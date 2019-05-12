@@ -3,6 +3,9 @@
 #include "list.hpp"
 #include "../error.hpp"
 #include "../config/debug.hpp"
+#include "../sfinae/when.hpp"
+#include "../list/is_list.hpp"
+#include "../algorithm/all_of.hpp"
 
 #include <cstddef>
 
@@ -26,15 +29,8 @@ namespace jln::mp
   {
     template<class... seqs>
     using join = typename mp::join<>::template f<seqs...>;
-  } // namespace eager
-}
+  }
 
-#include "../sfinae/when.hpp"
-#include "../algorithm/all_of.hpp"
-#include "../list/is_list.hpp"
-
-namespace jln::mp
-{
   namespace smp
   {
     template<class continuation = listify>
@@ -42,11 +38,17 @@ namespace jln::mp
   }
 }
 
-
 #include "../config/enumerate.hpp"
 
 namespace jln::mp::detail
 {
+  template<class continuation>
+  struct _sfinae<join<continuation>>
+  {
+    using type = smp::join<continuation>;
+  };
+
+
   template<std::size_t n JLN_MP_DEBUG_A(class error)>
   struct _join_select : _join_select<(n <= 16 ? 16 : n <= 64 ? 64 : n <= 256 ? 256 : 1024)>
   {};
@@ -80,4 +82,4 @@ namespace jln::mp::detail
     : _join_select<sizeof...(tail)+1>::template f<function, list<JLN_MP_XS_1024(JLN_MP_NIL, ...)>, tail...>
     {};
   };
-} // namespace jln::mp
+} // namespace jln::mp::detail

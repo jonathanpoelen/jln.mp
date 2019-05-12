@@ -26,10 +26,16 @@ namespace jln::mp
 
 #include "../functional/is_invovable.hpp"
 #include "../functional/if.hpp"
+#include "sfinae.hpp"
 
 namespace jln::mp::detail
 {
-  // TODO fork<function, cfe<always>
+  template<class predicate, template<class...> class function, class... args>
+  struct _sfinae<when<predicate, function, args...>>
+  {
+    using type = when<predicate, function, args...>;
+  };
+
   template<class function>
   struct _when_impl
   {
@@ -37,13 +43,19 @@ namespace jln::mp::detail
     using f = always<typename function::template f<xs...>>;
   };
 
+  template<class function, class when>
+  using _when_sfinae = typename conditional<std::is_same<unsafe_sfinae<function>, when>>::template f<
+    if_<is_invocable<function>, _when_impl<function>, unsatisfactory_concept>,
+    unsafe_sfinae<function>
+  >;
+
   template<class predicate, template<class...> class function, class... args>
   struct _when
   {
     template<class... xs>
     using f = typename mp::conditional_c<predicate::template f<xs...>::value>
       ::template f<
-        if_<is_invocable<function<args...>>, _when_impl<function<args...>>, unsatisfactory_concept>,
+        _when_sfinae<function<args...>, when<predicate, function, args...>>,
         unsatisfactory_concept>
       ::template f<xs...>;
   };
