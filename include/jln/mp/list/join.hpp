@@ -34,7 +34,7 @@ namespace jln::mp
   namespace smp
   {
     template<class continuation = listify>
-    using join = when<all_of<is_list<>>, mp::join, continuation>;
+    using join = when<all_of<is_list<>>, mp::join<when_continuation<continuation>>>;
   }
 }
 
@@ -42,10 +42,10 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  template<class continuation>
-  struct _sfinae<join<continuation>>
+  template<template<class> class sfinae, class continuation>
+  struct _sfinae<sfinae, join<continuation>>
   {
-    using type = smp::join<continuation>;
+    using type = smp::join<sfinae<continuation>>;
   };
 
 

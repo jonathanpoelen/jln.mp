@@ -9,36 +9,41 @@ namespace
   {
     using namespace jln::mp;
 
+    auto test = [](auto a, auto sa, auto r, auto... args){
+      IS_INVOCABLE_V(a, args...);
+      IS_INVOCABLE_V(sa, args...);
+      r = call<decltype(a), decltype(args)...>();
+      r = call<decltype(sa), decltype(args)...>();
+    };
+
+    class X;
     using a = list<int, float, double>;
     using b = list<char, unsigned>;
-    using c = list<class X>;
-    using flat_list = list<int, float, double, char, unsigned, class X>;
-    eager::join<a, b, c>{} = flat_list{};
-    eager::join<list<>, list<>, list<>>{} = list<>{};
+    using c = list<X>;
+    using e = list<>;
+    using flat_list = list<int, float, double, char, unsigned, X>;
+    eager::join<a, b, c>() = flat_list();
+    eager::join<list<>, e, e>() = e();
 
-    call<join<>, list<class X>, list<>>{} = list<class X>{};
-    call<join<join<>>, list<a, b>, list<c>>{} = flat_list{};
-    call<join<join<>>, list<list<class X>>, list<>>{} = list<class X>{};
-    call<join<join<join<>>>, list<>>{} = list<>{};
-    call<join<join<join<>>>, list<list<>>, list<>>{} = list<>{};
+    test(join<>(), smp::join<>(), e());
+    test(join<>(), smp::join<>(), c(), c(), e());
+    test(join<join<>>(), smp::join<smp::join<>>(), flat_list(), list<a, b>(), list<c>());
+    test(join<join<>>(), smp::join<smp::join<>>(), c(), list<c>(), e());
+    test(join<join<join<>>>(), smp::join<smp::join<smp::join<>>>(), e(), e());
+    test(join<join<join<>>>(), smp::join<smp::join<smp::join<>>>(), e(), list<e>(), e());
 
-    call<smp::join<>, list<class X>, list<>>{} = list<class X>{};
-    call<smp::join<smp::join<>>, list<a, b>, list<c>>{} = flat_list{};
-    call<smp::join<smp::join<>>, list<list<class X>>, list<>>{} = list<class X>{};
-    call<smp::join<smp::join<smp::join<>>>, list<>>{} = list<>{};
-    call<smp::join<smp::join<smp::join<>>>, list<list<>>, list<>>{} = list<>{};
+    // sfinae<join<join<>>>{} = smp::join<smp::join<>>{};
 
-    TEST_SMP(join<class x>);
-
-    IS_INVOCABLE(smp::join<>, list<class X>, list<>);
-    not IS_INVOCABLE(smp::join<>, class X, list<>);
-    not IS_INVOCABLE(smp::join<smp::join<>>, list<class X>, list<>);
-                // call<smp::join<smp::join<>>, list<class X>, list<>>{} = 1; BUG gcc
-         // always<call<smp::join<smp::join<>>, list<class X>, list<>>>{} = 1;
-    // smp::join<smp::join<>>::f<list<list<class X>>, list<>>{} = 1;
-    IS_INVOCABLE(smp::join<smp::join<>>, list<list<class X>>, list<>);
-    not IS_INVOCABLE(smp::join<smp::join<smp::join<>>>, list<class X>, list<>);
-    not IS_INVOCABLE(smp::join<smp::join<smp::join<>>>, list<list<class X>>, list<>);
-    IS_INVOCABLE(smp::join<smp::join<smp::join<>>>, list<list<list<class X>>>, list<>);
+    IS_INVOCABLE(smp::join<>, c, e);
+    not IS_INVOCABLE(smp::join<>, X, e);
+    not IS_INVOCABLE(smp::join<smp::join<>>, c, e);
+                // call<smp::join<smp::join<>>, c, e>() = 1; BUG gcc
+         // always<call<smp::join<smp::join<>>, c, e>>() = 1;
+    // smp::join<smp::join<>>::f<list<c>, e>() = 1;
+    IS_INVOCABLE(smp::join<smp::join<>>, list<c>, e);
+    not IS_INVOCABLE(smp::join<smp::join<smp::join<>>>, c, e);
+    not IS_INVOCABLE(smp::join<smp::join<smp::join<>>>, list<c>, e);
+    IS_INVOCABLE(smp::join<smp::join<smp::join<>>>, list<list<c>>, e);
+    not IS_INVOCABLE(sfinae<join<join<join<>>>>, list<c>, e);
   }
 }

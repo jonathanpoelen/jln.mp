@@ -1,8 +1,8 @@
 #pragma once
 
 #include "identity.hpp"
-#include "../number/number.hpp"
 #include "call.hpp"
+#include "../sfinae/when.hpp"
 
 
 namespace jln::mp
@@ -14,8 +14,6 @@ namespace jln::mp
     using f = call<continuation, typename function<xs...>::type>;
   };
 
-  // TODO using cfe = cfl<function, cfl<get_type, continuation>>
-  // TODO using cfe = cfl<function, get_type<continuation>>
   template<template<class...> class function, class continuation = identity>
   struct cfe
   {
@@ -23,17 +21,30 @@ namespace jln::mp
     using f = call<continuation, function<xs...>>;
   };
 
-  template<template<auto...> class function, class continuation = identity>
-  struct vcfl
+  namespace smp
   {
-    template<int_... ns>
-    using f = call<continuation, typename function<ns...>::type>;
+    template<template<class...> class function, class continuation = identity>
+    using cfl = when<
+      if_<is_invocable<cfe<function>>, is_invocable<cfl<function>>, always<false_>>,
+      cfl<function, continuation>>;
+
+    template<template<class...> class function, class continuation = identity>
+    using cfe = when<is_invocable<cfe<function>>, cfe<function, continuation>>;
+  }
+}
+
+
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, template<class...> class function, class continuation>
+  struct _sfinae<sfinae, cfl<function, continuation>>
+  {
+    using type = smp::cfl<function, sfinae<continuation>>;
   };
 
-  template<template<auto...> class function, class continuation = identity>
-  struct vcfe
+  template<template<class> class sfinae, template<class...> class function, class continuation>
+  struct _sfinae<sfinae, cfe<function, continuation>>
   {
-    template<int... ns>
-    using f = call<continuation, function<ns...>>;
+    using type = smp::cfe<function, sfinae<continuation>>;
   };
 }

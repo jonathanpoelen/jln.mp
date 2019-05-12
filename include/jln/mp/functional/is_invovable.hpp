@@ -25,7 +25,7 @@ namespace jln::mp
 
   namespace eager
   {
-    template<class function, class... xs>
-    using is_invocable = decltype(detail::_is_invocable(static_cast<function*>(nullptr), static_cast<xs*>(nullptr)...));
+    template</*TODO DOXY: class function, */class... xs>
+    using is_invocable = decltype(detail::_is_invocable(static_cast<xs*>(nullptr)...));
   }
 }

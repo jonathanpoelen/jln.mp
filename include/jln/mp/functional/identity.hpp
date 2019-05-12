@@ -14,3 +14,14 @@ namespace jln::mp
     using identity = x;
   }
 }
+
+#include "../sfinae/sfinae.hpp"
+
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae>
+  struct _sfinae<sfinae, identity>
+  {
+    using type = identity;
+  };
+}
