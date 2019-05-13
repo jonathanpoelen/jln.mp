@@ -46,8 +46,9 @@ namespace
     not IS_INVOCABLE(smp::join<smp::join<smp::join<>>>, list<c>, e);
     IS_INVOCABLE(smp::join<smp::join<smp::join<>>>, list<list<c>>, e);
     not IS_INVOCABLE(sfinae<join<join<join<>>>>, list<c>, e);
-    IS_INVOCABLE(sfinae<join<>>, list<list<c>>, e);
-    // IS_INVOCABLE(sfinae<join<join<>>>, list<list<c>>, e);
-    // IS_INVOCABLE(sfinae<join<join<join<>>>>, list<list<c>>, e);
+    // sfinae<join<>>::f<list<list<c>>, e>{} = 1;
+    // sfinae<join<join<>>>::f<list<list<c>>, e>{} = 1;
+    // sfinae<join<join<join<>>>>::f<list<list<c>>, e>{} = 1;
+    IS_INVOCABLE(sfinae<join<join<join<>>>>, list<list<c>>, e);
   }
 }

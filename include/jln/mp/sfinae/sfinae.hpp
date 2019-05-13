@@ -42,12 +42,6 @@ namespace jln::mp::detail
     using type = when<xs...>;
   };
 
-  template<template<class> class sfinae>
-  struct _sfinae<sfinae, listify>
-  {
-    using type = listify;
-  };
-
   template<class x>
   struct _recursive_sfinae_impl
   {
@@ -70,6 +64,30 @@ namespace jln::mp::detail
     using f = always<typename function::template f<xs...>>;
   };
 
+  template<template<class> class sfinae, class... xs>
+  struct _sfinae<sfinae, _when<xs...>>
+  {
+    using type = _when<xs...>;
+  };
+
+  template<template<class> class sfinae>
+  struct _sfinae<sfinae, listify>
+  {
+    using type = sfinae_barrier<_when_impl<listify>>;
+  };
+
+  template<template<class> class sfinae>
+  struct _sfinae<sfinae, identity>
+  {
+    using type = sfinae_barrier<_when_impl<listify>>;
+  };
+
+  template<>
+  struct _when_continuation<identity>
+  {
+    using type = _when_impl<identity>;
+  };
+
   template<class function>
   struct _when_continuation
   {
@@ -88,11 +106,11 @@ namespace jln::mp::detail
     using type = _when_impl<listify>;
   };
 
-  template<class continuation>
-  struct _when_continuation<when<always<true_>, continuation>>
-  {
-    using type = continuation;
-  };
+  // template<class continuation>
+  // struct _when_continuation<when<always<true_>, continuation>>
+  // {
+  //   using type = continuation;
+  // };
 
   template<template<class> class sfinae, class function, class>
   struct _unsafe_sfinae

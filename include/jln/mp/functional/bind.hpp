@@ -29,10 +29,10 @@ namespace jln::mp
     template<template<class...> class function, class continuation = identity>
     using cfl = when<
       mp::if_<mp::is_invocable<mp::cfe<function>>, mp::is_invocable<mp::cfl<function>>, mp::always<false_>>,
-      mp::cfl<function, continuation>>;
+      mp::cfl<function, when_continuation<continuation>>>;
 
     template<template<class...> class function, class continuation = identity>
-    using cfe = when<mp::is_invocable<mp::cfe<function>>, mp::cfe<function, continuation>>;
+    using cfe = when<mp::is_invocable<mp::cfe<function>>, mp::cfe<function, when_continuation<continuation>>>;
   }
 }
 
