@@ -2,6 +2,7 @@
 
 #include "jln/mp/functional/call.hpp"
 #include "jln/mp/list/join.hpp"
+#include "jln/mp/sfinae/sfinae.hpp"
 
 namespace
 {
@@ -14,6 +15,8 @@ namespace
       IS_INVOCABLE_V(sa, args...);
       r = call<decltype(a), decltype(args)...>();
       r = call<decltype(sa), decltype(args)...>();
+      // r = call<sfinae<decltype(a)>, decltype(args)...>();
+      r = call<sfinae<decltype(sa)>, decltype(args)...>();
     };
 
     class X;
@@ -32,8 +35,6 @@ namespace
     test(join<join<join<>>>(), smp::join<smp::join<smp::join<>>>(), e(), e());
     test(join<join<join<>>>(), smp::join<smp::join<smp::join<>>>(), e(), list<e>(), e());
 
-    // sfinae<join<join<>>>{} = smp::join<smp::join<>>{};
-
     IS_INVOCABLE(smp::join<>, c, e);
     not IS_INVOCABLE(smp::join<>, X, e);
     not IS_INVOCABLE(smp::join<smp::join<>>, c, e);
@@ -45,5 +46,8 @@ namespace
     not IS_INVOCABLE(smp::join<smp::join<smp::join<>>>, list<c>, e);
     IS_INVOCABLE(smp::join<smp::join<smp::join<>>>, list<list<c>>, e);
     not IS_INVOCABLE(sfinae<join<join<join<>>>>, list<c>, e);
+    IS_INVOCABLE(sfinae<join<>>, list<list<c>>, e);
+    // IS_INVOCABLE(sfinae<join<join<>>>, list<list<c>>, e);
+    // IS_INVOCABLE(sfinae<join<join<join<>>>>, list<list<c>>, e);
   }
 }

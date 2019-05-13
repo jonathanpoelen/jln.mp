@@ -3,7 +3,7 @@
 #include "list.hpp"
 #include "../error.hpp"
 #include "../config/debug.hpp"
-#include "../sfinae/when.hpp"
+#include "../sfinae/sfinaefwd.hpp"
 #include "../list/is_list.hpp"
 #include "../algorithm/all_of.hpp"
 

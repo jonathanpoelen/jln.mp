@@ -15,13 +15,13 @@ namespace jln::mp
   }
 }
 
-#include "../sfinae/sfinae.hpp"
-
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae>
-  struct _sfinae<sfinae, identity>
-  {
-    using type = identity;
-  };
-}
+// #include "../sfinae/sfinae_barrier.hpp"
+//
+// namespace jln::mp::detail
+// {
+//   template<template<class> class sfinae>
+//   struct _sfinae<sfinae, identity>
+//   {
+//     using type = sfinae_barrier<identity>;
+//   };
+// }

@@ -2,7 +2,10 @@
 
 #include "identity.hpp"
 #include "call.hpp"
-#include "../sfinae/when.hpp"
+#include "../sfinae/sfinaefwd.hpp"
+#include "../functional/always.hpp"
+#include "../functional/if.hpp"
+#include "../functional/is_invovable.hpp"
 
 
 namespace jln::mp
@@ -25,11 +28,11 @@ namespace jln::mp
   {
     template<template<class...> class function, class continuation = identity>
     using cfl = when<
-      if_<is_invocable<cfe<function>>, is_invocable<cfl<function>>, always<false_>>,
-      cfl<function, continuation>>;
+      mp::if_<mp::is_invocable<mp::cfe<function>>, mp::is_invocable<mp::cfl<function>>, mp::always<false_>>,
+      mp::cfl<function, continuation>>;
 
     template<template<class...> class function, class continuation = identity>
-    using cfe = when<is_invocable<cfe<function>>, cfe<function, continuation>>;
+    using cfe = when<mp::is_invocable<mp::cfe<function>>, mp::cfe<function, continuation>>;
   }
 }
 
