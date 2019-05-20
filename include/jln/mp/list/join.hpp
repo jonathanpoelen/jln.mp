@@ -3,9 +3,9 @@
 #include "list.hpp"
 #include "../error.hpp"
 #include "../config/debug.hpp"
-#include "../sfinae/sfinaefwd.hpp"
 #include "../list/is_list.hpp"
 #include "../algorithm/all_of.hpp"
+#include "../functional/when.hpp"
 
 #include <cstddef>
 
@@ -34,7 +34,7 @@ namespace jln::mp
   namespace smp
   {
     template<class continuation = listify>
-    using join = when<all_of<is_list<>>, mp::join<when_continuation<continuation>>>;
+    using join = when<mp::all_of<mp::is_list<>>, mp::join<when_continuation<continuation>>>;
   }
 }
 

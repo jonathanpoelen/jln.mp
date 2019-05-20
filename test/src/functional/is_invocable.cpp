@@ -1,6 +1,6 @@
 #include "test/test_case.hpp"
 
-#include "jln/mp/functional/is_invovable.hpp"
+#include "jln/mp/functional/is_invocable.hpp"
 
 namespace
 {

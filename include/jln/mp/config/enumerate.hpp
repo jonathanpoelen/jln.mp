@@ -13,12 +13,51 @@
   func(64, JLN_MP_XS_64)              \
   func(256, JLN_MP_XS_256)
 
+#define JLN_MP_GEN_XS_8_16_64_256(func) \
+  func(8, JLN_MP_XS_8)                  \
+  func(16, JLN_MP_XS_16)                \
+  func(64, JLN_MP_XS_64)                \
+  func(256, JLN_MP_XS_256)
+
+#define JLN_MP_GEN_XS_1_TO_8(func) \
+  func(1, JLN_MP_XS_1)             \
+  func(2, JLN_MP_XS_2)             \
+  func(3, JLN_MP_XS_3)             \
+  func(4, JLN_MP_XS_4)             \
+  func(5, JLN_MP_XS_5)             \
+  func(6, JLN_MP_XS_6)             \
+  func(7, JLN_MP_XS_7)
+
+
 #define JLN_MP_XS_0(before, after)
 
-#define JLN_MP_XS_1(before, after) before _0 after
+#define JLN_MP_XS_1(before, after) \
+  before _0 after
 
-#define JLN_MP_XS_4(before, after)                                    \
-  before _0 after, before _1 after, before _2 after, before _3 after  \
+#define JLN_MP_XS_2(before, after) \
+  before _0 after, before _1 after
+
+#define JLN_MP_XS_3(before, after) \
+  before _0 after, before _1 after, before _2 after
+
+#define JLN_MP_XS_4(before, after) \
+  before _0 after, before _1 after, before _2 after, before _3 after
+
+#define JLN_MP_XS_5(before, after)                                    \
+  before _0 after, before _1 after, before _2 after, before _3 after, \
+  before _4 after
+
+#define JLN_MP_XS_6(before, after)                                    \
+  before _0 after, before _1 after, before _2 after, before _3 after, \
+  before _4 after, before _5 after
+
+#define JLN_MP_XS_7(before, after)                                    \
+  before _0 after, before _1 after, before _2 after, before _3 after, \
+  before _4 after, before _5 after, before _6 after
+
+#define JLN_MP_XS_8(before, after)                                    \
+  before _0 after, before _1 after, before _2 after, before _3 after, \
+  before _4 after, before _5 after, before _6 after, before _7 after
 
 #define JLN_MP_XS_16(before, after)                                     \
   before _0 after, before _1 after, before _2 after, before _3 after,   \
