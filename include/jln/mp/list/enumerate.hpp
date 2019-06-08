@@ -2,9 +2,11 @@
 
 #include "list.hpp"
 #include "../functional/identity.hpp"
-#include "../functional/packed.hpp"
 #include "../number/numbers.hpp"
+#include "../number/is_number.hpp"
+
 #include <utility>
+
 
 #ifndef JLN_MP_HAS_MAKE_INTEGER_SEQ
 # if defined(__has_builtin)
@@ -26,16 +28,22 @@ namespace jln::mp
     struct _enumerate;
 
 #if JLN_MP_HAS_MAKE_INTEGER_SEQ
-    template<int_ n, class continuation = mp::numbers<listify>>
+    template<int_ n, class continuation>
     using _enumerate_v_c = __make_integer_seq<
       detail::_enumerate<continuation>::template f, int_, n>;
 #else
-    template<int_ n, class continuation = listify_c>
-    using enumerate_v_c = typename detail::_enumerate<
-    std::make_index_sequence<n>
-    >::template f<continuation>::type;
+    template<int_ n, class continuation>
+    using _enumerate_v_c = typename detail::_enumerate<
+      std::make_index_sequence<n>>::template f<continuation>;
 #endif
   }
+
+  template<class continuation = listify>
+  struct enumerate
+  {
+    template<class n>
+    using f = detail::_enumerate_v_c<n::value, numbers<continuation>>;
+  };
 
   namespace eager
   {
@@ -46,16 +54,21 @@ namespace jln::mp
     using enumerate = detail::_enumerate_v_c<n::value, mp::numbers<continuation>>;
   }
 
-  template<class continuation = listify>
-  struct enumerate
+  namespace smp
   {
-    template<class n>
-    using f = detail::_enumerate_v_c<n::value, numbers<continuation>>;
-  };
+    template<class continuation = listify>
+    using enumerate = when<mp::is_number<>, mp::enumerate<when_continuation<continuation>>>;
+  }
 }
 
 namespace jln::mp::detail
 {
+  template<template<class> class sfinae, class continuation>
+  struct _sfinae<sfinae, enumerate<continuation>>
+  {
+    using type = smp::enumerate<sfinae<continuation>>;
+  };
+
 #if JLN_MP_HAS_MAKE_INTEGER_SEQ
   template<class continuation>
   struct _enumerate

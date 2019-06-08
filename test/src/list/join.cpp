@@ -1,7 +1,5 @@
 #include "test.hpp"
 
-#include "jln/mp/functional/sfinae.hpp"
-#include "jln/mp/functional/call.hpp"
 #include "jln/mp/list/join.hpp"
 
 namespace

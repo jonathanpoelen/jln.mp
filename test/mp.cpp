@@ -1,2 +1,5 @@
 #include "src/functional/is_invocable.cpp"
+#include "src/functional/bind.cpp"
+#include "src/number/is_number.cpp"
 #include "src/list/join.cpp"
+#include "src/list/enumerate.cpp"
