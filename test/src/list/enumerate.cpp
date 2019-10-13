@@ -2,7 +2,7 @@
 
 #include "jln/mp/list/enumerate.hpp"
 #include "jln/mp/number/numbers.hpp"
-#include "jln/mp/algorithm/size.hpp"
+#include "jln/mp/list/size.hpp"
 
 namespace
 {

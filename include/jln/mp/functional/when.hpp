@@ -65,9 +65,9 @@ namespace jln::mp
   struct if_
   {
     template<class... xs>
-    using f = typename mp::conditional_c<predicate::template f<xs...>::value>
-      ::template f<true_continuation, false_continuation>
-      ::template f<xs...>;
+    using f = call<typename mp::conditional_c<call<predicate, xs...>::value>
+      ::template f<true_continuation, false_continuation>,
+      xs...>;
   };
 
   template<class function, class continuation = identity>
@@ -77,18 +77,37 @@ namespace jln::mp
     using f = typename continuation::template f<decltype(detail::_is_invocable(static_cast<function*>(nullptr), static_cast<xs*>(nullptr)...))>;
   };
 
+  namespace detail
+  {
+    template<bool>
+    struct dcallf;
+
+    template<>
+    struct dcallf<true>
+    {
+        template<template<class...> class F, typename...xs>
+        using f = F<xs...>;
+    };
+  }
+
   template<template<class...> class function, class continuation = identity>
   struct cfl
   {
     template<class... xs>
-    using f = call<continuation, typename function<xs...>::type>;
+    using f = call<
+      continuation,
+      typename detail::dcallf<sizeof...(xs) < 1000000>
+        ::template f<function, xs...>::type>;
   };
 
   template<template<class...> class function, class continuation = identity>
   struct cfe
   {
     template<class... xs>
-    using f = call<continuation, function<xs...>>;
+    using f = call<
+      continuation,
+      typename detail::dcallf<sizeof...(xs) < 1000000>
+        ::template f<function, xs...>>;
   };
 
   template<class... vals>
@@ -105,6 +124,13 @@ namespace jln::mp
         detail::_rotate_size(n::value, sizeof...(xs)))
     >::template f<detail::_rotate_size(n::value, sizeof...(xs)),
       continuation, xs...>;
+  };
+
+  template<class continuation = identity>
+  struct size
+  {
+    template<class... xs>
+    using f = typename continuation::template f<number<sizeof...(xs)>>;
   };
 
   // TODO DOXY template<class... functions, class continuation>
@@ -133,8 +159,8 @@ namespace jln::mp
       ::template f<true_continuation, false_continuation>
       ::template f<xs...>;
 
-    template</*TODO DOXY: class function, */class... xs>
-    using is_invocable = decltype(detail::_is_invocable(static_cast<xs*>(nullptr)...));
+    template<class function, class... xs>
+    using is_invocable = mp::call<mp::is_invocable<function>, xs...>;
   }
 
   template<class continuation>
@@ -143,11 +169,32 @@ namespace jln::mp
   template<class predicate, class continuation>
   struct when;
 
+  // TODO move to mp, eager, smp
+  //@{
+  template <class T, class C = identity>
+  struct same_as
+  {
+    template <class x>
+    using f = typename C::template f<number<std::is_same<T, x>::value>>;
+  };
+
+  template<class N, class C = identity>
+  using size_of = size<same_as<N>>;
+
+  template<class C = identity>
+  using size_of_1 = size_of<number<1>, identity>;
+
+  template<class C = identity>
+  using size_of_2 = size_of<number<2>, identity>;
+  //@}
+
   namespace smp
   {
-    using identity = when<mp::is_invocable<mp::identity>, mp::identity>;
+    using identity = when<mp::size_of_1<>, mp::identity>;
+    using listify = when<mp::always<true_>, mp::listify>;
 
     template<class x, class continuation = identity>
+    // TODO direct evaluation
     using always = when<mp::always<true_>, mp::always<x, when_continuation<continuation>>>;
 
     template<class predicate, class true_continuation, class false_continuation>
@@ -167,6 +214,10 @@ namespace jln::mp
 
     template<template<class...> class function, class continuation = identity>
     using cfe = when<mp::is_invocable<mp::cfe<function>>, mp::cfe<function, when_continuation<continuation>>>;
+
+    template<class continuation = identity>
+    using size = when<mp::always<true_>,
+      mp::size<when_continuation<continuation>>>;
   }
 
   struct unsatisfactory_concept_error;
@@ -176,10 +227,32 @@ namespace jln::mp
   struct when
   {
     template<class... xs>
-    using f = typename mp::conditional_c<predicate::template f<xs...>::value>
-      ::template f<continuation, unsatisfactory_concept>
-      ::template f<xs...>
-      ::template f<>;
+    using f = call<
+      if_<
+        same_as<unsatisfactory_concept_error>
+      , cfl<unsatisfactory_concept::template f>
+      , identity
+      >
+    , call<
+        typename conditional<call<predicate, xs...>>
+        // TODO compose<continuation, if_<...>>
+        ::template f<continuation, unsatisfactory_concept>,
+        xs...
+      >
+    >;
+  };
+
+  template<class WP, class WC, class C>
+  struct is_invocable<when<WP, WC>, C>
+  {
+    template<class... xs>
+    using f = typename C::template f<number<!std::is_same<
+      call<
+        typename mp::conditional<call<WP, xs...>>
+        ::template f<WC, unsatisfactory_concept>
+      , xs...>
+    , unsatisfactory_concept_error
+    >::value>>;
   };
 }
 
@@ -190,14 +263,6 @@ namespace jln::mp::detail
 {
   template<class predicate, class continuation>
   struct _when;
-
-  // TODO _when_impl<c> = demux<c, cfe<always>>
-  template<class function>
-  struct _when_impl
-  {
-    template<class... xs>
-    using f = always<typename function::template f<xs...>>;
-  };
 
   template<template<class> class sfinae, class... xs>
   struct _sfinae<sfinae, when<xs...>>
@@ -220,7 +285,7 @@ namespace jln::mp::detail
   template<template<class> class sfinae>
   struct _sfinae<sfinae, listify>
   {
-    using type = when<always<true_>, _when_impl<listify>>;
+    using type = smp::listify;
   };
 
   template<template<class> class sfinae, template<class...> class function, class continuation>
@@ -235,14 +300,21 @@ namespace jln::mp::detail
     using type = smp::cfe<function, sfinae<continuation>>;
   };
 
+  template<template<class> class sfinae, class continuation>
+  struct _sfinae<sfinae, size<continuation>>
+  {
+    using type = smp::size<sfinae<continuation>>;
+  };
+
 
   template<class predicate, class continuation>
   struct _when
   {
     template<class... xs>
-    using f = typename mp::conditional_c<predicate::template f<xs...>::value>
+    using f = mp::call<
+      typename mp::conditional<mp::call<predicate, xs...>>
       ::template f<continuation, unsatisfactory_concept>
-      ::template f<xs...>;
+    , xs...>;
   };
 
   // TODO _when_capture_n<1, identity>
@@ -267,19 +339,7 @@ namespace jln::mp::detail
   template<class function>
   struct _when_continuation
   {
-    using type = if_<is_invocable<function>, _when_impl<function>, unsatisfactory_concept>;
-  };
-
-  template<>
-  struct _when_continuation<identity>
-  {
-    using type = _when_identity;
-  };
-
-  template<>
-  struct _when_continuation<listify>
-  {
-    using type = _when_impl<listify>;
+    using type = _when<is_invocable<function>, function>;
   };
 
   template<class predicate, class continuation>
@@ -288,10 +348,10 @@ namespace jln::mp::detail
     using type = _when<predicate, continuation>;
   };
 
-  template<class continuation>
-  struct _when_continuation<when<always<true_>, continuation>>
+  template<class predicate, class continuation>
+  struct _when_continuation<_when<predicate, continuation>>
   {
-    using type = _when_impl<continuation>;
+    using type = _when<predicate, continuation>;
   };
 
 

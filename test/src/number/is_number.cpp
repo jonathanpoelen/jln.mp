@@ -17,6 +17,9 @@ namespace
     test_context<is_number<>, smp::is_number<>>()
       .test<true_, n>()
       .test<false_, x>()
+      .not_invocable<>()
+      .not_invocable<x, x>()
+      .not_invocable<n, n>()
       ;
   }
 }

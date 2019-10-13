@@ -16,6 +16,7 @@ namespace
       using type = x;
     };
   }
+
   TEST()
   {
     using namespace jln::mp;

@@ -1,3 +1,4 @@
+#include "src/algorithm/size.cpp"
 #include "src/functional/is_invocable.cpp"
 #include "src/functional/bind.cpp"
 #include "src/number/is_number.cpp"

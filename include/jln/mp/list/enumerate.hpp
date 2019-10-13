@@ -59,7 +59,7 @@ namespace jln::mp
     template<class continuation = listify>
     using enumerate = when<mp::is_number<>, mp::enumerate<when_continuation<continuation>>>;
   }
-}
+} // namespace jln::mp
 
 namespace jln::mp::detail
 {

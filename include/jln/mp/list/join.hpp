@@ -28,7 +28,7 @@ namespace jln::mp
   namespace eager
   {
     template<class... seqs>
-    using join = typename mp::join<>::template f<seqs...>;
+    using join = mp::call<mp::join<>, seqs...>;
   }
 
   namespace smp

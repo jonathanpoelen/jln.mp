@@ -29,6 +29,7 @@ namespace
       .test<c, list<c>, e>()
       .not_invocable<c, e>()
       ;
+
     test_context<join<join<join<>>>, smp::join<smp::join<smp::join<>>>>()
       .test<e, e>()
       .test<e, list<e>, e>()

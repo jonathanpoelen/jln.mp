@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./is_invocable.hpp"
+#include "./is_same.hpp"
 #include "jln/mp/functional/call.hpp"
 #include "jln/mp/functional/always.hpp"
 #include "jln/mp/functional/sfinae.hpp"
@@ -13,12 +14,13 @@ inline namespace TU
   template<class Mp, class Smp>
   struct test_context
   {
+    IS_SAME(Smp, sfinae<Mp>);
+    IS_SAME(Smp, sfinae<Smp>);
+
     template<class R, class... xs>
     test_context& test()
     {
-      IS_INVOCABLE(Mp, xs...);
       IS_INVOCABLE(Smp, xs...);
-      Smp() = sfinae<Smp>();
       R() = call<Mp, xs...>();
       R() = call<Smp, xs...>();
       return *this;
@@ -28,7 +30,6 @@ inline namespace TU
     test_context& not_invocable()
     {
       not IS_INVOCABLE(Smp, xs...);
-      not IS_INVOCABLE(jln::mp::sfinae<Mp>, xs...);
       return *this;
     }
   };
