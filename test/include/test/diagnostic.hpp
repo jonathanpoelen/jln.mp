@@ -33,17 +33,8 @@ SOFTWARE.
 
 #ifdef _MSC_VER
 #  define JLN_PRAGMA_I(x) __pragma(x)
-#  include "../preprocessor/stringize.hpp"
-#  define JLN_WARNING_MSG(MSG) \
-     JLN_PRAGMA(message(__FILE__ "(" JLN_PP_STRINGIZE(__LINE__) "): warning: " MSG))
-#  define JLN_ERROR_MSG(MSG) \
-     JLN_PRAGMA(message(__FILE__ "(" JLN_PP_STRINGIZE(__LINE__) "): error: " MSG)) \
-     __pragma(warning(error:4615)) \
-     __pragma(warning())
 #else
 #  define JLN_PRAGMA_I(x) _Pragma(#x)
-#  define JLN_WARNING_MSG(MSG) JLN_PRAGMA(GCC warning MSG)
-#  define JLN_ERROR_MSG(MSG) JLN_PRAGMA(GCC error MSG)
 #endif
 
 

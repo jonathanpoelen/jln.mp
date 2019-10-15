@@ -10,6 +10,7 @@ test_dep = declare_dependency(include_directories: include_directories('test/inc
 executable('size', 'test/src/algorithm/size.cpp', dependencies: test_dep, build_by_default: false)
 executable('is_invocable', 'test/src/functional/is_invocable.cpp', dependencies: test_dep, build_by_default: false)
 executable('bind', 'test/src/functional/bind.cpp', dependencies: test_dep, build_by_default: false)
+executable('invoke', 'test/src/functional/invoke.cpp', dependencies: test_dep, build_by_default: false)
 executable('is_number', 'test/src/number/is_number.cpp', dependencies: test_dep, build_by_default: false)
 executable('join', 'test/src/list/join.cpp', dependencies: test_dep, build_by_default: false)
 executable('enumerate', 'test/src/list/enumerate.cpp', dependencies: test_dep, build_by_default: false)
