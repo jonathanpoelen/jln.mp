@@ -10,14 +10,14 @@ namespace jln::mp
     struct _as_number;
   }
 
-  namespace eager
+  namespace emp
   {
     template<class v>
     using as_number = typename detail::_as_number<v>::type;
   }
 
   template<class continuation = identity>
-  using as_number = cfl<eager::as_number, continuation>;
+  using as_number = cfl<emp::as_number, continuation>;
 }
 
 #include "number.hpp"

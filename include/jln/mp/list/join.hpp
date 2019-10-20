@@ -25,7 +25,7 @@ namespace jln::mp
     using f = typename detail::_join_select<sizeof...(seqs)>::template f<continuation::template f, seqs...>::type;
   };
 
-  namespace eager
+  namespace emp
   {
     template<class... seqs>
     using join = mp::call<mp::join<>, seqs...>;
@@ -49,11 +49,12 @@ namespace jln::mp::detail
   };
 
 
+  // TODO n <=16 .... -> n_16_64_256_1024<n>
   template<std::size_t n JLN_MP_DEBUG_A(class error)>
   struct _join_select : _join_select<(n <= 16 ? 16 : n <= 64 ? 64 : n <= 256 ? 256 : 1024)>
   {};
 
-#define JLN_MP_JOIN_SELECT(n, mp_xs)                                         \
+#define JLN_MP_JOIN_SELECT(n, mp_xs, _)                                      \
   template<JLN_MP_DEBUG(class error)>                                        \
   struct _join_select<n JLN_MP_DEBUG_A(error)>                               \
   {                                                                          \

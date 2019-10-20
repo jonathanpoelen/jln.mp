@@ -12,7 +12,7 @@ namespace jln::mp
     using f = typename continuation::template f<number<ns>...>;
   };
 
-  namespace eager
+  namespace emp
   {
     template<int_... vs>
     using numbers = list<number<vs>...>;

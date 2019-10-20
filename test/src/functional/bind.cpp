@@ -8,7 +8,7 @@ namespace
   namespace bind_test
   {
     template<class x>
-    using eager = x;
+    using emp = x;
 
     template<class x>
     struct lazy
@@ -24,7 +24,7 @@ namespace
 
     class x{};
 
-    test_context<cfe<t::eager>, smp::cfe<t::eager>>()
+    test_context<cfe<t::emp>, smp::cfe<t::emp>>()
       .test<x, x>()
       ;
     test_context<cfl<t::lazy>, smp::cfl<t::lazy>>()

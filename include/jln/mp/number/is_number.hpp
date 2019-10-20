@@ -12,7 +12,7 @@ namespace jln::mp
     struct _is_number;
   }
 
-  namespace eager
+  namespace emp
   {
     template<class x>
     using is_number = typename detail::_is_number<x>::type;

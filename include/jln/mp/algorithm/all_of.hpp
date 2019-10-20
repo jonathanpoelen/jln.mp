@@ -13,7 +13,7 @@ namespace jln::mp
       (predicate::template f<xs>::value && ... && true)>>;
   };
 
-  namespace eager
+  namespace emp
   {
     template<class predicate, class... xs>
     using all_of = number<(predicate::template f<xs>::value && ... && true)>;

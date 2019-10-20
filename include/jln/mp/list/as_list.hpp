@@ -22,7 +22,7 @@ namespace jln::mp
     using f = typename detail::_as_list<continuation::template f, seq>::type;
   };
 
-  namespace eager
+  namespace emp
   {
     template<class seq, class continuation = listify>
     using as_list = typename detail::_as_list<continuation::template f, seq>::type;

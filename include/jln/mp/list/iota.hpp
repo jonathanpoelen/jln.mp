@@ -17,7 +17,7 @@ namespace jln::mp
     using f = typename detail::_iota_v_c<continuation>::template f<start::value, size::value, stride::value>;
   };
 
-  namespace eager
+  namespace emp
   {
     template<int_ start, int_ size, int_ stride = 1, class continuation = listify>
     using iota_c = typename detail::_iota_v_c<continuation>::template f<start, size, stride>;

@@ -1,32 +1,139 @@
 #pragma once
 
 #define JLN_MP_NIL
+#define JLN_MP_COMMA ,
 
-#define JLN_MP_GEN_XS_16_64_256_1024(func) \
-  func(16, JLN_MP_XS_16)                   \
-  func(64, JLN_MP_XS_64)                   \
-  func(256, JLN_MP_XS_256)                 \
-  func(1024, JLN_MP_XS_1024)
+#define JLN_MP_GEN_XS_16_64_256_1024(func)      \
+  func(16,   JLN_MP_XS_16,   JLN_MP_REPEAT_16)  \
+  func(64,   JLN_MP_XS_64,   JLN_MP_REPEAT_64)  \
+  func(256,  JLN_MP_XS_256,  JLN_MP_REPEAT_256) \
+  func(1024, JLN_MP_XS_1024, JLN_MP_REPEAT_1024)
 
-#define JLN_MP_GEN_XS_16_64_256(func) \
-  func(16, JLN_MP_XS_16)              \
-  func(64, JLN_MP_XS_64)              \
-  func(256, JLN_MP_XS_256)
+#define JLN_MP_GEN_XS_16_64_256(func)        \
+  func(16,  JLN_MP_XS_16,  JLN_MP_REPEAT_16) \
+  func(64,  JLN_MP_XS_64,  JLN_MP_REPEAT_64) \
+  func(256, JLN_MP_XS_256, JLN_MP_REPEAT_256)
 
-#define JLN_MP_GEN_XS_8_16_64_256(func) \
-  func(8, JLN_MP_XS_8)                  \
-  func(16, JLN_MP_XS_16)                \
-  func(64, JLN_MP_XS_64)                \
-  func(256, JLN_MP_XS_256)
+#define JLN_MP_GEN_XS_8_16_64_256(func)      \
+  func(8,   JLN_MP_XS_8,   JLN_MP_REPEAT_8)  \
+  func(16,  JLN_MP_XS_16,  JLN_MP_REPEAT_16) \
+  func(64,  JLN_MP_XS_64,  JLN_MP_REPEAT_64) \
+  func(256, JLN_MP_XS_256, JLN_MP_REPEAT_256)
 
-#define JLN_MP_GEN_XS_1_TO_8(func) \
-  func(1, JLN_MP_XS_1)             \
-  func(2, JLN_MP_XS_2)             \
-  func(3, JLN_MP_XS_3)             \
-  func(4, JLN_MP_XS_4)             \
-  func(5, JLN_MP_XS_5)             \
-  func(6, JLN_MP_XS_6)             \
-  func(7, JLN_MP_XS_7)
+#define JLN_MP_GEN_XS_4_8_16_64_256(func)    \
+  func(4,   JLN_MP_XS_4,   JLN_MP_REPEAT_4)  \
+  func(8,   JLN_MP_XS_8,   JLN_MP_REPEAT_8)  \
+  func(16,  JLN_MP_XS_16,  JLN_MP_REPEAT_16) \
+  func(64,  JLN_MP_XS_64,  JLN_MP_REPEAT_64) \
+  func(256, JLN_MP_XS_256, JLN_MP_REPEAT_256)
+
+#define JLN_MP_GEN_XS_1_TO_8(func)      \
+  func(1, JLN_MP_XS_1, JLN_MP_REPEAT_1) \
+  func(2, JLN_MP_XS_2, JLN_MP_REPEAT_2) \
+  func(3, JLN_MP_XS_3, JLN_MP_REPEAT_3) \
+  func(4, JLN_MP_XS_4, JLN_MP_REPEAT_4) \
+  func(5, JLN_MP_XS_5, JLN_MP_REPEAT_5) \
+  func(6, JLN_MP_XS_6, JLN_MP_REPEAT_6) \
+  func(7, JLN_MP_XS_7, JLN_MP_REPEAT_7)
+
+#define JLN_MP_GEN_XS_0_TO_4(func)      \
+  func(0, JLN_MP_XS_0, JLN_MP_REPEAT_0) \
+  func(1, JLN_MP_XS_1, JLN_MP_REPEAT_1) \
+  func(2, JLN_MP_XS_2, JLN_MP_REPEAT_2) \
+  func(3, JLN_MP_XS_3, JLN_MP_REPEAT_3)
+
+#define JLN_MP_GEN_XS_1_TO_4(func)      \
+  func(1, JLN_MP_XS_1, JLN_MP_REPEAT_1) \
+  func(2, JLN_MP_XS_2, JLN_MP_REPEAT_2) \
+  func(3, JLN_MP_XS_3, JLN_MP_REPEAT_3)
+
+
+#define JLN_MP_REPEAT_0(x)
+#define JLN_MP_REPEAT_1(x) x
+#define JLN_MP_REPEAT_2(x) x x
+#define JLN_MP_REPEAT_3(x) x x x
+#define JLN_MP_REPEAT_4(x) x x x x
+#define JLN_MP_REPEAT_5(x) x x x x x
+#define JLN_MP_REPEAT_6(x) x x x x x x
+#define JLN_MP_REPEAT_7(x) x x x x x x x
+#define JLN_MP_REPEAT_8(x) x x x x x x x x
+
+#define JLN_MP_REPEAT_16(x) x x x x x x x x x x x x x x x x
+
+#define JLN_MP_REPEAT_32(x) \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x
+
+#define JLN_MP_REPEAT_64(x)                                       \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x
+
+#define JLN_MP_REPEAT_128(x)                                      \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x
+
+#define JLN_MP_REPEAT_256(x)                                      \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x
+
+#define JLN_MP_REPEAT_512(x)                                      \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x
+
+#define JLN_MP_REPEAT_1024(x)                                     \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+  x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x
 
 
 #define JLN_MP_XS_0(before, after)

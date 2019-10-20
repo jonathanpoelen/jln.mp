@@ -16,17 +16,17 @@ namespace
     using _3 = number<3>;
     using _4 = number<4>;
 
-    using a = eager::numbers<>;
-    using b = eager::numbers<0>;
-    using c = eager::numbers<0, 1>;
-    using d = eager::numbers<0, 1, 2>;
-    using e = eager::numbers<0, 1, 2, 3>;
+    using a = emp::numbers<>;
+    using b = emp::numbers<0>;
+    using c = emp::numbers<0, 1>;
+    using d = emp::numbers<0, 1, 2>;
+    using e = emp::numbers<0, 1, 2, 3>;
 
-    eager::enumerate<_0>() = a();
-    eager::enumerate<_1>() = b();
-    eager::enumerate<_2>() = c();
-    eager::enumerate<_3>() = d();
-    eager::enumerate<_4>() = e();
+    emp::enumerate<_0>() = a();
+    emp::enumerate<_1>() = b();
+    emp::enumerate<_2>() = c();
+    emp::enumerate<_3>() = d();
+    emp::enumerate<_4>() = e();
 
     test_context<enumerate<>, smp::enumerate<>>()
       .test<a, _0>()

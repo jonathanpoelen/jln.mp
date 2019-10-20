@@ -45,7 +45,7 @@ namespace jln::mp
     using f = detail::_enumerate_v_c<n::value, numbers<continuation>>;
   };
 
-  namespace eager
+  namespace emp
   {
     template<int_ n, class continuation = listify>
     using enumerate_c = detail::_enumerate_v_c<n, mp::numbers<continuation>>;

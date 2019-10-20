@@ -14,8 +14,8 @@ namespace
     using c = list<X>;
     using e = list<>;
     using flat_list = list<int, float, double, char, unsigned, X>;
-    eager::join<a, b, c>() = flat_list();
-    eager::join<list<>, e, e>() = e();
+    emp::join<a, b, c>() = flat_list();
+    emp::join<list<>, e, e>() = e();
 
     test_context<join<>, smp::join<>>()
       .test<e>()

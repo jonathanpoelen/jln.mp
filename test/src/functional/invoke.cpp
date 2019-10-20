@@ -20,6 +20,8 @@ namespace
 
   void invoke2(...);
 
+  IGNORE_UNUSED_FUNCTION_POP()
+
   TEST()
   {
     using l1 = int*;
@@ -29,6 +31,7 @@ namespace
     using l5 = list<list<>, list<>>*;
     using l6 = list<list<int>>*;
 
+    IS_SAME_V(invoke1(char()), void);
     IS_SAME_V(invoke1(l1()), void);
     IS_SAME_V(invoke1(l2()), list<>);
     IS_SAME_V(invoke1(l3()), list<int>);

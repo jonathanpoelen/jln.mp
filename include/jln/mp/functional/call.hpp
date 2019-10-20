@@ -17,6 +17,9 @@ namespace jln::mp
     };
   }
 
+  // TODO invoke -> try_invoke
+  // TODO call -> invoke
+
 #if jln_MP_ENABLE_DEBUG
   namespace detail
   {
