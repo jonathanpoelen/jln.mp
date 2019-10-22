@@ -33,5 +33,32 @@ inline namespace TU
       return *this;
     }
   };
+
+
+  using unary = identity;
+  struct binary
+  {
+    template<class a, class b> using f = void;
+  };
+
+  template<template<class...> class Tpl, class... Args>
+  struct test_pack
+  {
+    template<class... xs>
+    test_pack& test_unary()
+    {
+      static_assert((void(Tpl<Args..., unary>{}), 1));
+      static_assert((void(Tpl<Args..., listify>{}), 1));
+      return *this;
+    }
+
+    template<class... xs>
+    test_pack& test_binary()
+    {
+      static_assert((void(Tpl<Args..., binary>{}), 1));
+      static_assert((void(Tpl<Args..., listify>{}), 1));
+      return *this;
+    }
+  };
 }
 }

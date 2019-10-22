@@ -2,6 +2,12 @@
 
 #include "diagnostic.hpp"
 
+#define TEST_SUITE_BEGIN(name) TEST_SUITE_BEGIN_I(name, __COUNTER__)
+#define TEST_SUITE_BEGIN_I(name, n) TEST_SUITE_BEGIN_II(name, n)
+#define TEST_SUITE_BEGIN_II(name, n) \
+  namespace { struct test_ ## name ## _ ## n {
+#define TEST_SUITE_END() }; }
+
 #define TEST() TEST_I(__COUNTER__)
 #define TEST_I(n) TEST_II(n)
 

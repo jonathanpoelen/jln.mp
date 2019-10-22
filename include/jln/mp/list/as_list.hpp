@@ -12,7 +12,7 @@ namespace jln::mp
   namespace detail
   {
     template<template<class...> class, class seq>
-    struct _as_list JLN_MP_WITH_DEBUG(: error_occurred<as_list, err::you_need_to_add_a_specialization<seq>> {});
+    struct _as_list JLN_MP_DEBUG(: error_occurred<as_list, err::you_need_to_add_a_specialization<seq>> {});
   }
 
   template<class continuation>

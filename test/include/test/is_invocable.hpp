@@ -3,7 +3,7 @@
 #include "jln/mp/number/number.hpp"
 #include "jln/mp/functional/is_invocable.hpp"
 
-#define IS_INVOCABLE(...) jln::mp::true_{} = jln::mp::eager::is_invocable<__VA_ARGS__>{}
+#define IS_INVOCABLE(...) jln::mp::true_{} = jln::mp::emp::is_invocable<__VA_ARGS__>{}
 #define IS_INVOCABLE_V(...) [](auto _f, auto... _xs) { IS_INVOCABLE(decltype(_f), decltype(_xs)...); }(__VA_ARGS__)
 
 namespace hack_test
