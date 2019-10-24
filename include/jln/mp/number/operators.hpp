@@ -467,7 +467,13 @@ namespace jln::mp
     template<class C = identity>
     using div1 = when<
       mp::all_of<mp::has_value<>>,
-      mp::div1<when_continuation<C>>>;
+      mp::if_<
+        mp::size<>,
+        mp::if_<
+          mp::pop_front<mp::and_<>>,
+          mp::div<when_continuation<C>>,
+          mp::unsatisfactory_concept>,
+        mp::always<number<1>, when_continuation<C>>>>;
 
     template<class C = identity>
     using mod = when<
@@ -498,7 +504,7 @@ namespace jln::mp
           mp::pop_front<mp::and_<>>,
           mp::mod<when_continuation<C>>,
           mp::unsatisfactory_concept>,
-        mp::always<number<0>, when_continuation<C>>>>;
+        mp::always<number<1>, when_continuation<C>>>>;
 
     template<class C = identity>
     using xor_ = when<

@@ -59,6 +59,7 @@ TEST()
   using _1 = number<1>;
 
   INVOKE_IS_SAME(_0, smp::div0<>);
+  INVOKE_IS_SAME(_1, smp::div1<>);
   INVOKE_IS_SAME(_0, smp::div0<>, _0);
   INVOKE_IS_SAME(_1, smp::div0<>, _1);
   not IS_INVOCABLE(smp::div0<>, _1, _0);
