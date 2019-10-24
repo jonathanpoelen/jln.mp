@@ -28,8 +28,8 @@ namespace jln::mp
 
   namespace smp
   {
-    template<class C>
-    // TODO is int_ ?
+    template<class C = listify>
+    // no checked
     using numbers = mp::when<
       mp::always<mp::true_>,
       mp::numbers<when_continuation<C>>>;

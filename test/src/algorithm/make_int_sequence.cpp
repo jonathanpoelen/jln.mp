@@ -1,16 +1,10 @@
 #include "test.hpp"
 
-#include "jln/mp/list/enumerate.hpp"
+#include "jln/mp/algorithm/make_int_sequence.hpp"
 #include "jln/mp/number/numbers.hpp"
 #include "jln/mp/list/size.hpp"
 
-TEST_SUITE_BEGIN(enumerate)
-
-struct listify2
-{
-  template<class a, class b>
-  using f = jln::mp::list<a, b>;
-};
+TEST_SUITE_BEGIN(make_int_sequence)
 
 TEST()
 {
@@ -28,18 +22,18 @@ TEST()
   using d = emp::numbers<0, 1, 2>;
   using e = emp::numbers<0, 1, 2, 3>;
 
-  emp::enumerate<_0>() = a();
-  emp::enumerate<_1>() = b();
-  emp::enumerate<_2>() = c();
-  emp::enumerate<_3>() = d();
-  emp::enumerate<_4>() = e();
+  emp::make_int_sequence<_0>() = a();
+  emp::make_int_sequence<_1>() = b();
+  emp::make_int_sequence<_2>() = c();
+  emp::make_int_sequence<_3>() = d();
+  emp::make_int_sequence<_4>() = e();
 
-  test_pack<enumerate>()
+  test_pack<make_int_sequence>()
     .test_unary<_1>()
     .test_binary<_2>()
   ;
 
-  test_context<enumerate<>, smp::enumerate<>>()
+  test_context<make_int_sequence<>, smp::make_int_sequence<>>()
     .test<a, _0>()
     .test<b, _1>()
     .test<c, _2>()
@@ -48,7 +42,7 @@ TEST()
     .not_invocable<e>()
     .not_invocable<class X>()
     ;
-  test_context<enumerate<size<enumerate<>>>, smp::enumerate<smp::size<smp::enumerate<>>>>()
+  test_context<make_int_sequence<size<make_int_sequence<>>>, smp::make_int_sequence<smp::size<smp::make_int_sequence<>>>>()
     .test<a, _0>()
     .test<b, _1>()
     .test<c, _2>()

@@ -6,9 +6,12 @@
 #define IS_INVOCABLE(...) jln::mp::true_{} = jln::mp::emp::is_invocable<__VA_ARGS__>{}
 #define IS_INVOCABLE_V(...) [](auto _f, auto... _xs) { IS_INVOCABLE(decltype(_f), decltype(_xs)...); }(__VA_ARGS__)
 
-namespace hack_test
+namespace
 {
-  constexpr jln::mp::false_ operator !(jln::mp::true_ const&) { return {}; }
+  namespace hack_test
+  {
+    constexpr jln::mp::false_ operator !(jln::mp::true_ const&) { return {}; }
+  }
 }
 
 using hack_test::operator!;

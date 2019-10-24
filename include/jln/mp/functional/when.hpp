@@ -317,10 +317,10 @@ namespace jln::mp
   using size_of = size<same_as<N, C>>;
 
   template<class C = identity>
-  using size_of_1 = size_of<number<1>, identity>;
+  using size_of_1 = size_of<number<1>, C>;
 
   template<class C = identity>
-  using size_of_2 = size_of<number<2>, identity>;
+  using size_of_2 = size_of<number<2>, C>;
   //@}
 
   template<class Pred, class C = identity>
@@ -344,6 +344,19 @@ namespace jln::mp
       mp::demux<Fs..., when_continuation<C>>
     >;
   }
+
+  // TODO na
+  struct unsatisfactory_concept_error;
+  using unsatisfactory_concept = always<unsatisfactory_concept_error>;
+
+  template<class F, class TC = identity, class FC = unsatisfactory_concept>
+  struct try_invoke;
+
+  template<class F, class TC, class FC = unsatisfactory_concept>
+  using when_try_invoke = when<
+    mp::always<mp::true_>,
+    try_invoke<when_continuation<F>, TC, FC>
+  >;
 
   namespace smp
   {
@@ -370,11 +383,23 @@ namespace jln::mp
     using conditional = when<mp::size_of_2<>, mp::conditional<v>>;
 
     template<class Pred, class TC, class FC>
-    using if_ = when<
+    /*when<
       mp::is_invocable_predicate<Pred>,
       mp::if_<Pred,
         when_continuation<TC>,
-        when_continuation<FC>>>;
+        when_continuation<FC>>>*/
+    using if_ = when_try_invoke<
+      Pred,
+      mp::if_<
+        mp::has_value<>,
+        mp::if_<
+          mp::identity,
+          when_continuation<TC>,
+          when_continuation<FC>
+        >,
+        mp::unsatisfactory_concept
+      >
+    >;
 
     template<class F, class C = identity>
     using is_invocable = when<
@@ -401,7 +426,9 @@ namespace jln::mp
       mp::size<when_continuation<C>>>;
 
     template<class C>
-    using unpack = mp::unpack<when_continuation<C>>;
+    using unpack = mp::when<
+      mp::size<>,
+      mp::unpack<when_continuation<C>>>;
 
     template<class C = identity>
     using has_value = when<
@@ -427,10 +454,6 @@ namespace jln::mp
       mp::size_of_1<>,
       mp::same_as<when_continuation<C>>>;
   }
-
-  // TODO na
-  struct unsatisfactory_concept_error;
-  using unsatisfactory_concept = always<unsatisfactory_concept_error>;
 
   template<class Pred, class C>
   struct when
@@ -458,9 +481,6 @@ namespace jln::mp
     , unsatisfactory_concept_error
     >::value>>;
   };
-
-  template<class F, class TC = identity, class FC = unsatisfactory_concept>
-  struct try_invoke;
 
   template<class Pred, class C, class TC, class FC>
   struct try_invoke<when<Pred, C>, TC, FC>
@@ -516,6 +536,18 @@ namespace jln::mp::detail
     using type = smp::listify;
   };
 
+  template<template<class> class sfinae, class Pred, class TC, class FC>
+  struct _sfinae<sfinae, if_<Pred, TC, FC>>
+  {
+    using type = smp::if_<sfinae<Pred>, sfinae<TC>, sfinae<FC>>;
+  };
+
+  template<template<class> class sfinae, class T, class C>
+  struct _sfinae<sfinae, always<T, C>>
+  {
+    using type = smp::always<T, sfinae<C>>;
+  };
+
   template<template<class> class sfinae, template<class...> class F, class C>
   struct _sfinae<sfinae, cfl<F, C>>
   {
@@ -538,6 +570,12 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, same_as<C>>
   {
     using type = smp::same_as<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, unpack<C>>
+  {
+    using type = smp::unpack<sfinae<C>>;
   };
 
 
@@ -578,8 +616,7 @@ namespace jln::mp::detail
   template<class C, template<class...> class Seq, class... Ts, class... xs>
   struct _unpack<C, Seq<Ts...>, xs...>
   {
-      using type = typename dcall<sizeof...(Ts)>
-        ::template f<C, xs..., Ts...>;
+      using type = typename C::template f<xs..., Ts...>;
   };
 
   template<class x, class>

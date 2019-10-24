@@ -12,29 +12,29 @@ namespace jln::mp
     struct _is_number;
   }
 
+  template<class C = identity>
+  struct is_number
+  {
+    template<class x>
+    using f = call<C, typename detail::_is_number<x>::type>;
+  };
+
   namespace emp
   {
     template<class x>
     using is_number = typename detail::_is_number<x>::type;
   }
 
-  template<class continuation = identity>
-  struct is_number
-  {
-    template<class x>
-    using f = call<continuation, typename detail::_is_number<x>::type>;
-  };
-
   namespace smp
   {
-    template<class continuation = identity>
+    template<class C = identity>
     using is_number = when<
       mp::size_of_1<>,
-      // TODO when_continuation_or_identity
+      // TODO when_C_or_identity
       // when<mp::size_of_1<>, C> -> C
       // when<mp::alway<true_>, identity> -> identity
       // identity -> identity
-      mp::is_number<when_continuation<continuation>>>;
+      mp::is_number<when_continuation<C>>>;
   }
 }
 
@@ -54,9 +54,9 @@ namespace jln::mp::detail
     using type = true_;
   };
 
-  template<template<class> class sfinae, class continuation>
-  struct _sfinae<sfinae, is_number<continuation>>
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, is_number<C>>
   {
-    using type = smp::is_number<sfinae<continuation>>;
+    using type = smp::is_number<sfinae<C>>;
   };
 }

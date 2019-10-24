@@ -2,24 +2,27 @@
 
 #include "jln/mp/number/is_number.hpp"
 
-namespace
+TEST_SUITE_BEGIN(is_number)
+
+TEST()
 {
-  TEST()
-  {
-    using namespace jln::mp;
+  using namespace jln::mp;
 
-    class x;
-    using n = number<0>;
+  class x;
+  using n = number<0>;
 
-    true_() = emp::is_number<n>();
-    false_() = emp::is_number<x>();
+  test_pack<is_number>()
+    .test_binary()
+    .test_unary()
+  ;
 
-    test_context<is_number<>, smp::is_number<>>()
-      .test<true_, n>()
-      .test<false_, x>()
-      .not_invocable<>()
-      .not_invocable<x, x>()
-      .not_invocable<n, n>()
-      ;
-  }
+  test_context<is_number<>, smp::is_number<>>()
+    .test<true_, n>()
+    .test<false_, x>()
+    .not_invocable<>()
+    .not_invocable<x, x>()
+    .not_invocable<n, n>()
+    ;
 }
+
+TEST_SUITE_END()

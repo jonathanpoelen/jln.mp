@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../functional/bind.hpp"
+#include "../functional/when.hpp"
 
 namespace jln::mp
 {
@@ -10,28 +10,45 @@ namespace jln::mp
     struct _as_number;
   }
 
+  template<class C = identity>
+  struct as_number
+  {
+    template<class x>
+    using f = mp::call<C, number<x::value>>;
+  };
+
   namespace emp
   {
-    template<class v>
-    using as_number = typename detail::_as_number<v>::type;
+    template<class x>
+    using as_number = number<x::value>;
   }
 
-  template<class continuation = identity>
-  using as_number = cfl<emp::as_number, continuation>;
+  namespace smp
+  {
+    template<class C = identity>
+    using as_number = when<
+      mp::if_<mp::size_of_1<>, mp::cfe<detail::_as_number>>,
+      mp::as_number<when_continuation<C>>>;
+  }
 }
 
-#include "number.hpp"
-#include "../config/debug.hpp"
-#include "../error.hpp"
 #include <type_traits>
 
 namespace jln::mp::detail
 {
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, as_number<C>>
+  {
+    using type = smp::as_number<sfinae<C>>;
+  };
+
   template<class v, class>
-  struct _as_number JLN_MP_WITH_DEBUG(: error_occurred<as_number, err::not_a_number<v>>
-    {});
+  struct _as_number
+  : false_
+  {};
 
   template<class v>
-  struct _as_number<v, std::void_t<decltype(int_(v::value))>>
-  : number<int_(v::value)> {};
+  struct _as_number<v, std::void_t<decltype(int_{v::value})>>
+  : true_
+  {};
 }

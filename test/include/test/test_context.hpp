@@ -6,7 +6,8 @@
 #include "jln/mp/functional/always.hpp"
 #include "jln/mp/functional/sfinae.hpp"
 
-namespace {
+namespace
+{
 inline namespace TU
 {
   using namespace jln::mp;
@@ -21,8 +22,8 @@ inline namespace TU
     test_context& test()
     {
       IS_INVOCABLE(Smp, xs...);
-      R() = call<Mp, xs...>();
-      R() = call<Smp, xs...>();
+      INVOKE_IS_SAME(R, Mp, xs...);
+      INVOKE_IS_SAME(R, Smp, xs...);
       return *this;
     }
 

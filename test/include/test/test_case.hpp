@@ -1,6 +1,6 @@
 #pragma once
 
-#include "diagnostic.hpp"
+#include "jln/cxx/diagnostic.hpp"
 
 #define TEST_SUITE_BEGIN(name) TEST_SUITE_BEGIN_I(name, __COUNTER__)
 #define TEST_SUITE_BEGIN_I(name, n) TEST_SUITE_BEGIN_II(name, n)
