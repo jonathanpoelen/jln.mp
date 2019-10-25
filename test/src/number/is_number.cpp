@@ -2,7 +2,7 @@
 
 #include "jln/mp/number/is_number.hpp"
 
-TEST_SUITE_BEGIN(is_number)
+TEST_SUITE_BEGIN()
 
 TEST()
 {

@@ -3,7 +3,13 @@
 #include "jln/mp/number/operators.hpp"
 #include "jln/mp/number/numbers.hpp"
 
-TEST_SUITE_BEGIN(operators)
+TEST_SUITE_BEGIN()
+
+struct bad_number
+{
+  class a {};
+  constexpr static a value {};
+};
 
 TEST()
 {
@@ -17,6 +23,8 @@ TEST()
   using seq_1_2_3 = emp::numbers<1, 2, 3>;
   using seq_2_1_0 = emp::numbers<2, 1, 0>;
   using seq_3_2_1 = emp::numbers<3, 2, 1>;
+  using bad_seq1 = list<bad_number>;
+  using bad_seq2 = list<bad_number, bad_number>;
 
   emp::and_<e>() = true_();
   emp::or_<e>() = false_();
@@ -36,6 +44,8 @@ TEST()
     .test<false_, e>()
     .test<false_, l0>()
     .test<true_, l1>()
+    .not_invocable<bad_seq1>()
+    .not_invocable<bad_seq2>()
     ;
 
   ctx(and_())
@@ -57,7 +67,19 @@ TEST()
 
   using _0 = number<0>;
   using _1 = number<1>;
+  using _3 = number<3>;
 
+  ctx(add0<>())
+    .test<_0, e>()
+    .test<_0, l0>()
+    .test<_3, l1>()
+    ;
+
+  using _0 = number<0>;
+  using _1 = number<1>;
+
+  INVOKE_IS_SAME(_0, div0<>);
+  INVOKE_IS_SAME(_1, div0<>, _1);
   INVOKE_IS_SAME(_0, smp::div0<>);
   INVOKE_IS_SAME(_1, smp::div1<>);
   INVOKE_IS_SAME(_0, smp::div0<>, _0);

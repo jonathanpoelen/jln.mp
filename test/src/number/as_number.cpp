@@ -5,7 +5,7 @@
 #include <type_traits>
 
 
-TEST_SUITE_BEGIN(as_number)
+TEST_SUITE_BEGIN()
 
 TEST()
 {

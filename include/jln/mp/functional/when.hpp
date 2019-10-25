@@ -490,6 +490,29 @@ namespace jln::mp
       ::template f<demux<C, TC>, FC>
       ::template f<xs...>;
   };
+
+  namespace detail
+  {
+    template<class F, class... xs>
+    typename F::template f<xs...> _try_invoke(F*, xs*...);
+
+    unsatisfactory_concept_error _try_invoke(...);
+  }
+
+  // TODO rename or rename ^^^
+  template<class F, class TC, class FC>
+  struct try_invoke
+  {
+    template<class... xs>
+    using f = typename if_<
+      same_as<unsatisfactory_concept_error>
+    , FC
+    , TC
+    >::template f<decltype(detail::_try_invoke(
+      static_cast<F*>(nullptr),
+      static_cast<xs*>(nullptr)...
+    ))>;
+  };
 }
 
 

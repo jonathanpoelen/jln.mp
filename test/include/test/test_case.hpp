@@ -2,7 +2,7 @@
 
 #include "jln/cxx/diagnostic.hpp"
 
-#define TEST_SUITE_BEGIN(name) TEST_SUITE_BEGIN_I(name, __COUNTER__)
+#define TEST_SUITE_BEGIN() TEST_SUITE_BEGIN_I(jln_test_, __COUNTER__)
 #define TEST_SUITE_BEGIN_I(name, n) TEST_SUITE_BEGIN_II(name, n)
 #define TEST_SUITE_BEGIN_II(name, n) \
   namespace { struct test_ ## name ## _ ## n {

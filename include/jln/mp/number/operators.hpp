@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../functional/when.hpp"
-#include "../list/pop_front.hpp"
 #include "../list/push_back.hpp"
 #include "../number/number.hpp"
 
@@ -22,14 +21,14 @@ namespace jln::mp
   struct or_
   {
     template<class... xs>
-    using f = typename C::template f<number<(... || xs::value)>>;
+    using f = typename C::template f<number<(false || ... || xs::value)>>;
   };
 
   template<class C = identity>
   struct and_
   {
     template<class... xs>
-    using f = typename C::template f<number<(... && xs::value)>>;
+    using f = typename C::template f<number<(true && ... && xs::value)>>;
   };
 
   template<class C = identity>
@@ -80,7 +79,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using mul0 = if_<size<>, always<number<0>, C>, mul<C>>;
+  using mul0 = if_<size<>, mul<C>, always<number<0>, C>>;
 
   template<class C = identity>
   using mul1 = mp::push_back<number<1>, mul<C>>;
@@ -93,7 +92,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using div0 = if_<size<>, always<number<0>, C>, div<C>>;
+  using div0 = if_<size<>, div<C>, always<number<0>, C>>;
 
   template<class C = identity>
   using div1 = mp::push_back<number<1>, add<C>>;
@@ -106,10 +105,10 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using mod0 = if_<size<>, always<number<0>, C>, mod<C>>;
+  using mod0 = if_<size<>, mod<C>, always<number<0>, C>>;
 
   template<class C = identity>
-  using mod1 = if_<size<>, always<number<1>, C>, mod<C>>;
+  using mod1 = if_<size<>, mod<C>, always<number<1>, C>>;
 
   template<class C = identity>
   struct xor_
@@ -119,7 +118,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using xor0 = if_<size<>, always<number<0>, C>, xor_<C>>;
+  using xor0 = if_<size<>, xor_<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct bit_and
@@ -129,7 +128,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using bit_and0 = if_<size<>, always<number<0>, C>, bit_and<C>>;
+  using bit_and0 = if_<size<>, bit_and<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct bit_or
@@ -224,44 +223,6 @@ namespace jln::mp
     template<class x, class y>
     using f = number<(x::value >= y::value)>;
   };
-}
-
-namespace jln::mp
-{
-  template<class F, class C = listify>
-  struct transform
-  {
-    template<class... xs>
-    using f = call<C, call<F, xs>...>;
-  };
-
-  template<class F, class C = identity>
-  using all_of = mp::transform<F, mp::and_<C>>;
-
-  template<class C, class FC = unsatisfactory_concept>
-  using monadic_invoke = if_<
-   transform<
-     same_as<unsatisfactory_concept_error>, or_<>>,
-   FC, C
-  >;
-
-  namespace emp
-  {
-    template<class L, class C = mp::listify>
-    using transform = eager<L, mp::transform<C>>;
-  }
-
-  namespace smp
-  {
-    template<class F, class C = listify>
-    using transform = when<
-      mp::always<mp::true_>,
-      mp::transform<
-        mp::try_invoke<when_continuation<F>>,
-        mp::monadic_invoke<when_continuation<C>>
-      >
-    >;
-  }
 }
 
 namespace jln::mp
@@ -381,220 +342,215 @@ namespace jln::mp
   {
     template<class C = identity>
     using or_ = when<
-      mp::all_of<mp::has_value<>>,
-      mp::or_<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::or_<when_continuation<C>>>>;
 
     template<class C = identity>
     using and_ = when<
-      mp::all_of<mp::has_value<>>,
-      mp::and_<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::and_<when_continuation<C>>>>;
 
     template<class C = identity>
     using add = when<
-      mp::if_<mp::size<>, mp::all_of<mp::has_value<>>>,
-      mp::add<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::add<when_continuation<C>>>>;
 
     template<class C = identity>
     using add0 = when<
-      mp::all_of<mp::has_value<>>,
-      mp::add0<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::push_back<number<0>,
+        mp::try_invoke<mp::add<when_continuation<C>>>>>;
 
     template<class C = identity>
     using sub = when<
-      mp::if_<mp::size<>, mp::all_of<mp::has_value<>>>,
-      mp::sub<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::sub<when_continuation<C>>>>;
 
     template<class C = identity>
     using sub0 = when<
-      mp::all_of<mp::has_value<>>,
-      mp::sub0<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::push_back<number<0>,
+        mp::try_invoke<mp::sub<when_continuation<C>>>>>;
 
     template<class C = identity>
     using lshift = when<
-      mp::if_<mp::size<>, mp::all_of<mp::has_value<>>>,
-      mp::lshift<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::lshift<when_continuation<C>>>>;
 
     template<class C = identity>
     using lshift0 = when<
-      mp::all_of<mp::has_value<>>,
-      mp::lshift0<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::push_back<number<0>,
+        mp::try_invoke<mp::lshift<when_continuation<C>>>>>;
 
     template<class C = identity>
     using rshift = when<
-      mp::if_<mp::size<>, mp::all_of<mp::has_value<>>>,
-      mp::rshift<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::rshift<when_continuation<C>>>>;
 
     template<class C = identity>
     using rshift0 = when<
-      mp::all_of<mp::has_value<>>,
-      mp::rshift0<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::push_back<number<0>,
+        mp::try_invoke<mp::rshift<when_continuation<C>>>>>;
 
     template<class C = identity>
     using mul = when<
-      mp::if_<mp::size<>, mp::all_of<mp::has_value<>>>,
-      mp::mul<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::mul<when_continuation<C>>>>;
 
     template<class C = identity>
     using mul0 = when<
-      mp::all_of<mp::has_value<>>,
-      mp::mul0<when_continuation<C>>>;
+      mp::always<true_>,
+      mp::if_<
+        mp::size<>,
+        mp::try_invoke<mp::mul<when_continuation<C>>>,
+        mp::always<mp::number<0>>>>;
 
     template<class C = identity>
     using mul1 = when<
-      mp::all_of<mp::has_value<>>,
-      mp::mul1<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::push_back<number<1>,
+        mp::try_invoke<mp::mul<when_continuation<C>>>>>;
 
     template<class C = identity>
     using div = when<
-      mp::if_<
-        mp::size<>,
-        mp::if_<
-          mp::all_of<mp::has_value<>>,
-          mp::pop_front<mp::and_<>>>>,
-      mp::div<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::div<when_continuation<C>>>>;
 
     template<class C = identity>
     using div0 = when<
-      mp::all_of<mp::has_value<>>,
+      mp::always<mp::true_>,
       mp::if_<
         mp::size<>,
-        mp::if_<
-          mp::pop_front<mp::and_<>>,
-          mp::div<when_continuation<C>>,
-          mp::unsatisfactory_concept>,
-        mp::always<number<0>, when_continuation<C>>>>;
+        mp::try_invoke<mp::div<when_continuation<C>>>,
+        mp::always<mp::number<0>>>>;
 
     template<class C = identity>
     using div1 = when<
-      mp::all_of<mp::has_value<>>,
-      mp::if_<
-        mp::size<>,
-        mp::if_<
-          mp::pop_front<mp::and_<>>,
-          mp::div<when_continuation<C>>,
-          mp::unsatisfactory_concept>,
-        mp::always<number<1>, when_continuation<C>>>>;
+      mp::always<mp::true_>,
+      mp::push_back<number<1>,
+        mp::try_invoke<mp::div<when_continuation<C>>>>>;
 
     template<class C = identity>
     using mod = when<
-      mp::if_<
-        mp::size<>,
-        mp::if_<
-          mp::all_of<mp::has_value<>>,
-          mp::pop_front<mp::and_<>>>>,
-      mp::mod<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::mod<when_continuation<C>>>>;
 
     template<class C = identity>
     using mod0 = when<
-      mp::all_of<mp::has_value<>>,
+      mp::always<mp::true_>,
       mp::if_<
         mp::size<>,
-        mp::if_<
-          mp::pop_front<mp::and_<>>,
-          mp::mod<when_continuation<C>>,
-          mp::unsatisfactory_concept>,
-        mp::always<number<0>, when_continuation<C>>>>;
+        mp::try_invoke<mp::mod<when_continuation<C>>>,
+        mp::always<mp::number<0>>>>;
 
     template<class C = identity>
     using mod1 = when<
-      mp::all_of<mp::has_value<>>,
+      mp::always<mp::true_>,
       mp::if_<
         mp::size<>,
-        mp::if_<
-          mp::pop_front<mp::and_<>>,
-          mp::mod<when_continuation<C>>,
-          mp::unsatisfactory_concept>,
-        mp::always<number<1>, when_continuation<C>>>>;
+        mp::try_invoke<mp::mod<when_continuation<C>>>,
+        mp::always<mp::number<1>>>>;
 
     template<class C = identity>
     using xor_ = when<
-      mp::if_<mp::size<>, mp::all_of<mp::has_value<>>>,
-      mp::xor_<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::xor_<when_continuation<C>>>>;
 
     template<class C = identity>
     using xor0 = when<
-      mp::all_of<mp::has_value<>>,
-      mp::xor0<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::if_<
+        mp::size<>,
+        mp::try_invoke<mp::xor_<when_continuation<C>>>,
+        mp::always<mp::number<0>>>>;
 
     template<class C = identity>
     using bit_and = when<
-      mp::if_<mp::size<>, mp::all_of<mp::has_value<>>>,
-      mp::bit_and<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::bit_and<when_continuation<C>>>>;
 
     template<class C = identity>
     using bit_and0 = when<
-      mp::all_of<mp::has_value<>>,
-      mp::bit_and0<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::if_<
+        mp::size<>,
+        mp::try_invoke<mp::bit_and<when_continuation<C>>>,
+        mp::always<mp::number<0>>>>;
 
     template<class C = identity>
     using bit_or = when<
-      mp::if_<mp::size<>, mp::all_of<mp::has_value<>>>,
-      mp::bit_or<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::bit_or<when_continuation<C>>>>;
 
     template<class C = identity>
     using bit_or0 = when<
-      mp::all_of<mp::has_value<>>,
-      mp::bit_or0<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::if_<
+        mp::size<>,
+        mp::try_invoke<mp::bit_or<when_continuation<C>>>,
+        mp::always<mp::number<0>>>>;
 
     template<class C = identity>
     using neg = when<
-      mp::if_<mp::size_of_1<>, mp::has_value<>>,
-      mp::neg<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::neg<when_continuation<C>>>>;
 
     template<class C = identity>
     using unary_plus = when<
-      mp::if_<mp::size_of_1<>, mp::has_value<>>,
-      mp::unary_plus<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::unary_plus<when_continuation<C>>>>;
 
     template<class C = identity>
     using not_ = when<
-      mp::if_<mp::size_of_1<>, mp::has_value<>>,
-      mp::not_<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::not_<when_continuation<C>>>>;
 
     template<class C = identity>
     using bit_not = when<
-      mp::if_<mp::size_of_1<>, mp::has_value<>>,
-      mp::bit_not<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::bit_not<when_continuation<C>>>>;
 
     template<class C = identity>
     using inc = when<
-      mp::if_<mp::size_of_1<>, mp::has_value<>>,
-      mp::inc<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::inc<when_continuation<C>>>>;
 
     template<class C = identity>
     using dec = when<
-      mp::if_<mp::size_of_1<>, mp::has_value<>>,
-      mp::dec<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::dec<when_continuation<C>>>>;
 
     template<class C = identity>
     using equal = when<
-      mp::if_<mp::size_of_2<>, mp::all_of<mp::has_value<>>>,
-      mp::equal<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::equal<when_continuation<C>>>>;
 
     template<class C = identity>
     using not_equal = when<
-      mp::if_<mp::size_of_2<>, mp::all_of<mp::has_value<>>>,
-      mp::not_equal<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::not_equal<when_continuation<C>>>>;
 
     template<class C = identity>
     using less = when<
-      mp::if_<mp::size_of_2<>, mp::all_of<mp::has_value<>>>,
-      mp::less<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::less<when_continuation<C>>>>;
 
     template<class C = identity>
     using less_equal = when<
-      mp::if_<mp::size_of_2<>, mp::all_of<mp::has_value<>>>,
-      mp::less_equal<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::less_equal<when_continuation<C>>>>;
 
     template<class C = identity>
     using greater = when<
-      mp::if_<mp::size_of_2<>, mp::all_of<mp::has_value<>>>,
-      mp::greater<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::greater<when_continuation<C>>>>;
 
     template<class C = identity>
     using greater_equal = when<
-      mp::if_<mp::size_of_2<>, mp::all_of<mp::has_value<>>>,
-      mp::greater_equal<when_continuation<C>>>;
+      mp::always<mp::true_>,
+      mp::try_invoke<mp::greater_equal<when_continuation<C>>>>;
   }
 }
 

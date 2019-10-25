@@ -2,7 +2,7 @@
 
 #include "jln/mp/number/numbers.hpp"
 
-TEST_SUITE_BEGIN(numbers)
+TEST_SUITE_BEGIN()
 
 TEST()
 {
