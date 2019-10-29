@@ -1,7 +1,7 @@
 #include "test.hpp"
 
-#include "jln/mp/number/operators.hpp"
-#include "jln/mp/number/numbers.hpp"
+#include "jln/mp/smp/number/operators.hpp"
+#include "jln/mp/smp/number/numbers.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -26,10 +26,10 @@ TEST()
   using bad_seq1 = list<bad_number>;
   using bad_seq2 = list<bad_number, bad_number>;
 
-  emp::and_<e>() = true_();
-  emp::or_<e>() = false_();
-  emp::or_<l1>() = true_();
-  emp::or_<l0>() = false_();
+  IS_SAME(emp::and_<e>, true_);
+  IS_SAME(emp::or_<e>, false_);
+  IS_SAME(emp::or_<l1>, true_);
+  IS_SAME(emp::or_<l0>, false_);
 
   test_pack<or_>()
     .test_unary()
@@ -67,6 +67,7 @@ TEST()
 
   using _0 = number<0>;
   using _1 = number<1>;
+  using _2 = number<2>;
   using _3 = number<3>;
 
   ctx(add0<>())
@@ -85,6 +86,15 @@ TEST()
   INVOKE_IS_SAME(_0, smp::div0<>, _0);
   INVOKE_IS_SAME(_1, smp::div0<>, _1);
   not IS_INVOCABLE(smp::div0<>, _1, _0);
+  INVOKE_IS_SAME(_1, smp::div0<inc<>>);
+  INVOKE_IS_SAME(_2, smp::div1<inc<>>);
+
+  INVOKE_IS_SAME(_1, smp::equal_than<_3>, _3);
+  INVOKE_IS_SAME(_0, smp::not_equal_than<_3>, _3);
+  INVOKE_IS_SAME(_1, smp::less_than<_3>, _2);
+  INVOKE_IS_SAME(_1, smp::less_equal_than<_3>, _3);
+  INVOKE_IS_SAME(_1, smp::greater_than<_1>, _3);
+  INVOKE_IS_SAME(_1, smp::greater_equal_than<_3>, _3);
 
   test_context<not_<>, smp::not_<>>()
     .test<_1, _0>()

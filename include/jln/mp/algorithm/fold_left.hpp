@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../config/enumerate.hpp"
-#include "../functional/when.hpp"
-#include "../functional/monadic_invoke.hpp"
+#include "../functional/identity.hpp"
 
 namespace jln::mp
 {
@@ -27,17 +25,9 @@ namespace jln::mp
     template<class L, class C = mp::identity>
     using fold_left = eager<L, mp::fold_left<C>>;
   }
-
-  namespace smp
-  {
-    template<class F, class C = identity>
-    using fold_left = when<
-      mp::size<>,
-      mp::fold_left<
-        mp::monadic_invoke<when_continuation<F>>,
-        mp::monadic_invoke<when_continuation<C>>>>;
-  }
 }
+
+#include "../config/enumerate.hpp"
 
 namespace jln::mp::detail
 {

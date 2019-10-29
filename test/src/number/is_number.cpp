@@ -1,6 +1,7 @@
 #include "test.hpp"
 
 #include "jln/mp/number/is_number.hpp"
+#include "jln/mp/functional/sfinae.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -19,6 +20,14 @@ TEST()
   test_context<is_number<>, smp::is_number<>>()
     .test<true_, n>()
     .test<false_, x>()
+    .not_invocable<>()
+    .not_invocable<x, x>()
+    .not_invocable<n, n>()
+    ;
+
+  test_context<is_number<is_number<>>, smp::is_number<smp::is_number<>>>()
+    .test<true_, n>()
+    .test<true_, x>()
     .not_invocable<>()
     .not_invocable<x, x>()
     .not_invocable<n, n>()

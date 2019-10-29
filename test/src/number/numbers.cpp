@@ -1,6 +1,6 @@
 #include "test.hpp"
 
-#include "jln/mp/number/numbers.hpp"
+#include "jln/mp/smp/number/numbers.hpp"
 
 TEST_SUITE_BEGIN()
 

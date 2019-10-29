@@ -3,8 +3,8 @@
 #include "./is_invocable.hpp"
 #include "./is_same.hpp"
 #include "jln/mp/functional/call.hpp"
-#include "jln/mp/functional/always.hpp"
 #include "jln/mp/functional/sfinae.hpp"
+#include "jln/mp/utility/always.hpp"
 
 namespace
 {
@@ -30,7 +30,32 @@ inline namespace TU
     template<class... xs>
     test_context& not_invocable()
     {
-      not IS_INVOCABLE(Smp, xs...);
+      IS_NOT_INVOCABLE(Smp, xs...);
+      return *this;
+    }
+  };
+
+  template<class Mp>
+  struct test_context<Mp, void>
+  {
+    template<class R, class... xs>
+    test_context& test()
+    {
+      INVOKE_IS_SAME(R, Mp, xs...);
+      return *this;
+    }
+
+    template<class... xs>
+    test_context& is_invocable()
+    {
+      IS_NOT_INVOCABLE(Mp, xs...);
+      return *this;
+    }
+
+    template<class... xs>
+    test_context& not_invocable()
+    {
+      IS_NOT_INVOCABLE(Mp, xs...);
       return *this;
     }
   };
@@ -48,16 +73,16 @@ inline namespace TU
     template<class... xs>
     test_pack& test_unary()
     {
-      static_assert((void(Tpl<Args..., unary>{}), 1));
-      static_assert((void(Tpl<Args..., listify>{}), 1));
+      static_assert(((void)Tpl<Args..., xs..., unary>{}, 1));
+      static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
       return *this;
     }
 
     template<class... xs>
     test_pack& test_binary()
     {
-      static_assert((void(Tpl<Args..., binary>{}), 1));
-      static_assert((void(Tpl<Args..., listify>{}), 1));
+      static_assert(((void)Tpl<Args..., xs..., binary>{}, 1));
+      static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
       return *this;
     }
   };

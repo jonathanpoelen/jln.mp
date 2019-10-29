@@ -1,3 +1,11 @@
 #pragma once
 
-#include "../functional/when.hpp"
+#include "../functional/bind.hpp"
+
+namespace jln::mp
+{
+  template<class... xs>
+  class list {};
+
+  using listify = cfe<list>;
+} // namespace jln::mp

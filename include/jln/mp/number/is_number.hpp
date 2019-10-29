@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../functional/when.hpp"
-#include "../list/size.hpp"
-#include "../utility/same_as.hpp"
+#include "number.hpp"
 
 namespace jln::mp
 {
@@ -24,19 +22,8 @@ namespace jln::mp
     template<class x>
     using is_number = typename detail::_is_number<x>::type;
   }
-
-  namespace smp
-  {
-    template<class C = identity>
-    using is_number = when<
-      mp::size_of_1<>,
-      // TODO when_C_or_identity
-      // when<mp::size_of_1<>, C> -> C
-      // when<mp::alway<true_>, identity> -> identity
-      // identity -> identity
-      mp::is_number<when_continuation<C>>>;
-  }
 }
+
 
 #include "number.hpp"
 
@@ -52,11 +39,5 @@ namespace jln::mp::detail
   struct _is_number<number<x>>
   {
     using type = true_;
-  };
-
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, is_number<C>>
-  {
-    using type = smp::is_number<sfinae<C>>;
   };
 }

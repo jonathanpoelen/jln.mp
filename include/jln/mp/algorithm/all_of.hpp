@@ -5,6 +5,11 @@
 
 namespace jln::mp
 {
+
+  // TODO all_of
+  template<class F, class C = identity>
+  using all_of = mp::transform<F, mp::and_<C>>;
+
   template<class predicate, class continuation = identity>
   struct all_of
   {

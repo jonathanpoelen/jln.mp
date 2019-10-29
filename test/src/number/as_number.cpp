@@ -1,6 +1,6 @@
 #include "test.hpp"
 
-#include "jln/mp/number/as_number.hpp"
+#include "jln/mp/smp/number/as_number.hpp"
 
 #include <type_traits>
 

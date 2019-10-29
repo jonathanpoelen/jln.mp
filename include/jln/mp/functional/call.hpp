@@ -12,8 +12,8 @@ namespace jln::mp
     template<>
     struct dcall<true>
     {
-        template<class continuation, typename...xs>
-        using f = typename continuation::template f<xs...>;
+        template<class C, typename...xs>
+        using f = typename C::template f<xs...>;
     };
   }
 
@@ -23,16 +23,16 @@ namespace jln::mp
 #if jln_MP_ENABLE_DEBUG
   namespace detail
   {
-    template<class continuation, class... xs>
+    template<class C, class... xs>
     struct _call
     {
-      using type = typename dcall<(sizeof...(xs) < 1000000)>::template f<continuation, xs...>;
+      using type = typename dcall<(sizeof...(xs) < 1000000)>::template f<C, xs...>;
     };
   }
-  template<class continuation, class... xs>
-  using call = typename detail::_call<continuation, xs...>::type;
+  template<class C, class... xs>
+  using call = typename detail::_call<C, xs...>::type;
 #else
-  template<class continuation, class... xs>
-  using call = typename dcall<(sizeof...(xs) < 1000000)>::template f<continuation, xs...>;
+  template<class C, class... xs>
+  using call = typename dcall<(sizeof...(xs) < 1000000)>::template f<C, xs...>;
 #endif
 }
