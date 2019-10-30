@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../functional/when.hpp"
+#include "list.hpp"
+#include "../functional/call.hpp"
 
 namespace jln::mp
 {
@@ -8,6 +9,12 @@ namespace jln::mp
   struct push_front
   {
     template<class... xs>
-    using f = mp::call<C, T, xs...>;
+    using f = call<C, T, xs...>;
   };
+
+  namespace emp
+  {
+    template<class L, class T, class C = mp::listify>
+    using push_front = eager<L, mp::push_front<T, C>>;
+  }
 }

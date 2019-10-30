@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../functional/identity.hpp"
 #include "../../number/operators.hpp"
-#include "../../list/size.hpp"
-#include "../../list/push_back.hpp"
-
-#include "../../../cxx/diagnostic.hpp"
+#include "../functional/identity.hpp"
+#include "../functional/if.hpp"
+#include "../list/size.hpp"
+#include "../list/push_back.hpp"
 
 namespace jln::mp::smp
 {

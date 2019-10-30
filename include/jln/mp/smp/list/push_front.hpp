@@ -1,13 +1,22 @@
 #pragma once
 
-#include "../functional/when.hpp"
+#include "../functional/identity.hpp"
+#include "../../list/push_front.hpp"
 
 namespace jln::mp
 {
-  template<class T, class C = listify>
-  struct push_front
+  namespace smp
   {
-    template<class... xs>
-    using f = mp::call<C, T, xs...>;
+    template<class x, class C = listify>
+    using push_front = valid_contract<mp::push_front<x, subcontract<C>>>;
+  }
+}
+
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class x, class C>
+  struct _sfinae<sfinae, push_front<x, C>>
+  {
+    using type = smp::push_front<x, sfinae<C>>;
   };
 }

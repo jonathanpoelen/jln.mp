@@ -85,7 +85,7 @@ TEST()
   INVOKE_IS_SAME(_1, smp::div1<>);
   INVOKE_IS_SAME(_0, smp::div0<>, _0);
   INVOKE_IS_SAME(_1, smp::div0<>, _1);
-  not IS_INVOCABLE(smp::div0<>, _1, _0);
+  IS_NOT_INVOCABLE(smp::div0<>, _1, _0);
   INVOKE_IS_SAME(_1, smp::div0<inc<>>);
   INVOKE_IS_SAME(_2, smp::div1<inc<>>);
 

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../functional/identity.hpp"
-#include "../number/operators.hpp"
 #include "../../number/math.hpp"
+#include "../number/operators.hpp"
 
 namespace jln::mp::smp
 {
@@ -36,6 +35,6 @@ namespace jln::mp::detail
   template<template<class> class sfinae>
   struct _sfinae<sfinae, _pow>
   {
-    using type = valid_contract<try_invoke<_pow>>;
+    using type = try_contract<_pow>;
   };
 }

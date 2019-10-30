@@ -3,7 +3,6 @@
 #include "list.hpp"
 #include "../functional/call.hpp"
 
-
 namespace jln::mp
 {
   template<class T, class C = listify>

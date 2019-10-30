@@ -26,6 +26,13 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
+  template<template<class> class sfinae, class x>
+  struct _sfinae
+  {
+    static constexpr bool missing_specialization = static_cast<x*>(nullptr);
+    static_assert(missing_specialization);
+  };
+
   template<class x>
   struct _recursive_sfinae_impl
   {
