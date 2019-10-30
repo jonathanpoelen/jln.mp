@@ -6,8 +6,5 @@
 namespace jln::mp::smp
 {
   template<class F, class C = identity>
-  using is_invocable = valid_contract<try_invoke<F,
-    mp::always<mp::call<mp::try_invoke<subcontract<C>>, true_>>,
-    mp::always<mp::call<mp::try_invoke<subcontract<C>>, false_>>
-  >>;
+  using is_invocable = valid_contract<mp::is_invocable<subcontract<F>, subcontract<C>>>;
 }

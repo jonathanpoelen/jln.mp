@@ -128,11 +128,11 @@ namespace jln::mp::detail
     using type = try_invoke<F>;
   };
 
-  template<class Pred, class C>
-  struct _subcontract<contract<Pred, C>>
-  {
-    using type = try_invoke<contract<Pred, C>>;
-  };
+  // template<class Pred, class C>
+  // struct _subcontract<contract<Pred, C>>
+  // {
+  //   using type = try_invoke<contract<Pred, C>>;
+  // };
 
   template<class C>
   struct _subcontract<contract<always<true_>, C>>
@@ -155,6 +155,6 @@ namespace jln::mp::detail
   template<template<class> class sfinae, class F, class TC, class FC>
   struct _sfinae<sfinae, try_invoke<F, TC, FC>>
   {
-    using type = try_invoke<F, TC, FC>;
+    using type = valid_contract<try_invoke<F, TC, FC>>;
   };
 }
