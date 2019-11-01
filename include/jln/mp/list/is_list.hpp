@@ -10,12 +10,18 @@ namespace jln::mp
     struct _is_list;
   }
 
-  template<class continuation = identity>
+  template<class C = identity>
   struct is_list
   {
     template<class x>
-    using f = typename continuation::template f<typename detail::_is_list<x>::type>;
+    using f = typename C::template f<typename detail::_is_list<x>::type>;
   };
+
+  namespace emp
+  {
+    template<class x, class C = mp::identity>
+    using is_list = typename C::template f<typename detail::_is_list<x>::type>;
+  }
 } // namespace jln::mp
 
 namespace jln::mp::detail

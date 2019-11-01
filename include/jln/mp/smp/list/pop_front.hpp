@@ -1,13 +1,12 @@
 #pragma once
 
-#include "../functional/when.hpp"
+#include "list.hpp"
+#include "drop.hpp"
+#include "../../list/pop_front.hpp"
+#include "../../functional/sfinaefwd.hpp"
 
-namespace jln::mp
+namespace jln::mp::smp
 {
   template<class C = listify>
-  struct pop_front
-  {
-    template<class x, class... xs>
-    using f = mp::call<C, xs...>;
-  };
+  using pop_front = mp::detail::sfinae<mp::pop_front<subcontract<C>>>;
 }

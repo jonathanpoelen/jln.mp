@@ -1,14 +1,14 @@
 #pragma once
 
 #include "../number/number.hpp"
+#include "../algorithm/transform.hpp"
 #include "../functional/identity.hpp"
 
 namespace jln::mp
 {
-
   // TODO all_of
-  template<class F, class C = identity>
-  using all_of = mp::transform<F, mp::and_<C>>;
+  // template<class F, class C = identity>
+  // using all_of = mp::transform<F, mp::and_<C>>;
 
   template<class predicate, class continuation = identity>
   struct all_of
@@ -26,21 +26,4 @@ namespace jln::mp
     template<class predicate, class... xs>
     constexpr inline bool all_of_v = (predicate::template f<xs>::value && ... && true);
   }
-
-  namespace smp
-  {
-    template<class predicate, class continuation>
-    using all_of = when<is_invocable_predicate<predicate>,
-      mp::all_of<predicate, when_continuation<continuation>>>;
-  }
 } // namespace jln::mp
-
-
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, class predicate, class continuation>
-  struct _sfinae<sfinae, all_of<predicate, continuation>>
-  {
-    using type = smp::all_of<sfinae<predicate>, sfinae<continuation>>;
-  };
-}

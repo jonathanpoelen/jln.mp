@@ -11,9 +11,9 @@ namespace jln::mp::smp
 
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, same_as<C>>
+  template<template<class> class sfinae, class x, class C>
+  struct _sfinae<sfinae, same_as<x, C>>
   {
-    using type = smp::same_as<sfinae<C>>;
+    using type = smp::same_as<x, sfinae<C>>;
   };
 }

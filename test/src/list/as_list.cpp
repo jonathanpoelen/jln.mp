@@ -1,0 +1,37 @@
+#include "test.hpp"
+
+#include "jln/mp/smp/list/as_list.hpp"
+
+TEST_SUITE_BEGIN()
+
+template<class, class, class>
+struct fake_list;
+
+template<class...>
+struct other_list;
+
+TEST()
+{
+  using namespace jln::mp;
+
+  using l1 = list<int, char, void>;
+  using l2 = fake_list<int, char, void>;
+  using l3 = other_list<int, char, void>;
+
+  IS_SAME(l1, emp::as_list<l1>);
+  IS_SAME(l1, emp::as_list<l2>);
+  IS_SAME(l1, emp::as_list<l3>);
+
+  class bad;
+
+  test_context<as_list<>, smp::as_list<>>()
+    .test<l1, l1>()
+    .test<l1, l2>()
+    .test<l1, l3>()
+    .not_invocable<>()
+    .not_invocable<bad>()
+    .not_invocable<l1, l1>()
+    ;
+}
+
+TEST_SUITE_END()

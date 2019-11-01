@@ -7,7 +7,7 @@ namespace jln::mp
 {
   namespace smp
   {
-    template<class C = listify>
+    template<class C = identity>
     using front = try_contract<mp::front<subcontract<C>>>;
   }
 }

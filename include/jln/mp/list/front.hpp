@@ -14,7 +14,7 @@ namespace jln::mp
 
   namespace emp
   {
-    template<class L, class C = mp::listify>
+    template<class L, class C = mp::identity>
     using front = eager<L, front<C>>;
   }
 }

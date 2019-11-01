@@ -1,53 +1,19 @@
 #pragma once
 
 #include "list.hpp"
-#include "../error.hpp"
-#include "../config/debug.hpp"
+#include "../../list/as_list.hpp"
 
-namespace jln::mp
+namespace jln::mp::smp
 {
-  template<class continuation = listify>
-  struct as_list;
-
-  namespace detail
-  {
-    template<template<class...> class, class seq>
-    struct _as_list JLN_MP_DEBUG(: error_occurred<as_list, err::you_need_to_add_a_specialization<seq>> {});
-  }
-
-  template<class continuation>
-  struct as_list
-  {
-    template<class seq>
-    using f = typename detail::_as_list<continuation::template f, seq>::type;
-  };
-
-  namespace emp
-  {
-    template<class seq, class continuation = listify>
-    using as_list = typename detail::_as_list<continuation::template f, seq>::type;
-  }
+  template<class C = listify>
+  using as_list = try_contract<mp::as_list<subcontract<C>>>;
 }
-
-#include "../number/number.hpp"
 
 namespace jln::mp::detail
 {
-  template<template<class...> class f, template<class...> class seq, class... xs>
-  struct _as_list<f, seq<xs...>>
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, as_list<C>>
   {
-    using type = f<xs...>;
-  };
-
-  template<template<class...> class f, template<class T, T...> class seq, class T, T... ns>
-  struct _as_list<f, seq<T, ns...>>
-  {
-    using type = f<number<ns>...>;
-  };
-
-  template<template<class...> class f, template<auto...> class seq, auto... ns>
-  struct _as_list<f, seq<ns...>>
-  {
-    using type = f<number<ns>...>;
+    using type = smp::as_list<sfinae<C>>;
   };
 }

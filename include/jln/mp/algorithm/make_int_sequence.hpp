@@ -1,9 +1,7 @@
 #pragma once
 
 #include "../list/list.hpp"
-#include "../functional/identity.hpp"
 #include "../number/numbers.hpp"
-#include "../number/is_number.hpp"
 
 #include <utility>
 
@@ -26,7 +24,6 @@
 #  define JLN_MP_USE_MAKE_INTEGER_SEQ 0
 #endif
 
-#include "../number/numbers.hpp"
 
 namespace jln::mp
 {
@@ -66,27 +63,10 @@ namespace jln::mp
     template<int_ n, class C = mp::listify>
     using make_int_sequence_c = make_int_sequence<mp::number<n>, C>;
   }
-
-  namespace smp
-  {
-    // TODO make_int_sequence_v
-
-    template<class C = listify>
-    // TODO is_unsigned ?
-    using make_int_sequence = when<mp::is_number<>, mp::make_int_sequence<when_continuation<C>>>;
-  }
 } // namespace jln::mp
 
 namespace jln::mp::detail
 {
-  // TODO make_int_sequence_v
-
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, make_int_sequence<C>>
-  {
-    using type = smp::make_int_sequence<sfinae<C>>;
-  };
-
 #if JLN_MP_USE_MAKE_INTEGER_SEQ
   template<class, int_... ns>
   struct _make_int_sequence_impl

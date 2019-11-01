@@ -2,6 +2,7 @@
 
 #include "../utility/conditional.hpp"
 #include "../utility/always.hpp"
+#include "../number/number.hpp"
 #include "../functional/call.hpp"
 
 namespace jln::mp

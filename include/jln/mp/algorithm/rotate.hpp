@@ -1,8 +1,10 @@
 #pragma once
 
+#include "../config/enumerate.hpp"
+#include "../list/list.hpp"
 #include "../number/number.hpp"
 #include "../functional/call.hpp"
-#include "../list/list.hpp"
+#include "../utility/conditional.hpp"
 
 namespace jln::mp
 {
@@ -11,34 +13,28 @@ namespace jln::mp
     template <unsigned n>
     struct _rotate;
 
-    // TODO n_8_or_less_16_64_256
-    constexpr unsigned _rotate_step(unsigned n)
+    constexpr unsigned _rotate_size(int_ n, unsigned size)
     {
-      return
-        n <= 8 ? n
-      : n < 16 ? 8
-      : n < 64 ? 16
-      : n < 256 ? 64
-      : 256
-      ;
-    }
-
-    // TODO compatibility with negative n ?
-    constexpr unsigned _rotate_size(unsigned n, unsigned size) {
-      return n >= size ? (size == 0 ? 0 : n % size) : n;
+      return n >= size
+        ? (size == 0 ? 0 : n % size)
+        : (n < 0 ? (size && n % size ? size + n % size : 0) : n);
     }
   }
 
-  template <class n, class C = listify>
+  template <class N, class C = listify>
   struct rotate
   {
     template<class... xs>
-    using f = typename detail::_rotate<
-      detail::_rotate_step(
-        detail::_rotate_size(n::value, sizeof...(xs)))
-    >::template f<
-      detail::_rotate_size(n::value, sizeof...(xs)),
-      C, xs...>;
+    // TODO detail::dcalli
+    using f = typename conditional_c<(sizeof...(xs) < 1000000)>
+      ::template f<
+        detail::_rotate<detail::n_8_or_less_16_64_256(
+          detail::_rotate_size(N::value, sizeof...(xs))
+        )>,
+        void>
+      ::template f<
+        detail::_rotate_size(N::value, sizeof...(xs)),
+        C, xs...>;
   };
 
   template <int_ n, class C = listify>
@@ -54,42 +50,43 @@ namespace jln::mp
   }
 }
 
-#include "../config/enumerate.hpp"
 
 namespace jln::mp::detail
 {
-  template <>
-  struct _rotate<0>
-  {
-    template<unsigned size, class continuation, class... xs>
-    using f = typename continuation::template f<xs...>;
+#define JLN_MP_ROTATE_IMPL(n, mp_xs, _)                   \
+  template<>                                              \
+  struct _rotate<n>                                       \
+  {                                                       \
+    template<unsigned size, class C,                      \
+      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
+      class... xs>                                        \
+    using f = typename C::template f<                     \
+      xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)>; \
   };
 
-#define JLN_MP_ROTATE_IMPL(n, mp_xs, _)          \
-  template<>                                     \
-  struct _rotate<n>                              \
-  {                                              \
-    template<unsigned size, class continuation,  \
-      mp_xs(class, JLN_MP_NIL), class... xs>     \
-    using f = typename continuation::template f< \
-      xs..., mp_xs(JLN_MP_NIL, JLN_MP_NIL)>;     \
-  };
-
-  JLN_MP_GEN_XS_1_TO_8(JLN_MP_ROTATE_IMPL)
+  JLN_MP_GEN_XS_0_TO_8(JLN_MP_ROTATE_IMPL)
 
 #undef JLN_MP_ROTATE_IMPL
 
-#define JLN_MP_ROTATE_IMPL(n, mp_xs, _)                            \
-  template<>                                                       \
-  struct _rotate<n>                                                \
-  {                                                                \
-    template<unsigned size, class continuation,                    \
-      mp_xs(class, JLN_MP_NIL), class... xs>                       \
-    using f = typename _rotate<_rotate_step(size-n)>::template f<  \
-      size-n, continuation, xs..., mp_xs(JLN_MP_NIL, JLN_MP_NIL)>; \
+#define JLN_MP_ROTATE_IMPL(n, mp_xs, mp_rep) \
+  JLN_MP_ROTATE_IMPL2(n, mp_xs, mp_rep, n_8_or_less_16_64_256)
+
+#define JLN_MP_ROTATE_IMPL2(n, mp_xs, _, next_int)        \
+  template<>                                              \
+  struct _rotate<n>                                       \
+  {                                                       \
+    template<unsigned size, class C,                      \
+      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
+      class... xs>                                        \
+    using f = typename _rotate<next_int (size-n)>         \
+      ::template f<size-n, C,                             \
+        xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL) \
+      >;                                                  \
   };
 
-  JLN_MP_GEN_XS_8_16_64_256(JLN_MP_ROTATE_IMPL)
+  JLN_MP_GEN_XS_8_args(JLN_MP_ROTATE_IMPL2, JLN_MP_NIL)
+  JLN_MP_GEN_XS_16_64_256(JLN_MP_ROTATE_IMPL)
 
+#undef JLN_MP_ROTATE_IMPL2
 #undef JLN_MP_ROTATE_IMPL
 } // namespace jln::mp

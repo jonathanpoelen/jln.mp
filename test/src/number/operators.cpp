@@ -1,35 +1,34 @@
 #include "test.hpp"
+#include "test/numbers.hpp"
 
 #include "jln/mp/smp/number/operators.hpp"
-#include "jln/mp/smp/number/numbers.hpp"
 
 TEST_SUITE_BEGIN()
-
-struct bad_number
-{
-  class a {};
-  constexpr static a value {};
-};
 
 TEST()
 {
   using namespace jln::mp;
+  using namespace TU::ints;
 
   using e = list<>;
-  using l0 = emp::numbers<0, 0, 0>;
-  using l1 = emp::numbers<1, 1, 1>;
-  using _42 = emp::numbers<42>;
-  using seq_0_1_2 = emp::numbers<0, 1, 2>;
-  using seq_1_2_3 = emp::numbers<1, 2, 3>;
-  using seq_2_1_0 = emp::numbers<2, 1, 0>;
-  using seq_3_2_1 = emp::numbers<3, 2, 1>;
-  using bad_seq1 = list<bad_number>;
-  using bad_seq2 = list<bad_number, bad_number>;
 
-  IS_SAME(emp::and_<e>, true_);
-  IS_SAME(emp::or_<e>, false_);
-  IS_SAME(emp::or_<l1>, true_);
-  IS_SAME(emp::or_<l0>, false_);
+  IS_SAME(true_, emp::and_seq<e>);
+  IS_SAME(false_, emp::or_seq<e>);
+  IS_SAME(true_, emp::or_seq<seq_1_1_1>);
+  IS_SAME(false_, emp::or_seq<seq_0_0_0>);
+
+  IS_SAME(true_, emp::or_<_0, _1, _0>);
+  IS_SAME(false_, emp::or_<>);
+  IS_SAME(false_, emp::and_<_0, _1, _0>);
+  IS_SAME(true_, emp::and_<>);
+
+  IS_SAME(false_, emp::not_<true_>);
+
+  IS_SAME(true_, emp::or_c<0, 1, 0>);
+  IS_SAME(false_, emp::or_c<>);
+  IS_SAME(false_, emp::and_c<0, 1, 0>);
+  IS_SAME(true_, emp::and_c<>);
+
 
   test_pack<or_>()
     .test_unary()
@@ -42,42 +41,34 @@ TEST()
 
   ctx(or_())
     .test<false_, e>()
-    .test<false_, l0>()
-    .test<true_, l1>()
-    .not_invocable<bad_seq1>()
-    .not_invocable<bad_seq2>()
+    .test<false_, seq_0_0_0>()
+    .test<true_, seq_1_1_1>()
+    .not_invocable<seq_bad>()
+    .not_invocable<seq_bad_bad>()
     ;
 
   ctx(and_())
     .test<true_, e>()
-    .test<false_, l0>()
-    .test<true_, l1>()
+    .test<false_, seq_0_0_0>()
+    .test<true_, seq_1_1_1>()
     ;
 
   ctx(div())
-    .test<number<42>, _42>()
-    .test<number<1>, l1>()
-    .test<number<0>, seq_0_1_2>()
-    .test<number<0>, seq_1_2_3>()
-    .test<number<1>, seq_3_2_1>()
+    .test<_42, list<_42>>()
+    .test<_1, seq_1_1_1>()
+    .test<_0, seq_0_1_2>()
+    .test<_0, seq_1_2_3>()
+    .test<_1, seq_3_2_1>()
     .not_invocable<e>()
     .not_invocable<seq_2_1_0>()
-    .not_invocable<l0>()
+    .not_invocable<seq_0_0_0>()
     ;
-
-  using _0 = number<0>;
-  using _1 = number<1>;
-  using _2 = number<2>;
-  using _3 = number<3>;
 
   ctx(add0<>())
     .test<_0, e>()
-    .test<_0, l0>()
-    .test<_3, l1>()
+    .test<_0, seq_0_0_0>()
+    .test<_3, seq_1_1_1>()
     ;
-
-  using _0 = number<0>;
-  using _1 = number<1>;
 
   INVOKE_IS_SAME(_0, div0<>);
   INVOKE_IS_SAME(_1, div0<>, _1);

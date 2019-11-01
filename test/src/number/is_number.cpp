@@ -1,6 +1,6 @@
 #include "test.hpp"
 
-#include "jln/mp/number/is_number.hpp"
+#include "jln/mp/smp/number/is_number.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -11,8 +11,10 @@ TEST()
   class x;
   using n = number<0>;
 
+  IS_SAME(false_, emp::is_number<x>);
+  IS_SAME(true_, emp::is_number<n>);
+
   test_pack<is_number>()
-    .test_binary()
     .test_unary()
   ;
 

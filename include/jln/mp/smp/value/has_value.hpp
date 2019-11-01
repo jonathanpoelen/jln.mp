@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../functional/identity.hpp"
-#include "../../utility/has_value.hpp"
+#include "../../value/has_value.hpp"
 
 namespace jln::mp::smp
 {

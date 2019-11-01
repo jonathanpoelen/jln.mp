@@ -42,28 +42,31 @@ namespace jln::mp::detail
     : n)>
   {};
 
-#define JLN_MP_FOLD_LEFT_SELECT(n, mp_xs, mp_repeat)   \
-  template<>                                           \
-  struct _fold_left<n>                                 \
-  {                                                    \
-    template<template<class...> class F,               \
-      class x, mp_xs(class, JLN_MP_NIL), class... xs>  \
-    using f = typename _fold_left<sizeof...(xs)>       \
-      ::template f<F,                                  \
-        mp_repeat(F<) x, mp_xs(JLN_MP_NIL, >), xs...>; \
+#define JLN_MP_FOLD_LEFT_SELECT(n, mp_xs, mp_dup)   \
+  template<>                                        \
+  struct _fold_left<n>                              \
+  {                                                 \
+    template<template<class...> class F, class x,   \
+      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),       \
+      class... xs>                                  \
+    using f = typename _fold_left<sizeof...(xs)>    \
+      ::template f<F,                               \
+        mp_dup(F<, JLN_MP_NIL) x,                   \
+        mp_xs(JLN_MP_NIL, >, JLN_MP_COMMA), xs...>; \
   };
 
   JLN_MP_GEN_XS_4_8_16_64_256(JLN_MP_FOLD_LEFT_SELECT)
 
 #undef JLN_MP_FOLD_LEFT_SELECT
 
-#define JLN_MP_FOLD_LEFT_SELECT(n, mp_xs, mp_repeat) \
-  template<>                                         \
-  struct _fold_left<n>                               \
-  {                                                  \
-    template<template<class...> class F,             \
-      class x, mp_xs(class, JLN_MP_NIL)>             \
-    using f = mp_repeat(F<) x, mp_xs(JLN_MP_NIL, >); \
+#define JLN_MP_FOLD_LEFT_SELECT(n, mp_xs, mp_dup) \
+  template<>                                      \
+  struct _fold_left<n>                            \
+  {                                               \
+    template<template<class...> class F, class x, \
+      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA)>     \
+    using f = mp_dup(F<, JLN_MP_NIL) x,           \
+      mp_xs(JLN_MP_NIL, >, JLN_MP_COMMA);         \
   };
 
   JLN_MP_GEN_XS_1_TO_4(JLN_MP_FOLD_LEFT_SELECT)

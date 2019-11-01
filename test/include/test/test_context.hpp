@@ -3,14 +3,15 @@
 #include "./is_invocable.hpp"
 #include "./is_same.hpp"
 #include "jln/mp/functional/call.hpp"
-#include "jln/mp/functional/sfinae.hpp"
+#include "jln/mp/functional/sfinaefwd.hpp"
 #include "jln/mp/utility/always.hpp"
+#include "jln/mp/smp/utility/unpack.hpp"
 
 namespace
 {
 inline namespace TU
 {
-  using namespace jln::mp;
+  using jln::mp::detail::sfinae;
 
   template<class Mp, class Smp>
   struct test_context
@@ -61,7 +62,8 @@ inline namespace TU
   };
 
 
-  using unary = identity;
+  using unary = jln::mp::identity;
+  using jln::mp::listify;
   struct binary
   {
     template<class a, class b> using f = void;

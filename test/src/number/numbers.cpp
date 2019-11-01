@@ -12,9 +12,9 @@ TEST()
   using b = emp::numbers<0>;
   using c = emp::numbers<0, 1>;
 
-  a() = list<>();
-  b() = list<number<0>>();
-  c() = list<number<0>, number<1>>();
+  IS_SAME(a, list<>);
+  IS_SAME(b, list<number<0>>);
+  IS_SAME(c, list<number<0>, number<1>>);
 }
 
 TEST_SUITE_END()

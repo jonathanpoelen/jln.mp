@@ -17,22 +17,24 @@ namespace jln::mp
     };
   }
 
-  // TODO invoke -> try_invoke
-  // TODO call -> invoke
-
-#if jln_MP_ENABLE_DEBUG
   namespace detail
   {
-    template<class C, class... xs>
-    struct _call
+    template<class F, class... xs>
+    struct _memoizer
     {
-      using type = typename dcall<(sizeof...(xs) < 1000000)>::template f<C, xs...>;
+      using type = typename F::template f<xs...>;
     };
   }
+
   template<class C, class... xs>
-  using call = typename detail::_call<C, xs...>::type;
+  using memoize_call = typename detail::_memoizer<C, xs...>::type;
+
+#if JLN_MP_ENABLE_DEBUG
+  template<class C, class... xs>
+  using call = typename detail::_memoizer<C, xs...>::type;
 #else
   template<class C, class... xs>
-  using call = typename dcall<(sizeof...(xs) < 1000000)>::template f<C, xs...>;
+  using call = typename detail::dcall<(sizeof...(xs) < 1000000)>
+    ::template f<C, xs...>;
 #endif
 }

@@ -1,4 +1,5 @@
 #include "test.hpp"
+#include "test/numbers.hpp"
 
 #include "jln/mp/algorithm/make_int_sequence.hpp"
 #include "jln/mp/number/numbers.hpp"
@@ -9,12 +10,7 @@ TEST_SUITE_BEGIN(make_int_sequence)
 TEST()
 {
   using namespace jln::mp;
-
-  using _0 = number<0>;
-  using _1 = number<1>;
-  using _2 = number<2>;
-  using _3 = number<3>;
-  using _4 = number<4>;
+  using namespace TU::ints;
 
   using a = emp::numbers<>;
   using b = emp::numbers<0>;

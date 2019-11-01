@@ -1,24 +1,45 @@
 #pragma once
 
-#include "../algorithm/drop_front.hpp"
+#include "drop.hpp"
 #include "front.hpp"
+#include "../functional/identity.hpp"
+#include "../../list/at.hpp"
 
-namespace jln::mp
+namespace jln::mp::smp
 {
-  template<class C = identity>
-  using at0 = drop_front<number<1>, C>;
+  template<class N, class C = identity>
+  using at = detail::sfinae<mp::at<N, C>>;
+
+  template<int_ n, class C = identity>
+  using at_c = detail::sfinae<mp::at_c<n, C>>;
 
   template<class C = identity>
-  using at1 = drop_front<number<2>, front<C>>;
+  using at0 = detail::sfinae<mp::at0<C>>;
 
-  namespace emp
-  {
-    template<class L, class i, class C = mp::identity>
-    using at = eager<L, drop_front<number<i::value+1>, front<C>>>;
+  template<class C = identity>
+  using at1 = detail::sfinae<mp::at1<C>>;
 
-    template<class L, int_ i, class C = mp::identity>
-    using at_c = eager<L, drop_front<number<i+1>, front<C>>>;
-  }
+  template<class C = identity>
+  using at2 = detail::sfinae<mp::at2<C>>;
 
-  // TODO smp
+  template<class C = identity>
+  using at3 = detail::sfinae<mp::at3<C>>;
+
+  template<class C = identity>
+  using at4 = detail::sfinae<mp::at4<C>>;
+
+  template<class C = identity>
+  using at5 = detail::sfinae<mp::at5<C>>;
+
+  template<class C = identity>
+  using at6 = detail::sfinae<mp::at6<C>>;
+
+  template<class C = identity>
+  using at7 = detail::sfinae<mp::at7<C>>;
+
+  template<class C = identity>
+  using at8 = detail::sfinae<mp::at8<C>>;
+
+  template<class C = identity>
+  using at9 = detail::sfinae<mp::at9<C>>;
 }

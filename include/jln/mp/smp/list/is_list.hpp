@@ -1,34 +1,19 @@
 #pragma once
 
-#include "list.hpp"
+#include "../functional/identity.hpp"
+#include "../../list/is_list.hpp"
 
-namespace jln::mp
+namespace jln::mp::smp
 {
-  namespace detail
-  {
-    template<class x>
-    struct _is_list;
-  }
-
-  template<class continuation = identity>
-  struct is_list
-  {
-    template<class x>
-    using f = typename continuation::template f<typename detail::_is_list<x>::type>;
-  };
-} // namespace jln::mp
+  template<class C = identity>
+  using is_list = try_contract<mp::is_list<subcontract<C>>>;
+}
 
 namespace jln::mp::detail
 {
-  template<class x>
-  struct _is_list
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, is_list<C>>
   {
-    using type = false_;
+    using type = smp::is_list<sfinae<C>>;
   };
-
-  template<class... xs>
-  struct _is_list<list<xs...>>
-  {
-    using type = true_;
-  };
-} // namespace jln::mp::detail
+}

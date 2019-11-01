@@ -1,13 +1,15 @@
 #pragma once
 
-#include "../functional/when.hpp"
+#include "drop.hpp"
 
 namespace jln::mp
 {
   template<class C = listify>
-  struct pop_front
+  using pop_front = drop<number<1>, C>;
+
+  namespace emp
   {
-    template<class x, class... xs>
-    using f = mp::call<C, xs...>;
-  };
+    template<class L, class C = mp::listify>
+    using pop_front = drop<L, mp::number<1>, C>;
+  }
 }

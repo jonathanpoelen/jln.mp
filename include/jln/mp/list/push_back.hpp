@@ -2,6 +2,7 @@
 
 #include "list.hpp"
 #include "../functional/call.hpp"
+#include "../utility/eager.hpp"
 
 namespace jln::mp
 {

@@ -10,6 +10,8 @@
 
 #include "../../cxx/diagnostic.hpp"
 
+#include <limits>
+
 // TODO under condition ?
 JLN_DIAGNOSTIC_PUSH
 JLN_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wlogical-op")
@@ -48,7 +50,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using add0 = mp::push_back<number<0>, add<C>>;
+  using add0 = if_<size<>, add<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct sub
@@ -58,7 +60,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using sub0 = mp::push_back<number<0>, sub<C>>;
+  using sub0 = if_<size<>, sub<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct lshift
@@ -68,7 +70,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using lshift0 = mp::push_back<number<0>, lshift<C>>;
+  using lshift0 = if_<size<>, lshift<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct rshift
@@ -78,7 +80,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using rshift0 = mp::push_back<number<0>, rshift<C>>;
+  using rshift0 = if_<size<>, rshift<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct mul
@@ -91,7 +93,7 @@ namespace jln::mp
   using mul0 = if_<size<>, mul<C>, always<number<0>, C>>;
 
   template<class C = identity>
-  using mul1 = mp::push_back<number<1>, mul<C>>;
+  using mul1 = if_<size<>, mul<C>, always<number<1>, C>>;
 
   template<class C = identity>
   struct div
@@ -104,7 +106,7 @@ namespace jln::mp
   using div0 = if_<size<>, div<C>, always<number<0>, C>>;
 
   template<class C = identity>
-  using div1 = mp::push_back<number<1>, add<C>>;
+  using div1 = if_<size<>, div<C>, always<number<1>, C>>;
 
   template<class C = identity>
   struct mod
@@ -147,7 +149,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using bit_or0 = mp::push_back<number<0>, bit_or<C>>;
+  using bit_or0 = if_<size<>, bit_or<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct neg
@@ -233,6 +235,7 @@ namespace jln::mp
     using f = number<(x::value >= y::value)>;
   };
 
+
   template<class N, class C = identity>
   using equal_than = push_back<N, equal<C>>;
 
@@ -250,117 +253,296 @@ namespace jln::mp
 
   template<class N, class C = identity>
   using greater_equal_than = push_back<N, greater_equal<C>>;
+
+
+  template<int_ n, class C = identity>
+  using equal_than_c = equal_than<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using not_equal_than_c = not_equal_than<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using less_than_c = less_than<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using less_equal_than_c = less_equal_than<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using greater_than_c = greater_than<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using greater_equal_than_c = greater_equal_than<number<n>, C>;
 }
 
 namespace jln::mp::emp
 {
   template<class L, class C = mp::identity>
-  using or_ = eager<L, mp::or_<C>>;
+  using or_seq = eager<L, mp::or_<C>>;
 
   template<class L, class C = mp::identity>
-  using and_ = eager<L, mp::and_<C>>;
+  using and_seq = eager<L, mp::and_<C>>;
 
   template<class L, class C = mp::identity>
-  using add = eager<L, mp::add<C>>;
+  using add_seq = eager<L, mp::add<C>>;
 
   template<class L, class C = mp::identity>
-  using sub = eager<L, mp::sub<C>>;
+  using add0_seq = eager<L, mp::add0<C>>;
 
   template<class L, class C = mp::identity>
-  using sub0 = eager<L, mp::sub0<C>>;
+  using sub_seq = eager<L, mp::sub<C>>;
 
   template<class L, class C = mp::identity>
-  using lshift = eager<L, mp::lshift<C>>;
+  using sub0_seq = eager<L, mp::sub0<C>>;
 
   template<class L, class C = mp::identity>
-  using lshift0 = eager<L, mp::lshift0<C>>;
+  using lshift_seq = eager<L, mp::lshift<C>>;
 
   template<class L, class C = mp::identity>
-  using rshift = eager<L, mp::rshift<C>>;
+  using lshift0_seq = eager<L, mp::lshift0<C>>;
 
   template<class L, class C = mp::identity>
-  using rshift0 = eager<L, mp::rshift0<C>>;
+  using rshift_seq = eager<L, mp::rshift<C>>;
 
   template<class L, class C = mp::identity>
-  using mul = eager<L, mp::mul<C>>;
+  using rshift0_seq = eager<L, mp::rshift0<C>>;
 
   template<class L, class C = mp::identity>
-  using mul0 = eager<L, mp::mul0<C>>;
+  using mul_seq = eager<L, mp::mul<C>>;
 
   template<class L, class C = mp::identity>
-  using mul1 = eager<L, mp::mul1<C>>;
+  using mul0_seq = eager<L, mp::mul0<C>>;
 
   template<class L, class C = mp::identity>
-  using div = eager<L, mp::div<C>>;
+  using mul1_seq = eager<L, mp::mul1<C>>;
 
   template<class L, class C = mp::identity>
-  using div0 = eager<L, mp::div0<C>>;
+  using div_seq = eager<L, mp::div<C>>;
 
   template<class L, class C = mp::identity>
-  using div1 = eager<L, mp::div1<C>>;
+  using div0_seq = eager<L, mp::div0<C>>;
 
   template<class L, class C = mp::identity>
-  using mod = eager<L, mp::mod<C>>;
+  using div1_seq = eager<L, mp::div1<C>>;
 
   template<class L, class C = mp::identity>
-  using mod0 = eager<L, mp::mod0<C>>;
+  using mod_seq = eager<L, mp::mod<C>>;
 
   template<class L, class C = mp::identity>
-  using mod1 = eager<L, mp::mod1<C>>;
+  using mod0_seq = eager<L, mp::mod0<C>>;
 
   template<class L, class C = mp::identity>
-  using xor_ = eager<L, mp::xor_<C>>;
+  using mod1_seq = eager<L, mp::mod1<C>>;
 
   template<class L, class C = mp::identity>
-  using xor0 = eager<L, mp::xor0<C>>;
+  using xor_seq = eager<L, mp::xor_<C>>;
 
   template<class L, class C = mp::identity>
-  using bit_and = eager<L, mp::bit_and<C>>;
+  using xor0_seq = eager<L, mp::xor0<C>>;
 
   template<class L, class C = mp::identity>
-  using bit_and0 = eager<L, mp::bit_and0<C>>;
+  using bit_and_seq = eager<L, mp::bit_and<C>>;
 
   template<class L, class C = mp::identity>
-  using bit_or = eager<L, mp::bit_or<C>>;
+  using bit_and0_seq = eager<L, mp::bit_and0<C>>;
 
   template<class L, class C = mp::identity>
-  using bit_or0 = eager<L, mp::bit_or0<C>>;
+  using bit_or_seq = eager<L, mp::bit_or<C>>;
 
   template<class L, class C = mp::identity>
-  using neg = eager<L, mp::neg<C>>;
+  using bit_or0_seq = eager<L, mp::bit_or0<C>>;
 
-  template<class L, class C = mp::identity>
-  using unary_plus = eager<L, mp::unary_plus<C>>;
 
-  template<class L, class C = mp::identity>
-  using not_ = eager<L, mp::not_<C>>;
+  template<int_... xs>
+  using or_c = number<(false || ... || xs)>;
 
-  template<class L, class C = mp::identity>
-  using bit_not = eager<L, mp::bit_not<C>>;
+  template<int_... xs>
+  using and_c = number<(true && ... && xs)>;
 
-  template<class L, class C = mp::identity>
-  using inc = eager<L, mp::inc<C>>;
+  template<int_... xs>
+  using add_c = number<(... + xs)>;
 
-  template<class L, class C = mp::identity>
-  using dec = eager<L, mp::dec<C>>;
+  template<int_... xs>
+  using add0_c = add_c<xs..., 0>;
 
-  template<class L, class C = mp::identity>
-  using equal = eager<L, mp::equal<C>>;
+  template<int_... xs>
+  using sub_c = number<(... - xs)>;
 
-  template<class L, class C = mp::identity>
-  using not_equal = eager<L, mp::not_equal<C>>;
+  template<int_... xs>
+  using sub0_c = sub_c<xs..., 0>;
 
-  template<class L, class C = mp::identity>
-  using less = eager<L, mp::less<C>>;
+  template<int_... xs>
+  using lshift_c = number<(... << xs)>;
 
-  template<class L, class C = mp::identity>
-  using less_equal = eager<L, mp::less_equal<C>>;
+  template<int_... xs>
+  using lshift0_c = lshift_c<xs..., 0>;
 
-  template<class L, class C = mp::identity>
-  using greater = eager<L, mp::greater<C>>;
+  template<int_... xs>
+  using rshift_c = number<(... >> xs)>;
 
-  template<class L, class C = mp::identity>
-  using greater_equal = eager<L, mp::greater_equal<C>>;
+  template<int_... xs>
+  using rshift0_c = rshift_c<xs..., 0>;
+
+  template<int_... xs>
+  using mul_c = number<(... * xs)>;
+
+  template<int_... xs>
+  using mul0_c = mul_c<xs..., (sizeof...(xs) ? 1 : 0)>;
+
+  template<int_... xs>
+  using mul1_c = mul_c<xs..., 1>;
+
+  template<int_... xs>
+  using div_c = number<(... / xs)>;
+
+  template<int_... xs>
+  using div0_c = div_c<xs..., (sizeof...(xs) ? 1 : 0)>;
+
+  template<int_... xs>
+  using div1_c = div_c<xs..., 1>;
+
+  template<int_... xs>
+  using mod_c = number<(... % xs)>;
+
+  template<int_... xs>
+  using mod0_c = mod_c<xs...,
+    (sizeof...(xs) ? std::numeric_limits<int_>::min() : 0)>;
+
+  template<int_... xs>
+  using mod1_c = mod_c<xs...,
+    (sizeof...(xs) ? std::numeric_limits<int_>::min() : 1)>;
+
+  template<int_... xs>
+  using xor_c = number<(... ^ xs)>;
+
+  template<int_... xs>
+  using xor0_c = xor_c<xs..., 0, 0>;
+
+  template<int_... xs>
+  using bit_and_c = number<(... & xs)>;
+
+  template<int_... xs>
+  using bit_and0_c = bit_and_c<xs...,
+    (sizeof...(xs) ? std::numeric_limits<int_>::max() : 0)>;
+
+  template<int_... xs>
+  using bit_or_c = number<(... | xs)>;
+
+  template<int_... xs>
+  using bit_or0_c = bit_or_c<xs...,
+    (sizeof...(xs) ? std::numeric_limits<int_>::max() : 0)>;
+
+
+  template<class... xs>
+  using or_ = number<(false || ... || xs::value)>;
+
+  template<class... xs>
+  using and_ = number<(true && ... && xs::value)>;
+
+  template<class... xs>
+  using add = number<(... + xs::value)>;
+
+  template<class... xs>
+  using add0 = call<mp::add0<>, xs...>;
+
+  template<class... xs>
+  using sub = number<(... - xs::value)>;
+
+  template<class... xs>
+  using sub0 = call<mp::sub0<>, xs...>;
+
+  template<class... xs>
+  using lshift = number<(... << xs::value)>;
+
+  template<class... xs>
+  using lshift0 = call<mp::lshift0<>, xs...>;
+
+  template<class... xs>
+  using rshift = number<(... >> xs::value)>;
+
+  template<class... xs>
+  using rshift0 = call<mp::rshift0<>, xs...>;
+
+  template<class... xs>
+  using mul = number<(... * xs::value)>;
+
+  template<class... xs>
+  using mul0 = call<mp::mul0<>, xs...>;
+
+  template<class... xs>
+  using mul1 = call<mp::mul1<>, xs...>;
+
+  template<class... xs>
+  using div = number<(... / xs::value)>;
+
+  template<class... xs>
+  using div0 = call<mp::div0<>, xs...>;
+
+  template<class... xs>
+  using div1 = call<mp::div1<>, xs...>;
+
+  template<class... xs>
+  using mod = number<(... % xs::value)>;
+
+  template<class... xs>
+  using mod0 = call<mp::mod0<>, xs...>;
+
+  template<class... xs>
+  using mod1 = call<mp::mod1<>, xs...>;
+
+  template<class... xs>
+  using xor_ = number<(... ^ xs::value)>;
+
+  template<class... xs>
+  using xor0 = call<mp::xor0<>, xs...>;
+
+  template<class... xs>
+  using bit_and = number<(... & xs::value)>;
+
+  template<class... xs>
+  using bit_and0 = call<mp::bit_and0<>, xs...>;
+
+  template<class... xs>
+  using bit_or = number<(... | xs::value)>;
+
+  template<class... xs>
+  using bit_or0 = call<mp::bit_or0<>, xs...>;
+
+
+  template<class x, class C = mp::identity>
+  using neg = call<mp::neg<>, x>;
+
+  template<class x, class C = mp::identity>
+  using unary_plus = call<mp::unary_plus<>, x>;
+
+  template<class x, class C = mp::identity>
+  using not_ = call<mp::not_<>, x>;
+
+  template<class x, class C = mp::identity>
+  using bit_not = call<mp::bit_not<>, x>;
+
+  template<class x, class C = mp::identity>
+  using inc = call<mp::inc<>, x>;
+
+  template<class x, class C = mp::identity>
+  using dec = call<mp::dec<>, x>;
+
+  template<class x, class y, class C = mp::identity>
+  using equal = call<mp::equal<>, x, y>;
+
+  template<class x, class y, class C = mp::identity>
+  using not_equal = call<mp::not_equal<>, x, y>;
+
+  template<class x, class y, class C = mp::identity>
+  using less = call<mp::less<>, x, y>;
+
+  template<class x, class y, class C = mp::identity>
+  using less_equal = call<mp::less_equal<>, x, y>;
+
+  template<class x, class y, class C = mp::identity>
+  using greater = call<mp::greater<>, x, y>;
+
+  template<class x, class y, class C = mp::identity>
+  using greater_equal = call<mp::greater_equal<>, x, y>;
 }
 
 JLN_DIAGNOSTIC_POP

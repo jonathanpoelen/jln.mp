@@ -6,6 +6,16 @@
 #include "../list/size.hpp"
 #include "../list/push_back.hpp"
 
+namespace jln::mp::detail
+{
+  template<template<class...> class Tpl, class C, int_ i = 0>
+  using smp_op_default = valid_contract<
+    if_<
+      size<>,
+      try_invoke<Tpl<subcontract<C>>>,
+      always<number<i>, subcontract<C>>>>;
+}
+
 namespace jln::mp::smp
 {
   template<class C = identity>
@@ -18,110 +28,70 @@ namespace jln::mp::smp
   using add = try_contract<mp::add<subcontract<C>>>;
 
   template<class C = identity>
-  using add0 = valid_contract<
-    mp::push_back<number<0>,
-      mp::try_invoke<mp::add<subcontract<C>>>>>;
+  using add0 = detail::smp_op_default<mp::add, C>;
 
   template<class C = identity>
   using sub = try_contract<mp::sub<subcontract<C>>>;
 
   template<class C = identity>
-  using sub0 = valid_contract<
-    mp::push_back<number<0>,
-      mp::try_invoke<mp::sub<subcontract<C>>>>>;
+  using sub0 = detail::smp_op_default<mp::sub, C>;
 
   template<class C = identity>
   using lshift = try_contract<mp::lshift<subcontract<C>>>;
 
   template<class C = identity>
-  using lshift0 = valid_contract<
-    mp::push_back<number<0>,
-      mp::try_invoke<mp::lshift<subcontract<C>>>>>;
+  using lshift0 = detail::smp_op_default<mp::lshift, C>;
 
   template<class C = identity>
   using rshift = try_contract<mp::rshift<subcontract<C>>>;
 
   template<class C = identity>
-  using rshift0 = valid_contract<
-    mp::push_back<number<0>,
-      mp::try_invoke<mp::rshift<subcontract<C>>>>>;
+  using rshift0 = detail::smp_op_default<mp::rshift, C>;
 
   template<class C = identity>
   using mul = try_contract<mp::mul<subcontract<C>>>;
 
   template<class C = identity>
-  using mul0 = valid_contract<
-    mp::if_<
-      mp::size<>,
-      mp::try_invoke<mp::mul<subcontract<C>>>,
-      mp::always<mp::number<0>, subcontract<C>>>>;
+  using mul0 = detail::smp_op_default<mp::mul, C>;
 
   template<class C = identity>
-  using mul1 = valid_contract<
-    mp::push_back<number<1>,
-      mp::try_invoke<mp::mul<subcontract<C>>>>>;
+  using mul1 = detail::smp_op_default<mp::mul, C, 1>;
 
   template<class C = identity>
   using div = try_contract<mp::div<subcontract<C>>>;
 
   template<class C = identity>
-  using div0 = valid_contract<
-    mp::if_<
-      mp::size<>,
-      mp::try_invoke<mp::div<subcontract<C>>>,
-      mp::always<mp::number<0>, subcontract<C>>>>;
+  using div0 = detail::smp_op_default<mp::div, C>;
 
   template<class C = identity>
-  using div1 = valid_contract<
-    mp::push_back<number<1>,
-      mp::try_invoke<mp::div<subcontract<C>>>>>;
+  using div1 = detail::smp_op_default<mp::div, C, 1>;
 
   template<class C = identity>
   using mod = try_contract<mp::mod<subcontract<C>>>;
 
   template<class C = identity>
-  using mod0 = valid_contract<
-    mp::if_<
-      mp::size<>,
-      mp::try_invoke<mp::mod<subcontract<C>>>,
-      mp::always<mp::number<0>, subcontract<C>>>>;
+  using mod0 = detail::smp_op_default<mp::mod, C>;
 
   template<class C = identity>
-  using mod1 = valid_contract<
-    mp::if_<
-      mp::size<>,
-      mp::try_invoke<mp::mod<subcontract<C>>>,
-      mp::always<mp::number<1>, subcontract<C>>>>;
+  using mod1 = detail::smp_op_default<mp::mod, C, 1>;
 
   template<class C = identity>
   using xor_ = try_contract<mp::xor_<subcontract<C>>>;
 
   template<class C = identity>
-  using xor0 = valid_contract<
-    mp::if_<
-      mp::size<>,
-      mp::try_invoke<mp::xor_<subcontract<C>>>,
-      mp::always<mp::number<0>, subcontract<C>>>>;
+  using xor0 = detail::smp_op_default<mp::xor_, C>;
 
   template<class C = identity>
   using bit_and = try_contract<mp::bit_and<subcontract<C>>>;
 
   template<class C = identity>
-  using bit_and0 = valid_contract<
-    mp::if_<
-      mp::size<>,
-      mp::try_invoke<mp::bit_and<subcontract<C>>>,
-      mp::always<mp::number<0>, subcontract<C>>>>;
+  using bit_and0 = detail::smp_op_default<mp::bit_and, C>;
 
   template<class C = identity>
   using bit_or = try_contract<mp::bit_or<subcontract<C>>>;
 
   template<class C = identity>
-  using bit_or0 = valid_contract<
-    mp::if_<
-      mp::size<>,
-      mp::try_invoke<mp::bit_or<subcontract<C>>>,
-      mp::always<mp::number<0>, subcontract<C>>>>;
+  using bit_or0 = detail::smp_op_default<mp::bit_or, C>;
 
   template<class C = identity>
   using neg = try_contract<mp::neg<subcontract<C>>>;
@@ -188,6 +158,24 @@ namespace jln::mp::smp
   using greater_equal_than = valid_contract<
     mp::push_back<N,
       mp::try_invoke<mp::greater_equal<subcontract<C>>>>>;
+
+  template<int_ n, class C = identity>
+  using equal_than_c = equal_than<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using not_equal_than_c = not_equal_than<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using less_than_c = less_than<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using less_equal_than_c = less_equal_than<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using greater_than_c = greater_than<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using greater_equal_than_c = greater_equal_than<number<n>, C>;
 }
 
 namespace jln::mp::detail

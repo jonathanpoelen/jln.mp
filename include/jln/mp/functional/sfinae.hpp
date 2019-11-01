@@ -1,18 +1,23 @@
 #pragma once
 
 #include "sfinaefwd.hpp"
-// TODO include smp/* ?
+#include "try_invoke.hpp"
+#include "bind.hpp"
+#include "../utility/always.hpp"
 
 // TODO mp::unsafe_sfinae / mp::unsafe_sfinae_once ? for sfinae<F> without specialization on F
 namespace jln::mp
 {
-  template<class x>
-  using sfinae = typename detail::_sfinae<detail::_recursive_sfinae, x>::type;
+  using detail::sfinae;
+  using detail::sfinae_once;
 
-  template<class x>
-  using sfinae_once = typename detail::_sfinae<detail::_sfinae_once, x>::type;
+  template<class F, class... xs>
+  using invoke = typename try_invoke<sfinae<F>, cfe<always>>
+    ::template f<xs...>
+    ::template f<>;
 }
 
+// TODO include smp/* ?
 // #include "../smp/traits.hpp"
 #include "../smp/utility/always.hpp"
 #include "../smp/utility/has_value.hpp"

@@ -3,44 +3,44 @@
 #include "../functional/identity.hpp"
 #include "../number/number.hpp"
 
-// TODO value/has_value ?
-
 namespace jln::mp
 {
   namespace detail
   {
     template<class x, class = void>
-    struct _has_value;
+    struct _has_type;
   }
 
   template<class C = identity>
-  struct has_value
+  struct has_type
   {
     template<class x>
     using f = typename C::template f<
-      typename detail::_has_value<x>::type>;
+      typename detail::_has_type<x>::type>;
   };
 
   namespace emp
   {
     template<class x>
-    using has_value = typename detail::_has_value<x>::type;
+    using has_type = typename detail::_has_type<x>::type;
 
     template<class x>
-    inline constexpr bool has_value_v = detail::_has_value<x>::type::value;
+    inline constexpr bool has_type_v = detail::_has_type<x>::type::value;
   }
 }
+
+#include <type_traits>
 
 namespace jln::mp::detail
 {
   template<class x, class>
-  struct _has_value
+  struct _has_type
   {
     using type = false_;
   };
 
   template<class x>
-  struct _has_value<x, decltype(void(x::value))>
+  struct _has_type<x, std::void_t<typename x::type>>
   {
     using type = true_;
   };
