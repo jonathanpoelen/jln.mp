@@ -3,6 +3,7 @@
 #include "operators.hpp"
 #include "../list/at.hpp"
 #include "../functional/flip.hpp"
+#include "../functional/fork.hpp"
 #include "../algorithm/fold_left.hpp"
 
 namespace jln::mp

@@ -155,84 +155,84 @@ namespace jln::mp
   struct neg
   {
     template<class x>
-    using f = number<(-x::value)>;
+    using f = typename C::template f<number<(-x::value)>>;
   };
 
   template<class C = identity>
   struct unary_plus
   {
     template<class x>
-    using f = number<(+x::value)>;
+    using f = typename C::template f<number<(+x::value)>>;
   };
 
   template<class C = identity>
   struct not_
   {
     template<class x>
-    using f = number<(!x::value)>;
+    using f = typename C::template f<number<(!x::value)>>;
   };
 
   template<class C = identity>
   struct bit_not
   {
     template<class x>
-    using f = number<(~x::value)>;
+    using f = typename C::template f<number<(~x::value)>>;
   };
 
   template<class C = identity>
   struct inc
   {
     template<class x>
-    using f = number<(x::value+1)>;
+    using f = typename C::template f<number<(x::value+1)>>;
   };
 
   template<class C = identity>
   struct dec
   {
     template<class x>
-    using f = number<(x::value-1)>;
+    using f = typename C::template f<number<(x::value-1)>>;
   };
 
   template<class C = identity>
   struct equal
   {
     template<class x, class y>
-    using f = number<(x::value == y::value)>;
+    using f = typename C::template f<number<(x::value == y::value)>>;
   };
 
   template<class C = identity>
   struct not_equal
   {
     template<class x, class y>
-    using f = number<(x::value != y::value)>;
+    using f = typename C::template f<number<(x::value != y::value)>>;
   };
 
   template<class C = identity>
   struct less
   {
     template<class x, class y>
-    using f = number<(x::value < y::value)>;
+    using f = typename C::template f<number<(x::value < y::value)>>;
   };
 
   template<class C = identity>
   struct less_equal
   {
     template<class x, class y>
-    using f = number<(x::value <= y::value)>;
+    using f = typename C::template f<number<(x::value <= y::value)>>;
   };
 
   template<class C = identity>
   struct greater
   {
     template<class x, class y>
-    using f = number<(x::value > y::value)>;
+    using f = typename C::template f<number<(x::value > y::value)>>;
   };
 
   template<class C = identity>
   struct greater_equal
   {
     template<class x, class y>
-    using f = number<(x::value >= y::value)>;
+    using f = typename C::template f<number<(x::value >= y::value)>>;
   };
 
 
@@ -509,40 +509,40 @@ namespace jln::mp::emp
 
 
   template<class x, class C = mp::identity>
-  using neg = call<mp::neg<>, x>;
+  using neg = call<mp::neg<C>, x>;
 
   template<class x, class C = mp::identity>
-  using unary_plus = call<mp::unary_plus<>, x>;
+  using unary_plus = call<mp::unary_plus<C>, x>;
 
   template<class x, class C = mp::identity>
-  using not_ = call<mp::not_<>, x>;
+  using not_ = call<mp::not_<C>, x>;
 
   template<class x, class C = mp::identity>
-  using bit_not = call<mp::bit_not<>, x>;
+  using bit_not = call<mp::bit_not<C>, x>;
 
   template<class x, class C = mp::identity>
-  using inc = call<mp::inc<>, x>;
+  using inc = call<mp::inc<C>, x>;
 
   template<class x, class C = mp::identity>
-  using dec = call<mp::dec<>, x>;
+  using dec = call<mp::dec<C>, x>;
 
   template<class x, class y, class C = mp::identity>
-  using equal = call<mp::equal<>, x, y>;
+  using equal = call<mp::equal<C>, x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using not_equal = call<mp::not_equal<>, x, y>;
+  using not_equal = call<mp::not_equal<C>, x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using less = call<mp::less<>, x, y>;
+  using less = call<mp::less<C>, x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using less_equal = call<mp::less_equal<>, x, y>;
+  using less_equal = call<mp::less_equal<C>, x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using greater = call<mp::greater<>, x, y>;
+  using greater = call<mp::greater<C>, x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using greater_equal = call<mp::greater_equal<>, x, y>;
+  using greater_equal = call<mp::greater_equal<C>, x, y>;
 }
 
 JLN_DIAGNOSTIC_POP

@@ -2,6 +2,7 @@
 
 #include "number.hpp"
 #include "../list/list.hpp"
+#include "../functional/call.hpp"
 
 namespace jln::mp
 {
@@ -9,7 +10,7 @@ namespace jln::mp
   struct numbers
   {
     template<int_... ns>
-    using f = typename C::template f<number<ns>...>;
+    using f = call<C, number<ns>...>;
   };
 
   template<>

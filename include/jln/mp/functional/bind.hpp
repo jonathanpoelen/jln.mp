@@ -58,7 +58,7 @@ namespace jln::mp
       ::template f<F, xs::value...>;
   };
 
-  template<template<auto...> class F>
+  template<template<class, auto...> class F>
   struct cftv
   {
     template<class x, class... xs>
@@ -74,7 +74,7 @@ namespace jln::mp
       ::template f<F, vs...>;
   };
 
-  template<template<auto...> class F>
+  template<template<class, auto...> class F>
   struct cftv_v
   {
     template<class x, auto... vs>

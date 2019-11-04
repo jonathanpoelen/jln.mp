@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../functional/when.hpp"
+#include "../functional/identity.hpp"
+#include "../list/list.hpp"
 
 namespace jln::mp
 {
@@ -14,8 +15,8 @@ namespace jln::mp
   struct same
   {
     template<class... xs>
-    using f = typename detail::dcall<sizeof...(xs)>
-      ::template f<C, typename detail::_same<always<xs>...>::type>;
+    using f = typename C::template f<
+      typename detail::_same<xs...>::type>;
   };
 
   namespace emp
@@ -23,30 +24,26 @@ namespace jln::mp
     template<class L, class C = mp::identity>
     using same = eager<L, mp::same<C>>;
   }
-
-  namespace smp
-  {
-    template<class C = identity>
-    using same = when<mp::always<true_>,
-      mp::same<when_continuation<C>>>;
-  }
 }
 
 namespace jln::mp::detail
 {
   template<class... xs>
-  struct _same
+  struct _same_impl
   {
     using type = mp::false_;
   };
 
   template<template<class> class... _, class x>
-  struct _same<_<x>...>
+  struct _same_impl<_<x>...>
   {
     using type = mp::true_;
   };
 
-  // TODO optional ?
+  template<class... xs>
+  struct _same : _same_impl<list<xs>...>
+  {};
+
   template<>
   struct _same<>
   {

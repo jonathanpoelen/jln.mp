@@ -1,6 +1,7 @@
 #pragma once
 
 #include "list.hpp"
+#include "../utility/eager.hpp"
 #include "../functional/call.hpp"
 
 namespace jln::mp

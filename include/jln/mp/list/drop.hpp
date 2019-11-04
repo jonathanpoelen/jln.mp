@@ -55,32 +55,33 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-#define JLN_MP_DROP_IMPL(n, _, mp_rep)       \
-  template<>                                 \
-  struct _drop<n>                            \
-  {                                          \
-    template<unsigned size, class C,         \
-      mp_rep(class JLN_MP_COMMA, JLN_MP_NIL) \
-      class... xs>                           \
-    using f = typename C::template f<xs...>; \
+#define JLN_MP_DROP_IMPL(n, _, mp_rxs, mp_rep) \
+  template<>                                   \
+  struct _drop<n>                              \
+  {                                            \
+    template<unsigned size, class C,           \
+      mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)   \
+      class... xs>                             \
+    using f = typename C::template f<xs...>;   \
   };
 
   JLN_MP_GEN_XS_0_TO_8(JLN_MP_DROP_IMPL)
 
 #undef JLN_MP_DROP_IMPL
 
-#define JLN_MP_DROP_IMPL(n, mp_xs, mp_rep) \
-  JLN_MP_DROP_IMPL2(n, mp_xs, mp_rep, n_8_or_less_16_64_256)
+#define JLN_MP_DROP_IMPL(n, mp_xs, mp_rxs, mp_rep) \
+  JLN_MP_DROP_IMPL2(n, mp_xs, mp_rxs, mp_rep,      \
+    n_8_or_less_16_64_256)
 
-#define JLN_MP_DROP_IMPL2(n, _, mp_rep, next_int) \
-  template<>                                      \
-  struct _drop<n>                                 \
-  {                                               \
-    template<unsigned size, class C,              \
-      mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)      \
-      class... xs>                                \
-    using f = typename _drop<next_int (size-n)>   \
-      ::template f<(size-n), C, xs...>;           \
+#define JLN_MP_DROP_IMPL2(n, _, mp_rxs, mp_rep, next_int) \
+  template<>                                              \
+  struct _drop<n>                                         \
+  {                                                       \
+    template<unsigned size, class C,                      \
+      mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)              \
+      class... xs>                                        \
+    using f = typename _drop<next_int (size-n)>           \
+      ::template f<(size-n), C, xs...>;                   \
   };
 
   JLN_MP_GEN_XS_8_args(JLN_MP_DROP_IMPL2, JLN_MP_NIL)

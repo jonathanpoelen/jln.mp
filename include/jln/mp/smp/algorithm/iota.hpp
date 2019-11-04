@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../number/numbers.hpp"
-#include "../../list/iota.hpp"
+#include "../../algorithm/iota.hpp"
 
 namespace jln::mp::smp
 {

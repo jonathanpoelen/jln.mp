@@ -34,7 +34,7 @@ namespace jln::mp::detail
   struct _join_select : _join_select<n_16_64_256_1024(n)>
   {};
 
-#define JLN_MP_JOIN_SELECT(n, mp_xs, _)                     \
+#define JLN_MP_JOIN_SELECT(n, mp_xs, mp_rxs, _)             \
   template<JLN_MP_DEBUG(class error)>                       \
   struct _join_select<n JLN_MP_DEBUG_A(error)>              \
   {                                                         \

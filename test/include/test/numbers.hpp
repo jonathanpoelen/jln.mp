@@ -1068,6 +1068,8 @@ inline namespace TU
     using seq_0_2_4 = jln::mp::emp::numbers<0, 2, 4>;
     using seq_1_3_5 = jln::mp::emp::numbers<1, 3, 5>;
 
+    using seq_0_1_2_3 = jln::mp::emp::numbers<0, 1, 2, 3>;
+
     using seq_0_1_2_3_4_5_6_7_8_9
       = jln::mp::emp::numbers<0, 1, 2, 3, 4, 5, 6, 7, 8, 9>;
     using seq_1_2_3_4_5_6_7_8_9_10

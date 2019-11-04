@@ -46,7 +46,6 @@ namespace jln::mp::detail
   struct _fork
   {
     template <class... xs>
-    using f = typename C::template f<
-      typename Fs::template f<xs...>...>;
+    using f = typename C::template f<call<Fs, xs...>...>;
   };
 } // namespace jln::mp

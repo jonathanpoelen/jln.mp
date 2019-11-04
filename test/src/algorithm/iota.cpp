@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/list/iota.hpp"
+#include "jln/mp/smp/algorithm/iota.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -15,6 +15,11 @@ TEST()
 
   IS_SAME(seq_0_1_2, emp::iota_v_c<0, 3>);
   IS_SAME(seq_1_3_5, emp::iota_v_c<1, 3, 2>);
+
+  test_pack<iota>()
+    .test_binary()
+    .test_unary()
+  ;
 
   test_context<iota<>, smp::iota<>>()
     .test<list<>, _0, _0>()

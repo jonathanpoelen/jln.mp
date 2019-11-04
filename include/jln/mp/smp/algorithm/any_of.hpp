@@ -2,13 +2,13 @@
 
 #include "transform.hpp"
 #include "../number/operators.hpp"
-#include "../../algorithm/all_of.hpp"
+#include "../../algorithm/any_of.hpp"
 
 namespace jln::mp
 {
   namespace smp
   {
     template<class Pred, class C = identity>
-    using all_of = transform<Pred, and_<C>>;
+    using any_of = transform<Pred, or_<C>>;
   }
 } // namespace jln::mp

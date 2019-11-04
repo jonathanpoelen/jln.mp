@@ -16,7 +16,7 @@ TEST()
   ;
 
   test_context<as_val<>, smp::as_val<>>()
-    // .test<v1, _1>()
+    .test<v1, _1>()
     .test<v1, v1>()
     .not_invocable<>()
     .not_invocable<list<>>()

@@ -29,7 +29,11 @@ namespace jln::mp
 {
   namespace detail
   {
+#if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
+    template<std::size_t>
+#else
     template<class>
+#endif
     struct _make_int_sequence;
   }
 
@@ -38,7 +42,8 @@ namespace jln::mp
   {
     template<class n>
 #if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
-    using f = typename detail::_make_int_sequence<n>::type::template f<C>;
+    using f = typename detail::_make_int_sequence<n::value>
+      ::type::template f<C>;
 #else
     using f = typename detail::_make_int_sequence<
       std::make_index_sequence<n::value>>::template f<C>;
@@ -46,8 +51,7 @@ namespace jln::mp
   };
 
   template<class C = mp::listify>
-  struct make_int_sequence : make_int_sequence_v<mp::numbers<C>>
-  {};
+  using make_int_sequence = make_int_sequence_v<mp::numbers<C>>;
 
   namespace emp
   {
@@ -75,10 +79,10 @@ namespace jln::mp::detail
     using f = typename C::template f<ns...>;
   };
 
-  template<class n>
+  template<std::size_t n>
   struct _make_int_sequence
   {
-    using type = __make_integer_seq<_make_int_sequence_impl, int_, n::value>;
+    using type = __make_integer_seq<_make_int_sequence_impl, int_, n>;
   };
 #elif JLN_MP_USE_INTEGER_PACK
   template<int_... ns>
@@ -88,10 +92,10 @@ namespace jln::mp::detail
     using f = typename C::template f<ns...>;
   };
 
-  template<class n>
+  template<std::size_t n>
   struct _make_int_sequence
   {
-    using type = _make_int_sequence_impl<__integer_pack(n::value)...>;
+    using type = _make_int_sequence_impl<__integer_pack(n)...>;
   };
 #else
   template<std::size_t... ns>

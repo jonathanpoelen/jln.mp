@@ -53,7 +53,7 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-#define JLN_MP_ROTATE_IMPL(n, mp_xs, _)                   \
+#define JLN_MP_ROTATE_IMPL(n, mp_xs, mp_rxs, _)           \
   template<>                                              \
   struct _rotate<n>                                       \
   {                                                       \
@@ -68,20 +68,21 @@ namespace jln::mp::detail
 
 #undef JLN_MP_ROTATE_IMPL
 
-#define JLN_MP_ROTATE_IMPL(n, mp_xs, mp_rep) \
-  JLN_MP_ROTATE_IMPL2(n, mp_xs, mp_rep, n_8_or_less_16_64_256)
+#define JLN_MP_ROTATE_IMPL(n, mp_xs, mp_rxs, mp_rep) \
+  JLN_MP_ROTATE_IMPL2(n, mp_xs, mp_rep, mp_rxs,      \
+    n_8_or_less_16_64_256)
 
-#define JLN_MP_ROTATE_IMPL2(n, mp_xs, _, next_int)        \
-  template<>                                              \
-  struct _rotate<n>                                       \
-  {                                                       \
-    template<unsigned size, class C,                      \
-      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
-      class... xs>                                        \
-    using f = typename _rotate<next_int (size-n)>         \
-      ::template f<size-n, C,                             \
-        xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL) \
-      >;                                                  \
+#define JLN_MP_ROTATE_IMPL2(n, mp_xs, mp_rxs, _, next_int) \
+  template<>                                               \
+  struct _rotate<n>                                        \
+  {                                                        \
+    template<unsigned size, class C,                       \
+      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)               \
+      class... xs>                                         \
+    using f = typename _rotate<next_int (size-n)>          \
+      ::template f<size-n, C,                              \
+        xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)  \
+      >;                                                   \
   };
 
   JLN_MP_GEN_XS_8_args(JLN_MP_ROTATE_IMPL2, JLN_MP_NIL)

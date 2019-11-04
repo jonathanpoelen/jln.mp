@@ -2,17 +2,17 @@
 
 namespace jln::mp
 {
-  template<class continuation>
+  template<class C>
   struct values
   {
     template<class... ns>
-    using f = typename continuation::template f<ns::value...>;
+    using f = typename C::template f<ns::value...>;
   };
 
-  template<class continuation>
+  template<class C>
   struct typed_values
   {
     template<class x, class... ns>
-    using f = typename continuation::template f<x, ns::value...>;
+    using f = typename C::template f<x, ns::value...>;
   };
 }

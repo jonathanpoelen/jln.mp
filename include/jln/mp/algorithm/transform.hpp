@@ -11,7 +11,7 @@ namespace jln::mp
   struct transform
   {
     template<class... xs>
-    using f = call<C, call<F, xs>...>;
+    using f = call<C, typename F::template f<xs>...>;
   };
 
   namespace emp
