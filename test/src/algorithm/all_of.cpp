@@ -9,10 +9,10 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
-  IS_SAME(false_, emp::all_of<seq_0_1_2, identity>);
-  IS_SAME(true_, emp::all_of<seq_1_2_3, identity>);
+  ut::same<false_, emp::all_of<seq_0_1_2, identity>>();
+  ut::same<true_, emp::all_of<seq_1_2_3, identity>>();
 
   test_pack<all_of, identity>()
     .test_binary()

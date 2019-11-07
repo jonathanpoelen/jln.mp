@@ -18,9 +18,9 @@ TEST()
   using l2 = fake_list<int, char, void>;
   using l3 = other_list<int, char, void>;
 
-  IS_SAME(l1, emp::as_list<l1>);
-  IS_SAME(l1, emp::as_list<l2>);
-  IS_SAME(l1, emp::as_list<l3>);
+  ut::same<l1, emp::as_list<l1>>();
+  ut::same<l1, emp::as_list<l2>>();
+  ut::same<l1, emp::as_list<l3>>();
 
   class bad;
 

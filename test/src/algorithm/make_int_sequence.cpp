@@ -10,12 +10,12 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
-  IS_SAME(emp::make_int_sequence<_0>, list<>);
-  IS_SAME(emp::make_int_sequence<_1>, seq_0);
-  IS_SAME(emp::make_int_sequence<_2>, seq_0_1);
-  IS_SAME(emp::make_int_sequence<_3>, seq_0_1_2);
+  ut::same<emp::make_int_sequence<_0>, list<>>();
+  ut::same<emp::make_int_sequence<_1>, seq_0>();
+  ut::same<emp::make_int_sequence<_2>, seq_0_1>();
+  ut::same<emp::make_int_sequence<_3>, seq_0_1_2>();
 
   test_pack<make_int_sequence>()
     .test_unary<>()

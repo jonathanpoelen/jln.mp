@@ -9,9 +9,9 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
-  IS_SAME(_3, eager<seq_0_0_0, size<>>);
+  ut::same<_3, eager<seq_0_0_0, size<>>>();
 }
 
 TEST_SUITE_END()

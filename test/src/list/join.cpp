@@ -8,7 +8,7 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
   class X;
   using a = list<_0, _1, _2>;
@@ -17,8 +17,8 @@ TEST()
   using e = list<>;
   using flat_list = list<_0, _1, _2, _3, _4, X>;
 
-  IS_SAME(flat_list, emp::join<a, b, c>);
-  IS_SAME(e, emp::join<list<>, e, e>);
+  ut::same<flat_list, emp::join<a, b, c>>();
+  ut::same<e, emp::join<list<>, e, e>>();
 
   test_context<join<>, smp::join<>>()
     .test<e>()

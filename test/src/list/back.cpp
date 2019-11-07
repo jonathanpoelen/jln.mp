@@ -8,9 +8,9 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
-  IS_SAME(_2, emp::back<seq_0_1_2>);
+  ut::same<_2, emp::back<seq_0_1_2>>();
 
   test_context<back<>, smp::back<>>()
     .test<_1, _0, _1>()

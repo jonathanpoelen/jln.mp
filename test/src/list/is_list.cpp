@@ -8,10 +8,10 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
-  IS_SAME(_0, emp::is_list<_0>);
-  IS_SAME(_1, emp::is_list<list<>>);
+  ut::same<_0, emp::is_list<_0>>();
+  ut::same<_1, emp::is_list<list<>>>();
 
   test_context<is_list<>, smp::is_list<>>()
     .test<_0, _1>()

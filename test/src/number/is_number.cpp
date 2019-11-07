@@ -11,8 +11,8 @@ TEST()
   class x;
   using n = number<0>;
 
-  IS_SAME(false_, emp::is_number<x>);
-  IS_SAME(true_, emp::is_number<n>);
+  ut::same<false_, emp::is_number<x>>();
+  ut::same<true_, emp::is_number<n>>();
 
   test_pack<is_number>()
     .test_unary()

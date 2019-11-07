@@ -9,30 +9,30 @@
 
 namespace
 {
-inline namespace TU
+namespace ut
 {
   using jln::mp::detail::sfinae;
 
   template<class Mp, class Smp>
   struct test_context
   {
-    IS_SAME(Smp, sfinae<Mp>);
-    IS_SAME(Smp, sfinae<Smp>);
+    static_assert((same<Smp, sfinae<Mp>>(), 1));
+    static_assert((same<Smp, sfinae<Smp>>(), 1));
 
     template<class R, class... xs>
-    test_context& test()
+    static test_context test()
     {
-      IS_INVOCABLE(Smp, xs...);
-      INVOKE_IS_SAME(R, Mp, xs...);
-      INVOKE_IS_SAME(R, Smp, xs...);
-      return *this;
+      invocable<Smp, xs...>();
+      invoke_r<R, Mp, xs...>();
+      invoke_r<R, Smp, xs...>();
+      return {};
     }
 
     template<class... xs>
-    test_context& not_invocable()
+    static test_context not_invocable()
     {
-      IS_NOT_INVOCABLE(Smp, xs...);
-      return *this;
+      ut::not_invocable<Smp, xs...>();
+      return {};
     }
   };
 
@@ -40,24 +40,17 @@ inline namespace TU
   struct test_context<Mp, void>
   {
     template<class R, class... xs>
-    test_context& test()
+    static test_context test()
     {
-      INVOKE_IS_SAME(R, Mp, xs...);
-      return *this;
+      invoke_r<R, Mp, xs...>();
+      return {};
     }
 
     template<class... xs>
-    test_context& is_invocable()
+    static test_context not_invocable()
     {
-      IS_NOT_INVOCABLE(Mp, xs...);
-      return *this;
-    }
-
-    template<class... xs>
-    test_context& not_invocable()
-    {
-      IS_NOT_INVOCABLE(Mp, xs...);
-      return *this;
+      ut::not_invocable<Mp, xs...>();
+      return {};
     }
   };
 
@@ -73,20 +66,24 @@ inline namespace TU
   struct test_pack
   {
     template<class... xs>
-    test_pack& test_unary()
+    static test_pack test_unary()
     {
       static_assert(((void)Tpl<Args..., xs..., unary>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
-      return *this;
+      return {};
     }
 
     template<class... xs>
-    test_pack& test_binary()
+    static test_pack test_binary()
     {
       static_assert(((void)Tpl<Args..., xs..., binary>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
-      return *this;
+      return {};
     }
   };
 }
+
+using ut::test_context;
+using ut::test_pack;
+
 }

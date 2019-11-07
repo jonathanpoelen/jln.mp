@@ -8,13 +8,13 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
-  IS_SAME(seq_0_1_2, emp::iota_c<0, 3>);
-  IS_SAME(seq_1_3_5, emp::iota_c<1, 3, 2>);
+  ut::same<seq_0_1_2, emp::iota_c<0, 3>>();
+  ut::same<seq_1_3_5, emp::iota_c<1, 3, 2>>();
 
-  IS_SAME(seq_0_1_2, emp::iota_v_c<0, 3>);
-  IS_SAME(seq_1_3_5, emp::iota_v_c<1, 3, 2>);
+  ut::same<seq_0_1_2, emp::iota_v_c<0, 3>>();
+  ut::same<seq_1_3_5, emp::iota_v_c<1, 3, 2>>();
 
   test_pack<iota>()
     .test_binary()

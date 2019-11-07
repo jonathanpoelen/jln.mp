@@ -4,7 +4,7 @@
 
 namespace
 {
-inline namespace TU
+namespace ut
 {
   namespace ints
   {

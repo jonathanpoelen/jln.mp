@@ -8,7 +8,7 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
   test_pack<push_back, _2>()
     .test_binary()

@@ -10,7 +10,7 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
   using e = list<>;
   using l_mod_3 = list<
@@ -21,8 +21,8 @@ TEST()
     e
   >;
 
-  IS_SAME(l_mod_3, emp::split_if<seq_0_1_2_3_4_5_6_7_8_9,
-    push_back<_3, mod<not_<>>>>);
+  ut::same<l_mod_3, emp::split_if<seq_0_1_2_3_4_5_6_7_8_9,
+    push_back<_3, mod<not_<>>>>>();
 
   test_pack<split_if>().test_unary();
   test_pack<split_if, identity>().test_binary();

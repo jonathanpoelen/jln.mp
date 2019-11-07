@@ -12,10 +12,10 @@
 #define TEST_I(n) TEST_II(n)
 
 #ifdef __clang__
-  #define TEST_II(n)                                 \
-    JLN_DIAGNOSTIC_PUSH                              \
+  #define TEST_II(n)                                        \
+    JLN_DIAGNOSTIC_PUSH                                     \
     JLN_DIAGNOSTIC_CLANG_IGNORE("-Wunused-member-function") \
-    inline void test_ ## n()                         \
+    inline void test_ ## n()                                \
     JLN_DIAGNOSTIC_POP
 #else
   #define TEST_II(n) inline void test_ ## n()

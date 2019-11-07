@@ -8,7 +8,7 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
   test_context<smp::listify, void>()
     .test<list<>>()

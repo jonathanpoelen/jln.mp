@@ -13,7 +13,7 @@ struct dummy
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
   test_pack<has_type>()
     .test_unary()

@@ -8,7 +8,7 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
   test_context<conditional_c<true>, smp::conditional_c<true>>()
     .test<_1, _1, _2>()

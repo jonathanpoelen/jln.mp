@@ -9,11 +9,11 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
   using rlist_2_1_0 = list<list<_0, _1>, _2>;
 
-  IS_SAME(rlist_2_1_0, emp::fold_left<seq_0_1_2, listify>);
+  ut::same<rlist_2_1_0, emp::fold_left<seq_0_1_2, listify>>();
 
   test_pack<fold_left>().test_binary();
   test_pack<fold_left, listify>().test_unary();

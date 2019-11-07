@@ -9,18 +9,18 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
   using e = list<>;
 
-  IS_SAME(_0, emp::min0<e>);
-  IS_SAME(_1, emp::min<seq_1_2_3>);
-  IS_SAME(_3, emp::max<seq_1_2_3>);
-  IS_SAME(_1, abs<>::f<_1>);
-  IS_SAME(_1, abs<>::f<number<(-1)>>);
-  IS_SAME(_1, emp::pow<seq_1_2_3>);
-  IS_SAME(_0, emp::pow<seq_0_1_2>);
-  IS_SAME(number<8*8*8*8>, emp::pow<seq_2_3_4>);
+  ut::same<_0, emp::min0<e>>();
+  ut::same<_1, emp::min<seq_1_2_3>>();
+  ut::same<_3, emp::max<seq_1_2_3>>();
+  ut::same<_1, abs<>::f<_1>>();
+  ut::same<_1, abs<>::f<number<(-1)>>>();
+  ut::same<_1, emp::pow<seq_1_2_3>>();
+  ut::same<_0, emp::pow<seq_0_1_2>>();
+  ut::same<number<8*8*8*8>, emp::pow<seq_2_3_4>>();
 
   test_pack<min, less<>>().test_unary();
   test_pack<abs, less<>>().test_unary();
@@ -28,7 +28,7 @@ TEST()
 
   auto ctx = [](auto f){
     using g = unpack<decltype(f)>;
-    return test_context<g, sfinae<g>>();
+    return test_context<g, detail::sfinae<g>>();
   };
 
   ctx(min<>())

@@ -9,14 +9,12 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
   test_pack<values>()
     .test_binary()
     .test_unary()
   ;
-
-  val<1> x = val<1l>();
 
   test_context<values<>, smp::values<>>()
     .test<list<>>()

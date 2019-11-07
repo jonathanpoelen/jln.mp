@@ -15,8 +15,8 @@ TEST()
   using b = std::integral_constant<int, 1>;
   using c = std::integral_constant<unsigned long long, ~0ull>;
 
-  IS_SAME(a, emp::as_number<a>);
-  IS_SAME(number<1>, emp::as_number<b>);
+  ut::same<a, emp::as_number<a>>();
+  ut::same<number<1>, emp::as_number<b>>();
 
   test_pack<as_number>()
     .test_unary()

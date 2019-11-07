@@ -9,7 +9,7 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  using namespace TU::ints;
+  using namespace ut::ints;
 
   test_pack<transform, inc<>>()
     .test_binary()
@@ -21,7 +21,7 @@ TEST()
     .test_unary()
     ;
 
-  IS_SAME(seq_1_2_3, emp::transform<seq_0_1_2, inc<>>);
+  ut::same<seq_1_2_3, emp::transform<seq_0_1_2, inc<>>>();
 
   test_context<transform<inc<>>, smp::transform<smp::inc<>>>()
     .test<list<>>()
