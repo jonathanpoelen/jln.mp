@@ -5,7 +5,6 @@
 
 namespace jln::mp
 {
-  // TODO size<identity> = fork<size<>, C> ?
   template<class C = identity>
   struct size
   {

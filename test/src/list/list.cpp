@@ -10,7 +10,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_context<smp::listify, void>()
+  test_context<listify, smp::listify>()
     .test<list<>>()
     .test<seq_0, _0>()
     .test<seq_1_2_3, _1, _2, _3>()

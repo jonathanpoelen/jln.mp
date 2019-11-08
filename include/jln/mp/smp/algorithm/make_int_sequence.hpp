@@ -20,4 +20,9 @@ namespace jln::mp::detail
   {
     using type = smp::make_int_sequence_v<sfinae<C>>;
   };
+
+  template<class C>
+  struct expected_argument<make_int_sequence_v<C>>
+    : number<argument_category::unary_positive>
+  {};
 }

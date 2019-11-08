@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using size = valid_contract<mp::size<subcontract<C>>>;
+  using size = valid_contract<mp::size<assume_number<C>>>;
 }
 
 namespace jln::mp::detail

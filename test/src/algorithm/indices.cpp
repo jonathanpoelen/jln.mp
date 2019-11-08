@@ -21,8 +21,7 @@ TEST()
   ut::invocable<smp::indices<>>();
   ut::invocable<smp::indices<>, _1>();
 
-  // TODO smp::indices
-  test_context<indices<>, void>()
+  test_context<indices<>, smp::indices<>>()
     .test<list<>>()
     .test<seq_0_1_2, _0, _0, _0>()
     ;

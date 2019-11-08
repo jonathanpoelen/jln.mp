@@ -1,6 +1,7 @@
 #pragma once
 
 #include "identity.hpp"
+#include "../number/number.hpp"
 
 // TODO include smp/* ?
 
