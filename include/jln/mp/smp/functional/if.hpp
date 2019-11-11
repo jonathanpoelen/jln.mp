@@ -4,23 +4,21 @@
 #include "../utility/always.hpp"
 #include "../../functional/fork_front.hpp"
 #include "../../functional/if.hpp"
+#include "../../functional/fork.hpp"
+#include "../../number/as_number.hpp"
 
 namespace jln::mp::smp
 {
-  // TODO optimize if_<size_of<x>, size_of<y>, size_of<z>>
   template<class Pred, class TC, class FC = always<false_>>
   using if_ = valid_contract<
     mp::fork_front<
       mp::try_invoke<
-        subcontract<Pred>,
-        mp::try_invoke<
-          mp::if_<
-            mp::identity,
-            mp::always<subcontract<TC>>,
-            mp::always<subcontract<FC>>
-          >,
+        // TODO output_type<Pred> = number -> if_<subcontract<Pred>, ....>
+        mp::fork<subcontract<Pred>, mp::as_number<>>,
+        mp::if_<
           mp::identity,
-          mp::always<violation>
+          mp::always<subcontract<TC>>,
+          mp::always<subcontract<FC>>
         >,
         mp::always<violation>
       >

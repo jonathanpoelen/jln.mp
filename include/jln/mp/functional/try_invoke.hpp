@@ -129,6 +129,16 @@ namespace jln::mp
     template<class L, class F, class TC = mp::identity, class FC = mp::violation>
     using try_invoke = eager<L, try_invoke<F, TC, FC>>;
   }
+
+  template<class F>
+  struct contract_barrier
+  {
+    template<class... xs>
+    using f = call<F, xs...>;
+  };
+
+  template<class F>
+  using subcontract_barrier = contract_barrier<subcontract<F>>;
 }
 
 namespace jln::mp::detail
@@ -181,6 +191,7 @@ namespace jln::mp::detail
 
       unary_strictly_positive = unary | strictly_positive,
       unary_positive = unary | positive,
+      unary_number = unary | number,
     };
   };
 
@@ -217,5 +228,17 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, try_invoke<F, TC, FC>>
   {
     using type = valid_contract<try_invoke<F, TC, FC>>;
+  };
+
+  template<template<class> class sfinae, class F>
+  struct _sfinae<sfinae, contract_barrier<F>>
+  {
+    using type = valid_contract<F>;
+  };
+
+  template<template<class> class sfinae, class Pred, class C>
+  struct _sfinae<sfinae, contract_barrier<contract<Pred, C>>>
+  {
+    using type = contract<Pred, C>;
   };
 }

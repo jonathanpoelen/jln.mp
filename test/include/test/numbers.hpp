@@ -1058,6 +1058,7 @@ namespace ut
 
     using seq_0_0_0 = jln::mp::emp::numbers<0, 0, 0>;
     using seq_1_1_1 = jln::mp::emp::numbers<1, 1, 1>;
+    using seq_2_2_2 = jln::mp::emp::numbers<2, 2, 2>;
     using seq_0_1_2 = jln::mp::emp::numbers<0, 1, 2>;
     using seq_1_2_3 = jln::mp::emp::numbers<1, 2, 3>;
     using seq_2_3_4 = jln::mp::emp::numbers<2, 3, 4>;

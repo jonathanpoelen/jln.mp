@@ -16,7 +16,7 @@ namespace jln::mp
     constexpr unsigned _rotate_size(int_ n, unsigned size)
     {
       return n >= size
-        ? (size == 0 ? 0 : n % size)
+        ? (size ? n % size : 0)
         : (n < 0 ? (size && n % size ? size + n % size : 0) : n);
     }
   }

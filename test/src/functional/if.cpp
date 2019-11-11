@@ -1,32 +1,44 @@
 #include "test.hpp"
+#include "test/numbers.hpp"
 
-#include "jln/mp/functional/if.hpp"
+#include "jln/mp/smp/functional/if.hpp"
+#include "jln/mp/smp/list/front.hpp"
+#include "jln/mp/number/number.hpp"
 
 TEST_SUITE_BEGIN()
 
 TEST()
 {
   using namespace jln::mp;
-
-  using yes = always<true_>;
-  using no = always<false_>;
+  using namespace ut::ints;
 
   test_pack<if_>()
-    .test_binary<yes>()
-    .test_binary<yes, yes>()
-    .test_binary<no, no>()
-    .test_unary<yes>()
-    .test_unary<yes, yes>()
-    .test_unary<no, no>()
+    .test_binary<_1>()
+    .test_binary<_1, _1>()
+    .test_binary<_0, _0>()
+    .test_unary<_1>()
+    .test_unary<_1, _1>()
+    .test_unary<_0, _0>()
   ;
 
   test_context<
-    if_<identity, yes>,
-    smp::if_<smp::identity, smp::always<true_>, smp::always<false_>>
+    if_<identity, always<_1>>,
+    smp::if_<smp::identity, smp::always<_1>>
   >()
-    .test<true_, number<3>>()
-    .test<false_, number<0>>()
-    .not_invocable<yes>()
+    .test<_1, _3>()
+    .test<_0, _0>()
+    .not_invocable<>()
+    .not_invocable<bad_number>()
+    ;
+
+  test_context<
+    if_<front<>, always<_1>>,
+    smp::if_<smp::front<>, smp::always<_1>>
+  >()
+    .test<_1, _3>()
+    .test<_0, _0>()
+    .not_invocable<>()
+    .not_invocable<bad_number>()
     ;
 }
 

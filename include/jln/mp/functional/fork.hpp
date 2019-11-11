@@ -37,6 +37,17 @@ namespace jln::mp
     >;
   };
 
+  template <class F0, class F1, class F2, class C>
+  struct fork<F0, F1, F2, C>
+  {
+    template<class... xs>
+    using f = typename C::template f<
+      call<F0, xs...>,
+      call<F1, xs...>,
+      call<F2, xs...>
+    >;
+  };
+
   // TODO emp
 }
 

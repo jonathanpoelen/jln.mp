@@ -6,6 +6,7 @@
 #include "jln/mp/functional/sfinaefwd.hpp"
 #include "jln/mp/utility/always.hpp"
 #include "jln/mp/smp/utility/unpack.hpp"
+#include "jln/mp/smp/utility/conditional.hpp"
 
 namespace
 {
@@ -13,10 +14,25 @@ namespace ut
 {
   using jln::mp::detail::sfinae;
 
-  template<class Mp, class Smp>
+  namespace detail
+  {
+    template<bool, class SfinaeMp, class Smp>
+    struct same_smp : jln::mp::true_
+    {
+      static_assert((same<Smp, SfinaeMp>(), 1));
+    };
+
+    template<class SfinaeMp, class Smp>
+    struct same_smp<false, SfinaeMp, Smp> : jln::mp::true_
+    {
+      static_assert(!std::is_same_v<Smp, SfinaeMp>());
+    };
+  }
+
+  template<class Mp, class Smp, bool VerifySfinaeEq = true>
   struct test_context
   {
-    static_assert((same<Smp, sfinae<Mp>>(), 1));
+    static_assert(detail::same_smp<VerifySfinaeEq, sfinae<Mp>, Smp>::value);
     static_assert((same<Smp, sfinae<Smp>>(), 1));
 
     template<class R, class... xs>
@@ -25,6 +41,9 @@ namespace ut
       invocable<Smp, xs...>();
       invoke_r<R, Mp, xs...>();
       invoke_r<R, Smp, xs...>();
+      if constexpr (!VerifySfinaeEq) {
+        invoke_r<R, sfinae<Mp>, xs...>();
+      }
       return {};
     }
 
@@ -32,12 +51,15 @@ namespace ut
     static test_context not_invocable()
     {
       ut::not_invocable<Smp, xs...>();
+      if constexpr (!VerifySfinaeEq) {
+        ut::not_invocable<sfinae<Mp>, xs...>();
+      }
       return {};
     }
   };
 
-  template<class Mp>
-  struct test_context<Mp, void>
+  template<class Mp, bool _>
+  struct test_context<Mp, void, _>
   {
     template<class R, class... xs>
     static test_context test()
@@ -57,9 +79,16 @@ namespace ut
 
   using unary = jln::mp::identity;
   using jln::mp::listify;
+
   struct binary
   {
     template<class a, class b> using f = void;
+  };
+
+  struct variadic
+  {
+    template<class... xs>
+    using f = jln::mp::list<typename jln::mp::if_<xs, void, void>::type...>;
   };
 
   template<template<class...> class Tpl, class... Args>
@@ -70,6 +99,7 @@ namespace ut
     {
       static_assert(((void)Tpl<Args..., xs..., unary>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
+      static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
       return {};
     }
 
@@ -78,6 +108,7 @@ namespace ut
     {
       static_assert(((void)Tpl<Args..., xs..., binary>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
+      static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
       return {};
     }
   };

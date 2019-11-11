@@ -1,6 +1,8 @@
 #pragma once
 
-#define JLN_MP_ENABLE_DEBUG 0
+#ifndef JLN_MP_ENABLE_DEBUG
+#  define JLN_MP_ENABLE_DEBUG 0
+#endif
 
 #if JLN_MP_ENABLE_DEBUG
 #  define JLN_MP_DEBUG_A(...) , __VA_ARGS__

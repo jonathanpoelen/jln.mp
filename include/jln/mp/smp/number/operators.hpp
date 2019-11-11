@@ -323,4 +323,10 @@ namespace jln::mp::detail
   {
     using type = smp::greater_equal<sfinae<C>>;
   };
+
+
+  template<class C>
+  struct expected_argument<not_<C>>
+    : number<argument_category::unary_number>
+  {};
 }

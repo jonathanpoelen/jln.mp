@@ -10,6 +10,7 @@ namespace jln::mp
     struct _is_list;
   }
 
+  // TODO is_instance_of<list>
   template<class C = identity>
   struct is_list
   {
