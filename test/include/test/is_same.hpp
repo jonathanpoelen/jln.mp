@@ -10,11 +10,25 @@ namespace ut
   struct Result
   {};
 
+  template<class T>
+  struct Differ
+  {
+    Differ(Result<T>) = delete;
+    template<class U> constexpr Differ(Result<U>) {}
+  };
+
   template<class T, class U>
   constexpr void same()
   {
     Result<T> should_be_same = Result<U>();
     (void)should_be_same;
+  }
+
+  template<class T, class U>
+  constexpr void not_same()
+  {
+    Differ<T> should_not_be_same = Result<U>();
+    (void)should_not_be_same;
   }
 
   template<class R, class C, class... xs>

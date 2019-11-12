@@ -20,8 +20,8 @@ namespace jln::mp
 
   namespace detail
   {
-    template<class C>
-    struct _subcontract;
+    template<class C> struct _subcontract;
+    template<class x> struct _optimize_try_invoke;
 
     template<class F> struct _assume_number { using type = F; };
     template<class F> struct _assume_positive { using type = F; };
@@ -139,6 +139,10 @@ namespace jln::mp
 
   template<class F>
   using subcontract_barrier = contract_barrier<subcontract<F>>;
+
+  template<class F, class TC = identity, class FC = violation>
+  using try_subcontract = typename detail::_optimize_try_invoke<
+    try_invoke<subcontract<F>, TC, FC>>::type;
 }
 
 namespace jln::mp::detail
@@ -216,6 +220,19 @@ namespace jln::mp::detail
       try_invoke<F, identity, violation>
     >;
   };
+
+
+  template<class x>
+  struct _optimize_try_invoke
+  {
+    using type = x;
+  };
+
+  template<class F, class TC, class FC>
+  struct _optimize_try_invoke<
+    try_invoke<try_invoke<F, TC, FC>, identity, FC>>
+  : _optimize_try_invoke<try_invoke<F, TC, FC>>
+  {};
 
 
   template<template<class> class sfinae, class Pred, class C>

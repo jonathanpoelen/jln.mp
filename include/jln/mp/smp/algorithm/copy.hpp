@@ -1,21 +1,17 @@
 #pragma once
 
-#include "../list/list.hpp"
-#include "../../functional/monadic.hpp"
-#include "../../algorithm/transform.hpp"
+#include "remove.hpp"
+#include "../functional/fork.hpp"
+#include "../number/operators.hpp"
+#include "../../algorithm/copy.hpp"
+
 
 namespace jln::mp::smp
 {
-  template<class F, class C = listify>
-  using transform = valid_contract<mp::transform<
-    subcontract<F>, mp::monadic_xs<subcontract<C>>>>;
-}
+  template<class Pred, class C = listify>
+  using copy_if = remove_if<try_invoke<
+    mp::fork<subcontract<Pred>, mp::not_<>>>, C>;
 
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, class F, class C>
-  struct _sfinae<sfinae, transform<F, C>>
-  {
-    using type = smp::transform<sfinae<F>, sfinae<C>>;
-  };
+  template<class x, class C = listify>
+  using copy = valid_contract<mp::copy<x, subcontract<C>>>;
 }

@@ -25,7 +25,7 @@ namespace ut
     template<class SfinaeMp, class Smp>
     struct same_smp<false, SfinaeMp, Smp> : jln::mp::true_
     {
-      static_assert(!std::is_same_v<Smp, SfinaeMp>());
+      static_assert((not_same<Smp, SfinaeMp>(), 1));
     };
   }
 
@@ -97,6 +97,7 @@ namespace ut
     template<class... xs>
     static test_pack test_unary()
     {
+      static_assert(((void)Tpl<Args..., xs..., jln::mp::na>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., unary>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
@@ -106,7 +107,17 @@ namespace ut
     template<class... xs>
     static test_pack test_binary()
     {
+      static_assert(((void)Tpl<Args..., xs..., jln::mp::na>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., binary>{}, 1));
+      static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
+      static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
+      return {};
+    }
+
+    template<class... xs>
+    static test_pack test_variadic()
+    {
+      static_assert(((void)Tpl<Args..., xs..., jln::mp::na>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
       return {};

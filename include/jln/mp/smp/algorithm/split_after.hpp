@@ -1,10 +1,7 @@
 #pragma once
 
-#include "../list/list.hpp"
-#include "../algorithm/transform.hpp"
-#include "../utility/always.hpp"
-#include "../../functional/monadic.hpp"
-#include "../../algorithm/split_after_if.hpp"
+#include "split.hpp"
+#include "../../algorithm/split_after.hpp"
 
 namespace jln::mp::smp
 {
@@ -14,6 +11,9 @@ namespace jln::mp::smp
       try_invoke<Pred, same_as<na>, mp::always<false_>>,
       or_<not_<>>>,
     mp::split_after_if<subcontract<Pred>, subcontract<C>>>;
+
+  template<class x, class C = listify>
+  using split_after = valid_contract<mp::split_after<x, subcontract<C>>>;
 }
 
 namespace jln::mp::detail
@@ -24,3 +24,4 @@ namespace jln::mp::detail
     using type = smp::split_after_if<sfinae<F>, sfinae<C>>;
   };
 }
+

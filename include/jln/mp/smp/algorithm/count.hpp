@@ -1,21 +1,20 @@
 #pragma once
 
-#include "../list/list.hpp"
-#include "../../functional/monadic.hpp"
-#include "../../algorithm/transform.hpp"
+#include "transform.hpp"
+#include "../list/join.hpp"
+#include "../functional/fork.hpp"
+#include "../number/as_bool.hpp"
+#include "../utility/same_as.hpp"
+#include "../../algorithm/count.hpp"
+
 
 namespace jln::mp::smp
 {
-  template<class F, class C = listify>
-  using transform = valid_contract<mp::transform<
-    subcontract<F>, mp::monadic_xs<subcontract<C>>>>;
-}
+  template<class Pred, class C = identity>
+  using count_if = valid_contract<mp::transform<
+    try_subcontract<Pred, as_bool<>>,
+    mp::monadic_xs<mp::add0<subcontract<C>>>>>;
 
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, class F, class C>
-  struct _sfinae<sfinae, transform<F, C>>
-  {
-    using type = smp::transform<sfinae<F>, sfinae<C>>;
-  };
+  template<class x, class C = identity>
+  using count = valid_contract<mp::count<x, subcontract<C>>>;
 }

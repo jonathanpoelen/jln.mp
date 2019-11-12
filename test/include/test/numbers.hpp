@@ -1047,8 +1047,13 @@ namespace ut
     using seq_1 = jln::mp::emp::numbers<1>;
     using seq_2 = jln::mp::emp::numbers<2>;
     using seq_3 = jln::mp::emp::numbers<3>;
+    using seq_4 = jln::mp::emp::numbers<4>;
+    using seq_5 = jln::mp::emp::numbers<5>;
 
     using seq_0_1 = jln::mp::emp::numbers<0, 1>;
+    using seq_0_2 = jln::mp::emp::numbers<0, 2>;
+    using seq_0_3 = jln::mp::emp::numbers<0, 3>;
+
     using seq_1_2 = jln::mp::emp::numbers<1, 2>;
     using seq_2_3 = jln::mp::emp::numbers<2, 3>;
 
@@ -1071,10 +1076,17 @@ namespace ut
 
     using seq_0_1_2_3 = jln::mp::emp::numbers<0, 1, 2, 3>;
 
+    using seq_0_1_0_2_0_3_0
+      = jln::mp::emp::numbers<0, 1, 0, 2, 0, 3, 0>;
+
     using seq_0_1_2_3_4_5_6_7_8_9
       = jln::mp::emp::numbers<0, 1, 2, 3, 4, 5, 6, 7, 8, 9>;
     using seq_1_2_3_4_5_6_7_8_9_10
       = jln::mp::emp::numbers<1, 2, 3, 4, 5, 6, 7, 8, 9, 10>;
+
+    using seq_1_3_5_7_9 = jln::mp::emp::numbers<1, 3, 5, 7, 9>;
+    using seq_2_4_6_8_10 = jln::mp::emp::numbers<2, 4, 6, 8, 10>;
+    using seq_0_2_4_6_8 = jln::mp::emp::numbers<0, 2, 4, 6, 8>;
   }
 }
 }
