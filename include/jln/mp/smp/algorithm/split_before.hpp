@@ -6,10 +6,7 @@
 namespace jln::mp::smp
 {
   template<class Pred, class C = listify>
-  using split_before_if = contract<
-    mp::transform<
-      try_invoke<Pred, same_as<na>, mp::always<false_>>,
-      or_<not_<>>>,
+  using split_before_if = try_contract<
     mp::split_before_if<subcontract<Pred>, subcontract<C>>>;
 
   template<class x, class C = listify>
@@ -24,4 +21,3 @@ namespace jln::mp::detail
     using type = smp::split_before_if<sfinae<F>, sfinae<C>>;
   };
 }
-

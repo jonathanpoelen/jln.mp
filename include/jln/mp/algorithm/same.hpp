@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../functional/identity.hpp"
+#include "../utility/eager.hpp"
+#include "../number/number.hpp"
 #include "../list/list.hpp"
 
 namespace jln::mp

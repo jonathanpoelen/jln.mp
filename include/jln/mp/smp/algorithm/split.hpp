@@ -2,19 +2,12 @@
 
 #include "../list/list.hpp"
 #include "../utility/same_as.hpp"
-#include "../../number/operators.hpp"
-#include "../../utility/always.hpp"
-#include "../../algorithm/transform.hpp"
 #include "../../algorithm/split.hpp"
 
 namespace jln::mp::smp
 {
   template<class F, class C = listify>
-  using split_if = contract<
-    // TODO transform<Pres> + zip
-    mp::transform<
-      try_invoke<F, same_as<na>, mp::always<false_>>,
-      or_<not_<>>>,
+  using split_if = try_contract<
     mp::split_if<subcontract<F>, subcontract<C>>>;
 
   template<class x, class C = listify>

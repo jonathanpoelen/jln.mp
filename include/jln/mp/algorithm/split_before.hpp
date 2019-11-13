@@ -4,27 +4,12 @@
 
 namespace jln::mp
 {
-  namespace detail
-  {
-    template <class x, class state>
-    struct split_before_push;
-  }
-
   template<class Pred, class C = listify>
   struct split_before_if
   {
     template <class... xs>
-    using f = typename conditional_c<!sizeof...(xs)>
-      ::template f<
-        always<list<>>,
-        fold_right<
-          if_<
-            at0<Pred>,
-            cfl<detail::split_before_push>,
-            cfl<detail::push_front_sublist>>,
-          push_front<unpack<C>, cfe<call>>
-        >
-      >::template f<list<list<>>, xs...>;
+    using f = typename detail::_split<sizeof...(xs) != 0>
+      ::template f<detail::split_before, C, Pred, xs...>;
   };
 
   template<class x, class C = listify>
@@ -38,13 +23,4 @@ namespace jln::mp
     template<class L, class x, class C = mp::listify>
     using split_before = eager<L, mp::split_before<x, C>>;
   }
-}
-
-namespace jln::mp::detail
-{
-  template<class x, class... Ls, class... xs>
-  struct split_before_push<x, list<list<xs...>, Ls...>>
-  {
-    using type = list<list<>, list<x, xs...>, Ls...>;
-  };
 }
