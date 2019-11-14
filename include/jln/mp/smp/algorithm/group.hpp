@@ -2,14 +2,13 @@
 
 #include "same.hpp"
 #include "../list/list.hpp"
-#include "../../functional/monadic.hpp"
 #include "../../algorithm/group.hpp"
 
 namespace jln::mp::smp
 {
   template<class Cmp, class C = listify>
   using group_if = try_contract<mp::group_if<
-    subcontract<Cmp>, subcontract<C>>>;
+    try_subcontract<Cmp>, subcontract<C>>>;
 
   template<class C = listify>
   using group = valid_contract<mp::group<subcontract<C>>>;

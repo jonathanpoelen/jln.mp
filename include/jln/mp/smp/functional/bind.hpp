@@ -6,12 +6,10 @@
 namespace jln::mp::smp
 {
   template<template<class...> class F, class C = identity>
-  using cfe = valid_contract<
-    mp::try_invoke<mp::cfe<F, subcontract<C>>>>;
+  using cfe = try_contract<mp::cfe<F, subcontract<C>>>;
 
   template<template<class...> class F, class C = identity>
-  using cfl = valid_contract<
-    mp::try_invoke<mp::cfe<F, subcontract<C>>>>;
+  using cfl = try_contract<mp::cfl<F, subcontract<C>>>;
 }
 
 namespace jln::mp::detail
