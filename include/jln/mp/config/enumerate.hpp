@@ -38,6 +38,8 @@ namespace jln::mp::detail
 
 #define JLN_MP_NIL
 #define JLN_MP_COMMA ,
+#define JLN_MP_PAREN_OPEN (
+#define JLN_MP_PAREN_CLOSE )
 
 #define JLN_MP_GEN_XS_16_64_256_1024(func)                       \
   func(16,   JLN_MP_XS_16,   JLN_MP_RXS_16,   JLN_MP_REPEAT_16)  \

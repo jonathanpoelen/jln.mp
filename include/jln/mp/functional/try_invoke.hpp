@@ -11,6 +11,7 @@
 #include "../utility/always.hpp"
 #include "../utility/same_as.hpp"
 #include "../utility/conditional.hpp"
+#include "../number/operators.hpp"
 
 
 namespace jln::mp
@@ -87,16 +88,18 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename conditional<call<Pred, xs...>>
-      ::template f<fork<C, TC>, FC>
+      ::template f<fork<C, if_<same_as<na>, FC, TC>>, FC>
       ::template f<xs...>;
   };
 
-  template<class Pred, class C>
-  struct try_invoke<contract<Pred, C>, identity, violation>
+  template<class Pred, class C, class TFC>
+  struct try_invoke<contract<Pred, C>, always<true_, TFC>, always<false_, TFC>>
   {
     template<class... xs>
     using f = typename conditional<call<Pred, xs...>>
-      ::template f<C, violation>
+      ::template f<
+        fork<C, same_as<na, not_<TFC>>>,
+        always<false_, TFC>>
       ::template f<xs...>;
   };
 
@@ -111,14 +114,15 @@ namespace jln::mp
       ))>;
   };
 
-  template<class F>
-  struct try_invoke<F, identity, violation>
+  template<class F, class TFC>
+  struct try_invoke<F, always<true_, TFC>, always<false_, TFC>>
   {
     template<class... xs>
-    using f = decltype(detail::_try_invoke(
-      static_cast<F*>(nullptr),
-      static_cast<xs*>(nullptr)...
-    ));
+    using f = call<TFC, number<!std::is_same<na,
+      decltype(detail::_try_invoke(
+        static_cast<F*>(nullptr),
+        static_cast<xs*>(nullptr)...
+      ))>::value>>;
   };
 
   template<class F, class TC = identity, class FC = violation>
@@ -233,6 +237,14 @@ namespace jln::mp::detail
     try_invoke<try_invoke<F, TC, FC>, identity, FC>>
   : _optimize_try_invoke<try_invoke<F, TC, FC>>
   {};
+
+  template<class F, class TC, class FC>
+  struct _optimize_try_invoke<
+    try_invoke<try_invoke<F>, TC, FC>>
+  : _optimize_try_invoke<try_invoke<F, TC, FC>>
+  {};
+
+  // TODO _optimize_try_invoke<...contract...>
 
 
   template<template<class> class sfinae, class Pred, class C>

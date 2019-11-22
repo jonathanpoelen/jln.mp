@@ -6,7 +6,7 @@
 namespace jln::mp
 {
   template<class F, class C = identity>
-  using is_invocable = try_invoke<F, same_as<na, not_<C>>, always<false_, C>>;
+  using is_invocable = try_invoke<F, always<true_, C>, always<false_, C>>;
 
   namespace emp
   {
