@@ -2,7 +2,6 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/algorithm/insert.hpp"
-#include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
 

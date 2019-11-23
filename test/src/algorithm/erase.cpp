@@ -2,7 +2,6 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/algorithm/erase.hpp"
-#include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
 
