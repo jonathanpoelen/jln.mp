@@ -12,6 +12,9 @@ namespace jln::mp
   {
     template<unsigned>
     struct _drop;
+
+    template<unsigned i, unsigned n>
+    using validate_index = number<(0 * std::size_t{int_(n) - int_{i}}) + i>;
   }
 
   template<class N, class C = listify>
@@ -19,11 +22,11 @@ namespace jln::mp
   {
     template<class... xs>
     // TODO detail::dcalli
-    using f = typename conditional_c<(sizeof...(xs) < 1000000)>
-      ::template f<
-        detail::_drop<detail::n_8_or_less_16_64_256(N::value)>,
-        void>
-      ::template f<N::value, C, xs...>;
+    using f = typename detail::_drop<
+      detail::n_8_or_less_16_64_256(
+        detail::validate_index<N::value, sizeof...(xs)>::value
+      )
+    >::template f<N::value, C, xs...>;
   };
 
   template<int_ n, class C = listify>

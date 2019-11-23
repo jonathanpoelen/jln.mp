@@ -7,9 +7,7 @@
 namespace jln::mp::smp
 {
   template<class N, class C = listify>
-  using take = contract<
-    mp::size<mp::greater_equal_than<N>>,
-    mp::take<N, subcontract<C>>>;
+  using take = try_contract<mp::take<N, subcontract<C>>>;
 
   template<int_ n, class C = listify>
   using take_c = take<number<n>, C>;
