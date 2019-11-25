@@ -9,30 +9,30 @@
 
 namespace jln::mp
 {
-  template<class i, class count = number<1>, class C = listify>
+  template<class start, class size = number<1>, class C = listify>
   struct erase
   {
     template<class... xs>
     using f = call<
       join<C>,
-      typename take<i>::template f<xs...>,
+      typename take<start>::template f<xs...>,
       call<drop_c<std::min<std::size_t>(
         sizeof...(xs),
-        detail::validate_index<i::value, sizeof...(xs)>::value
-        + std::size_t{count::value}
+        detail::validate_index<start::value, sizeof...(xs)>::value
+        + std::size_t{size::value}
       )>, xs...>
     >;
   };
 
-  template<int_ i, int_ count = 1, class C = listify>
-  using erase_c = erase<number<i>, number<count>, C>;
+  template<int_ start, int_ size = 1, class C = listify>
+  using erase_c = erase<number<start>, number<size>, C>;
 
   namespace emp
   {
-    template<class L, class i, class count = mp::number<1>, class C = mp::listify>
-    using erase = eager<L, mp::erase<i, count, C>>;
+    template<class L, class start, class size = mp::number<1>, class C = mp::listify>
+    using erase = eager<L, mp::erase<start, size, C>>;
 
-    template<class L, int_ i, int_ count = 1, class C = mp::listify>
-    using erase_c = erase<L, number<i>, number<count>, C>;
+    template<class L, int_ start, int_ size = 1, class C = mp::listify>
+    using erase_c = erase<L, number<start>, number<size>, C>;
   }
 }

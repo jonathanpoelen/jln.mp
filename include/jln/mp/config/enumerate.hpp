@@ -13,6 +13,16 @@ namespace jln::mp::detail
     ;
   }
 
+  constexpr unsigned n_8_or_less_16_64(unsigned n)
+  {
+    return
+      n <= 8 ? n
+    : n < 16 ? 8
+    : n < 64 ? 16
+    : 64
+    ;
+  }
+
   constexpr unsigned n_4_or_less_8_16_64_256(unsigned n)
   {
     return
@@ -83,6 +93,14 @@ namespace jln::mp::detail
 
 #define JLN_MP_GEN_XS_1_TO_8(func)                    \
   func(1, JLN_MP_XS_1, JLN_MP_RXS_1, JLN_MP_REPEAT_1) \
+  func(2, JLN_MP_XS_2, JLN_MP_RXS_2, JLN_MP_REPEAT_2) \
+  func(3, JLN_MP_XS_3, JLN_MP_RXS_3, JLN_MP_REPEAT_3) \
+  func(4, JLN_MP_XS_4, JLN_MP_RXS_4, JLN_MP_REPEAT_4) \
+  func(5, JLN_MP_XS_5, JLN_MP_RXS_5, JLN_MP_REPEAT_5) \
+  func(6, JLN_MP_XS_6, JLN_MP_RXS_6, JLN_MP_REPEAT_6) \
+  func(7, JLN_MP_XS_7, JLN_MP_RXS_7, JLN_MP_REPEAT_7)
+
+#define JLN_MP_GEN_XS_2_TO_8(func)                    \
   func(2, JLN_MP_XS_2, JLN_MP_RXS_2, JLN_MP_REPEAT_2) \
   func(3, JLN_MP_XS_3, JLN_MP_RXS_3, JLN_MP_REPEAT_3) \
   func(4, JLN_MP_XS_4, JLN_MP_RXS_4, JLN_MP_REPEAT_4) \

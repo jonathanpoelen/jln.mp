@@ -5,18 +5,18 @@
 
 namespace jln::mp::smp
 {
-  template<class i, class count = number<1>, class C = listify>
-  using erase = try_contract<mp::erase<i, count, subcontract<C>>>;
+  template<class start, class size = number<1>, class C = listify>
+  using erase = try_contract<mp::erase<start, size, subcontract<C>>>;
 
-  template<int_ i, int_ count = 1, class C = listify>
-  using erase_c = erase<number<i>, number<count>, C>;
+  template<int_ start, int_ size = 1, class C = listify>
+  using erase_c = erase<number<start>, number<size>, C>;
 }
 
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class i, class count, class C>
-  struct _sfinae<sfinae, erase<i, count, C>>
+  template<template<class> class sfinae, class start, class size, class C>
+  struct _sfinae<sfinae, erase<start, size, C>>
   {
-    using type = smp::erase<i, count, sfinae<C>>;
+    using type = smp::erase<start, size, sfinae<C>>;
   };
 }

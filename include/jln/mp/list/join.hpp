@@ -1,8 +1,11 @@
 #pragma once
 
 #include "list.hpp"
+#include "../functional/call.hpp"
 #include "../error.hpp"
 #include "../config/debug.hpp"
+
+#include <cstddef>
 
 namespace jln::mp
 {
@@ -16,7 +19,7 @@ namespace jln::mp
   struct join
   {
     template<class... seqs>
-    using f = typename detail::_join_select<sizeof...(seqs)>::template f<C::template f, seqs...>::type;
+    using f = typename detail::_join_select<sizeof...(seqs)>::template f<C, seqs...>::type;
   };
 
   namespace emp
@@ -38,15 +41,15 @@ namespace jln::mp::detail
   template<JLN_MP_DEBUG(class error)>                       \
   struct _join_select<n JLN_MP_DEBUG_A(error)>              \
   {                                                         \
-    template<template<class...> class F,                    \
+    template<class F,                    \
       mp_xs(class, = list<>, JLN_MP_COMMA)>                 \
     struct f;                                               \
                                                             \
-    template<template<class...> class F,                    \
+    template<class F,                    \
       mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>            \
     struct f<F, mp_xs(list<, ...>, JLN_MP_COMMA)>           \
     {                                                       \
-      using type = F<mp_xs(JLN_MP_NIL, ..., JLN_MP_COMMA)>; \
+      using type = typename F::template f<mp_xs(JLN_MP_NIL, ..., JLN_MP_COMMA)>; \
     };                                                      \
   };
 
@@ -57,12 +60,12 @@ namespace jln::mp::detail
   template<JLN_MP_DEBUG(class error)>
   struct _join_select<1024 JLN_MP_DEBUG_A(error)>
   {
-    template<template<class...> class F,
+    template<class F,
       JLN_MP_XS_1024(class, = list<>, JLN_MP_COMMA),
       class... tail>
     struct f;
 
-    template<template<class...> class F,
+    template<class F,
       JLN_MP_XS_1024(class..., JLN_MP_NIL, JLN_MP_COMMA),
       class... tail>
     struct f<F, JLN_MP_XS_1024(list<, ...>, JLN_MP_COMMA), tail...>

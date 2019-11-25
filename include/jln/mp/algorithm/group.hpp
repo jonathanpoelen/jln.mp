@@ -74,7 +74,6 @@ namespace jln::mp::detail
       list<list<>>,
       list<number<bools::value ? split_keep : split_before>, xs>...
     >;
-
   };
 
   template<class C, class Cmp, class TC, class FC, class x, class... xs, class... ys>

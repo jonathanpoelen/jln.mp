@@ -78,7 +78,7 @@ namespace jln::mp::detail
   {
     template<int_ policy, class C, class Pred, class... xs>
     using f = call<
-      // TODO unpack<C> -> identity
+      // TODO unpack<listify> -> identity
       fold_right<cfl<split_state>, unpack<C>>,
       list<list<>>,
       list<number<Pred::template f<xs>::value

@@ -1,15 +1,23 @@
 #pragma once
 
-#include "../list/list.hpp"
-#include "../list/join.hpp"
-#include "../functional/call.hpp"
+#include "../list/drop.hpp"
+#include "../list/take.hpp"
+#include "../functional/fork.hpp"
 
 namespace jln::mp
 {
-  template<class C = listify>
-  struct split_at
+  template<class i, class C = listify>
+  using split_at = fork<take<i>, drop<i>, C>;
+
+  template<int_ i, class C = listify>
+  using split_at_c = split_at<number<i>, C>;
+
+  namespace emp
   {
-    template<class... xs>
-    using f = mp::call<mp::join<C>, xs...>;
-  };
+    template<class L, class i, class C = mp::listify>
+    using split_at = eager<L, mp::split_at<i, C>>;
+
+    template<class L, int_ i, class C = mp::listify>
+    using split_at_c = eager<L, mp::split_at_c<i, C>>;
+  }
 }

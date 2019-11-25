@@ -37,10 +37,27 @@ namespace jln::mp
   using dispatch = typename detail::_memoizer<C,
     typename detail::_memoizer<F, xs>::type...
   >::type;
+
+  template<class F, class C, class... xs>
+  using indirect_call = typename detail::_memoizer<
+    typename detail::_memoizer<F, xs...>::type,
+    C, xs...
+  >::type;
 #else
   template<class C, class... xs>
   using call = typename detail::dcall<(sizeof...(xs) < 1000000)>
     ::template f<C, xs...>;
+
+  namespace detail
+  {
+    template<template<class...> class f, class C, class F, class... xs>
+    using _indirect_call = f<f<F, xs...>, C, xs...>;
+  }
+
+  template<class F, class C, class... xs>
+  using indirect_call = detail::_indirect_call<
+    detail::dcall<(sizeof...(xs) < 1000000)>::template f,
+    C, F, xs...>;
 
   namespace detail
   {

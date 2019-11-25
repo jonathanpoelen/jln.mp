@@ -1,16 +1,13 @@
 #pragma once
 
-#include "../list/join.hpp"
-#include "../list/take.hpp"
-#include "../list/drop.hpp"
-#include "../functional/fork.hpp"
+#include "splice.hpp"
 #include "../../algorithm/insert.hpp"
 
 namespace jln::mp::smp
 {
-  template<class i, class seq, class C = listify>
-  using insert = try_contract<mp::insert<i, seq, subcontract<C>>>;
+  template<class i, class x, class C = listify>
+  using insert = splice<i, list<x>, C>;
 
-  template<int_ i, class seq, class C = listify>
-  using insert_c = insert<number<i>, seq, C>;
+  template<int_ i, class x, class C = listify>
+  using insert_c = splice_c<i, list<x>, C>;
 }
