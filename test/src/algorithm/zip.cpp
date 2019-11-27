@@ -1,9 +1,13 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/algorithm/transpose.hpp"
+#include "jln/mp/smp/algorithm/zip.hpp"
+#include "jln/mp/smp/functional/bind.hpp"
 
 TEST_SUITE_BEGIN()
+
+template<class...>
+struct another_list;
 
 TEST()
 {
@@ -16,7 +20,7 @@ TEST()
       emp::numbers<30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 310, 311, 312, 313, 314, 315, 316, 317, 318>,
       emp::numbers<0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18>
     >,
-    emp::transpose<list<
+    emp::zip<list<
       emp::numbers<40,  30, 0>, emp::numbers<41,  31, 1>,
       emp::numbers<42,  32, 2>, emp::numbers<43,  33, 3>,
       emp::numbers<44,  34, 4>, emp::numbers<45,  35, 5>,
@@ -30,13 +34,13 @@ TEST()
     >>
   >();
 
-  test_pack<transpose>()
+  test_pack<zip>()
     .test_variadic()
     .test_binary()
     .test_unary()
     ;
 
-  test_context<transpose<>, smp::transpose<>>()
+  test_context<zip<>, smp::zip<>>()
     .test<list<>, list<>, list<>>()
     .test<list<list<_0, _1>>, list<_0>, list<_1>>()
     .test<list<list<_0, _2>, list<_1, _3>>,
@@ -45,6 +49,25 @@ TEST()
       list<_0, _1>, list<_2, _3>, list<_4, _5>>()
     .not_invocable<list<>, list<_0>>()
     .not_invocable<int>()
+    .not_invocable<another_list<>>()
+    ;
+
+  test_context<
+    zip_shortest_with<cfe<another_list>>,
+    smp::zip_shortest_with<smp::cfe<another_list>>
+  >()
+    .test<list<>, list<>, list<>>()
+    .test<list<>, list<>, list<_1>>()
+    .test<list<another_list<_0, _1>>, list<_0>, list<_1>>()
+    .test<list<another_list<_0, _2>, another_list<_1, _3>>,
+      list<_0, _1>, list<_2, _3>>()
+    .test<list<another_list<_0, _2, _4>, another_list<_1, _3, _5>>,
+      list<_0, _1>, list<_2, _3>, list<_4, _5>>()
+    .test<list<another_list<_0, _4, _7>, another_list<_1, _5, _8>,
+        another_list<_2, _6, _9>>,
+      list<_0, _1, _2, _3>, list<_4, _5, _6>, list<_7, _8, _9>>()
+    .not_invocable<int>()
+    .not_invocable<another_list<>>()
     ;
 }
 
