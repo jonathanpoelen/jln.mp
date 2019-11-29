@@ -1,55 +1,60 @@
-#include "jln/mp/list/join.hpp"
-#include <boost/mp11/algorithm.hpp>
+#include "fold_left.hpp"
+#include "../functional/bind.hpp"
+#include "../utility/eager.hpp"
 
-using jln::mp::list;
-
-namespace detail
+namespace jln::mp
 {
-  template<class>
-  struct _distinct;
-};
+  namespace detail
+  {
+    template<class L, class x, class = void>
+    struct _set_push_back2;
+  }
 
-template<class C = jln::mp::listify>
-struct distinct
+  template<class C = listify>
+  struct unique
+  {
+    template<class... xs>
+    // TODO unpack<listify> -> identity
+    using f = typename fold_left<cfl<detail::_set_push_back2>, unpack<C>>
+      ::template f<list<>, xs...>;
+  };
+
+  namespace emp
+  {
+    template<class L, class C = mp::listify>
+    using unique = eager<L, unique<C>>;
+  }
+}
+
+
+#include <utility>
+
+namespace jln::mp::detail
 {
-  template<class... xs>
-  using f = typename jln::mp::join<C>::template f<
-    typename detail::_distinct<list<xs...>>::template f<xs>...>;
-};
+  template<class x>
+  struct _inherit_impl {};
+  template<std::size_t i, class x>
+  struct inherit_impl : _inherit_impl<x> {};
 
-namespace detail
-{
-  template<class seq, class x>
-  struct _distinct_tag
+  template<class, class...>
+  struct inherit;
+
+  template<std::size_t... ints, class... xs>
+  struct inherit<std::integer_sequence<std::size_t, ints...>, xs...>
+    : inherit_impl<ints, xs>...
+  {};
+
+  template<class L, class x, class>
+  struct _set_push_back2
   {
-    friend constexpr auto _distinct_test(_distinct_tag<seq, x>);
+    using type = L;
   };
 
-  template<class seq, class x, bool y>
-  struct _distinct_impl
+  template<class... xs, class x>
+  struct _set_push_back2<list<xs...>, x,
+  // TODO contains
+    std::enable_if_t<sizeof(inherit<std::make_index_sequence<sizeof...(xs)+1>, xs..., x>) == 1>>
   {
-    friend constexpr auto _distinct_test(_distinct_tag<seq, x>)
-    {
-      return 1;
-    }
-
-    using type = list<x>;
+    using type = list<xs..., x>;
   };
-
-  template<class seq, class x>
-  struct _distinct_impl<seq, x, true>
-  {
-    using type = list<>;
-  };
-
-  template<class seq>
-  struct _distinct
-  {
-    template<class x> static long long test(...);
-    template<class x, int = sizeof(_distinct_test(_distinct_tag<seq, x>()))> static bool test(int);
-
-    template<class x, bool v = sizeof(bool) == sizeof(test<x>(0))>
-    using f = typename _distinct_impl<seq, x, v>::type;
-  };
-};
-
+}
