@@ -11,6 +11,13 @@ namespace ut
   {};
 
   template<class T>
+  struct Expected
+  {
+    constexpr Expected(Result<T>)
+    {}
+  };
+
+  template<class T>
   struct Differ
   {
     Differ(Result<T>) = delete;
@@ -20,7 +27,7 @@ namespace ut
   template<class T, class U>
   constexpr void same()
   {
-    Result<T> should_be_same = Result<U>();
+    Expected<T> should_be_same = Result<U>();
     (void)should_be_same;
   }
 
@@ -34,7 +41,7 @@ namespace ut
   template<class R, class C, class... xs>
   constexpr void invoke_r()
   {
-    Result<R> should_be_same = Result<jln::mp::call<C, xs...>>();
+    Expected<R> should_be_same = Result<jln::mp::call<C, xs...>>();
     (void)should_be_same;
   }
 }
