@@ -4,7 +4,7 @@ namespace jln::mp
 {
   namespace detail
   {
-    template <typename C, typename L, typename... Ts>
+    template <class L, class... Ts>
     struct _unpack;
   }
 
@@ -12,16 +12,16 @@ namespace jln::mp
   struct unpack
   {
     template<class... Ls>
-    // TODO _unpack<Ls...>::template f<C> ?
-    using f = typename detail::_unpack<C, Ls...>::type;
+    using f = typename detail::_unpack<Ls...>::template f<C>;
   };
 } // namespace jln::mp
 
 namespace jln::mp::detail
 {
-  template<class C, template<class...> class Seq, class... Ts, class... xs>
-  struct _unpack<C, Seq<Ts...>, xs...>
+  template<template<class...> class Seq, class... Ts, class... xs>
+  struct _unpack<Seq<Ts...>, xs...>
   {
-      using type = typename C::template f<xs..., Ts...>;
+    template<class C>
+    using f = typename C::template f<xs..., Ts...>;
   };
 }

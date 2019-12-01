@@ -6,9 +6,11 @@
 namespace jln::mp::smp
 {
   template<template<class...> class F, class C = identity>
+  // TODO subcontract<C> -> if_<same_as<na>, identity, subcontract<C>>
   using cfe = try_contract<mp::cfe<F, subcontract<C>>>;
 
   template<template<class...> class F, class C = identity>
+  // TODO subcontract<C> -> if_<same_as<na>, identity, subcontract<C>>
   using cfl = try_contract<mp::cfl<F, subcontract<C>>>;
 }
 

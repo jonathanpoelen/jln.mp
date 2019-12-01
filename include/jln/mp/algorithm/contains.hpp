@@ -5,7 +5,7 @@
 
 namespace jln::mp
 {
-  // TODO impl() -> decltype((static_cast<x*>(inherit<xs...>*), true_)) ?
+  // TODO impl() -> decltype((static_cast<x*>(inherit<xs...>*), true_)) ? see unique
   // TODO find<x, always<true_, C>, always<false_, C>> ?
   template<class T, class C = identity>
   using contains = any_of<same_as<T>, C>;
