@@ -2,6 +2,16 @@
 
 namespace jln::mp::detail
 {
+  constexpr unsigned min(unsigned a, unsigned b)
+  {
+    return a < b ? a : b;
+  }
+
+  constexpr unsigned max(unsigned a, unsigned b)
+  {
+    return a < b ? b : a;
+  }
+
   constexpr unsigned n_8_or_less_16_64_256(unsigned n)
   {
     return
