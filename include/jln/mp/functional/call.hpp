@@ -43,6 +43,17 @@ namespace jln::mp
     typename detail::_memoizer<F, xs...>::type,
     C, xs...
   >::type;
+
+  template<class C, class F, class... xs>
+  using unary_compose_call = typename detail::_memoizer<C,
+    typename detail::_memoizer<F, xs...>::type
+  >::type;
+
+  template<class C, class F0, class F1, class... xs>
+  using binary_compose_call = typename detail::_memoizer<C,
+    typename detail::_memoizer<F0, xs...>::type,
+    typename detail::_memoizer<F1, xs...>::type
+  >::type;
 #else
   template<class C, class... xs>
   using call = typename detail::dcall<(sizeof...(xs) < 1000000)>
@@ -69,5 +80,27 @@ namespace jln::mp
   using dispatch = detail::_dispatch<
     detail::dcall<(sizeof...(xs) < 1000000)>::template f,
     C, F, xs...>;
+
+  namespace detail
+  {
+    template<template<class...> class f, class C, class F, class... xs>
+    using _unary_compose_call = f<C, f<F, xs...>>;
+  }
+
+  template<class C, class F, class... xs>
+  using unary_compose_call = detail::_unary_compose_call<
+    detail::dcall<(sizeof...(xs) < 1000000)>::template f,
+    C, F, xs...>;
+
+  namespace detail
+  {
+    template<template<class...> class f, class C, class F0, class F1, class... xs>
+    using _binary_compose_call = f<C, f<F0, xs...>, f<F1, xs...>>;
+  }
+
+  template<class C, class F0, class F1, class... xs>
+  using binary_compose_call = detail::_binary_compose_call<
+    detail::dcall<(sizeof...(xs) < 1000000)>::template f,
+    C, F0, F1, xs...>;
 #endif
 }

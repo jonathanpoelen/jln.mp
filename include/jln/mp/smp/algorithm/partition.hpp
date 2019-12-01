@@ -1,17 +1,12 @@
 #pragma once
 
-#include "remove.hpp"
 #include "copy.hpp"
+#include "remove.hpp"
 #include "../functional/fork.hpp"
+#include "../../algorithm/partition.hpp"
 
-namespace jln::mp
+namespace jln::mp::smp
 {
   template<class Pred, class C = listify>
   using partition = fork<remove_if<Pred>, copy_if<Pred>, C>;
-
-  namespace emp
-  {
-    template<class L, class C = mp::listify>
-    using partition = eager<L, mp::partition<C>>;
-  }
 }

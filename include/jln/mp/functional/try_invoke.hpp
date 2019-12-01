@@ -238,10 +238,22 @@ namespace jln::mp::detail
   : _optimize_try_invoke<try_invoke<F, TC, FC>>
   {};
 
+  template<class F, class FC>
+  struct _optimize_try_invoke<
+    try_invoke<try_invoke<F, identity, FC>, identity, FC>>
+  : _optimize_try_invoke<try_invoke<F, identity, FC>>
+  {};
+
   template<class F, class TC, class FC>
   struct _optimize_try_invoke<
     try_invoke<try_invoke<F>, TC, FC>>
   : _optimize_try_invoke<try_invoke<F, TC, FC>>
+  {};
+
+  template<class F>
+  struct _optimize_try_invoke<
+    try_invoke<try_invoke<F>>>
+  : _optimize_try_invoke<try_invoke<F>>
   {};
 
   // TODO _optimize_try_invoke<...contract...>

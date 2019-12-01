@@ -24,17 +24,14 @@ namespace jln::mp
   struct fork<F, C>
   {
     template<class... xs>
-    using f = typename C::template f<call<F, xs...>>;
+    using f = unary_compose_call<C, F, xs...>;
   };
 
   template <class F0, class F1, class C>
   struct fork<F0, F1, C>
   {
     template<class... xs>
-    using f = typename C::template f<
-      call<F0, xs...>,
-      call<F1, xs...>
-    >;
+    using f = binary_compose_call<C, F0, F1, xs...>;
   };
 
   template <class F0, class F1, class F2, class C>
