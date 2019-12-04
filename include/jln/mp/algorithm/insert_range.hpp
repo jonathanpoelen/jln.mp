@@ -9,17 +9,17 @@
 namespace jln::mp
 {
   template<class i, class seq, class C = listify>
-  using splice = fork<take<i>, always<seq>, drop<i>, join<C>>;
+  using insert_range = fork<take<i>, always<seq>, drop<i>, join<C>>;
 
   template<int_ i, class seq, class C = listify>
-  using splice_c = splice<number<i>, seq, C>;
+  using insert_range_c = insert_range<number<i>, seq, C>;
 
   namespace emp
   {
     template<class L, class i, class seq, class C = mp::listify>
-    using splice = eager<L, mp::splice<i, seq, C>>;
+    using insert_range = eager<L, mp::insert_range<i, seq, C>>;
 
     template<class L, int_ i, class seq, class C = mp::listify>
-    using splice_c = eager<L, mp::splice_c<i, seq, C>>;
+    using insert_range_c = eager<L, mp::insert_range_c<i, seq, C>>;
   }
 }
