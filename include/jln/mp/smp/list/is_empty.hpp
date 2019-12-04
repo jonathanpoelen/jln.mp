@@ -2,10 +2,10 @@
 
 #include "../number/operators.hpp"
 #include "../list/size.hpp"
-#include "../../list/empty.hpp"
+#include "../../list/is_empty.hpp"
 
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using empty = valid_contract<mp::empty<assume_number<C>>>;
+  using is_empty = valid_contract<mp::is_empty<assume_number<C>>>;
 }
