@@ -79,6 +79,8 @@ namespace jln::mp
   template<class C>
   using valid_contract = contract<always<true_>, C>;
 
+  using bad_contract = contract<always<false_>, listify>;
+
 
   template<class F, class TC = identity, class FC = violation>
   struct try_invoke;
