@@ -4,11 +4,8 @@
 #include "../number/operators.hpp"
 #include "../../algorithm/any_of.hpp"
 
-namespace jln::mp
+namespace jln::mp::smp
 {
-  namespace smp
-  {
-    template<class Pred, class C = identity>
-    using any_of = transform<Pred, or_<C>>;
-  }
-} // namespace jln::mp
+  template<class Pred, class C = identity>
+  using any_of = transform<Pred, or_<C>>;
+}

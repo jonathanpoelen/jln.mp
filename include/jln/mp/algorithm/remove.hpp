@@ -79,6 +79,7 @@ namespace jln::mp::detail
   template<template<class...> class Pred>
   struct _list_wrap_if
   {
+    // TODO class x, class... xs   Pred<x,xs...>
     template<class x>
     using f = typename _wrap_if<!Pred<x>::value>::template f<x>;
   };
@@ -86,6 +87,7 @@ namespace jln::mp::detail
   template<template<class...> class Pred>
   struct _list_wrap_if_not
   {
+    // TODO class x, class... xs   Pred<x,xs...>
     template<class x>
     using f = typename _wrap_if<Pred<x>::value>::template f<x>;
   };

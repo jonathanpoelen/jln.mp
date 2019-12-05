@@ -4,11 +4,8 @@
 #include "../list/size.hpp"
 #include "../../algorithm/indices.hpp"
 
-namespace jln::mp
+namespace jln::mp::smp
 {
-  namespace smp
-  {
-    template<class C = listify>
-    using indices = valid_contract<mp::indices<subcontract<C>>>;
-  }
-} // namespace jln::mp
+  template<class C = listify>
+  using indices = valid_contract<mp::indices<subcontract<C>>>;
+}

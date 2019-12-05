@@ -11,6 +11,7 @@ namespace jln::mp::smp
 {
   template<class Pred, class C = listify, class NC = C>
   using find_if = valid_contract<mp::find_if<
+    // TODO optimize for same_as and other safe predicate
     concepts::predicate<Pred, mp::identity, mp::always<true_>>,
     mp::if_<
       mp::front<concepts::predicate<Pred>>,

@@ -4,11 +4,8 @@
 #include "../number/operators.hpp"
 #include "../../algorithm/all_of.hpp"
 
-namespace jln::mp
+namespace jln::mp::smp
 {
-  namespace smp
-  {
-    template<class Pred, class C = identity>
-    using all_of = transform<Pred, and_<C>>;
-  }
-} // namespace jln::mp
+  template<class Pred, class C = identity>
+  using all_of = transform<Pred, and_<C>>;
+}

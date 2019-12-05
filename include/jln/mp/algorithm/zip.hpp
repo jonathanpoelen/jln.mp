@@ -15,6 +15,8 @@ namespace jln::mp
     struct _drop_back;
   }
 
+  // TODO class F = lisitfy (zip<list_wrap_if<at1<>>, join<>>)
+  // for <T, bool>...
   template<class C = listify>
   struct zip
   {
