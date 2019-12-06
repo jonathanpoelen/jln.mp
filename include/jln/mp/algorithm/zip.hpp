@@ -15,8 +15,6 @@ namespace jln::mp
     struct _drop_back;
   }
 
-  // TODO class F = lisitfy (zip<list_wrap_if<at1<>>, join<>>)
-  // for <T, bool>...
   template<class C = listify>
   struct zip
   {
@@ -79,13 +77,23 @@ namespace jln::mp::detail
   template<class...>
   struct _zip_impl;
 
-#define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep)        \
-  template<class C, mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)> \
-  struct _zip_impl<C, mp_xs(list<, ...>, JLN_MP_COMMA)>        \
-  {                                                            \
-    using type = typename C::template f<list<                  \
-      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)              \
-    >...>;                                                     \
+#define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep)         \
+  template<class C, mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>  \
+  struct _zip_impl<C, mp_xs(list<, ...>, JLN_MP_COMMA)>         \
+  {                                                             \
+    using type = typename C::template f<list<                   \
+      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)               \
+    >...>;                                                      \
+  };                                                            \
+                                                                \
+  template<class F, class C,                                    \
+    mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>                  \
+  struct _zip_impl<                                             \
+    transform<unpack<F>, C>, mp_xs(list<, ...>, JLN_MP_COMMA)>  \
+  {                                                             \
+    using type = typename C::template f<typename F::template f< \
+      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)               \
+    >...>;                                                      \
   };
 
   JLN_MP_GEN_XS_1_TO_8(JLN_MP_TRANSPOSE_IMPL)

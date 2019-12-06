@@ -3,6 +3,7 @@
 
 #include "jln/mp/smp/algorithm/zip.hpp"
 #include "jln/mp/smp/functional/bind.hpp"
+#include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -50,6 +51,12 @@ TEST()
     .not_invocable<list<>, list<_0>>()
     .not_invocable<int>()
     .not_invocable<another_list<>>()
+    ;
+
+  test_context<zip_with<add<>>, smp::zip_with<smp::add<>>>()
+    .test<list<>>()
+    .test<list<_6, _2>, list<_4, _1>, list<_2, _1>>()
+    .not_invocable<list<bad_number>, list<_1>>()
     ;
 
   test_context<
