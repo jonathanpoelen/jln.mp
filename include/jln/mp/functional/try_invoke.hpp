@@ -182,6 +182,12 @@ namespace jln::mp::detail
     using type = try_invoke<F, TC, FC>;
   };
 
+  template<class F>
+  struct _subcontract<contract_barrier<F>>
+  {
+    using type = F;
+  };
+
 
   struct argument_category
   {

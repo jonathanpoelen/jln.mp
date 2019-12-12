@@ -22,9 +22,9 @@ TEST()
   ut::same<_0, emp::pow<seq_0_1_2>>();
   ut::same<number<8*8*8*8>, emp::pow<seq_2_3_4>>();
 
-  test_pack<min, less<>>().test_unary();
-  test_pack<abs, less<>>().test_unary();
-  test_pack<pow>().test_unary();
+  test_pack<min, less<>>().test_unary_not_na();
+  test_pack<abs, less<>>().test_unary_not_na();
+  test_pack<pow>().test_unary_not_na();
 
   auto ctx = [](auto f){
     using g = unpack<decltype(f)>;
@@ -57,6 +57,19 @@ TEST()
     .test<bad_number, seq_bad>()
     .test<_0, e>()
     .not_invocable<seq_bad_bad>()
+    ;
+
+  test_context<clamp_c<-2, 5>, smp::clamp_c<-2, 5>>()
+    .test<_1, _1>()
+    .test<_4, _4>()
+    .test<_5, _5>()
+    .test<_5, _6>()
+    .test<number<-1>, number<-1>>()
+    .test<number<-2>, number<-2>>()
+    .test<number<-2>, number<-3>>()
+    .not_invocable<>()
+    .not_invocable<_1, _2>()
+    .not_invocable<bad_number>()
     ;
 
   test_context<abs<>, smp::abs<>>()

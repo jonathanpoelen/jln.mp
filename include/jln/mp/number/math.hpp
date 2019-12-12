@@ -13,22 +13,30 @@ namespace jln::mp
     struct _pow;
   }
 
-  template<class Pred = less<>, class C = identity>
-  using min = fold_left<if_<flip<Pred>, at1<>, at0<>>, C>;
+  template<class Cmp = less<>, class C = identity>
+  using min = fold_left<if_<flip<Cmp>, at1<>, at0<>>, C>;
 
-  template<class Pred = less<>, class C = identity>
-  using min0 = if_<size<>, min<Pred, C>, always<number<0>, C>>;
-
-
-  template<class Pred = less<>, class C = identity>
-  using max = fold_left<if_<Pred, at1<>, at0<>>, C>;
-
-  template<class Pred = less<>, class C = identity>
-  using max0 = if_<size<>, max<Pred, C>, always<number<0>, C>>;
+  template<class Cmp = less<>, class C = identity>
+  using min0 = if_<size<>, min<Cmp, C>, always<number<0>, C>>;
 
 
-  template<class Pred = less<>, class C = identity>
-  using abs = fork<identity, neg<>, max<Pred, C>>;
+  template<class Cmp = less<>, class C = identity>
+  using max = fold_left<if_<Cmp, at1<>, at0<>>, C>;
+
+  template<class Cmp = less<>, class C = identity>
+  using max0 = if_<size<>, max<Cmp, C>, always<number<0>, C>>;
+
+
+  template<class Min, class Max, class Cmp = less<>, class C = identity>
+  using clamp = if_<push_back<Min, Cmp>, always<Min>,
+    if_<push_front<Max, Cmp>, always<Max>, identity>>;
+
+  template<int_ min, int_ max, class Cmp = less<>, class C = identity>
+  using clamp_c = clamp<number<min>, number<max>, Cmp, C>;
+
+
+  template<class Cmp = less<>, class C = identity>
+  using abs = fork<identity, neg<>, max<Cmp, C>>;
 
 
   template<class C = identity>
@@ -43,20 +51,26 @@ namespace jln::mp
 
   namespace emp
   {
-    template<class L, class Pred = mp::less<>, class C = mp::identity>
-    using min = eager<L, mp::min<Pred, C>>;
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    using min = eager<L, mp::min<Cmp, C>>;
 
-    template<class L, class Pred = mp::less<>, class C = mp::identity>
-    using min0 = eager<L, mp::min0<Pred, C>>;
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    using min0 = eager<L, mp::min0<Cmp, C>>;
 
-    template<class L, class Pred = mp::less<>, class C = mp::identity>
-    using max = eager<L, mp::max<Pred, C>>;
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    using max = eager<L, mp::max<Cmp, C>>;
 
-    template<class L, class Pred = mp::less<>, class C = mp::identity>
-    using max0 = eager<L, mp::max0<Pred, C>>;
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    using max0 = eager<L, mp::max0<Cmp, C>>;
 
-    template<class L, class Pred = mp::less<>, class C = mp::identity>
-    using abs = eager<L, mp::abs<Pred, C>>;
+    template<class L, class Min, class Max, class Cmp = mp::less<>, class C = mp::identity>
+    using clamp = eager<L, mp::clamp<Min, Max, Cmp, C>>;
+
+    template<class L, int_ min, int_ max, class Cmp = mp::less<>, class C = mp::identity>
+    using clamp_c = eager<L, mp::clamp_c<min, max, Cmp, C>>;
+
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    using abs = eager<L, mp::abs<Cmp, C>>;
 
     template<class L, class C = mp::identity>
     using pow = eager<L, mp::pow<C>>;
