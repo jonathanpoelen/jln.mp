@@ -1,6 +1,7 @@
 #pragma once
 
 #include "find.hpp"
+#include "../list/size.hpp"
 #include "../utility/always.hpp"
 #include "../../algorithm/index.hpp"
 #include "../../functional/fork.hpp"
@@ -8,33 +9,27 @@
 
 namespace jln::mp::smp
 {
+  template<class F, class C = identity>
+  using index_for = try_contract<
+    mp::index_for<subcontract<F>, subcontract<C>>>;
+
   template<class Pred, class C = identity, class NC = always<na>>
-  using index_if = valid_contract<mp::fork_front<mp::fork<
-    mp::always<Pred>,
-    mp::size<mp::fork<
-      mp::identity,
-      mp::always<subcontract<C>>,
-      mp::cfe<mp::offset, cfe<contract_barrier>>
-    >>,
-    mp::always<NC>,
-    mp::cfe<find_if, mp::cfe<try_invoke>>
-  >>>;
+  using index_if = index_for<find_if<Pred, size<>, NC>, C>;
 
   template<class T, class C = identity, class NC = always<na>>
-  using index_of = valid_contract<
-    mp::index_of<T, subcontract<C>, subcontract<NC>>>;
+  using index_of = index_if<same_as<T>, C, NC>;
 }
 
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class Pred, class C, class NC>
-  struct _sfinae<sfinae, index_if<Pred, C, NC>>
+  template<template<class> class sfinae, class F, class C>
+  struct _sfinae<sfinae, index_for<F, C>>
   {
-    using type = smp::index_if<sfinae<Pred>, sfinae<C>, sfinae<NC>>;
+    using type = smp::index_for<sfinae<F>, sfinae<C>>;
   };
 
   template<template<class> class sfinae, class T, class C, class NC>
-  struct _sfinae<sfinae, index_if<same_as<T>, C, NC>>
+  struct _sfinae<sfinae, index_for<find_if<same_as<T>, size<>, NC>, C>>
   {
     using type = smp::index_of<T, sfinae<C>, sfinae<NC>>;
   };
