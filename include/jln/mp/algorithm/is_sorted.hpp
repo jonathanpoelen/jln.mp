@@ -17,7 +17,7 @@ namespace jln::mp
   struct is_sorted
   {
     template<class... xs>
-    using f = typename detail::dcall<bool(sizeof...(xs)+1)>
+    using f = typename detail::dcall<(sizeof...(xs) < 1000000)>
       ::template f<C, typename detail::_is_sorted<detail::min(sizeof...(xs), 3)>
         ::template f<Cmp, xs...>>;
   };

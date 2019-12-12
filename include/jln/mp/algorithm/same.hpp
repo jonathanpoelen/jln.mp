@@ -43,6 +43,7 @@ namespace jln::mp::detail
   };
 
   template<class... xs>
+  // TODO _same<list<x, xs...>, list<xs..., x>> ? + _same<x, y?> || std::is_same ?
   struct _same : _same_impl<list<xs>...>
   {};
 
