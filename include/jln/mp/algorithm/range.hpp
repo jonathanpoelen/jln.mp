@@ -1,13 +1,8 @@
 #pragma once
 
-#include "reverse.hpp"
-#include "../list/take.hpp"
-#include "../list/drop.hpp"
-#include "../list/push_front.hpp"
-#include "../functional/fork.hpp"
-#include "../functional/fork_front.hpp"
-#include "../functional/call.hpp"
-#include "../number/operators.hpp"
+#include "../utility/eager.hpp"
+#include "../list/list.hpp"
+#include "../number/number.hpp"
 
 namespace jln::mp
 {
@@ -42,12 +37,17 @@ namespace jln::mp
   }
 }
 
+#include "cartesian.hpp"
+#include "../list/take.hpp"
+#include "../list/drop.hpp"
+#include "../utility/always.hpp"
+
 namespace jln::mp::detail
 {
   template<int_ beg, int_ end, class C>
   struct _range<beg, end, C, false, false, false>
   {
-    using type = always<C, cfe<call>>;
+    using type = _cartesian<C, 0>; // for C::f<>
   };
 
   template<int_ beg, int_ end>
@@ -114,7 +114,7 @@ namespace jln::mp::detail
   template<int_ beg, int_ end, int_ n, class C>
   struct _range_impl<beg, end, n, C, false, false>
   {
-    using type = always<C, cfe<call>>;
+    using type = _cartesian<C, 0>; // for C::f<>
   };
 
   template<int_ beg, int_ end, int_ n>

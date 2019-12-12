@@ -27,6 +27,7 @@ namespace jln::mp
 }
 
 #include "fold_right.hpp"
+#include "cartesian.hpp"
 #include "../list/front.hpp"
 #include "../list/join.hpp"
 #include "../functional/call.hpp"
@@ -67,7 +68,7 @@ namespace jln::mp::detail
   template<class C>
   struct _powerset<C, false>
   {
-    using type = always<C, cfe<call>>;
+    using type = _cartesian<C, 0>; // for C::f<>
   };
 
   template<>

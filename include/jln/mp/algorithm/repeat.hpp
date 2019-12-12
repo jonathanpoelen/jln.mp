@@ -35,6 +35,7 @@ namespace jln::mp
 
 
 #include "transform.hpp"
+#include "cartesian.hpp"
 #include "../list/join.hpp"
 #include "../functional/call.hpp"
 #include "../utility/always.hpp"
@@ -53,7 +54,7 @@ namespace jln::mp::detail
   struct _repeat<0>
   {
     template<class C>
-    using f = always<C, cfe<call>>;
+    using f = _cartesian<C, 0>; // for C::f<>
   };
 
   template<>
