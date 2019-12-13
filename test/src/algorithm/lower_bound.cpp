@@ -79,9 +79,9 @@ TEST()
     .test_unary()
   ;
 
-  // using pred1 = less_than_c<2>;
+  using pred1 = less_than_c<2>;
 
-  // ut::same<list<_3>, emp::lower_bound<seq_0_1_2_3, pred1>>();
+  ut::same<list<_2, _3>, emp::lower_bound<seq_0_1_2_3, pred1>>();
 
   test_lower_bounds<0>();
   test_lower_bounds<1>();
@@ -105,39 +105,25 @@ TEST()
   test_lower_bounds<512>();
   test_lower_bounds<513>();
 
-  // ut::invoke_r<li_3st<_13>, iota<lower_bound<_12>>, _0, _14>();
-  // ut::invoke_r<list<_20, _21>, iota<lower_bound<_20>>, _0, _22>();
-  // ut::invoke_r<list<_60, _61>, iota<lower_bound<_60>>, _0, _62>();
-  // ut::invoke_r<list<_70, _71>, iota<lower_bound<_70>>, _0, _72>();
-  // ut::invoke_r<list<_130, _131>, iota<lower_bound<_130>>, _0, _132>();
-  // ut::invoke_r<list<_260, _261>, iota<lower_bound<_260>>, _0, _262>();
-  // ut::invoke_r<list<_320, _321>, iota<lower_bound<_320>>, _0, _322>();
-  // ut::invoke_r<list<_520, _521>, iota<lower_bound<_520>>, _0, _522>();
-  // ut::invoke_r<list<_555, _556>, iota<lower_bound<_555>>, _0, _557>();
-  // ut::invoke_r<list<_580, _581>, iota<lower_bound<_580>>, _0, _582>();
-  // ut::invoke_r<list<_780, _781>, iota<lower_bound<_780>>, _0, _782>();
-  //
-  // test_context<lower_bound_if<identity>, smp::lower_bound_if<smp::identity>>()
-  //   .test<list<>>()
-  //   .test<list<>, _0>()
-  //   .test<seq_1, _1>()
-  //   .test<seq_1, _0, _1>()
-  //   .test<seq_1_2, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _1, _2>()
-  //   .test<seq_1_2, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _0, _1, _2>()
-  //   .not_invocable<void>()
-  //   ;
-  //
-  // test_context<
-  //   lower_bound<_3, listify, always<void>>,
-  //   smp::lower_bound<_3, smp::listify, smp::always<void>>,
-  //   0
-  // >()
-  //   .test<void>()
-  //   .test<void, _0>()
-  //   .test<void, _0, _1, _2>()
-  //   .test<seq_3_2, _3, _2>()
-  //   .test<seq_3_2, _0, _3, _2>()
-  //   ;
+  test_context<
+    lower_bound<less_than_c<2>>,
+    smp::lower_bound<smp::less_than_c<2>>
+  >()
+    .test<list<>>()
+    .test<list<>, _0>()
+    .test<list<>, _1>()
+    .test<list<>, _0, _1>()
+    .test<list<_2>, _0, _1, _2>()
+    .not_invocable<void>()
+    ;
+
+  test_context<lower_bound<pred1, identity, always<void>>, void, 0>()
+    .test<void>()
+    .test<void, _0>()
+    .test<_2, _0, _1, _2>()
+    .not_invocable<_3, _4>()
+    .not_invocable<_1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _3, _4>()
+    ;
 }
 
 TEST_SUITE_END()
