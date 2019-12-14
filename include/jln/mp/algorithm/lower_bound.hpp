@@ -2,6 +2,7 @@
 
 #include "../list/drop.hpp"
 #include "../utility/same_as.hpp"
+#include "../number/operators.hpp"
 #include "../functional/identity.hpp"
 
 namespace jln::mp
@@ -36,10 +37,22 @@ namespace jln::mp
     >::template f<sizeof...(xs), Pred, C, NC, xs...>;
   };
 
+  template<int_ x, class C = listify, class NC = C>
+  using lower_bound_c = lower_bound<less_than_c<x>, C, NC>;
+
+  template<int_ x, class C = listify, class NC = C>
+  using upper_bound_c = lower_bound<greater_equal_than_c<x>, C, NC>;
+
   namespace emp
   {
     template<class L, class Pred, class C = mp::listify, class NC = C>
     using lower_bound = eager<L, mp::lower_bound<Pred, C, NC>>;
+
+    template<class L, int_ x, class C = mp::listify, class NC = C>
+    using lower_bound_c = eager<L, mp::lower_bound_c<x, C, NC>>;
+
+    template<class L, int_ x, class C = mp::listify, class NC = C>
+    using upper_bound_c = eager<L, mp::upper_bound_c<x, C, NC>>;
   }
 }
 

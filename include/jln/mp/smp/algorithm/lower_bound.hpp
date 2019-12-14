@@ -3,6 +3,7 @@
 #include "../concepts.hpp"
 #include "../list/list.hpp"
 #include "../utility/same_as.hpp"
+#include "../number/operators.hpp"
 #include "../functional/identity.hpp"
 #include "../../list/front.hpp"
 #include "../../algorithm/lower_bound.hpp"
@@ -18,6 +19,12 @@ namespace jln::mp::smp
   template<class Pred, class C = listify, class NC = C>
   using lower_bound = valid_contract<detail::_smp_lower_bound_impl<
     subcontract<Pred>, subcontract<C>, subcontract<NC>>>;
+
+  template<int_ x, class C = listify, class NC = C>
+  using lower_bound_c = lower_bound<less_than_c<x>, C, NC>;
+
+  template<int_ x, class C = listify, class NC = C>
+  using upper_bound_c = lower_bound<greater_equal_than_c<x>, C, NC>;
 }
 
 namespace jln::mp::detail

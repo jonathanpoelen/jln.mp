@@ -114,6 +114,8 @@ TEST()
     .test<list<>, _1>()
     .test<list<>, _0, _1>()
     .test<list<_2>, _0, _1, _2>()
+    .test<list<_2, _2, _2, _2, _2>, _2, _2, _2, _2, _2>()
+    .test<list<_2, _2>, _1, _1, _1, _2, _2>()
     .not_invocable<void>()
     ;
 
