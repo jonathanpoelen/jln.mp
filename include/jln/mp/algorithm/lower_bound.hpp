@@ -4,6 +4,8 @@
 #include "../utility/same_as.hpp"
 #include "../number/operators.hpp"
 #include "../functional/identity.hpp"
+#include "../functional/fork.hpp"
+#include "../functional/flip.hpp"
 
 namespace jln::mp
 {
@@ -28,36 +30,61 @@ namespace jln::mp
     }
   }
 
-  template<class Pred, class C = listify, class NC = C>
+  template<class x, class Cmp = less<>, class C = listify, class NC = C>
   struct lower_bound
   {
     template<class... xs>
     using f = typename detail::_lower_bound<
       detail::_lower_bound_select(sizeof...(xs))
-    >::template f<sizeof...(xs), Pred, C, NC, xs...>;
+    >::template f<sizeof...(xs), push_back<x, Cmp>, C, NC, xs...>;
   };
 
-  template<int_ x, class C = listify, class NC = C>
-  using lower_bound_c = lower_bound<less_than_c<x>, C, NC>;
+  template<class x, class CmpC, class C, class NC>
+  struct lower_bound<x, flip<fork<less<CmpC>, not_<>>>, C, NC>
+  // TODO optimize_cmp
+  : lower_bound<x, flip<less<not_<CmpC>>>, C, NC>
+  {};
+
+  template<class x, class CmpC, class ForkC, class C, class NC>
+  struct lower_bound<x, flip<fork<flip<CmpC>, ForkC>>, C, NC>
+  // TODO optimize_cmp
+  : lower_bound<x, fork<CmpC, ForkC>, C, NC>
+  {};
+
+  template<class x, class ForkC, class C, class NC>
+  struct lower_bound<x, fork<less<>, ForkC>, C, NC>
+  // TODO optimize_cmp
+  : lower_bound<x, less<ForkC>, C, NC>
+  {};
+
+  template<int_ x, class Cmp = less<>, class C = listify, class NC = C>
+  using lower_bound_c = lower_bound<number<x>, Cmp, C, NC>;
+
+  template<class x, class C = listify, class NC = C>
+  using lower_bound_of = lower_bound<x, less<>, C, NC>;
 
   template<int_ x, class C = listify, class NC = C>
-  using upper_bound_c = lower_bound<greater_equal_than_c<x>, C, NC>;
+  using lower_bound_of_c = lower_bound<number<x>, less<>, C, NC>;
 
   namespace emp
   {
-    template<class L, class Pred, class C = mp::listify, class NC = C>
-    using lower_bound = eager<L, mp::lower_bound<Pred, C, NC>>;
+    template<class L, class x, class Cmp = mp::less<>, class C = mp::listify, class NC = C>
+    using lower_bound = eager<L, mp::lower_bound<x, Cmp, C, NC>>;
+
+    template<class L, int_ x, class Cmp = mp::less<>, class C = mp::listify, class NC = C>
+    using lower_bound_c = eager<L, mp::lower_bound<mp::number<x>, Cmp, C, NC>>;
+
+    template<class L, class x, class C = mp::listify, class NC = C>
+    using lower_bound_of = eager<L, mp::lower_bound<x, mp::less<>, C, NC>>;
 
     template<class L, int_ x, class C = mp::listify, class NC = C>
-    using lower_bound_c = eager<L, mp::lower_bound_c<x, C, NC>>;
-
-    template<class L, int_ x, class C = mp::listify, class NC = C>
-    using upper_bound_c = eager<L, mp::upper_bound_c<x, C, NC>>;
+    using lower_bound_of_c = eager<L, mp::lower_bound<mp::number<x>, mp::less<>, C, NC>>;
   }
 }
 
 
 #include "cartesian.hpp"
+#include "../functional/contract.hpp"
 #include "../config/enumerate.hpp"
 #include "../list/pop_front.hpp"
 #include "../list/front.hpp"

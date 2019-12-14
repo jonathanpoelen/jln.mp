@@ -19,8 +19,8 @@ static void test_lower_bound()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  using f = iota<lower_bound<
-    less_than_c<less_than>,
+  using f = iota<lower_bound_of_c<
+    less_than,
     cfe<list>,
     cfe<other_list>
   >>;
@@ -79,9 +79,7 @@ TEST()
     .test_unary()
   ;
 
-  using pred1 = less_than_c<2>;
-
-  ut::same<list<_2, _3>, emp::lower_bound<seq_0_1_2_3, pred1>>();
+  ut::same<list<_2, _3>, emp::lower_bound_of_c<seq_0_1_2_3, 2>>();
 
   test_lower_bounds<0>();
   test_lower_bounds<1>();
@@ -105,10 +103,7 @@ TEST()
   test_lower_bounds<512>();
   test_lower_bounds<513>();
 
-  test_context<
-    lower_bound<less_than_c<2>>,
-    smp::lower_bound<smp::less_than_c<2>>
-  >()
+  test_context<lower_bound_of_c<2>, smp::lower_bound_of_c<2>>()
     .test<list<>>()
     .test<list<>, _0>()
     .test<list<>, _1>()
@@ -119,7 +114,7 @@ TEST()
     .not_invocable<void>()
     ;
 
-  test_context<lower_bound<pred1, identity, always<void>>, void, 0>()
+  test_context<lower_bound_of_c<2, identity, always<void>>, void, 0>()
     .test<void>()
     .test<void, _0>()
     .test<_2, _0, _1, _2>()
