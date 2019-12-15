@@ -27,12 +27,27 @@ namespace ut
     {
       static_assert((not_same<Smp, SfinaeMp>(), 1));
     };
+
+    template<bool, class Mp>
+    struct maybe_sfinae
+    {
+      using type = sfinae<Mp>;
+    };
+
+    template<class Mp>
+    struct maybe_sfinae<false, Mp>
+    {
+      using type = void;
+    };
   }
 
-  template<class Mp, class Smp, bool VerifySfinaeEq = true>
+  // 1: check Smp == sfinae<Mp>
+  // 0: check Smp != sfinae<Mp>
+  // -1: not sfinae<Mp>
+  template<class Mp, class Smp, int VerifySfinae = 1>
   struct test_context
   {
-    static_assert(detail::same_smp<VerifySfinaeEq, sfinae<Mp>, Smp>::value);
+    static_assert(detail::same_smp<(VerifySfinae > 0), typename detail::maybe_sfinae<(VerifySfinae >= 0), Mp>::type, Smp>::value);
     static_assert((same<Smp, sfinae<Smp>>(), 1));
 
     template<class R, class... xs>
@@ -41,7 +56,7 @@ namespace ut
       invocable<Smp, xs...>();
       invoke_r<R, Mp, xs...>();
       invoke_r<R, Smp, xs...>();
-      if constexpr (!VerifySfinaeEq) {
+      if constexpr (!VerifySfinae) {
         invoke_r<R, sfinae<Mp>, xs...>();
       }
       return {};
@@ -51,14 +66,14 @@ namespace ut
     static test_context not_invocable()
     {
       ut::not_invocable<Smp, xs...>();
-      if constexpr (!VerifySfinaeEq) {
+      if constexpr (!VerifySfinae) {
         ut::not_invocable<sfinae<Mp>, xs...>();
       }
       return {};
     }
   };
 
-  template<class Mp, bool _>
+  template<class Mp, int _>
   struct test_context<Mp, void, _>
   {
     template<class R, class... xs>
