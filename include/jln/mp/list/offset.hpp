@@ -10,7 +10,14 @@ namespace jln::mp
   struct offset
   {
     template <class... xs>
-    using f = call<C, number<(I::value - int_{sizeof...(xs)})>>;
+    using f = typename C::template f<number<(I::value - int_{sizeof...(xs)})>>;
+  };
+
+  template <class I>
+  struct offset<I, identity>
+  {
+    template <class... xs>
+    using f = number<(I::value - int_{sizeof...(xs)})>;
   };
 
   template<int_ i, class C = identity>

@@ -7,8 +7,8 @@
 namespace jln::mp::smp
 {
   template<class F>
-  using fork_front = valid_contract<mp::fork_front<mp::try_invoke<
-    subcontract<F>, mp::identity, mp::always<mp::violation>>>>;
+  using fork_front = valid_contract<mp::fork_front<mp::try_subcontract<
+    F, mp::identity, mp::always<mp::violation>>>>;
 }
 
 namespace jln::mp::detail

@@ -22,12 +22,19 @@ TEST()
     index_for<always<_3>>,
     smp::index_for<smp::always<_3>>
   >()
-    .test<_0, _0, _1, _2>()
-    .test<_1, _0, _1, _2, _3>()
-    .not_invocable<_1, _2>()
-    .not_invocable<void, void>()
-    .not_invocable<void>()
+    .test<number<-3>>()
+    .test<number<-2>, void>()
+    .test<number<-1>, void, void>()
+    .test<_0, void, void, void>()
+    .test<_1, void, void, void, void>()
+    ;
+
+  test_context<
+    index_for<always<bad_number>>,
+    smp::index_for<smp::always<bad_number>>
+  >()
     .not_invocable<>()
+    .not_invocable<void>()
     ;
 
   test_context<

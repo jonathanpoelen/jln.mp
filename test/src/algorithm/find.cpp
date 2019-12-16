@@ -3,6 +3,7 @@
 
 #include "jln/mp/smp/algorithm/find.hpp"
 #include "jln/mp/smp/utility/always.hpp"
+#include "jln/mp/smp/number/operators.hpp"
 #include "jln/mp/algorithm/iota.hpp"
 
 TEST_SUITE_BEGIN()
@@ -51,6 +52,13 @@ TEST()
     .test<void, _0, _1, _2>()
     .test<seq_3_2, _3, _2>()
     .test<seq_3_2, _0, _3, _2>()
+    ;
+
+  test_context<smp::find_if<equal_than<_3>>, void>()
+    .test<seq_3_2, _0, _3, _2>()
+    .test<list<_3, _2, bad_number>, _0, _3, _2, bad_number>()
+    .not_invocable<bad_number>()
+    .not_invocable<_0, bad_number>()
     ;
 }
 

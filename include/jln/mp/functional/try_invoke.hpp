@@ -17,6 +17,7 @@
 namespace jln::mp
 {
   struct na;
+  using is_na = same_as<na>;
   using violation = always<na>;
 
   namespace detail
@@ -28,6 +29,12 @@ namespace jln::mp
     template<class F> struct _assume_positive { using type = F; };
     template<class F> struct _assume_strictly_positive { using type = F; };
     template<class F> struct _assume_list { using type = F; };
+    template<class F> struct _assume_unary { using type = F; };
+    template<class F> struct _assume_unary_number { using type = F; };
+    template<class F> struct _assume_unary_positive { using type = F; };
+    template<class F> struct _assume_unary_strictly_positive { using type = F; };
+    template<class F> struct _assume_unary_list { using type = F; };
+    template<class F> struct _assume_binary { using type = F; };
     template<class F> struct _assume_binary_number { using type = F; };
     template<class F> struct _assume_binary_positive { using type = F; };
     template<class F> struct _assume_binary_strictly_positive { using type = F; };
@@ -49,6 +56,9 @@ namespace jln::mp
 
   template<class C>
   using assume_number = typename detail::_assume_number<subcontract<C>>::type;
+
+  template<class C>
+  using assume_unary = typename detail::_assume_unary<subcontract<C>>::type;
 
   template<class Pred, class C>
   struct contract

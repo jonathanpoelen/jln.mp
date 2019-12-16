@@ -10,7 +10,7 @@
 
 namespace jln::mp::smp
 {
-  template<class Pred, class C = identity>
+  template<class Pred, class C = listify, class NC = C>
   using take_while = detail::sfinae<mp::take_while<
-    subcontract_barrier<Pred>, subcontract_barrier<C>>>;
+      subcontract_barrier<Pred>, subcontract_barrier<C>, subcontract_barrier<NC>>>;
 }

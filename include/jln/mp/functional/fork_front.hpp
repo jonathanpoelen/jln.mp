@@ -6,7 +6,6 @@
 
 namespace jln::mp
 {
-  // TODO emp, smp
   // TODO compose ?
   template<class F>
   struct fork_front

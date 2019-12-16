@@ -11,11 +11,7 @@ namespace ut
   {};
 
   template<class T>
-  struct Expected
-  {
-    constexpr Expected(Result<T>)
-    {}
-  };
+  using Expected = Result<T>;
 
   template<class T>
   struct Differ

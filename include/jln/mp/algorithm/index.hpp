@@ -2,6 +2,7 @@
 
 #include "find.hpp"
 #include "../list/size.hpp"
+#include "../list/push_front.hpp"
 #include "../utility/same_as.hpp"
 
 namespace jln::mp
@@ -10,19 +11,23 @@ namespace jln::mp
   struct index_for
   {
     template<class... xs>
-    using f = typename detail::dcall<(sizeof...(xs) < 1000000)>
-      ::template f<C, number<unsigned{int(sizeof...(xs)) - call<F, xs...>::value}>>;
+    using f = typename C::template f<number<int_(sizeof...(xs)) - call<F, xs...>::value>>;
   };
 
   template<class F>
   struct index_for<F, identity>
   {
     template<class... xs>
-    using f = number<unsigned{int(sizeof...(xs)) - call<F, xs...>::value}>;
+    using f = number<int_(sizeof...(xs)) - call<F, xs...>::value>;
   };
 
   template<class Pred, class C = identity, class NC = always<na>>
-  using index_if = index_for<find_if<Pred, size<>, NC>, C>;
+  struct index_if
+  {
+    template<class... xs>
+    using f = typename find_if<Pred, size<push_front<number<sizeof...(xs)>, sub<C>>>, NC>
+      ::template f<xs...>;
+  };
 
   template<class T, class C = listify, class NC = always<na>>
   using index_of = index_if<same_as<T>, C, NC>;

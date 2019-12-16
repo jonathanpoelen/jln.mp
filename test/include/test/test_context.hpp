@@ -14,6 +14,12 @@ namespace ut
 {
   using jln::mp::detail::sfinae;
 
+  template<class...>
+  struct other_list
+  {};
+
+  using other_listify = jln::mp::cfe<other_list>;
+
   namespace detail
   {
     template<bool, class SfinaeMp, class Smp>
@@ -169,4 +175,13 @@ namespace ut
 using ut::test_context;
 using ut::test_pack;
 
+}
+
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae>
+  struct _sfinae<sfinae, cfe<ut::other_list>>
+  {
+    using type = valid_contract<cfe<ut::other_list>>;
+  };
 }

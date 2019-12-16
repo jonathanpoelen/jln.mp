@@ -44,8 +44,6 @@ namespace jln::mp
       call<F2, xs...>
     >;
   };
-
-  // TODO emp
 }
 
 namespace jln::mp::detail
