@@ -12,9 +12,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  using rlist_1_2_0 = list<_1, list<_2, _0>>;
-
-  ut::same<rlist_1_2_0, emp::fold_right<seq_0_1_2, listify>>();
+  ut::same<list<_0, list<_1, list<_2, _3>>>,
+    emp::fold_right<seq_0_1_2, _3, listify>>();
 
   test_pack<fold_right>().test_binary();
   test_pack<fold_right, listify>().test_unary();

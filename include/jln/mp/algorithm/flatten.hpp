@@ -22,9 +22,10 @@ namespace jln::mp
   template<template<class...> class S, class C>
   struct flatten<cfe<S, identity>, C>
   {
-    template<class... xs>
-    using f = mp::call<mp::join<C>,
-      typename detail::_flatten<S, xs>::type...>;
+    template<class... seqs>
+    using f = typename detail::_join_select<sizeof...(seqs)>
+      ::template f<C, typename detail::_flatten<S, seqs>::type...>
+      ::type;
   };
 
   template<class S>
@@ -48,7 +49,7 @@ namespace jln::mp::detail
   template<template<class...> class S, class... xs>
   struct _flatten<S, S<xs...>>
   : _join_select<sizeof...(xs)>
-    ::template f<list, typename _flatten<S, xs>::type...>
+    ::template f<listify, typename _flatten<S, xs>::type...>
   {};
 
   template<template<class...> class S, class... xs>

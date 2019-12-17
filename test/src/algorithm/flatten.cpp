@@ -28,6 +28,13 @@ TEST()
     .test<list<_0, other_list<list<_1>>, _2, _3>,
       _0, list<other_list<list<_1>>, _2>, _3>()
     ;
+
+  test_context<flatten<cfe<other_list>>, smp::flatten<cfe<other_list>>>()
+    .test<seq_0_1_2_3, _0, _1, _2, _3>()
+    .test<list<_0, list<list<_1>, _2>, _3>, _0, list<list<_1>, _2>, _3>()
+    .test<list<_0, list<_1>, _1, list<_2>, _3>,
+      _0, other_list<list<_1>, _1>, list<_2>, _3>()
+    ;
 }
 
 TEST_SUITE_END()
