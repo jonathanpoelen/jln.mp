@@ -118,7 +118,6 @@ namespace ut
     template<class... xs>
     static test_pack test_unary()
     {
-      static_assert(((void)Tpl<Args..., xs..., jln::mp::na>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., unary>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
@@ -128,7 +127,6 @@ namespace ut
     template<class... xs>
     static test_pack test_binary()
     {
-      static_assert(((void)Tpl<Args..., xs..., jln::mp::na>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., binary>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
@@ -137,33 +135,6 @@ namespace ut
 
     template<class... xs>
     static test_pack test_variadic()
-    {
-      static_assert(((void)Tpl<Args..., xs..., jln::mp::na>{}, 1));
-      static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
-      static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
-      return {};
-    }
-
-    template<class... xs>
-    static test_pack test_unary_not_na()
-    {
-      static_assert(((void)Tpl<Args..., xs..., unary>{}, 1));
-      static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
-      static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
-      return {};
-    }
-
-    template<class... xs>
-    static test_pack test_binary_not_na()
-    {
-      static_assert(((void)Tpl<Args..., xs..., binary>{}, 1));
-      static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
-      static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
-      return {};
-    }
-
-    template<class... xs>
-    static test_pack test_variadic_not_na()
     {
       static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
       static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
