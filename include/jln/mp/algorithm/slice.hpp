@@ -1,6 +1,5 @@
 #pragma once
 
-#include "filter_mask.hpp"
 #include "../list/list.hpp"
 #include "../number/number.hpp"
 #include "../utility/eager.hpp"
