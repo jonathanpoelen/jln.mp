@@ -1,22 +1,14 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/algorithm/sort.hpp"
-#include "jln/mp/smp/number/operators.hpp"
+#include "jln/mp/smp/algorithm/sort.hpp"
 
 TEST_SUITE_BEGIN()
-
-template<long... ints>
-using ri = jln::mp::detail::rlist<jln::mp::number<ints>...>;
-
-template<class... xs>
-using rl = jln::mp::detail::rlist<xs...>;
 
 TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
-  using jln::mp::detail::rlist;
 
   ut::same<list<>, call<sort<>>>();
 
@@ -187,6 +179,14 @@ TEST()
   ut::same<list<_0, _1, _2, _3, _4, _5, _6>, call<sort<>, _2, _6, _3, _1, _4, _0, _5>>();
 
   ut::same<list<
+    _1, _2, _5, _5, _6, _6, _9, _9, _11, _13, _15, _16,
+    _17, _19, _21, _22, _22, _23, _26, _26, _30
+  >, call<sort<>,
+    _11, _16, _5, _19, _2, _30, _17, _15, _26, _9, _22,
+    _6, _13, _6, _21, _22, _5, _9, _23, _26, _1>
+  >();
+
+  ut::same<list<
     _0, _1, _2, _3, _4, _5, _6, _7, _8, _9,
     _10, _11, _12, _13, _14, _15, _16, _17, _18, _19,
     _20, _21, _22, _23, _24, _25, _26, _27, _28, _29,
@@ -213,32 +213,24 @@ TEST()
   >>();
 
 
-  // test_pack<sort, listify>()
-  //   .test_unary()
-  //   ;
-  //
-  // ut::same<_1, emp::sort<seq_0_1_2_3_4_5_6_7_8_9>>();
-  //
-  // test_context<sort<>, smp::sort<>>()
-  //   .test<_1>()
-  //   .test<_1, _0>()
-  //   .test<_1, _0, _0>()
-  //   .test<_1, _0, _1>()
-  //   .test<_0, _1, _0>()
-  //   .test<_1, _0, _1, _2>()
-  //   .test<_0, _1, _0, _2>()
-  //   .test<_0, _0, _2, _1>()
-  //   .test<_1, _0, _1, _2, _3, _4>()
-  //   .test<_0, _0, _1, _2, _4, _3>()
-  //   .test<_1, bad_number>()
-  //   .not_invocable<bad_number, bad_number>()
-  //   .not_invocable<bad_number, bad_number, bad_number>()
-  //   ;
-  //
-  // test_context<smp::sort<na>, void>()
-  //   .test<_1>()
-  //   .not_invocable<_1, _2>()
-  //   ;
+  test_pack<sort, listify>()
+    .test_unary()
+    .test_binary()
+    .test_variadic()
+    ;
+
+  ut::same<seq_1_2_3, emp::sort<seq_3_2_1>>();
+
+  test_context<sort<>, smp::sort<>>()
+    .test<list<>>()
+    .test<list<_0, _1>, _1, _0>()
+    .test<list<_0, _0, _0, _0, _0, _1, _1, _1, _1, _1, _1>,
+      _1, _0, _0, _0, _0, _1, _0, _1, _1, _1, _1>()
+    .test<list<bad_number>, bad_number>()
+    .not_invocable<bad_number, bad_number>()
+    .not_invocable<bad_number, bad_number, bad_number>()
+    .not_invocable<_0, _0, _0, _0, _0, _0, _0, _0, _0, bad_number, _0, _0, _0>()
+    ;
 
 }
 
