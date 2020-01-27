@@ -2,6 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/algorithm/prepend.hpp"
+#include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -17,10 +18,9 @@ TEST()
 
   ut::same<list<_3, _4, _0, _1, _2>, emp::prepend<seq_0_1_2, _3, _4>>();
 
-  test_context<prepend<inc<>>, smp::prepend<smp::inc<>>>()
-    .test<list<>>()
-    .test<seq_1_2_3, _0, _1, _2>()
-    .not_invocable<list<>>()
+  test_context<prepend<list<_9>>, smp::prepend<list<_9>>>()
+    .test<list<_9>>()
+    .test<list<_0, _1, _2, _9>, _0, _1, _2>()
     ;
 }
 

@@ -1,8 +1,6 @@
 #pragma once
 
 #include "../list/list.hpp"
-#include "../list/join.hpp"
-#include "../functional/call.hpp"
 #include "../number/operators.hpp"
 
 namespace jln::mp
@@ -38,323 +36,339 @@ namespace jln::mp
 }
 
 #include "../utility/conditional.hpp"
-#include "find.hpp"
-#include "swap_index.hpp"
-#include "reverse.hpp"
-#include "../list/push_back.hpp"
-#include "../list/push_front.hpp"
-#include "../list/pop_front.hpp"
+#include "../functional/call.hpp"
+#include "prepend.hpp"
 #include "../list/take.hpp"
 #include "../list/drop.hpp"
-#include "../list/at.hpp"
-#include "../functional/fork.hpp"
-#include "../functional/flip.hpp"
-#include "../number/operators.hpp"
 
 namespace jln::mp::detail
 {
-  constexpr int sort_impl_select(int n)
+  template<class x, class y, class z = list<>, class = true_>
+  struct _merge;
+
+  template<class, class, class, class, class = true_>
+  struct _merge_impl
+  {};
+
+  constexpr int _fast_merge_impl_select(bool b, int xn, int yn)
   {
-    return n <= 3 ? n : 0;
+    return b ? (yn >= 4) + (yn >= 9) * 4 : (xn >= 4) + (xn >= 9) * 4 + 2;
   }
 
-  template<class seq1, class seq2>
-  struct _sort_merge;
+  template<int>
+  struct _fast_merge_impl;
 
-  template<class...>
-  class rlist;
-
-  template<bool>
-  struct mk_rlist2_2
+  template<>
+  struct _fast_merge_impl<0>
   {
-    template<class Cmp, class x0, class x1, class y0, class y1>
-    using f = rlist<rlist<x0, x1>, y0, rlist<y1>>;
-  };
+    template<class, class, class, class>
+    struct f
+    {};
 
-  template<bool, bool>
-  struct mk_rlist2_2_s2
-  {
-    template<class Cmp, class x0, class x1, class y0, class y1>
-    using f = rlist<rlist<x0, y0>, x1, rlist<y1>>;
+    template<class xh, class... xt, class yh, class... yt, class... zs, class cmp>
+    struct f<list<xh, xt...>, list<yh, yt...>, list<zs...>, cmp>
+    : _merge_impl<list<xh, xt...>, list<yt...>, list<zs..., yh>, cmp>
+    {};
   };
 
   template<>
-  struct mk_rlist2_2_s2<true, false>
+  struct _fast_merge_impl<1>
   {
-    template<class Cmp, class x0, class x1, class y0, class y1>
-    using f = rlist<rlist<y0, x0>, x1, rlist<y1>>;
+    template<class, class, class, class, class = true_>
+    struct f
+    {};
+
+    template<
+      class xh, class... xt,
+      class yh0, class yh1, class yh2, class yh3, class yh4, class... yt,
+      class... zs, class cmp>
+    struct f<
+      list<xh, xt...>,
+      list<yh0, yh1, yh2, yh3, yh4, yt...>,
+      list<zs...>, cmp,
+      number<bool(call<cmp, yh4, xh>::value)>>
+    : _merge_impl<list<xh, xt...>, list<yt...>, list<zs..., yh0, yh1, yh2, yh3, yh4>, cmp>
+    {};
+
+    template<
+      class xh, class... xt,
+      class yh0, class yh1, class yh2, class yh3, class yh4, class... yt,
+      class... zs, class cmp>
+    struct f<
+      list<xh, xt...>,
+      list<yh0, yh1, yh2, yh3, yh4, yt...>,
+      list<zs...>, cmp,
+      number<!bool(call<cmp, yh4, xh>::value)>>
+    : _merge_impl<list<xh, xt...>, list<yh1, yh2, yh3, yh4, yt...>, list<zs..., yh0>, cmp>
+    {};
   };
 
   template<>
-  struct mk_rlist2_2_s2<false, true>
+  struct _fast_merge_impl<2>
   {
-    template<class Cmp, class x0, class x1, class y0, class y1>
-    using f = rlist<rlist<x0, y0>, y1, rlist<x1>>;
-  };
+    template<class, class, class, class>
+    struct f
+    {};
 
-  template<bool>
-  struct mk_rlist2_2_s3_m
-  {
-    template<class x0, class x1, class y0, class y1>
-    using f = rlist<rlist<y0, x0>, y1, rlist<x1>>;
-  };
-
-  template<>
-  struct mk_rlist2_2_s3_m<true>
-  {
-    template<class x0, class x1, class y0, class y1>
-    using f = rlist<rlist<y0, y1>, x0, rlist<x1>>;
+    template<class xh, class... xt, class yh, class... yt, class... zs, class cmp>
+    struct f<list<xh, xt...>, list<yh, yt...>, list<zs...>, cmp>
+    : _merge_impl<list<xt...>, list<yh, yt...>, list<zs..., xh>, cmp>
+    {};
   };
 
   template<>
-  struct mk_rlist2_2_s2<true, true>
+  struct _fast_merge_impl<3>
   {
-    template<class Cmp, class x0, class x1, class y0, class y1>
-    using f = typename mk_rlist2_2_s3_m<
-      bool(call<Cmp, y1, x0>::value)
-    >::template f<x0, x1, y0, y1>;
+    template<class, class, class, class, class = true_>
+    struct f
+    {};
+
+    template<
+      class xh0, class xh1, class xh2, class xh3, class xh4, class... xt,
+      class yh, class... yt,
+      class... zs, class cmp>
+    struct f<
+      list<xh0, xh1, xh2, xh3, xh4, xt...>,
+      list<yh, yt...>,
+      list<zs...>, cmp,
+      number<!bool(call<cmp, yh, xh4>::value)>>
+    : _merge_impl<list<xt...>, list<yh, yt...>, list<zs..., xh0, xh1, xh2, xh3, xh4>, cmp>
+    {};
+
+    template<
+      class xh0, class xh1, class xh2, class xh3, class xh4, class... xt,
+      class yh, class... yt,
+      class... zs, class cmp>
+    struct f<
+      list<xh0, xh1, xh2, xh3, xh4, xt...>,
+      list<yh, yt...>,
+      list<zs...>, cmp,
+      number<bool(call<cmp, yh, xh4>::value)>>
+    : _merge_impl<list<xh1, xh2, xh3, xh4, xt...>, list<yh, yt...>, list<zs..., xh0>, cmp>
+    {};
   };
 
   template<>
-  struct mk_rlist2_2<true>
+  struct _fast_merge_impl<4>
   {
-    template<class Cmp, class x0, class x1, class y0, class y1>
-    using f = typename mk_rlist2_2_s2<
-      bool(call<Cmp, y0, x0>::value),
-      bool(call<Cmp, y1, x1>::value)
-    >::template f<Cmp, x0, x1, y0, y1>;
-  };
+    template<class, class, class, class>
+    struct f
+    {};
 
-  template<class x0, class x1, class y0, class y1>
-  struct _sort_merge<rlist<x0, x1>, rlist<y0, y1>>
-  {
-    template<class Cmp>
-    using f = typename mk_rlist2_2<bool(call<Cmp, y0, x1>::value)>
-      ::template f<Cmp, x0, x1, y0, y1>;
-  };
-
-
-  template<bool>
-  struct mk_rlist2_3
-  {
-    template<class Cmp, class a, class b, class c, class d, class e>
-    using f = rlist<rlist<a, b>, c, rlist<d, e>>;
-  };
-
-  template<bool, bool>
-  struct mk_rlist2_3_s2
-  {
-    template<class Cmp, class a, class b, class c, class d, class e>
-    using f = rlist<rlist<a, c>, b, rlist<d, e>>;
+    template<class xh, class... xt, class yh, class... yt, class... zs, class cmp>
+    struct f<list<xh, xt...>, list<yh, yt...>, list<zs...>, cmp>
+    : _merge_impl<list<xh, xt...>, list<yt...>, list<zs..., yh>, cmp>
+    {};
   };
 
   template<>
-  struct mk_rlist2_3_s2<true, false>
+  struct _fast_merge_impl<5>
   {
-    template<class Cmp, class a, class b, class c, class d, class e>
-    using f = rlist<rlist<c, a>, b, rlist<d, e>>;
-  };
+    template<class, class, class, class, class = true_>
+    struct f
+    {};
 
-  template<bool>
-  struct mk_rlist2_3_s3
-  {
-    template<class Cmp, class a, class b, class c, class d, class e>
-    using f = rlist<rlist<a, c>, d, rlist<b, e>>;
-  };
+    template<
+      class xh, class... xt,
+      class yh0, class yh1, class yh2, class yh3, class yh4,
+      class yh5, class yh6, class yh7, class yh8, class yh9, class... yt,
+      class... zs, class cmp>
+    struct f<
+      list<xh, xt...>,
+      list<yh0, yh1, yh2, yh3, yh4, yh5, yh6, yh7, yh8, yh9, yt...>,
+      list<zs...>, cmp,
+      number<bool(call<cmp, yh9, xh>::value)>>
+    : _merge_impl<
+      list<xh, xt...>,
+      list<yt...>,
+      list<zs..., yh0, yh1, yh2, yh3, yh4, yh5, yh6, yh7, yh8, yh9>,
+      cmp>
+    {};
 
-  template<>
-  struct mk_rlist2_3_s3<true>
-  {
-    template<class Cmp, class a, class b, class c, class d, class e>
-    using f = rlist<rlist<a, c>, d, rlist<e, b>>;
-  };
-
-  template<>
-  struct mk_rlist2_3_s2<false, true>
-  {
-    template<class Cmp, class a, class b, class c, class d, class e>
-    using f = typename mk_rlist2_3_s3<
-      bool(call<Cmp, e, b>::value)
-    >::template f<Cmp, a, b, c, d, e>;
-  };
-
-  template<bool, bool>
-  struct mk_rlist2_3_s3_2
-  {
-    template<class Cmp, class a, class b, class c, class d, class e>
-    using f = rlist<rlist<c, a>, d, rlist<b, e>>;
-  };
-
-  template<>
-  struct mk_rlist2_3_s3_2<true, false>
-  {
-    template<class Cmp, class a, class b, class c, class d, class e>
-    using f = rlist<rlist<c, a>, d, rlist<e, b>>;
+    template<
+      class xh, class... xt,
+      class yh0, class yh1, class yh2, class yh3, class yh4,
+      class yh5, class yh6, class yh7, class yh8, class yh9, class... yt,
+      class... zs, class cmp>
+    struct f<
+      list<xh, xt...>,
+      list<yh0, yh1, yh2, yh3, yh4, yh5, yh6, yh7, yh8, yh9, yt...>,
+      list<zs...>, cmp,
+      number<!bool(call<cmp, yh9, xh>::value)>>
+    : _fast_merge_impl<1>::template f<
+      list<xh, xt...>,
+      list<yh1, yh2, yh3, yh4, yh5, yh6, yh7, yh8, yh9, yt...>,
+      list<zs..., yh0>,
+      cmp>
+    {};
   };
 
   template<>
-  struct mk_rlist2_3_s3_2<false, true>
+  struct _fast_merge_impl<6>
   {
-    template<class Cmp, class a, class b, class c, class d, class e>
-    using f = rlist<rlist<c, d>, a, rlist<b, e>>;
-  };
+    template<class, class, class, class>
+    struct f
+    {};
 
-  template<bool>
-  struct mk_rlist2_3_s3_2_s2
-  {
-    template<class a, class b, class c, class d, class e>
-    using f = rlist<rlist<c, d>, a, rlist<e, b>>;
-  };
-
-  template<>
-  struct mk_rlist2_3_s3_2_s2<true>
-  {
-    template<class a, class b, class c, class d, class e>
-    using f = rlist<rlist<c, d>, e, rlist<a, b>>;
+    template<class xh, class... xt, class yh, class... yt, class... zs, class cmp>
+    struct f<list<xh, xt...>, list<yh, yt...>, list<zs...>, cmp>
+    : _merge_impl<list<xt...>, list<yh, yt...>, list<zs..., xh>, cmp>
+    {};
   };
 
   template<>
-  struct mk_rlist2_3_s3_2<true, true>
+  struct _fast_merge_impl<7>
   {
-    template<class Cmp, class a, class b, class c, class d, class e>
-    using f = typename mk_rlist2_3_s3_2_s2<
-      bool(call<Cmp, e, a>::value)
-    >::template f<a, b, c, d, e>;
+    template<class, class, class, class, class = true_>
+    struct f
+    {};
+
+    template<
+      class xh0, class xh1, class xh2, class xh3, class xh4,
+      class xh5, class xh6, class xh7, class xh8, class xh9, class... xt,
+      class yh, class... yt,
+      class... zs, class cmp>
+    struct f<
+      list<xh0, xh1, xh2, xh3, xh4, xh5, xh6, xh7, xh8, xh9, xt...>,
+      list<yh, yt...>,
+      list<zs...>, cmp,
+      number<!bool(call<cmp, yh, xh9>::value)>>
+    : _merge_impl<
+      list<xt...>,
+      list<yh, yt...>,
+      list<zs..., xh0, xh1, xh2, xh3, xh4, xh4>,
+      cmp>
+    {};
+
+    template<
+      class xh0, class xh1, class xh2, class xh3, class xh4,
+      class xh5, class xh6, class xh7, class xh8, class xh9, class... xt,
+      class yh, class... yt,
+      class... zs, class cmp>
+    struct f<
+      list<xh0, xh1, xh2, xh3, xh4, xh5, xh6, xh7, xh8, xh9, xt...>,
+      list<yh, yt...>,
+      list<zs...>, cmp,
+      number<bool(call<cmp, yh, xh9>::value)>>
+    : _fast_merge_impl<3>::template f<
+      list<xh1, xh2, xh3, xh4, xh5, xh6, xh7, xh8, xh9, xt...>,
+      list<yh, yt...>,
+      list<zs..., xh0>,
+      cmp>
+    {};
   };
 
-  template<>
-  struct mk_rlist2_3_s2<true, true>
+  template<class xh, class... xt, class yh, class... yt, class... zs, class cmp>
+  struct _merge_impl<list<xh, xt...>, list<yh, yt...>, list<zs...>, cmp>
+  : _fast_merge_impl<_fast_merge_impl_select(
+    bool(call<cmp, yh, xh>::value), sizeof...(xt), sizeof...(yt)
+  )>::template f<
+    list<xh, xt...>, list<yh, yt...>, list<zs...>, cmp>
+  {};
+
+  template<class... xs, class... zs, class cmp>
+  struct _merge_impl<list<xs...>, list<>, list<zs...>, cmp>
   {
-    template<class Cmp, class a, class b, class c, class d, class e>
-    using f = typename mk_rlist2_3_s3_2<
-      bool(call<Cmp, e, b>::value),
-      bool(call<Cmp, d, a>::value)
-    >::template f<Cmp, a, b, c, d, e>;
+    template<class x, class y>
+    using part = typename _merge<emp::prepend<x, xs...>, y, list<zs...>>::template f<cmp>;
+
+    using type = list<zs..., xs...>;
   };
 
-  template<>
-  struct mk_rlist2_3<true>
+  template<class... ys, class... zs, class cmp>
+  struct _merge_impl<list<>, list<ys...>, list<zs...>, cmp>
   {
-    template<class Cmp, class a, class b, class c, class d, class e>
-    using f = typename mk_rlist2_3_s2<
-      bool(call<Cmp, c, a>::value),
-      bool(call<Cmp, d, b>::value)
-    >::template f<Cmp, a, b, c, d, e>;
+    template<class x, class y>
+    using part = typename _merge<x, emp::prepend<y, ys...>, list<zs...>>::template f<cmp>;
+
+    using type = list<zs..., ys...>;
   };
 
-  template<class a, class b, class c, class d, class e>
-  struct _sort_merge<rlist<a, b>, rlist<c, d, e>>
+  template<class... xs, class... ys, class z>
+  struct _merge<list<xs...>, list<ys...>, z, number<
+    // x.size + y.size >= 100, unless empty list
+    (unsigned{sizeof...(xs)-1LL} + unsigned{sizeof...(ys)-1LL} >= 98u)>>
   {
-    template<class Cmp>
-    using f = typename mk_rlist2_3<bool(call<Cmp, c, b>::value)>
-      ::template f<Cmp, a, b, c, d, e>;
+    using xm = number<(sizeof...(xs) + 1) / 2>;
+    using ym = number<(sizeof...(ys) + 1) / 2>;
+
+    using xl = call<take<xm>, xs...>;
+    using yl = call<take<ym>, ys...>;
+
+    using xr = call<drop<xm>, xs...>;
+    using yr = call<drop<ym>, ys...>;
+
+    using l = _merge<xl, yl, z>;
+
+    template<class cmp>
+    using f = typename l::template f<cmp>::template part<xr, yr>;
   };
+
+  template<class x, class y, class z, class>
+  struct _merge
+  {
+    template<class cmp>
+    using f = _merge_impl<x, y, z, cmp>;
+  };
+
+  template<class x, class z>
+  struct _merge<x, list<>, z>
+  {
+    template<class cmp>
+    using f = _merge_impl<x, list<>, z, cmp>;
+  };
+
+  template<class y, class z>
+  struct _merge<list<>, y, z>
+  {
+    template<class cmp>
+    using f = _merge_impl<list<>, y, z, cmp>;
+  };
+
+  constexpr int sort_impl_select(int n)
+  {
+    return n <= 2 ? n : 0;
+  }
 
   template<int n, class Cmp>
   struct _sort_impl
   {
     template<class... xs>
-    using f = typename _sort_merge<
+    using f = typename memoize_call<_merge<
       call<take_c<sizeof...(xs) / 2,
         _sort_impl<sort_impl_select(sizeof...(xs) / 2), Cmp>>, xs...>,
       call<drop_c<sizeof...(xs) / 2,
-        _sort_impl<sort_impl_select(sizeof...(xs) - sizeof...(xs) / 2), Cmp>>, xs...>
-    >::template f<Cmp>;
-  };
-
-  template<class Cmp>
-  struct _sort_impl<1, Cmp>
-  {
-    template<class x>
-    using f = rlist<x>;
+        _sort_impl<sort_impl_select((sizeof...(xs) + 1) / 2), Cmp>>, xs...>
+    >, Cmp>::type;
   };
 
   template<bool>
-  struct mk_rlist2
+  struct mk_list2
   {
     template<class... xs>
-    using f = rlist<xs...>;
+    using f = list<xs...>;
   };
 
   template<>
-  struct mk_rlist2<true>
+  struct mk_list2<true>
   {
     template<class x, class y>
-    using f = rlist<y, x>;
+    using f = list<y, x>;
   };
 
   template<class Cmp>
   struct _sort_impl<2, Cmp>
   {
     template<class x, class y>
-    using f = typename mk_rlist2<bool(call<Cmp, y, x>::value)>
+    using f = typename mk_list2<bool(call<Cmp, y, x>::value)>
       ::template f<x, y>;
   };
 
-  template<bool, bool>
-  struct mk_rlist3
-  {
-    template<class Cmp, class... xs>
-    using f = rlist<xs...>;
-  };
-
-  template<>
-  struct mk_rlist3<true, true>
-  {
-    template<class Cmp, class x, class y, class z>
-    using f = rlist<z, y, x>;
-  };
-
-  template<bool>
-  struct mk_rlist3_r
-  {
-    template<class x, class y, class z>
-    using f = rlist<x, z, y>;
-  };
-
-  template<>
-  struct mk_rlist3_r<true>
-  {
-    template<class x, class y, class z>
-    using f = rlist<z, x, y>;
-  };
-
-  template<>
-  struct mk_rlist3<false, true>
-  {
-    template<class Cmp, class x, class y, class z>
-    using f = typename mk_rlist3_r<bool(call<Cmp, z, x>::value)>
-      ::template f<x, y, z>;
-  };
-
-  template<bool>
-  struct mk_rlist3_l
-  {
-    template<class x, class y, class z>
-    using f = rlist<y, x, z>;
-  };
-
-  template<>
-  struct mk_rlist3_l<true>
-  {
-    template<class x, class y, class z>
-    using f = rlist<y, z, x>;
-  };
-
-  template<>
-  struct mk_rlist3<true, false>
-  {
-    template<class Cmp, class x, class y, class z>
-    using f = typename mk_rlist3_l<bool(call<Cmp, z, x>::value)>
-      ::template f<x, y, z>;
-  };
-
   template<class Cmp>
-  struct _sort_impl<3, Cmp>
+  struct _sort_impl<1, Cmp>
   {
-    template<class x, class y, class z>
-    using f = typename mk_rlist3<bool(call<Cmp, y, x>::value), bool(call<Cmp, z, y>::value)>
-      ::template f<Cmp, x, y, z>;
+    template<class x>
+    using f = list<x>;
   };
 
   template<int n, class Cmp, class C>
@@ -376,8 +390,7 @@ namespace jln::mp::detail
   struct _sort<1, Cmp, C>
   {
     template<class x, class y>
-    using f = typename conditional_c<bool(call<Cmp, x, y>::value)>
-      ::template f<flip<C>, C>
+    using f = typename mk_list2<bool(call<Cmp, x, y>::value)>
       ::template f<y, x>;
   };
 
