@@ -63,6 +63,7 @@ namespace jln::mp::detail
     using f = _merge<x, y>;
   };
 
+  // TODO
   template<class x>
   struct lazy
   {

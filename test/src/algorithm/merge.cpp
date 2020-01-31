@@ -24,6 +24,7 @@ TEST()
     .test<list<_0, _1>, list<>, list<_0, _1>>()
     .test<list<_0, _1>, list<_0, _1>, list<>>()
     .test<list<bad_number>, list<>, list<bad_number>>()
+    .not_invocable<list<>, int>()
     .not_invocable<list<bad_number>, list<bad_number>>()
     ;
 }
