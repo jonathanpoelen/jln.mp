@@ -95,7 +95,8 @@ namespace jln::mp
   template<class F, class TC = identity, class FC = violation>
   struct try_invoke;
 
-  // TODO try_invoke_or<F, FC> = try_invoke<F, identity, FC>
+  template<class F, class FC = violation>
+  using try_invoke_or = try_invoke<F, identity, FC>;
 
   template<class Pred, class C, class TC, class FC>
   struct try_invoke<contract<Pred, C>, TC, FC>
