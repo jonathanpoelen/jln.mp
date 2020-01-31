@@ -5,6 +5,13 @@
 
 TEST_SUITE_BEGIN()
 
+struct cmp_err
+{
+  template<class x, class y>
+  using f = typename jln::mp::conditional_c<(x::value % 2) == (y::value % 2)>
+    ::template f<jln::mp::number<(x::value < y::value)>, int>;
+};
+
 TEST()
 {
   using namespace jln::mp;
@@ -212,6 +219,7 @@ TEST()
     _100, _101, _102, _103, _104, _105, _106, _107, _108, _109
   >>();
 
+  ut::not_invocable<smp::sort<cmp_err>, _0, _0, _0, _1, _1, _1>();
 
   test_pack<sort, listify>()
     .test_unary()
@@ -223,13 +231,16 @@ TEST()
 
   test_context<sort<>, smp::sort<>>()
     .test<list<>>()
+    .test<list<_0>, _0>()
     .test<list<_0, _1>, _1, _0>()
     .test<list<_0, _0, _0, _0, _0, _1, _1, _1, _1, _1, _1>,
       _1, _0, _0, _0, _0, _1, _0, _1, _1, _1, _1>()
     .test<list<bad_number>, bad_number>()
     .not_invocable<bad_number, bad_number>()
     .not_invocable<bad_number, bad_number, bad_number>()
+    .not_invocable<_0, _0, bad_number>()
     .not_invocable<_0, _0, _0, _0, _0, _0, _0, _0, _0, bad_number, _0, _0, _0>()
+    .not_invocable<_0, _0, _0, _0, _0, _0, _0, _0, bad_number, _0, _0, _0, _0>()
     ;
 
 }

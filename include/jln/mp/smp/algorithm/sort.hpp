@@ -1,14 +1,24 @@
 #pragma once
 
 #include "../list/list.hpp"
+#include "../number/as_bool.hpp"
 #include "../number/operators.hpp"
+#include "../algorithm/is_sorted.hpp"
 #include "../../functional/contract.hpp"
 #include "../../algorithm/sort.hpp"
+#include "../concepts.hpp"
 
 namespace jln::mp::smp
 {
   template<class Cmp = less<>, class C = listify>
-  using sort = try_contract<sort<subcontract<Cmp>, subcontract<C>>>;
+  using sort = try_contract<mp::sort<
+    concepts::predicate<Cmp, mp::identity, mp::always<true_>>,
+    mp::if_<
+      try_invoke<is_sorted<Cmp>, always<true_>, always<false_>>,
+      subcontract<C>,
+      violation
+    >
+  >>;
 
   template<class Cmp = less<>, class C = listify>
   using stable_sort = sort<Cmp, C>;

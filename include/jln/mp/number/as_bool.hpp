@@ -10,7 +10,7 @@ namespace jln::mp
   struct as_bool
   {
     template<class x>
-    using f = call<C, number<x::value ? 1 : 0>>;
+    using f = call<C, number<bool(x::value)>>;
   };
 
   namespace emp
