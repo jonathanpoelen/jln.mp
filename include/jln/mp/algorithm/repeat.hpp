@@ -1,6 +1,7 @@
 #pragma once
 
 #include "make_int_sequence.hpp"
+#include "../config/enumerate.hpp"
 
 namespace jln::mp
 {
@@ -15,8 +16,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = emp::make_int_sequence<N,
-      // TODO sizeof...(xs) > 2 ? 2 : sizeof...(xs) ; better ?
-      typename detail::_repeat<sizeof...(xs)>
+      typename detail::_repeat<detail::min(sizeof...(xs), 2)>
         ::template f<C, xs...>>;
   };
 
@@ -46,7 +46,6 @@ namespace jln::mp::detail
   struct _repeat
   {
     template<class C, class... xs>
-    // TODO join<C>::template f<list<conditional_c<true>::f<list<xs...>, x>...> ?
     using f = transform<always<list<xs...>>, join<C>>;
   };
 
