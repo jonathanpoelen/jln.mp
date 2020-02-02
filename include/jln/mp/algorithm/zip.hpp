@@ -24,6 +24,7 @@ namespace jln::mp
     >::template f<C, seqs...>;
   };
 
+  // TODO also smp
   template<class C>
   struct zip<transform<unpack<listify>, C>>
   : zip<C>

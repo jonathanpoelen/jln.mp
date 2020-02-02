@@ -32,7 +32,7 @@ TEST()
 
   test_context<group_n<_3>, smp::group_n<_3>>()
     .test<list<>>()
-    .test<list<list<_0, _1>>, _0, _1>()
+    .test<list<seq_0_1>, _0, _1>()
     .test<list<seq_0_1_2>, _0, _1, _2>()
     .test<list<seq_0_1_2, seq_3>, _0, _1, _2, _3>()
     .test<list<list<bad_number>>, bad_number>()

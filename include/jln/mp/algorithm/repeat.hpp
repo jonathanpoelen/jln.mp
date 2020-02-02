@@ -42,13 +42,6 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  template<int_ n>
-  struct _repeat
-  {
-    template<class C, class... xs>
-    using f = transform<always<list<xs...>>, join<C>>;
-  };
-
   template<>
   struct _repeat<0>
   {
@@ -61,5 +54,12 @@ namespace jln::mp::detail
   {
     template<class C, class x>
     using f = transform<always<x>, C>;
+  };
+
+  template<>
+  struct _repeat<2>
+  {
+    template<class C, class... xs>
+    using f = transform<always<list<xs...>>, join<C>>;
   };
 }

@@ -47,7 +47,7 @@ namespace jln::mp::detail
   struct _intersperse<1>
   {
     template<class C, class x, class... xs>
-    using f = typename detail::_zip_impl<
+    using f = typename _zip_impl<
       join<pop_front<C>>,
       emp::make_int_sequence_c<sizeof...(xs), transform<always<x>>>,
       list<xs...>
