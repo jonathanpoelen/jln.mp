@@ -10,6 +10,16 @@ namespace jln::mp
   {
     template<int>
     struct _slice;
+
+    // TODO optimize start = 0
+    constexpr int_ slide_select(int_ nx, int_ size, int_ stride)
+    {
+      return !size ? 0
+        : size == 1 ? 3
+        : stride <= 1 ? 2
+        : nx < stride ? 2
+        : 1;
+    }
   }
 
   template<class start, class size, class stride = number<1>, class C = listify>
@@ -17,7 +27,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_slice<
-      (size::value ? (stride::value > 1 ? 1 : 2) : 0)>
+      detail::slide_select(int_(sizeof...(xs)) - start::value, size::value, stride::value)
+    >
     ::template f<
       start::value, size::value,
       // verify that stride is strictly greater than 0
@@ -40,11 +51,12 @@ namespace jln::mp
 }
 
 
-#include "remove.hpp"
+#include "remove.hpp" // _wrap_if
 #include "make_int_sequence.hpp"
 #include "../list/join.hpp"
 #include "../list/drop.hpp"
 #include "../list/take.hpp"
+#include "../list/front.hpp"
 #include "../functional/bind.hpp"
 
 namespace jln::mp::detail
@@ -52,7 +64,7 @@ namespace jln::mp::detail
   template<>
   struct _slice<2>
   {
-    template<unsigned start, unsigned size, unsigned stride, class C, unsigned len>
+    template<unsigned start, unsigned size, unsigned /*stride*/, class C, unsigned len>
     using f = drop_c<start, take_c<
       detail::validate_index<size - 1u,
         unsigned{int_(len) - start}>::value + 1u,
@@ -67,7 +79,7 @@ namespace jln::mp::detail
     {
       template<class... xs>
       using f = typename join<C>::template f<
-        typename _wrap_if<(ints < size && ints % stride == 0)>
+        typename _wrap_if<(ints <= size && ints % stride == 0)>
         ::template f<xs>
       ...>;
     };
@@ -82,7 +94,7 @@ namespace jln::mp::detail
       typename emp::make_int_sequence_v_c<
         detail::validate_index<int_(len) - start, len>::value,
         cfv_v<_slice_impl<
-          detail::validate_index<size * stride - 1u, len - start>::value,
+          detail::validate_index<size * stride - stride + 1, len - start>::value,
           stride, C
         >::template impl>
       >
@@ -92,9 +104,16 @@ namespace jln::mp::detail
   template<>
   struct _slice<0>
   {
-    template<unsigned start, unsigned size, unsigned stride, class C, unsigned len>
+    template<unsigned start, unsigned size, unsigned /*stride*/, class C, unsigned len>
     using f = typename conditional_c<
       bool(detail::validate_index<start, len>::value)
     >::template f<C, C>;
+  };
+
+  template<>
+  struct _slice<3>
+  {
+    template<unsigned start, unsigned size, unsigned /*stride*/, class C, unsigned len>
+    using f = drop_c<start, front<C>>;
   };
 }

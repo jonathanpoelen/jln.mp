@@ -40,6 +40,12 @@ TEST()
     .not_invocable<>()
     ;
 
+  test_context<slice_c<0, 2, 5>, smp::slice_c<0, 2, 5>>()
+    .test<list<_0, _5>, _0, _1, _2, _3, _4, _5>()
+    .test<list<_0, _5>, _0, _1, _2, _3, _4, _5, _6>()
+    .not_invocable<_0, _1, _2, _3, _4>()
+    ;
+
   ut::not_invocable<smp::slice_c<2, 3, 0>,
     _0, _1, _2, _3, _4, _5>();
 }
