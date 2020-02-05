@@ -4,6 +4,7 @@ from os import listdir
 from os.path import isfile, join
 
 all_targets = set()
+cpp_test_paths = []
 output_lines = []
 
 def new_target(name):
@@ -29,6 +30,7 @@ def make_targets(path, prefix, target_prefix='t_'):
     newpath = join(path, f)
     if isfile(newpath):
       if f.endswith('.cpp'):
+        cpp_test_paths.append(f'{path}/{f}')
         name = new_target(f[:-4])
         l.append(new_executable(name, newpath, target_prefix, i))
         i += 1
@@ -57,3 +59,8 @@ with open('meson.build', 'w') as f:
   f.write('\n')
   f.write(stop_str)
   f.write(content[stop + len(stop_str):])
+
+cpp_test_paths.sort()
+with open('test/mp.cpp', 'w') as f:
+  for path in cpp_test_paths:
+    f.write(f'#include "{path[5:]}"\n')
