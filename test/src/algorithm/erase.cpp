@@ -11,9 +11,9 @@ TEST()
   using namespace ut::ints;
 
   test_pack<erase, _0, _1>()
-    .test_variadic_not_na()
-    .test_binary_not_na()
-    .test_unary_not_na()
+    .test_variadic()
+    .test_binary()
+    .test_unary()
     ;
 
   ut::same<emp::numbers<0, 2>, emp::erase_c<seq_0_1_2, 1>>();

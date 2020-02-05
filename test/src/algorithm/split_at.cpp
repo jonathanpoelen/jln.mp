@@ -16,7 +16,7 @@ TEST()
     emp::split_at<seq_0_1_2_3_4_5_6_7_8_9, _4>>();
 
   test_pack<split_at, _3>()
-    .test_binary_not_na()
+    .test_binary()
     ;
 
   test_context<split_at<_3>, smp::split_at<_3>, 0>()

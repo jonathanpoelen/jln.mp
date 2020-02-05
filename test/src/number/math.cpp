@@ -22,9 +22,9 @@ TEST()
   ut::same<_0, emp::pow<seq_0_1_2>>();
   ut::same<number<8*8*8*8>, emp::pow<seq_2_3_4>>();
 
-  test_pack<min, less<>>().test_unary_not_na();
-  test_pack<abs, less<>>().test_unary_not_na();
-  test_pack<pow>().test_unary_not_na();
+  test_pack<min, less<>>().test_unary();
+  test_pack<abs, less<>>().test_unary();
+  test_pack<pow>().test_unary();
 
   auto ctx = [](auto f){
     using g = unpack<decltype(f)>;

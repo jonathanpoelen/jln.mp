@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../list/list.hpp"
-#include "../number/as_bool.hpp"
 #include "../number/operators.hpp"
 #include "../algorithm/is_sorted.hpp"
 #include "../../functional/contract.hpp"

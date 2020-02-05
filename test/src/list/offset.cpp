@@ -14,7 +14,7 @@ TEST()
   ut::same<number<-1>, emp::offset<list<int, int, int>, _2>>();
 
   test_pack<offset, _2>()
-    .test_unary_not_na()
+    .test_unary()
     ;
 
   test_context<offset<_2>, smp::offset<_2>>()
