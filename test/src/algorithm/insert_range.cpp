@@ -10,20 +10,16 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<insert_range, _1>()
-    .test_variadic_not_na()
-    .test_binary_not_na()
-    .test_unary_not_na()
+  test_pack<insert_range, _1, list<_2, _3>>()
+    .test_variadic()
+    .test_binary()
+    .test_unary()
     ;
 
-  ut::same<emp::numbers<0, 3, 1, 2>, emp::insert_range_c<
-    seq_0_1_2, 1, list<_3>>>();
+  ut::same<emp::numbers<0, 3, 1, 2>,
+    emp::insert_range_c<seq_0_1_2, 1, list<_3>>>();
 
-  test_context<
-    insert_range_c<2, emp::numbers<6, 7>>,
-    smp::insert_range_c<2, emp::numbers<6, 7>>,
-    0
-  >()
+  test_context<insert_range_c<2, list<_6, _7>>, smp::insert_range_c<2, list<_6, _7>>>()
     .test<list<_0, _1, _6, _7, _2, _3>, _0, _1, _2, _3>()
     .test<list<_0, _1, _6, _7>, _0, _1>()
     .not_invocable<_0>()
