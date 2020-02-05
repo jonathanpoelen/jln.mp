@@ -1,14 +1,15 @@
 #include "test.hpp"
+#include "test/numbers.hpp"
 
-#include "jln/mp/functional/fork.hpp"
-#include "jln/mp/number/operators.hpp"
-#include "jln/mp/number/numbers.hpp"
+#include "jln/mp/smp/functional/fork.hpp"
+#include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
 
 TEST()
 {
   using namespace jln::mp;
+  using namespace ut::ints;
 
   using yes = always<true_>;
   using no = always<false_>;
@@ -19,12 +20,10 @@ TEST()
     .test_unary<yes>()
   ;
 
-  using f = fork<inc<>, dec<>, listify>;
-
-  test_context<f, sfinae<f>>()
-    .test<emp::numbers<1, 3>, number<0>, number<4>>()
-    .not_invocable<number<0>>()
-    .not_invocable<number<0>, number<0>, number<0>>()
+  test_context<fork<inc<>, dec<>, listify>, smp::fork<smp::inc<>, smp::dec<>, smp::listify>>()
+    .test<list<_2, _0>, _1>()
+    .not_invocable<>()
+    .not_invocable<_0, _0>()
     ;
 }
 
