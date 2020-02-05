@@ -1,37 +1,41 @@
 #include "test.hpp"
 
-#include "jln/mp/functional/call.hpp"
-#include "jln/mp/functional/bind.hpp"
+#include "jln/mp/smp/functional/bind.hpp"
 
-namespace
+TEST_SUITE_BEGIN()
+
+template<class x>
+using foo = x;
+
+template<class x>
+struct bar
 {
-  namespace bind_test
-  {
-    template<class x>
-    using emp = x;
+  using type = x;
+};
 
-    template<class x>
-    struct lazy
-    {
-      using type = x;
-    };
-  }
+class x {};
 
-  TEST()
-  {
-    using namespace jln::mp;
-    namespace t = bind_test;
+TEST()
+{
+  using namespace jln::mp;
 
-    class x{};
+  test_context<cfe<foo>, smp::cfe<foo>>()
+    .test<x, x>()
+    .not_invocable<x, x>()
+    ;
 
-    test_context<cfe<t::emp>, smp::cfe<t::emp>>()
-      .test<x, x>()
-      ;
-    test_context<cfl<t::lazy>, smp::cfl<t::lazy>>()
-      .test<x, x>()
-      ;
-    test_context<cfe<t::lazy>, smp::cfe<t::lazy>>()
-      .test<t::lazy<x>, x>()
-      ;
-  }
+  test_context<cfl<bar>, smp::cfl<bar>>()
+    .test<x, x>()
+    .not_invocable<x, x>()
+    ;
+
+  test_context<cfe<bar>, smp::cfe<bar>>()
+    .test<bar<x>, x>()
+    ;
+
+  test_context<cfl<foo>, smp::cfl<foo>>()
+    .not_invocable<x>()
+    ;
 }
+
+TEST_SUITE_END()
