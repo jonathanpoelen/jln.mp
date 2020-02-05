@@ -54,7 +54,6 @@
 #include "src/functional/compose.cpp"
 #include "src/functional/fork.cpp"
 #include "src/functional/if.cpp"
-#include "src/functional/invoke.cpp"
 #include "src/functional/is_invocable.cpp"
 #include "src/functional/recurse.cpp"
 #include "src/list/as_list.cpp"
