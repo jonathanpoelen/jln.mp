@@ -1,14 +1,14 @@
 #pragma once
 
-#include "splice.hpp"
+#include "insert_range.hpp"
 
 namespace jln::mp
 {
   template<class i, class x, class C = listify>
-  using insert = splice<i, list<x>, C>;
+  using insert = insert_range<i, list<x>, C>;
 
   template<int_ i, class x, class C = listify>
-  using insert_c = splice_c<i, list<x>, C>;
+  using insert_c = insert_range_c<i, list<x>, C>;
 
   namespace emp
   {
