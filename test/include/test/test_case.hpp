@@ -4,9 +4,10 @@
 
 #define TEST_SUITE_BEGIN() TEST_SUITE_BEGIN_I(jln_test_, __COUNTER__)
 #define TEST_SUITE_BEGIN_I(name, n) TEST_SUITE_BEGIN_II(name, n)
+// under namespace to prevent ambiguities with libc
 #define TEST_SUITE_BEGIN_II(name, n) \
-  namespace { struct test_ ## name ## _ ## n {
-#define TEST_SUITE_END() }; }
+  namespace jln::mp { namespace { namespace test_suite { struct test_ ## name ## _ ## n {
+#define TEST_SUITE_END() }; } } }
 
 #define TEST() TEST_I(__COUNTER__)
 #define TEST_I(n) TEST_II(n)
