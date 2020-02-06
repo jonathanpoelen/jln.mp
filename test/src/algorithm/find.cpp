@@ -4,6 +4,7 @@
 #include "jln/mp/smp/algorithm/find.hpp"
 #include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/number/operators.hpp"
+#include "jln/mp/smp/number/to_bool.hpp"
 #include "jln/mp/algorithm/iota.hpp"
 
 TEST_SUITE_BEGIN()
@@ -18,7 +19,7 @@ TEST()
     .test_unary()
   ;
 
-  ut::same<seq_1_2_3, emp::find_if<seq_0_1_2_3, identity>>();
+  ut::same<seq_1_2_3, emp::find_if<seq_0_1_2_3, to_bool<>>>();
 
   ut::invoke_r<list<_12, _13>, iota<find<_12>>, _0, _14>();
   ut::invoke_r<list<_20, _21>, iota<find<_20>>, _0, _22>();
@@ -32,7 +33,7 @@ TEST()
   ut::invoke_r<list<_580, _581>, iota<find<_580>>, _0, _582>();
   ut::invoke_r<list<_780, _781>, iota<find<_780>>, _0, _782>();
 
-  test_context<find_if<identity>, smp::find_if<smp::identity>>()
+  test_context<find_if<to_bool<>>, smp::find_if<smp::to_bool<>>>()
     .test<list<>>()
     .test<list<>, _0>()
     .test<seq_1, _1>()

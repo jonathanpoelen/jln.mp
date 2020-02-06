@@ -22,22 +22,24 @@ TEST()
   ;
 
   test_context<
-    if_<identity, always<_1>>,
-    smp::if_<smp::identity, smp::always<_1>>
+    if_<identity, always<int>>,
+    smp::if_<smp::identity, smp::always<int>>
   >()
-    .test<_1, _3>()
+    .test<int, _1>()
     .test<_0, _0>()
     .not_invocable<>()
+    .not_invocable<_3>() // narrowing conversion
     .not_invocable<bad_number>()
     ;
 
   test_context<
-    if_<front<>, always<_1>>,
-    smp::if_<smp::front<>, smp::always<_1>>
+    if_<front<>, always<int>>,
+    smp::if_<smp::front<>, smp::always<int>>
   >()
-    .test<_1, _3>()
+    .test<int, _1>()
     .test<_0, _0>()
     .not_invocable<>()
+    .not_invocable<_3>() // narrowing conversion
     .not_invocable<bad_number>()
     ;
 }

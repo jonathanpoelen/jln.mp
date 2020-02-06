@@ -80,7 +80,7 @@ namespace jln::mp::detail
       mp_dup(class, JLN_MP_COMMA),                       \
       class... xs>                                       \
     using f = typename _find<                            \
-      _index_of<bool(Pred::template f<xs>::value)...>(), \
+      _index_of<bool{Pred::template f<xs>::value}...>(), \
       0>                                                 \
     ::template f<Pred, C, NC, xs...>;                    \
   };
@@ -96,7 +96,7 @@ namespace jln::mp::detail
   {
     template<class Pred, class C, class NC, class... xs>
     using f = typename _find<
-      _index_of<bool(Pred::template f<xs>::value)...>(),
+      _index_of<bool{Pred::template f<xs>::value}...>(),
       0>
     ::template f<Pred, C, NC, xs...>;
   };
@@ -121,8 +121,8 @@ namespace jln::mp::detail
       class... xs>                                 \
     using f = typename _find<                      \
       _index_of<mp_xs(                             \
-        bool JLN_MP_PAREN_OPEN Pred::template f<,  \
-        >::value JLN_MP_PAREN_CLOSE, JLN_MP_COMMA  \
+        bool{Pred::template f<, >::value},         \
+        JLN_MP_COMMA                               \
       )>(),                                        \
       _find_select(sizeof...(xs), n)               \
     >                                              \
@@ -148,8 +148,8 @@ namespace jln::mp::detail
       class... xs>                                 \
     using f = typename _find<                      \
       _index_of<mp_xs(                             \
-        bool JLN_MP_PAREN_OPEN Pred::template f<,  \
-        >::value JLN_MP_PAREN_CLOSE, JLN_MP_COMMA  \
+        bool { Pred::template f<, >::value },      \
+        JLN_MP_COMMA                               \
       )>(),                                        \
       _find_select(sizeof...(xs), n)>              \
     ::template f<                                  \

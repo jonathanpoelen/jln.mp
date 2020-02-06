@@ -85,8 +85,9 @@ t_4_1 = executable('as_number', 'test/src/number/as_number.cpp', dependencies: t
 t_4_2 = executable('as_bool', 'test/src/number/as_bool.cpp', dependencies: test_dep, build_by_default: false)
 t_4_3 = executable('numbers', 'test/src/number/numbers.cpp', dependencies: test_dep, build_by_default: false)
 t_4_4 = executable('math', 'test/src/number/math.cpp', dependencies: test_dep, build_by_default: false)
-t_4_5 = executable('is_number', 'test/src/number/is_number.cpp', dependencies: test_dep, build_by_default: false)
-alias_target('mp.number', t_4_0, t_4_1, t_4_2, t_4_3, t_4_4, t_4_5)
+t_4_5 = executable('to_bool', 'test/src/number/to_bool.cpp', dependencies: test_dep, build_by_default: false)
+t_4_6 = executable('is_number', 'test/src/number/is_number.cpp', dependencies: test_dep, build_by_default: false)
+alias_target('mp.number', t_4_0, t_4_1, t_4_2, t_4_3, t_4_4, t_4_5, t_4_6)
 t_5_0 = executable('push_front', 'test/src/list/push_front.cpp', dependencies: test_dep, build_by_default: false)
 t_5_1 = executable('is_size_of', 'test/src/list/is_size_of.cpp', dependencies: test_dep, build_by_default: false)
 t_5_2 = executable('size', 'test/src/list/size.cpp', dependencies: test_dep, build_by_default: false)
@@ -105,7 +106,7 @@ t_5_14 = executable('back', 'test/src/list/back.cpp', dependencies: test_dep, bu
 t_5_15 = executable('is_empty', 'test/src/list/is_empty.cpp', dependencies: test_dep, build_by_default: false)
 t_5_16 = executable('as_list', 'test/src/list/as_list.cpp', dependencies: test_dep, build_by_default: false)
 alias_target('mp.list', t_5_0, t_5_1, t_5_2, t_5_3, t_5_4, t_5_5, t_5_6, t_5_7, t_5_8, t_5_9, t_5_10, t_5_11, t_5_12, t_5_13, t_5_14, t_5_15, t_5_16)
-alias_target('mp', t_0_0, t_0_1, t_0_2, t_0_3, t_0_4, t_0_5, t_0_6, t_1_0, t_1_1, t_1_2, t_1_3, t_1_4, t_1_5, t_1_6, t_1_7, t_1_8, t_1_9, t_1_10, t_1_11, t_1_12, t_1_13, t_1_14, t_1_15, t_1_16, t_1_17, t_1_18, t_1_19, t_1_20, t_1_21, t_1_22, t_1_23, t_1_24, t_1_25, t_1_26, t_1_27, t_1_28, t_1_29, t_1_30, t_1_31, t_1_32, t_1_33, t_1_34, t_1_35, t_1_36, t_1_37, t_1_38, t_1_39, t_1_40, t_1_41, t_1_42, t_1_43, t_1_44, t_1_45, t_1_46, t_1_47, t_1_48, t_1_49, t_1_50, t_2_0, t_2_1, t_2_2, t_2_3, t_2_4, t_2_5, t_2_6, t_3_0, t_3_1, t_3_2, t_3_3, t_4_0, t_4_1, t_4_2, t_4_3, t_4_4, t_4_5, t_5_0, t_5_1, t_5_2, t_5_3, t_5_4, t_5_5, t_5_6, t_5_7, t_5_8, t_5_9, t_5_10, t_5_11, t_5_12, t_5_13, t_5_14, t_5_15, t_5_16)
+alias_target('mp', t_0_0, t_0_1, t_0_2, t_0_3, t_0_4, t_0_5, t_0_6, t_1_0, t_1_1, t_1_2, t_1_3, t_1_4, t_1_5, t_1_6, t_1_7, t_1_8, t_1_9, t_1_10, t_1_11, t_1_12, t_1_13, t_1_14, t_1_15, t_1_16, t_1_17, t_1_18, t_1_19, t_1_20, t_1_21, t_1_22, t_1_23, t_1_24, t_1_25, t_1_26, t_1_27, t_1_28, t_1_29, t_1_30, t_1_31, t_1_32, t_1_33, t_1_34, t_1_35, t_1_36, t_1_37, t_1_38, t_1_39, t_1_40, t_1_41, t_1_42, t_1_43, t_1_44, t_1_45, t_1_46, t_1_47, t_1_48, t_1_49, t_1_50, t_2_0, t_2_1, t_2_2, t_2_3, t_2_4, t_2_5, t_2_6, t_3_0, t_3_1, t_3_2, t_3_3, t_4_0, t_4_1, t_4_2, t_4_3, t_4_4, t_4_5, t_4_6, t_5_0, t_5_1, t_5_2, t_5_3, t_5_4, t_5_5, t_5_6, t_5_7, t_5_8, t_5_9, t_5_10, t_5_11, t_5_12, t_5_13, t_5_14, t_5_15, t_5_16)
 # stop tests
 
 executable('mp_test', 'test/mp.cpp', dependencies: test_dep)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../number/operators.hpp"
+#include "../../list/is_empty.hpp"
 #include "../functional/identity.hpp"
 #include "../functional/if.hpp"
 #include "../list/size.hpp"
@@ -11,9 +12,9 @@ namespace jln::mp::detail
   template<template<class...> class Tpl, class C, int_ i = 0>
   using smp_op_default = valid_contract<
     if_<
-      size<>,
-      try_invoke<Tpl<subcontract<C>>>,
-      always<number<i>, subcontract<C>>>>;
+      is_empty<>,
+      always<number<i>, subcontract<C>>,
+      try_invoke<Tpl<subcontract<C>>>>>;
 }
 
 namespace jln::mp::smp

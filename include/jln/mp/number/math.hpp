@@ -2,6 +2,7 @@
 
 #include "operators.hpp"
 #include "../list/at.hpp"
+#include "../list/is_empty.hpp"
 #include "../functional/flip.hpp"
 #include "../functional/fork.hpp"
 #include "../algorithm/fold_left.hpp"
@@ -17,14 +18,14 @@ namespace jln::mp
   using min = fold_left<if_<flip<Cmp>, at1<>, at0<>>, C>;
 
   template<class Cmp = less<>, class C = identity>
-  using min0 = if_<size<>, min<Cmp, C>, always<number<0>, C>>;
+  using min0 = if_<is_empty<>, always<number<0>, C>, min<Cmp, C>>;
 
 
   template<class Cmp = less<>, class C = identity>
   using max = fold_left<if_<Cmp, at1<>, at0<>>, C>;
 
   template<class Cmp = less<>, class C = identity>
-  using max0 = if_<size<>, max<Cmp, C>, always<number<0>, C>>;
+  using max0 = if_<is_empty<>, always<number<0>, C>, max<Cmp, C>>;
 
 
   template<class Min, class Max, class Cmp = less<>, class C = identity>
@@ -43,10 +44,10 @@ namespace jln::mp
   using pow = fold_left<detail::_pow, C>;
 
   template<class C = identity>
-  using pow0 = if_<size<>, pow<C>, always<number<0>, C>>;
+  using pow0 = if_<is_empty<>, always<number<0>, C>, pow<C>>;
 
   template<class C = identity>
-  using pow1 = if_<size<>, pow<C>, always<number<1>, C>>;
+  using pow1 = if_<is_empty<>, always<number<1>, C>, pow<C>>;
 
 
   namespace emp

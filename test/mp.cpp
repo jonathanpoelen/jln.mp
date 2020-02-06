@@ -79,6 +79,7 @@
 #include "src/number/math.cpp"
 #include "src/number/numbers.cpp"
 #include "src/number/operators.cpp"
+#include "src/number/to_bool.cpp"
 #include "src/utility/always.cpp"
 #include "src/utility/conditional.cpp"
 #include "src/utility/eager.cpp"
