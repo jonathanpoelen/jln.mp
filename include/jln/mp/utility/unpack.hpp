@@ -17,6 +17,9 @@ namespace jln::mp
   };
 } // namespace jln::mp
 
+
+#include "../list/list.hpp"
+
 namespace jln::mp::detail
 {
   template<template<class...> class Seq, class... Ts, class... xs>
@@ -25,4 +28,19 @@ namespace jln::mp::detail
     template<class C>
     using f = typename C::template f<xs..., Ts...>;
   };
+
+  template<class C>
+  struct optimize_useless_unpack
+  {
+    using type = C;
+  };
+
+  template<>
+  struct optimize_useless_unpack<unpack<listify>>
+  {
+    using type = identity;
+  };
+
+  template<class C>
+  using optimize_useless_unpack_t = typename optimize_useless_unpack<C>::type;
 }

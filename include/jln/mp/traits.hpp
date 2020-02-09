@@ -13,4 +13,6 @@ namespace jln::mp
     template<class x, class y>
     using f = number<std::is_same<x, y>::value>;
   };
+
+  // TODO is_instance_of<list>
 }

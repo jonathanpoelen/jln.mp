@@ -14,13 +14,11 @@ namespace jln::mp
     template <bool>
     struct _split;
 
-    // TODO enum ?
     inline constexpr int_ split_keep = 0;
     inline constexpr int_ split_after = 1;
     inline constexpr int_ split_before = 2;
     inline constexpr int_ split_skip = 3;
-    // TODO
-    inline constexpr int_ split_na = 4;
+    // inline constexpr int_ split_na = 4;
   }
 
   template<class Pred = identity, class C = listify>
@@ -78,10 +76,9 @@ namespace jln::mp::detail
   {
     template<int_ policy, class C, class Pred, class... xs>
     using f = call<
-      // TODO unpack<listify> -> identity
-      fold_right<cfl<split_state>, unpack<C>>,
+      fold_right<cfl<split_state>, optimize_useless_unpack_t<unpack<C>>>,
       list<list<>>,
-      list<number<Pred::template f<xs>::value
+      list<number<bool{Pred::template f<xs>::value}
         ? policy : split_keep>, xs>...
     >;
   };
