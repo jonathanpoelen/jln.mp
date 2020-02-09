@@ -22,12 +22,18 @@ namespace jln::mp::detail
   template<>
   struct optimize_useless_unpack<smp::unpack<listify>>
   {
-    using type = smp::identity;
+    using type = valid_contract<identity>;
   };
 
   template<>
   struct optimize_useless_unpack<smp::unpack<smp::listify>>
   {
-    using type = smp::identity;
+    using type = valid_contract<identity>;
+  };
+
+  template<>
+  struct optimize_useless_unpack<unpack<smp::listify>>
+  {
+    using type = valid_contract<identity>;
   };
 }
