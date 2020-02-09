@@ -8,7 +8,7 @@ namespace jln::mp
 {
   namespace detail
   {
-    template<class L1, class L2>
+    template<class>
     struct _remove_adjacent;
   }
 
@@ -17,9 +17,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_remove_adjacent<
-      list<xs...>,
       rotate_c<-1>::template f<xs...>
-    >::template f<C, Cmp>;
+    >::template f<C, Cmp, xs...>;
   };
 
   template<class C = listify>
@@ -40,22 +39,19 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  // TODO _remove_adjacent<list<y, ys...>, x, xs...>
-  template<class x, class... xs, class y, class... ys>
-  struct _remove_adjacent<list<x, xs...>, list<y, ys...>>
+  template<class y, class... ys>
+  struct _remove_adjacent<list<y, ys...>>
   {
-    // TODO struct<Cmp> for memoization of Cmp<xs, ys> ?
-    // TODO template<class...> class Cmp is better ?
-    template<class C, class Cmp>
+    template<class C, class Cmp, class x, class... xs>
     using f = typename join<C>::template f<
       list<x>,
       typename _wrap_if<!Cmp::template f<xs, ys>::value>::template f<xs>...>;
   };
 
-  template<class, class>
+  template<class>
   struct _remove_adjacent
   {
-    template<class C, class>
+    template<class C, class...>
     using f = typename C::template f<>;
   };
 }
