@@ -13,8 +13,8 @@ namespace jln::mp
     template<unsigned>
     struct _drop;
 
-    template<unsigned i, unsigned n>
-    using validate_index = number<(0 * std::size_t{int_(n) - int_{i}}) + i>;
+    template<int_ i, unsigned n>
+    using validate_index = number<(0 * std::size_t{int_(n) - i}) + i>;
   }
 
   template<class N, class C = listify>

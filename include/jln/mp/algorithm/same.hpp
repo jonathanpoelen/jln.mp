@@ -1,15 +1,14 @@
 #pragma once
 
+#include "../config/enumerate.hpp"
 #include "../functional/identity.hpp"
 #include "../utility/eager.hpp"
-#include "../number/number.hpp"
-#include "../list/list.hpp"
 
 namespace jln::mp
 {
   namespace detail
   {
-    template<class... xs>
+    template<int>
     struct _same;
   }
 
@@ -18,7 +17,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename C::template f<
-      typename detail::_same<xs...>::type>;
+      typename detail::_same<detail::min(sizeof...(xs), 3)>::template f<xs...>>;
   };
 
   namespace emp
@@ -28,28 +27,48 @@ namespace jln::mp
   }
 }
 
+
+#include "../number/number.hpp"
+#include "../list/list.hpp"
+#include <type_traits>
+
+namespace jln::mp
+{
+  template<>
+  struct same<identity>
+  {
+    template<class... xs>
+    using f = typename detail::_same<sizeof...(xs)>::template f<xs...>;
+  };
+}
+
 namespace jln::mp::detail
 {
-  template<class... xs>
-  struct _same_impl
+  template<>
+  struct _same<0>
   {
-    using type = mp::false_;
+    template<class...>
+    using f = mp::true_;
   };
-
-  template<template<class> class... _, class x>
-  struct _same_impl<_<x>...>
-  {
-    using type = mp::true_;
-  };
-
-  template<class... xs>
-  // TODO _same<list<x, xs...>, list<xs..., x>> ? + _same<x, y?> || std::is_same ?
-  struct _same : _same_impl<list<xs>...>
-  {};
 
   template<>
-  struct _same<>
+  struct _same<1>
   {
-    using type = mp::true_;
+    template<class>
+    using f = mp::true_;
+  };
+
+  template<>
+  struct _same<2>
+  {
+    template<class x, class y>
+    using f = mp::number<std::is_same<x, y>::value>;
+  };
+
+  template<>
+  struct _same<3>
+  {
+    template<class x, class... xs>
+    using f = mp::number<std::is_same<list<x, xs...>, list<xs..., x>>::value>;
   };
 }

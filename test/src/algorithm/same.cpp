@@ -17,7 +17,10 @@ TEST()
 
   test_context<same<>, smp::same<>>()
     .test<true_>()
+    .test<true_, int>()
+    .test<true_, int, int>()
     .test<true_, int, int, int>()
+    .test<false_, int, void>()
     .test<false_, int, int, void>()
     ;
 }
