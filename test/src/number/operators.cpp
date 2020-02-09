@@ -39,7 +39,7 @@ TEST()
     return test_context<g, detail::sfinae<g>>();
   };
 
-  ctx(or_())
+  ctx(or_<>())
     .test<false_, e>()
     .test<false_, seq_0_0_0>()
     .test<true_, seq_1_1_1>()
@@ -47,13 +47,13 @@ TEST()
     .not_invocable<seq_bad_bad>()
     ;
 
-  ctx(and_())
+  ctx(and_<>())
     .test<true_, e>()
     .test<false_, seq_0_0_0>()
     .test<true_, seq_1_1_1>()
     ;
 
-  ctx(div())
+  ctx(div<>())
     .test<_42, list<_42>>()
     .test<_1, seq_1_1_1>()
     .test<_0, seq_0_1_2>()
