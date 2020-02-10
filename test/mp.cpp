@@ -53,6 +53,7 @@
 #include "src/functional/bind.cpp"
 #include "src/functional/cascade.cpp"
 #include "src/functional/compose.cpp"
+#include "src/functional/each.cpp"
 #include "src/functional/fork.cpp"
 #include "src/functional/if.cpp"
 #include "src/functional/is_invocable.cpp"

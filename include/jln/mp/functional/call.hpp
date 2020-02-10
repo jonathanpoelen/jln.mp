@@ -54,6 +54,13 @@ namespace jln::mp
     typename detail::_memoizer<F0, xs...>::type,
     typename detail::_memoizer<F1, xs...>::type
   >::type;
+
+  template<class C, class F0, class F1, class F2, class... xs>
+  using ternary_compose_call = typename detail::_memoizer<C,
+    typename detail::_memoizer<F0, xs...>::type,
+    typename detail::_memoizer<F1, xs...>::type,
+    typename detail::_memoizer<F2, xs...>::type
+  >::type;
 #else
   template<class C, class... xs>
   using call = typename detail::dcall<(sizeof...(xs) < 1000000)>
@@ -102,5 +109,16 @@ namespace jln::mp
   using binary_compose_call = detail::_binary_compose_call<
     detail::dcall<(sizeof...(xs) < 1000000)>::template f,
     C, F0, F1, xs...>;
+
+  namespace detail
+  {
+    template<template<class...> class f, class C, class F0, class F1, class F2, class... xs>
+    using _ternary_compose_call = f<C, f<F0, xs...>, f<F1, xs...>, f<F2, xs...>>;
+  }
+
+  template<class C, class F0, class F1, class F2, class... xs>
+  using ternary_compose_call = detail::_ternary_compose_call<
+    detail::dcall<(sizeof...(xs) < 1000000)>::template f,
+    C, F0, F1, F2, xs...>;
 #endif
 }

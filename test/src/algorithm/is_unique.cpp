@@ -2,7 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/algorithm/is_unique.hpp"
-#include "jln/mp/smp/functional/fork.hpp"
+#include "jln/mp/smp/functional/each.hpp"
 #include "jln/mp/smp/list/at.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
@@ -34,10 +34,9 @@ TEST()
 
   using first = unpack<at0<>>;
   using smp_first = smp::unpack<smp::at0<>>;
-  // TODO each<first, first, cfe<std::is_same>>
   test_context<
-    is_unique_if<fork<at0<first>, at1<first>, cfe<std::is_same>>>,
-    smp::is_unique_if<smp::fork<smp::at0<smp_first>, smp::at1<smp_first>, smp::cfe<std::is_same>>>
+    is_unique_if<each<first, first, cfe<std::is_same>>>,
+    smp::is_unique_if<smp::each<smp_first, smp_first, smp::cfe<std::is_same>>>
   >()
     .test<_1>()
     .test<_1, _0>()

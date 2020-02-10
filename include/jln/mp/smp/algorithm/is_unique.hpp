@@ -1,6 +1,7 @@
 #pragma once
 
 #include "unique.hpp"
+#include "../functional/fork.hpp"
 #include "../../algorithm/is_unique.hpp"
 
 namespace jln::mp::smp

@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/functional/fork.hpp"
+#include "jln/mp/smp/functional/each.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
@@ -20,32 +20,34 @@ TEST()
   using yes = always<true_>;
   using no = always<false_>;
 
-  test_pack<fork>()
+  test_pack<each>()
     .test_binary<yes, yes>()
     .test_binary<no, no>()
     .test_unary<yes>()
   ;
 
-  ut::same<int, fork<identity, identity, identity, identity, foo>::template f<void>>();
+  ut::same<int, each<identity, identity, identity, identity, foo>
+    ::template f<void, void, void, void>>();
 
-  test_context<fork<inc<>, dec<>, listify>, smp::fork<smp::inc<>, smp::dec<>, smp::listify>>()
-    .test<list<_2, _0>, _1>()
+  test_context<each<inc<>, dec<>, listify>, smp::each<smp::inc<>, smp::dec<>, smp::listify>>()
+    .test<list<_1, _3>, _0, _4>()
     .not_invocable<>()
-    .not_invocable<_0, _0>()
+    .not_invocable<_0>()
+    .not_invocable<_0, _0, _0>()
     ;
 
   test_context<
-    fork<inc<>, inc<>, inc<>, inc<>, listify>,
-    smp::fork<smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::listify>
+    each<inc<>, inc<>, inc<>, inc<>, listify>,
+    smp::each<smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::listify>
   >()
-    .test<list<_2, _2, _2, _2>, _1>()
+    .test<list<_2, _2, _2, _2>, _1, _1, _1, _1>()
     .not_invocable<>()
     .not_invocable<_0, _0>()
     ;
 
-  ut::not_invocable<smp::fork<
+  ut::not_invocable<smp::each<
     smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, foo
-  >, _1>();
+  >, _1, _1, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

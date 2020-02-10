@@ -38,11 +38,7 @@ namespace jln::mp
   struct fork<F0, F1, F2, C>
   {
     template<class... xs>
-    using f = typename C::template f<
-      call<F0, xs...>,
-      call<F1, xs...>,
-      call<F2, xs...>
-    >;
+    using f = ternary_compose_call<C, F0, F1, F2, xs...>;
   };
 }
 
