@@ -21,6 +21,7 @@
 #include "src/algorithm/intersperse.cpp"
 #include "src/algorithm/iota.cpp"
 #include "src/algorithm/is_sorted.cpp"
+#include "src/algorithm/is_unique.cpp"
 #include "src/algorithm/lower_bound.cpp"
 #include "src/algorithm/make_int_sequence.cpp"
 #include "src/algorithm/merge.cpp"
