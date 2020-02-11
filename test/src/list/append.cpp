@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/algorithm/append.hpp"
+#include "jln/mp/smp/list/append.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()

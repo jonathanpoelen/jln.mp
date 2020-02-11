@@ -3,7 +3,7 @@
 #include "../list/list.hpp"
 #include "../list/push_front.hpp"
 #include "../utility/unpack.hpp"
-#include "../../algorithm/prepend.hpp"
+#include "../../list/prepend.hpp"
 
 namespace jln::mp::smp
 {

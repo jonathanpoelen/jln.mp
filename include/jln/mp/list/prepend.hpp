@@ -4,7 +4,6 @@
 #include "../list/push_front.hpp"
 #include "../utility/unpack.hpp"
 
-// TODO list/append.hpp
 namespace jln::mp
 {
   template<class L, class C = listify>
