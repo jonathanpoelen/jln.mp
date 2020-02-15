@@ -9,26 +9,14 @@ namespace jln::mp
 {
   namespace detail
   {
-    template<int>
-    struct _zip;
-
     struct _drop_back;
+
+    template<class C = listify>
+    struct _zip;
   }
 
   template<class C = listify>
-  struct zip
-  {
-    template<class... seqs>
-    using f = typename detail::_zip<
-      sizeof...(seqs) ? (sizeof...(seqs) > 8 ? 2 : 1) : 0
-    >::template f<C, seqs...>;
-  };
-
-  // TODO also smp
-  template<class C>
-  struct zip<transform<unpack<listify>, C>>
-  : zip<C>
-  {};
+  using zip = detail::_zip<detail::optimize_useless_transform_unpack_t<C>>;
 
   template<class F = listify, class C = listify>
   using zip_with = zip<transform<unpack<F>, C>>;
@@ -38,6 +26,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename transform<
+      // TODO shortest
       call<transform<unpack<size<>>, detail::_drop_back>, xs...>,
       zip<C>
     >::template f<xs...>;
@@ -102,15 +91,27 @@ namespace jln::mp::detail
 
 #undef JLN_MP_TRANSPOSE_IMPL
 
+  template<int>
+  struct _zip_dispatch;
+
+  template<class C>
+  struct _zip
+  {
+    template<class... seqs>
+    using f = typename _zip_dispatch<
+      sizeof...(seqs) ? (sizeof...(seqs) > 8 ? 2 : 1) : 0
+    >::template f<C, seqs...>;
+  };
+
   template<>
-  struct _zip<0>
+  struct _zip_dispatch<0>
   {
     template<class C>
     using f = typename C::template f<>;
   };
 
   template<>
-  struct _zip<1>
+  struct _zip_dispatch<1>
   {
     template<class C, class... seqs>
     using f = typename _zip_impl<C, seqs...>::type;
@@ -154,7 +155,7 @@ namespace jln::mp::detail
 #undef JLN_MP_TRANSPOSE_IMPL
 
   template<>
-  struct _zip<2>
+  struct _zip_dispatch<2>
   {
     template<class C, class... seqs>
     using f = typename _recursive_zip<

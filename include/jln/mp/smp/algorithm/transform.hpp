@@ -18,4 +18,32 @@ namespace jln::mp::detail
   {
     using type = smp::transform<sfinae<F>, sfinae<C>>;
   };
+
+  template<>
+  struct optimize_useless_transform_unpack_impl<valid_contract<identity>>
+  {
+    template<class C>
+    using f = optimize_useless_transform_unpack_t<valid_contract<C>>;
+  };
+
+  template<class F, class C>
+  struct optimize_useless_transform_unpack<valid_contract<transform<F, C>>>
+  {
+    using type = typename optimize_useless_transform_unpack_impl<optimize_useless_unpack_t<F>>
+      ::template f<C>;
+  };
+
+  template<class F, class C>
+  struct optimize_useless_transform_unpack<valid_contract<transform<F, mp::monadic_xs<C>>>>
+  {
+    using type =
+      typename optimize_useless_transform_unpack_impl<optimize_useless_unpack_t<F>>
+      ::template f<
+        typename conditional_c<std::is_same_v<
+          optimize_useless_transform_unpack_t<transform<F>>,
+          transform<F>
+        >>
+        ::template f<mp::monadic_xs<C>, C>
+      >;
+  };
 }

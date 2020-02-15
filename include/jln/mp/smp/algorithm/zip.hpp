@@ -17,7 +17,7 @@ namespace jln::mp::smp
       mp::transform<mp::is_list<>, mp::and_<>>,
       mp::transform<mp::unpack<mp::size<>>, mp::same<>>
     >,
-    mp::zip<subcontract<C>>>;
+    mp::zip<C>>;
 
   template<class F = listify, class C = listify>
   using zip_with = zip<transform<unpack<F>, C>>;
@@ -34,7 +34,7 @@ namespace jln::mp::smp
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, zip<C>>
+  struct _sfinae<sfinae, _zip<C>>
   {
     using type = smp::zip<sfinae<C>>;
   };
