@@ -3,17 +3,13 @@
 #include "list.hpp"
 #include "../algorithm/all_of.hpp"
 #include "../../list/join.hpp"
-
-namespace jln::mp::detail
-{
-  template<class> struct _is_join_param : false_ {};
-}
+#include "../../list/is_list.hpp"
 
 namespace jln::mp::smp
 {
   template<class C = listify>
   using join = contract<
-    mp::all_of<mp::cfe<detail::_is_join_param>>,
+    mp::all_of<mp::is_list<>>,
     mp::join<subcontract<C>>>;
 }
 
@@ -25,9 +21,4 @@ namespace jln::mp::detail
   {
     using type = smp::join<sfinae<C>>;
   };
-
-  template<template<class...> class Tpl, class... xs>
-  struct _is_join_param<Tpl<xs...>>
-  : true_
-  {};
 } // namespace jln::mp::detail
