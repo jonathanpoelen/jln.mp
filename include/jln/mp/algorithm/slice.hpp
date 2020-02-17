@@ -57,7 +57,7 @@ namespace jln::mp
 #include "../list/drop.hpp"
 #include "../list/take.hpp"
 #include "../list/front.hpp"
-#include "../functional/bind.hpp"
+#include "../functional/function.hpp"
 
 namespace jln::mp::detail
 {

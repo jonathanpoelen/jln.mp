@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../functional/bind.hpp"
+#include "../functional/function.hpp"
 
 namespace jln::mp
 {

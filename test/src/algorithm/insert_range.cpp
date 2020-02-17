@@ -16,6 +16,18 @@ TEST()
     .test_unary()
     ;
 
+  test_pack<insert_range, void, list<_2, _3>>()
+    .test_variadic()
+    .test_binary()
+    .test_unary()
+    ;
+
+  test_pack<insert_range, void, void>()
+    .test_variadic()
+    .test_binary()
+    .test_unary()
+    ;
+
   ut::same<emp::numbers<0, 3, 1, 2>,
     emp::insert_range_c<seq_0_1_2, 1, list<_3>>>();
 

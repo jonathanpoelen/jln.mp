@@ -1,7 +1,7 @@
 #include "test.hpp"
 
 #include "jln/mp/smp/list/list_wrap_if.hpp"
-#include "jln/mp/smp/functional/bind.hpp"
+#include "jln/mp/smp/functional/function.hpp"
 #include "jln/mp/smp/utility/same_as.hpp"
 
 #include <type_traits>

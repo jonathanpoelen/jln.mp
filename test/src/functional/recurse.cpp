@@ -2,7 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/functional/recurse.hpp"
-#include "jln/mp/smp/functional/bind.hpp"
+#include "jln/mp/smp/functional/function.hpp"
 #include "jln/mp/smp/functional/if.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 

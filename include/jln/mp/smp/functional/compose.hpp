@@ -2,7 +2,7 @@
 
 #include "../../functional/compose.hpp"
 #include "../functional/identity.hpp"
-#include "../functional/bind.hpp"
+#include "../functional/function.hpp"
 #include "../functional/fork.hpp"
 
 namespace jln::mp::smp

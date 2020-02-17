@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../algorithm/fold_right.hpp"
+#include "../functional/function.hpp"
 #include "../utility/always.hpp"
 #include "../list/at.hpp"
 

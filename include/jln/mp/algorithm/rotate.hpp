@@ -25,16 +25,13 @@ namespace jln::mp
   struct rotate
   {
     template<class... xs>
-    // TODO detail::dcalli
-    using f = typename conditional_c<(sizeof...(xs) < 1000000)>
-      ::template f<
-        detail::_rotate<detail::n_8_or_less_16_64_256(
-          detail::_rotate_size(N::value, sizeof...(xs))
-        )>,
-        void>
-      ::template f<
-        detail::_rotate_size(N::value, sizeof...(xs)),
-        C, xs...>;
+    using f = typename detail::_rotate<detail::n_8_or_less_16_64_256(
+      detail::_rotate_size(N::value, sizeof...(xs))
+    )>
+    ::template f<
+      detail::_rotate_size(N::value, sizeof...(xs)),
+      C, xs...
+    >;
   };
 
   template <int_ n, class C = listify>

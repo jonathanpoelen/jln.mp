@@ -1,40 +1,52 @@
 #include "test.hpp"
+#include "test/numbers.hpp"
 
 #include "jln/mp/smp/functional/bind.hpp"
+#include "jln/mp/smp/list/push_front.hpp"
+#include "jln/mp/smp/list/list.hpp"
 
 TEST_SUITE_BEGIN()
-
-template<class x>
-using foo = x;
-
-template<class x>
-struct bar
-{
-  using type = x;
-};
-
-class x {};
 
 TEST()
 {
   using namespace jln::mp;
+  using namespace ut::ints;
 
-  test_context<cfe<foo>, smp::cfe<foo>>()
-    .test<x, x>()
-    .not_invocable<x, x>()
+  test_pack<bind1st, listify>()
+    .test_variadic()
+    .test_binary()
+    .test_unary()
+  ;
+
+  ut::same<void, bind1st<identity, identity>::template f<void>>();
+  ut::same<list<int, void>, bind1st<always<int>, listify>::template f<void, void>>();
+
+  test_context<
+    bind1st<push_front<_9>, listify>,
+    smp::bind1st<smp::push_front<_9>, smp::listify>
+  >()
+    .test<list<list<_9, _0>>, _0>()
+    .test<list<list<_9, _0>, seq_0_0, seq_0_0_0>, _0, seq_0_0, seq_0_0_0>()
+    .not_invocable<>()
     ;
 
-  test_context<cfl<bar>, smp::cfl<bar>>()
-    .test<x, x>()
-    .not_invocable<x, x>()
-    ;
 
-  test_context<cfe<bar>, smp::cfe<bar>>()
-    .test<bar<x>, x>()
-    ;
+  test_pack<bind2nd, listify>()
+    .test_variadic()
+    .test_binary()
+    .test_unary()
+  ;
 
-  test_context<cfl<foo>, smp::cfl<foo>>()
-    .not_invocable<x>()
+  ut::same<list<void, int>, bind2nd<always<int>, listify>::template f<void, void>>();
+
+  test_context<
+    bind2nd<push_front<_9>, listify>,
+    smp::bind2nd<smp::push_front<_9>, smp::listify>
+  >()
+    .test<list<_1, list<_9, _0>>, _1, _0>()
+    .test<list<seq_0_0, list<_9, _0>, seq_0_0_0>, seq_0_0, _0, seq_0_0_0>()
+    .not_invocable<>()
+    .not_invocable<void>()
     ;
 }
 

@@ -16,6 +16,12 @@ TEST()
     .test_unary()
     ;
 
+  test_pack<repeat>()
+    .test_variadic()
+    .test_binary()
+    .test_unary()
+    ;
+
   ut::same<seq_1_1_1, emp::repeat_c<seq_1, 3>>();
 
   test_context<repeat_c<3>, smp::repeat_c<3>>()

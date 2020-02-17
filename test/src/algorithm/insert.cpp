@@ -10,7 +10,13 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<insert, _1, _2>()
+  test_pack<insert, _1, void>()
+    .test_variadic()
+    .test_binary()
+    .test_unary()
+    ;
+
+  test_pack<insert, void, void>()
     .test_variadic()
     .test_binary()
     .test_unary()

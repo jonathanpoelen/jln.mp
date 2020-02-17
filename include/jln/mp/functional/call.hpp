@@ -6,24 +6,15 @@ namespace jln::mp
 {
   namespace detail
   {
-    template<bool>
-    struct dcall;
+    template<bool> struct dcall;
+    template<bool> struct dcallf;
+#if __cplusplus >= 201703L
+    template<bool> struct dcallv;
+    template<bool> struct dcalltv;
+#endif
 
-    template<>
-    struct dcall<true>
-    {
-        template<class C, typename...xs>
-        using f = typename C::template f<xs...>;
-    };
-  }
-
-  namespace detail
-  {
     template<class F, class... xs>
-    struct _memoizer
-    {
-      using type = typename F::template f<xs...>;
-    };
+    struct _memoizer;
   }
 
   template<class C, class... xs>
@@ -120,5 +111,44 @@ namespace jln::mp
   using ternary_compose_call = detail::_ternary_compose_call<
     detail::dcall<(sizeof...(xs) < 1000000)>::template f,
     C, F0, F1, F2, xs...>;
+#endif
+}
+
+namespace jln::mp::detail
+{
+  template<>
+  struct dcall<true>
+  {
+      template<class C, typename...xs>
+      using f = typename C::template f<xs...>;
+  };
+
+  template<class F, class... xs>
+  struct _memoizer
+  {
+    using type = typename F::template f<xs...>;
+  };
+
+  template<>
+  struct dcallf<true>
+  {
+    template<template<class...> class F, class...xs>
+    using f = F<xs...>;
+  };
+
+#if __cplusplus >= 201703L
+  template<>
+  struct dcallv<true>
+  {
+    template<template<auto...> class F, auto...vs>
+    using f = F<vs...>;
+  };
+
+  template<>
+  struct dcalltv<true>
+  {
+    template<template<class, auto...> class F, class x, auto...vs>
+    using f = F<x, vs...>;
+  };
 #endif
 }

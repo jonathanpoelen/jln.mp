@@ -1050,16 +1050,25 @@ namespace ut
     using seq_4 = jln::mp::emp::numbers<4>;
     using seq_5 = jln::mp::emp::numbers<5>;
 
+    using seq_0_0 = jln::mp::emp::numbers<0, 0>;
     using seq_0_1 = jln::mp::emp::numbers<0, 1>;
     using seq_0_2 = jln::mp::emp::numbers<0, 2>;
     using seq_0_3 = jln::mp::emp::numbers<0, 3>;
 
+    using seq_1_0 = jln::mp::emp::numbers<1, 0>;
+    using seq_1_1 = jln::mp::emp::numbers<1, 1>;
     using seq_1_2 = jln::mp::emp::numbers<1, 2>;
+    using seq_1_3 = jln::mp::emp::numbers<1, 3>;
+
+    using seq_2_0 = jln::mp::emp::numbers<2, 0>;
+    using seq_2_1 = jln::mp::emp::numbers<2, 1>;
+    using seq_2_2 = jln::mp::emp::numbers<2, 2>;
     using seq_2_3 = jln::mp::emp::numbers<2, 3>;
 
-    using seq_1_0 = jln::mp::emp::numbers<1, 0>;
-    using seq_2_1 = jln::mp::emp::numbers<2, 1>;
+    using seq_3_0 = jln::mp::emp::numbers<3, 0>;
+    using seq_3_1 = jln::mp::emp::numbers<3, 1>;
     using seq_3_2 = jln::mp::emp::numbers<3, 2>;
+    using seq_3_3 = jln::mp::emp::numbers<3, 3>;
 
     using seq_0_0_0 = jln::mp::emp::numbers<0, 0, 0>;
     using seq_1_1_1 = jln::mp::emp::numbers<1, 1, 1>;

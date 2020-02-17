@@ -1,32 +1,35 @@
 #pragma once
 
 #include "list.hpp"
-#include "../error.hpp"
-#include "../config/debug.hpp"
+#include "../utility/unpack.hpp"
 
 namespace jln::mp
 {
-  template<class C = listify>
-  struct as_list;
-
   namespace detail
   {
-    template<template<class...> class, class seq>
-    struct _as_list JLN_MP_DEBUG(: error_occurred<as_list, err::you_need_to_add_a_specialization> {});
+    template<class seq>
+    struct _as_list
+    {};
   }
 
-  // TODO unpack ?
-  template<class C>
+  template<class C = listify>
   struct as_list
   {
     template<class seq>
-    using f = typename detail::_as_list<C::template f, seq>::type;
+    using f = typename unpack<C>::template f<typename detail::_as_list<seq>::type>;
+  };
+
+  template<>
+  struct as_list<listify>
+  {
+    template<class seq>
+    using f = typename detail::_as_list<seq>::type;
   };
 
   namespace emp
   {
     template<class seq, class C = mp::listify>
-    using as_list = typename detail::_as_list<C::template f, seq>::type;
+    using as_list = typename as_list<C>::template f<seq>;
   }
 }
 
@@ -34,22 +37,21 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  template<template<class...> class f, template<class...> class seq, class... xs>
-  struct _as_list<f, seq<xs...>>
+  template<template<class...> class seq, class... xs>
+  struct _as_list<seq<xs...>>
   {
-    using type = f<xs...>;
+    using type = list<xs...>;
   };
 
-  template<template<class...> class f, template<class T, T...> class seq, class T, T... ns>
-  struct _as_list<f, seq<T, ns...>>
+  template<template<class T, T...> class seq, class T, T... ns>
+  struct _as_list<seq<T, ns...>>
   {
-    using type = f<number<ns>...>;
+    using type = list<number<ns>...>;
   };
 
-  // TODO value
-  template<template<class...> class f, template<auto...> class seq, auto... ns>
-  struct _as_list<f, seq<ns...>>
+  template<template<auto...> class seq, auto... ns>
+  struct _as_list<seq<ns...>>
   {
-    using type = f<number<ns>...>;
+    using type = list<number<ns>...>;
   };
 }

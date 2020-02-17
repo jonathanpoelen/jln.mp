@@ -44,7 +44,6 @@ namespace jln::mp::detail
   template<int_... i>
   struct _group_n_impl
   {
-    // TODO memoized ?
     template<class C, unsigned long long n, class... xs>
     using f = call<
       fold_right<cfl<split_state>, unpack<pop_front<C>>>,

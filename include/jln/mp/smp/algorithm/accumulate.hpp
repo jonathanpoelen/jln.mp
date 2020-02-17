@@ -6,7 +6,7 @@
 #include "../../list/is_list.hpp"
 #include "../../list/is_empty.hpp"
 #include "../../list/pop_front.hpp"
-#include "../../algorithm/transform.hpp"
+#include "../../algorithm/all_of.hpp"
 #include "../../algorithm/accumulate.hpp"
 #include "../../number/operators.hpp"
 
@@ -17,7 +17,8 @@ namespace jln::mp::smp
     mp::if_<
       mp::is_empty<>,
       mp::always<false_>,
-      mp::pop_front<mp::transform<mp::is_list<>, mp::and_<>>>>,
+      mp::pop_front<mp::all_of<mp::is_list<>>>>,
+    // TODO detail::_accumulate<smp::fold_left<F, C>>
     mp::accumulate<
       mp::monadic0<subcontract<F>>,
       mp::monadic<subcontract<C>>>>;

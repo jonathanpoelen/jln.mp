@@ -5,14 +5,13 @@
 
 namespace jln::mp
 {
-  // TODO impl() -> decltype((static_cast<x*>(inherit<xs...>*), true_)) ? see unique
-  // TODO find<x, always<true_, C>, always<false_, C>> ?
-  template<class T, class C = identity>
-  using contains = any_of<same_as<T>, C>;
+  template<class x, class C = identity>
+  using contains = any_of<same_as<x>, C>;
+  // using contains = find<x, always<true_, C>, always<false_, C>>;
 
   namespace emp
   {
-    template<class L, class T, class C = mp::identity>
-    using contains = eager<L, mp::contains<T, C>>;
+    template<class L, class x, class C = mp::identity>
+    using contains = eager<L, mp::contains<x, C>>;
   }
 }

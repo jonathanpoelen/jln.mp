@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../functional/identity.hpp"
-#include "../functional/call.hpp"
 #include "../utility/eager.hpp"
 
 
@@ -51,7 +50,7 @@ namespace jln::mp
 }
 
 
-#include "../functional/bind.hpp"
+#include "../functional/call.hpp"
 
 namespace jln::mp::detail
 {

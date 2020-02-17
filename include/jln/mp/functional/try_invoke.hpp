@@ -1,6 +1,6 @@
 #pragma once
 
-#include "bind.hpp"
+#include "function.hpp"
 #include "call.hpp"
 #include "fork.hpp"
 #include "identity.hpp"

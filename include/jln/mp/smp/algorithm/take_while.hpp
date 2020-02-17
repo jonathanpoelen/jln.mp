@@ -2,7 +2,7 @@
 
 #include "index.hpp"
 #include "../list/take.hpp"
-#include "../functional/bind.hpp"
+#include "../functional/function.hpp"
 #include "../functional/fork.hpp"
 #include "../functional/fork_front.hpp"
 #include "../utility/always.hpp"

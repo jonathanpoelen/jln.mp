@@ -5,12 +5,18 @@
 
 namespace jln::mp
 {
-  // TODO at<0>
   template<class C = identity>
   struct front
   {
     template<class x, class... xs>
     using f = typename C::template f<x>;
+  };
+
+  template<>
+  struct front<identity>
+  {
+    template<class x, class...>
+    using f = x;
   };
 
   namespace emp

@@ -2,7 +2,7 @@
 
 #include "../list/join.hpp"
 #include "../functional/call.hpp"
-#include "../functional/bind.hpp"
+#include "../functional/function.hpp"
 #include "../utility/eager.hpp"
 
 namespace jln::mp

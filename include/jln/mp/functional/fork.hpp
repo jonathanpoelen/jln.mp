@@ -2,7 +2,7 @@
 
 #include "../algorithm/rotate.hpp"
 #include "../number/number.hpp"
-#include "bind.hpp"
+#include "function.hpp"
 #include "call.hpp"
 
 namespace jln::mp

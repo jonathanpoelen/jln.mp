@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../functional/bind.hpp"
+#include "../functional/function.hpp"
 #include "../utility/eager.hpp"
 
 #include <type_traits>

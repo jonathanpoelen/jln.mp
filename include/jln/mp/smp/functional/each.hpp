@@ -6,8 +6,7 @@
 namespace jln::mp::detail
 {
   template<class C, class... Fs>
-  // TODO _each ?
-  using _smp_each = mp::each<Fs..., monadic_xs<C>>;
+  using _smp_each = _each<monadic_xs<C>, Fs...>;
 }
 
 namespace jln::mp::smp

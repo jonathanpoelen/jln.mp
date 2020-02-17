@@ -1,111 +1,24 @@
 #pragma once
 
-#include "identity.hpp"
+#include "call.hpp"
+#include "../list/front.hpp"
 
 namespace jln::mp
 {
-  namespace detail
-  {
-    template<bool> struct dcallf;
-#if __cplusplus >= 201703L
-    template<bool> struct dcallv;
-    template<bool> struct dcalltv;
-#endif
-  }
-
-  template<template<class...> class F, class C = identity>
-  struct cfl
-  {
-    template<class... xs>
-    using f = typename C::template f<
-      typename detail::dcallf<sizeof...(xs) < 1000000>
-      ::template f<F, xs...>::type
-    >;
-  };
-
-  template<template<class...> class F>
-  struct cfl<F, identity>
-  {
-    template<class... xs>
-    using f = typename detail::dcallf<sizeof...(xs) < 1000000>
-      ::template f<F, xs...>::type;
-  };
-
-  template<template<class...> class F, class C = identity>
-  struct cfe
-  {
-    template<class... xs>
-    using f = typename C::template f<
-      typename detail::dcallf<sizeof...(xs) < 1000000>
-      ::template f<F, xs...>
-    >;
-  };
-
-  template<template<class...> class F>
-  struct cfe<F, identity>
-  {
-    template<class... xs>
-    using f = typename detail::dcallf<sizeof...(xs) < 1000000>
-      ::template f<F, xs...>;
-  };
-
-#if __cplusplus >= 201703L
-  template<template<auto...> class F>
-  struct cfv
-  {
-    template<class... xs>
-    using f = typename detail::dcallv<(sizeof...(xs) < 1000000)>
-      ::template f<F, xs::value...>;
-  };
-
-  template<template<class, auto...> class F>
-  struct cftv
+  // fork_front<front<F, cfe<push_front, cfe<pop_front>>>, C>
+  template<class F, class C>
+  struct bind1st
   {
     template<class x, class... xs>
-    using f = typename detail::dcalltv<(sizeof...(xs) < 1000000)>
-      ::template f<F, x, xs::value...>;
+    using f = call<C,
+      typename detail::dcall<sizeof...(xs) < 100000>::template f<F, x>, xs...>;
   };
 
-  template<template<auto...> class F>
-  struct cfv_v
+  template<class F, class C>
+  struct bind2nd
   {
-    template<auto... vs>
-    using f = typename detail::dcallv<(sizeof...(vs) < 1000000)>
-      ::template f<F, vs...>;
+    template<class x, class y, class... xs>
+    using f = call<C, x,
+      typename detail::dcall<sizeof...(xs) < 100000>::template f<F, y>, xs...>;
   };
-
-  template<template<class, auto...> class F>
-  struct cftv_v
-  {
-    template<class x, auto... vs>
-    using f = typename detail::dcalltv<(sizeof...(vs) < 1000000)>
-      ::template f<F, x, vs...>;
-  };
-#endif
 } // namespace jln::mp
-
-namespace jln::mp::detail
-{
-  template<>
-  struct dcallf<true>
-  {
-    template<template<class...> class F, class...xs>
-    using f = F<xs...>;
-  };
-
-#if __cplusplus >= 201703L
-  template<>
-  struct dcallv<true>
-  {
-    template<template<auto...> class F, auto...vs>
-    using f = F<vs...>;
-  };
-
-  template<>
-  struct dcalltv<true>
-  {
-    template<template<class, auto...> class F, class x, auto...vs>
-    using f = F<x, vs...>;
-  };
-#endif
-}

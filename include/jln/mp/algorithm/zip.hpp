@@ -21,25 +21,6 @@ namespace jln::mp
   template<class F = listify, class C = listify>
   using zip_with = zip<transform<unpack<F>, C>>;
 
-  template<class C = listify>
-  struct zip_shortest
-  {
-    template<class... xs>
-    using f = typename transform<
-      // TODO shortest
-      call<transform<unpack<size<>>, detail::_drop_back>, xs...>,
-      zip<C>
-    >::template f<xs...>;
-  };
-
-  template<class C>
-  struct zip_shortest<transform<unpack<listify>, C>>
-  : zip_shortest<C>
-  {};
-
-  template<class F = listify, class C = listify>
-  using zip_shortest_with = zip_shortest<transform<unpack<F>, C>>;
-
   namespace emp
   {
     template<class L, class C = mp::listify>
@@ -47,19 +28,11 @@ namespace jln::mp
 
     template<class L, class F = mp::listify, class C = mp::listify>
     using zip_with = eager<L, mp::zip_with<F, C>>;
-
-    template<class L, class C = mp::listify>
-    using zip_shortest = eager<L, mp::zip_shortest<C>>;
-
-    template<class L, class F = mp::listify, class C = mp::listify>
-    using zip_shortest_with = eager<L, mp::zip_shortest_with<F, C>>;
   }
 }
 
 #include "../config/enumerate.hpp"
-#include "../utility/same_as.hpp"
 #include "../list/join.hpp"
-#include "../list/take.hpp"
 #include <algorithm>
 
 namespace jln::mp::detail
@@ -161,14 +134,5 @@ namespace jln::mp::detail
     using f = typename _recursive_zip<
       (sizeof...(seqs) >= 8 ? 8 : sizeof...(seqs))
     >::template f<sizeof...(seqs)-8, C, seqs...>;
-  };
-
-  struct _drop_back
-  {
-    template<class n>
-    using impl = unpack<if_<size<same_as<n>>, listify, take<n>>>;
-
-    template<class... ns>
-    using f = impl<number<std::min({int_(~0u), ns::value...})>>;
   };
 }

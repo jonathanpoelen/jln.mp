@@ -33,6 +33,7 @@ namespace jln::mp
 #include "../list/prepend.hpp"
 #include "../list/take.hpp"
 #include "../list/drop.hpp"
+#include "../detail/type_identity.hpp"
 
 #include <type_traits>
 
@@ -63,18 +64,11 @@ namespace jln::mp::detail
     using f = _merge<x, y>;
   };
 
-  // TODO
-  template<class x>
-  struct lazy
-  {
-    using type = x;
-  };
-
   template<>
   struct _dispatch_merge<true, true>
   {
     template<class x, class y>
-    using f = always<lazy<list<>>>;
+    using f = always<type_identity<list<>>>;
   };
 
   template<template<class...> class Tpl, class... xs>

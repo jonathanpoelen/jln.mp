@@ -42,28 +42,14 @@ namespace jln::mp::detail
   template<unsigned i, unsigned j, class C>
   struct swap_elem
   {
-  private:
-    template<class Call, class... xs>
-    using _call = typename join<C>::template f<
-      typename Call::template f<take_c<i>, xs...>,
-      list<typename Call::template f<at_c<j>, xs...>>,
-      typename Call::template f<drop_c<i+1, take_c<j-i-1>>, xs...>,
-      list<typename Call::template f<at_c<i>, xs...>>,
-      typename Call::template f<drop_c<j+1>, xs...>
-    >;
-
-  public:
     template<class... xs>
-    using f = _call<detail::dcall<(sizeof...(xs) < 1000000)>, xs...>;
-    // TODO or ?
-    // template<class... xs>
-    // using f = typename join<C>::template f<
-    //   call<take_c<i>, xs...>,
-    //   list<call<at_c<j>, xs...>>,
-    //   call<drop_c<i+1, take_c<j-i-1>>, xs...>,
-    //   list<call<at_c<i>, xs...>>,
-    //   call<drop_c<j+1>, xs...>
-    // >;
+    using f = typename join<C>::template f<
+      call<take_c<i>, xs...>,
+      list<call<at_c<j>, xs...>>,
+      call<drop_c<i+1, take_c<j-i-1>>, xs...>,
+      list<call<at_c<i>, xs...>>,
+      call<drop_c<j+1>, xs...>
+    >;
   };
 
   template<unsigned i, unsigned j, bool, bool>

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../algorithm/rotate.hpp"
-#include "../number/number.hpp"
 #include "call.hpp"
 
 namespace jln::mp

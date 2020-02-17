@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../algorithm/transform.hpp"
-#include "../functional/bind.hpp"
 #include "../utility/unpack.hpp"
 #include "../../functional/cascade.hpp"
 

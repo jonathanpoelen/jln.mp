@@ -10,7 +10,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<rotate, number<2>>()
+  test_pack<rotate, _2>()
     .test_binary()
     .test_unary()
   ;

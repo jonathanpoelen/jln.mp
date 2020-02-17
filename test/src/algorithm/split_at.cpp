@@ -19,6 +19,10 @@ TEST()
     .test_binary()
     ;
 
+  test_pack<split_at>()
+    .test_binary()
+    ;
+
   test_context<split_at<_3>, smp::split_at<_3>, 0>()
     .test<list<seq_1_2_3, list<>>, _1, _2, _3>()
     .test<list<seq_1_2_3, list<_4>>, _1, _2, _3, _4>()
