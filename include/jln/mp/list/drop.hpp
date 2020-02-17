@@ -2,6 +2,7 @@
 
 #include "../config/enumerate.hpp"
 #include "../list/list.hpp"
+#include "../detail/first.hpp"
 #include "../number/number.hpp"
 #include "../utility/eager.hpp"
 #include "../utility/conditional.hpp"
@@ -24,13 +25,20 @@ namespace jln::mp
     // TODO detail::dcalli
     using f = typename detail::_drop<
       detail::n_8_or_less_16_64_256(
-        detail::validate_index<N::value, sizeof...(xs)>::value
+        detail::validate_index<detail::first<N, xs...>::value, sizeof...(xs)>::value
       )
-    >::template f<N::value, C, xs...>;
+    >::template f<detail::first<N, xs...>::value, C, xs...>;
   };
 
   template<int_ n, class C = listify>
   using drop_c = drop<number<n>, C>;
+
+  template<class C>
+  struct drop<number<0>, C>
+  {
+    template<class... xs>
+    using f = call<C, xs...>;
+  };
 
   template<class C>
   struct drop<number<1>, C>
@@ -45,6 +53,8 @@ namespace jln::mp
     template<class x0, class x1, class... xs>
     using f = call<C, xs...>;
   };
+
+  // TODO more drop
 
   namespace emp
   {

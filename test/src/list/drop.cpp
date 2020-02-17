@@ -11,7 +11,14 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<drop, number<2>>()
+  test_pack<drop, _2>()
+    .test_variadic()
+    .test_binary()
+    .test_unary()
+  ;
+
+  test_pack<drop>()
+    .test_variadic()
     .test_binary()
     .test_unary()
   ;

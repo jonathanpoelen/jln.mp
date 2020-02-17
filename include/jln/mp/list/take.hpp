@@ -10,7 +10,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = call<
-      rotate<N, drop<number<(sizeof...(xs)-N::value)>, C>>,
+      rotate<N, drop<number<sizeof...(xs) - detail::first<N, xs...>::value>, C>>,
       xs...>;
   };
 
