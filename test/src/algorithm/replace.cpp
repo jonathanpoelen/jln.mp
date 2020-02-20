@@ -11,10 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<replace_if, same_as<int>, void>()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<replace_if, same_as<int>, void>();
+  test_pack2<replace_if, void, void>();
 
   ut::same<emp::numbers<1, 1, 2>, emp::replace_if<seq_0_1_2, same_as<_0>, _1>>();
   ut::same<emp::numbers<1, 1, 2>, emp::replace<seq_0_1_2, _0, _1>>();

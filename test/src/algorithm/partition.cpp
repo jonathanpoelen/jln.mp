@@ -11,10 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<partition, same_as<int>>()
-    .test_variadic()
-    .test_binary()
-    ;
+  test_pack2<partition, same_as<int>>();
+  test_pack2<partition, void>();
 
   using mod2 = push_back<_2, mod<>>;
 

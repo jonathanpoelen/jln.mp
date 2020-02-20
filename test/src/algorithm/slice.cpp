@@ -10,11 +10,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<slice, _1, _2, _1>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<slice, _1, _2, _1>();
+  test_pack3<slice, void, void, void>();
 
   ut::same<emp::numbers<3, 4, 5, 6>, emp::slice_c<
     seq_0_1_2_3_4_5_6_7_8_9, 3, 4>>();

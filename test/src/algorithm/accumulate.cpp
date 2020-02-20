@@ -11,9 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<accumulate, listify>()
-    .test_unary()
-    ;
+  test_pack2<accumulate, listify>();
+  test_pack2<accumulate>();
 
   ut::same<list<list<list<list<list<_9, _0>, _1>, _4>, _3>, _2>,
     emp::accumulate<list<seq_0_1, seq_4_3_2>, _9, listify>>();

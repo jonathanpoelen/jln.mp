@@ -26,8 +26,8 @@ TEST()
   ut::same<list<e, seq_1, seq_2, seq_3, e>,
     emp::split<seq_0_1_0_2_0_3_0, _0>>();
 
-  test_pack<split_if>().test_unary();
-  test_pack<split_if, identity>().test_binary();
+  test_pack2<split_if>();
+  test_pack2<split_if, identity>();
 
   test_context<split_if<not_<>>, smp::split_if<smp::not_<>>>()
     .test<list<>>()

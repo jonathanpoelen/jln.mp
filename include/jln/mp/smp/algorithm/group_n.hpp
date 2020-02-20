@@ -5,12 +5,11 @@
 
 namespace jln::mp::smp
 {
-  template<class n, class C = listify>
-  using group_n = valid_contract<mp::group_n<n, subcontract<C>>>;
-
   template<int_ n, class C = listify>
   using group_n_c = valid_contract<mp::group_n_c<n, subcontract<C>>>;
 }
+
+JLN_MP_MAKE_REGULAR_SMP2_P(group_n, (N), (C, smp::listify), smp::group_n_c<N::value, C>)
 
 namespace jln::mp::detail
 {

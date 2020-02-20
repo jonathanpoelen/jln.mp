@@ -12,10 +12,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<copy_if, same_as<int>>()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<copy_if, same_as<int>>();
 
   using odd = push_back<number<2>, mod<>>;
 

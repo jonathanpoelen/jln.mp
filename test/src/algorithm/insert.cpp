@@ -10,17 +10,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<insert, _1, void>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-    ;
-
-  test_pack<insert, void, void>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<insert, _1, void>();
+  test_pack2<insert, void, void>();
 
   ut::same<emp::numbers<0, 3, 1, 2>,
     emp::insert_c<seq_0_1_2, 1, _3>>();

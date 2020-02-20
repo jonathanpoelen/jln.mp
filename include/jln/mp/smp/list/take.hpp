@@ -3,15 +3,15 @@
 #include "drop.hpp"
 #include "../algorithm/rotate.hpp"
 #include "../../list/take.hpp"
+#include "../../list/front.hpp"
 
 namespace jln::mp::smp
 {
-  template<class N, class C = listify>
-  using take = try_contract<mp::take<N, subcontract<C>>>;
-
   template<int_ n, class C = listify>
-  using take_c = take<number<n>, C>;
+  using take_c = try_contract<mp::take<mp::number<n>, subcontract<C>>>;
 }
+
+JLN_MP_MAKE_REGULAR_SMP2_P(take, (N), (C, smp::listify), smp::take_c<N::value, C>)
 
 namespace jln::mp::detail
 {

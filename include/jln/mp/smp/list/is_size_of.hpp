@@ -5,9 +5,6 @@
 
 namespace jln::mp::smp
 {
-  template<class N, class C = identity>
-  using is_size_of = valid_contract<mp::is_size_of<N, subcontract<C>>>;
-
   template<int_ n, class C = identity>
   using is_size_of_c = valid_contract<mp::is_size_of_c<n, subcontract<C>>>;
 
@@ -17,12 +14,13 @@ namespace jln::mp::smp
   template<class C = identity>
   using is_size_of_2 = valid_contract<mp::is_size_of_2<subcontract<C>>>;
 
-  template<class N, class C = identity>
-  using is_size_larger_than = valid_contract<mp::is_size_larger_than<N, subcontract<C>>>;
-
   template<int_ n, class C = identity>
   using is_size_larger_than_c = valid_contract<mp::is_size_larger_than_c<n, subcontract<C>>>;
 }
+
+JLN_MP_MAKE_REGULAR_SMP2_P(is_size_of, (N), (C, smp::identity), smp::is_size_of_c<N::value, C>)
+JLN_MP_MAKE_REGULAR_SMP2_P(is_size_larger_than, (N), (C, smp::identity),
+  smp::is_size_larger_than_c<N::value, C>)
 
 namespace jln::mp::detail
 {

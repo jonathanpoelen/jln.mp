@@ -10,11 +10,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<combine>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<combine>();
 
   ut::same<list<>, emp::combine<list<>>>();
   ut::same<list<

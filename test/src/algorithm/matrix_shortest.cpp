@@ -19,11 +19,7 @@ TEST()
     emp::matrix_shortest<list<seq_0_0_0, seq_0_1, seq_3_2_1>>
   >();
 
-  test_pack<matrix_shortest>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<matrix_shortest>();
 
   test_context<matrix_shortest<>, smp::matrix_shortest<>>()
     .test<list<>>()

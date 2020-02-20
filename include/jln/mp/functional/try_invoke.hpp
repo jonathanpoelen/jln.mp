@@ -164,6 +164,9 @@ namespace jln::mp
     try_invoke<subcontract<F>, TC, FC>>::type;
 }
 
+
+#include "../number/as_number.hpp"
+
 namespace jln::mp::detail
 {
   // for reduce recursivity
@@ -278,6 +281,139 @@ namespace jln::mp::detail
   {};
 
   // TODO _optimize_try_invoke<...contract...>
+
+
+  template<class F>
+  typename F::type lazy_build(int);
+
+  template<class F>
+  bad_contract lazy_build(...);
+
+#define JLN_MP_PARAM_NAME_2(name, init) name
+#define JLN_MP_PARAM_NAME_1(name) name
+
+#define JLN_MP_PARAM_DECL_2(name, init) name = init
+#define JLN_MP_PARAM_DECL_1(name) name
+
+#define JLN_MP_PARAM_COUNT_I(a, b, c, ...) c
+#define JLN_MP_PARAM_COUNT(...) JLN_MP_PARAM_COUNT_I(__VA_ARGS__, _2, _1, _0)
+
+#define JLN_MP_PP_CAT_I(a, b) a##b
+#define JLN_MP_PP_CAT(a, b) JLN_MP_PP_CAT_I(a, b)
+
+#define JLN_MP_PARAM_DECL(arg) JLN_MP_PP_CAT(JLN_MP_PARAM_DECL, JLN_MP_PARAM_COUNT arg) arg
+#define JLN_MP_PARAM_NAME(arg) JLN_MP_PP_CAT(JLN_MP_PARAM_NAME, JLN_MP_PARAM_COUNT arg) arg
+
+#define JLN_MP_MAKE_REGULAR_SMP1_II(                     \
+  ns_smp, ns_detail, smp_name, name, na, da, ...)        \
+  namespace ns_detail {                                  \
+    template<class na, class = void>                     \
+    struct smp_name {};                                  \
+    template<class na>                                   \
+    struct smp_name<na, std::void_t<__VA_ARGS__>>        \
+    { using type = __VA_ARGS__; };                       \
+  }                                                      \
+  namespace ns_smp {                                     \
+    template<class da>                                   \
+    using name = decltype(::jln::mp::detail::lazy_build< \
+      ::ns_detail::smp_name<na>>(1));                    \
+  }
+
+#define JLN_MP_MAKE_REGULAR_SMP1_I(ns_smp, ns_detail, smp_name, name, na, da, ...) \
+  JLN_MP_MAKE_REGULAR_SMP1_II(ns_smp, ns_detail, smp_name, name, na, da, __VA_ARGS__)
+
+#define JLN_MP_MAKE_REGULAR_SMP1(ns_smp, ns_detail, smp_name, name, a, ...) \
+  JLN_MP_MAKE_REGULAR_SMP1_I(ns_smp, ns_detail, smp_name, name,             \
+    JLN_MP_PARAM_NAME(a), JLN_MP_PARAM_DECL(a), __VA_ARGS__)
+
+#define JLN_MP_MAKE_REGULAR_SMP1_P(name, a, ...) JLN_MP_MAKE_REGULAR_SMP1( \
+  jln::mp::smp, jln::mp::detail, smp_##name, name, a, __VA_ARGS__)
+
+#define JLN_MP_MAKE_REGULAR_SMP2_II(                      \
+  ns_smp, ns_detail, smp_name, name, na, nb, da, db, ...) \
+  namespace ns_detail {                                   \
+    template<class na, class nb, class = void>            \
+    struct smp_name {};                                   \
+    template<class na, class nb>                          \
+    struct smp_name<na, nb, std::void_t<__VA_ARGS__>>     \
+    { using type = __VA_ARGS__; };                        \
+  }                                                       \
+  namespace ns_smp {                                      \
+    template<class da, class db>                          \
+    using name = decltype(::jln::mp::detail::lazy_build<  \
+      ::ns_detail::smp_name<na, nb>>(1));                 \
+  }
+
+#define JLN_MP_MAKE_REGULAR_SMP2_I(ns_smp, ns_detail, smp_name, name, na, nb, da, db, ...) \
+  JLN_MP_MAKE_REGULAR_SMP2_II(ns_smp, ns_detail, smp_name, name, na, nb, da, db, __VA_ARGS__)
+
+#define JLN_MP_MAKE_REGULAR_SMP2(ns_smp, ns_detail, smp_name, name, a, b, ...) \
+  JLN_MP_MAKE_REGULAR_SMP2_I(ns_smp, ns_detail, smp_name, name,                \
+    JLN_MP_PARAM_NAME(a), JLN_MP_PARAM_NAME(b),                                \
+    JLN_MP_PARAM_DECL(a), JLN_MP_PARAM_DECL(b), __VA_ARGS__)
+
+#define JLN_MP_MAKE_REGULAR_SMP2_P(name, a, b, ...) JLN_MP_MAKE_REGULAR_SMP2( \
+  jln::mp::smp, jln::mp::detail, smp_##name, name, a, b, __VA_ARGS__)
+
+
+#define JLN_MP_MAKE_REGULAR_SMP3_II(                              \
+  ns_smp, ns_detail, smp_name, name, na, nb, nc, da, db, dc, ...) \
+  namespace ns_detail {                                           \
+    template<class na, class nb, class nc, class = void>          \
+    struct smp_name {};                                           \
+    template<class na, class nb, class nc>                        \
+    struct smp_name<na, nb, nc, std::void_t<__VA_ARGS__>>         \
+    { using type = __VA_ARGS__; };                                \
+  }                                                               \
+  namespace ns_smp {                                              \
+    template<class da, class db, class dc>                        \
+    using name = decltype(::jln::mp::detail::lazy_build<          \
+      ::ns_detail::smp_name<na, nb, nc>>(1));                     \
+  }
+
+#define JLN_MP_MAKE_REGULAR_SMP3_I(                               \
+  ns_smp, ns_detail, smp_name, name, na, nb, nc, da, db, dc, ...) \
+  JLN_MP_MAKE_REGULAR_SMP3_II(                                    \
+    ns_smp, ns_detail, smp_name, name, na, nb, nc, da, db, dc, __VA_ARGS__)
+
+#define JLN_MP_MAKE_REGULAR_SMP3(ns_smp, ns_detail, smp_name, name, a, b, c, ...) \
+  JLN_MP_MAKE_REGULAR_SMP3_I(ns_smp, ns_detail, smp_name, name,                   \
+    JLN_MP_PARAM_NAME(a), JLN_MP_PARAM_NAME(b), JLN_MP_PARAM_NAME(c),             \
+    JLN_MP_PARAM_DECL(a), JLN_MP_PARAM_DECL(b), JLN_MP_PARAM_DECL(c), __VA_ARGS__)
+
+#define JLN_MP_MAKE_REGULAR_SMP3_P(name, a, b, c, ...) JLN_MP_MAKE_REGULAR_SMP3( \
+  jln::mp::smp, jln::mp::detail, smp_##name, name, a, b, c, __VA_ARGS__)
+
+
+#define JLN_MP_MAKE_REGULAR_SMP4_II(                                      \
+  ns_smp, ns_detail, smp_name, name, na, nb, nc, nd, da, db, dc, dd, ...) \
+  namespace ns_detail {                                                   \
+    template<class na, class nb, class nc, class nd, class = void>        \
+    struct smp_name {};                                                   \
+    template<class na, class nb, class nc, class nd>                      \
+    struct smp_name<na, nb, nc, nd, std::void_t<__VA_ARGS__>>             \
+    { using type = __VA_ARGS__; };                                        \
+  }                                                                       \
+  namespace ns_smp {                                                      \
+    template<class da, class db, class dc, class dd>                      \
+    using name = decltype(::jln::mp::detail::lazy_build<                  \
+      ::ns_detail::smp_name<na, nb, nc, nd>>(1));                         \
+  }
+
+#define JLN_MP_MAKE_REGULAR_SMP4_I(                                       \
+  ns_smp, ns_detail, smp_name, name, na, nb, nc, nd, da, db, dc, dd, ...) \
+  JLN_MP_MAKE_REGULAR_SMP4_II(                                            \
+    ns_smp, ns_detail, smp_name, name, na, nb, nc, nd, da, db, dc, dd, __VA_ARGS__)
+
+#define JLN_MP_MAKE_REGULAR_SMP4(ns_smp, ns_detail, smp_name, name, a, b, c, d, ...) \
+  JLN_MP_MAKE_REGULAR_SMP4_I(ns_smp, ns_detail, smp_name, name,                      \
+    JLN_MP_PARAM_NAME(a), JLN_MP_PARAM_NAME(b),                                      \
+    JLN_MP_PARAM_NAME(c), JLN_MP_PARAM_NAME(d),                                      \
+    JLN_MP_PARAM_DECL(a), JLN_MP_PARAM_DECL(b),                                      \
+    JLN_MP_PARAM_DECL(c), JLN_MP_PARAM_DECL(d), __VA_ARGS__)
+
+#define JLN_MP_MAKE_REGULAR_SMP4_P(name, a, b, c, d, ...) JLN_MP_MAKE_REGULAR_SMP4( \
+  jln::mp::smp, jln::mp::detail, smp_##name, name, a, b, c, d, __VA_ARGS__)
 
 
   template<template<class> class sfinae, class Pred, class C>

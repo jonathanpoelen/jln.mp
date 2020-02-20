@@ -36,11 +36,7 @@ TEST()
     >>
   >();
 
-  test_pack<zip>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<zip>();
 
   test_context<zip<>, smp::zip<>>()
     .test<list<>, list<>, list<>>()

@@ -5,12 +5,12 @@
 
 namespace jln::mp::smp
 {
-  template<class size, class stride = mp::number<1>, class C = listify>
-  using sliding = try_contract<mp::sliding<size, stride, subcontract<C>>>;
-
   template<int_ size, int_ stride = 1, class C = listify>
   using sliding_c = try_contract<mp::sliding_c<size, stride, subcontract<C>>>;
 }
+
+JLN_MP_MAKE_REGULAR_SMP3_P(sliding, (size), (stride, number<1>), (C, smp::listify),
+  smp::sliding_c<size::value, stride::value, C>)
 
 namespace jln::mp::detail
 {

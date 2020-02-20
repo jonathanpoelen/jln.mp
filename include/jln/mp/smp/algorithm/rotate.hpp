@@ -5,12 +5,11 @@
 
 namespace jln::mp::smp
 {
-  template <class N, class C = listify>
-  using rotate = valid_contract<mp::rotate<N, subcontract<C>>>;
-
   template <int_ n, class C = listify>
   using rotate_c = rotate<number<n>, C>;
 }
+
+JLN_MP_MAKE_REGULAR_SMP2_P(rotate, (N), (C, smp::listify), smp::rotate_c<N::value, C>)
 
 namespace jln::mp::detail
 {

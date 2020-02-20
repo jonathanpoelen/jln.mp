@@ -74,10 +74,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<lower_bound>()
-    .test_binary()
-    .test_unary()
-  ;
+  test_pack2<lower_bound>();
 
   ut::same<list<_2, _3>, emp::lower_bound_of_c<seq_0_1_2_3, 2>>();
 

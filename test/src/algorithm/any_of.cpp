@@ -15,10 +15,8 @@ TEST()
   ut::same<true_, emp::any_of<seq_0_1_2, identity>>();
   ut::same<true_, emp::any_of<seq_1_2_3, identity>>();
 
-  test_pack<any_of, identity>()
-    .test_binary()
-    .test_unary()
-  ;
+  test_pack2<any_of, identity>();
+  test_pack2<any_of>();
 
   test_context<any_of<identity>, smp::any_of<smp::identity>>()
     .test<false_>()

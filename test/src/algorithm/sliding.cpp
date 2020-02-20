@@ -36,11 +36,8 @@ TEST()
   ut::same<list<seq_0_1_2, seq_2_3_4>, emp::sliding<list<_0, _1, _2, _3, _4>, _3, _2>>();
   ut::same<list<seq_0_1_2, seq_2_3_4, list<_4, _5, _6>>, emp::sliding<list<_0, _1, _2, _3, _4, _5, _6>, _3, _2>>();
 
-  test_pack<sliding, _2, _1>()
-    .test_unary()
-    .test_binary()
-    .test_variadic()
-    ;
+  test_pack2<sliding, _2, _1>();
+  test_pack3<sliding, void, void>();
 
   ut::same<list<seq_0_1, seq_1_2>, emp::sliding<seq_0_1_2, _2>>();
 

@@ -21,4 +21,7 @@ namespace jln::mp
     using f = call<C, x,
       typename detail::dcall<sizeof...(xs) < 100000>::template f<F, y>, xs...>;
   };
+
+  // TODO polybind<Fs..., C>
+  // polybind<f1, f2, f3, g>::f<a, b, c, d, e> = g<f1<a>, f2<b>, f3<c>, d, e>
 } // namespace jln::mp

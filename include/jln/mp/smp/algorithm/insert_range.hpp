@@ -9,9 +9,9 @@
 
 namespace jln::mp::smp
 {
-  template<class i, class seq, class C = listify>
-  using insert_range = detail::sfinae<mp::insert_range<i, seq, C>>;
-
   template<int_ i, class seq, class C = listify>
-  using insert_range_c = insert_range<number<i>, seq, C>;
+  using insert_range_c = detail::sfinae<mp::insert_range_c<i, seq, C>>;
 }
+
+JLN_MP_MAKE_REGULAR_SMP3_P(insert_range, (I), (seq), (C, smp::listify),
+  smp::insert_range_c<I::value, seq, C>)

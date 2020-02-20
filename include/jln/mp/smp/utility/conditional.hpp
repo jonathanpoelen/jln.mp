@@ -8,10 +8,9 @@ namespace jln::mp::smp
 {
   template<bool b>
   using conditional_c = valid_contract<mp::try_invoke<mp::conditional_c<b>>>;
-
-  template<class v>
-  using conditional = conditional_c<bool{v::value}>;
 }
+
+JLN_MP_MAKE_REGULAR_SMP1_P(conditional, (x), smp::conditional_c<x::value>)
 
 namespace jln::mp::detail
 {

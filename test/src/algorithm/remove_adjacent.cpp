@@ -11,10 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<remove_adjacent_if, equal<>>()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<remove_adjacent_if, equal<>>();
+  test_pack2<remove_adjacent_if, void>();
 
   ut::same<emp::numbers<0, 1, 2, 3, 4>, emp::remove_adjacent_if<
     emp::numbers<0, 0, 1, 2, 3, 4, 4>, equal<>>>();

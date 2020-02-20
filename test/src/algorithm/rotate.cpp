@@ -10,10 +10,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<rotate, _2>()
-    .test_binary()
-    .test_unary()
-  ;
+  test_pack2<rotate, _2>();
+  test_pack3<rotate>();
 
   test_context<rotate_c<2>, smp::rotate_c<2>>()
     .test<list<>>()

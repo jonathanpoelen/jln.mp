@@ -11,9 +11,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<is_sorted, listify>()
-    .test_unary()
-    ;
+  test_pack2<is_sorted, listify>();
 
   ut::same<_1, emp::is_sorted<seq_0_1_2_3_4_5_6_7_8_9>>();
 

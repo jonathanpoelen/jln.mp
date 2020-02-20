@@ -11,14 +11,13 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template<class I, class J, class C = listify>
-  using swap_index = typename detail::_smp_swap_index<
-    mp::swap_index<I, J, C>>::type;
-
   template<unsigned i, unsigned j, class C = listify>
   using swap_index_c = typename detail::_smp_swap_index<
     mp::swap_index_c<i, j, C>>::type;
 }
+
+JLN_MP_MAKE_REGULAR_SMP3_P(swap_index, (i), (j), (C, smp::listify),
+  smp::swap_index_c<i::value, j::value, C>)
 
 namespace jln::mp::detail
 {

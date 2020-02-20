@@ -3,6 +3,7 @@
 #include "./is_invocable.hpp"
 #include "./is_same.hpp"
 #include "jln/mp/functional/call.hpp"
+#include "jln/mp/functional/function.hpp"
 #include "jln/mp/functional/sfinaefwd.hpp"
 #include "jln/mp/utility/always.hpp"
 #include "jln/mp/smp/utility/unpack.hpp"
@@ -113,6 +114,31 @@ namespace ut
   };
 
   template<template<class...> class Tpl, class... Args>
+  void test_pack3()
+  {
+    using jln::mp::cfe;
+    using jln::mp::call;
+    using jln::mp::is_invocable;
+
+    static_assert(((void)call<is_invocable<cfe<Tpl>>, Args..., void>::value,1));
+    static_assert(((void)call<is_invocable<cfe<Tpl>>, Args..., unary>::value,1));
+    static_assert(((void)call<is_invocable<cfe<Tpl>>, Args..., binary>::value,1));
+    static_assert(((void)call<is_invocable<cfe<Tpl>>, Args..., listify>::value,1));
+    static_assert(((void)call<is_invocable<cfe<Tpl>>, Args..., variadic>::value,1));
+  }
+
+  template<template<class...> class Tpl, class... Args>
+  void test_pack2()
+  {
+    static_assert(((void)Tpl<Args..., void>{}, 1));
+    static_assert(((void)Tpl<Args..., unary>{}, 1));
+    static_assert(((void)Tpl<Args..., binary>{}, 1));
+    static_assert(((void)Tpl<Args..., listify>{}, 1));
+    static_assert(((void)Tpl<Args..., variadic>{}, 1));
+    test_pack3<Tpl, Args...>();
+  }
+
+  template<template<class...> class Tpl, class... Args>
   struct test_pack
   {
     template<class... xs>
@@ -145,6 +171,8 @@ namespace ut
 
 using ut::test_context;
 using ut::test_pack;
+using ut::test_pack2;
+using ut::test_pack3;
 
 }
 

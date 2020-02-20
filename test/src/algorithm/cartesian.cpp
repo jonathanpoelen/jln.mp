@@ -10,11 +10,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<cartesian>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<cartesian>();
 
   ut::same<list<>, emp::cartesian<list<>>>();
   ut::same<list<seq_0, seq_1>, emp::cartesian<list<list<_0, _1>>>>();

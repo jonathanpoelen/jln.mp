@@ -13,11 +13,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<flatten, cfe<list>>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<flatten, cfe<list>>();
 
   ut::same<seq_0_1_2_3, emp::flatten<
     list<_0, list<_1, list<_2>>, list<list<_3>>>>>();

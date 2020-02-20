@@ -10,11 +10,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<intersperse, int>()
-    .test_unary()
-    .test_binary()
-    .test_variadic()
-    ;
+  test_pack2<intersperse, int>();
 
   ut::same<list<>, emp::intersperse<list<>, int>>();
   ut::same<list<_0>, emp::intersperse<seq_0, int>>();

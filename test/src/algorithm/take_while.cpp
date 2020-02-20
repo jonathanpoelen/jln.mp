@@ -38,6 +38,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  test_pack2<take_while>();
+
   ut::same<seq_0_1, emp::take_while<list<_0, _1, _2, _3>, same_as<_2>>>();
   ut::same<ut::other_list<_0, _1>, emp::take_while<list<_0, _1>, same_as<_2>, listify, ut::other_listify>>();
 

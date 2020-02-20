@@ -14,10 +14,8 @@ TEST()
   ut::same<false_, emp::all_of<seq_0_1_2, identity>>();
   ut::same<true_, emp::all_of<seq_1_2_3, identity>>();
 
-  test_pack<all_of, identity>()
-    .test_binary()
-    .test_unary()
-  ;
+  test_pack2<all_of, identity>();
+  test_pack2<all_of>();
 
   test_context<all_of<identity>, smp::all_of<smp::identity>>()
     .test<true_>()

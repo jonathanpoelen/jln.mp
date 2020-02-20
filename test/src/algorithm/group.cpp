@@ -19,10 +19,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<group_if, same_as<int>>()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<group_if, same_as<int>>();
+  test_pack2<group_if, void>();
 
   ut::same<list<list<_0>, list<_1, _1>, list<_2, _2, _2>>,
     emp::group<emp::numbers<0, 1, 1, 2, 2, 2>>>();

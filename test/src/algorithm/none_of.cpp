@@ -15,10 +15,8 @@ TEST()
   ut::same<false_, emp::none_of<seq_0_1_2, identity>>();
   ut::same<false_, emp::none_of<seq_1_2_3, identity>>();
 
-  test_pack<none_of, identity>()
-    .test_binary()
-    .test_unary()
-  ;
+  test_pack2<none_of, void>();
+  test_pack2<none_of, identity>();
 
   test_context<none_of<identity>, smp::none_of<smp::identity>>()
     .test<true_>()

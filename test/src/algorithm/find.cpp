@@ -14,10 +14,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<find>()
-    .test_binary()
-    .test_unary()
-  ;
+  test_pack2<find>();
 
   ut::same<seq_1_2_3, emp::find_if<seq_0_1_2_3, to_bool<>>>();
 

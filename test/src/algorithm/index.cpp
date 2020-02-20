@@ -12,9 +12,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<index_of, int>()
-    .test_unary()
-  ;
+  test_pack2<index_of, int>();
 
   ut::same<_2, emp::index_of<seq_0_1_2_3, _2>>();
 

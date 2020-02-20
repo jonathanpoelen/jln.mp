@@ -15,6 +15,8 @@ struct foo
   using f = int;
 };
 
+struct S { static constexpr const char* value = ""; };
+
 TEST()
 {
   using namespace jln::mp;
@@ -31,8 +33,8 @@ TEST()
 
   test_context<
     fork_front<front<cfe<take, cfe<pop_front>>>>,
-    smp::fork_front<smp::front<smp::cfe<smp::take, smp::cfe<pop_front>>>>,
-    0
+    smp::fork_front<smp::front<smp::cfe<smp::take, smp::cfe<smp::pop_front>>>>,
+    -1
   >()
     .test<list<void, int>, _2, void, int, char, long>()
     .not_invocable<void, void, int, char, long>()

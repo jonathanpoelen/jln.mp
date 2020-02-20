@@ -11,17 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<drop, _2>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-  ;
-
-  test_pack<drop>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-  ;
+  test_pack2<drop, _2>();
+  test_pack3<drop>();
 
   test_context<drop_c<2>, smp::drop_c<2>>()
     .test<list<>, _0, _1>()

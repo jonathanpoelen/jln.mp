@@ -17,10 +17,7 @@ TEST()
   ut::same<emp::make_int_sequence<_2>, seq_0_1>();
   ut::same<emp::make_int_sequence<_3>, seq_0_1_2>();
 
-  test_pack<make_int_sequence>()
-    .test_unary<>()
-    .test_binary<>()
-  ;
+  test_pack2<make_int_sequence>();
 
   test_context<make_int_sequence<>, smp::make_int_sequence<>>()
     .test<list<>, _0>()

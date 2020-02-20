@@ -7,9 +7,6 @@
 
 namespace jln::mp::smp
 {
-  template<class N, class C = identity>
-  using at = detail::sfinae<mp::at<N, C>>;
-
   template<int_ n, class C = identity>
   using at_c = detail::sfinae<mp::at_c<n, C>>;
 
@@ -43,3 +40,5 @@ namespace jln::mp::smp
   template<class C = identity>
   using at9 = detail::sfinae<mp::at9<C>>;
 }
+
+JLN_MP_MAKE_REGULAR_SMP2_P(at, (N), (C, smp::identity), smp::at_c<N::value, C>)

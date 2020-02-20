@@ -1,16 +1,17 @@
 #pragma once
 
-#include "list.hpp"
+#include "drop.hpp"
+#include "../algorithm/rotate.hpp"
 #include "../../list/drop.hpp"
+#include "../../list/front.hpp"
 
 namespace jln::mp::smp
 {
-  template<class N, class C = listify>
-  using drop = try_contract<mp::drop<N, subcontract<C>>>;
-
   template<int_ n, class C = listify>
-  using drop_c = drop<number<n>, C>;
+  using drop_c = try_contract<mp::drop<mp::number<n>, subcontract<C>>>;
 }
+
+JLN_MP_MAKE_REGULAR_SMP2_P(drop, (N), (C, smp::listify), smp::drop_c<N::value, C>)
 
 namespace jln::mp::detail
 {

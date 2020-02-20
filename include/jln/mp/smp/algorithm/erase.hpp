@@ -5,12 +5,12 @@
 
 namespace jln::mp::smp
 {
-  template<class start, class size = number<1>, class C = listify>
-  using erase = try_contract<mp::erase<start, size, subcontract<C>>>;
-
   template<int_ start, int_ size = 1, class C = listify>
-  using erase_c = erase<number<start>, number<size>, C>;
+  using erase_c = try_contract<mp::erase<number<start>, number<size>, subcontract<C>>>;
 }
+
+JLN_MP_MAKE_REGULAR_SMP3_P(erase, (start), (size, number<1>), (C, smp::listify),
+  smp::erase_c<start::value, size::value, C>)
 
 namespace jln::mp::detail
 {

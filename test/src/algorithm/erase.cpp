@@ -10,11 +10,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<erase, _0, _1>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<erase, _0, _1>();
 
   ut::same<emp::numbers<0, 2>, emp::erase_c<seq_0_1_2, 1>>();
 
