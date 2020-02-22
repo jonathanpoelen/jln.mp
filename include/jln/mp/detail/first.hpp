@@ -8,6 +8,6 @@ namespace jln::mp::detail
 #if defined(__GNUC__) and !defined(__clang__)
   using first = x;
 #else
-  using first = typename conditional_c<sizeof...(xs) || true>::template f<x, void>;
+  using first = typename conditional_c<0 <= sizeof...(xs)>::template f<x, void>;
 #endif
 }

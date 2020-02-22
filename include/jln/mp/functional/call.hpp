@@ -8,9 +8,11 @@ namespace jln::mp
   {
     template<bool> struct dcall;
     template<bool> struct dcallf;
+    template<bool> struct dcall_c;
+    template<bool> struct dcall_v;
 #if __cplusplus >= 201703L
-    template<bool> struct dcallv;
-    template<bool> struct dcalltv;
+    template<bool> struct dcallf_c;
+    template<bool> struct dcallf_tc;
 #endif
 
     template<class F, class... xs>
@@ -55,6 +57,10 @@ namespace jln::mp
 #else
   template<class C, class... xs>
   using call = typename detail::dcall<(sizeof...(xs) < 1000000)>
+    ::template f<C, xs...>;
+
+  template<class C, class... xs>
+  using call_v = typename detail::dcall_v<(sizeof...(xs) < 1000000)>
     ::template f<C, xs...>;
 
   namespace detail
@@ -116,6 +122,12 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
+  template<class F, class... xs>
+  struct _memoizer
+  {
+    using type = typename F::template f<xs...>;
+  };
+
   template<>
   struct dcall<true>
   {
@@ -123,10 +135,18 @@ namespace jln::mp::detail
       using f = typename C::template f<xs...>;
   };
 
-  template<class F, class... xs>
-  struct _memoizer
+  template<>
+  struct dcall_v<true>
   {
-    using type = typename F::template f<xs...>;
+      template<class C, class...xs>
+      using f = typename C::template f<xs::value...>;
+  };
+
+  template<>
+  struct dcall_c<true>
+  {
+      template<class C, auto...xs>
+      using f = typename C::template f<xs...>;
   };
 
   template<>
@@ -138,14 +158,14 @@ namespace jln::mp::detail
 
 #if __cplusplus >= 201703L
   template<>
-  struct dcallv<true>
+  struct dcallf_c<true>
   {
     template<template<auto...> class F, auto...vs>
     using f = F<vs...>;
   };
 
   template<>
-  struct dcalltv<true>
+  struct dcallf_tc<true>
   {
     template<template<class, auto...> class F, class x, auto...vs>
     using f = F<x, vs...>;

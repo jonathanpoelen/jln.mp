@@ -93,7 +93,7 @@ namespace jln::mp::detail
       start,
       typename emp::make_int_sequence_v_c<
         detail::validate_index<int_(len) - start, len>::value,
-        cfv_v<_slice_impl<
+        cfe_c<_slice_impl<
           detail::validate_index<size * stride - stride + 1, len - start>::value,
           stride, C
         >::template impl>

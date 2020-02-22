@@ -48,6 +48,14 @@ TEST()
   test_context<cfl<foo>, smp::cfl<foo>>()
     .not_invocable<x>()
     ;
+
+  test_context<cfe<violation::f>, smp::cfe<violation::f>>()
+    .not_invocable<x>()
+    ;
+
+  test_context<cfl<violation::f>, smp::cfl<violation::f>>()
+    .not_invocable<x>()
+    ;
 }
 
 TEST_SUITE_END()

@@ -12,14 +12,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<if_>()
-    .test_binary<_1>()
-    .test_binary<_1, _1>()
-    .test_binary<_0, _0>()
-    .test_unary<_1>()
-    .test_unary<_1, _1>()
-    .test_unary<_0, _0>()
-  ;
+  test_pack2<if_, _0>();
+  test_pack2<if_, _0, _0>();
 
   test_context<
     if_<identity, always<int>>,

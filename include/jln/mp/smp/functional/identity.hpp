@@ -6,7 +6,7 @@
 
 namespace jln::mp::smp
 {
-  using identity = valid_contract<mp::try_invoke<mp::identity>>;
+  using identity = try_contract<mp::identity>;
 }
 
 namespace jln::mp::detail

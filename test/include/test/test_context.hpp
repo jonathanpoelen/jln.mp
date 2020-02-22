@@ -113,6 +113,7 @@ namespace ut
     using f = jln::mp::list<typename jln::mp::if_<xs, void, void>::type...>;
   };
 
+  // TODO use test_pack2
   template<template<class...> class Tpl, class... Args>
   void test_pack3()
   {
@@ -138,6 +139,7 @@ namespace ut
     test_pack3<Tpl, Args...>();
   }
 
+  // TODO use test_pack2/3
   template<template<class...> class Tpl, class... Args>
   struct test_pack
   {

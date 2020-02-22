@@ -204,7 +204,7 @@ namespace jln::mp::detail
   {
     template<class C, int_ size, int_, class... xs>
     using f = typename emp::make_int_sequence_v_c<
-      sizeof...(xs), cfv_v<_group_n_impl>
+      sizeof...(xs), cfe_c<_group_n_impl>
     >::template f<C, size, xs...>;
   };
 

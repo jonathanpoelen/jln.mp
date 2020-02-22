@@ -9,24 +9,12 @@
 
 TEST_SUITE_BEGIN()
 
-struct foo
-{
-  template<class, class, class, class>
-  using f = int;
-};
-
-struct S { static constexpr const char* value = ""; };
-
 TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<fork, always<listify>>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-  ;
+  test_pack2<fork_front>();
 
   ut::same<list<void, int>, fork_front<front<cfe<take, cfe<pop_front>>>>
     ::template f<_2, void, int, char, long>>();

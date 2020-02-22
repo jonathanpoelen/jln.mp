@@ -10,4 +10,10 @@ namespace jln::mp
     template<class... xs>
     using f = call<C, fix<C>, xs...>;
   };
+
+  namespace emp
+  {
+    template<class F, class... xs>
+    using fix = typename fix<F>::template f<xs...>;
+  }
 }

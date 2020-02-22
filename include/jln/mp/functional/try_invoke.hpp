@@ -44,6 +44,7 @@ namespace jln::mp
     template<class F> struct _assume_xs_strictly_positive { using type = F; };
     template<class F> struct _assume_xs_list { using type = F; };
 
+    // TODO _try_invoke(int)
     template<class F, class... xs>
     typename F::template f<xs...>
     _try_invoke(F*, xs*...);
@@ -95,7 +96,7 @@ namespace jln::mp
   template<class F, class TC = identity, class FC = violation>
   struct try_invoke;
 
-  template<class F, class FC = violation>
+  template<class F, class FC>
   using try_invoke_or = try_invoke<F, identity, FC>;
 
   template<class Pred, class C, class TC, class FC>

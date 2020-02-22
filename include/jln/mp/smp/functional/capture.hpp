@@ -1,37 +1,83 @@
 #pragma once
 
-#include "../number/number.hpp"
+#include "../../functional/capture.hpp"
+#include "../../functional/try_invoke.hpp"
+#include "../../detail/first.hpp"
 
-namespace jln::mp
+namespace jln::mp::detail
 {
   template<class... xs>
-  struct capture
+  std::bool_constant<(((void(xs::value), ...), 1))> all_has_value(xs*...);
+
+  std::false_type all_has_value(...);
+
+#if defined(__GNUC__) && !defined(__clang__)
+  template<class... xs>
+  struct smp_capture_v
   {
-    template<class continuation>
-    using f = typename continuation::template f<xs...>;
+    template<class C>
+    using f = typename C::template f<first<xs, C>::value...>;
   };
+#else
+  template<class>
+  struct smp_capture_v_select;
+#endif
 }
 
-namespace jln::vmp
+namespace jln::mp::smp
 {
-  template<int_... ns>
-  struct capture_c
-  {
-    template<class continuation>
-    using f = typename continuation::template f<ns...>;
-  };
+  template<class... xs>
+  using capture = try_contract<mp::capture<xs...>>;
 
   template<class... xs>
-  struct capture_v
+  // TODO or not
+#if defined(__GNUC__) && !defined(__clang__)
+  using capture_v = try_contract<detail::smp_capture_v<xs...>>;
+#else
+  // using capture_v = try_contract<mp::capture_v<xs...>>;
+  using capture_v = typename detail::smp_capture_v_select<
+    // TODO detail::_has_value<xs>::type::value && ...
+    decltype(detail::all_has_value(static_cast<xs*>(nullptr)...))
+  >::template f<xs...>;
+#endif
+
+  template<auto... xs>
+  using capture_c = try_contract<mp::capture_c<xs...>>;
+}
+
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class... xs>
+  struct _sfinae<sfinae, capture<xs...>>
   {
-    template<class continuation>
-    static constexpr int_ f = continuation::template f<xs...>;
+    using type = smp::capture<xs...>;
   };
 
-  template<int_... ns>
-  struct capture_v_c
+  template<template<class> class sfinae, class... xs>
+  struct _sfinae<sfinae, capture_v<xs...>>
   {
-    template<class continuation>
-    static constexpr int_ f = continuation::template f<ns...>;
+    using type = smp::capture_v<xs...>;
   };
+
+  template<template<class> class sfinae, auto... xs>
+  struct _sfinae<sfinae, capture_c<xs...>>
+  {
+    using type = smp::capture_c<xs...>;
+  };
+
+#if !defined(__GNUC__) || defined(__clang__)
+  template<>
+  struct smp_capture_v_select<std::false_type>
+  {
+    template<class... xs>
+    using f = bad_contract;
+  };
+
+  template<>
+  struct smp_capture_v_select<std::true_type>
+  {
+    template<class... xs>
+    using f = try_contract<mp::capture_v<xs...>>;
+  };
+#endif
 }

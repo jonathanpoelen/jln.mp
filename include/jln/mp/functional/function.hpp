@@ -43,35 +43,35 @@ namespace jln::mp
 
 #if __cplusplus >= 201703L
   template<template<auto...> class F>
-  struct cfv
+  struct cfe_v
   {
     template<class... xs>
-    using f = typename detail::dcallv<(sizeof...(xs) < 1000000)>
+    using f = typename detail::dcallf_c<(sizeof...(xs) < 1000000)>
       ::template f<F, xs::value...>;
   };
 
+  template<template<auto...> class F>
+  struct cfe_c
+  {
+    template<auto... xs>
+    using f = typename detail::dcallf_c<(sizeof...(xs) < 1000000)>
+      ::template f<F, xs...>;
+  };
+
   template<template<class, auto...> class F>
-  struct cftv
+  struct cfe_tv
   {
     template<class x, class... xs>
-    using f = typename detail::dcalltv<(sizeof...(xs) < 1000000)>
+    using f = typename detail::dcallf_tc<(sizeof...(xs) < 1000000)>
       ::template f<F, x, xs::value...>;
   };
 
-  template<template<auto...> class F>
-  struct cfv_v
-  {
-    template<auto... vs>
-    using f = typename detail::dcallv<(sizeof...(vs) < 1000000)>
-      ::template f<F, vs...>;
-  };
-
   template<template<class, auto...> class F>
-  struct cftv_v
+  struct cfe_tc
   {
-    template<class x, auto... vs>
-    using f = typename detail::dcalltv<(sizeof...(vs) < 1000000)>
-      ::template f<F, x, vs...>;
+    template<class x, auto... xs>
+    using f = typename detail::dcallf_tc<(sizeof...(xs) < 1000000)>
+      ::template f<F, x, xs...>;
   };
 #endif
 } // namespace jln::mp
