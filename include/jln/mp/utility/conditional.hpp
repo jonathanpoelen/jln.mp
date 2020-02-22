@@ -17,12 +17,12 @@ namespace jln::mp
   };
 
   template<class v>
-  using conditional = conditional_c<bool{v::value}>;
+  using conditional = conditional_c<bool(v::value)>;
 
   namespace emp
   {
     template<class v, class x, class y>
-    using conditional = typename mp::conditional_c<bool{v::value}>
+    using conditional = typename mp::conditional_c<bool(v::value)>
       ::template f<x, y>;
 
     template<bool cond, class x, class y>

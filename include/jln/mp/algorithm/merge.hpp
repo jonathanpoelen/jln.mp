@@ -133,7 +133,7 @@ namespace jln::mp::detail
       list<xh, xt...>,
       list<yh0, yh1, yh2, yh3, yh4, yt...>,
       list<zs...>, cmp,
-      number<bool{call<cmp, yh4, xh>::value}>>
+      number<bool(call<cmp, yh4, xh>::value)>>
     : _merge_impl<list<xh, xt...>, list<yt...>, list<zs..., yh0, yh1, yh2, yh3, yh4>, cmp>
     {};
 
@@ -145,7 +145,7 @@ namespace jln::mp::detail
       list<xh, xt...>,
       list<yh0, yh1, yh2, yh3, yh4, yt...>,
       list<zs...>, cmp,
-      number<!bool{call<cmp, yh4, xh>::value}>>
+      number<!bool(call<cmp, yh4, xh>::value)>>
     : _merge_impl<list<xh, xt...>, list<yh1, yh2, yh3, yh4, yt...>, list<zs..., yh0>, cmp>
     {};
   };
@@ -178,7 +178,7 @@ namespace jln::mp::detail
       list<xh0, xh1, xh2, xh3, xh4, xt...>,
       list<yh, yt...>,
       list<zs...>, cmp,
-      number<!bool{call<cmp, yh, xh4>::value}>>
+      number<!bool(call<cmp, yh, xh4>::value)>>
     : _merge_impl<list<xt...>, list<yh, yt...>, list<zs..., xh0, xh1, xh2, xh3, xh4>, cmp>
     {};
 
@@ -190,7 +190,7 @@ namespace jln::mp::detail
       list<xh0, xh1, xh2, xh3, xh4, xt...>,
       list<yh, yt...>,
       list<zs...>, cmp,
-      number<bool{call<cmp, yh, xh4>::value}>>
+      number<bool(call<cmp, yh, xh4>::value)>>
     : _merge_impl<list<xh1, xh2, xh3, xh4, xt...>, list<yh, yt...>, list<zs..., xh0>, cmp>
     {};
   };
@@ -198,7 +198,7 @@ namespace jln::mp::detail
   template<class xh, class... xt, class yh, class... yt, class... zs, class cmp>
   struct _merge_impl<list<xh, xt...>, list<yh, yt...>, list<zs...>, cmp>
   : _fast_merge_impl<_fast_merge_impl_select(
-    bool{call<cmp, yh, xh>::value}, sizeof...(xt), sizeof...(yt)
+    bool(call<cmp, yh, xh>::value), sizeof...(xt), sizeof...(yt)
   )>::template f<
     list<xh, xt...>, list<yh, yt...>, list<zs...>, cmp>
   {};

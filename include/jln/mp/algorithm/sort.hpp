@@ -43,7 +43,7 @@ namespace jln::mp
   struct as_cmp
   {
     template<class x, class y>
-    using f = number<bool{cmp::template f<x, y>::value}>;
+    using f = number<bool(cmp::template f<x, y>::value)>;
   };
 
   template<class Cmp>
@@ -85,7 +85,7 @@ namespace jln::mp::detail
   struct _sort<2, Cmp>
   {
     template<class x, class y>
-    using f = typename mk_list2<bool{call<Cmp, y, x>::value}>
+    using f = typename mk_list2<bool(call<Cmp, y, x>::value)>
       ::template f<x, y>;
   };
 

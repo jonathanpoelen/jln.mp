@@ -147,7 +147,7 @@ namespace jln::mp::detail
 
   template<int_ n>
   struct _make_int_sequence
- : _make_int_sequence_impl<n & 1, n/2, typename _make_int_sequence<n / 2>::type>
+ : _make_int_sequence_impl<bool(n & 1), n/2, typename _make_int_sequence<n / 2>::type>
   {};
 
   template<>

@@ -29,13 +29,6 @@ namespace jln::mp
   // TODO equal_than<N> and co
 
   template<class C = identity>
-  struct not_
-  {
-    template<class x>
-    using f = typename C::template f<number<(!x::value)>>;
-  };
-
-  template<class C = identity>
   struct or_
   {
     template<class... xs>
@@ -57,7 +50,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using add0 = if_<size<not_<>>, always<number<0>, C>, add<C>>;
+  using add0 = if_<size<>, add<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct sub
@@ -67,7 +60,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using sub0 = if_<size<not_<>>, always<number<0>, C>, sub<C>>;
+  using sub0 = if_<size<>, sub<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct lshift
@@ -77,7 +70,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using lshift0 = if_<size<not_<>>, always<number<0>, C>, lshift<C>>;
+  using lshift0 = if_<size<>, lshift<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct rshift
@@ -87,7 +80,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using rshift0 = if_<size<not_<>>, always<number<0>, C>, rshift<C>>;
+  using rshift0 = if_<size<>, rshift<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct mul
@@ -97,10 +90,10 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using mul0 = if_<size<not_<>>, always<number<0>, C>, mul<C>>;
+  using mul0 = if_<size<>, mul<C>, always<number<0>, C>>;
 
   template<class C = identity>
-  using mul1 = if_<size<not_<>>, always<number<1>, C>, mul<C>>;
+  using mul1 = if_<size<>, mul<C>, always<number<1>, C>>;
 
   template<class C = identity>
   struct div
@@ -110,10 +103,10 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using div0 = if_<size<not_<>>, always<number<0>, C>, div<C>>;
+  using div0 = if_<size<>, div<C>, always<number<0>, C>>;
 
   template<class C = identity>
-  using div1 = if_<size<not_<>>, always<number<1>, C>, div<C>>;
+  using div1 = if_<size<>, div<C>, always<number<1>, C>>;
 
   template<class C = identity>
   struct mod
@@ -123,10 +116,10 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using mod0 = if_<size<not_<>>, always<number<0>, C>, mod<C>>;
+  using mod0 = if_<size<>, mod<C>, always<number<0>, C>>;
 
   template<class C = identity>
-  using mod1 = if_<size<not_<>>, always<number<1>, C>, mod<C>>;
+  using mod1 = if_<size<>, mod<C>, always<number<1>, C>>;
 
   template<class C = identity>
   struct xor_
@@ -136,7 +129,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using xor0 = if_<size<not_<>>, always<number<0>, C>, xor_<C>>;
+  using xor0 = if_<size<>, xor_<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct bit_and
@@ -146,7 +139,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using bit_and0 = if_<size<not_<>>, always<number<0>, C>, bit_and<C>>;
+  using bit_and0 = if_<size<>, bit_and<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct bit_or
@@ -156,7 +149,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using bit_or0 = if_<size<not_<>>, always<number<0>, C>, bit_or<C>>;
+  using bit_or0 = if_<size<>, bit_or<C>, always<number<0>, C>>;
 
   template<class C = identity>
   struct neg
@@ -170,6 +163,13 @@ namespace jln::mp
   {
     template<class x>
     using f = typename C::template f<number<(+x::value)>>;
+  };
+
+  template<class C = identity>
+  struct not_
+  {
+    template<class x>
+    using f = typename C::template f<number<(!x::value)>>;
   };
 
   template<class C = identity>

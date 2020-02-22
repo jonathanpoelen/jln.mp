@@ -11,7 +11,7 @@ namespace jln::mp
   struct if_
   {
     template<class... xs>
-    using f = typename mp::conditional_c<bool{call<Pred, xs...>::value}>
+    using f = typename mp::conditional_c<bool(call<Pred, xs...>::value)>
       ::template f<TC, FC>
       ::template f<xs...>;
   };

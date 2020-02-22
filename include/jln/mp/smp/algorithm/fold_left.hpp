@@ -3,11 +3,13 @@
 #include "../functional/identity.hpp"
 #include "../../algorithm/fold_left.hpp"
 #include "../../functional/monadic.hpp"
+#include "../../list/size.hpp"
 
 namespace jln::mp::smp
 {
   template<class F, class C = identity>
-  using fold_left = try_contract<
+  using fold_left = contract<
+    mp::size<>,
     mp::fold_left<
       mp::monadic0<subcontract<F>>,
       mp::monadic<subcontract<C>>>>;

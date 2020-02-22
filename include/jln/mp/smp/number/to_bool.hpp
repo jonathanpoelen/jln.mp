@@ -5,6 +5,7 @@
 
 namespace jln::mp::smp
 {
+  // TODO C, NC = violation ?
   template<class C = identity>
   using to_bool = try_contract<mp::to_bool<subcontract<C>>>;
 }

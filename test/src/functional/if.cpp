@@ -19,10 +19,9 @@ TEST()
     if_<identity, always<int>>,
     smp::if_<smp::identity, smp::always<int>>
   >()
-    .test<int, _1>()
+    .test<int, _3>()
     .test<_0, _0>()
     .not_invocable<>()
-    .not_invocable<_3>() // narrowing conversion
     .not_invocable<bad_number>()
     ;
 
@@ -30,10 +29,11 @@ TEST()
     if_<front<>, always<int>>,
     smp::if_<smp::front<>, smp::always<int>>
   >()
-    .test<int, _1>()
+    .test<int, _3>()
     .test<_0, _0>()
+    .test<int, _3, _0>()
+    .test<_0, _0, _3>()
     .not_invocable<>()
-    .not_invocable<_3>() // narrowing conversion
     .not_invocable<bad_number>()
     ;
 }

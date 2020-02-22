@@ -103,7 +103,7 @@ namespace jln::mp::detail
   };
 
   template<class Bool>
-  struct _smp_conditional<Bool, decltype(void(bool{Bool::value}))>
+  struct _smp_conditional<Bool, decltype(void(bool(Bool::value)))>
   {
     template<class C, class NC>
     using f = typename conditional_c<bool(Bool::value)>::template f<C, NC>;
@@ -140,7 +140,7 @@ namespace jln::mp::detail
   };
 
 #define JLN_MP_LOWER_BOUND_PRED_CALL(x) \
-  typename conditional_c<bool{Pred::template f<x>::value}>
+  typename conditional_c<bool(Pred::template f<x>::value)>
 
 #define JLN_MP_LOWER_BOUND_SMP_PRED_CALL(x) \
   typename _smp_conditional<typename Pred::template f<x>>
