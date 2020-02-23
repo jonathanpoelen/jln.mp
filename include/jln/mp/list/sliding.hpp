@@ -1,10 +1,9 @@
 #pragma once
 
-#include "transform.hpp"
 #include "../number/number.hpp"
 #include "../config/enumerate.hpp"
-#include "../list/list.hpp"
 #include "../utility/eager.hpp"
+#include "list.hpp"
 
 namespace jln::mp
 {
@@ -33,14 +32,14 @@ namespace jln::mp
 }
 
 
-#include "zip.hpp"
-#include "make_int_sequence.hpp"
-#include "rotate.hpp"
-#include "transform.hpp"
-#include "group_n.hpp"
-#include "slice.hpp"
+#include "../algorithm/zip.hpp"
+#include "../algorithm/make_int_sequence.hpp"
+#include "../algorithm/rotate.hpp"
+#include "../algorithm/transform.hpp"
+#include "../algorithm/group_n.hpp"
 #include "../functional/fork.hpp"
-#include "../list/drop.hpp"
+#include "drop.hpp"
+#include "slice.hpp"
 
 namespace jln::mp::detail
 {

@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/algorithm/insert_range.hpp"
+#include "jln/mp/smp/list/insert_range.hpp"
 
 TEST_SUITE_BEGIN()
 

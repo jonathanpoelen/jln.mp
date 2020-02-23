@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/algorithm/erase.hpp"
+#include "jln/mp/smp/list/erase.hpp"
 
 TEST_SUITE_BEGIN()
 

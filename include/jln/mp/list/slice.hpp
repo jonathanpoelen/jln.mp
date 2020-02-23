@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../list/list.hpp"
+#include "list.hpp"
 #include "../number/number.hpp"
 #include "../utility/eager.hpp"
 
@@ -51,13 +51,13 @@ namespace jln::mp
 }
 
 
-#include "make_int_sequence.hpp"
-#include "../list/list_wrap_if.hpp"
-#include "../list/join.hpp"
-#include "../list/drop.hpp"
-#include "../list/take.hpp"
-#include "../list/front.hpp"
+#include "../algorithm/make_int_sequence.hpp"
 #include "../functional/function.hpp"
+#include "list_wrap_if.hpp"
+#include "join.hpp"
+#include "drop.hpp"
+#include "take.hpp"
+#include "front.hpp"
 
 namespace jln::mp::detail
 {

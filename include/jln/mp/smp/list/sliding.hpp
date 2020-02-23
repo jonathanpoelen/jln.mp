@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../algorithm/sliding.hpp"
 #include "../list/list.hpp"
+#include "../../list/sliding.hpp"
 
 namespace jln::mp::smp
 {

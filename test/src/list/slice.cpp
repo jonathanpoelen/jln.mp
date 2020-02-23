@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/algorithm/slice.hpp"
+#include "jln/mp/smp/list/slice.hpp"
 
 TEST_SUITE_BEGIN()
 

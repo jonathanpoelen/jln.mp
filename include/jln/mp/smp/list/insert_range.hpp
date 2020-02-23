@@ -5,7 +5,7 @@
 #include "../list/drop.hpp"
 #include "../utility/always.hpp"
 #include "../functional/fork.hpp"
-#include "../../algorithm/insert_range.hpp"
+#include "../../list/insert_range.hpp"
 
 namespace jln::mp::smp
 {

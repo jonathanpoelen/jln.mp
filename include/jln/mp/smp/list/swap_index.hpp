@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../list/list.hpp"
-#include "../../algorithm/swap_index.hpp"
+#include "../../list/swap_index.hpp"
 
 namespace jln::mp::detail
 {

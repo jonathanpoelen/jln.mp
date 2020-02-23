@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../utility/eager.hpp"
-#include "../list/list.hpp"
 #include "../number/number.hpp"
+#include "list.hpp"
 
 namespace jln::mp
 {
@@ -37,10 +37,10 @@ namespace jln::mp
   }
 }
 
-#include "cartesian.hpp"
-#include "../list/take.hpp"
-#include "../list/drop.hpp"
+#include "../algorithm/cartesian.hpp"
 #include "../utility/always.hpp"
+#include "take.hpp"
+#include "drop.hpp"
 
 namespace jln::mp::detail
 {

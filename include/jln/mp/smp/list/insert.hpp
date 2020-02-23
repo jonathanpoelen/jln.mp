@@ -1,7 +1,7 @@
 #pragma once
 
 #include "insert_range.hpp"
-#include "../../algorithm/insert.hpp"
+#include "../../list/insert.hpp"
 
 namespace jln::mp::smp
 {

@@ -1,8 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-// TODO smp
-#include "jln/mp/smp/algorithm/range.hpp"
+#include "jln/mp/smp/list/range.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()

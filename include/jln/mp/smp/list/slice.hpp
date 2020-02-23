@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../list/list.hpp"
-#include "../../algorithm/slice.hpp"
+#include "../../list/slice.hpp"
 
 namespace jln::mp::smp
 {

@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/algorithm/swap_index.hpp"
+#include "jln/mp/smp/list/swap_index.hpp"
 
 TEST_SUITE_BEGIN()
 

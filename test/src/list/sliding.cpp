@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/algorithm/sliding.hpp"
+#include "jln/mp/smp/list/sliding.hpp"
 
 TEST_SUITE_BEGIN()
 
