@@ -92,6 +92,11 @@ TEST()
     .test<_0, _1>()
     .not_invocable<e>()
     ;
+
+  ut::not_invocable<smp::not_<bad_function>>();
+  ut::not_invocable<smp::not_<bad_function>, false_>();
+  ut::not_invocable<smp::div0<bad_function>>();
+  ut::not_invocable<smp::div0<bad_function>, _1, _1>();
 }
 
 TEST_SUITE_END()

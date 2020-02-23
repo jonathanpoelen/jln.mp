@@ -42,6 +42,12 @@ TEST()
     .not_invocable<list<>, _0, _1>()
     .not_invocable<list<>, _0, _1, _2>()
     ;
+
+  ut::not_invocable<smp::remove_adjacent<bad_function>>();
+  ut::not_invocable<smp::remove_adjacent<bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::remove_adjacent_if<bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::remove_adjacent_if<bad_function, bad_function>>();
+  ut::not_invocable<smp::remove_adjacent_if<bad_function, bad_function>, _1, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

@@ -17,6 +17,9 @@ TEST()
     .test<_1>()
     .test<_0, int>()
     ;
+
+  ut::not_invocable<smp::is_empty<bad_function>>();
+  ut::not_invocable<smp::is_empty<bad_function>, _1>();
 }
 
 TEST_SUITE_END()

@@ -28,6 +28,9 @@ TEST()
     .not_invocable<void, void, int, char, long>()
     .not_invocable<_5, void, int, char, long>()
     ;
+
+  ut::not_invocable<smp::fork_front<bad_function>>();
+  ut::not_invocable<smp::fork_front<always<bad_function>>>();
 }
 
 TEST_SUITE_END()

@@ -39,6 +39,10 @@ TEST()
     .test<list<list<_0, _0>, list<_1, _0>>, list<_0, _0>, list<_0, _1>, list<_1, _0>>()
     .not_invocable<_0, _0>()
     ;
+
+  ut::not_invocable<smp::unique<bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::unique_if<bad_function, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::unique_if<cfe<std::is_same>, bad_function>, _1, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

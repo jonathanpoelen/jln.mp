@@ -43,6 +43,9 @@ TEST()
     .not_invocable<bad_number>()
     .not_invocable<class X>()
     ;
+
+  ut::not_invocable<smp::make_int_sequence<bad_function>>();
+  ut::not_invocable<smp::make_int_sequence<bad_function>, _1>();
 }
 
 TEST_SUITE_END()

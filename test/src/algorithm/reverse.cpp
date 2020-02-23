@@ -24,6 +24,8 @@ TEST()
     .test<emp::numbers<8, 7, 6, 5, 4, 3, 2, 1, 0>,
       _0, _1, _2, _3, _4, _5, _6, _7, _8>()
     ;
+
+  ut::not_invocable<smp::reverse<bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

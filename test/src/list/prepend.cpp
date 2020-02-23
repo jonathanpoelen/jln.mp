@@ -22,6 +22,9 @@ TEST()
     .test<list<_9>>()
     .test<list<_0, _1, _2, _9>, _0, _1, _2>()
     ;
+
+  ut::not_invocable<smp::prepend<_1>>();
+  ut::not_invocable<smp::prepend<list<>, bad_function>>();
 }
 
 TEST_SUITE_END()

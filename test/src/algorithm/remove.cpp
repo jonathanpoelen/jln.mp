@@ -44,6 +44,12 @@ TEST()
     .test<list<>, _1, _1, _1>()
     .test<emp::numbers<0, 3>, _0, _1, _3>()
     ;
+
+  ut::not_invocable<smp::remove<void, bad_function>>();
+  ut::not_invocable<smp::remove<void, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::remove_if<bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::remove_if<bad_function, bad_function>>();
+  ut::not_invocable<smp::remove_if<bad_function, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

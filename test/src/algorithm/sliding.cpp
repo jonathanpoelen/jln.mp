@@ -127,6 +127,16 @@ TEST()
   ut::not_invocable<smp::sliding_c<3, 3, and_<>>, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10>();
   ut::not_invocable<smp::sliding_c<3, 4, and_<>>, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10,
     _11, _12, _13, _14, _15>();
+
+  ut::not_invocable<smp::sliding<_3, _1, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::sliding<_1, _2, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::sliding<_2, _2, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::sliding<_3, _2, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::sliding<_5, _2, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::sliding<_2, _5, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::sliding<_0, number<-1>, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::sliding<_1, number<-1>, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::sliding<bad_number, bad_number, bad_function>, _1, _1>();
 }
 
 TEST_SUITE_END()

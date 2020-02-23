@@ -45,6 +45,10 @@ TEST()
 
   test_take_while<list, list>();
   test_take_while<list, ut::other_list>();
+
+  ut::not_invocable<smp::take_while<bad_function>, _1, _1>();
+  ut::not_invocable<smp::take_while<bad_function, bad_function>, _1, _1>();
+  ut::not_invocable<smp::take_while<bad_function, bad_function, bad_function>, _1, _1>();
 }
 
 TEST_SUITE_END()

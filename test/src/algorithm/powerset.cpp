@@ -31,6 +31,8 @@ TEST()
       list<_2, _3>, list<_0, _2, _3>, list<_1, _2, _3>, list<_0, _1, _2, _3>>,
       _0, _1, _2, _3>()
     ;
+
+  ut::not_invocable<smp::powerset<bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

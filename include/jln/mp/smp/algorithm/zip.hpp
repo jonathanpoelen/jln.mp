@@ -17,10 +17,10 @@ namespace jln::mp::smp
       mp::transform<mp::is_list<>, mp::and_<>>,
       mp::transform<mp::unpack<mp::size<>>, mp::same<>>
     >,
-    mp::zip<C>>;
+    mp::zip<subcontract<C>>>;
 
   template<class F = listify, class C = listify>
-  using zip_with = zip<transform<unpack<F>, C>>;
+  using zip_with = zip<contract_barrier<transform<unpack<F>, C>>>;
 }
 
 namespace jln::mp::detail

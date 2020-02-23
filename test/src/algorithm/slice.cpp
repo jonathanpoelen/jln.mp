@@ -43,8 +43,12 @@ TEST()
     .not_invocable<_0, _1, _2, _3, _4>()
     ;
 
-  ut::not_invocable<smp::slice_c<2, 3, 0>,
-    _0, _1, _2, _3, _4, _5>();
+  ut::not_invocable<smp::slice_c<2, 3, 0>, _0, _1, _2, _3, _4, _5>();
+
+  ut::not_invocable<smp::slice<_2, _3, _2, bad_function>, _1, _1, _1, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::slice<bad_number, _3, _2, bad_function>, _1, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::slice<_2, bad_number, _2, bad_function>, _1, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::slice<_2, _3, bad_number, bad_function>, _1, _1, _1, _1, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

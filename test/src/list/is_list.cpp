@@ -18,6 +18,9 @@ TEST()
     .test<_1, list<>>()
     .not_invocable<_0, _0>()
     ;
+
+  ut::not_invocable<smp::is_list<bad_function>>();
+  ut::not_invocable<smp::is_list<bad_function>, list<>>();
 }
 
 TEST_SUITE_END()

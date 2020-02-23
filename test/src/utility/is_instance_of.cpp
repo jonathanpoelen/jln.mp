@@ -31,6 +31,9 @@ TEST()
     .not_invocable<>()
     .not_invocable<int, int>()
     ;
+
+  ut::not_invocable<smp::is_instance_of<size, bad_function>>();
+  ut::not_invocable<smp::is_instance_of<size, bad_function>, size<>>();
 }
 
 TEST_SUITE_END()

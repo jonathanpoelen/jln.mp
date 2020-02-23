@@ -51,6 +51,8 @@ TEST()
     .not_invocable<int>()
     .not_invocable<list<int>>()
     ;
+
+  ut::not_invocable<smp::cascade<bad_function>, list<list<>>>();
 }
 
 TEST_SUITE_END()

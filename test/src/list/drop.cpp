@@ -65,6 +65,9 @@ TEST()
       JLN_MP_XS_64(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA),
       _64, _65, _66, _67, _68, _69>()
     ;
+
+  ut::not_invocable<smp::drop<_1, bad_function>>();
+  ut::not_invocable<smp::drop<_1, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

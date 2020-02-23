@@ -21,6 +21,9 @@ TEST()
     .test<seq_1_2_3, _0, _1, _2>()
     .not_invocable<list<>>()
     ;
+
+  ut::not_invocable<smp::transform<bad_function>, _1>();
+  ut::not_invocable<smp::transform<bad_function, bad_function>, _1>();
 }
 
 TEST_SUITE_END()

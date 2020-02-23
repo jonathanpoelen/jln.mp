@@ -48,6 +48,9 @@ TEST()
   ut::not_invocable<smp::each<
     smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, foo
   >, _1, _1, _1, _1, _1>();
+
+  ut::not_invocable<smp::each<bad_function>>();
+  ut::not_invocable<smp::each<bad_function, bad_function, bad_function>, _1, _1>();
 }
 
 TEST_SUITE_END()

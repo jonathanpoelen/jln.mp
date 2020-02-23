@@ -18,6 +18,8 @@ TEST()
     .not_invocable<>()
     .not_invocable<int>()
     ;
+
+  ut::not_invocable<smp::flip<bad_function>, void, int>();
 }
 
 TEST_SUITE_END()

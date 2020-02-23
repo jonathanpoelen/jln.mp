@@ -99,6 +99,9 @@ TEST()
       JLN_MP_XS_64(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA),
       _64, _65, _66, _67, _68, _69, _70, _71>()
     ;
+
+  ut::not_invocable<smp::rotate<_2, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::rotate<bad_number, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

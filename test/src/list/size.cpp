@@ -18,6 +18,8 @@ TEST()
     .test<_2, int, void>()
     .test<_3, int, void, char>()
     ;
+
+  ut::not_invocable<smp::size<bad_function>>();
 }
 
 TEST_SUITE_END()

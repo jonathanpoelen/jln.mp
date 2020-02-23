@@ -54,6 +54,11 @@ TEST()
     .not_invocable<int>()
     .not_invocable<int, int, int>()
     ;
+
+  ut::not_invocable<smp::list_wrap_if<bad_function>>();
+  ut::not_invocable<smp::list_wrap_if<bad_function>, int, int>();
+  ut::not_invocable<smp::list_wrap_if_not<bad_function>>();
+  ut::not_invocable<smp::list_wrap_if_not<bad_function>, int, int>();
 }
 
 TEST_SUITE_END()

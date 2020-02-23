@@ -60,6 +60,11 @@ TEST()
     .test<seq_0_0_0, _0, _0, _0>()
     .not_invocable<_0, _1, _3>()
     ;
+
+  ut::not_invocable<smp::replace<void, void, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::replace_if<always<_1>, void, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::replace_if<bad_function, void>, _1, _1, _1>();
+  ut::not_invocable<smp::replace_if<bad_function, void, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

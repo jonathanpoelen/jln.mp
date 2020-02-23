@@ -73,6 +73,19 @@ TEST()
     .not_invocable<int>()
     .not_invocable<another_list<>>()
     ;
+
+  ut::not_invocable<smp::zip<bad_function>>();
+  ut::not_invocable<smp::zip<bad_function>, list<>>();
+  ut::not_invocable<smp::zip<bad_function>,
+    list<>, list<>, list<>, list<>, list<>, list<>, list<>, list<>, list<>>();
+  ut::not_invocable<smp::zip_with<always<_1>, bad_function>>();
+  ut::not_invocable<smp::zip_with<always<_1>, bad_function>, list<>>();
+  ut::not_invocable<smp::zip_with<always<_1>, bad_function>,
+    list<>, list<>, list<>, list<>, list<>, list<>, list<>, list<>, list<>>();
+  ut::not_invocable<smp::zip_with<bad_function, bad_function>>();
+  ut::not_invocable<smp::zip_with<bad_function, bad_function>, list<>>();
+  ut::not_invocable<smp::zip_with<bad_function, bad_function>,
+    list<>, list<>, list<>, list<>, list<>, list<>, list<>, list<>, list<>>();
 }
 
 TEST_SUITE_END()

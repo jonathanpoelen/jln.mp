@@ -46,6 +46,15 @@ TEST()
   ut::not_invocable<smp::fork<
     smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, foo
   >, _1>();
+
+  ut::not_invocable<smp::fork<bad_function, bad_function, bad_function, bad_function, listify>>();
+  ut::not_invocable<smp::fork<bad_function, bad_function, bad_function, bad_function, bad_function>>();
+  ut::not_invocable<smp::fork<bad_function, listify>>();
+  ut::not_invocable<smp::fork<bad_function, bad_function>>();
+  ut::not_invocable<smp::fork<bad_function, bad_function, listify>>();
+  ut::not_invocable<smp::fork<bad_function, bad_function, bad_function>>();
+  ut::not_invocable<smp::fork<bad_function, bad_function, bad_function, listify>>();
+  ut::not_invocable<smp::fork<bad_function, bad_function, bad_function, bad_function>>();
 }
 
 TEST_SUITE_END()

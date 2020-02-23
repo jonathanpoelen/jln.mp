@@ -28,6 +28,9 @@ TEST()
     .not_invocable<void>()
     .not_invocable<c>() // narrowing conversion
     ;
+
+  ut::not_invocable<smp::as_number<bad_function>>();
+  ut::not_invocable<smp::as_number<bad_function>, true_>();
 }
 
 TEST_SUITE_END()

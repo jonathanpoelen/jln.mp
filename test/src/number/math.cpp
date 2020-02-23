@@ -89,6 +89,9 @@ TEST()
     .not_invocable<_0, bad_number>()
     .not_invocable<_0, bad_number, bad_number>()
     ;
+
+  ut::not_invocable<smp::pow<bad_function>>();
+  ut::not_invocable<smp::pow<bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

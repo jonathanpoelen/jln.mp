@@ -23,6 +23,9 @@ TEST()
     .test<vseq_0_1_2, _0, v1, _2>()
     .not_invocable<bad_val>()
     ;
+
+  ut::not_invocable<smp::values<bad_function>>();
+  ut::not_invocable<smp::values<bad_function>, _1>();
 }
 
 TEST_SUITE_END()

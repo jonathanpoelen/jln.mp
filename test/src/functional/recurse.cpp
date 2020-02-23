@@ -63,6 +63,11 @@ TEST()
 
   test_rec<recurse, smp::recurse, until_rec_c<3>, detail::sfinae>();
   test_rec<recurse_fix, smp::recurse_fix, until_rec_fix_c<3>, contract_barrier, -1>();
+
+  ut::not_invocable<smp::recurse<until_rec_c<3>, bad_function>>();
+  ut::not_invocable<smp::recurse<bad_function, bad_function>>();
+  ut::not_invocable<smp::recurse_fix<until_rec_fix_c<3>, bad_function>>();
+  ut::not_invocable<smp::recurse_fix<bad_function, bad_function>>();
 }
 
 TEST_SUITE_END()

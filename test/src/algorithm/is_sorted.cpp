@@ -36,6 +36,10 @@ TEST()
     .not_invocable<_1, _2>()
     ;
 
+  ut::not_invocable<smp::is_sorted<less<>, bad_function>, _1, _1>();
+  ut::not_invocable<smp::is_sorted<less<>, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::is_sorted<bad_function, bad_function>, _1, _1>();
+  ut::not_invocable<smp::is_sorted<bad_function, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

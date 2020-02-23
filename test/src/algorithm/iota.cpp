@@ -30,6 +30,9 @@ TEST()
     .not_invocable<_1>()
     .not_invocable<_1, _1, _1, _1>()
     ;
+
+  ut::not_invocable<smp::iota<bad_function>>();
+  ut::not_invocable<smp::iota<bad_function>, _1, _4>();
 }
 
 TEST_SUITE_END()

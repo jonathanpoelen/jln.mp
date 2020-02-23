@@ -50,6 +50,10 @@ TEST()
     .test<list<seq_1>, _1>()
     .test<list<seq_1, seq_2_3, list<_2, _5>>, _1, _2, _3, _2, _5>()
     ;
+
+  ut::not_invocable<smp::split_before<bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::split_before_if<bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::split_before_if<bad_function, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

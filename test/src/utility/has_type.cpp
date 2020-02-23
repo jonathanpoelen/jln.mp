@@ -25,6 +25,9 @@ TEST()
     .not_invocable<>()
     .not_invocable<_0, _1>()
     ;
+
+  ut::not_invocable<smp::has_type<bad_function>>();
+  ut::not_invocable<smp::has_type<bad_function>, int>();
 }
 
 TEST_SUITE_END()

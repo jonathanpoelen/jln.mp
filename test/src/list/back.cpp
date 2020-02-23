@@ -17,6 +17,9 @@ TEST()
     .test<_4, _0, _1, _2, _3, _4>()
     .not_invocable<>()
     ;
+
+  ut::not_invocable<smp::back<bad_function>>();
+  ut::not_invocable<smp::back<bad_function>, _1>();
 }
 
 TEST_SUITE_END()

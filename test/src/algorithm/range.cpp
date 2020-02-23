@@ -2,7 +2,7 @@
 #include "test/numbers.hpp"
 
 // TODO smp
-#include "jln/mp/algorithm/range.hpp"
+#include "jln/mp/smp/algorithm/range.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
@@ -12,15 +12,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  // test_pack<transform, inc<>>()
-  //   .test_binary()
-  //   .test_unary()
-  //   ;
-  //
-  // test_pack<transform, listify>()
-  //   .test_binary()
-  //   .test_unary()
-  //   ;
+  test_pack2<range, _1, _2>();
 
   ut::same<seq_0_1_2_3_4_5_6_7_8_9,
     emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 0, 10>>();
@@ -50,8 +42,8 @@ TEST()
     emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 12, -1>>();
   ut::same<list<>,
     emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 12, -2>>();
-  // ut::same<list<>,
-  //   emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 0, -20>>();
+  ut::same<list<>,
+    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 0, -20>>();
   ut::same<list<>,
     emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, -22, -20>>();
   ut::same<list<>,
@@ -67,12 +59,23 @@ TEST()
   ut::same<emp::numbers<1, 2, 3, 4, 5, 6, 7, 8>,
     emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 1, -2>>();
 
-  // TODO smp
-  // test_context<transform<inc<>>, void>()
-  //   .test<list<>>()
-  //   .test<seq_1_2_3, _0, _1, _2>()
-  //   .not_invocable<list<>>()
-  //   ;
+  test_context<range<_2, _4>, smp::range<_2, _4>>()
+    .test<list<_2, _3>, _0, _1, _2, _3, _4, _5>()
+    ;
+
+  ut::not_invocable<smp::range<_0, _9, bad_function>, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<_2, _9, bad_function>, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<_0, number<-1>, bad_function>, _1, _1, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<_1, number<-1>, bad_function>, _1, _1, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<_1, number<-2>, bad_function>, _1, _1, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<number<-1>, number<-1>, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<number<-3>, _10, bad_function>, _1, _1, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<number<3>, number<-3>, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<number<-9>, number<-7>, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<number<-10>, number<-2>, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<number<-11>, number<-2>, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<number<-22>, _0, bad_function>, _1, _1, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<bad_number, bad_number, bad_function>, _1, _1, _1, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

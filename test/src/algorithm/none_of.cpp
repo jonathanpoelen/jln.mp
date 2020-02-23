@@ -31,6 +31,10 @@ TEST()
     .test<true_, _3, _3>()
     .not_invocable<list<>>()
     ;
+
+  ut::not_invocable<smp::none_of<bad_function>, _1>();
+  ut::not_invocable<smp::none_of<bad_function, bad_function>>();
+  ut::not_invocable<smp::none_of<bad_function, bad_function>, _1>();
 }
 
 TEST_SUITE_END()

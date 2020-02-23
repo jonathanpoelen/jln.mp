@@ -139,6 +139,8 @@ namespace ut
     test_pack3<Tpl, Args...>();
   }
 
+  class bad_function {};
+
   // TODO use test_pack2/3
   template<template<class...> class Tpl, class... Args>
   struct test_pack
@@ -175,6 +177,7 @@ using ut::test_context;
 using ut::test_pack;
 using ut::test_pack2;
 using ut::test_pack3;
+using ut::bad_function;
 
 }
 

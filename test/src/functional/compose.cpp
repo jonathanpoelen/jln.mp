@@ -44,6 +44,9 @@ TEST()
     .test<_4, _1>()
     .not_invocable<int>()
   ;
+
+  ut::not_invocable<smp::compose_f<bad_function, bad_function>>();
+  ut::not_invocable<smp::compose_f<bad_function, bad_function, bad_function>>();
 }
 
 TEST_SUITE_END()

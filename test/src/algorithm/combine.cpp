@@ -36,6 +36,10 @@ TEST()
       list<_2, _2, _0>, list<_2, _2, _1>, list<_2, _2, _2>>,
       _0, _1, _2>()
     ;
+
+  ut::not_invocable<smp::combine<bad_function>>();
+  ut::not_invocable<smp::combine<bad_function>, _1>();
+  ut::not_invocable<smp::combine<bad_function>, _1, _1>();
 }
 
 TEST_SUITE_END()

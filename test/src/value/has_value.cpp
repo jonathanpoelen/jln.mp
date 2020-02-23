@@ -20,6 +20,8 @@ TEST()
     .not_invocable<>()
     .not_invocable<_0, _1>()
     ;
+
+  ut::not_invocable<smp::has_value<bad_function>, _1>();
 }
 
 TEST_SUITE_END()

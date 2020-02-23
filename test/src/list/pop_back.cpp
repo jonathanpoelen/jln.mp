@@ -20,6 +20,8 @@ TEST()
     .test<seq_1_2, _1, _2, _3>()
     .not_invocable<>()
     ;
+
+  ut::not_invocable<smp::pop_back<bad_function>>();
 }
 
 TEST_SUITE_END()

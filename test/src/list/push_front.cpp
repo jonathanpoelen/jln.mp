@@ -21,6 +21,8 @@ TEST()
     .test<seq_1_2, _2>()
     .test<seq_1_2_3, _2, _3>()
     ;
+
+  ut::not_invocable<smp::push_front<_1, bad_function>>();
 }
 
 TEST_SUITE_END()

@@ -24,6 +24,9 @@ TEST()
     .not_invocable<>()
     .not_invocable<_0>()
     ;
+
+  ut::not_invocable<smp::unpack<bad_function>>();
+  ut::not_invocable<smp::unpack<bad_function>, list<>>();
 }
 
 TEST_SUITE_END()

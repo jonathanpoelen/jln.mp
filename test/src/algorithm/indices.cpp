@@ -22,6 +22,8 @@ TEST()
     .test<list<>>()
     .test<seq_0_1_2, _0, _0, _0>()
     ;
+
+  ut::not_invocable<smp::indices<bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

@@ -22,6 +22,8 @@ TEST()
     .test<list<_0, int, _1>, _0, _1>()
     .test<list<_0, int, _1, int, _2>, _0, _1, _2>()
     ;
+
+  ut::not_invocable<smp::intersperse<void, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

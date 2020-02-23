@@ -28,6 +28,9 @@ TEST()
   test_context<smp::offset<bad_number>, void>()
     .not_invocable<>()
     ;
+
+  ut::not_invocable<smp::offset<_1, bad_function>>();
+  ut::not_invocable<smp::offset<_1, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

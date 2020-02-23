@@ -22,6 +22,11 @@ TEST()
     .test<false_, int, void>()
     .test<false_, int, int, void>()
     ;
+
+  ut::not_invocable<smp::same<bad_function>>();
+  ut::not_invocable<smp::same<bad_function>, void>();
+  ut::not_invocable<smp::same<bad_function>, void, void>();
+  ut::not_invocable<smp::same<bad_function>, void, void, void>();
 }
 
 TEST_SUITE_END()

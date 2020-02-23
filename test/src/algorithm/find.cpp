@@ -57,6 +57,10 @@ TEST()
     .not_invocable<bad_number>()
     .not_invocable<_0, bad_number>()
     ;
+
+  ut::not_invocable<smp::find<_1, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::find_if<always<_1>, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::find_if<bad_function, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

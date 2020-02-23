@@ -31,6 +31,11 @@ TEST()
     .test<list<list<>, seq_1_1_1>, _1, _1, _1>()
     .not_invocable<bad_number>()
     ;
+
+  ut::not_invocable<smp::partition<mod2, bad_function>>();
+  ut::not_invocable<smp::partition<mod2, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::partition<bad_function, bad_function>>();
+  ut::not_invocable<smp::partition<bad_function, bad_function>, _1, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

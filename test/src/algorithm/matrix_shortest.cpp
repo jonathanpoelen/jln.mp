@@ -39,6 +39,10 @@ TEST()
     .not_invocable<list<list<>, list<>>, list<>, list<>>()
     .not_invocable<int>()
     ;
+
+  ut::not_invocable<smp::matrix_shortest<bad_function>>();
+  ut::not_invocable<smp::matrix_shortest<bad_function>, seq_0_1, seq_0_1>();
+  ut::not_invocable<smp::matrix_shortest<bad_function>, seq_0_1, seq_0_1_2_3>();
 }
 
 TEST_SUITE_END()

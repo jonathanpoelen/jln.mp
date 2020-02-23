@@ -36,6 +36,10 @@ TEST()
     .not_invocable<>()
     .not_invocable<bad_number>()
     ;
+
+  ut::not_invocable<smp::if_<always<_1>, bad_function>>();
+  ut::not_invocable<smp::if_<always<_0>, bad_function, bad_function>>();
+  ut::not_invocable<smp::if_<bad_function, bad_function, bad_function>>();
 }
 
 TEST_SUITE_END()

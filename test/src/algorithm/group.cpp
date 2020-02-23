@@ -53,6 +53,13 @@ TEST()
     .test<list<seq_1_1_1>, _1, _1, _1>()
     .test<list<seq_0, seq_1, seq_3>, _0, _1, _3>()
     ;
+
+  ut::not_invocable<smp::group<bad_function>>();
+  ut::not_invocable<smp::group<bad_function>, _1, _1, _1, _2>();
+  ut::not_invocable<smp::group_if<cmp, bad_function>>();
+  ut::not_invocable<smp::group_if<cmp, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::group_if<bad_function, bad_function>>();
+  ut::not_invocable<smp::group_if<bad_function, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

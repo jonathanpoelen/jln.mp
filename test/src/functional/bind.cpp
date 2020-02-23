@@ -48,6 +48,12 @@ TEST()
     .not_invocable<>()
     .not_invocable<void>()
     ;
+
+
+  ut::not_invocable<smp::bind1st<push_front<int>, bad_function>>();
+  ut::not_invocable<smp::bind1st<bad_function, bad_function>>();
+  ut::not_invocable<smp::bind2nd<push_front<int>, bad_function>>();
+  ut::not_invocable<smp::bind2nd<bad_function, bad_function>>();
 }
 
 TEST_SUITE_END()

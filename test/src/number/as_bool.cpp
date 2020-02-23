@@ -30,6 +30,9 @@ TEST()
     .not_invocable<c>() // narrowing conversion
     .not_invocable<>()
     ;
+
+  ut::not_invocable<smp::as_bool<bad_function>>();
+  ut::not_invocable<smp::as_bool<bad_function>, true_>();
 }
 
 TEST_SUITE_END()

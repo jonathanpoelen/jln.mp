@@ -54,6 +54,10 @@ TEST()
       list<_0, _1, _2>, list<_3, _4>, list<_5, _6>>()
     .not_invocable<int>()
     ;
+
+  ut::not_invocable<smp::cartesian<bad_function>>();
+  ut::not_invocable<smp::cartesian<bad_function>, seq_0>();
+  ut::not_invocable<smp::cartesian<bad_function>, seq_0_1, seq_0_1>();
 }
 
 TEST_SUITE_END()

@@ -118,6 +118,17 @@ TEST()
     .not_invocable<_3, _4>()
     .not_invocable<_1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _3, _4>()
     ;
+
+  ut::not_invocable<smp::lower_bound<void, bad_function>, _1>();
+  ut::not_invocable<smp::lower_bound<void, bad_function, bad_function>, _1>();
+  ut::not_invocable<smp::lower_bound<void, bad_function, bad_function, bad_function>, _1>();
+  ut::not_invocable<smp::lower_bound_of<_1, bad_function, bad_function>, _1>();
+  ut::not_invocable<smp::lower_bound_of<bad_number, bad_function, bad_function>, _1>();
+  ut::not_invocable<smp::lower_bound<void, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::lower_bound<void, bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::lower_bound<void, bad_function, bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::lower_bound_of<_1, bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::lower_bound_of<bad_number, bad_function, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

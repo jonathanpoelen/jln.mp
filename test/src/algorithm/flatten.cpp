@@ -31,6 +31,11 @@ TEST()
     .test<list<_0, list<_1>, _1, list<_2>, _3>,
       _0, other_list<list<_1>, _1>, list<_2>, _3>()
     ;
+
+  ut::not_invocable<smp::flatten<cfe<list>, bad_function>, seq_0>();
+  ut::not_invocable<smp::flatten<cfe<list>, bad_function>, seq_0, seq_0_2>();
+  ut::not_invocable<smp::flatten<bad_function, bad_function>, seq_0>();
+  ut::not_invocable<smp::flatten<bad_function, bad_function>, seq_0, seq_0_0_0>();
 }
 
 TEST_SUITE_END()

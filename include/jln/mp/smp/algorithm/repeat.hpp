@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<int_ n, class C = listify>
-  using repeat_c = repeat<mp::number<n>, C>;
+  using repeat_c = repeat<mp::number<n>, subcontract<C>>;
 }
 
 JLN_MP_MAKE_REGULAR_SMP2_P(repeat, (N), (C, smp::listify), smp::repeat_c<N::value, C>)

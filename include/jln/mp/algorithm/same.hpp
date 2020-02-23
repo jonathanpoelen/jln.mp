@@ -38,7 +38,7 @@ namespace jln::mp
   struct same<identity>
   {
     template<class... xs>
-    using f = typename detail::_same<sizeof...(xs)>::template f<xs...>;
+    using f = typename detail::_same<detail::min(sizeof...(xs), 3)>::template f<xs...>;
   };
 }
 

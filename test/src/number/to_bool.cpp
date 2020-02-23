@@ -32,6 +32,9 @@ TEST()
     .not_invocable<>()
     .not_invocable<void>()
     ;
+
+  ut::not_invocable<smp::to_bool<bad_function>>();
+  ut::not_invocable<smp::to_bool<bad_function>, true_>();
 }
 
 TEST_SUITE_END()

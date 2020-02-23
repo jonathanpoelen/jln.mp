@@ -23,6 +23,9 @@ TEST()
     .not_invocable<_0>()
     .not_invocable<>()
     ;
+
+  ut::not_invocable<smp::insert_range<_2, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::insert_range<bad_number, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

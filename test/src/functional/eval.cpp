@@ -41,6 +41,8 @@ TEST()
     .not_invocable<>()
     .not_invocable<int, int>()
     ;
+
+  ut::not_invocable<smp::eval<bad_function>>();
 }
 
 TEST_SUITE_END()

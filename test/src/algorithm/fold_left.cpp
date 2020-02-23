@@ -47,6 +47,11 @@ TEST()
     .not_invocable<_0, na>()
     .not_invocable<_0, _1, na>()
     ;
+
+  ut::not_invocable<smp::fold_left<listify, bad_function>, _1>();
+  ut::not_invocable<smp::fold_left<listify, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::fold_left<bad_function, bad_function>, _1>();
+  ut::not_invocable<smp::fold_left<bad_function, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()
