@@ -9,29 +9,21 @@ namespace jln::mp
 {
   namespace detail
   {
-    template<unsigned> struct _compose;
-    template<class, class> struct _compose_f;
+    template<unsigned> struct _compose_f;
+    template<class, class> struct _compose;
   }
 
   template<template<class...> class F, template<class...> class... Fs>
-  using compose = typename detail::_compose<sizeof...(Fs)>
+  using compose_f = typename detail::_compose_f<sizeof...(Fs)>
     ::template f<F, Fs...>;
 
   template<class F, class... Fs>
-  using compose_f = typename conditional_c<sizeof...(Fs) == 0>
+  using compose = typename conditional_c<sizeof...(Fs) == 0>
     ::template f<
       at1<F>,
-      mp::fold_right<cfl<detail::_compose_f>>
+      mp::fold_right<cfl<detail::_compose>>
     >
     ::template f<identity, F, Fs...>;
-
-  // TODO compose_c<auto F, auto Fs>
-  /*TODO template<auto F>
-  struct eval
-  {
-    template<class... xs>
-    using f = decltype(F.template operator()<xs...>());
-  };*/
 }
 
 
@@ -44,7 +36,7 @@ namespace jln::mp::detail
   template<template<class...> class F                    \
     mp_xs(JLN_MP_COMMA template<class...> class,         \
       JLN_MP_NIL, JLN_MP_NIL)>                           \
-  struct _compose_impl##n                                \
+  struct _compose_f_impl##n                                \
   {                                                      \
     template<class... xs>                                \
     using f = mp_rxs(JLN_MP_NIL, <, JLN_MP_NIL)          \
@@ -59,12 +51,12 @@ namespace jln::mp::detail
 
 #define JLN_COMPOSE_IMPL(n, mp_xs, mp_rxs, mp_dup)  \
   template<>                                        \
-  struct _compose<n>                                \
+  struct _compose_f<n>                                \
   {                                                 \
     template<template<class...> class F             \
       mp_xs(JLN_MP_COMMA template<class...> class,  \
         JLN_MP_NIL, JLN_MP_NIL)>                    \
-    using f = _compose_impl##n<F                    \
+    using f = _compose_f_impl##n<F                    \
       mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)>; \
   };
 
@@ -73,7 +65,7 @@ namespace jln::mp::detail
 #undef JLN_COMPOSE_IMPL
 
   template<unsigned n>
-  struct _compose
+  struct _compose_f
   {
     template<
       template<class...> class F0,
@@ -85,29 +77,29 @@ namespace jln::mp::detail
       template<class...> class F6,
       template<class...> class F7,
       template<class...> class... Fs>
-    using f = typename _compose<n-8>::template f<
-      _compose_impl7<F0, F1, F2, F3, F4, F5, F6, F7>::template f,
+    using f = typename _compose_f<n-8>::template f<
+      _compose_f_impl7<F0, F1, F2, F3, F4, F5, F6, F7>::template f,
       Fs...
     >;
   };
 
   template<class F, class C>
-  struct _compose_f
+  struct _compose
   {
     using type = fork<F, C>;
   };
 
   template<template<class...> class F, class x>
-  struct _compose_f<cfe<F>, x>
+  struct _compose<cfe<F>, x>
   {
     using type = cfe<F, x>;
   };
 
   template<template<class...> class F, class x>
-  struct _compose_f<cfl<F>, x>
+  struct _compose<cfl<F>, x>
   {
     using type = cfl<F, x>;
   };
 
-  // TODO compose_f smp::cfe/cfl
+  // TODO compose smp::cfe/cfl
 }
