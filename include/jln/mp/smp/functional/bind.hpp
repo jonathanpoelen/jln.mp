@@ -7,6 +7,12 @@
 
 namespace jln::mp::smp
 {
+  template<class F, class... xs>
+  using bind = try_contract<mp::bind<try_subcontract<F>, xs...>>;
+
+  template<class F, class... xs>
+  using reverse_bind = try_contract<mp::reverse_bind<try_subcontract<F>, xs...>>;
+
   template<class F, class C>
   using bind1st = try_contract<mp::bind1st<
     try_subcontract<F>,
@@ -23,6 +29,18 @@ namespace jln::mp::smp
 
 namespace jln::mp::detail
 {
+  template<template<class> class sfinae, class F, class... xs>
+  struct _sfinae<sfinae, bind<F, xs...>>
+  {
+    using type = smp::bind<sfinae<F>, xs...>;
+  };
+
+  template<template<class> class sfinae, class F, class... xs>
+  struct _sfinae<sfinae, reverse_bind<F, xs...>>
+  {
+    using type = smp::reverse_bind<sfinae<F>, xs...>;
+  };
+
   template<template<class> class sfinae, class F, class C>
   struct _sfinae<sfinae, bind1st<F, C>>
   {
