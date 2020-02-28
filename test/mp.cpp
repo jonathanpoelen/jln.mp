@@ -56,6 +56,7 @@
 #include "src/functional/identity.cpp"
 #include "src/functional/if.cpp"
 #include "src/functional/is_invocable.cpp"
+#include "src/functional/partial.cpp"
 #include "src/functional/recurse.cpp"
 #include "src/list/append.cpp"
 #include "src/list/as_list.cpp"
