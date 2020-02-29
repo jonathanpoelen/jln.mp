@@ -7,6 +7,12 @@
 
 TEST_SUITE_BEGIN()
 
+struct foo
+{
+  template<class, class>
+  using f = int;
+};
+
 TEST()
 {
   using namespace jln::mp;
@@ -23,6 +29,8 @@ TEST()
 
   ut::same<list<list<void>, list<void>, void, void>, partial<listify, listify, listify>
     ::template f<void, void, void, void>>();
+
+  ut::same<int, partial<identity, identity, foo>::template f<void, void>>();
 
   test_context<
     partial<inc<>, dec<>, listify>, 
