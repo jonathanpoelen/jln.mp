@@ -101,4 +101,5 @@
 #include "src/value/as_val.cpp"
 #include "src/value/has_value.cpp"
 #include "src/value/is_val.cpp"
+#include "src/value/operators.cpp"
 #include "src/value/values.cpp"

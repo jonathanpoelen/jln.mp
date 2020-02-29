@@ -12,22 +12,11 @@
 
 #include <limits>
 
-// TODO under condition ?
 JLN_DIAGNOSTIC_PUSH
 JLN_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wlogical-op")
 
-// value/operators.hpp
-
 namespace jln::mp
 {
-  // TODO C++20 value<(... @ xs::value)> ? other namespace ?
-  // TODO @_right = number<(value @ ...)>
-  // TODO @_v and emp::@_c
-
-  // TODO add0 = number<(value @ ... @ 0)>
-
-  // TODO equal_than<N> and co
-
   template<class C = identity>
   struct or_
   {
