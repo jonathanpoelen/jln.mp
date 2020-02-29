@@ -49,6 +49,9 @@ namespace jln::mp
     _try_invoke(F*, xs*...);
 
     na _try_invoke(...);
+    
+    template<class x>
+    struct _try_invoke_dispatch;
   }
 
   template<class C>
@@ -60,24 +63,21 @@ namespace jln::mp
   template<class C>
   using assume_unary = typename detail::_assume_unary<subcontract<C>>::type;
 
+  template<class F, class TC = identity, class FC = violation>
+  struct try_invoke;
+
   template<class C>
   struct contract
   {
     template<class... xs>
-    using f = typename if_<
-      same_as<na>,
-      cfl<violation::template f>,
-      identity
-    >::template f<call<C, xs...>>;
+    using f = typename detail::_try_invoke_dispatch<call<C, xs...>>
+      ::template f<identity, cfl<violation::template f>, xs...>;
   };
 
   using bad_contract = contract<violation>;
   
   template<class Pred, class TC = identity, class FC = violation>
   using test_contract = contract<if_<Pred, TC, FC>>;
-
-  template<class F, class TC = identity, class FC = violation>
-  struct try_invoke;
 
   template<class F, class FC>
   using try_invoke_or = try_invoke<F, identity, FC>;
@@ -86,18 +86,8 @@ namespace jln::mp
   struct try_invoke<contract<C>, TC, FC>
   {
     template<class... xs>
-    // TODO _try_invoke_dispatch<call<C, xs...>>::f<FC, TC, xs...>
-    using f = typename if_<same_as<na>, always<FC>, fork<TC, cfe<always>>>
-      ::template f<call<C, xs...>>
-      ::template f<xs...>;
-  };
-
-  template<class C, class TC, class x, class FC>
-  struct try_invoke<contract<C>, TC, always<x, FC>>
-  {
-    template<class... xs>
-    using f = typename if_<same_as<na>, always<x, FC>, TC>
-      ::template f<call<C, xs...>>;
+    using f = typename detail::_try_invoke_dispatch<call<C, xs...>>
+      ::template f<TC, FC, xs...>;
   };
 
   template<class C>
@@ -111,24 +101,11 @@ namespace jln::mp
   struct try_invoke
   {
     template<class... xs>
-    // TODO _try_invoke_dispatch<decltype(...)>::f<FC, TC, xs...>
-    using f = typename if_<same_as<na>, always<FC>, fork<TC, cfe<always>>>
-      ::template f<decltype(detail::_try_invoke(
+    using f = typename detail::_try_invoke_dispatch<
+      decltype(detail::_try_invoke(
         static_cast<F*>(nullptr),
         static_cast<xs*>(nullptr)...
-      ))>
-      ::template f<xs...>;
-  };
-
-  template<class F, class TC, class x, class FC>
-  struct try_invoke<F, TC, always<x, FC>>
-  {
-    template<class... xs>
-    using f = typename if_<same_as<na>, always<x, FC>, TC>
-      ::template f<decltype(detail::_try_invoke(
-        static_cast<F*>(nullptr),
-        static_cast<xs*>(nullptr)...
-      ))>;
+      ))>::template f<TC, FC, xs...>;
   };
 
   template<class F>
@@ -168,6 +145,20 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
+  template<class x>
+  struct _try_invoke_dispatch
+  {
+    template<class TC, class FC, class...>
+    using f = typename TC::template f<x>;
+  };
+  
+  template<>
+  struct _try_invoke_dispatch<na>
+  {
+    template<class TC, class FC, class... xs>
+    using f = typename FC::template f<xs...>;
+  };
+  
   // for reduce recursivity
   // TODO subcontract_for_unary
   // TODO subcontract_for_binary
@@ -178,12 +169,6 @@ namespace jln::mp::detail
   {
     using type = try_invoke<F>;
   };
-
-  // template<class Pred, class C>
-  // struct _subcontract<contract<Pred, C>>
-  // {
-  //   using type = try_invoke<contract<Pred, C>>;
-  // };
 
   template<class C>
   struct _subcontract<contract<C>>
@@ -272,8 +257,6 @@ namespace jln::mp::detail
     try_invoke<try_invoke<F>>>
   : _optimize_try_invoke<try_invoke<F>>
   {};
-
-  // TODO _optimize_try_invoke<...contract...>
 
 
   template<class F>
