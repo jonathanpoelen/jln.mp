@@ -16,7 +16,7 @@ namespace jln::mp
   // TODO DOXY template<class... F, class C>
   template <class... Fs>
   struct fork
-  : rotate<number<sizeof...(Fs)-1>, cfe<detail::_fork>>
+  : rotate<number<-1>, cfe<detail::_fork>>
   ::template f<Fs...>
   {};
 

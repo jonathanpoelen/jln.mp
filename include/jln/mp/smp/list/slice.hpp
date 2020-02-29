@@ -3,12 +3,17 @@
 #include "../list/list.hpp"
 #include "../../list/slice.hpp"
 
+namespace jln::mp::detail
+{
+  template<bool>
+  struct smp_slice_select;
+}
+
 namespace jln::mp::smp
 {
   template<unsigned start, unsigned size, unsigned stride = 1, class C = listify>
-  // TODO stride == 0 -> bad_contract
-  using slice_c = contract<always<number<(stride > 0)>>,
-    try_invoke<mp::slice<number<start>, number<size>, number<stride>, subcontract<C>>>>;
+  using slice_c = typename detail::smp_slice_select<(stride > 0)>
+    ::template f<start, size, stride, C>;
 }
 
 JLN_MP_MAKE_REGULAR_SMP4_P(slice, (start), (size), (stride, number<1>), (C, smp::listify),
@@ -17,6 +22,22 @@ JLN_MP_MAKE_REGULAR_SMP4_P(slice, (start), (size), (stride, number<1>), (C, smp:
 
 namespace jln::mp::detail
 {
+  template<>
+  struct smp_slice_select<false>
+  {
+    template<unsigned start, unsigned size, unsigned stride, class C>
+    using f = bad_contract;
+  };
+
+  template<>
+  struct smp_slice_select<true>
+  {
+    template<unsigned start, unsigned size, unsigned stride, class C>
+    using f = try_contract<
+      mp::slice<number<start>, number<size>, number<stride>,
+      subcontract<C>>>;
+  };
+
   template<template<class> class sfinae, class start, class size, class stride, class C>
   struct _sfinae<sfinae, slice<start, size, stride, C>>
   {

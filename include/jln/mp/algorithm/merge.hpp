@@ -248,7 +248,7 @@ namespace jln::mp::detail
     using f = _merge_impl<x, y, z, cmp>;
   };
 
-  // TODO remove ?
+  // could be deleted
   template<class x, class z>
   struct _merge<x, list<>, z>
   {
@@ -256,7 +256,7 @@ namespace jln::mp::detail
     using f = _merge_impl<x, list<>, z, cmp>;
   };
 
-  // TODO remove ?
+  // could be deleted
   template<class y, class z>
   struct _merge<list<>, y, z>
   {

@@ -100,6 +100,4 @@ namespace jln::mp::detail
   {
     using type = cfl<F, x>;
   };
-
-  // TODO compose smp::cfe/cfl
 }

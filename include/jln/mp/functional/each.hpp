@@ -15,7 +15,7 @@ namespace jln::mp
 
   template <class... Fs>
   struct each
-  : rotate<number<sizeof...(Fs)-1>, cfe<detail::_each>>
+  : rotate<number<-1>, cfe<detail::_each>>
   ::template f<Fs...>
   {};
 

@@ -1,5 +1,6 @@
 #pragma once
 
+// TODO within unpack.hpp
 namespace jln::mp
 {
   namespace detail
@@ -8,6 +9,7 @@ namespace jln::mp
     struct _unpack_append;
   }
 
+  // TODO rename to reverse_unpack ?
   template<class C>
   struct unpack_append
   {

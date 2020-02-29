@@ -44,7 +44,6 @@ namespace jln::mp
     template<class F> struct _assume_xs_strictly_positive { using type = F; };
     template<class F> struct _assume_xs_list { using type = F; };
 
-    // TODO _try_invoke(int)
     template<class F, class... xs>
     typename F::template f<xs...>
     _try_invoke(F*, xs*...);
@@ -61,6 +60,7 @@ namespace jln::mp
   template<class C>
   using assume_unary = typename detail::_assume_unary<subcontract<C>>::type;
 
+  // TODO remove Pred
   template<class Pred, class C>
   struct contract
   {

@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/functional/function.hpp"
 #include "jln/mp/smp/functional/fork.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
@@ -43,10 +44,16 @@ TEST()
     .not_invocable<_0, _0>()
     ;
 
+  test_context<fork<listify>, smp::fork<smp::listify>>()
+    .test<list<>>()
+    .test<list<>, _1>()
+    ;
+
   ut::not_invocable<smp::fork<
     smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, foo
   >, _1>();
 
+  ut::not_invocable<smp::fork<bad_function>>();
   ut::not_invocable<smp::fork<bad_function, bad_function, bad_function, bad_function, listify>>();
   ut::not_invocable<smp::fork<bad_function, bad_function, bad_function, bad_function, bad_function>>();
   ut::not_invocable<smp::fork<bad_function, listify>>();
@@ -55,6 +62,7 @@ TEST()
   ut::not_invocable<smp::fork<bad_function, bad_function, bad_function>>();
   ut::not_invocable<smp::fork<bad_function, bad_function, bad_function, listify>>();
   ut::not_invocable<smp::fork<bad_function, bad_function, bad_function, bad_function>>();
+  ut::not_invocable<smp::cfe<smp::fork>>();
 }
 
 TEST_SUITE_END()

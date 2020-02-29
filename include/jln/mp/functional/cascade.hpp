@@ -18,7 +18,6 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  // TODO _cascade<i>::f<....>
   template<class F, class... Fs>
   struct _cascade
   {

@@ -4,7 +4,6 @@
 
 namespace jln::mp
 {
-  // TODO search and replace push_front<x, f<C>> by bind<f<C>, N>
   template<class F, class... xs>
   struct bind
   {
@@ -12,7 +11,6 @@ namespace jln::mp
     using f = call<F, xs..., ys...>;
   };
 
-  // TODO search and replace push_back<x, f<C>> by reverse_bind<f<C>, N>
   template<class F, class... xs>
   struct reverse_bind
   {
