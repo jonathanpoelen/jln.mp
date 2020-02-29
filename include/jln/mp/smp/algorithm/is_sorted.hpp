@@ -15,7 +15,6 @@ namespace jln::mp::smp
     mp::if_<
       mp::size<mp::less_than_c<2>>,
       always<mp::number<1>, C>,
-      // TODO sliding<2> = list<a, b, c, d> -> list<liat<a, b>, list<b, c>, list<c, d>>
       mp::fork<
         mp::pop_front<>,
         mp::rotate_c<-1, mp::pop_front<>>,

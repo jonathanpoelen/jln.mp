@@ -11,7 +11,6 @@ namespace jln::mp
     template<int>
     struct _slice;
 
-    // TODO optimize start = 0
     constexpr int_ slide_select(int_ nx, int_ size, int_ stride)
     {
       return !size ? 0

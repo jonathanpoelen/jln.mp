@@ -41,16 +41,12 @@ namespace jln::mp
 #include "../utility/conditional.hpp"
 #include "../functional/fork_front.hpp"
 #include "../functional/function.hpp"
+#include "../functional/partial.hpp"
 
 namespace jln::mp::detail
 {
-  // TODO bind_front<unpack<push_front<x>>, C>
   template<class x, class C>
-  struct _group_insert_x
-  {
-    template<class seq, class... seqs>
-    using f = call<C, emp::unpack<seq, push_front<x>>, seqs...>;
-  };
+  using _group_insert_x = partial<unpack<push_front<x>>, C>;
 
   template<class...>
   struct _group_impl;

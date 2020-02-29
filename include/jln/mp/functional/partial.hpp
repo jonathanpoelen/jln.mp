@@ -50,7 +50,6 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  // TODO _partial::f<C, Fs...>::impl::f<xs...>
   template <class C, class... Fs>
   struct _partial
   {

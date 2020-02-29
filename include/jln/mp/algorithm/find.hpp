@@ -11,15 +11,7 @@ namespace jln::mp
     template<int, unsigned>
     struct _find;
 
-    constexpr unsigned _first_find_select(unsigned n)
-    {
-      return
-        n == 0 ? 0
-      : n < 64 ? 17
-      : n < 256 ? 65
-      : 257
-      ;
-    }
+    constexpr unsigned _first_find_select(unsigned n);
   }
 
   template<class Pred, class C = listify, class NC = C>
@@ -50,6 +42,16 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
+  constexpr unsigned _first_find_select(unsigned n)
+  {
+    return
+      n == 0 ? 0
+    : n < 64 ? 17
+    : n < 256 ? 65
+    : 257
+    ;
+  }
+
   template<int i, unsigned>
   struct _find
   {

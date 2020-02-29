@@ -73,23 +73,11 @@ namespace jln::mp::detail
     >::template f<C, size, stride, xs...>;
   };
 
-  // TODO also with zip
-  template<class C>
-  struct optimize_with_pattern
-  {
-    using type = C;
-  };
-
-  template<class C>
-  struct optimize_with_pattern<transform<unpack<listify>, C>>
-  : optimize_with_pattern<C>
-  {};
-
   template<int_ size, int_, int_ stride>
   struct mk_sliding
   {
     template<class C>
-    using f = sliding_<size, stride, typename optimize_with_pattern<C>::type>;
+    using f = sliding_<size, stride, optimize_useless_transform_unpack_t<C>>;
   };
 
   // TODO generic class for error
@@ -120,10 +108,8 @@ namespace jln::mp::detail
 
   constexpr int_ slinding_pivot(int_ nx, int_ size, int_ stride)
   {
-    int_ r = nx - (nx - size + stride - 1) / stride * stride - 1;
-    return r;
+    return nx - (nx - size + stride - 1) / stride * stride - 1;
   }
-
 
   constexpr int sliding_select(int n, int_ size, int_ stride)
   {
@@ -226,11 +212,7 @@ namespace jln::mp::detail
 
   constexpr int_ slinding8_pivot(int_ nx, int_ size, int_ stride)
   {
-    // if (stride >= size) {
-    //   return nx - ((nx + stride - 1) / stride - 1) * stride - 1;
-    // }
-    int_ r = nx - (nx - size + stride - 1) / stride * stride - 1;
-    // TODO return 0 + see slinding_pivot
+    int_ r = slinding_pivot(nx, size, stride);
     return r < 0 ? size : r;
   }
 
@@ -259,11 +241,9 @@ namespace jln::mp::detail
     using f = typename memoize_call<
       make_int_sequence_v<impl<
         C,
-        (sizeof...(xs) - size) / stride + 2 /*- (stride > size)*/,
+        (sizeof...(xs) - size) / stride + 2,
         stride,
-        // len - (len - size + stride - 1) / stride * stride
         slinding8_pivot(sizeof...(xs), size, stride)
-        // (sizeof...(xs) - size) % stride
       >>,
       number<size>
     >::template f<xs...>;

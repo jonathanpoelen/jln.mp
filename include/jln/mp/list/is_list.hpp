@@ -14,7 +14,6 @@ namespace jln::mp
   struct is_list
   {
     template<class x>
-    // TODO cfl<detail::_is_list>
     using f = typename C::template f<typename detail::_is_list<x>::type>;
   };
 

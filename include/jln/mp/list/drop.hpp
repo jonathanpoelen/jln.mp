@@ -21,7 +21,6 @@ namespace jln::mp
   struct drop
   {
     template<class... xs>
-    // TODO detail::dcalli
     using f = typename detail::_drop<
       detail::n_8_or_less_16_64_256(
         detail::validate_index<N::value, sizeof...(xs)>::value
@@ -42,18 +41,37 @@ namespace jln::mp
   template<class C>
   struct drop<number<1>, C>
   {
-    template<class x0, class... xs>
+    template<class, class... xs>
     using f = call<C, xs...>;
   };
 
   template<class C>
   struct drop<number<2>, C>
   {
-    template<class x0, class x1, class... xs>
+    template<class, class, class... xs>
     using f = call<C, xs...>;
   };
 
-  // TODO more drop
+  template<class C>
+  struct drop<number<3>, C>
+  {
+    template<class, class, class, class... xs>
+    using f = call<C, xs...>;
+  };
+
+  template<class C>
+  struct drop<number<4>, C>
+  {
+    template<class, class, class, class, class... xs>
+    using f = call<C, xs...>;
+  };
+
+  template<class C>
+  struct drop<number<5>, C>
+  {
+    template<class, class, class, class, class, class... xs>
+    using f = call<C, xs...>;
+  };
 
   namespace emp
   {
