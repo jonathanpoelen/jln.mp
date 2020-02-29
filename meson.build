@@ -1,5 +1,9 @@
 project('jln.mp', 'cpp', default_options : ['cpp_std=c++17'])
 
+jln_default_flags = {
+  'whole_program': 'strip_all',
+  'debug': 'off',
+}
 subdir('meson_jln_flags')
 add_global_arguments(jln_cpp_flags, language:'cpp')
 add_global_link_arguments(jln_link_flags, language:'cpp')
