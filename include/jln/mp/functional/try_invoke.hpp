@@ -255,14 +255,6 @@ namespace jln::mp::detail
     using type = x;
   };
 
-  // TODO error
-  template<class F, class TC, class FC>
-  struct _optimize_try_invoke<
-    try_invoke<try_invoke<F, TC, FC>, identity, FC>>
-  : _optimize_try_invoke<try_invoke<F, TC, FC>>
-  {};
-
-  // TODO error
   template<class F, class FC>
   struct _optimize_try_invoke<
     try_invoke<try_invoke<F, identity, FC>, identity, FC>>
@@ -275,7 +267,6 @@ namespace jln::mp::detail
   : _optimize_try_invoke<try_invoke<F, TC, FC>>
   {};
 
-  // TODO duplicate
   template<class F>
   struct _optimize_try_invoke<
     try_invoke<try_invoke<F>>>
