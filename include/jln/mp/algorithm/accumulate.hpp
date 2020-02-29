@@ -18,7 +18,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class state, class F, class C = mp::identity>
-    using accumulate = eager<L,
+    using accumulate = unpack<L,
       mp::push_front<state, mp::accumulate<F, C>>>;
   }
 }

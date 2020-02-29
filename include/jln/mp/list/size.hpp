@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../number/number.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 
 namespace jln::mp
 {
@@ -15,6 +15,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using size = eager<L, mp::size<C>>;
+    using size = unpack<L, mp::size<C>>;
   }
 }

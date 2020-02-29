@@ -2,7 +2,7 @@
 
 #include "../list/list.hpp"
 #include "../config/enumerate.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 #include "../functional/call.hpp"
 
 namespace jln::mp
@@ -31,7 +31,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using reverse = eager<L, mp::reverse<C>>;
+    using reverse = unpack<L, mp::reverse<C>>;
   }
 }
 

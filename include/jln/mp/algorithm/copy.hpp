@@ -14,9 +14,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class C = mp::listify>
-    using copy_if = eager<L, mp::copy_if<Pred, C>>;
+    using copy_if = unpack<L, mp::copy_if<Pred, C>>;
 
     template<class L, class x, class C = mp::listify>
-    using copy = eager<L, mp::copy<x, C>>;
+    using copy = unpack<L, mp::copy<x, C>>;
   }
 }

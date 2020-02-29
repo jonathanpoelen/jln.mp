@@ -19,10 +19,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using is_unique = eager<L, is_unique<C>>;
+    using is_unique = unpack<L, is_unique<C>>;
 
     template<class L, class Cmp = cfe<std::is_same>, class C = mp::identity>
-    using is_unique_if = eager<L, is_unique_if<Cmp, C>>;
+    using is_unique_if = unpack<L, is_unique_if<Cmp, C>>;
   }
 }
 

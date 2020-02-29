@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../functional/identity.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 
 namespace jln::mp
 {
@@ -22,6 +22,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using front = eager<L, front<C>>;
+    using front = unpack<L, front<C>>;
   }
 }

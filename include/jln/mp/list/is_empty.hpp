@@ -11,6 +11,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using is_empty = eager<L, mp::is_empty<C>>;
+    using is_empty = unpack<L, mp::is_empty<C>>;
   }
 }

@@ -17,9 +17,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class C = mp::identity>
-    using count_if = eager<L, mp::count_if<Pred, C>>;
+    using count_if = unpack<L, mp::count_if<Pred, C>>;
 
     template<class L, class x, class C = mp::identity>
-    using count = eager<L, mp::count<x, C>>;
+    using count = unpack<L, mp::count<x, C>>;
   }
 }

@@ -2,7 +2,7 @@
 
 #include "list.hpp"
 #include "../functional/call.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 
 namespace jln::mp
 {
@@ -16,6 +16,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class T, class C = mp::listify>
-    using push_back = eager<L, mp::push_back<T, C>>;
+    using push_back = unpack<L, mp::push_back<T, C>>;
   }
 }

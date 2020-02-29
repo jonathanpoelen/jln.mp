@@ -3,7 +3,7 @@
 #include "../config/enumerate.hpp"
 #include "../list/list.hpp"
 #include "../number/number.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 #include "../utility/conditional.hpp"
 
 namespace jln::mp
@@ -40,10 +40,10 @@ namespace jln::mp
   namespace emp
   {
     template <class L, class n, class C = mp::listify>
-    using rotate = eager<L, mp::rotate<n, C>>;
+    using rotate = unpack<L, mp::rotate<n, C>>;
 
     template <class L, int_ n, class C = mp::listify>
-    using rotate_c = eager<L, mp::rotate<number<n>, C>>;
+    using rotate_c = unpack<L, mp::rotate<number<n>, C>>;
   }
 }
 

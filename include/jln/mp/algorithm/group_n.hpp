@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../list/list.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 #include "../number/number.hpp"
 
 
@@ -27,10 +27,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class n, class C = mp::listify>
-    using group_n = eager<L, mp::group_n<n, C>>;
+    using group_n = unpack<L, mp::group_n<n, C>>;
 
     template<class L, int_ n, class C = mp::listify>
-    using group_n_c = eager<L, mp::group_n_c<n, C>>;
+    using group_n_c = unpack<L, mp::group_n_c<n, C>>;
   }
 }
 

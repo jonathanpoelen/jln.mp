@@ -16,6 +16,8 @@ TEST()
     .test_binary()
   ;
 
+  ut::same<_3, emp::unpack<seq_0_0_0, size<>>>();
+
   test_context<unpack<size<>>, smp::unpack<smp::size<>>>()
     .test<_0, list<>>()
     .test<_1, seq_1>()

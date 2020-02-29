@@ -20,10 +20,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class N, class C = mp::listify>
-    using take = eager<L, mp::take<N, C>>;
+    using take = unpack<L, mp::take<N, C>>;
 
     template<class L, int_ n, class C = mp::listify>
-    using take_c = eager<L, mp::take<number<n>, C>>;
+    using take_c = unpack<L, mp::take<number<n>, C>>;
   }
 }
 

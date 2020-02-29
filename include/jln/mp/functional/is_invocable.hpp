@@ -15,6 +15,6 @@ namespace jln::mp
 
     template<class L, class F, class C = mp::identity>
     inline constexpr bool is_invocable_v
-      = eager<L, mp::is_invocable<C>>::value;
+      = unpack<L, mp::is_invocable<C>>::value;
   }
 }

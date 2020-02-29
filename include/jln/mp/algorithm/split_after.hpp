@@ -18,9 +18,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class C = mp::listify>
-    using split_after_if = eager<L, mp::split_after_if<Pred, C>>;
+    using split_after_if = unpack<L, mp::split_after_if<Pred, C>>;
 
     template<class L, class x, class C = mp::listify>
-    using split_after = eager<L, mp::split_after<x, C>>;
+    using split_after = unpack<L, mp::split_after<x, C>>;
   }
 }

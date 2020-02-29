@@ -3,7 +3,7 @@
 #include "../list/size.hpp"
 #include "../list/list.hpp"
 #include "../list/take.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 #include "../functional/each.hpp"
 #include <algorithm>
 
@@ -33,6 +33,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using matrix_shortest = eager<L, mp::matrix_shortest<C>>;
+    using matrix_shortest = unpack<L, mp::matrix_shortest<C>>;
   }
 }

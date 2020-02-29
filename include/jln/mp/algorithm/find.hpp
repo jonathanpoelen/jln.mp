@@ -37,10 +37,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class C = mp::listify, class NC = C>
-    using find_if = eager<L, mp::find_if<Pred, C, NC>>;
+    using find_if = unpack<L, mp::find_if<Pred, C, NC>>;
 
     template<class L, class T, class C = mp::listify, class NC = C>
-    using find = eager<L, mp::find_if<mp::same_as<T>, C, NC>>;
+    using find = unpack<L, mp::find_if<mp::same_as<T>, C, NC>>;
   }
 }
 

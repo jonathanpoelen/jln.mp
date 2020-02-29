@@ -15,6 +15,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using flip = eager<L, mp::flip<C>>;
+    using flip = unpack<L, mp::flip<C>>;
   }
 }

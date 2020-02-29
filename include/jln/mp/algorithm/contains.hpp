@@ -12,6 +12,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class x, class C = mp::identity>
-    using contains = eager<L, mp::contains<x, C>>;
+    using contains = unpack<L, mp::contains<x, C>>;
   }
 }

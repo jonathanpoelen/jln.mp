@@ -2,7 +2,7 @@
 
 #include "../config/enumerate.hpp"
 #include "../functional/identity.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 
 namespace jln::mp
 {
@@ -23,7 +23,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using same = eager<L, mp::same<C>>;
+    using same = unpack<L, mp::same<C>>;
   }
 }
 

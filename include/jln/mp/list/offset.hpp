@@ -2,7 +2,7 @@
 
 #include "../number/number.hpp"
 #include "../functional/identity.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 
 namespace jln::mp
 {
@@ -26,9 +26,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class I, class C = mp::identity>
-    using offset = eager<L, mp::offset<I, C>>;
+    using offset = unpack<L, mp::offset<I, C>>;
 
     template<class L, int_ i, class C = mp::identity>
-    using offset_c = eager<L, mp::offset<number<i>, C>>;
+    using offset_c = unpack<L, mp::offset<number<i>, C>>;
   }
 }

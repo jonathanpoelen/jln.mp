@@ -11,6 +11,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class C = mp::identity>
-    using any_of = eager<L, mp::any_of<Pred, C>>;
+    using any_of = unpack<L, mp::any_of<Pred, C>>;
   }
 } // namespace jln::mp

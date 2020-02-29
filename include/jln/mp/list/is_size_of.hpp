@@ -27,21 +27,21 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class N, class C = mp::identity>
-    using is_size_of = eager<L, mp::is_size_of<N, C>>;
+    using is_size_of = unpack<L, mp::is_size_of<N, C>>;
 
     template<class L, int_ n, class C = mp::identity>
-    using is_size_of_c = eager<L, mp::is_size_of_c<n, C>>;
+    using is_size_of_c = unpack<L, mp::is_size_of_c<n, C>>;
 
     template<class L, class C = mp::identity>
-    using is_size_of_1 = eager<L, is_size_of_1<C>>;
+    using is_size_of_1 = unpack<L, is_size_of_1<C>>;
 
     template<class L, class C = mp::identity>
-    using is_size_of_2 = eager<L, is_size_of_2<C>>;
+    using is_size_of_2 = unpack<L, is_size_of_2<C>>;
 
     template<class L, class N, class C = mp::identity>
-    using is_size_larger_than = eager<L, is_size_larger_than<N, C>>;
+    using is_size_larger_than = unpack<L, is_size_larger_than<N, C>>;
 
     template<class L, int_ n, class C = mp::identity>
-    using is_size_larger_than_c = eager<L, is_size_larger_than_c<n, C>>;
+    using is_size_larger_than_c = unpack<L, is_size_larger_than_c<n, C>>;
   }
 }

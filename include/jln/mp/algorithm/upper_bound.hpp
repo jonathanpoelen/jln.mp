@@ -19,15 +19,15 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class x, class Cmp = mp::less<>, class C = mp::listify, class NC = C>
-    using upper_bound = eager<L, mp::upper_bound<x, Cmp, C, NC>>;
+    using upper_bound = unpack<L, mp::upper_bound<x, Cmp, C, NC>>;
 
     template<class L, int_ x, class Cmp = mp::less<>, class C = mp::listify, class NC = C>
-    using upper_bound_c = eager<L, mp::upper_bound<mp::number<x>, Cmp, C, NC>>;
+    using upper_bound_c = unpack<L, mp::upper_bound<mp::number<x>, Cmp, C, NC>>;
 
     template<class L, class x, class C = mp::listify, class NC = C>
-    using upper_bound_of = eager<L, mp::upper_bound<x, mp::less<>, C, NC>>;
+    using upper_bound_of = unpack<L, mp::upper_bound<x, mp::less<>, C, NC>>;
 
     template<class L, int_ x, class C = mp::listify, class NC = C>
-    using upper_bound_of_c = eager<L, mp::upper_bound<mp::number<x>, mp::less<>, C, NC>>;
+    using upper_bound_of_c = unpack<L, mp::upper_bound<mp::number<x>, mp::less<>, C, NC>>;
   }
 }

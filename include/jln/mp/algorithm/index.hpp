@@ -35,12 +35,12 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F, class C = mp::identity>
-    using index_for = eager<L, mp::index_for<F, C>>;
+    using index_for = unpack<L, mp::index_for<F, C>>;
 
     template<class L, class Pred, class C = mp::identity, class NC = mp::always<na>>
-    using index_if = eager<L, mp::index_if<Pred, C, NC>>;
+    using index_if = unpack<L, mp::index_if<Pred, C, NC>>;
 
     template<class L, class T, class C = mp::identity, class NC = mp::always<na>>
-    using index_of = eager<L, mp::index_of<T, C, NC>>;
+    using index_of = unpack<L, mp::index_of<T, C, NC>>;
   }
 }

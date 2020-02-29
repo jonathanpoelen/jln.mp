@@ -13,7 +13,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class i, class x, class C = mp::listify>
-    using insert = eager<L, mp::insert<i, x, C>>;
+    using insert = unpack<L, mp::insert<i, x, C>>;
 
     template<class L, int_ i, class x, class C = mp::listify>
     using insert_c = insert<L, number<i>, x, C>;

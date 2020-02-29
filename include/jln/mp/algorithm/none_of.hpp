@@ -10,6 +10,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class C = mp::identity>
-    using none_of = eager<L, mp::none_of<Pred, C>>;
+    using none_of = unpack<L, mp::none_of<Pred, C>>;
   }
 } // namespace jln::mp

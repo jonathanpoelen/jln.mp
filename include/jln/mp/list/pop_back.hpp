@@ -11,6 +11,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using pop_back = eager<L, mp::pop_back<C>>;
+    using pop_back = unpack<L, mp::pop_back<C>>;
   }
 }

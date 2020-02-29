@@ -12,6 +12,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class... xs>
-    using prepend = typename unpack<listify>::template f<L, xs...>;
+    using prepend = unpack<L, listify, xs...>;
   }
 }

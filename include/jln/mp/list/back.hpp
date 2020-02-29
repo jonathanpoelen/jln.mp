@@ -11,6 +11,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using back = eager<L, mp::back<C>>;
+    using back = unpack<L, mp::back<C>>;
   }
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "list.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 #include "../functional/call.hpp"
 
 namespace jln::mp
@@ -16,6 +16,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class T, class C = mp::listify>
-    using push_front = eager<L, mp::push_front<T, C>>;
+    using push_front = unpack<L, mp::push_front<T, C>>;
   }
 }

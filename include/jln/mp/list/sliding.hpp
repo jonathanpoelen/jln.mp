@@ -2,7 +2,7 @@
 
 #include "../number/number.hpp"
 #include "../config/enumerate.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 #include "list.hpp"
 
 namespace jln::mp
@@ -24,10 +24,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class size, class stride = number<1>, class C = mp::listify>
-    using sliding = eager<L, mp::sliding<size, stride, C>>;
+    using sliding = unpack<L, mp::sliding<size, stride, C>>;
 
     template<class L, int_ size, int_ stride = 1, class C = mp::listify>
-    using sliding_c = eager<L, mp::sliding_c<size, stride, C>>;
+    using sliding_c = unpack<L, mp::sliding_c<size, stride, C>>;
   }
 }
 

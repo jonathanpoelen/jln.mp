@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../functional/identity.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 #include "../list/push_front.hpp"
 #include "../config/enumerate.hpp"
 
@@ -27,7 +27,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class state, class C = mp::identity>
-    using fold_left = eager<L,
+    using fold_left = unpack<L,
       mp::push_front<state, mp::fold_left<C>>>;
   }
 }

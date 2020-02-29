@@ -17,6 +17,12 @@ namespace jln::mp
     // TODO _unpack_append<Ls...>::template f<C> ?
     using f = typename detail::_unpack_append<C, Ls...>::type;
   };
+  
+  namespace emp
+  {
+    template<class L, class C, class... xs>
+    using unpack_append = typename mp::unpack_append<C>::template f<L, xs...>;
+  }
 } // namespace jln::mp
 
 namespace jln::mp::detail

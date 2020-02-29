@@ -22,7 +22,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class C = mp::listify, class NC = C>
-    using take_while = eager<L, mp::take_while<Pred, C, NC>>;
+    using take_while = unpack<L, mp::take_while<Pred, C, NC>>;
   }
 }
 

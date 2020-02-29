@@ -35,10 +35,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred = mp::identity, class C = mp::listify>
-    using split_if = eager<L, mp::split_if<Pred, C>>;
+    using split_if = unpack<L, mp::split_if<Pred, C>>;
 
     template<class L, class x, class C = mp::listify>
-    using split = eager<L, mp::split<x, C>>;
+    using split = unpack<L, mp::split<x, C>>;
   }
 }
 

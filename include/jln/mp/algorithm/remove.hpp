@@ -16,9 +16,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class C = mp::listify>
-    using remove_if = eager<L, mp::remove_if<Pred, C>>;
+    using remove_if = unpack<L, mp::remove_if<Pred, C>>;
 
     template<class L, class T, class C = mp::listify>
-    using remove = eager<L, mp::remove<T, C>>;
+    using remove = unpack<L, mp::remove<T, C>>;
   }
 }

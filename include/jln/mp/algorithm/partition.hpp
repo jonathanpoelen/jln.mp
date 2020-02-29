@@ -12,6 +12,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using partition = eager<L, mp::partition<C>>;
+    using partition = unpack<L, mp::partition<C>>;
   }
 }

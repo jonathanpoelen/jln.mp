@@ -12,6 +12,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class... xs>
-    using append = typename unpack_append<listify>::template f<L, xs...>;
+    using append = unpack_append<L, listify, xs...>;
   }
 }

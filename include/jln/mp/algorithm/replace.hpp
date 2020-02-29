@@ -16,9 +16,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class T, class U, class C = mp::listify>
-    using replace = eager<L, mp::replace<T, U, C>>;
+    using replace = unpack<L, mp::replace<T, U, C>>;
 
     template<class L, class Pred, class T, class C = mp::listify>
-    using replace_if = eager<L, mp::replace_if<Pred, T, C>>;
+    using replace_if = unpack<L, mp::replace_if<Pred, T, C>>;
   }
 }

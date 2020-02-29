@@ -25,7 +25,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Cmp = mp::less<>, class C = listify>
-    using merge = eager<L, mp::merge<Cmp, C>>;
+    using merge = unpack<L, mp::merge<Cmp, C>>;
   }
 }
 

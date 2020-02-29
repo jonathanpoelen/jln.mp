@@ -3,7 +3,7 @@
 #include "../config/enumerate.hpp"
 #include "../list/list.hpp"
 #include "../number/number.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 #include "../utility/conditional.hpp"
 
 namespace jln::mp
@@ -58,10 +58,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class N, class C = mp::listify>
-    using drop = eager<L, mp::drop<N, C>>;
+    using drop = unpack<L, mp::drop<N, C>>;
 
     template<class L, int_ n, class C = mp::listify>
-    using drop_c = eager<L, mp::drop<number<n>, C>>;
+    using drop_c = unpack<L, mp::drop<number<n>, C>>;
   }
 }
 

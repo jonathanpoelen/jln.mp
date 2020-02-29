@@ -22,7 +22,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using cartesian = eager<L, cartesian<C>>;
+    using cartesian = unpack<L, cartesian<C>>;
   }
 }
 

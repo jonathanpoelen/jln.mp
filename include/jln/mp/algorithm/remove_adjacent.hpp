@@ -27,10 +27,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Cmp, class C = mp::listify>
-    using remove_adjacent_if = eager<L, mp::remove_adjacent_if<Cmp, C>>;
+    using remove_adjacent_if = unpack<L, mp::remove_adjacent_if<Cmp, C>>;
 
     template<class L, class C = mp::listify>
-    using remove_adjacent = eager<L, mp::remove_adjacent<C>>;
+    using remove_adjacent = unpack<L, mp::remove_adjacent<C>>;
   }
 }
 

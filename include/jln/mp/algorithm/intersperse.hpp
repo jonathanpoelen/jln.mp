@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../list/list.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 
 namespace jln::mp
 {
@@ -22,7 +22,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class x, class C = mp::listify>
-    using intersperse = eager<L, mp::intersperse<x, C>>;
+    using intersperse = unpack<L, mp::intersperse<x, C>>;
   }
 }
 

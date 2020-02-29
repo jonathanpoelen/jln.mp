@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../list/list.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 #include "../number/number.hpp"
 
 namespace jln::mp
@@ -23,10 +23,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class I, class J, class C = mp::listify>
-    using swap_index = eager<L, swap_index<I, J, C>>;
+    using swap_index = unpack<L, swap_index<I, J, C>>;
 
     template<class L, unsigned i, unsigned j, class C = mp::listify>
-    using swap_index_c = eager<L, swap_index_c<i, j, C>>;
+    using swap_index_c = unpack<L, swap_index_c<i, j, C>>;
   }
 }
 

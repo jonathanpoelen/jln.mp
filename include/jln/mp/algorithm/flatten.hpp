@@ -3,7 +3,7 @@
 #include "../list/join.hpp"
 #include "../functional/call.hpp"
 #include "../functional/function.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 
 namespace jln::mp
 {
@@ -34,7 +34,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class S = wrapper<L>, class C = mp::listify>
-    using flatten = eager<L, mp::flatten<S, C>>;
+    using flatten = unpack<L, mp::flatten<S, C>>;
   }
 }
 

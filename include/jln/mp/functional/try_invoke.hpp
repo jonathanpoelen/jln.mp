@@ -7,7 +7,7 @@
 #include "if.hpp"
 #include "sfinaefwd.hpp"
 #include "../number/number.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 #include "../utility/always.hpp"
 #include "../utility/same_as.hpp"
 #include "../utility/conditional.hpp"
@@ -147,7 +147,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F, class TC = mp::identity, class FC = mp::violation>
-    using try_invoke = eager<L, try_invoke<F, TC, FC>>;
+    using try_invoke = unpack<L, try_invoke<F, TC, FC>>;
   }
 
   template<class F>

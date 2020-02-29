@@ -33,7 +33,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using is_sorted = eager<L, mp::is_sorted<Cmp, C>>;
+    using is_sorted = unpack<L, mp::is_sorted<Cmp, C>>;
   }
 }
 

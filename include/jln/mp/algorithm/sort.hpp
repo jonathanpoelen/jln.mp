@@ -27,10 +27,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Cmp = mp::less<>, class C = listify>
-    using sort = eager<L, mp::sort<Cmp, C>>;
+    using sort = unpack<L, mp::sort<Cmp, C>>;
 
     template<class L, class Cmp = mp::less<>, class C = listify>
-    using stable_sort = eager<L, mp::sort<Cmp, C>>;
+    using stable_sort = unpack<L, mp::sort<Cmp, C>>;
   }
 }
 

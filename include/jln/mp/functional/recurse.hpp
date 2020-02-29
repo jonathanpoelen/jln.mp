@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../functional/identity.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 
 
 namespace jln::mp
@@ -42,10 +42,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F, class C = mp::identity>
-    using recurse = eager<L, mp::recurse<F, C>>;
+    using recurse = unpack<L, mp::recurse<F, C>>;
 
     template<class L, class F, class C = mp::identity>
-    using recurse_fix = eager<L, mp::recurse_fix<F, C>>;
+    using recurse_fix = unpack<L, mp::recurse_fix<F, C>>;
   }
 }
 

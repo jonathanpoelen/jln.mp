@@ -2,7 +2,7 @@
 
 #include "list.hpp"
 #include "../number/number.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 
 namespace jln::mp
 {
@@ -43,7 +43,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class start, class size, class stride = number<1>, class C = mp::listify>
-    using slice = eager<L, slice<start, size, stride, C>>;
+    using slice = unpack<L, slice<start, size, stride, C>>;
 
     template<class L, unsigned start, unsigned size, unsigned stride = 1, class C = mp::listify>
     using slice_c = slice<L, number<start>, number<size>, number<stride>, C>;

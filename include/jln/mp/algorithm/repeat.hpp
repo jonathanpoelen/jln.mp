@@ -26,10 +26,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class n, class C = mp::listify>
-    using repeat = eager<L, mp::repeat<n, C>>;
+    using repeat = unpack<L, mp::repeat<n, C>>;
 
     template<class L, int_ n, class C = mp::listify>
-    using repeat_c = eager<L, mp::repeat<number<n>, C>>;
+    using repeat_c = unpack<L, mp::repeat<number<n>, C>>;
   }
 }
 

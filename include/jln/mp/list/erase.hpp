@@ -30,7 +30,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class start, class size = mp::number<1>, class C = mp::listify>
-    using erase = eager<L, mp::erase<start, size, C>>;
+    using erase = unpack<L, mp::erase<start, size, C>>;
 
     template<class L, int_ start, int_ size = 1, class C = mp::listify>
     using erase_c = erase<L, number<start>, number<size>, C>;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 #include "../number/number.hpp"
 #include "list.hpp"
 
@@ -30,10 +30,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class beg, class end, class C = mp::listify>
-    using range = eager<L, mp::range<beg, end, C>>;
+    using range = unpack<L, mp::range<beg, end, C>>;
 
     template<class L, int_ beg, int_ end, class C = mp::listify>
-    using range_c = eager<L, mp::range_c<beg, end, C>>;
+    using range_c = unpack<L, mp::range_c<beg, end, C>>;
   }
 }
 

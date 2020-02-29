@@ -6,7 +6,7 @@
 #include "../list/size.hpp"
 #include "../number/number.hpp"
 #include "../utility/always.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 
 #include "../../cxx/diagnostic.hpp"
 
@@ -277,79 +277,79 @@ namespace jln::mp
 namespace jln::mp::emp
 {
   template<class L, class C = mp::identity>
-  using or_seq = eager<L, mp::or_<C>>;
+  using or_seq = unpack<L, mp::or_<C>>;
 
   template<class L, class C = mp::identity>
-  using and_seq = eager<L, mp::and_<C>>;
+  using and_seq = unpack<L, mp::and_<C>>;
 
   template<class L, class C = mp::identity>
-  using add_seq = eager<L, mp::add<C>>;
+  using add_seq = unpack<L, mp::add<C>>;
 
   template<class L, class C = mp::identity>
-  using add0_seq = eager<L, mp::add0<C>>;
+  using add0_seq = unpack<L, mp::add0<C>>;
 
   template<class L, class C = mp::identity>
-  using sub_seq = eager<L, mp::sub<C>>;
+  using sub_seq = unpack<L, mp::sub<C>>;
 
   template<class L, class C = mp::identity>
-  using sub0_seq = eager<L, mp::sub0<C>>;
+  using sub0_seq = unpack<L, mp::sub0<C>>;
 
   template<class L, class C = mp::identity>
-  using lshift_seq = eager<L, mp::lshift<C>>;
+  using lshift_seq = unpack<L, mp::lshift<C>>;
 
   template<class L, class C = mp::identity>
-  using lshift0_seq = eager<L, mp::lshift0<C>>;
+  using lshift0_seq = unpack<L, mp::lshift0<C>>;
 
   template<class L, class C = mp::identity>
-  using rshift_seq = eager<L, mp::rshift<C>>;
+  using rshift_seq = unpack<L, mp::rshift<C>>;
 
   template<class L, class C = mp::identity>
-  using rshift0_seq = eager<L, mp::rshift0<C>>;
+  using rshift0_seq = unpack<L, mp::rshift0<C>>;
 
   template<class L, class C = mp::identity>
-  using mul_seq = eager<L, mp::mul<C>>;
+  using mul_seq = unpack<L, mp::mul<C>>;
 
   template<class L, class C = mp::identity>
-  using mul0_seq = eager<L, mp::mul0<C>>;
+  using mul0_seq = unpack<L, mp::mul0<C>>;
 
   template<class L, class C = mp::identity>
-  using mul1_seq = eager<L, mp::mul1<C>>;
+  using mul1_seq = unpack<L, mp::mul1<C>>;
 
   template<class L, class C = mp::identity>
-  using div_seq = eager<L, mp::div<C>>;
+  using div_seq = unpack<L, mp::div<C>>;
 
   template<class L, class C = mp::identity>
-  using div0_seq = eager<L, mp::div0<C>>;
+  using div0_seq = unpack<L, mp::div0<C>>;
 
   template<class L, class C = mp::identity>
-  using div1_seq = eager<L, mp::div1<C>>;
+  using div1_seq = unpack<L, mp::div1<C>>;
 
   template<class L, class C = mp::identity>
-  using mod_seq = eager<L, mp::mod<C>>;
+  using mod_seq = unpack<L, mp::mod<C>>;
 
   template<class L, class C = mp::identity>
-  using mod0_seq = eager<L, mp::mod0<C>>;
+  using mod0_seq = unpack<L, mp::mod0<C>>;
 
   template<class L, class C = mp::identity>
-  using mod1_seq = eager<L, mp::mod1<C>>;
+  using mod1_seq = unpack<L, mp::mod1<C>>;
 
   template<class L, class C = mp::identity>
-  using xor_seq = eager<L, mp::xor_<C>>;
+  using xor_seq = unpack<L, mp::xor_<C>>;
 
   template<class L, class C = mp::identity>
-  using xor0_seq = eager<L, mp::xor0<C>>;
+  using xor0_seq = unpack<L, mp::xor0<C>>;
 
   template<class L, class C = mp::identity>
-  using bit_and_seq = eager<L, mp::bit_and<C>>;
+  using bit_and_seq = unpack<L, mp::bit_and<C>>;
 
   template<class L, class C = mp::identity>
-  using bit_and0_seq = eager<L, mp::bit_and0<C>>;
+  using bit_and0_seq = unpack<L, mp::bit_and0<C>>;
 
   template<class L, class C = mp::identity>
-  using bit_or_seq = eager<L, mp::bit_or<C>>;
+  using bit_or_seq = unpack<L, mp::bit_or<C>>;
 
   template<class L, class C = mp::identity>
-  using bit_or0_seq = eager<L, mp::bit_or0<C>>;
+  using bit_or0_seq = unpack<L, mp::bit_or0<C>>;
 
 
   template<int_... xs>

@@ -52,34 +52,34 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using min = eager<L, mp::min<Cmp, C>>;
+    using min = unpack<L, mp::min<Cmp, C>>;
 
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using min0 = eager<L, mp::min0<Cmp, C>>;
+    using min0 = unpack<L, mp::min0<Cmp, C>>;
 
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using max = eager<L, mp::max<Cmp, C>>;
+    using max = unpack<L, mp::max<Cmp, C>>;
 
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using max0 = eager<L, mp::max0<Cmp, C>>;
+    using max0 = unpack<L, mp::max0<Cmp, C>>;
 
     template<class L, class Min, class Max, class Cmp = mp::less<>, class C = mp::identity>
-    using clamp = eager<L, mp::clamp<Min, Max, Cmp, C>>;
+    using clamp = unpack<L, mp::clamp<Min, Max, Cmp, C>>;
 
     template<class L, int_ min, int_ max, class Cmp = mp::less<>, class C = mp::identity>
-    using clamp_c = eager<L, mp::clamp_c<min, max, Cmp, C>>;
+    using clamp_c = unpack<L, mp::clamp_c<min, max, Cmp, C>>;
 
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using abs = eager<L, mp::abs<Cmp, C>>;
+    using abs = unpack<L, mp::abs<Cmp, C>>;
 
     template<class L, class C = mp::identity>
-    using pow = eager<L, mp::pow<C>>;
+    using pow = unpack<L, mp::pow<C>>;
 
     template<class L, class C = mp::identity>
-    using pow0 = eager<L, mp::pow0<C>>;
+    using pow0 = unpack<L, mp::pow0<C>>;
 
     template<class L, class C = mp::identity>
-    using pow1 = eager<L, mp::pow1<C>>;
+    using pow1 = unpack<L, mp::pow1<C>>;
   }
 }
 

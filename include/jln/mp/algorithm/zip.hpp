@@ -2,7 +2,7 @@
 
 #include "transform.hpp"
 #include "../list/list.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 
 
 namespace jln::mp
@@ -24,10 +24,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using zip = eager<L, mp::zip<C>>;
+    using zip = unpack<L, mp::zip<C>>;
 
     template<class L, class F = mp::listify, class C = mp::listify>
-    using zip_with = eager<L, mp::zip_with<F, C>>;
+    using zip_with = unpack<L, mp::zip_with<F, C>>;
   }
 }
 

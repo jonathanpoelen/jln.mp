@@ -17,6 +17,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using combine = eager<L, mp::combine<C>>;
+    using combine = unpack<L, mp::combine<C>>;
   }
 }

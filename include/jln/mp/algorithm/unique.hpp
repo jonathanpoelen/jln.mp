@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../functional/function.hpp"
-#include "../utility/eager.hpp"
+#include "../utility/unpack.hpp"
 
 #include <type_traits>
 
@@ -22,10 +22,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using unique = eager<L, unique<C>>;
+    using unique = unpack<L, unique<C>>;
 
     template<class L, class Cmp = cfe<std::is_same>, class C = mp::listify>
-    using unique_if = eager<L, unique_if<Cmp, C>>;
+    using unique_if = unpack<L, unique_if<Cmp, C>>;
   }
 }
 

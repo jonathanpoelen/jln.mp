@@ -17,9 +17,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class i, class seq, class C = mp::listify>
-    using insert_range = eager<L, mp::insert_range<i, seq, C>>;
+    using insert_range = unpack<L, mp::insert_range<i, seq, C>>;
 
     template<class L, int_ i, class seq, class C = mp::listify>
-    using insert_range_c = eager<L, mp::insert_range_c<i, seq, C>>;
+    using insert_range_c = unpack<L, mp::insert_range_c<i, seq, C>>;
   }
 }

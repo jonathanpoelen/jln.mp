@@ -27,16 +27,17 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Cmp, class C = mp::listify>
-    using group_if = eager<L, mp::group_if<Cmp, C>>;
+    using group_if = unpack<L, mp::group_if<Cmp, C>>;
 
     template<class L, class C = mp::listify>
-    using group = eager<L, mp::group<C>>;
+    using group = unpack<L, mp::group<C>>;
   }
 }
 
 
 #include "split.hpp"
 #include "../list/take.hpp"
+#include "../list/push_front.hpp"
 #include "../utility/conditional.hpp"
 #include "../functional/fork_front.hpp"
 #include "../functional/function.hpp"
@@ -48,7 +49,7 @@ namespace jln::mp::detail
   struct _group_insert_x
   {
     template<class seq, class... seqs>
-    using f = call<C, eager<seq, push_front<x>>, seqs...>;
+    using f = call<C, emp::unpack<seq, push_front<x>>, seqs...>;
   };
 
   template<class...>
