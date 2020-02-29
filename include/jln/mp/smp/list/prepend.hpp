@@ -8,5 +8,5 @@
 namespace jln::mp::smp
 {
   template<class L, class C = listify>
-  using prepend = valid_contract<mp::push_front<L, subcontract<unpack<C>>>>;
+  using prepend = contract<mp::push_front<L, subcontract<unpack<C>>>>;
 }

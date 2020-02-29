@@ -7,5 +7,5 @@
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using indices = valid_contract<mp::indices<subcontract<C>>>;
+  using indices = contract<mp::indices<subcontract<C>>>;
 }

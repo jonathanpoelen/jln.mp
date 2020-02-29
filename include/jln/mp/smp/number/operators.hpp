@@ -9,7 +9,7 @@
 namespace jln::mp::detail
 {
   template<template<class...> class Tpl, class C, int_ i = 0>
-  using smp_op_default = valid_contract<
+  using smp_op_default = contract<
     if_<
       size<>,
       try_invoke<Tpl<subcontract<C>>>,
@@ -130,32 +130,32 @@ namespace jln::mp::smp
   using greater_equal = try_contract<mp::greater_equal<subcontract<C>>>;
 
   template<class N, class C = identity>
-  using equal_than = valid_contract<
+  using equal_than = contract<
     mp::push_back<N,
       mp::try_invoke<mp::equal<subcontract<C>>>>>;
 
   template<class N, class C = identity>
-  using not_equal_than = valid_contract<
+  using not_equal_than = contract<
     mp::push_back<N,
       mp::try_invoke<mp::not_equal<subcontract<C>>>>>;
 
   template<class N, class C = identity>
-  using less_than = valid_contract<
+  using less_than = contract<
     mp::push_back<N,
       mp::try_invoke<mp::less<subcontract<C>>>>>;
 
   template<class N, class C = identity>
-  using less_equal_than = valid_contract<
+  using less_equal_than = contract<
     mp::push_back<N,
       mp::try_invoke<mp::less_equal<subcontract<C>>>>>;
 
   template<class N, class C = identity>
-  using greater_than = valid_contract<
+  using greater_than = contract<
     mp::push_back<N,
       mp::try_invoke<mp::greater<subcontract<C>>>>>;
 
   template<class N, class C = identity>
-  using greater_equal_than = valid_contract<
+  using greater_equal_than = contract<
     mp::push_back<N,
       mp::try_invoke<mp::greater_equal<subcontract<C>>>>>;
 

@@ -10,7 +10,7 @@ namespace jln::mp::smp
     mp::split_before_if<subcontract<Pred>, subcontract<C>>>;
 
   template<class x, class C = listify>
-  using split_before = valid_contract<mp::split_before<x, subcontract<C>>>;
+  using split_before = contract<mp::split_before<x, subcontract<C>>>;
 }
 
 namespace jln::mp::detail

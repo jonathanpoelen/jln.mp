@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using reverse = valid_contract<mp::reverse<subcontract<C>>>;
+  using reverse = contract<mp::reverse<subcontract<C>>>;
 }
 
 namespace jln::mp::detail

@@ -11,7 +11,7 @@
 namespace jln::mp::smp
 {
   template<class Pred, class TC, class FC = always<false_>>
-  using if_ = valid_contract<
+  using if_ = contract<
     mp::fork_front<
       concepts::predicate<
         Pred,

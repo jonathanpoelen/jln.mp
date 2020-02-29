@@ -26,13 +26,13 @@ namespace jln::mp::detail
   template<template<class> class sfinae>
   struct _sfinae<sfinae, cfl<_set_push_back>>
   {
-    using type = valid_contract<cfl<_set_push_back>>;
+    using type = contract<cfl<_set_push_back>>;
   };
 
   template<template<class> class sfinae, class Cmp>
   struct _sfinae<sfinae, _set_cmp_push_back<Cmp>>
   {
-    using type = valid_contract<unpack<try_invoke<cfe<
+    using type = contract<unpack<try_invoke<cfe<
       _set_cmp_push_back<sfinae<Cmp>>::template impl
     >>>>;
   };

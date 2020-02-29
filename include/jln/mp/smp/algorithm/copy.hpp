@@ -13,5 +13,5 @@ namespace jln::mp::smp
     mp::fork<subcontract<Pred>, mp::not_<>>>, C>;
 
   template<class x, class C = listify>
-  using copy = valid_contract<mp::copy<x, subcontract<C>>>;
+  using copy = contract<mp::copy<x, subcontract<C>>>;
 }

@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using powerset = valid_contract<mp::powerset<subcontract<C>>>;
+  using powerset = contract<mp::powerset<subcontract<C>>>;
 }
 
 namespace jln::mp::detail

@@ -7,12 +7,12 @@
 namespace jln::mp::smp
 {
   template<class F, class C = identity>
-  using recurse = valid_contract<mp::recurse<
+  using recurse = contract<mp::recurse<
     try_subcontract<F, mp::identity, mp::always<mp::stop_iteration<na>>>,
     monadic<subcontract<C>>>>;
 
   template<class F, class C = identity>
-  using recurse_fix = valid_contract<mp::recurse_fix<
+  using recurse_fix = contract<mp::recurse_fix<
     try_subcontract<F>, monadic<subcontract<C>>>>;
 }
 

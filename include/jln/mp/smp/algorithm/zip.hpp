@@ -12,7 +12,7 @@
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using zip = contract<
+  using zip = test_contract<
     mp::if_<
       mp::transform<mp::is_list<>, mp::and_<>>,
       mp::transform<mp::unpack<mp::size<>>, mp::same<>>

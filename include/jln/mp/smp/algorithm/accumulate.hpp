@@ -14,7 +14,7 @@
 namespace jln::mp::smp
 {
   template<class F, class C = identity>
-  using accumulate = contract<
+  using accumulate = test_contract<
     mp::if_<
       mp::size<>,
       mp::pop_front<mp::all_of<mp::is_list<>>>>,

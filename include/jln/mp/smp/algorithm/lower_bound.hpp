@@ -17,7 +17,7 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template<class x, class Cmp, class C = listify, class NC = C>
-  using lower_bound = valid_contract<detail::_smp_lower_bound_impl<
+  using lower_bound = contract<detail::_smp_lower_bound_impl<
     x, subcontract<Cmp>, subcontract<C>, subcontract<NC>>>;
 
   template<int_ x, class Cmp = less<>, class C = listify, class NC = C>

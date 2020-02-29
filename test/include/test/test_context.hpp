@@ -186,6 +186,6 @@ namespace jln::mp::detail
   template<template<class> class sfinae>
   struct _sfinae<sfinae, cfe<ut::other_list>>
   {
-    using type = valid_contract<cfe<ut::other_list>>;
+    using type = contract<cfe<ut::other_list>>;
   };
 }

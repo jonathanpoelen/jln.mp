@@ -8,7 +8,7 @@
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using join = contract<
+  using join = test_contract<
     mp::all_of<mp::is_list<>>,
     mp::join<subcontract<C>>>;
 }

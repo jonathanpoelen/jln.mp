@@ -11,7 +11,7 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template <class... Fs>
-  using fork = valid_contract<typename mp::rotate<
+  using fork = contract<typename mp::rotate<
       mp::number<-1>,
       detail::_smp_fork
     >::template f<subcontract<Fs>...>>;

@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class x, class C = listify>
-  using intersperse = valid_contract<mp::intersperse<x, subcontract<C>>>;
+  using intersperse = contract<mp::intersperse<x, subcontract<C>>>;
 }
 
 namespace jln::mp::detail

@@ -10,7 +10,7 @@
 namespace jln::mp::smp
 {
   template<class Pred, class C = listify, class NC = C>
-  using find_if = valid_contract<mp::find_if<
+  using find_if = contract<mp::find_if<
     // TODO optimize for same_as and other safe predicate
     concepts::predicate<Pred, mp::identity, mp::always<true_>>,
     mp::if_<
@@ -21,7 +21,7 @@ namespace jln::mp::smp
     subcontract<NC>>>;
 
   template<class T, class C = listify, class NC = C>
-  using find = valid_contract<
+  using find = contract<
     mp::find<T, subcontract<C>, subcontract<NC>>>;
 }
 

@@ -7,7 +7,7 @@
 namespace jln::mp::smp
 {
   template <int_ i, class C = identity>
-  using offset_c = valid_contract<mp::offset<number<i>, subcontract<C>>>;
+  using offset_c = contract<mp::offset<number<i>, subcontract<C>>>;
 }
 
 JLN_MP_MAKE_REGULAR_SMP2_P(offset, (N), (C, smp::identity), smp::offset_c<N::value, C>)

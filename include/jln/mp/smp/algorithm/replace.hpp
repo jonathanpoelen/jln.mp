@@ -14,6 +14,6 @@ namespace jln::mp::smp
     subcontract_barrier<Pred>, T, subcontract_barrier<C>>>;
 
   template<class T, class U, class C = listify>
-  using replace = valid_contract<
+  using replace = contract<
     mp::replace<T, U, monadic_xs_if_na<U, subcontract<C>>>>;
 }

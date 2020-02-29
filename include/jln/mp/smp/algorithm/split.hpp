@@ -11,7 +11,7 @@ namespace jln::mp::smp
     mp::split_if<subcontract<F>, subcontract<C>>>;
 
   template<class x, class C = listify>
-  using split = valid_contract<mp::split<x, subcontract<C>>>;
+  using split = contract<mp::split<x, subcontract<C>>>;
 }
 
 namespace jln::mp::detail

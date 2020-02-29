@@ -7,7 +7,7 @@
 namespace jln::mp::smp
 {
   template<class F, class C = listify>
-  using transform = valid_contract<mp::transform<
+  using transform = contract<mp::transform<
     subcontract<F>, mp::monadic_xs<subcontract<C>>>>;
 }
 
@@ -20,21 +20,21 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct optimize_useless_transform_unpack_impl<valid_contract<identity>>
+  struct optimize_useless_transform_unpack_impl<contract<identity>>
   {
     template<class C>
-    using f = optimize_useless_transform_unpack_t<valid_contract<C>>;
+    using f = optimize_useless_transform_unpack_t<contract<C>>;
   };
 
   template<class F, class C>
-  struct optimize_useless_transform_unpack<valid_contract<transform<F, C>>>
+  struct optimize_useless_transform_unpack<contract<transform<F, C>>>
   {
     using type = typename optimize_useless_transform_unpack_impl<optimize_useless_unpack_t<F>>
       ::template f<C>;
   };
 
   template<class F, class C>
-  struct optimize_useless_transform_unpack<valid_contract<transform<F, mp::monadic_xs<C>>>>
+  struct optimize_useless_transform_unpack<contract<transform<F, mp::monadic_xs<C>>>>
   {
     using type =
       typename optimize_useless_transform_unpack_impl<optimize_useless_unpack_t<F>>

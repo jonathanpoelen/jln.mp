@@ -19,7 +19,7 @@ namespace jln::mp::smp
     mp::index_for<subcontract<F>, subcontract<C>>>;
 
   template<class Pred, class C = identity, class NC = always<na>>
-  using index_if = valid_contract<detail::_smp_index_if<
+  using index_if = contract<detail::_smp_index_if<
     subcontract<Pred>, subcontract<C>, subcontract<NC>>>;
 
   template<class T, class C = identity, class NC = always<na>>

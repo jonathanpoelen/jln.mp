@@ -7,7 +7,7 @@ namespace jln::mp::smp
 {
   template<class C = listify>
   // no checked
-  using numbers = valid_contract<mp::numbers<subcontract<C>>>;
+  using numbers = contract<mp::numbers<subcontract<C>>>;
 }
 
 namespace jln::mp::detail

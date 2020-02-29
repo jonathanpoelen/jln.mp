@@ -24,13 +24,13 @@ namespace jln::mp::detail
   template<unsigned i, class C>
   struct _smp_swap_index<if_valid_index<i, C>>
   {
-    using type = contract<size<greater_than_c<i>>, subcontract<C>>;
+    using type = test_contract<size<greater_than_c<i>>, subcontract<C>>;
   };
 
   template<unsigned i, unsigned j, class C>
   struct _smp_swap_index<swap_elem<i, j, C>>
   {
-    using type = contract<size<greater_than_c<j>>, swap_elem<i, j, subcontract<C>>>;
+    using type = test_contract<size<greater_than_c<j>>, swap_elem<i, j, subcontract<C>>>;
   };
 
   template<template<class> class sfinae, unsigned i, class C>

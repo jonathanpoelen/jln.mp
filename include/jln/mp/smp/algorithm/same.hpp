@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using same = valid_contract<mp::same<subcontract<C>>>;
+  using same = contract<mp::same<subcontract<C>>>;
 }
 
 namespace jln::mp::detail

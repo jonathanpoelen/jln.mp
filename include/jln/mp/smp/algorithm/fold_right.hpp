@@ -8,7 +8,7 @@
 namespace jln::mp::smp
 {
   template<class F, class C = identity>
-  using fold_right = contract<
+  using fold_right = test_contract<
     mp::size<>,
     mp::fold_right<
       mp::monadic0<subcontract<F>>,

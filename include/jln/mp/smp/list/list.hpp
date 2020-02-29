@@ -6,7 +6,7 @@
 
 namespace jln::mp::smp
 {
-  using listify = valid_contract<mp::listify>;
+  using listify = contract<mp::listify>;
 }
 
 namespace jln::mp::detail

@@ -10,10 +10,10 @@
 namespace jln::mp::smp
 {
   template<class Pred, class C = listify>
-  using remove_if = valid_contract<mp::transform<
+  using remove_if = contract<mp::transform<
     subcontract<list_wrap_if_not<Pred>>,
     mp::monadic_xs<mp::join<subcontract<C>>>>>;
 
   template<class x, class C = listify>
-  using remove = valid_contract<mp::remove<x, subcontract<C>>>;
+  using remove = contract<mp::remove<x, subcontract<C>>>;
 }

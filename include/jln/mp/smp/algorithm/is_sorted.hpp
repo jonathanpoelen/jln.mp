@@ -11,7 +11,7 @@
 namespace jln::mp::smp
 {
   template<class Cmp = less<>, class C = identity>
-  using is_sorted = valid_contract<
+  using is_sorted = contract<
     mp::if_<
       mp::size<mp::less_than_c<2>>,
       always<mp::number<1>, C>,

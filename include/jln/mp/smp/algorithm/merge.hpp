@@ -12,7 +12,7 @@
 namespace jln::mp::smp
 {
   template<class Cmp = less<>, class C = listify>
-  using merge = contract<
+  using merge = test_contract<
     mp::if_<mp::at0<mp::is_list<>>, mp::at1<mp::is_list<>>>,
     mp::merge<
       concepts::predicate<Cmp, mp::identity, mp::always<true_>>,

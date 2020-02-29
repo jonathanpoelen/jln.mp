@@ -8,7 +8,7 @@ namespace jln::mp
   namespace smp
   {
     template<class x, class C = listify>
-    using push_back = valid_contract<mp::push_back<x, subcontract<C>>>;
+    using push_back = contract<mp::push_back<x, subcontract<C>>>;
   }
 }
 

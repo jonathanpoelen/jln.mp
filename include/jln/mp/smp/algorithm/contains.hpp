@@ -7,7 +7,7 @@
 namespace jln::mp::smp
 {
   template<class F, class C = listify>
-  using transform = valid_contract<mp::transform<
+  using transform = contract<mp::transform<
     subcontract<F>, mp::monadic_xs<subcontract<C>>>>;
 }
 

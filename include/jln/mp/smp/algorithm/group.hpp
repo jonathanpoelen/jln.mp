@@ -11,7 +11,7 @@ namespace jln::mp::smp
     try_subcontract<Cmp>, subcontract<C>>>;
 
   template<class C = listify>
-  using group = valid_contract<mp::group<subcontract<C>>>;
+  using group = contract<mp::group<subcontract<C>>>;
 }
 
 namespace jln::mp::detail

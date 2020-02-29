@@ -12,7 +12,7 @@ namespace jln::mp::smp
     subcontract<Cmp>, subcontract<C>>>;
 
   template<class C = listify>
-  using remove_adjacent = valid_contract<mp::remove_adjacent<subcontract<C>>>;
+  using remove_adjacent = contract<mp::remove_adjacent<subcontract<C>>>;
 }
 
 namespace jln::mp::detail

@@ -7,7 +7,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using is_unique = valid_contract<mp::is_unique<subcontract<C>>>;
+  using is_unique = contract<mp::is_unique<subcontract<C>>>;
 
   template<class Cmp = cfe<std::is_same>, class C = identity>
   using is_unique_if = detail::sfinae<mp::is_unique_if<

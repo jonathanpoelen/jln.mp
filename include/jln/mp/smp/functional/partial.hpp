@@ -33,7 +33,7 @@ namespace jln::mp::detail
   struct _smp_partial 
   {
     template<class C, class... Fs>
-    using f = contract<
+    using f = test_contract<
       size<greater_equal_than_c<sizeof...(Fs)>>, 
       _partial<monadic_xs<C>, Fs...>>;
   };

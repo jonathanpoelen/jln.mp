@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<int_ beg, int_ end, class C = listify>
-  using range_c = valid_contract<mp::range_c<
+  using range_c = contract<mp::range_c<
     beg, end, subcontract<C>>>;
 }
 

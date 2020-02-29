@@ -3,14 +3,14 @@
 #include "../list/list.hpp"
 #include "../../list/is_list.hpp"
 #include "../../number/operators.hpp"
-#include "../../algorithm/transform.hpp"
+#include "../../algorithm/all_of.hpp"
 #include "../../algorithm/cartesian.hpp"
 
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using cartesian = contract<
-    mp::transform<mp::is_list<>, mp::and_<>>,
+  using cartesian = test_contract<
+    mp::all_of<mp::is_list<>>,
     mp::cartesian<subcontract<C>>>;
 }
 
