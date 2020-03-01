@@ -24,6 +24,7 @@
 #include "src/algorithm/merge.cpp"
 #include "src/algorithm/none_of.cpp"
 #include "src/algorithm/partition.cpp"
+#include "src/algorithm/permutations.cpp"
 #include "src/algorithm/powerset.cpp"
 #include "src/algorithm/remove.cpp"
 #include "src/algorithm/remove_adjacent.cpp"
