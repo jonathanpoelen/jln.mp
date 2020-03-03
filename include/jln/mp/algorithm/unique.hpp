@@ -66,26 +66,20 @@ namespace jln::mp::detail
 
   template<class> using to_false = std::false_type;
 
-  template<class Cmp>
-  struct _set_cmp_push_back
+  struct _set_cmp_push_back_impl 
   {
-    template<class x, class... xs>
-    using impl = typename conditional_c<std::is_same<
+    template<class Cmp, class x, class... xs>
+    using f = typename conditional_c<std::is_same<
       list<std::bool_constant<Cmp::template f<xs, x>::value>...>,
       list<to_false<xs>...>
     >::value>::template f<list<xs..., x>, list<xs...>>;
+  };
 
-    struct wrap
-    {
-      template<class x, class... xs>
-      struct f
-      {
-        using type = impl<x, xs...>;
-      };
-    };
-
+  template<class Cmp>
+  struct _set_cmp_push_back
+  {
     template<class L, class x>
-    using f = typename unpack<wrap>::template f<L, x>::type;
+    using f = typename unpack<_set_cmp_push_back_impl>::template f<L, Cmp, x>;
   };
 
   template<class Cmp, class C>

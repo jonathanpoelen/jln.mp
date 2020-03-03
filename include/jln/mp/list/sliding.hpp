@@ -174,7 +174,7 @@ namespace jln::mp::detail
     struct impl
     {
       template<int_... i>
-      using f = fork<rotate_c<i-size, drop>..., zip<C>>;
+      using f = _fork<zip<C>, rotate_c<i-size, drop>...>;
     };
 
     template<class C, int_ size, int_, class... xs>
@@ -200,7 +200,7 @@ namespace jln::mp::detail
     struct impl
     {
       template<size_t... i>
-      using f = fork<slice_c<i, size, stride>..., zip<C>>;
+      using f = _fork<zip<C>, slice_c<i, size, stride>...>;
     };
 
     template<class C, int_ size, int_ stride, class... xs>
@@ -230,11 +230,11 @@ namespace jln::mp::detail
     struct impl
     {
       template<int_... i>
-      using f = fork<slice_c<i, size - (pivot < i), stride,
-        typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>
-      >..., zip<
+      using f = _fork<zip<
         rotate_c<-1, adjust<unpack<rotate_c<-1, pop_front<>>>, C>>
-      >>;
+      >, slice_c<i, size - (pivot < i), stride,
+        typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>
+      >...>;
     };
 
     template<class C, int_ size, int_ stride, class... xs>

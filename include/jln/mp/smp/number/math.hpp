@@ -14,34 +14,38 @@
 namespace jln::mp::smp
 {
   template<class Cmp = less<>, class C = identity>
-  using min = mp::detail::sfinae<mp::min<subcontract_barrier<Cmp>, subcontract_barrier<C>>>;
+  using min = fold_left<if_<contract<mp::flip<subcontract<Cmp>>>, contract<mp::at1<>>, contract<mp::at0<>>>, subcontract<C>>;
 
   template<class Cmp = less<>, class C = identity>
-  using min0 = mp::detail::sfinae<mp::min0<subcontract_barrier<Cmp>, subcontract_barrier<C>>>;
+  using min0 = if_<contract<mp::size<>>, min<Cmp, C>, always<number<0>, C>>;
+
+  
+  template<class Cmp = less<>, class C = identity>
+  using max = fold_left<if_<Cmp, contract<mp::at1<>>, contract<mp::at0<>>>, C>;
 
   template<class Cmp = less<>, class C = identity>
-  using max = mp::detail::sfinae<mp::max<subcontract_barrier<Cmp>, subcontract_barrier<C>>>;
+  using max0 = if_<contract<mp::size<>>, max<Cmp, C>, always<number<0>, C>>;
 
-  template<class Cmp = less<>, class C = identity>
-  using max0 = mp::detail::sfinae<mp::max0<subcontract_barrier<Cmp>, subcontract_barrier<C>>>;
-
+  
   template<class Min, class Max, class Cmp = less<>, class C = identity>
-  using clamp = mp::detail::sfinae<mp::clamp<Min, Max, subcontract_barrier<Cmp>, subcontract_barrier<C>>>;
+  using clamp = detail::sfinae<mp::clamp<Min, Max, subcontract_barrier<Cmp>, subcontract_barrier<C>>>;
 
   template<int_ min, int_ max, class Cmp = less<>, class C = identity>
-  using clamp_c = mp::detail::sfinae<mp::clamp_c<min, max, subcontract_barrier<Cmp>, subcontract_barrier<C>>>;
+  using clamp_c = clamp<number<min>, number<max>, Cmp, C>;
 
+  
   template<class Cmp = less<>, class C = identity>
-  using abs = mp::detail::sfinae<mp::abs<subcontract_barrier<Cmp>, subcontract_barrier<C>>>;
+  using abs = detail::sfinae<mp::abs<subcontract_barrier<Cmp>, subcontract_barrier<C>>>;
+
 
   template<class C = identity>
-  using pow = mp::detail::sfinae<mp::pow<subcontract_barrier<C>>>;
+  using pow = detail::sfinae<mp::pow<subcontract_barrier<C>>>;
 
   template<class C = identity>
-  using pow0 = mp::detail::sfinae<mp::pow0<subcontract_barrier<C>>>;
+  using pow0 = if_<contract<mp::size<>>, pow<C>, always<number<0>, C>>;
 
   template<class C = identity>
-  using pow1 = mp::detail::sfinae<mp::pow1<subcontract_barrier<C>>>;
+  using pow1 = if_<contract<mp::size<>>, pow<C>, always<number<1>, C>>;
 }
 
 namespace jln::mp::detail

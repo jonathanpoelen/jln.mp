@@ -32,9 +32,7 @@ namespace jln::mp::detail
   template<template<class> class sfinae, class Cmp>
   struct _sfinae<sfinae, _set_cmp_push_back<Cmp>>
   {
-    using type = contract<unpack<try_invoke<cfe<
-      _set_cmp_push_back<sfinae<Cmp>>::template impl
-    >>>>;
+    using type = contract<try_invoke<_set_cmp_push_back<sfinae<Cmp>>>>;
   };
 
   template<class C>

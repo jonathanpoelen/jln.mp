@@ -7,10 +7,6 @@ namespace jln::mp::smp
 {
   template<class C = identity>
   using is_number = try_contract<
-    // TODO when_C_or_identity
-    // when<mp::size_of_1<>, C> -> C
-    // when<mp::alway<true_>, identity> -> identity
-    // identity -> identity
     mp::is_number<subcontract<C>>>;
 }
 

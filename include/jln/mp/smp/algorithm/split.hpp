@@ -22,4 +22,3 @@ namespace jln::mp::detail
     using type = smp::split_if<sfinae<F>, sfinae<C>>;
   };
 }
-

@@ -3,7 +3,6 @@
 #include "../functional/identity.hpp"
 #include "../utility/unpack.hpp"
 #include "../list/push_front.hpp"
-#include "../config/enumerate.hpp"
 
 namespace jln::mp
 {
@@ -32,6 +31,8 @@ namespace jln::mp
   }
 }
 
+
+#include "../config/enumerate.hpp"
 
 namespace jln::mp::detail
 {
