@@ -7,7 +7,7 @@ namespace jln::mp::smp
 {
   template<class C>
   using unpack = try_contract<mp::unpack<subcontract<C>>>;
-  
+
   template<class C>
   using unpack_append = try_contract<mp::unpack_append<subcontract<C>>>;
 }
@@ -28,7 +28,7 @@ namespace jln::mp::detail
     using type = smp::unpack_append<sfinae<C>>;
   };
 
-  
+
   template<>
   struct optimize_useless_unpack<smp::unpack<listify>>
   {

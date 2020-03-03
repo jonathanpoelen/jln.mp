@@ -12,7 +12,7 @@
 #include "../../number/operators.hpp"
 
 namespace jln::mp::detail
-{  
+{
   template<class F, class C>
   struct _smp_accumulate;
 }
@@ -34,12 +34,12 @@ namespace jln::mp::detail
   {
     using type = smp::accumulate<sfinae<F>, sfinae<C>>;
   };
-  
+
   template<class F, class C>
   struct _smp_accumulate
   {
     template<class state, class... seqs>
-    using f = call<join<push_front<state, 
+    using f = call<join<push_front<state,
       mp::fold_left<mp::monadic0<F>, mp::monadic<C>>>>, seqs...>;
   };
 }

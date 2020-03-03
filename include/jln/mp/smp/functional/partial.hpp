@@ -5,7 +5,7 @@
 
 namespace jln::mp::detail
 {
-  struct _smp_partial; 
+  struct _smp_partial;
 }
 
 namespace jln::mp::smp
@@ -29,12 +29,12 @@ namespace jln::mp::detail
   {
     using type = smp::partial<sfinae<Fs>...>;
   };
-  
-  struct _smp_partial 
+
+  struct _smp_partial
   {
     template<class C, class... Fs>
     using f = test_contract<
-      size<greater_equal_than_c<sizeof...(Fs)>>, 
+      size<greater_equal_than_c<sizeof...(Fs)>>,
       _partial<monadic_xs<C>, Fs...>>;
   };
 }

@@ -19,21 +19,21 @@ namespace jln::mp::smp
   template<class Cmp = less<>, class C = identity>
   using min0 = if_<contract<mp::size<>>, min<Cmp, C>, always<number<0>, C>>;
 
-  
+
   template<class Cmp = less<>, class C = identity>
   using max = fold_left<if_<Cmp, contract<mp::at1<>>, contract<mp::at0<>>>, C>;
 
   template<class Cmp = less<>, class C = identity>
   using max0 = if_<contract<mp::size<>>, max<Cmp, C>, always<number<0>, C>>;
 
-  
+
   template<class Min, class Max, class Cmp = less<>, class C = identity>
   using clamp = detail::sfinae<mp::clamp<Min, Max, subcontract_barrier<Cmp>, subcontract_barrier<C>>>;
 
   template<int_ min, int_ max, class Cmp = less<>, class C = identity>
   using clamp_c = clamp<number<min>, number<max>, Cmp, C>;
 
-  
+
   template<class Cmp = less<>, class C = identity>
   using abs = detail::sfinae<mp::abs<subcontract_barrier<Cmp>, subcontract_barrier<C>>>;
 

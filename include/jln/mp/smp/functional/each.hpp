@@ -5,7 +5,7 @@
 
 namespace jln::mp::detail
 {
-  struct _smp_each; 
+  struct _smp_each;
 }
 
 namespace jln::mp::smp
@@ -27,8 +27,8 @@ namespace jln::mp::detail
   {
     using type = smp::each<sfinae<Fs>...>;
   };
-  
-  struct _smp_each 
+
+  struct _smp_each
   {
     template<class C, class... Fs>
     using f = _each<monadic_xs<C>, Fs...>;

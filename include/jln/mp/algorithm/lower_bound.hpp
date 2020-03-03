@@ -15,7 +15,7 @@ namespace jln::mp
     struct _lower_bound;
 
     constexpr int _lower_bound_select(unsigned n);
-    
+
     template<class>
     struct optimize_cmp;
   }
@@ -27,8 +27,8 @@ namespace jln::mp
     using f = typename detail::_lower_bound<
       detail::_lower_bound_select(sizeof...(xs))
     >::template f<
-      sizeof...(xs), 
-      push_back<x, typename detail::optimize_cmp<Cmp>::type>, 
+      sizeof...(xs),
+      push_back<x, typename detail::optimize_cmp<Cmp>::type>,
       C, NC, xs...>;
   };
 
@@ -72,24 +72,24 @@ namespace jln::mp::detail
   {
     using type = Cmp;
   };
-  
+
   template<class Cmp>
   struct optimize_cmp<flip<fork<less<Cmp>, not_<>>>>
   {
     using type = flip<less<not_<Cmp>>>;
   };
-  
+
   template<class Cmp, class C>
   struct optimize_cmp<flip<fork<flip<Cmp>, C>>>
   : optimize_cmp<fork<Cmp, C>>
   {};
-  
+
   template<class C>
   struct optimize_cmp<fork<less<>, C>>
   {
     using type = less<C>;
   };
-  
+
   template<int>
   struct _smp_lower_bound;
 
@@ -126,7 +126,7 @@ namespace jln::mp::detail
     template<class C, class NC>
     using f = typename conditional_c<bool(Bool::value)>::template f<C, NC>;
   };
-  
+
   constexpr int _lower_bound_select(unsigned n)
   {
     return

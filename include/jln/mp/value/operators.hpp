@@ -389,19 +389,19 @@ namespace jln::mp::emp
 
   template<auto... xs>
   using mod_c_v = val<(... % xs)>;
-  
+
   namespace detail
   {
     template<bool, template<auto...> class f, int_ d>
     struct _op;
-    
+
     template<template<auto...> class F, int_ d>
     struct _op<true, F, d>
     {
       template<auto... xs>
       using f = F<xs...>;
     };
-    
+
     template<template<auto...> class F, int_ d>
     struct _op<false, F, d>
     {

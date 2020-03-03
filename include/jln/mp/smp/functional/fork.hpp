@@ -27,10 +27,10 @@ namespace jln::mp::detail
   {
     using type = smp::fork<sfinae<Fs>...>;
   };
-  
-  struct _smp_fork 
+
+  struct _smp_fork
   {
     template<class C, class... Fs>
     using f = _fork<monadic_xs<C>, Fs...>;
-  };  
+  };
 }

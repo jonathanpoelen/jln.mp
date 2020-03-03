@@ -66,7 +66,7 @@ namespace jln::mp::detail
 
   template<class> using to_false = std::false_type;
 
-  struct _set_cmp_push_back_impl 
+  struct _set_cmp_push_back_impl
   {
     template<class Cmp, class x, class... xs>
     using f = typename conditional_c<std::is_same<

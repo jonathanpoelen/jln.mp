@@ -49,7 +49,7 @@ namespace jln::mp
     _try_invoke(F*, xs*...);
 
     na _try_invoke(...);
-    
+
     template<class x>
     struct _try_invoke_dispatch;
   }
@@ -75,7 +75,7 @@ namespace jln::mp
   };
 
   using bad_contract = contract<violation>;
-  
+
   template<class Pred, class TC = identity, class FC = violation>
   using test_contract = contract<if_<Pred, TC, FC>>;
 
@@ -128,7 +128,7 @@ namespace jln::mp
   }
 
   template<class F>
-  struct contract_barrier 
+  struct contract_barrier
   : F
   {};
 
@@ -151,14 +151,14 @@ namespace jln::mp::detail
     template<class TC, class FC, class...>
     using f = typename TC::template f<x>;
   };
-  
+
   template<>
   struct _try_invoke_dispatch<na>
   {
     template<class TC, class FC, class... xs>
     using f = typename FC::template f<xs...>;
   };
-  
+
   // for reduce recursivity
   // TODO subcontract_for_unary
   // TODO subcontract_for_binary

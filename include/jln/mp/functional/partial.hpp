@@ -27,14 +27,14 @@ namespace jln::mp
   };
 
   template <class F0, class F1, class C>
-  struct partial<F0, F1, C> 
+  struct partial<F0, F1, C>
   {
     template <class x0, class x1, class... xs>
     using f = call<C, call<F0, x0>, call<F1, x1>, xs...>;
   };
 
   template <class F0, class F1, class F2, class C>
-  struct partial<F0, F1, F2, C> 
+  struct partial<F0, F1, F2, C>
   {
     template <class x0, class x1, class x2, class... xs>
     using f = call<C, call<F0, x0>, call<F1, x1>, call<F2, x2>, xs...>;
@@ -55,9 +55,9 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename _join_select<2>::f<
-      cfe<_each>, 
-      list<C, Fs...>, 
+      cfe<_each>,
+      list<C, Fs...>,
       emp::make_int_sequence_c<sizeof...(xs) - sizeof...(Fs), transform<always<identity>>>
     >::type::template f<xs...>;
-  };  
+  };
 } // namespace jln::mp
