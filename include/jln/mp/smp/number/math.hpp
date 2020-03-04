@@ -14,7 +14,7 @@
 namespace jln::mp::smp
 {
   template<class Cmp = less<>, class C = identity>
-  using min = fold_left<if_<contract<mp::flip<subcontract<Cmp>>>, contract<mp::at1<>>, contract<mp::at0<>>>, subcontract<C>>;
+  using min = fold_left<if_<contract<mp::flip<assume_binary<Cmp>>>, contract<mp::at1<>>, contract<mp::at0<>>>, C>;
 
   template<class Cmp = less<>, class C = identity>
   using min0 = if_<contract<mp::size<>>, min<Cmp, C>, always<number<0>, C>>;

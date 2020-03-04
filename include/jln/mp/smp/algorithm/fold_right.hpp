@@ -11,7 +11,7 @@ namespace jln::mp::smp
   using fold_right = test_contract<
     mp::size<>,
     mp::fold_right<
-      mp::monadic0<subcontract<F>>,
+      mp::monadic0<assume_unary<F>>,
       mp::monadic<subcontract<C>>>>;
 }
 

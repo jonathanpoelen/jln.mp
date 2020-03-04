@@ -28,6 +28,17 @@ namespace jln::mp::detail
     using type = smp::unpack_append<sfinae<C>>;
   };
 
+  
+  template<class C>
+  struct expected_argument<unpack<C>>
+  : number<argument_category::list_xs>
+  {};
+
+  template<class C>
+  struct expected_argument<unpack_append<C>>
+  : number<argument_category::list_xs>
+  {};
+
 
   template<>
   struct optimize_useless_unpack<smp::unpack<listify>>

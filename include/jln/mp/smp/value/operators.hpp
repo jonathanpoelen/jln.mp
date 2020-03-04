@@ -12,44 +12,44 @@ namespace jln::mp::detail
   using smp_opv_default = contract<
     if_<
       size<>,
-      try_invoke<Tpl<subcontract<C>>>,
-      always<val<i>, subcontract<C>>>>;
+      try_invoke<Tpl<assume_unary<C>>>,
+      always<val<i>, assume_unary<C>>>>;
 }
 
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using or_v = try_contract<mp::or_v<subcontract<C>>>;
+  using or_v = try_contract<mp::or_v<assume_unary<C>>>;
 
   template<class C = identity>
-  using and_v = try_contract<mp::and_v<subcontract<C>>>;
+  using and_v = try_contract<mp::and_v<assume_unary<C>>>;
 
   template<class C = identity>
-  using add_v = try_contract<mp::add_v<subcontract<C>>>;
+  using add_v = try_contract<mp::add_v<assume_unary<C>>>;
 
   template<class C = identity>
   using add0_v = detail::smp_opv_default<mp::add_v, C>;
 
   template<class C = identity>
-  using sub_v = try_contract<mp::sub_v<subcontract<C>>>;
+  using sub_v = try_contract<mp::sub_v<assume_unary<C>>>;
 
   template<class C = identity>
   using sub0_v = detail::smp_opv_default<mp::sub_v, C>;
 
   template<class C = identity>
-  using lshift_v = try_contract<mp::lshift_v<subcontract<C>>>;
+  using lshift_v = try_contract<mp::lshift_v<assume_unary<C>>>;
 
   template<class C = identity>
   using lshift0_v = detail::smp_opv_default<mp::lshift_v, C>;
 
   template<class C = identity>
-  using rshift_v = try_contract<mp::rshift_v<subcontract<C>>>;
+  using rshift_v = try_contract<mp::rshift_v<assume_unary<C>>>;
 
   template<class C = identity>
   using rshift0_v = detail::smp_opv_default<mp::rshift_v, C>;
 
   template<class C = identity>
-  using mul_v = try_contract<mp::mul_v<subcontract<C>>>;
+  using mul_v = try_contract<mp::mul_v<assume_unary<C>>>;
 
   template<class C = identity>
   using mul0_v = detail::smp_opv_default<mp::mul_v, C>;
@@ -58,7 +58,7 @@ namespace jln::mp::smp
   using mul1_v = detail::smp_opv_default<mp::mul_v, C, 1>;
 
   template<class C = identity>
-  using div_v = try_contract<mp::div_v<subcontract<C>>>;
+  using div_v = try_contract<mp::div_v<assume_unary<C>>>;
 
   template<class C = identity>
   using div0_v = detail::smp_opv_default<mp::div_v, C>;
@@ -67,7 +67,7 @@ namespace jln::mp::smp
   using div1_v = detail::smp_opv_default<mp::div_v, C, 1>;
 
   template<class C = identity>
-  using mod_v = try_contract<mp::mod_v<subcontract<C>>>;
+  using mod_v = try_contract<mp::mod_v<assume_unary<C>>>;
 
   template<class C = identity>
   using mod0_v = detail::smp_opv_default<mp::mod_v, C>;
@@ -76,88 +76,88 @@ namespace jln::mp::smp
   using mod1_v = detail::smp_opv_default<mp::mod_v, C, 1>;
 
   template<class C = identity>
-  using xor_v = try_contract<mp::xor_v<subcontract<C>>>;
+  using xor_v = try_contract<mp::xor_v<assume_unary<C>>>;
 
   template<class C = identity>
   using xor0_v = detail::smp_opv_default<mp::xor_v, C>;
 
   template<class C = identity>
-  using bit_and_v = try_contract<mp::bit_and_v<subcontract<C>>>;
+  using bit_and_v = try_contract<mp::bit_and_v<assume_unary<C>>>;
 
   template<class C = identity>
   using bit_and0_v = detail::smp_opv_default<mp::bit_and_v, C>;
 
   template<class C = identity>
-  using bit_or_v = try_contract<mp::bit_or_v<subcontract<C>>>;
+  using bit_or_v = try_contract<mp::bit_or_v<assume_unary<C>>>;
 
   template<class C = identity>
   using bit_or0_v = detail::smp_opv_default<mp::bit_or_v, C>;
 
   template<class C = identity>
-  using neg_v = try_contract<mp::neg_v<subcontract<C>>>;
+  using neg_v = try_contract<mp::neg_v<assume_unary<C>>>;
 
   template<class C = identity>
-  using unary_plus_v = try_contract<mp::unary_plus_v<subcontract<C>>>;
+  using unary_plus_v = try_contract<mp::unary_plus_v<assume_unary<C>>>;
 
   template<class C = identity>
-  using not_v = try_contract<mp::not_v<subcontract<C>>>;
+  using not_v = try_contract<mp::not_v<assume_unary<C>>>;
 
   template<class C = identity>
-  using bit_not_v = try_contract<mp::bit_not_v<subcontract<C>>>;
+  using bit_not_v = try_contract<mp::bit_not_v<assume_unary<C>>>;
 
   template<class C = identity>
-  using inc_v = try_contract<mp::inc_v<subcontract<C>>>;
+  using inc_v = try_contract<mp::inc_v<assume_unary<C>>>;
 
   template<class C = identity>
-  using dec_v = try_contract<mp::dec_v<subcontract<C>>>;
+  using dec_v = try_contract<mp::dec_v<assume_unary<C>>>;
 
   template<class C = identity>
-  using equal_v = try_contract<mp::equal_v<subcontract<C>>>;
+  using equal_v = try_contract<mp::equal_v<assume_unary<C>>>;
 
   template<class C = identity>
-  using not_equal_v = try_contract<mp::not_equal_v<subcontract<C>>>;
+  using not_equal_v = try_contract<mp::not_equal_v<assume_unary<C>>>;
 
   template<class C = identity>
-  using less_v = try_contract<mp::less_v<subcontract<C>>>;
+  using less_v = try_contract<mp::less_v<assume_unary<C>>>;
 
   template<class C = identity>
-  using less_equal_v = try_contract<mp::less_equal_v<subcontract<C>>>;
+  using less_equal_v = try_contract<mp::less_equal_v<assume_unary<C>>>;
 
   template<class C = identity>
-  using greater_v = try_contract<mp::greater_v<subcontract<C>>>;
+  using greater_v = try_contract<mp::greater_v<assume_unary<C>>>;
 
   template<class C = identity>
-  using greater_equal_v = try_contract<mp::greater_equal_v<subcontract<C>>>;
+  using greater_equal_v = try_contract<mp::greater_equal_v<assume_unary<C>>>;
 
   template<class x, class C = identity>
   using equal_than_v = contract<
     mp::push_back<x,
-      mp::try_invoke<mp::equal_v<subcontract<C>>>>>;
+      mp::try_invoke<mp::equal_v<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
   using not_equal_than_v = contract<
     mp::push_back<x,
-      mp::try_invoke<mp::not_equal_v<subcontract<C>>>>>;
+      mp::try_invoke<mp::not_equal_v<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
   using less_than_v = contract<
     mp::push_back<x,
-      mp::try_invoke<mp::less_v<subcontract<C>>>>>;
+      mp::try_invoke<mp::less_v<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
   using less_equal_than_v = contract<
     mp::push_back<x,
-      mp::try_invoke<mp::less_equal_v<subcontract<C>>>>>;
+      mp::try_invoke<mp::less_equal_v<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
   using greater_than_v = contract<
     mp::push_back<x,
-      mp::try_invoke<mp::greater_v<subcontract<C>>>>>;
+      mp::try_invoke<mp::greater_v<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
   using greater_equal_than_v = contract<
     mp::push_back<x,
-      mp::try_invoke<mp::greater_equal_v<subcontract<C>>>>>;
+      mp::try_invoke<mp::greater_equal_v<assume_unary<C>>>>>;
 
   template<auto x, class C = identity>
   using equal_than_c_v = equal_than_v<val<x>, C>;
@@ -323,10 +323,4 @@ namespace jln::mp::detail
   {
     using type = smp::greater_equal_v<sfinae<C>>;
   };
-
-
-  template<class C>
-  struct expected_argument<not_v<C>>
-    : number<argument_category::unary>
-  {};
 }

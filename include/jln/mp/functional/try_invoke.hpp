@@ -39,6 +39,7 @@ namespace jln::mp
     template<class F> struct _assume_binary_positive { using type = F; };
     template<class F> struct _assume_binary_strictly_positive { using type = F; };
     template<class F> struct _assume_binary_list { using type = F; };
+    template<class F> struct _assume_binary_or_more { using type = F; };
     template<class F> struct _assume_xs_number { using type = F; };
     template<class F> struct _assume_xs_positive { using type = F; };
     template<class F> struct _assume_xs_strictly_positive { using type = F; };
@@ -62,6 +63,12 @@ namespace jln::mp
 
   template<class C>
   using assume_unary = typename detail::_assume_unary<subcontract<C>>::type;
+
+  template<class C>
+  using assume_binary = typename detail::_assume_unary<subcontract<C>>::type;
+
+  template<class C>
+  using assume_binary_or_more = typename detail::_assume_binary_or_more<subcontract<C>>::type;
 
   template<class F, class TC = identity, class FC = violation>
   struct try_invoke;
@@ -204,10 +211,15 @@ namespace jln::mp::detail
       unary             = 0b001'0000,
       binary            = 0b010'0000,
       variadic          = 0b100'0000,
+      
 
       unary_strictly_positive = unary | strictly_positive,
       unary_positive = unary | positive,
       unary_number = unary | number,
+      
+      binary_or_more = binary,
+      binary_number = binary,
+      list_xs       = binary,
     };
   };
 
@@ -223,6 +235,8 @@ namespace jln::mp::detail
         | detail::argument_category::unary)
     ) > detail::argument_category::unary
   )>;
+  
+  // TODO _assume_xs_list -> if<mp::all_of<mp::is_list<>>, C> -> C
 
   template<class F>
   struct _assume_number<try_invoke<F, identity, violation>>

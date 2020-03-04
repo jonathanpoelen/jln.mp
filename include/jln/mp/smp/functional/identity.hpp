@@ -16,4 +16,9 @@ namespace jln::mp::detail
   {
     using type = smp::identity;
   };
+
+  template<>
+  struct expected_argument<identity>
+  : number<argument_category::unary>
+  {};
 }

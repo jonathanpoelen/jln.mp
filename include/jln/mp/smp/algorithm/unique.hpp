@@ -15,7 +15,7 @@ namespace jln::mp::smp
 
   template<class Cmp = cfe<std::is_same>, class C = listify>
   using unique_if = detail::sfinae<mp::unique_if<
-    subcontract_barrier<Cmp>, subcontract_barrier<C>>>;
+    contract_barrier<assume_binary<Cmp>>, subcontract_barrier<C>>>;
 }
 
 #include "../algorithm/same.hpp"

@@ -8,21 +8,21 @@
 namespace jln::mp::smp
 {
   template<class F, class... xs>
-  using bind = try_contract<mp::bind<try_subcontract<F>, xs...>>;
+  using bind = contract<mp::bind<subcontract<F>, xs...>>;
 
   template<class F, class... xs>
-  using reverse_bind = try_contract<mp::reverse_bind<try_subcontract<F>, xs...>>;
+  using reverse_bind = contract<mp::reverse_bind<subcontract<F>, xs...>>;
 
   template<class F, class C>
   using bind1st = try_contract<mp::bind1st<
-    try_subcontract<F>,
+    assume_unary<F>,
     mp::if_<mp::front<mp::same_as<na>>, violation, subcontract<C>>
   >>;
 
   // flip<bind1st, flip<C>>
   template<class F, class C>
   using bind2nd = try_contract<mp::bind2nd<
-    try_subcontract<F>,
+    assume_unary<F>,
     mp::if_<mp::front<mp::same_as<na>>, violation, subcontract<C>>
   >>;
 }

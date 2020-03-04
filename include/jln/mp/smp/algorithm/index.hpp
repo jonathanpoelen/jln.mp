@@ -16,11 +16,11 @@ namespace jln::mp::smp
 {
   template<class F, class C = identity>
   using index_for = try_contract<
-    mp::index_for<subcontract<F>, subcontract<C>>>;
+    mp::index_for<subcontract<F>, assume_unary<C>>>;
 
   template<class Pred, class C = identity, class NC = always<na>>
   using index_if = contract<detail::_smp_index_if<
-    subcontract<Pred>, subcontract<C>, subcontract<NC>>>;
+    assume_unary<Pred>, assume_unary<C>, assume_unary<NC>>>;
 
   template<class T, class C = identity, class NC = always<na>>
   using index_of = index_if<same_as<T>, C, NC>;

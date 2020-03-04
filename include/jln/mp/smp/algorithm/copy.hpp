@@ -10,7 +10,7 @@ namespace jln::mp::smp
 {
   template<class Pred, class C = listify>
   using copy_if = remove_if<try_invoke<
-    mp::fork<subcontract<Pred>, mp::not_<>>>, C>;
+    mp::fork<assume_unary<Pred>, mp::not_<>>>, C>;
 
   template<class x, class C = listify>
   using copy = contract<mp::copy<x, subcontract<C>>>;

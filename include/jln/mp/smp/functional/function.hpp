@@ -6,11 +6,14 @@
 namespace jln::mp::smp
 {
   template<template<class...> class F, class C = identity>
-  using cfe = try_contract<mp::cfe<F, subcontract<C>>>;
+  using cfe = try_contract<mp::cfe<F, assume_unary<C>>>;
 
   template<template<class...> class F, class C = identity>
-  using cfl = try_contract<mp::cfl<F, subcontract<C>>>;
+  using cfl = try_contract<mp::cfl<F, assume_unary<C>>>;
 }
+
+
+#include <type_traits>
 
 namespace jln::mp::detail
 {
@@ -25,4 +28,15 @@ namespace jln::mp::detail
   {
     using type = smp::cfe<F, sfinae<C>>;
   };
+  
+  
+  template<class C>
+  struct expected_argument<cfe<std::is_same, C>>
+  : number<argument_category::binary>
+  {};
+  
+  template<class C>
+  struct expected_argument<cfl<std::is_same, C>>
+  : number<argument_category::binary>
+  {};
 }

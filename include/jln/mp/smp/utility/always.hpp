@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class x, class C = identity>
-  using always = contract<mp::always<x, subcontract<C>>>;
+  using always = contract<mp::always<x, assume_unary<C>>>;
 }
 
 namespace jln::mp::detail

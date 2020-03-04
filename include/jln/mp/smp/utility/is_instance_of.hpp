@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<template<class...> class Tpl, class C = identity>
-  using is_instance_of = try_contract<mp::is_instance_of<Tpl, subcontract<C>>>;
+  using is_instance_of = try_contract<mp::is_instance_of<Tpl, assume_unary<C>>>;
 }
 
 namespace jln::mp::detail

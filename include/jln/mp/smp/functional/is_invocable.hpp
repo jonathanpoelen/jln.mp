@@ -6,5 +6,5 @@
 namespace jln::mp::smp
 {
   template<class F, class C = identity>
-  using is_invocable = contract<mp::is_invocable<subcontract<F>, subcontract<C>>>;
+  using is_invocable = contract<mp::is_invocable<subcontract<F>, assume_unary<C>>>;
 }

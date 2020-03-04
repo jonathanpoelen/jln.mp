@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using flip = try_contract<mp::flip<subcontract<C>>>;
+  using flip = try_contract<mp::flip<assume_binary_or_more<C>>>;
 }
 
 namespace jln::mp::detail
@@ -16,4 +16,9 @@ namespace jln::mp::detail
   {
     using type = smp::flip<sfinae<C>>;
   };
+
+  template<class C>
+  struct expected_argument<flip<C>>
+  : number<argument_category::binary_or_more>
+  {};
 }

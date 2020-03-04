@@ -8,7 +8,7 @@ namespace jln::mp::smp
 {
   template<class F, class C = listify>
   using split_if = try_contract<
-    mp::split_if<subcontract<F>, subcontract<C>>>;
+    mp::split_if<assume_unary<F>, subcontract<C>>>;
 
   template<class x, class C = listify>
   using split = contract<mp::split<x, subcontract<C>>>;

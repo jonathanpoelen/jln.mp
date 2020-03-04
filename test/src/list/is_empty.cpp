@@ -13,7 +13,7 @@ TEST()
   ut::same<_0, emp::is_empty<list<int, int, int>>>();
   ut::same<_1, emp::is_empty<list<>>>();
 
-  test_context<is_empty<>, smp::is_empty<>>()
+  test_context<is_empty<>, smp::is_empty<>, 0>()
     .test<_1>()
     .test<_0, int>()
     ;

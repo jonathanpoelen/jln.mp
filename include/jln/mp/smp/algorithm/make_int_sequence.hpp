@@ -23,6 +23,6 @@ namespace jln::mp::detail
 
   template<class C>
   struct expected_argument<make_int_sequence_v<C>>
-    : number<argument_category::unary_positive>
+  : number<argument_category::unary_positive>
   {};
 }

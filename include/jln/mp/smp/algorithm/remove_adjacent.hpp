@@ -9,7 +9,7 @@ namespace jln::mp::smp
 {
   template<class Cmp, class C = listify>
   using remove_adjacent_if = try_contract<mp::remove_adjacent_if<
-    subcontract<Cmp>, subcontract<C>>>;
+    assume_binary<Cmp>, subcontract<C>>>;
 
   template<class C = listify>
   using remove_adjacent = contract<mp::remove_adjacent<subcontract<C>>>;

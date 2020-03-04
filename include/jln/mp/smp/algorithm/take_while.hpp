@@ -11,6 +11,8 @@
 namespace jln::mp::smp
 {
   template<class Pred, class C = listify, class NC = C>
-  using take_while = detail::sfinae<mp::take_while<
-      subcontract_barrier<Pred>, subcontract_barrier<C>, subcontract_barrier<NC>>>;
+  using take_while = fork_front<index_if<
+    Pred, 
+    contract<mp::fork<mp::identity, mp::always<C>, cfe<take>>>, 
+    always<NC>>>;
 }

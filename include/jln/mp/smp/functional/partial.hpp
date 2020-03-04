@@ -14,7 +14,7 @@ namespace jln::mp::smp
   using partial = typename mp::rotate<
     mp::number<-1>,
     detail::_smp_partial
-  >::template f<subcontract<Fs>...>;
+  >::template f<Fs...>;
 }
 
 
@@ -35,6 +35,6 @@ namespace jln::mp::detail
     template<class C, class... Fs>
     using f = test_contract<
       size<greater_equal_than_c<sizeof...(Fs)>>,
-      _partial<monadic_xs<C>, Fs...>>;
+      _partial<monadic_xs<subcontract<C>>, assume_unary<Fs>...>>;
   };
 }

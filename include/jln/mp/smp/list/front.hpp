@@ -3,13 +3,10 @@
 #include "../functional/identity.hpp"
 #include "../../list/front.hpp"
 
-namespace jln::mp
+namespace jln::mp::smp
 {
-  namespace smp
-  {
-    template<class C = identity>
-    using front = try_contract<mp::front<subcontract<C>>>;
-  }
+  template<class C = identity>
+  using front = try_contract<mp::front<assume_unary<C>>>;
 }
 
 namespace jln::mp::detail

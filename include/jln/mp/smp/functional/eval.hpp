@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../functional/eval.hpp"
+#include "../../functional/contract.hpp"
 
 #ifdef __cpp_nontype_template_parameter_class
 #if __cpp_nontype_template_parameter_class >= 201806L
@@ -8,7 +9,7 @@
 namespace jln::mp::smp
 {
   template <auto F, class C = identity>
-  using eval = try_contract<mp::eval<F, C>>;
+  using eval = try_contract<mp::eval<F, assume_unary<C>>>;
 }
 
 namespace jln::mp::detail

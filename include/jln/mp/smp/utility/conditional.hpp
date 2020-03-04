@@ -7,7 +7,7 @@
 namespace jln::mp::smp
 {
   template<bool b>
-  using conditional_c = contract<mp::try_invoke<mp::conditional_c<b>>>;
+  using conditional_c = try_contract<mp::conditional_c<b>>;
 }
 
 JLN_MP_MAKE_REGULAR_SMP1_P(conditional, (x), smp::conditional_c<bool(x::value)>)
@@ -19,4 +19,9 @@ namespace jln::mp::detail
   {
     using type = smp::conditional_c<b>;
   };
+
+  template<bool b>
+  struct expected_argument<conditional_c<b>>
+  : number<argument_category::binary>
+  {};
 }

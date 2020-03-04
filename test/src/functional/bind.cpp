@@ -19,17 +19,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<bind1st, listify>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-  ;
-
-  test_pack<bind2nd, listify>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-  ;
+  test_pack2<bind>();
+  test_pack2<bind1st, listify>();
+  test_pack2<bind2nd, listify>();
 
   ut::same<void, bind1st<identity, identity>::template f<void>>();
   ut::same<list<int, void>, bind1st<always<int>, listify>::template f<void, void>>();

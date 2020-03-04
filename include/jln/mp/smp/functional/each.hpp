@@ -14,7 +14,7 @@ namespace jln::mp::smp
   using each = try_contract<typename mp::rotate<
     mp::number<sizeof...(Fs)-1>,
     detail::_smp_each
-  >::template f<subcontract<Fs>...>>;
+  >::template f<Fs...>>;
 }
 
 
@@ -31,6 +31,6 @@ namespace jln::mp::detail
   struct _smp_each
   {
     template<class C, class... Fs>
-    using f = _each<monadic_xs<C>, Fs...>;
+    using f = _each<monadic_xs<subcontract<C>>, assume_unary<Fs>...>;
   };
 }

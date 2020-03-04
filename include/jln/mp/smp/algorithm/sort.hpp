@@ -11,9 +11,9 @@ namespace jln::mp::smp
 {
   template<class Cmp = less<>, class C = listify>
   using sort = try_contract<mp::sort<
-    concepts::predicate<Cmp, mp::identity, mp::always<true_>>,
+    concepts::compare<Cmp, mp::identity, mp::always<true_>>,
     mp::if_<
-      try_invoke<is_sorted<Cmp>, always<true_>, always<false_>>,
+      try_subcontract<is_sorted<Cmp>, mp::always<true_>, mp::always<false_>>,
       subcontract<C>,
       violation
     >

@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = listify>
-  // no checked
+  // TODO no checked
   using numbers = contract<mp::numbers<subcontract<C>>>;
 }
 

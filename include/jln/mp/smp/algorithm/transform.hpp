@@ -8,7 +8,7 @@ namespace jln::mp::smp
 {
   template<class F, class C = listify>
   using transform = contract<mp::transform<
-    subcontract<F>, mp::monadic_xs<subcontract<C>>>>;
+    assume_unary<F>, mp::monadic_xs<subcontract<C>>>>;
 }
 
 namespace jln::mp::detail

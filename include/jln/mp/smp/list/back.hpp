@@ -7,5 +7,5 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using back = mp::detail::sfinae<mp::back<subcontract<C>>>;
+  using back = mp::detail::sfinae<mp::back<assume_unary<C>>>;
 }

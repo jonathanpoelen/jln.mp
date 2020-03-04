@@ -17,7 +17,7 @@ namespace jln::mp::smp
     mp::merge<
       concepts::predicate<Cmp, mp::identity, mp::always<true_>>,
       mp::if_<
-        try_invoke<is_sorted<Cmp>, always<true_>, always<false_>>,
+        try_subcontract<is_sorted<Cmp>, mp::always<true_>, mp::always<false_>>,
         subcontract<C>,
         violation
       >

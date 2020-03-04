@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using as_number = try_contract<mp::as_number<subcontract<C>>>;
+  using as_number = try_contract<mp::as_number<assume_unary<C>>>;
 }
 
 namespace jln::mp::detail

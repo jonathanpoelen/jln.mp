@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class x, class C = identity>
-  using same_as = try_contract<mp::same_as<x, subcontract<C>>>;
+  using same_as = try_contract<mp::same_as<x, assume_unary<C>>>;
 }
 
 namespace jln::mp::detail
@@ -16,4 +16,9 @@ namespace jln::mp::detail
   {
     using type = smp::same_as<x, sfinae<C>>;
   };
+
+  template<class x, class C>
+  struct expected_argument<same_as<x, C>>
+  : number<argument_category::unary>
+  {};
 }

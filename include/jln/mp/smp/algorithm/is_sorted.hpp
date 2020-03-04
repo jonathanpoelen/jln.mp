@@ -19,8 +19,8 @@ namespace jln::mp::smp
         mp::pop_front<>,
         mp::rotate_c<-1, mp::pop_front<>>,
         mp::zip_with<
-          try_subcontract<Cmp>,
-          mp::try_invoke<mp::or_<mp::not_<try_subcontract<C>>>>
+          try_subcontract<contract_barrier<assume_binary<Cmp>>>,
+          mp::try_invoke<mp::or_<mp::not_<try_subcontract<contract_barrier<assume_unary<C>>>>>>
         >
       >
     >

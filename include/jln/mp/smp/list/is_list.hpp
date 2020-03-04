@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using is_list = try_contract<mp::is_list<subcontract<C>>>;
+  using is_list = try_contract<mp::is_list<assume_number<C>>>;
 }
 
 namespace jln::mp::detail
@@ -16,4 +16,9 @@ namespace jln::mp::detail
   {
     using type = smp::is_list<sfinae<C>>;
   };
+
+  template<class C>
+  struct expected_argument<is_list<C>>
+  : number<argument_category::unary>
+  {};
 }

@@ -24,7 +24,7 @@ namespace jln::mp::smp
     mp::if_<
       mp::size<>,
       mp::pop_front<mp::all_of<mp::is_list<>>>>,
-    detail::_smp_accumulate<subcontract<F>, subcontract<C>>>;
+    detail::_smp_accumulate<assume_binary<F>, assume_unary<C>>>;
 }
 
 namespace jln::mp::detail

@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using is_val = try_contract<mp::is_val<subcontract<C>>>;
+  using is_val = try_contract<mp::is_val<assume_number<C>>>;
 }
 
 namespace jln::mp::detail
@@ -16,4 +16,9 @@ namespace jln::mp::detail
   {
     using type = smp::is_val<sfinae<C>>;
   };
+
+  template<class C>
+  struct expected_argument<is_val<C>>
+  : number<argument_category::unary>
+  {};
 }
