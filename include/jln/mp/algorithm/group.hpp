@@ -62,29 +62,23 @@ namespace jln::mp::detail
     >;
   };
 
-  template<class... bools>
+  template<class... ys>
   struct _smp_group_impl
   {
-    template<class C, class x, class... xs>
+    template<class C, class cmp, class x, class... xs>
     using f = call<
-      fold_right<cfl<split_state>, unpack<_group_insert_x<x, C>>>,
-      list<list<>>,
-      list<number<bools::value ? split_keep : split_before>, xs>...
-    >;
+        fold_right<cfl<split_state>, unpack<_group_insert_x<x, C>>>,
+        list<list<>>,
+        list<number<bool(cmp::template f<ys, xs>::value)
+          ? split_keep : split_before>, xs>...
+      >;
   };
 
   template<class C, class Cmp, class TC, class FC, class x, class... xs, class... ys>
   struct _group_impl<C, try_invoke<Cmp, TC, FC>, x, list<ys...>, xs...>
   {
-    template<class... bool_or_na>
-    using impl = typename conditional_c<(
-      ... || std::is_same<bool_or_na, na>::value
-    )>::template f<always<violation>, cfe<_smp_group_impl>>
-      ::template f<bool_or_na...>;
-
-    using type = typename impl<
-      typename try_invoke<Cmp, TC, FC>::template f<ys, xs>...
-    >::template f<C, x, xs...>;
+    using type = typename try_invoke<_smp_group_impl<ys...>>
+      ::template f<C, try_invoke<Cmp, TC, FC>, x, xs...>;
   };
 
   template<>

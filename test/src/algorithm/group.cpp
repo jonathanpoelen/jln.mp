@@ -56,6 +56,7 @@ TEST()
 
   ut::not_invocable<smp::group<bad_function>>();
   ut::not_invocable<smp::group<bad_function>, _1, _1, _1, _2>();
+  ut::not_invocable<smp::group_if<always<void>>, _1, _1>();
   ut::not_invocable<smp::group_if<cmp, bad_function>>();
   ut::not_invocable<smp::group_if<cmp, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::group_if<bad_function, bad_function>>();
