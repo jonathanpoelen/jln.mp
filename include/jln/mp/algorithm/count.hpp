@@ -9,7 +9,7 @@
 namespace jln::mp
 {
   template<class Pred, class C = identity>
-  using count_if = transform<fork<Pred, mp::to_bool<>>, add0<C>>;
+  using count_if = transform<Pred, add0<C>>;
 
   template<class x, class C = identity>
   using count = transform<same_as<x>, add0<C>>;

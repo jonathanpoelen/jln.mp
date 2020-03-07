@@ -43,6 +43,7 @@ TEST()
 
   ut::not_invocable<smp::count<_1, bad_function>>();
   ut::not_invocable<smp::count<_1, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::count_if<always<void>>, _1>();
   ut::not_invocable<smp::count_if<always<_1>, bad_function>>();
   ut::not_invocable<smp::count_if<always<_1>, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::count_if<bad_function, bad_function>, _1, _1, _1>();
