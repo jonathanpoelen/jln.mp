@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "../../number/to_bool.hpp"
 #include "../functional/identity.hpp"
 

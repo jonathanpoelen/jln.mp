@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "../functional/identity.hpp"
 #include "../../value/is_val.hpp"
 

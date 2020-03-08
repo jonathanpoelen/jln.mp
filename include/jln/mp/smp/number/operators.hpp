@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "../../number/operators.hpp"
 #include "../functional/identity.hpp"
 #include "../functional/if.hpp"

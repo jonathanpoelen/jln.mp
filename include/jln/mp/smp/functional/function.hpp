@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "identity.hpp"
 #include "../../functional/function.hpp"
 

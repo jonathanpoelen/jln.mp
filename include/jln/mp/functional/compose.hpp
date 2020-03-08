@@ -28,6 +28,7 @@ namespace jln::mp
 
 
 #include "../config/enumerate.hpp"
+#include "fork.hpp"
 #include "bind.hpp"
 
 namespace jln::mp::detail

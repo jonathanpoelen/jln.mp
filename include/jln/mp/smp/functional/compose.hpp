@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../functional/compose.hpp"
+#include "../../functional/contract.hpp"
 #include "../functional/identity.hpp"
 #include "../functional/function.hpp"
 #include "../functional/fork.hpp"

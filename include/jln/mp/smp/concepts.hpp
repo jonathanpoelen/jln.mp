@@ -3,6 +3,7 @@
 #include "../utility/always.hpp"
 #include "../number/to_bool.hpp"
 #include "../functional/contract.hpp"
+#include "../functional/fork.hpp"
 
 namespace jln::mp::smp::concepts
 {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "../../number/is_number.hpp"
 #include "../functional/identity.hpp"
 

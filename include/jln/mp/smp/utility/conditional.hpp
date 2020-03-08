@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "../../utility/conditional.hpp"
 #include "../../functional/contract.hpp"
 #include "../../functional/sfinaefwd.hpp"

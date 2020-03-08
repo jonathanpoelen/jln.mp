@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "../number/numbers.hpp"
 #include "../../algorithm/make_int_sequence.hpp"
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "../../functional/identity.hpp"
 #include "../../functional/try_invoke.hpp"
 #include "../../functional/sfinaefwd.hpp"
