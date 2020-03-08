@@ -21,11 +21,9 @@ TEST()
   using yes = always<true_>;
   using no = always<false_>;
 
-  test_pack<fork>()
-    .test_binary<yes, yes>()
-    .test_binary<no, no>()
-    .test_unary<yes>()
-  ;
+  test_pack2<fork, yes, yes>();
+  test_pack2<fork, yes, no>();
+  test_pack2<fork, yes>();
 
   ut::same<int, fork<identity, identity, identity, identity, foo>::template f<void>>();
 

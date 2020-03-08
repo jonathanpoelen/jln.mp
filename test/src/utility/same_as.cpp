@@ -10,10 +10,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<same_as>()
-    .test_unary()
-    .test_binary()
-  ;
+  test_pack2<same_as>();
 
   test_context<same_as<_1>, smp::same_as<_1>>()
     .test<_0, list<>>()

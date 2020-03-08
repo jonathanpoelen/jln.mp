@@ -10,9 +10,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<pop_back>()
-    .test_unary()
-  ;
+  test_pack2<pop_back>();
 
   test_context<pop_back<>, smp::pop_back<>>()
     .test<list<>, _1>()

@@ -23,23 +23,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<cascade, listify>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-    ;
-
-  test_pack<cascade, listify, listify>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-    ;
-
-  test_pack<cascade, listify, listify, listify>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<cascade, listify>();
+  test_pack2<cascade, listify, listify>();
+  test_pack2<cascade, listify, listify, listify>();
 
   test_context<make_cascade<cascade>, make_cascade<smp::cascade>>()
     .test<list1<>>()

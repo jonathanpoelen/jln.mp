@@ -21,11 +21,10 @@ TEST()
   using yes = always<true_>;
   using no = always<false_>;
 
-  test_pack<each>()
-    .test_binary<yes, yes>()
-    .test_binary<no, no>()
-    .test_unary<yes>()
-  ;
+  test_pack2<each>();
+  test_pack2<each, yes, yes>();
+  test_pack2<each, yes, no>();
+  test_pack2<each, yes>();
 
   ut::same<int, each<identity, identity, identity, identity, foo>
     ::template f<void, void, void, void>>();

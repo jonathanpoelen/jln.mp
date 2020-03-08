@@ -39,11 +39,7 @@ void test_rec()
 
   ut::same<_3, call<Mp<F>, _0>>();
 
-  test_pack<Mp, identity>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-  ;
+  test_pack2<Mp, identity>();
 
   test_context<Mp<F>, Smp<sfinae<F>>, VerifySfinae>()
     .template test<_3, _0>()

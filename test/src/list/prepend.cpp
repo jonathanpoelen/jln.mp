@@ -11,10 +11,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<prepend, list<>>()
-    .test_binary()
-    .test_unary()
-    ;
+  test_pack2<prepend, list<>>();
 
   ut::same<list<_3, _4, _0, _1, _2>, emp::prepend<seq_0_1_2, _3, _4>>();
 

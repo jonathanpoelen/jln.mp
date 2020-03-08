@@ -21,11 +21,10 @@ TEST()
   using yes = always<true_>;
   using no = always<false_>;
 
-  test_pack<partial>()
-    .test_binary<yes, yes>()
-    .test_binary<no, no>()
-    .test_unary<yes>()
-  ;
+  test_pack2<partial>();
+  test_pack2<partial, yes, yes>();
+  test_pack2<partial, yes, no>();
+  test_pack2<partial, yes>();
 
   ut::same<list<list<void>, list<void>, void, void>, partial<listify, listify, listify>
     ::template f<void, void, void, void>>();
