@@ -9,8 +9,8 @@
 namespace jln::mp::smp
 {
   template<class Pred, class C = identity>
-  using count_if = transform<Pred, add0<C>>;
+  using count_if = transform<Pred, add0<contract_barrier<assume_number<C>>>>;
 
   template<class x, class C = identity>
-  using count = contract<mp::count<x, subcontract<C>>>;
+  using count = contract<mp::count<x, assume_number<C>>>;
 }
