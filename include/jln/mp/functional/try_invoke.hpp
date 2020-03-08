@@ -150,6 +150,30 @@ namespace jln::mp
   template<class F, class TC = identity, class FC = violation>
   using try_subcontract = typename detail::_optimize_try_invoke<
     try_invoke<subcontract<F>, TC, FC>>::type;
+
+  template<class F, class TC = identity, class FC = violation>
+  using try_assume_unary_or_more = typename detail::_optimize_try_invoke<
+    try_invoke<assume_unary_or_more<F>, TC, FC>>::type;
+
+  template<class F, class TC = identity, class FC = violation>
+  using try_assume_unary = typename detail::_optimize_try_invoke<
+    try_invoke<assume_unary<F>, TC, FC>>::type;
+
+  template<class F, class TC = identity, class FC = violation>
+  using try_assume_binary = typename detail::_optimize_try_invoke<
+    try_invoke<assume_binary<F>, TC, FC>>::type;
+
+  template<class F>
+  using assume_unary_barrier = contract_barrier<assume_unary<F>>;
+
+  template<class F>
+  using assume_binary_barrier = contract_barrier<assume_binary<F>>;
+
+  template<class F>
+  using assume_number_barrier = contract_barrier<assume_number<F>>;
+  
+  template<class F>
+  using assume_binary_list_barrier = contract_barrier<assume_binary_list<F>>;
 }
 
 

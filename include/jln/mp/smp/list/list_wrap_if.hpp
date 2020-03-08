@@ -7,11 +7,11 @@ namespace jln::mp::smp
 {
   template<class Pred>
   using list_wrap_if = try_contract<
-    mp::list_wrap_if<try_subcontract<contract_barrier<assume_unary_or_more<Pred>>>>>;
+    mp::list_wrap_if<try_assume_unary_or_more<Pred>>>;
 
   template<class Pred>
   using list_wrap_if_not = try_contract<
-    mp::list_wrap_if_not<try_subcontract<contract_barrier<assume_unary_or_more<Pred>>>>>;
+    mp::list_wrap_if_not<try_assume_unary_or_more<Pred>>>;
 }
 
 namespace jln::mp::detail

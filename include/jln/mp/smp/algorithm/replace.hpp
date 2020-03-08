@@ -11,7 +11,7 @@ namespace jln::mp::smp
 {
   template<class Pred, class T, class C = listify>
   using replace_if = detail::sfinae<mp::replace_if<
-    contract_barrier<assume_unary<Pred>>, T, subcontract_barrier<C>>>;
+    assume_unary_barrier<Pred>, T, subcontract_barrier<C>>>;
 
   template<class T, class U, class C = listify>
   using replace = contract<

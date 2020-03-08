@@ -1,7 +1,9 @@
 #pragma once
 
 #include "unique.hpp"
+#include "../number/to_bool.hpp"
 #include "../functional/fork.hpp"
+#include "../algorithm/same.hpp"
 #include "../../algorithm/is_unique.hpp"
 
 namespace jln::mp::smp
@@ -11,12 +13,9 @@ namespace jln::mp::smp
 
   template<class Cmp = cfe<std::is_same>, class C = identity>
   using is_unique_if = detail::sfinae<mp::is_unique_if<
-    contract_barrier<assume_binary<Cmp>>, contract_barrier<assume_number<C>>>>;
+    assume_binary_barrier<Cmp>, assume_number_barrier<C>>>;
 }
 
-#include "../algorithm/same.hpp"
-#include "../utility/unpack.hpp"
-#include "../number/to_bool.hpp"
 
 namespace jln::mp::detail
 {

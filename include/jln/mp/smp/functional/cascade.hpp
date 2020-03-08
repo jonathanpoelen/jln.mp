@@ -8,7 +8,7 @@ namespace jln::mp::smp
 {
   template<class F, class... Fs>
   using cascade = typename detail::sfinae<mp::cascade<
-    contract_barrier<subcontract<F>>,
-    contract_barrier<subcontract<Fs>>...
+    subcontract_barrier<F>,
+    subcontract_barrier<Fs>...
   >>;
 }

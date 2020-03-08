@@ -11,7 +11,7 @@ namespace jln::mp::smp
 {
   template<class Pred, class C = listify>
   using remove_if = contract<mp::transform<
-    subcontract<list_wrap_if_not<contract_barrier<assume_unary<Pred>>>>,
+    subcontract<list_wrap_if_not<assume_unary_barrier<Pred>>>,
     mp::monadic_xs<mp::join<subcontract<C>>>>>;
 
   template<class x, class C = listify>
