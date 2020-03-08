@@ -26,25 +26,14 @@ namespace jln::mp
     template<class x> struct _optimize_try_invoke;
 
     template<class F> struct _assume_number { using type = F; };
-    template<class F> struct _assume_positive { using type = F; };
-    template<class F> struct _assume_strictly_positive { using type = F; };
-    template<class F> struct _assume_list { using type = F; };
+    template<class F> struct _assume_positive_number { using type = F; };
+    template<class F> struct _assume_numbers { using type = F; };
     template<class F> struct _assume_unary { using type = F; };
-    template<class F> struct _assume_unary_number { using type = F; };
-    template<class F> struct _assume_unary_positive { using type = F; };
-    template<class F> struct _assume_unary_strictly_positive { using type = F; };
-    template<class F> struct _assume_unary_list { using type = F; };
     template<class F> struct _assume_unary_or_more { using type = F; };
     template<class F> struct _assume_binary { using type = F; };
-    template<class F> struct _assume_binary_number { using type = F; };
-    template<class F> struct _assume_binary_positive { using type = F; };
-    template<class F> struct _assume_binary_strictly_positive { using type = F; };
     template<class F> struct _assume_binary_list { using type = F; };
     template<class F> struct _assume_binary_or_more { using type = F; };
-    template<class F> struct _assume_xs_number { using type = F; };
-    template<class F> struct _assume_xs_positive { using type = F; };
-    template<class F> struct _assume_xs_strictly_positive { using type = F; };
-    template<class F> struct _assume_xs_list { using type = F; };
+    template<class F> struct _assume_lists { using type = F; };
 
     template<class F, class... xs>
     typename F::template f<xs...>
@@ -63,7 +52,10 @@ namespace jln::mp
   using assume_number = typename detail::_assume_number<subcontract<C>>::type;
 
   template<class C>
-  using assume_numbers = typename detail::_assume_number<subcontract<C>>::type;
+  using assume_positive_number = typename detail::_assume_positive_number<subcontract<C>>::type;
+
+  template<class C>
+  using assume_numbers = typename detail::_assume_numbers<subcontract<C>>::type;
 
   template<class C>
   using assume_unary = typename detail::_assume_unary<subcontract<C>>::type;
@@ -72,10 +64,10 @@ namespace jln::mp
   using assume_binary = typename detail::_assume_binary<subcontract<C>>::type;
 
   template<class C>
-  using assume_binary_list = typename detail::_assume_binary<subcontract<C>>::type;
+  using assume_binary_list = typename detail::_assume_binary_list<subcontract<C>>::type;
 
   template<class C>
-  using assume_lists = typename detail::_assume_binary<subcontract<C>>::type;
+  using assume_lists = typename detail::_assume_lists<subcontract<C>>::type;
 
   template<class C>
   using assume_binary_or_more = typename detail::_assume_binary_or_more<subcontract<C>>::type;
@@ -209,40 +201,6 @@ namespace jln::mp::detail
   };
 
 
-  struct argument_category
-  {
-    enum tag
-    {
-      strictly_positive = 1 << 0,
-      positive          = 1 << 1,
-      number            = 1 << 2,
-      list              = 1 << 3,
-
-      unary             = 1 << 4,
-      binary            = 1 << 5,
-      variadic          = 1 << 6,
-      xs                = variadic,
-      unary_or_more     = 1 << 7,
-      binary_or_more    = 1 << 8,
-      
-      _unary            = unary | xs, 
-      _binary           = binary | xs, 
-      _unary_or_more    = _unary | unary_or_more, 
-      _binary_or_more   = _binary | binary_or_more, 
-      _positive         = positive | strictly_positive | _unary,
-      _number           = number | _positive,
-      
-
-      unary_strictly_positive = unary | strictly_positive,
-      unary_positive = unary | positive,
-      unary_number = unary | number,
-      
-      binary_number = binary,
-      list_xs       = binary,
-      numbers       = binary,
-    };
-  };
-
   template<class F>
   struct expected_argument : number<0>
   {};
@@ -267,40 +225,52 @@ namespace jln::mp::detail
   : number<expected>                                   \
   {}
   
-  template<class F, int cat>
-  using _accept_argument = typename conditional_c<bool(expected_argument<F>::value & cat)>
-    ::template f<F, try_invoke<F, identity, violation>>;
+  struct argument_category
+  {
+    enum tag
+    {
+      lists             = 1 << 0,
+      number            = 1 << 1,
+      positive_number   = 1 << 2,
+      unary             = 1 << 3,
+      binary            = 1 << 4,
+      unary_or_more     = 1 << 5,
+      binary_or_more    = 1 << 6,
+      binary_list       = 1 << 7,
+      numbers           = 1 << 8,
+      
+      _unary            = unary, 
+      _binary           = binary, 
+      _binary_or_more   = _binary | binary_or_more | binary_list, 
+      _unary_or_more    = _unary | unary_or_more | _binary_or_more, 
+      _positive_number  = positive_number | _unary | number, 
+      _number           = number | _positive_number,
+      _numbers          = _number | numbers,
+      _lists            = lists,
+      _binary_list      = binary_list | _binary,
+    };
+  };
+  
+#define JLN_MP_MK_ASSUME(cat)                                 \
+  template<class F>                                           \
+  struct _assume_##cat<try_invoke<F, identity, violation>>    \
+  {                                                           \
+    using type = typename conditional_c<bool(                 \
+      expected_argument<F>::value & argument_category::_##cat \
+    )>::template f<F, try_invoke<F, identity, violation>>;    \
+  }
+  
+  JLN_MP_MK_ASSUME(lists);  
+  JLN_MP_MK_ASSUME(numbers);  
+  JLN_MP_MK_ASSUME(number);  
+  JLN_MP_MK_ASSUME(positive_number);  
+  JLN_MP_MK_ASSUME(unary);  
+  JLN_MP_MK_ASSUME(binary);  
+  JLN_MP_MK_ASSUME(binary_list);  
+  JLN_MP_MK_ASSUME(unary_or_more);  
+  JLN_MP_MK_ASSUME(binary_or_more);  
 
-  template<class F>
-  struct _assume_number<try_invoke<F, identity, violation>>
-  {
-    using type = _accept_argument<F, argument_category::_number>;
-  };
- 
-  template<class F>
-  struct _assume_unary<try_invoke<F, identity, violation>>
-  {
-    using type = _accept_argument<F, argument_category::_unary>;
-  };
- 
-  template<class F>
-  struct _assume_binary<try_invoke<F, identity, violation>>
-  {
-    using type = _accept_argument<F, argument_category::_binary>;
-  };
- 
-  template<class F>
-  struct _assume_unary_or_more<try_invoke<F, identity, violation>>
-  {
-    using type = _accept_argument<F, argument_category::_unary_or_more>;
-  };
- 
-  template<class F>
-  struct _assume_binary_or_more<try_invoke<F, identity, violation>>
-  {
-    using type = _accept_argument<F, argument_category::_binary_or_more>;
-  };
-
+#undef JLN_MP_MK_ASSUME
 
   template<class x>
   struct _optimize_try_invoke

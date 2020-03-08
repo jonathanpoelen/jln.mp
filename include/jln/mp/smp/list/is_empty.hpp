@@ -7,5 +7,5 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using is_empty = contract<mp::is_empty<assume_number<C>>>;
+  using is_empty = contract<mp::is_empty<assume_positive_number<C>>>;
 }

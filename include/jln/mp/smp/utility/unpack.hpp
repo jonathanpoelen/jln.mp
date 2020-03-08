@@ -29,10 +29,6 @@ namespace jln::mp::detail
   };
 
   
-  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::list_xs, unpack);
-  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::list_xs, unpack_append);
-
-
   template<>
   struct optimize_useless_unpack<smp::unpack<listify>>
   {

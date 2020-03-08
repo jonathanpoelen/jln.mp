@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using size = contract<mp::size<assume_number<C>>>;
+  using size = contract<mp::size<assume_positive_number<C>>>;
 }
 
 namespace jln::mp::detail
@@ -16,6 +16,4 @@ namespace jln::mp::detail
   {
     using type = smp::size<sfinae<C>>;
   };
-
-  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::xs, size);
 }

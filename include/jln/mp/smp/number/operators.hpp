@@ -330,12 +330,13 @@ namespace jln::mp::detail
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, not_);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, inc);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, dec);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, neg);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, unary_plus);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, bit_not);
-  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, equal);
-  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, not_equal);
-  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, less);
-  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, less_equal);
-  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, greater);
-  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, greater_equal);
+  // JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, equal);
+  // JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, not_equal);
+  // JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, less);
+  // JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, less_equal);
+  // JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, greater);
+  // JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, greater_equal);
 }
