@@ -26,7 +26,9 @@ TEST()
     ;
 
   ut::not_invocable<smp::merge<bad_function>, _1, _1>();
+  ut::not_invocable<smp::merge<always<void>>, _1, _1>();
   ut::not_invocable<smp::merge<bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::merge<always<true_>, bad_function>, _1, _1>();
 }
 
 TEST_SUITE_END()

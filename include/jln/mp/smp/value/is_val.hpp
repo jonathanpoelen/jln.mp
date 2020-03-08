@@ -17,8 +17,5 @@ namespace jln::mp::detail
     using type = smp::is_val<sfinae<C>>;
   };
 
-  template<class C>
-  struct expected_argument<is_val<C>>
-  : number<argument_category::unary>
-  {};
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, is_val);
 }

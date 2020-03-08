@@ -7,10 +7,10 @@ namespace jln::mp::smp
 {
   template<class Pred, class C = listify>
   using split_after_if = try_contract<
-    mp::split_after_if<assume_unary<Pred>, subcontract<C>>>;
+    mp::split_after_if<assume_unary<Pred>, assume_lists<C>>>;
 
   template<class x, class C = listify>
-  using split_after = contract<mp::split_after<x, subcontract<C>>>;
+  using split_after = contract<mp::split_after<x, assume_lists<C>>>;
 }
 
 namespace jln::mp::detail

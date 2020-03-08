@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using iota = try_contract<mp::iota<subcontract<C>>>;
+  using iota = try_contract<mp::iota<assume_numbers<C>>>;
 
   template<class C = numbers<>>
   using iota_v = try_contract<mp::iota_v<subcontract<C>>>;

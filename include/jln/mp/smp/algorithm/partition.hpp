@@ -8,5 +8,6 @@
 namespace jln::mp::smp
 {
   template<class Pred, class C = listify>
-  using partition = fork<remove_if<Pred>, copy_if<Pred>, C>;
+  using partition = fork<remove_if<Pred>, copy_if<Pred>, 
+    contract_barrier<assume_binary_list<C>>>;
 }

@@ -18,6 +18,8 @@ TEST()
     .test<_2, int, void>()
     .test<_3, int, void, char>()
     ;
+    
+  ut::same<smp::size<>, contract<mp::size<>>>();
 
   ut::not_invocable<smp::size<bad_function>>();
 }

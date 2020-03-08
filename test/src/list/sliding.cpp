@@ -134,6 +134,8 @@ TEST()
   ut::not_invocable<smp::sliding<_3, _2, bad_function>, _1, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::sliding<_5, _2, bad_function>, _1, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::sliding<_2, _5, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::sliding<_0, bad_number>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::sliding<bad_number, _1>, _1, _1, _1, _1>();
   ut::not_invocable<smp::sliding<_0, number<-1>, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::sliding<_1, number<-1>, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::sliding<bad_number, bad_number, bad_function>, _1, _1>();

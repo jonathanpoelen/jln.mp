@@ -243,6 +243,7 @@ TEST()
   ut::not_invocable<smp::sort<bad_function>, _1, _1>();
   ut::not_invocable<smp::sort<bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::sort<bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::sort<always<void>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::sort<bad_function, bad_function>, _1>();
   ut::not_invocable<smp::sort<bad_function, bad_function>, _1, _1>();
   ut::not_invocable<smp::sort<bad_function, bad_function>, _1, _1, _1>();

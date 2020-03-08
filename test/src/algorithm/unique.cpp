@@ -41,7 +41,8 @@ TEST()
     ;
 
   ut::not_invocable<smp::unique<bad_function>, _1, _1, _1, _1>();
-  ut::not_invocable<smp::unique_if<bad_function, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::unique_if<always<void>>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::unique_if<bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::unique_if<cfe<std::is_same>, bad_function>, _1, _1, _1, _1>();
 }
 

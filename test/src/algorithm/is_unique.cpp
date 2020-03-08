@@ -42,7 +42,7 @@ TEST()
     .not_invocable<_0, _0>()
     ;
 
-  test_context<is_unique_if<equal<>>, smp::is_unique_if<smp::equal<>>>()
+  test_context<is_unique_if<equal<>>, smp::is_unique_if<smp::equal<>>, 0>()
     .test<_1>()
     .test<_1, _1>()
     .test<_1, _1, _0>()
@@ -50,6 +50,8 @@ TEST()
     ;
 
   ut::not_invocable<smp::is_unique<bad_function>>();
+  ut::not_invocable<smp::is_unique_if<always<void>, bad_function>>();
+  ut::not_invocable<smp::is_unique_if<always<true_>, bad_function>>();
   ut::not_invocable<smp::is_unique_if<bad_function, bad_function>>();
   ut::not_invocable<smp::is_unique_if<bad_function, bad_function>, _1, _1, _1>();
 }

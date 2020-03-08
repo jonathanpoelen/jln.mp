@@ -38,6 +38,8 @@ TEST()
 
   ut::not_invocable<smp::is_sorted<less<>, bad_function>, _1, _1>();
   ut::not_invocable<smp::is_sorted<less<>, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::is_sorted<always<void>>, _1, _1, _1>();
+  ut::not_invocable<smp::is_sorted<always<void>, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::is_sorted<bad_function, bad_function>, _1, _1>();
   ut::not_invocable<smp::is_sorted<bad_function, bad_function>, _1, _1, _1>();
 }

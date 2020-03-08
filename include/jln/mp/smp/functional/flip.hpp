@@ -17,8 +17,5 @@ namespace jln::mp::detail
     using type = smp::flip<sfinae<C>>;
   };
 
-  template<class C>
-  struct expected_argument<flip<C>>
-  : number<argument_category::binary_or_more>
-  {};
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_or_more, flip);
 }

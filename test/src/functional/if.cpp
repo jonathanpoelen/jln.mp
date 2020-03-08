@@ -39,6 +39,7 @@ TEST()
 
   ut::not_invocable<smp::if_<always<_1>, bad_function>>();
   ut::not_invocable<smp::if_<always<_0>, bad_function, bad_function>>();
+  ut::not_invocable<smp::if_<always<void>, listify>>();
   ut::not_invocable<smp::if_<bad_function, bad_function, bad_function>>();
 }
 

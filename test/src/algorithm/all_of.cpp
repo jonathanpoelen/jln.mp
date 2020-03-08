@@ -31,6 +31,9 @@ TEST()
     ;
 
   ut::not_invocable<smp::all_of<bad_function>, _1>();
+  ut::not_invocable<smp::all_of<always<void>>, _1>();
+  ut::not_invocable<smp::all_of<always<true_>, bad_function>>();
+  ut::not_invocable<smp::all_of<always<true_>, bad_function>, _1>();
   ut::not_invocable<smp::all_of<bad_function, bad_function>>();
   ut::not_invocable<smp::all_of<bad_function, bad_function>, _1>();
 }

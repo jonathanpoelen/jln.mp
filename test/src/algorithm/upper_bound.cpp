@@ -120,15 +120,16 @@ TEST()
     .not_invocable<_1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _3, _4>()
     ;
 
-  ut::not_invocable<smp::upper_bound<bad_function, bad_function>, _1>();
-  ut::not_invocable<smp::upper_bound<bad_function, bad_function, bad_function>, _1>();
-  ut::not_invocable<smp::upper_bound<bad_function, bad_function, bad_function, bad_function>, _1>();
+  ut::not_invocable<smp::upper_bound<void, always<void>>, _1>();
+  ut::not_invocable<smp::upper_bound<void, bad_function>, _1>();
+  ut::not_invocable<smp::upper_bound<void, bad_function, bad_function>, _1>();
+  ut::not_invocable<smp::upper_bound<void, bad_function, bad_function, bad_function>, _1>();
   ut::not_invocable<smp::upper_bound_of<_1, bad_function, bad_function>, _1>();
   ut::not_invocable<smp::upper_bound_of<bad_contract, bad_function, bad_function>, _1>();
 
-  ut::not_invocable<smp::upper_bound<bad_function, bad_function>, _1, _1, _1>();
-  ut::not_invocable<smp::upper_bound<bad_function, bad_function, bad_function>, _1, _1, _1>();
-  ut::not_invocable<smp::upper_bound<bad_function, bad_function, bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::upper_bound<void, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::upper_bound<void, bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::upper_bound<void, bad_function, bad_function, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::upper_bound_of<_1, bad_function, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::upper_bound_of<bad_contract, bad_function, bad_function>, _1, _1, _1>();
 }

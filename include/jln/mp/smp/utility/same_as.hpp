@@ -17,8 +17,5 @@ namespace jln::mp::detail
     using type = smp::same_as<x, sfinae<C>>;
   };
 
-  template<class x, class C>
-  struct expected_argument<same_as<x, C>>
-  : number<argument_category::unary>
-  {};
+  JLN_MP_MAKE_EXPECTED_ARGUMENT2(argument_category::unary, same_as);
 }

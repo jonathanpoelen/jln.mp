@@ -19,8 +19,7 @@ TEST()
 
   test_context<
     replace_if<same_as<_1>, _2>,
-    smp::replace_if<same_as<_1>, _2>,
-    0
+    smp::replace_if<same_as<_1>, _2>
   >()
     .test<list<>>()
     .test<seq_0_0_0, _0, _0, _0>()
@@ -30,8 +29,7 @@ TEST()
 
   test_context<
     replace_if<same_as<_1>, na>,
-    smp::replace_if<same_as<_1>, na>,
-    0
+    smp::replace_if<same_as<_1>, na>
   >()
     .test<list<>>()
     .test<seq_0_0_0, _0, _0, _0>()
@@ -64,6 +62,7 @@ TEST()
   ut::not_invocable<smp::replace<void, void, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::replace_if<always<_1>, void, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::replace_if<bad_function, void>, _1, _1, _1>();
+  ut::not_invocable<smp::replace_if<always<void>, void>, _1, _1, _1>();
   ut::not_invocable<smp::replace_if<bad_function, void, bad_function>, _1, _1, _1>();
 }
 

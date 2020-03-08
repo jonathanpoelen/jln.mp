@@ -47,8 +47,10 @@ TEST()
     ;
 
   ut::not_invocable<smp::index_of<void, bad_function, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::index_for<always<void>, bad_function>, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::index_for<always<_3>, bad_function>, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::index_for<bad_function, bad_function>, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::index_if<always<void>, bad_function, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::index_if<always<_1>, bad_function, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::index_if<bad_function, bad_function, bad_function>, _1, _1, _1, _1>();
 }

@@ -48,8 +48,9 @@ TEST()
     .test<list<seq_1, seq_3, seq_5>, _1, _2, _3, _2, _5>()
     ;
 
-  ut::not_invocable<smp::split<bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::split<void, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::split_if<bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::split_if<always<void>, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::split_if<bad_function, bad_function>, _1, _1, _1>();
 }
 

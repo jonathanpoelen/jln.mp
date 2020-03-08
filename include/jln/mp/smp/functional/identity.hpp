@@ -17,8 +17,5 @@ namespace jln::mp::detail
     using type = smp::identity;
   };
 
-  template<>
-  struct expected_argument<identity>
-  : number<argument_category::unary>
-  {};
+  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::unary, (), (identity));
 }

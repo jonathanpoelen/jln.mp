@@ -20,8 +20,5 @@ namespace jln::mp::detail
     using type = smp::conditional_c<b>;
   };
 
-  template<bool b>
-  struct expected_argument<conditional_c<b>>
-  : number<argument_category::binary>
-  {};
+  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (bool b), (conditional_c<b>));
 }

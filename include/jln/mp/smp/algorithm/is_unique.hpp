@@ -7,11 +7,11 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using is_unique = contract<mp::is_unique<assume_unary<C>>>;
+  using is_unique = contract<mp::is_unique<assume_number<C>>>;
 
   template<class Cmp = cfe<std::is_same>, class C = identity>
   using is_unique_if = detail::sfinae<mp::is_unique_if<
-    contract_barrier<assume_binary<Cmp>>, contract_barrier<assume_unary<C>>>>;
+    contract_barrier<assume_binary<Cmp>>, contract_barrier<assume_number<C>>>>;
 }
 
 #include "../algorithm/same.hpp"

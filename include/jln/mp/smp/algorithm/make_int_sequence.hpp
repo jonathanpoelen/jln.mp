@@ -21,8 +21,5 @@ namespace jln::mp::detail
     using type = smp::make_int_sequence_v<sfinae<C>>;
   };
 
-  template<class C>
-  struct expected_argument<make_int_sequence_v<C>>
-  : number<argument_category::unary_positive>
-  {};
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary_positive, make_int_sequence_v);
 }

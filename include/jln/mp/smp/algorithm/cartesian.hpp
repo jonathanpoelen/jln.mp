@@ -11,7 +11,7 @@ namespace jln::mp::smp
   template<class C = listify>
   using cartesian = test_contract<
     mp::all_of<mp::is_list<>>,
-    mp::cartesian<subcontract<C>>>;
+    mp::cartesian<assume_lists<C>>>;
 }
 
 namespace jln::mp::detail

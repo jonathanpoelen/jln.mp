@@ -34,6 +34,7 @@ TEST()
 
   ut::not_invocable<smp::partition<mod2, bad_function>>();
   ut::not_invocable<smp::partition<mod2, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::partition<always<void>>, _1>();
   ut::not_invocable<smp::partition<bad_function, bad_function>>();
   ut::not_invocable<smp::partition<bad_function, bad_function>, _1, _1, _1, _1>();
 }

@@ -41,7 +41,7 @@ TEST()
     .test_unary()
     ;
 
-  test_context<make_cascade<cascade>, make_cascade<smp::cascade>, 0>()
+  test_context<make_cascade<cascade>, make_cascade<smp::cascade>>()
     .test<list1<>>()
     .test<list1<list2<>>, list<>>()
     .test<list1<list2<list3<>>>, list<list<>>>()

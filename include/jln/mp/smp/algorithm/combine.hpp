@@ -7,7 +7,7 @@
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using combine = contract<mp::combine<subcontract<C>>>;
+  using combine = contract<mp::combine<assume_lists<C>>>;
 }
 
 namespace jln::mp::detail

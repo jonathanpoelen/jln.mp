@@ -16,4 +16,6 @@ namespace jln::mp::detail
   {
     using type = smp::size<sfinae<C>>;
   };
+
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::xs, size);
 }

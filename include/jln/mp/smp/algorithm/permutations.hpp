@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using permutations = try_contract<permutations<subcontract<C>>>;
+  using permutations = try_contract<permutations<assume_lists<C>>>;
 }
 
 namespace jln::mp::detail

@@ -17,8 +17,5 @@ namespace jln::mp::detail
     using type = smp::is_list<sfinae<C>>;
   };
 
-  template<class C>
-  struct expected_argument<is_list<C>>
-  : number<argument_category::unary>
-  {};
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, is_list);
 }

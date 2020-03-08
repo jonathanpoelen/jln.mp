@@ -8,10 +8,10 @@ namespace jln::mp::smp
 {
   template<class Cmp, class C = listify>
   using group_if = try_contract<mp::group_if<
-    try_subcontract<contract_barrier<assume_binary<Cmp>>>, subcontract<C>>>;
+    try_subcontract<contract_barrier<assume_binary<Cmp>>>, assume_lists<C>>>;
 
   template<class C = listify>
-  using group = contract<mp::group<subcontract<C>>>;
+  using group = contract<mp::group<assume_lists<C>>>;
 }
 
 namespace jln::mp::detail

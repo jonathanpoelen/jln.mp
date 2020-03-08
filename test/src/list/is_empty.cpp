@@ -13,10 +13,13 @@ TEST()
   ut::same<_0, emp::is_empty<list<int, int, int>>>();
   ut::same<_1, emp::is_empty<list<>>>();
 
-  test_context<is_empty<>, smp::is_empty<>, 0>()
+  test_context<is_empty<>, smp::is_empty<>>()
     .test<_1>()
     .test<_0, int>()
     ;
+    
+  // optimized alias :)
+  ut::same<smp::is_empty<>, contract<size<not_<identity>>>>();
 
   ut::not_invocable<smp::is_empty<bad_function>>();
   ut::not_invocable<smp::is_empty<bad_function>, _1>();

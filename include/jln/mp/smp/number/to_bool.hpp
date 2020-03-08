@@ -17,8 +17,5 @@ namespace jln::mp::detail
     using type = smp::to_bool<sfinae<C>>;
   };
 
-  template<class C>
-  struct expected_argument<to_bool<C>>
-  : number<argument_category::unary>
-  {};
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, to_bool);
 }

@@ -29,6 +29,7 @@ TEST()
   ut::not_invocable<smp::accumulate<bad_function>>();
   ut::not_invocable<smp::accumulate<bad_function>, _1, _1>();
   ut::not_invocable<smp::accumulate<bad_function, bad_function>>();
+  ut::not_invocable<smp::accumulate<smp::add<>, bad_function>>();
   ut::not_invocable<smp::accumulate<bad_function, bad_function>, _1, _1, _1>();
 }
 

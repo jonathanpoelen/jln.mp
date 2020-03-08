@@ -22,6 +22,7 @@ TEST()
 
   ut::not_invocable<smp::is_size_of<_1, bad_function>>();
   ut::not_invocable<smp::is_size_of<_1, bad_function>, _1>();
+  ut::not_invocable<smp::is_size_of<bad_number>, _1>();
   ut::not_invocable<smp::is_size_of<bad_number, bad_function>, _1>();
 }
 

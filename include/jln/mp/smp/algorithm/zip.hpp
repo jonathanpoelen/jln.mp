@@ -17,7 +17,7 @@ namespace jln::mp::smp
       mp::transform<mp::is_list<>, mp::and_<>>,
       mp::transform<mp::unpack<mp::size<>>, mp::same<>>
     >,
-    mp::zip<subcontract<C>>>;
+    mp::zip<assume_lists<C>>>;
 
   template<class F = listify, class C = listify>
   using zip_with = zip<contract_barrier<transform<unpack<F>, C>>>;

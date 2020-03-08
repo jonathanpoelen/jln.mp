@@ -8,7 +8,7 @@
 namespace jln::mp::smp
 {
   template<int_ i, class C = listify>
-  using split_at_c = try_contract<mp::split_at_c<i, subcontract<C>>>;
+  using split_at_c = try_contract<mp::split_at_c<i, assume_binary_list<C>>>;
 }
 
 JLN_MP_MAKE_REGULAR_SMP2_P(split_at, (I), (C, smp::listify), smp::split_at_c<I::value, C>)

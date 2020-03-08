@@ -29,15 +29,8 @@ namespace jln::mp::detail
   };
 
   
-  template<class C>
-  struct expected_argument<unpack<C>>
-  : number<argument_category::list_xs>
-  {};
-
-  template<class C>
-  struct expected_argument<unpack_append<C>>
-  : number<argument_category::list_xs>
-  {};
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::list_xs, unpack);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::list_xs, unpack_append);
 
 
   template<>

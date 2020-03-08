@@ -120,7 +120,9 @@ TEST()
     ;
 
   ut::not_invocable<smp::lower_bound<void, bad_function>, _1>();
+  ut::not_invocable<smp::lower_bound<void, always<void>>, _1>();
   ut::not_invocable<smp::lower_bound<void, bad_function, bad_function>, _1>();
+  ut::not_invocable<smp::lower_bound<void, always<true_>, bad_function>, _1>();
   ut::not_invocable<smp::lower_bound<void, bad_function, bad_function, bad_function>, _1>();
   ut::not_invocable<smp::lower_bound_of<_1, bad_function, bad_function>, _1>();
   ut::not_invocable<smp::lower_bound_of<bad_number, bad_function, bad_function>, _1>();

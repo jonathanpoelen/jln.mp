@@ -30,13 +30,6 @@ namespace jln::mp::detail
   };
   
   
-  template<class C>
-  struct expected_argument<cfe<std::is_same, C>>
-  : number<argument_category::binary>
-  {};
-  
-  template<class C>
-  struct expected_argument<cfl<std::is_same, C>>
-  : number<argument_category::binary>
-  {};
+  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (cfe<std::is_same, C>));
+  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (cfl<std::is_same, C>));
 }

@@ -75,6 +75,8 @@ TEST()
   ut::not_invocable<smp::range<number<-11>, number<-2>, bad_function>, _1, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::range<number<-22>, _0, bad_function>, _1, _1, _1, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::range<bad_number, bad_number, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<_1, bad_number>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::range<bad_number, _2>, _1, _1, _1, _1, _1, _1>();
 }
 
 TEST_SUITE_END()
