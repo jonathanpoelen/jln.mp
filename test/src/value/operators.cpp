@@ -33,9 +33,8 @@ TEST()
   ut::same<yes, emp::and_c_v<>>();
 
 
-  test_pack<or_v>()
-    .test_unary()
-  ;
+  test_pack<or_v>().test_unary();
+  test_pack3<or_v>();
 
   auto ctx = [](auto f){
     using g = unpack<decltype(f)>;

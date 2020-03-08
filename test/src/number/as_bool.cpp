@@ -18,9 +18,8 @@ TEST()
   ut::same<a, emp::as_bool<a>>();
   ut::same<number<1>, emp::as_bool<b>>();
 
-  test_pack<as_bool>()
-    .test_unary()
-  ;
+  test_pack<as_bool>().test_unary();
+  test_pack3<as_bool>();
 
   test_context<as_bool<>, smp::as_bool<>>()
     .test<a, a>()

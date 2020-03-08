@@ -21,6 +21,7 @@ TEST()
   test_pack<fold_left>()
     .test_variadic()
     .test_binary()
+    .test_unary()
   ;
   test_pack<fold_left, listify>()
     .test_variadic()

@@ -25,6 +25,9 @@ TEST()
   test_pack<min, less<>>().test_unary();
   test_pack<abs, less<>>().test_unary();
   test_pack<pow>().test_unary();
+  test_pack3<min>();
+  test_pack3<abs>();
+  test_pack3<pow>();
 
   auto ctx = [](auto f){
     using g = unpack<decltype(f)>;

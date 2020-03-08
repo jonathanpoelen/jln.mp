@@ -18,9 +18,8 @@ TEST()
   ut::same<a, emp::as_number<a>>();
   ut::same<number<1>, emp::as_number<b>>();
 
-  test_pack<as_number>()
-    .test_unary()
-  ;
+  test_pack<as_number>().test_unary();
+  test_pack3<assume_number>();
 
   test_context<as_number<>, smp::as_number<>>()
     .test<a, a>()
