@@ -1,9 +1,9 @@
 #pragma once
 
+#include "../contract.hpp"
 #include "../list/list.hpp"
 #include "../number/operators.hpp"
 #include "../algorithm/is_sorted.hpp"
-#include "../../functional/contract.hpp"
 #include "../../algorithm/merge.hpp"
 #include "../../list/at.hpp"
 #include "../../list/is_list.hpp"

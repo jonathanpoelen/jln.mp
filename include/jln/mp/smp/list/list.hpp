@@ -1,8 +1,7 @@
 #pragma once
 
+#include "../contract.hpp"
 #include "../../list/list.hpp"
-#include "../../functional/contract.hpp"
-#include "../../functional/sfinaefwd.hpp"
 
 namespace jln::mp::smp
 {

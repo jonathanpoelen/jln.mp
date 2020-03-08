@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../functional/contract.hpp"
+#include "../contract.hpp"
 #include "../../algorithm/matrix_shortest.hpp"
 
 namespace jln::mp::smp

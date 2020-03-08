@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../functional/contract.hpp"
+#include "../contract.hpp"
 #include "../../functional/function.hpp"
 #include "../../functional/fork_front.hpp"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../functional/try_invoke.hpp"
+#include "contract.hpp"
 
 namespace jln::mp
 {

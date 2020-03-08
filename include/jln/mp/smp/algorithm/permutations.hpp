@@ -1,7 +1,7 @@
 #pragma once
 
+#include "../contract.hpp"
 #include "../../algorithm/permutations.hpp"
-#include "../../functional/contract.hpp"
 
 namespace jln::mp::smp
 {

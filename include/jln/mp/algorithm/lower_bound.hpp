@@ -1,11 +1,6 @@
 #pragma once
 
-#include "../list/drop.hpp"
-#include "../utility/same_as.hpp"
 #include "../number/operators.hpp"
-#include "../functional/identity.hpp"
-#include "../functional/fork.hpp"
-#include "../functional/flip.hpp"
 
 namespace jln::mp
 {
@@ -59,11 +54,12 @@ namespace jln::mp
 
 
 #include "cartesian.hpp"
-#include "../functional/contract.hpp"
 #include "../config/enumerate.hpp"
 #include "../list/pop_front.hpp"
 #include "../list/front.hpp"
 #include "../list/drop.hpp"
+#include "../functional/fork.hpp"
+#include "../functional/flip.hpp"
 
 namespace jln::mp::detail
 {
