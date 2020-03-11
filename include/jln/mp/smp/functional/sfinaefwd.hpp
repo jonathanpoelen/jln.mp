@@ -1,11 +1,7 @@
 #pragma once
 
-#include "identity.hpp"
-#include "../number/number.hpp"
+#include "../../functional/identity.hpp"
 
-// TODO include smp/* ?
-
-// TODO mp::unsafe_sfinae / mp::unsafe_sfinae_once ? for sfinae<F> without specialization on F
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class x>

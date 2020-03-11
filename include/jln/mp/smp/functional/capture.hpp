@@ -1,7 +1,7 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "../../functional/capture.hpp"
-#include "../../functional/try_invoke.hpp"
 
 namespace jln::mp::detail
 {

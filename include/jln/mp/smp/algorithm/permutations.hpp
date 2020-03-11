@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../contract.hpp"
+#include "../assume.hpp"
 #include "../../algorithm/permutations.hpp"
 
 namespace jln::mp::smp

@@ -1,8 +1,8 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "../list/list.hpp"
 #include "../../algorithm/combine.hpp"
-
 
 namespace jln::mp::smp
 {

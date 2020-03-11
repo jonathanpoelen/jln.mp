@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "../list/list.hpp"
 #include "../../functional/monadic.hpp"
 #include "../../algorithm/transform.hpp"

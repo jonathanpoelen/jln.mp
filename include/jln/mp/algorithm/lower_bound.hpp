@@ -60,6 +60,7 @@ namespace jln::mp
 #include "../list/drop.hpp"
 #include "../functional/fork.hpp"
 #include "../functional/flip.hpp"
+#include "../functional/try_invoke.hpp"
 
 namespace jln::mp::detail
 {

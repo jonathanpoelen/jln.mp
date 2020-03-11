@@ -4,10 +4,10 @@
 #include "./is_same.hpp"
 #include "jln/mp/functional/call.hpp"
 #include "jln/mp/functional/function.hpp"
-#include "jln/mp/functional/sfinaefwd.hpp"
 #include "jln/mp/utility/always.hpp"
 #include "jln/mp/smp/utility/unpack.hpp"
 #include "jln/mp/smp/utility/conditional.hpp"
+#include "jln/mp/smp/functional/sfinaefwd.hpp"
 
 namespace
 {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "../../functional/try_invoke.hpp"
 #include "../../list/list_wrap_if.hpp"
 

@@ -3,7 +3,10 @@
 #include "find.hpp"
 #include "../list/size.hpp"
 #include "../list/push_front.hpp"
+#include "../utility/always.hpp"
 #include "../utility/same_as.hpp"
+#include "../number/operators.hpp"
+#include "../functional/try_invoke.hpp"
 
 namespace jln::mp
 {

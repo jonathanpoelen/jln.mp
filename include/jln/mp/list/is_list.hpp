@@ -24,6 +24,9 @@ namespace jln::mp
   }
 } // namespace jln::mp
 
+
+#include "../number/number.hpp"
+
 namespace jln::mp::detail
 {
   template<class x>

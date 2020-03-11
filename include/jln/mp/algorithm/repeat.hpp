@@ -1,6 +1,7 @@
 #pragma once
 
 #include "make_int_sequence.hpp"
+#include "../utility/unpack.hpp"
 #include "../config/enumerate.hpp"
 
 namespace jln::mp

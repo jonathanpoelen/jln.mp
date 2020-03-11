@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "../list/list.hpp"
 #include "../../algorithm/powerset.hpp"
 

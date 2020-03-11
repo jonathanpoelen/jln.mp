@@ -1,6 +1,5 @@
 #pragma once
 
-
 namespace jln::mp
 {
   namespace detail
@@ -42,6 +41,7 @@ namespace jln::mp
 #include "../utility/same_as.hpp"
 #include "../functional/call.hpp"
 #include "../functional/fork.hpp"
+#include "../number/operators.hpp"
 
 namespace jln::mp::detail
 {

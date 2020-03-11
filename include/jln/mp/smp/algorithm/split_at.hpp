@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../assume.hpp"
 #include "../list/take.hpp"
 #include "../list/drop.hpp"
 #include "../functional/fork.hpp"

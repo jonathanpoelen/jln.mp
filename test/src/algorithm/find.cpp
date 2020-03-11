@@ -21,13 +21,13 @@ TEST()
   ut::invoke_r<list<_20, _21>, iota<find<_20>>, _0, _22>();
   ut::invoke_r<list<_60, _61>, iota<find<_60>>, _0, _62>();
   ut::invoke_r<list<_70, _71>, iota<find<_70>>, _0, _72>();
-  ut::invoke_r<list<_130, _131>, iota<find<_130>>, _0, _132>();
-  ut::invoke_r<list<_260, _261>, iota<find<_260>>, _0, _262>();
-  ut::invoke_r<list<_320, _321>, iota<find<_320>>, _0, _322>();
-  ut::invoke_r<list<_520, _521>, iota<find<_520>>, _0, _522>();
-  ut::invoke_r<list<_555, _556>, iota<find<_555>>, _0, _557>();
-  ut::invoke_r<list<_580, _581>, iota<find<_580>>, _0, _582>();
-  ut::invoke_r<list<_780, _781>, iota<find<_780>>, _0, _782>();
+  ut::invoke_r<list<number<130>, number<131>>, iota<find<number<130>>>, _0, number<132>>();
+  ut::invoke_r<list<number<260>, number<261>>, iota<find<number<260>>>, _0, number<262>>();
+  ut::invoke_r<list<number<320>, number<321>>, iota<find<number<320>>>, _0, number<322>>();
+  ut::invoke_r<list<number<520>, number<521>>, iota<find<number<520>>>, _0, number<522>>();
+  ut::invoke_r<list<number<555>, number<556>>, iota<find<number<555>>>, _0, number<557>>();
+  ut::invoke_r<list<number<580>, number<581>>, iota<find<number<580>>>, _0, number<582>>();
+  ut::invoke_r<list<number<780>, number<781>>, iota<find<number<780>>>, _0, number<782>>();
 
   test_context<find_if<identity>, smp::find_if<smp::identity>>()
     .test<list<>>()

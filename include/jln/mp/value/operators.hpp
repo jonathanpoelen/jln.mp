@@ -389,33 +389,36 @@ namespace jln::mp::emp
 
   template<auto... xs>
   using mod_c_v = val<(... % xs)>;
+}
 
-  namespace detail
+namespace jln::mp::detail
+{
+  template<bool, template<auto...> class f, int_ d>
+  struct _emp_op_v;
+
+  template<template<auto...> class F, int_ d>
+  struct _emp_op_v<true, F, d>
   {
-    template<bool, template<auto...> class f, int_ d>
-    struct _op;
+    template<auto... xs>
+    using f = F<xs...>;
+  };
 
-    template<template<auto...> class F, int_ d>
-    struct _op<true, F, d>
-    {
-      template<auto... xs>
-      using f = F<xs...>;
-    };
+  template<template<auto...> class F, int_ d>
+  struct _emp_op_v<false, F, d>
+  {
+    template<auto...>
+    using f = val<d>;
+  };
+}
 
-    template<template<auto...> class F, int_ d>
-    struct _op<false, F, d>
-    {
-      template<auto...>
-      using f = val<d>;
-    };
-  }
-
+namespace jln::mp::emp
+{
   template<auto... xs>
-  using mod0_c_v = typename detail::_op<sizeof...(xs) != 0, mod_c_v, 0>
+  using mod0_c_v = typename detail::_emp_op_v<sizeof...(xs) != 0, mod_c_v, 0>
     ::template f<xs...>;
 
   template<auto... xs>
-  using mod1_c_v = typename detail::_op<sizeof...(xs) != 0, mod_c_v, 1>
+  using mod1_c_v = typename detail::_emp_op_v<sizeof...(xs) != 0, mod_c_v, 1>
     ::template f<xs...>;
 
   template<auto... xs>
@@ -428,14 +431,14 @@ namespace jln::mp::emp
   using bit_and_c_v = val<(... & xs)>;
 
   template<auto... xs>
-  using bit_and0_c_v = typename detail::_op<sizeof...(xs) != 0, bit_and_c_v, 0>
+  using bit_and0_c_v = typename detail::_emp_op_v<sizeof...(xs) != 0, bit_and_c_v, 0>
     ::template f<xs...>;
 
   template<auto... xs>
   using bit_or_c_v = val<(... | xs)>;
 
   template<auto... xs>
-  using bit_or0_c_v = typename detail::_op<sizeof...(xs) != 0, bit_or_c_v, 0>
+  using bit_or0_c_v = typename detail::_emp_op_v<sizeof...(xs) != 0, bit_or_c_v, 0>
     ::template f<xs...>;
 
 

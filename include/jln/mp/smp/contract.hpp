@@ -1,11 +1,11 @@
 #pragma once
 
+#include "functional/sfinaefwd.hpp"
 #include "../functional/try_invoke.hpp"
 #include "../functional/function.hpp"
 #include "../functional/call.hpp"
 #include "../functional/identity.hpp"
 #include "../functional/if.hpp"
-#include "../functional/sfinaefwd.hpp"
 #include "../number/number.hpp"
 #include "../utility/always.hpp"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../contract.hpp"
+#include "../assume.hpp"
 #include "../../functional/each.hpp"
 
 namespace jln::mp::detail
