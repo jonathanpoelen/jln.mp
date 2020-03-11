@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-from os import listdir
-from os.path import isfile, join
+import os
 
 all_targets = set()
 cpp_test_paths = []
@@ -26,9 +25,9 @@ def make_targets(path, prefix, target_prefix='t_'):
   l = []
   i = 0
   idir = 0
-  for f in listdir(path):
-    newpath = join(path, f)
-    if isfile(newpath):
+  for f in os.listdir(path):
+    newpath = os.path.join(path, f)
+    if os.path.isfile(newpath):
       if f.endswith('.cpp'):
         cpp_test_paths.append(f'{path}/{f}')
         name = new_target(f[:-4])
@@ -57,6 +56,9 @@ with open('meson.build', 'w') as f:
   f.write(start_str)
   f.write('\n'.join(output_lines))
   f.write('\n')
+  sources = "',\n  '".join(os.path.join('test/autogen', filename) 
+                        for filename in os.listdir('test/autogen'))
+  f.write(f"executable('check_inc', [\n  '{sources}'\n], dependencies: test_dep)\n")
   f.write(stop_str)
   f.write(content[stop + len(stop_str):])
 
