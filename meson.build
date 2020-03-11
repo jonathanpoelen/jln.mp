@@ -66,23 +66,24 @@ t_1_42 = executable('intersperse', 'test/src/algorithm/intersperse.cpp', depende
 t_1_43 = executable('transform', 'test/src/algorithm/transform.cpp', dependencies: test_dep, build_by_default: false)
 t_1_44 = executable('rotate', 'test/src/algorithm/rotate.cpp', dependencies: test_dep, build_by_default: false)
 alias_target('mp.algorithm', t_1_0, t_1_1, t_1_2, t_1_3, t_1_4, t_1_5, t_1_6, t_1_7, t_1_8, t_1_9, t_1_10, t_1_11, t_1_12, t_1_13, t_1_14, t_1_15, t_1_16, t_1_17, t_1_18, t_1_19, t_1_20, t_1_21, t_1_22, t_1_23, t_1_24, t_1_25, t_1_26, t_1_27, t_1_28, t_1_29, t_1_30, t_1_31, t_1_32, t_1_33, t_1_34, t_1_35, t_1_36, t_1_37, t_1_38, t_1_39, t_1_40, t_1_41, t_1_42, t_1_43, t_1_44)
-t_2_0 = executable('capture', 'test/src/functional/capture.cpp', dependencies: test_dep, build_by_default: false)
-t_2_1 = executable('function', 'test/src/functional/function.cpp', dependencies: test_dep, build_by_default: false)
-t_2_2 = executable('each', 'test/src/functional/each.cpp', dependencies: test_dep, build_by_default: false)
-t_2_3 = executable('fork_front', 'test/src/functional/fork_front.cpp', dependencies: test_dep, build_by_default: false)
-t_2_4 = executable('recurse', 'test/src/functional/recurse.cpp', dependencies: test_dep, build_by_default: false)
-t_2_5 = executable('fork', 'test/src/functional/fork.cpp', dependencies: test_dep, build_by_default: false)
-t_2_6 = executable('partial', 'test/src/functional/partial.cpp', dependencies: test_dep, build_by_default: false)
-t_2_7 = executable('eval', 'test/src/functional/eval.cpp', dependencies: test_dep, build_by_default: false)
-t_2_8 = executable('is_invocable', 'test/src/functional/is_invocable.cpp', dependencies: test_dep, build_by_default: false)
-t_2_9 = executable('cascade', 'test/src/functional/cascade.cpp', dependencies: test_dep, build_by_default: false)
-t_2_10 = executable('fix', 'test/src/functional/fix.cpp', dependencies: test_dep, build_by_default: false)
-t_2_11 = executable('flip', 'test/src/functional/flip.cpp', dependencies: test_dep, build_by_default: false)
-t_2_12 = executable('bind', 'test/src/functional/bind.cpp', dependencies: test_dep, build_by_default: false)
-t_2_13 = executable('if', 'test/src/functional/if.cpp', dependencies: test_dep, build_by_default: false)
-t_2_14 = executable('identity', 'test/src/functional/identity.cpp', dependencies: test_dep, build_by_default: false)
-t_2_15 = executable('compose', 'test/src/functional/compose.cpp', dependencies: test_dep, build_by_default: false)
-alias_target('mp.functional', t_2_0, t_2_1, t_2_2, t_2_3, t_2_4, t_2_5, t_2_6, t_2_7, t_2_8, t_2_9, t_2_10, t_2_11, t_2_12, t_2_13, t_2_14, t_2_15)
+t_2_0 = executable('partial_eager', 'test/src/functional/partial_eager.cpp', dependencies: test_dep, build_by_default: false)
+t_2_1 = executable('capture', 'test/src/functional/capture.cpp', dependencies: test_dep, build_by_default: false)
+t_2_2 = executable('function', 'test/src/functional/function.cpp', dependencies: test_dep, build_by_default: false)
+t_2_3 = executable('each', 'test/src/functional/each.cpp', dependencies: test_dep, build_by_default: false)
+t_2_4 = executable('fork_front', 'test/src/functional/fork_front.cpp', dependencies: test_dep, build_by_default: false)
+t_2_5 = executable('recurse', 'test/src/functional/recurse.cpp', dependencies: test_dep, build_by_default: false)
+t_2_6 = executable('fork', 'test/src/functional/fork.cpp', dependencies: test_dep, build_by_default: false)
+t_2_7 = executable('partial', 'test/src/functional/partial.cpp', dependencies: test_dep, build_by_default: false)
+t_2_8 = executable('eval', 'test/src/functional/eval.cpp', dependencies: test_dep, build_by_default: false)
+t_2_9 = executable('is_invocable', 'test/src/functional/is_invocable.cpp', dependencies: test_dep, build_by_default: false)
+t_2_10 = executable('cascade', 'test/src/functional/cascade.cpp', dependencies: test_dep, build_by_default: false)
+t_2_11 = executable('fix', 'test/src/functional/fix.cpp', dependencies: test_dep, build_by_default: false)
+t_2_12 = executable('flip', 'test/src/functional/flip.cpp', dependencies: test_dep, build_by_default: false)
+t_2_13 = executable('bind', 'test/src/functional/bind.cpp', dependencies: test_dep, build_by_default: false)
+t_2_14 = executable('if', 'test/src/functional/if.cpp', dependencies: test_dep, build_by_default: false)
+t_2_15 = executable('identity', 'test/src/functional/identity.cpp', dependencies: test_dep, build_by_default: false)
+t_2_16 = executable('compose', 'test/src/functional/compose.cpp', dependencies: test_dep, build_by_default: false)
+alias_target('mp.functional', t_2_0, t_2_1, t_2_2, t_2_3, t_2_4, t_2_5, t_2_6, t_2_7, t_2_8, t_2_9, t_2_10, t_2_11, t_2_12, t_2_13, t_2_14, t_2_15, t_2_16)
 t_3_0 = executable('operators', 'test/src/value/operators.cpp', dependencies: test_dep, build_by_default: false)
 t_3_1 = executable('has_value', 'test/src/value/has_value.cpp', dependencies: test_dep, build_by_default: false)
 t_3_2 = executable('is_val', 'test/src/value/is_val.cpp', dependencies: test_dep, build_by_default: false)
@@ -125,7 +126,7 @@ t_5_24 = executable('is_empty', 'test/src/list/is_empty.cpp', dependencies: test
 t_5_25 = executable('as_list', 'test/src/list/as_list.cpp', dependencies: test_dep, build_by_default: false)
 t_5_26 = executable('slice', 'test/src/list/slice.cpp', dependencies: test_dep, build_by_default: false)
 alias_target('mp.list', t_5_0, t_5_1, t_5_2, t_5_3, t_5_4, t_5_5, t_5_6, t_5_7, t_5_8, t_5_9, t_5_10, t_5_11, t_5_12, t_5_13, t_5_14, t_5_15, t_5_16, t_5_17, t_5_18, t_5_19, t_5_20, t_5_21, t_5_22, t_5_23, t_5_24, t_5_25, t_5_26)
-alias_target('mp', t_0_0, t_0_1, t_0_2, t_0_3, t_0_4, t_0_5, t_1_0, t_1_1, t_1_2, t_1_3, t_1_4, t_1_5, t_1_6, t_1_7, t_1_8, t_1_9, t_1_10, t_1_11, t_1_12, t_1_13, t_1_14, t_1_15, t_1_16, t_1_17, t_1_18, t_1_19, t_1_20, t_1_21, t_1_22, t_1_23, t_1_24, t_1_25, t_1_26, t_1_27, t_1_28, t_1_29, t_1_30, t_1_31, t_1_32, t_1_33, t_1_34, t_1_35, t_1_36, t_1_37, t_1_38, t_1_39, t_1_40, t_1_41, t_1_42, t_1_43, t_1_44, t_2_0, t_2_1, t_2_2, t_2_3, t_2_4, t_2_5, t_2_6, t_2_7, t_2_8, t_2_9, t_2_10, t_2_11, t_2_12, t_2_13, t_2_14, t_2_15, t_3_0, t_3_1, t_3_2, t_3_3, t_3_4, t_4_0, t_4_1, t_4_2, t_4_3, t_4_4, t_4_5, t_4_6, t_5_0, t_5_1, t_5_2, t_5_3, t_5_4, t_5_5, t_5_6, t_5_7, t_5_8, t_5_9, t_5_10, t_5_11, t_5_12, t_5_13, t_5_14, t_5_15, t_5_16, t_5_17, t_5_18, t_5_19, t_5_20, t_5_21, t_5_22, t_5_23, t_5_24, t_5_25, t_5_26)
+alias_target('mp', t_0_0, t_0_1, t_0_2, t_0_3, t_0_4, t_0_5, t_1_0, t_1_1, t_1_2, t_1_3, t_1_4, t_1_5, t_1_6, t_1_7, t_1_8, t_1_9, t_1_10, t_1_11, t_1_12, t_1_13, t_1_14, t_1_15, t_1_16, t_1_17, t_1_18, t_1_19, t_1_20, t_1_21, t_1_22, t_1_23, t_1_24, t_1_25, t_1_26, t_1_27, t_1_28, t_1_29, t_1_30, t_1_31, t_1_32, t_1_33, t_1_34, t_1_35, t_1_36, t_1_37, t_1_38, t_1_39, t_1_40, t_1_41, t_1_42, t_1_43, t_1_44, t_2_0, t_2_1, t_2_2, t_2_3, t_2_4, t_2_5, t_2_6, t_2_7, t_2_8, t_2_9, t_2_10, t_2_11, t_2_12, t_2_13, t_2_14, t_2_15, t_2_16, t_3_0, t_3_1, t_3_2, t_3_3, t_3_4, t_4_0, t_4_1, t_4_2, t_4_3, t_4_4, t_4_5, t_4_6, t_5_0, t_5_1, t_5_2, t_5_3, t_5_4, t_5_5, t_5_6, t_5_7, t_5_8, t_5_9, t_5_10, t_5_11, t_5_12, t_5_13, t_5_14, t_5_15, t_5_16, t_5_17, t_5_18, t_5_19, t_5_20, t_5_21, t_5_22, t_5_23, t_5_24, t_5_25, t_5_26)
 executable('check_inc', [
   'test/autogen/smp@algorithm@matrix_shortest.hpp.cpp',
   'test/autogen/smp@value@is_val.hpp.cpp',
@@ -171,6 +172,7 @@ executable('check_inc', [
   'test/autogen/smp@list@push_front.hpp.cpp',
   'test/autogen/smp@algorithm@take_while.hpp.cpp',
   'test/autogen/smp@algorithm@combine.hpp.cpp',
+  'test/autogen/smp@functional@partial_eager.hpp.cpp',
   'test/autogen/smp@algorithm@powerset.hpp.cpp',
   'test/autogen/algorithm@upper_bound.hpp.cpp',
   'test/autogen/functional@compose.hpp.cpp',
@@ -353,6 +355,7 @@ executable('check_inc', [
   'test/autogen/smp@algorithm@unique.hpp.cpp',
   'test/autogen/algorithm@split.hpp.cpp',
   'test/autogen/smp@list@take.hpp.cpp',
+  'test/autogen/functional@partial_eager.hpp.cpp',
   'test/autogen/smp@list@insert_range.hpp.cpp',
   'test/autogen/smp@algorithm@group.hpp.cpp'
 ], dependencies: test_dep)

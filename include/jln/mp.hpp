@@ -63,6 +63,7 @@
 #include "mp/functional/if.hpp"
 #include "mp/functional/is_invocable.hpp"
 #include "mp/functional/monadic.hpp"
+#include "mp/functional/partial_eager.hpp"
 #include "mp/functional/partial.hpp"
 #include "mp/functional/recurse.hpp"
 #include "mp/functional/try_invoke.hpp"

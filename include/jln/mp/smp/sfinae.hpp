@@ -70,6 +70,7 @@ namespace jln::mp
 #include "functional/identity.hpp"
 #include "functional/if.hpp"
 #include "functional/is_invocable.hpp"
+#include "functional/partial_eager.hpp"
 #include "functional/partial.hpp"
 #include "functional/recurse.hpp"
 #include "functional/sfinaefwd.hpp"
