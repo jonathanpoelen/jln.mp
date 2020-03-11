@@ -19,6 +19,10 @@ namespace jln::mp
   ::template f<Fs...>
   {};
 
+  template <class C>
+  struct each<C> : detail::_each<C>
+  {};
+
   template <class F, class C>
   struct each<F, C> : detail::_each<C, F>
   {};

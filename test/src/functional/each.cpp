@@ -29,6 +29,11 @@ TEST()
   ut::same<int, each<identity, identity, identity, identity, foo>
     ::template f<void, void, void, void>>();
 
+  test_context<each<listify>, smp::each<smp::listify>>()
+    .test<list<>>()
+    .not_invocable<_1>()
+    ;
+  
   test_context<each<inc<>, dec<>, listify>, smp::each<smp::inc<>, smp::dec<>, smp::listify>>()
     .test<list<_1, _3>, _0, _4>()
     .not_invocable<>()

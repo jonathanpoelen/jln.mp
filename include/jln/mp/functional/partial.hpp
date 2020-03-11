@@ -19,6 +19,13 @@ namespace jln::mp
   ::template f<Fs...>
   {};
 
+  template <class C>
+  struct partial<C>
+  {
+    template <class... xs>
+    using f = call<C, xs...>;
+  };
+
   template <class F, class C>
   struct partial<F, C>
   {

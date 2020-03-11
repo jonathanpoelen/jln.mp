@@ -31,6 +31,11 @@ TEST()
 
   ut::same<int, partial<identity, identity, foo>::template f<void, void>>();
 
+  test_context<partial<listify>, smp::partial<smp::listify>>()
+    .test<list<>>()
+    .test<seq_0, _0>()
+    ;
+
   test_context<
     partial<inc<>, dec<>, listify>, 
     smp::partial<smp::inc<>, smp::dec<>, smp::listify>
