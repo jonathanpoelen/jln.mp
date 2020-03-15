@@ -1,3 +1,8 @@
+#include "test/test_case.hpp"
+
+#ifdef __cpp_nontype_template_parameter_class
+#if __cpp_nontype_template_parameter_class >= 201806L
+
 #include "test.hpp"
 #include "test/numbers.hpp"
 
@@ -5,8 +10,6 @@
 #include "jln/mp/smp/list/push_front.hpp"
 #include "jln/mp/smp/list/list.hpp"
 
-#ifdef __cpp_nontype_template_parameter_class
-#if __cpp_nontype_template_parameter_class >= 201806L
 TEST_SUITE_BEGIN()
 
 struct foo

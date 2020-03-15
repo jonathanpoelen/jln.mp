@@ -1,4 +1,5 @@
-#include "test.hpp"
+#include "test/test_case.hpp"
+#include "test/is_same.hpp"
 
 #include "jln/mp/smp/number/numbers.hpp"
 

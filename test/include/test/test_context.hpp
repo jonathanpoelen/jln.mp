@@ -9,8 +9,6 @@
 #include "jln/mp/smp/utility/conditional.hpp"
 #include "jln/mp/smp/functional/sfinaefwd.hpp"
 
-namespace
-{
 namespace ut
 {
   using jln::mp::detail::sfinae;
@@ -178,8 +176,6 @@ using ut::test_pack;
 using ut::test_pack2;
 using ut::test_pack3;
 using ut::bad_function;
-
-}
 
 namespace jln::mp::detail
 {

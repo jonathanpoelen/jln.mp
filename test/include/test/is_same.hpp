@@ -2,9 +2,9 @@
 
 #include "jln/mp/functional/call.hpp"
 
-namespace
-{
 namespace ut
+{
+namespace
 {
   template<class T>
   struct Result

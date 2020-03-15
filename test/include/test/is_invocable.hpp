@@ -4,9 +4,9 @@
 #include "jln/mp/functional/is_invocable.hpp"
 #include "jln/cxx/diagnostic.hpp"
 
-namespace
-{
 namespace ut
+{
+namespace
 {
   template<class F, class... xs>
   void invocable()

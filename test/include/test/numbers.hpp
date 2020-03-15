@@ -2,9 +2,9 @@
 
 #include "jln/mp/number/numbers.hpp"
 
-namespace
-{
 namespace ut
+{
+namespace
 {
   namespace ints
   {
