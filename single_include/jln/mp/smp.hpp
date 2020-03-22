@@ -23,6 +23,9 @@ SOFTWARE.
 
 #pragma once
 
+#ifndef JLN_MP_HPP
+#define JLN_MP_HPP
+
 #include <cstdint>
 #include <type_traits>
 #include <limits>
@@ -8898,7 +8901,7 @@ namespace jln::mp::detail
   struct _partial_eager
   {
     using type = fork<
-      take_c<sizeof...(Fs), _each<Fs..., listify>>, 
+      take_c<sizeof...(Fs), _each<listify, Fs...>>, 
       drop_c<sizeof...(Fs), fork<Flast, listify>>,
       join<C>
     >;
@@ -8908,8 +8911,6 @@ namespace jln::mp::detail
 {
   template<int>
   struct _smp_partial_eager_select;
-  
-  struct _smp_partial_eager;
 }
 
 namespace jln::mp::smp
@@ -8977,8 +8978,12 @@ namespace jln::mp::detail
   {
     template<class Flast, class C, class... Fs>
     using f = test_contract<
-      size<greater_equal_than_c<sizeof...(Fs)-1>>,
-      _partial_eager<subcontract<Flast>, monadic_xs<subcontract<C>>, assume_unary<Fs>...>
+      size<greater_equal_than_c<sizeof...(Fs)>>,
+      typename _partial_eager<
+        subcontract<Flast>, 
+        monadic_xs<subcontract<C>>, 
+        assume_unary<Fs>...
+      >::type
     >;
   };
   
@@ -11863,3 +11868,4 @@ namespace jln::mp::detail
 }
 
 
+#endif

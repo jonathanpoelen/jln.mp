@@ -23,6 +23,9 @@ SOFTWARE.
 
 #pragma once
 
+#ifndef JLN_MP_HPP
+#define JLN_MP_HPP
+
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -6610,7 +6613,7 @@ namespace jln::mp::detail
   struct _partial_eager
   {
     using type = fork<
-      take_c<sizeof...(Fs), _each<Fs..., listify>>, 
+      take_c<sizeof...(Fs), _each<listify, Fs...>>, 
       drop_c<sizeof...(Fs), fork<Flast, listify>>,
       join<C>
     >;
@@ -8572,3 +8575,4 @@ namespace jln::mp
 #endif
 
 
+#endif
