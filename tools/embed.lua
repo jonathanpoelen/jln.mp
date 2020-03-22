@@ -99,8 +99,10 @@ for path,info in pairs(files) do
 end
 
 embed = {
-  first_comment or '', 
-  '#pragma once\n\n', 
+  first_comment or '',
+  '#pragma once\n\n',
+  '#ifndef JLN_MP_HPP\n',
+  '#define JLN_MP_HPP\n\n',
   '#include <',
   tconcat(system_includes, '>\n#include <'),
   '>\n\n',
@@ -114,3 +116,4 @@ for path,info in pairs(files) do
 end
 
 print(tconcat(embed, ''))
+print('#endif')
