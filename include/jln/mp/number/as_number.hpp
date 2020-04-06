@@ -10,12 +10,12 @@ namespace jln::mp
   struct as_number
   {
     template<class x>
-    using f = call<C, number<x::value>>;
+    using f = call<C, number<int_{x::value}>>;
   };
 
   namespace emp
   {
     template<class x>
-    using as_number = number<x::value>;
+    using as_number = number<int_{x::value}>;
   }
 }
