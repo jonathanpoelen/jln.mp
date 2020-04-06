@@ -19,7 +19,9 @@
 #    define JLN_MP_USE_INTEGER_PACK 1
 #    define JLN_MP_USE_MAKE_INTEGER_SEQ 0
 #  endif
-#else
+#endif
+
+#ifndef JLN_MP_USE_INTEGER_PACK
 #  define JLN_MP_USE_INTEGER_PACK 0
 #  define JLN_MP_USE_MAKE_INTEGER_SEQ 0
 #endif
