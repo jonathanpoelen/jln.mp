@@ -1,3 +1,5 @@
+option('mp_debug', type: 'boolean', value: false)
+
 option('jln_color', type : 'combo', choices : ['default', 'auto', 'never', 'always'], value : 'default')
 option('jln_control_flow', type : 'combo', choices : ['default', 'off', 'on', 'allow_bugs'], value : 'default')
 option('jln_coverage', type : 'combo', choices : ['default', 'off', 'on'], value : 'default')

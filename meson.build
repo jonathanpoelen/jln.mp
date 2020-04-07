@@ -1,9 +1,19 @@
 project('jln.mp', 'cpp', default_options : ['cpp_std=c++17'])
 
-jln_default_flags = {
-  'whole_program': 'strip_all',
-  'debug': 'off',
-}
+if get_option('mp_debug')
+  add_global_arguments('-DJLN_MP_ENABLE_DEBUG=1', language : 'cpp')
+endif
+
+jln_default_flags = {}
+sys = build_machine.system()
+# quick compilation
+if sys != 'darwin' and sys != 'windows'
+  jln_default_flags = {
+    'debug': 'off',
+    'whole_program': 'strip_all',
+  }
+endif
+
 subdir('meson_jln_flags')
 add_global_arguments(jln_cpp_flags, language:'cpp')
 add_global_link_arguments(jln_link_flags, language:'cpp')
