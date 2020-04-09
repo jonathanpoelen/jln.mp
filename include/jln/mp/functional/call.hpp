@@ -4,6 +4,9 @@
 
 namespace jln::mp
 {
+  template<class...>
+  class list;
+
   namespace detail
   {
     template<bool> struct dcall;
@@ -15,8 +18,12 @@ namespace jln::mp
     template<bool> struct dcallf_tc;
 #endif
 
+    template<class F, class L, class = void>
+    struct _memoizer_impl
+    {};
+
     template<class F, class... xs>
-    struct _memoizer;
+    using _memoizer = _memoizer_impl<F, list<xs...>>;
   }
 
   template<class C, class... xs>
@@ -122,8 +129,11 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
+  template<class x, class...>
+  using _first = x;
+
   template<class F, class... xs>
-  struct _memoizer
+  struct _memoizer_impl<F, list<xs...>, _first<void, typename F::template f<xs...>>>
   {
     using type = typename F::template f<xs...>;
   };
