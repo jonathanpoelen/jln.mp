@@ -6,6 +6,11 @@
 #include "../utility/unpack.hpp"
 #include "../utility/conditional.hpp"
 
+#include <cstddef>
+#if defined(_MSC_VER) || defined(__clang__)
+# include <type_traits>
+#endif
+
 namespace jln::mp
 {
   namespace detail
@@ -13,8 +18,20 @@ namespace jln::mp
     template<unsigned>
     struct _drop;
 
+#if defined(_MSC_VER) || defined(__clang__)
+    template<int_ i, unsigned n, class = void>
+    struct validate_index
+    {};
+
+    template<int_ i, unsigned n>
+    struct validate_index<i, n, std::enable_if_t<(int_(n) - i >= 0)>>
+    {
+      static constexpr int_ value = i;
+    };
+#else
     template<int_ i, unsigned n>
     using validate_index = number<(0 * std::size_t{int_(n) - i}) + i>;
+#endif
   }
 
   template<class N, class C = listify>
