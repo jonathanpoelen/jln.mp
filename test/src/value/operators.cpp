@@ -11,7 +11,7 @@ TEST()
   using namespace ut::ints;
 
   using e = list<>;
-  
+
   using yes = val<true>;
   using no = val<false>;
 
@@ -74,8 +74,11 @@ TEST()
 
   ut::invoke_r<val<0>, div0_v<>>();
   ut::invoke_r<val<int_(1)>, div0_v<>, _1>();
-  ut::invoke_r<val<0>, smp::div0_v<>>();
-  ut::invoke_r<val<1>, smp::div1_v<>>();
+  // FIX gcc7: val<0> is a typed_val<int_,0> if val<int_(0)> precedes val<0>
+  if constexpr (std::is_same_v<val<0>, typed_val<int,0>>) {
+    ut::invoke_r<val<0>, smp::div0_v<>>();
+    ut::invoke_r<val<1>, smp::div1_v<>>();
+  }
   ut::invoke_r<val<int_(0)>, smp::div0_v<>, _0>();
   ut::invoke_r<val<int_(1)>, smp::div0_v<>, _1>();
   ut::not_invocable<smp::div0_v<>, _1, _0>();
