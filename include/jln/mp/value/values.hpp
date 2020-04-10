@@ -44,8 +44,8 @@ namespace jln::mp
   template<class C>
   struct typed_values
   {
-    template<class x, class... xs>
-    using f = call<C, x, typed_val<x, xs::value>...>;
+    template<class T, class... xs>
+    using f = call<C, typed_val<T, xs::value>...>;
   };
 
   namespace emp
