@@ -1,6 +1,7 @@
 #pragma once
 
 #include "jln/mp/value/values.hpp"
+#include "jln/mp/number/number.hpp"
 
 namespace ut
 {
