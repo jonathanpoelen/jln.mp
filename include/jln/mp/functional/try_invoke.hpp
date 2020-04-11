@@ -45,7 +45,7 @@ namespace jln::mp
   {
     template<class F, class TC, class FC, class... xs>
     using try_invoke = typename try_invoke<F, TC, FC>::template f<xs...>;
-    
+
     template<class F, class FC, class... xs>
     using try_invoke_or = typename try_invoke<F, mp::identity, FC>::template f<xs...>;
   }
@@ -62,6 +62,16 @@ namespace jln::mp
         static_cast<F*>(nullptr),
         static_cast<xs*>(nullptr)...
       ))>::value>;
+  };
+
+  template<class F>
+  struct try_invoke<F, identity, violation>
+  {
+    template<class... xs>
+    using f = decltype(detail::_try_invoke(
+      static_cast<F*>(nullptr),
+      static_cast<xs*>(nullptr)...
+    ));
   };
 }
 
