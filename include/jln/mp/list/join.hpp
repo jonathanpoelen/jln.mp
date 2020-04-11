@@ -37,20 +37,21 @@ namespace jln::mp::detail
   struct _join_select : _join_select<n_16_64_256_1024(n)>
   {};
 
-#define JLN_MP_JOIN_SELECT(n, mp_xs, mp_rxs, _)             \
-  template<JLN_MP_DEBUG(class error)>                       \
-  struct _join_select<n JLN_MP_DEBUG_A(error)>              \
-  {                                                         \
-    template<class F,                    \
-      mp_xs(class, = list<>, JLN_MP_COMMA)>                 \
-    struct f;                                               \
-                                                            \
-    template<class F,                    \
-      mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>            \
-    struct f<F, mp_xs(list<, ...>, JLN_MP_COMMA)>           \
-    {                                                       \
-      using type = typename F::template f<mp_xs(JLN_MP_NIL, ..., JLN_MP_COMMA)>; \
-    };                                                      \
+#define JLN_MP_JOIN_SELECT(n, mp_xs, mp_rxs, _)   \
+  template<JLN_MP_DEBUG(class error)>             \
+  struct _join_select<n JLN_MP_DEBUG_A(error)>    \
+  {                                               \
+    template<class F,                             \
+      mp_xs(class, = list<>, JLN_MP_COMMA)>       \
+    struct f;                                     \
+                                                  \
+    template<class F,                             \
+      mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>  \
+    struct f<F, mp_xs(list<, ...>, JLN_MP_COMMA)> \
+    {                                             \
+      using type = typename F::template f<        \
+        mp_xs(JLN_MP_NIL, ..., JLN_MP_COMMA)>;    \
+    };                                            \
   };
 
   JLN_MP_GEN_XS_16_64_256(JLN_MP_JOIN_SELECT)
