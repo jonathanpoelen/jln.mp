@@ -22,8 +22,7 @@ namespace jln::mp
   struct contract
   {
     template<class... xs>
-    using f = typename detail::_try_invoke_dispatch<call<C, xs...>>
-      ::template f<identity, cfl<violation::template f>, xs...>;
+    using f = call<C, xs...>;
   };
 
   template<class Pred, class TC = identity, class FC = violation>
@@ -31,10 +30,10 @@ namespace jln::mp
 
   template<class F, class TC = identity, class FC = violation>
   using try_contract = contract<try_invoke<F, TC, FC>>;
-  
+
   using bad_contract = contract<violation>;
 
-  
+
   template<class C>
   using subcontract = typename detail::_subcontract<C>::type;
 
@@ -42,7 +41,7 @@ namespace jln::mp
   using try_subcontract = typename detail::_optimize_try_invoke<
     try_invoke<subcontract<F>, TC, FC>>::type;
 
-  
+
   template<class F>
   struct contract_barrier
   : F
@@ -54,7 +53,7 @@ namespace jln::mp
 
 
 namespace jln::mp
-{  
+{
   template<class C, class TC, class FC>
   struct try_invoke<contract<C>, TC, FC>
   {
@@ -68,6 +67,13 @@ namespace jln::mp
   {
     template<class... xs>
     using f = number<!std::is_same<na, call<C, xs...>>::value>;
+  };
+
+  template<class C>
+  struct try_invoke<contract<C>, identity, violation>
+  {
+    template<class... xs>
+    using f = call<C, xs...>;
   };
 }
 
