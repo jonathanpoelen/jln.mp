@@ -127,7 +127,7 @@ namespace jln::mp::detail
   constexpr int _lower_bound_select(unsigned n)
   {
     return
-      n < 2 ? -n
+      n < 2 ? -int(n)
     : n < 4 ? 2
     : n < 8 ? 4
     : n < 16 ? 8
