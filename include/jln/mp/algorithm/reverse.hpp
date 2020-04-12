@@ -74,7 +74,7 @@ namespace jln::mp::detail
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),          \
       class... xs>                                     \
     using f = typename _reverse<                       \
-      detail::n_8_or_less_16_64_256(count-n)               \
+      detail::n_8_or_less_16_64_256(count-n)           \
     >::template f<C, count-n, xs..., list<             \
       mp_rxs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>>;  \
   };                                                   \

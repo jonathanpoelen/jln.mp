@@ -30,6 +30,7 @@ namespace jln::mp
   template<int_ x, class Cmp = less<>, class C = listify, class NC = C>
   using lower_bound_c = lower_bound<number<x>, Cmp, C, NC>;
 
+  // TODO of -> than
   template<class x, class C = listify, class NC = C>
   using lower_bound_of = lower_bound<x, less<>, C, NC>;
 
