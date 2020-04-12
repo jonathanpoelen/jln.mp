@@ -30,12 +30,16 @@ namespace jln::mp
 }
 
 #include "../config/enumerate.hpp"
+#include "../../cxx/diagnostic.hpp"
 
 namespace jln::mp::detail
 {
   template<std::size_t n JLN_MP_DEBUG_A(class error)>
   struct _join_select : _join_select<n_16_64_256_1024(n)>
   {};
+
+  JLN_DIAGNOSTIC_PUSH
+  JLN_DIAGNOSTIC_MSVC_IGNORE(4348)
 
 #define JLN_MP_JOIN_SELECT(n, mp_xs, mp_rxs, _)   \
   template<JLN_MP_DEBUG(class error)>             \
@@ -74,4 +78,7 @@ namespace jln::mp::detail
     ::template f<F, list<JLN_MP_XS_1024(JLN_MP_NIL, ..., JLN_MP_COMMA)>, tail...>
     {};
   };
+
+  JLN_DIAGNOSTIC_POP
+
 } // namespace jln::mp::detail
