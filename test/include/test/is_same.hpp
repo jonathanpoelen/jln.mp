@@ -11,7 +11,13 @@ namespace
   {};
 
   template<class T>
-  using Expected = Result<T>;
+  struct Expected
+  {
+    constexpr Expected(Result<T>){}
+  };
+
+  // template<class T>
+  // using Expected = Result<T>;
 
   template<class T>
   struct Differ
