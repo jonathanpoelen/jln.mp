@@ -227,7 +227,7 @@ namespace jln::mp::detail
   template<class... xs, class... ys, class z>
   struct _merge<list<xs...>, list<ys...>, z, number<
     // x.size + y.size >= 100, unless empty list
-    (unsigned{sizeof...(xs)-1LL} + unsigned{sizeof...(ys)-1LL} >= 98u)>>
+    (sizeof...(xs) && sizeof...(ys) && sizeof...(xs) > 0 && sizeof...(ys) >= 100u)>>
   {
     using xm = number<(sizeof...(xs) + 1) / 2>;
     using ym = number<(sizeof...(ys) + 1) / 2>;
