@@ -140,14 +140,17 @@ namespace jln::mp::detail
 #define JLN_MP_PARAM_DECL_2(name, init) name = init
 #define JLN_MP_PARAM_DECL_1(name) name
 
+#define JLN_MP_IDENT(x) x
 #define JLN_MP_PARAM_COUNT_I(a, b, c, ...) c
-#define JLN_MP_PARAM_COUNT(...) JLN_MP_PARAM_COUNT_I(__VA_ARGS__, _2, _1, _0)
+#define JLN_MP_PARAM_COUNT_P(...) (__VA_ARGS__, _2, _1, _0)
+#define JLN_MP_PARAM_COUNT(arg) JLN_MP_IDENT(JLN_MP_PARAM_COUNT_I JLN_MP_PARAM_COUNT_P arg)
 
-#define JLN_MP_PP_CAT_I(a, b) a##b
+#define JLN_MP_PP_CAT_II(a, b) a##b
+#define JLN_MP_PP_CAT_I(a, b) JLN_MP_PP_CAT_II(a,b)
 #define JLN_MP_PP_CAT(a, b) JLN_MP_PP_CAT_I(a, b)
 
-#define JLN_MP_PARAM_DECL(arg) JLN_MP_PP_CAT(JLN_MP_PARAM_DECL, JLN_MP_PARAM_COUNT arg) arg
-#define JLN_MP_PARAM_NAME(arg) JLN_MP_PP_CAT(JLN_MP_PARAM_NAME, JLN_MP_PARAM_COUNT arg) arg
+#define JLN_MP_PARAM_DECL(arg) JLN_MP_PP_CAT(JLN_MP_PARAM_DECL, JLN_MP_PARAM_COUNT(arg)) arg
+#define JLN_MP_PARAM_NAME(arg) JLN_MP_PP_CAT(JLN_MP_PARAM_NAME, JLN_MP_PARAM_COUNT(arg)) arg
 
 #define JLN_MP_MAKE_REGULAR_SMP1_II(                     \
   ns_smp, ns_detail, smp_name, name, na, da, ...)        \
