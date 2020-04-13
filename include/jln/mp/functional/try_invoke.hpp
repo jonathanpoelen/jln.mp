@@ -1,6 +1,7 @@
 #pragma once
 
 #include "identity.hpp"
+#include "../list/list.hpp"
 #include "../number/number.hpp"
 #include "../utility/always.hpp"
 #include "../utility/same_as.hpp"
@@ -14,11 +15,17 @@ namespace jln::mp
 
   namespace detail
   {
-    template<class F, class... xs>
-    typename F::template f<xs...>
-    _try_invoke(F*, xs*...);
+    template<class, class, class = void>
+    struct _try_invoke
+    {
+      using type = na;
+    };
 
-    na _try_invoke(...);
+    template<class F, class... xs>
+    struct _try_invoke<F, list<xs...>, std::void_t<typename F::template f<xs...>>>
+    {
+      using type = typename F::template f<xs...>;
+    };
 
     template<class x>
     struct _try_invoke_dispatch;
@@ -35,10 +42,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_try_invoke_dispatch<
-      decltype(detail::_try_invoke(
-        static_cast<F*>(nullptr),
-        static_cast<xs*>(nullptr)...
-      ))>::template f<TC, FC, xs...>;
+      typename detail::_try_invoke<F, list<xs...>>::type
+    >::template f<TC, FC, xs...>;
   };
 
   namespace emp
@@ -58,20 +63,16 @@ namespace jln::mp
   struct try_invoke<F, always<true_>, always<false_>>
   {
     template<class... xs>
-    using f = number<!std::is_same<na, decltype(detail::_try_invoke(
-        static_cast<F*>(nullptr),
-        static_cast<xs*>(nullptr)...
-      ))>::value>;
+    using f = number<!std::is_same<na,
+      typename detail::_try_invoke<F, list<xs...>>::type
+    >::value>;
   };
 
   template<class F>
   struct try_invoke<F, identity, violation>
   {
     template<class... xs>
-    using f = decltype(detail::_try_invoke(
-      static_cast<F*>(nullptr),
-      static_cast<xs*>(nullptr)...
-    ));
+    using f = typename detail::_try_invoke<F, list<xs...>>::type;
   };
 }
 

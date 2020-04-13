@@ -60,6 +60,7 @@
 #include "src/functional/partial.cpp"
 #include "src/functional/partial_eager.cpp"
 #include "src/functional/recurse.cpp"
+#include "src/functional/try_invoke.cpp"
 #include "src/list/append.cpp"
 #include "src/list/as_list.cpp"
 #include "src/list/at.cpp"
