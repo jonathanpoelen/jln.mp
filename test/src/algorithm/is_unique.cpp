@@ -26,6 +26,8 @@ TEST()
     .test<_1, _0, _1, _2>()
     .test<_0, _0, _0, _0, _0, _0>()
     .test<_0, _0, _0, _1, _0, _2, _2, _2, _0, _0, _3>()
+    .test<_1, int, int&, int&&, int const, int const&, int const&&>()
+    .test<_0, int, int&, int&&, int const, int const&, int const&&, int&>()
     ;
 
   using first = unpack<at0<>>;

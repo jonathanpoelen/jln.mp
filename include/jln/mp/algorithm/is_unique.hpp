@@ -37,17 +37,13 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename dcall<(sizeof...(xs) < 100000)>::template f<
-      C, mp::number<sizeof(inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>>;
-  };
-
-  template<class Cmp, class C>
-  struct _is_unique2
-  {
-    template<class... xs>
-    using f = typename dcall<(sizeof...(xs) < 100000)>::template f<C, mp::number<std::is_same<
-      typename unique_if<Cmp, C>::template f<xs...>,
-      list<xs...>
-    >::value>>;
+      C,
+#ifdef _MSC_VER
+      typename _is_set<xs...>::type
+#else
+      mp::number<sizeof(inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>
+#endif
+    >;
   };
 
   template<class Cmp, class C>

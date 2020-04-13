@@ -25,6 +25,8 @@ TEST()
     .test<seq_0_1_2, _0, _1, _2>()
     .test<seq_0, _0, _0, _0, _0, _0>()
     .test<seq_0_1_2_3, _0, _0, _1, _0, _2, _2, _2, _0, _0, _3>()
+    .test<list<int, int&, int&&, int const, int const&, int const&&>,
+      int, int&, int&&, int const, int const&, int const&&, int&>()
     ;
 
   using first = unpack<at0<>>;

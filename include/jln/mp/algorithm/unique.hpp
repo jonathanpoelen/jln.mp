@@ -51,6 +51,23 @@ namespace jln::mp::detail
     : inherit_impl<ints, xs>...
   {};
 
+#ifdef _MSC_VER
+  template<class... xs>
+  struct _is_set
+  {
+      template <class Pack>
+      static auto is_set(Pack pack) -> decltype((
+          static_cast<_inherit_impl<xs>*>(pack),...
+      ), number<1>());
+
+      static number<0> is_set(...);
+
+      using type = decltype(is_set(static_cast<
+        inherit<std::make_index_sequence<sizeof...(xs)>, xs...>*
+      >(nullptr)));
+  };
+#endif
+
   template<class L, class x, class = void>
   struct _set_push_back
   {
@@ -59,7 +76,13 @@ namespace jln::mp::detail
 
   template<class... xs, class x>
   struct _set_push_back<list<xs...>, x,
-    std::enable_if_t<sizeof(inherit<std::make_index_sequence<sizeof...(xs)+1>, xs..., x>) == 1>>
+    std::enable_if_t<
+#ifdef _MSC_VER
+      _is_set<xs..., x>::type::value
+#else
+      sizeof(inherit<std::make_index_sequence<sizeof...(xs)+1>, xs..., x>) == 1
+#endif
+  >>
   {
     using type = list<xs..., x>;
   };
