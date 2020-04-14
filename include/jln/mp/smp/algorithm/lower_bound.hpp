@@ -24,10 +24,10 @@ namespace jln::mp::smp
   using lower_bound_c = lower_bound<number<x>, Cmp, C, NC>;
 
   template<class x, class C = listify, class NC = C>
-  using lower_bound_of = lower_bound<x, less<>, C, NC>;
+  using lower_bound_than = lower_bound<x, less<>, C, NC>;
 
   template<int_ x, class C = listify, class NC = C>
-  using lower_bound_of_c = lower_bound<number<x>, less<>, C, NC>;
+  using lower_bound_than_c = lower_bound<number<x>, less<>, C, NC>;
 }
 
 namespace jln::mp::detail

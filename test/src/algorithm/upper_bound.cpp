@@ -19,7 +19,7 @@ static void test_upper_bound()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  using f = iota<upper_bound_of_c<
+  using f = iota<upper_bound_than_c<
     less_than,
     cfe<list>,
     cfe<other_list>
@@ -76,7 +76,7 @@ TEST()
 
   test_pack2<upper_bound>();
 
-  ut::same<list<_3>, emp::upper_bound_of_c<seq_0_1_2_3, 2>>();
+  ut::same<list<_3>, emp::upper_bound_than_c<seq_0_1_2_3, 2>>();
 
   test_upper_bounds<0>();
   test_upper_bounds<1>();
@@ -100,7 +100,7 @@ TEST()
   test_upper_bounds<512>();
   test_upper_bounds<513>();
 
-  test_context<upper_bound_of_c<2>, smp::upper_bound_of_c<2>, 0>()
+  test_context<upper_bound_than_c<2>, smp::upper_bound_than_c<2>, 0>()
     .test<list<>>()
     .test<list<>, _0>()
     .test<list<>, _1>()
@@ -112,7 +112,7 @@ TEST()
     .not_invocable<void>()
     ;
 
-  test_context<upper_bound_of_c<2, identity, always<void>>, void, 0>()
+  test_context<upper_bound_than_c<2, identity, always<void>>, void, 0>()
     .test<void>()
     .test<void, _0>()
     .test<_3, _0, _1, _2, _3>()
@@ -124,14 +124,14 @@ TEST()
   ut::not_invocable<smp::upper_bound<void, bad_function>, _1>();
   ut::not_invocable<smp::upper_bound<void, bad_function, bad_function>, _1>();
   ut::not_invocable<smp::upper_bound<void, bad_function, bad_function, bad_function>, _1>();
-  ut::not_invocable<smp::upper_bound_of<_1, bad_function, bad_function>, _1>();
-  ut::not_invocable<smp::upper_bound_of<bad_contract, bad_function, bad_function>, _1>();
+  ut::not_invocable<smp::upper_bound_than<_1, bad_function, bad_function>, _1>();
+  ut::not_invocable<smp::upper_bound_than<bad_contract, bad_function, bad_function>, _1>();
 
   ut::not_invocable<smp::upper_bound<void, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::upper_bound<void, bad_function, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::upper_bound<void, bad_function, bad_function, bad_function>, _1, _1, _1>();
-  ut::not_invocable<smp::upper_bound_of<_1, bad_function, bad_function>, _1, _1, _1>();
-  ut::not_invocable<smp::upper_bound_of<bad_contract, bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::upper_bound_than<_1, bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::upper_bound_than<bad_contract, bad_function, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

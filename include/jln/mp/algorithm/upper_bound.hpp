@@ -11,10 +11,10 @@ namespace jln::mp
   using upper_bound_c = upper_bound<number<x>, Cmp, C, NC>;
 
   template<class x, class C = listify, class NC = C>
-  using upper_bound_of = upper_bound<x, less<>, C, NC>;
+  using upper_bound_than = upper_bound<x, less<>, C, NC>;
 
   template<int_ x, class C = listify, class NC = C>
-  using upper_bound_of_c = upper_bound<number<x>, less<>, C, NC>;
+  using upper_bound_than_c = upper_bound<number<x>, less<>, C, NC>;
 
   namespace emp
   {
@@ -25,9 +25,9 @@ namespace jln::mp
     using upper_bound_c = unpack<L, mp::upper_bound<mp::number<x>, Cmp, C, NC>>;
 
     template<class L, class x, class C = mp::listify, class NC = C>
-    using upper_bound_of = unpack<L, mp::upper_bound<x, mp::less<>, C, NC>>;
+    using upper_bound_than = unpack<L, mp::upper_bound<x, mp::less<>, C, NC>>;
 
     template<class L, int_ x, class C = mp::listify, class NC = C>
-    using upper_bound_of_c = unpack<L, mp::upper_bound<mp::number<x>, mp::less<>, C, NC>>;
+    using upper_bound_than_c = unpack<L, mp::upper_bound<mp::number<x>, mp::less<>, C, NC>>;
   }
 }

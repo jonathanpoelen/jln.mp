@@ -19,7 +19,7 @@ static void test_lower_bound()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  using f = iota<lower_bound_of_c<
+  using f = iota<lower_bound_than_c<
     less_than,
     cfe<list>,
     cfe<other_list>
@@ -76,7 +76,7 @@ TEST()
 
   test_pack2<lower_bound>();
 
-  ut::same<list<_2, _3>, emp::lower_bound_of_c<seq_0_1_2_3, 2>>();
+  ut::same<list<_2, _3>, emp::lower_bound_than_c<seq_0_1_2_3, 2>>();
 
   test_lower_bounds<0>();
   test_lower_bounds<1>();
@@ -100,7 +100,7 @@ TEST()
   test_lower_bounds<512>();
   test_lower_bounds<513>();
 
-  test_context<lower_bound_of_c<2>, smp::lower_bound_of_c<2>>()
+  test_context<lower_bound_than_c<2>, smp::lower_bound_than_c<2>>()
     .test<list<>>()
     .test<list<>, _0>()
     .test<list<>, _1>()
@@ -111,7 +111,7 @@ TEST()
     .not_invocable<void>()
     ;
 
-  test_context<lower_bound_of_c<2, identity, always<void>>, void, 0>()
+  test_context<lower_bound_than_c<2, identity, always<void>>, void, 0>()
     .test<void>()
     .test<void, _0>()
     .test<_2, _0, _1, _2>()
@@ -124,13 +124,13 @@ TEST()
   ut::not_invocable<smp::lower_bound<void, bad_function, bad_function>, _1>();
   ut::not_invocable<smp::lower_bound<void, always<true_>, bad_function>, _1>();
   ut::not_invocable<smp::lower_bound<void, bad_function, bad_function, bad_function>, _1>();
-  ut::not_invocable<smp::lower_bound_of<_1, bad_function, bad_function>, _1>();
-  ut::not_invocable<smp::lower_bound_of<bad_number, bad_function, bad_function>, _1>();
+  ut::not_invocable<smp::lower_bound_than<_1, bad_function, bad_function>, _1>();
+  ut::not_invocable<smp::lower_bound_than<bad_number, bad_function, bad_function>, _1>();
   ut::not_invocable<smp::lower_bound<void, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::lower_bound<void, bad_function, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::lower_bound<void, bad_function, bad_function, bad_function>, _1, _1, _1>();
-  ut::not_invocable<smp::lower_bound_of<_1, bad_function, bad_function>, _1, _1, _1>();
-  ut::not_invocable<smp::lower_bound_of<bad_number, bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::lower_bound_than<_1, bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::lower_bound_than<bad_number, bad_function, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()
