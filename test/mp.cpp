@@ -100,6 +100,7 @@
 #include "src/utility/has_type.cpp"
 #include "src/utility/is_instance_of.cpp"
 #include "src/utility/same_as.cpp"
+#include "src/utility/traits.cpp"
 #include "src/utility/unpack.cpp"
 #include "src/value/as_val.cpp"
 #include "src/value/has_value.cpp"
