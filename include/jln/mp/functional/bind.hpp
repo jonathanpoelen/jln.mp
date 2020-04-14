@@ -23,15 +23,13 @@ namespace jln::mp
   struct bind1st
   {
     template<class x, class... xs>
-    using f = call<C,
-      typename detail::dcall<sizeof...(xs) < 100000>::template f<F, x>, xs...>;
+    using f = call<C, JLN_MP_DCALL(sizeof...(xs) < 100000, F, x), xs...>;
   };
 
   template<class F, class C>
   struct bind2nd
   {
     template<class x, class y, class... xs>
-    using f = call<C, x,
-      typename detail::dcall<sizeof...(xs) < 100000>::template f<F, y>, xs...>;
+    using f = call<C, x, JLN_MP_DCALL(sizeof...(xs) < 100000, F, y), xs...>;
   };
 } // namespace jln::mp

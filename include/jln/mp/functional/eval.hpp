@@ -11,8 +11,8 @@ namespace jln::mp
   struct eval
   {
     template<class... xs>
-    using f = typename detail::dcall<sizeof...(xs) + 1>
-      ::template f<C, decltype(F.template operator()<xs...>())>;
+    using f = JLN_MP_DCALL(sizeof...(xs) < 1000000,
+      C, decltype(F.template operator()<xs...>()));
   };
 
   namespace emp

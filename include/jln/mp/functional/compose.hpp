@@ -37,7 +37,7 @@ namespace jln::mp::detail
   template<template<class...> class F                    \
     mp_xs(JLN_MP_COMMA template<class...> class,         \
       JLN_MP_NIL, JLN_MP_NIL)>                           \
-  struct _compose_f_impl##n                                \
+  struct _compose_f_impl##n                              \
   {                                                      \
     template<class... xs>                                \
     using f = mp_rxs(JLN_MP_NIL, <, JLN_MP_NIL)          \

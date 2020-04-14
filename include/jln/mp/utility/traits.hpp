@@ -9,26 +9,26 @@
 namespace jln::mp::traits
 {
 
-#define JLN_MP_MAKE_TRAIT(Name)                                 \
-  template<class C = identity>                                  \
-  struct Name                                                   \
-  {                                                             \
-    template<class... xs>                                       \
-    using f = typename detail::dcall<(sizeof...(xs) < 1000000)> \
-      ::template f<C, typename std::Name<xs...>::type>;         \
-  };                                                            \
-                                                                \
-  namespace emp                                                 \
-  {                                                             \
-    template<class... xs>                                       \
-    using Name = typename std::Name<xs...>::type;               \
-  }                                                             \
-                                                                \
-  template<>                                                    \
-  struct Name<identity>                                         \
-  {                                                             \
-    template<class... xs>                                       \
-    using f = typename std::Name<xs...>::type;                  \
+#define JLN_MP_MAKE_TRAIT(Name)                     \
+  template<class C = identity>                      \
+  struct Name                                       \
+  {                                                 \
+    template<class... xs>                           \
+    using f = JLN_MP_DCALL(sizeof...(xs) < 1000000, \
+      C, typename std::Name<xs...>::type);          \
+  };                                                \
+                                                    \
+  namespace emp                                     \
+  {                                                 \
+    template<class... xs>                           \
+    using Name = typename std::Name<xs...>::type;   \
+  }                                                 \
+                                                    \
+  template<>                                        \
+  struct Name<identity>                             \
+  {                                                 \
+    template<class... xs>                           \
+    using f = typename std::Name<xs...>::type;      \
   }
 
 

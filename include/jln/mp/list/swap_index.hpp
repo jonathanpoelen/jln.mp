@@ -70,9 +70,7 @@ namespace jln::mp::detail
   struct if_valid_index
   {
     template<class... xs>
-    using f = typename detail::dcall<
-      (unsigned{int(sizeof...(xs)) - int{i}} < 1000000)
-    >::template f<C, xs...>;
+    using f = JLN_MP_DCALL(unsigned{int(sizeof...(xs)) - int{i}} < 1000000, C, xs...);
   };
 
   template<unsigned i, unsigned j>

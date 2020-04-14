@@ -37,16 +37,16 @@ namespace jln::mp
   struct partial_eager<F0, F1, C>
   {
     template <class x0, class... xs>
-    using f = typename detail::dcall<(sizeof...(xs) < 1000000)>
-      ::template f<C, call<F0, x0>, call<F1, xs...>>;
+    using f = JLN_MP_DCALL(sizeof...(xs) < 100000,
+      C, call<F0, x0>, call<F1, xs...>);
   };
 
   template <class F0, class F1, class F2, class C>
   struct partial_eager<F0, F1, F2, C>
   {
     template <class x0, class x1, class... xs>
-    using f = typename detail::dcall<(sizeof...(xs) < 1000000)>
-      ::template f<C, call<F0, x0>, call<F1, x1>, call<F2, xs...>>;
+    using f = JLN_MP_DCALL(sizeof...(xs) < 100000,
+      C, call<F0, x0>, call<F1, x1>, call<F2, xs...>);
   };
 }
 
@@ -62,7 +62,7 @@ namespace jln::mp::detail
   struct _partial_eager
   {
     using type = fork<
-      take_c<sizeof...(Fs), _each<listify, Fs...>>, 
+      take_c<sizeof...(Fs), _each<listify, Fs...>>,
       drop_c<sizeof...(Fs), fork<Flast, listify>>,
       join<C>
     >;

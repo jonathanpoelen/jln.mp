@@ -37,7 +37,7 @@ TEST()
     ;
 
   test_context<
-    partial_eager<listify, listify, listify>, 
+    partial_eager<listify, listify, listify>,
     smp::partial_eager<smp::listify, smp::listify, smp::listify>
   >()
     .test<list<seq_0, list<>>, _0>()
@@ -46,7 +46,7 @@ TEST()
     ;
 
   test_context<
-    partial_eager<inc<>, dec<>, listify>, 
+    partial_eager<inc<>, dec<>, listify>,
     smp::partial_eager<smp::inc<>, smp::dec<>, smp::listify>
   >()
     .test<list<_1, _3>, _0, _4>()
@@ -67,6 +67,8 @@ TEST()
     ;
 
   ut::not_invocable<smp::partial_eager<bad_function>>();
+  ut::not_invocable<smp::partial_eager<bad_function, bad_function>, _1, _1>();
+  ut::not_invocable<smp::partial_eager<identity, bad_function>, _1, _1>();
   ut::not_invocable<smp::partial_eager<bad_function, bad_function, bad_function>, _1, _1>();
   ut::not_invocable<smp::partial_eager<identity, identity, bad_function>, _1, _1>();
   ut::not_invocable<smp::cfe<smp::partial_eager>>();

@@ -36,14 +36,12 @@ namespace jln::mp::detail
   struct _is_unique
   {
     template<class... xs>
-    using f = typename dcall<(sizeof...(xs) < 100000)>::template f<
-      C,
 #ifdef _MSC_VER
-      typename _is_set<xs...>::type
+    using f = JLN_MP_DCALL(sizeof...(xs) < 100000, C, typename _is_set<xs...>::type);
 #else
-      mp::number<sizeof(inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>
+    using f = JLN_MP_DCALL(sizeof...(xs) < 100000, C,
+      mp::number<sizeof(inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>);
 #endif
-    >;
   };
 
   template<class Cmp, class C>

@@ -33,6 +33,8 @@ namespace jln::mp
   template<class C, class... xs>
   using call = typename detail::_memoizer<C, xs...>::type;
 
+# define JLN_MP_DCALL(cond, ...) typename detail::_memoizer<__VA_ARGS__>::type
+
   template<class C, class F, class... xs>
   using dispatch = typename detail::_memoizer<C,
     typename detail::_memoizer<F, xs>::type...
@@ -65,6 +67,8 @@ namespace jln::mp
   template<class C, class... xs>
   using call = typename detail::dcall<(sizeof...(xs) < 1000000)>
     ::template f<C, xs...>;
+
+# define JLN_MP_DCALL(cond, ...) typename detail::dcall<(cond)>::template f<__VA_ARGS__>
 
   template<class C, class... xs>
   using call_v = typename detail::dcall_v<(sizeof...(xs) < 1000000)>

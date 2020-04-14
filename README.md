@@ -1,1 +1,1 @@
- ./compiler-options.lua -f color,diagnostics_format,diagnostics_show_template_tree,elide_type,narrowing_error,pedantic,shadow_warnings,stl_fix,suggests,warnings,warnings_as_error mpl_
+[![CI](https://github.com/jonathanpoelen/jln.mp/workflows/CI/badge.svg?branch=master&event=push)](https://github.com/jonathanpoelen/jln.mp/actions?query=workflow%3ACI)
