@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, gh-action ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  linux:
+    name: Ubuntu ${{ matrix.cxx }} dbg=${{ matrix.debug }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    strategy:
+      fail-fast: false
+      matrix:
+        debug: ['false', 'true']
+        cxx: ['g++-7', 'g++-8', 'g++-9', 'clang-6.0', 'clang++-8', 'clang++-9']
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - run: |
+        ls --color=always
+        python -m pip install ninja meson
+        CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }}
+        CLICOLOR_FORCE= ninja -C build -k10 mp mp_test check_inc
+    
+  macos:
+    name: MacOs clang dbg=${{ matrix.debug }}
+    runs-on: macOS-latest
+    timeout-minutes: 4
+    strategy:
+      fail-fast: false
+      matrix:
+        debug: ['false', 'true']
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - run: |
+        python -m pip install ninja meson
+        meson setup build -Dmp_debug=${{ matrix.debug }}
+        CLICOLOR_FORCE= ninja -C build -k10 mp mp_test check_inc
+
+  windows:
+    name: Windows ${{ matrix.env }} dbg=${{ matrix.debug }}
+    runs-on: windows-latest
+    timeout-minutes: 4
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [clang-cl, g++]
+        debug: ['false', 'true']
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - shell: cmd
+      env:
+        CXX: ${{ matrix.env }}
+      run: |
+        if "%CXX%"=="g++" goto :after_vc
+        call "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86
+        IF ERRORLEVEL 1 EXIT
+        set PATH=%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Tools\Llvm\bin;%PATH%
+        set CC=clang-cl
+        :after_vc
+        python -m pip install ninja meson
+        meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }}
+        type D:\a\jln.mp\jln.mp\build\meson-logs\meson-log.txt
+        ninja -C build -k10 mp_test.exe mp
