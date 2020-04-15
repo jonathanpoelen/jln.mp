@@ -47,8 +47,8 @@ namespace jln::mp::detail
   {
     template<class F0, class F1, class C>
     using f = test_contract<size<same_as<number<2>>>, each<
-      assume_unary<F0>, 
-      assume_unary<F1>, 
+      assume_unary<F0>,
+      assume_unary<F1>,
       monadic_xs<assume_binary<C>>>>;
   };
 
@@ -57,9 +57,9 @@ namespace jln::mp::detail
   {
     template<class F0, class F1, class F2, class C>
     using f = test_contract<size<same_as<number<3>>>, each<
-      assume_unary<F0>, 
-      assume_unary<F1>, 
-      assume_unary<F2>, 
+      assume_unary<F0>,
+      assume_unary<F1>,
+      assume_unary<F2>,
       monadic_xs<subcontract<C>>>>;
   };
 
@@ -69,7 +69,7 @@ namespace jln::mp::detail
     using f = test_contract<size<same_as<number<sizeof...(Fs)>>>,
       _each<monadic_xs<subcontract<C>>, assume_unary<Fs>...>>;
   };
-  
+
   template<>
   struct _smp_each_select<5>
   : mp::rotate<mp::number<-1>, detail::_smp_each>

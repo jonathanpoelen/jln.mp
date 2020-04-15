@@ -28,7 +28,7 @@ namespace jln::mp::detail
     using type = smp::unpack_append<sfinae<C>>;
   };
 
-  
+
   template<>
   struct optimize_useless_unpack<smp::unpack<listify>>
   {

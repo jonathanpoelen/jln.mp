@@ -35,17 +35,17 @@ namespace jln::mp::detail
     template<class C>
     using f = contract<subcontract<C>>;
   };
-  
+
   template<>
   struct _smp_partial_select<2>
   {
     template<class F, class C>
     using f = test_contract<
-      size<>, 
+      size<>,
       partial<assume_unary<F>, monadic_xs<subcontract<C>>>
     >;
   };
-  
+
   template<>
   struct _smp_partial_select<3>
   {
@@ -53,13 +53,13 @@ namespace jln::mp::detail
     using f = test_contract<
       size<greater_equal_than_c<2>>,
       partial<
-        assume_unary<F0>, 
-        assume_unary<F1>, 
+        assume_unary<F0>,
+        assume_unary<F1>,
         monadic_xs<subcontract<C>>
       >
     >;
   };
-  
+
   template<>
   struct _smp_partial_select<4>
   {
@@ -67,14 +67,14 @@ namespace jln::mp::detail
     using f = test_contract<
       size<greater_equal_than_c<3>>,
       partial<
-        assume_unary<F0>, 
-        assume_unary<F1>, 
-        assume_unary<F2>, 
+        assume_unary<F0>,
+        assume_unary<F1>,
+        assume_unary<F2>,
         monadic_xs<subcontract<C>>
       >
     >;
   };
-  
+
   struct _smp_partial
   {
     template<class C, class... Fs>
@@ -83,9 +83,9 @@ namespace jln::mp::detail
       _partial<monadic_xs<subcontract<C>>, assume_unary<Fs>...>
     >;
   };
-  
+
   template<>
-  struct _smp_partial_select<5> 
+  struct _smp_partial_select<5>
   : mp::rotate<mp::number<-1>, _smp_partial>
   {};
 }

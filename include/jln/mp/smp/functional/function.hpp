@@ -29,8 +29,8 @@ namespace jln::mp::detail
   {
     using type = smp::cfe<F, sfinae<C>>;
   };
-  
-  
+
+
   JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (cfe<std::is_same, C>));
   JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (cfl<std::is_same, C>));
 }

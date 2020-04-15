@@ -34,7 +34,6 @@ static void test_lower_bound()
   using result = emp::iota_c<less_than, size, 1, to_list>;
 
   ut::invoke_r<result, f, _0, number<count>>();
-  // TODO test with [count*less_than] elements
 }
 
 template<int less_than>

@@ -28,14 +28,14 @@ namespace jln::mp::detail
   {
     using type = smp::partial_eager<sfinae<Fs>...>;
   };
-  
+
   template<>
   struct _smp_partial_eager_select<1>
   {
     template<class C>
     using f = contract<subcontract<C>>;
   };
-  
+
   template<>
   struct _smp_partial_eager_select<2>
   {
@@ -44,7 +44,7 @@ namespace jln::mp::detail
       partial_eager<subcontract<F>, monadic_xs<assume_unary<C>>>
     >;
   };
-  
+
   template<>
   struct _smp_partial_eager_select<3>
   {
@@ -52,13 +52,13 @@ namespace jln::mp::detail
     using f = test_contract<
       size<>,
       partial_eager<
-        assume_unary<F0>, 
-        subcontract<F1>, 
+        assume_unary<F0>,
+        subcontract<F1>,
         monadic_xs<assume_binary<C>>
       >
     >;
   };
-  
+
   template<>
   struct _smp_partial_eager_select<4>
   {
@@ -66,29 +66,29 @@ namespace jln::mp::detail
     using f = test_contract<
       size<greater_equal_than_c<2>>,
       partial_eager<
-        assume_unary<F0>, 
-        assume_unary<F1>, 
-        subcontract<F2>, 
+        assume_unary<F0>,
+        assume_unary<F1>,
+        subcontract<F2>,
         monadic_xs<subcontract<C>>
       >
     >;
   };
-  
+
   struct _smp_partial_eager
   {
     template<class Flast, class C, class... Fs>
     using f = test_contract<
       size<greater_equal_than_c<sizeof...(Fs)>>,
       typename _partial_eager<
-        subcontract<Flast>, 
-        monadic_xs<subcontract<C>>, 
+        subcontract<Flast>,
+        monadic_xs<subcontract<C>>,
         assume_unary<Fs>...
       >::type
     >;
   };
-  
+
   template<>
-  struct _smp_partial_eager_select<5> 
+  struct _smp_partial_eager_select<5>
   : mp::rotate<mp::number<-2>, _smp_partial_eager>
   {};
 }

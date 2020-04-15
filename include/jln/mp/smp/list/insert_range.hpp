@@ -30,18 +30,18 @@ namespace jln::mp::detail
   {
     template<int_ i, class C>
     using f = test_contract<
-      size<greater_equal_than_c<i>>, 
+      size<greater_equal_than_c<i>>,
       fork<take_c<i>, always<list<xs...>>, drop_c<i>, join<subcontract<C>>>
     >;
   };
-  
+
   template<>
   struct _smp_insert_range_dispatch<list<>>
   {
     template<int_ i, class C>
     using f = C;
   };
-  
+
   template<class>
   struct _smp_insert_range_dispatch
   {

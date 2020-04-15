@@ -19,7 +19,7 @@ namespace jln::mp::smp
 JLN_MP_MAKE_REGULAR_SMP3_P(swap_index, (i), (j), (C, smp::listify),
   smp::swap_index_c<i::value, j::value, C>)
 
-  
+
 #include "../../list/size.hpp"
 #include "../../number/operators.hpp"
 

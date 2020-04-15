@@ -16,7 +16,7 @@ namespace jln::mp
     template<class F> struct _assume_binary_or_more { using type = F; };
     template<class F> struct _assume_lists { using type = F; };
   }
-  
+
   template<class C>
   using assume_number = typename detail::_assume_number<subcontract<C>>::type;
 
@@ -43,7 +43,7 @@ namespace jln::mp
 
   template<class C>
   using assume_unary_or_more = typename detail::_assume_unary_or_more<subcontract<C>>::type;
-  
+
 
   template<class F, class TC = identity, class FC = violation>
   using try_assume_unary_or_more = typename detail::_optimize_try_invoke<
@@ -65,7 +65,7 @@ namespace jln::mp
 
   template<class F>
   using assume_number_barrier = contract_barrier<assume_number<F>>;
-  
+
   template<class F>
   using assume_binary_list_barrier = contract_barrier<assume_binary_list<F>>;
 }
@@ -78,25 +78,25 @@ namespace jln::mp::detail
   {};
 
 #define JLN_MP_UNPACK(...) __VA_ARGS__
-  
+
 #define JLN_MP_MAKE_EXPECTED_ARGUMENT(expected, tpl, spe) \
   template<JLN_MP_UNPACK tpl>                             \
   struct expected_argument<JLN_MP_UNPACK spe>             \
   : number<expected>                                      \
   {}
-  
+
 #define JLN_MP_MAKE_EXPECTED_ARGUMENT1(expected, name) \
   template<class C>                                    \
   struct expected_argument<name<C>>                    \
   : number<expected>                                   \
   {}
-  
+
 #define JLN_MP_MAKE_EXPECTED_ARGUMENT2(expected, name) \
   template<class F, class C>                           \
   struct expected_argument<name<F, C>>                 \
   : number<expected>                                   \
   {}
-  
+
   struct argument_category
   {
     enum tag
@@ -110,19 +110,19 @@ namespace jln::mp::detail
       binary_or_more    = 1 << 6,
       binary_list       = 1 << 7,
       numbers           = 1 << 8,
-      
-      _unary            = unary, 
-      _binary           = binary, 
-      _binary_or_more   = _binary | binary_or_more | binary_list, 
-      _unary_or_more    = _unary | unary_or_more | _binary_or_more, 
-      _positive_number  = positive_number | _unary | number, 
+
+      _unary            = unary,
+      _binary           = binary,
+      _binary_or_more   = _binary | binary_or_more | binary_list,
+      _unary_or_more    = _unary | unary_or_more | _binary_or_more,
+      _positive_number  = positive_number | _unary | number,
       _number           = number | _positive_number,
       _numbers          = _number | numbers,
       _lists            = lists,
       _binary_list      = binary_list | _binary,
     };
   };
-  
+
 #define JLN_MP_MK_ASSUME(cat)                                 \
   template<class F>                                           \
   struct _assume_##cat<try_invoke<F, identity, violation>>    \
@@ -131,16 +131,16 @@ namespace jln::mp::detail
       expected_argument<F>::value & argument_category::_##cat \
     )>::template f<F, try_invoke<F, identity, violation>>;    \
   }
-  
-  JLN_MP_MK_ASSUME(lists);  
-  JLN_MP_MK_ASSUME(numbers);  
-  JLN_MP_MK_ASSUME(number);  
-  JLN_MP_MK_ASSUME(positive_number);  
-  JLN_MP_MK_ASSUME(unary);  
-  JLN_MP_MK_ASSUME(binary);  
-  JLN_MP_MK_ASSUME(binary_list);  
-  JLN_MP_MK_ASSUME(unary_or_more);  
-  JLN_MP_MK_ASSUME(binary_or_more);  
+
+  JLN_MP_MK_ASSUME(lists);
+  JLN_MP_MK_ASSUME(numbers);
+  JLN_MP_MK_ASSUME(number);
+  JLN_MP_MK_ASSUME(positive_number);
+  JLN_MP_MK_ASSUME(unary);
+  JLN_MP_MK_ASSUME(binary);
+  JLN_MP_MK_ASSUME(binary_list);
+  JLN_MP_MK_ASSUME(unary_or_more);
+  JLN_MP_MK_ASSUME(binary_or_more);
 
 #undef JLN_MP_MK_ASSUME
 }
