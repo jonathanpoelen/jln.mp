@@ -16,16 +16,7 @@ namespace jln::mp
   namespace detail
   {
     template<class, class, class = void>
-    struct _try_invoke
-    {
-      using type = na;
-    };
-
-    template<class F, class... xs>
-    struct _try_invoke<F, list<xs...>, std::void_t<typename F::template f<xs...>>>
-    {
-      using type = typename F::template f<xs...>;
-    };
+    struct _try_invoke;
 
     template<class x>
     struct _try_invoke_dispatch;
@@ -78,6 +69,18 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
+  template<class, class, class>
+  struct _try_invoke
+  {
+    using type = na;
+  };
+
+  template<class F, class... xs>
+  struct _try_invoke<F, list<xs...>, std::void_t<typename F::template f<xs...>>>
+  {
+    using type = typename F::template f<xs...>;
+  };
+
   template<class x>
   struct _try_invoke_dispatch
   {
