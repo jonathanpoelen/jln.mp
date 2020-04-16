@@ -21,6 +21,10 @@ add_global_link_arguments(jln_link_flags, language:'cpp')
 test_dep = declare_dependency(include_directories: include_directories('test/include', 'include'))
 
 executable('mp_test', 'test/mp.cpp', dependencies: test_dep)
+executable('single_header_test',
+           ['test/single_mp.cpp', 'test/single_smp.cpp'],
+           dependencies: declare_dependency(
+             include_directories: include_directories('single_include')))
 
 # start tests
 t_0_0 = executable('is_instance_of', 'test/src/utility/is_instance_of.cpp', dependencies: test_dep, build_by_default: false)
@@ -247,6 +251,7 @@ executable('check_inc', [
   'test/autogen/list@join.hpp.cpp',
   'test/autogen/smp@list@push_back.hpp.cpp',
   'test/autogen/smp@algorithm@group_n.hpp.cpp',
+  'test/autogen/smp@sfinae.hpp.cpp',
   'test/autogen/smp@algorithm@index.hpp.cpp',
   'test/autogen/smp@algorithm@any_of.hpp.cpp',
   'test/autogen/smp@list@slice.hpp.cpp',
@@ -317,6 +322,7 @@ executable('check_inc', [
   'test/autogen/list@prepend.hpp.cpp',
   'test/autogen/algorithm@copy.hpp.cpp',
   'test/autogen/algorithm@lower_bound.hpp.cpp',
+  'test/autogen/smp@value.hpp.cpp',
   'test/autogen/smp@list@prepend.hpp.cpp',
   'test/autogen/list@drop.hpp.cpp',
   'test/autogen/smp@utility@unpack.hpp.cpp',
@@ -327,7 +333,6 @@ executable('check_inc', [
   'test/autogen/functional@function.hpp.cpp',
   'test/autogen/smp@list@is_empty.hpp.cpp',
   'test/autogen/smp@list@offset.hpp.cpp',
-  'test/autogen/detail@first.hpp.cpp',
   'test/autogen/smp@functional@capture.hpp.cpp',
   'test/autogen/smp@list@list_wrap_if.hpp.cpp',
   'test/autogen/smp@algorithm@split_after.hpp.cpp',

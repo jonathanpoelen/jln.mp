@@ -4,39 +4,43 @@ set -e
 
 cd ${0:h}/../include/jln
 
-rm ../../test/autogen/*
+rm ../../test/autogen/* ||:
 
 setopt extendedglob
 
-for f in mp/(*~smp)/*.hpp; do
-  echo "#include \"$f\""
-  echo "#include \"jln/$f\"\n" > ../../test/autogen/${f[4,-1]//\//@}.cpp
-done > mp.hpp
+gentest()
+{
+  echo "#include \"jln/$1\"\n" > ../../test/autogen/${1[4,-1]//\//@}.cpp
+}
+
+genfiles()
+{
+  echo '#pragma once'
+  echo
+  for d in $@; do
+    files=($d/*.hpp)
+    prefix=${d:t}
+    {
+      echo '#pragma once'
+      echo
+      for f in $files ; do
+        echo "#include \"$prefix/${f:t}\""
+        gentest $f
+      done
+    } > $d.hpp
+    echo "#include \"${d:h:t}/$prefix.hpp\""
+  done
+}
+
+genfiles mp/(*~(smp|config|detail))(/) > mp.hpp
+genfiles mp/smp/*(/) > mp/smp.hpp
+
+for f in mp/{config,detail}/**/*.hpp ; gentest $f
+for f in mp/smp/*.hpp ; [ -d $f[1,-5] ] || gentest $f
+
+echo "#include \"jln/$f\"\n" > ../../test/autogen/${f[4,-1]//\//@}.cpp
 
 echo 'int main(){}' > ../../test/autogen/main.cpp
-
-{
-  echo '#pragma once
-
-#include "functional/sfinaefwd.hpp"
-
-namespace jln::mp
-{
-  using detail::sfinae;
-  using detail::sfinae_once;
-}
-'
-
-for f in mp/smp/**/(*~sfinae).hpp; do
-  echo "#include \"${f[8,-1]}\""
-  echo "#include \"jln/$f\"\n" > ../../test/autogen/${f[4,-1]//\//@}.cpp
-done 
-
-} > mp/smp/sfinae.hpp
-
-echo '#pragma once
-
-#include "smp/sfinae.hpp"' > mp/smp.hpp
 
 cd ../../
 ./tools/update_meson.py

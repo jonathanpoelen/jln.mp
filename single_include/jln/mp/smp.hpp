@@ -105,12 +105,6 @@ namespace jln::mp::detail
     using type = typename _sfinae<emp::identity, x>::type;
   };
 }
-namespace jln::mp
-{
-  using detail::sfinae;
-  using detail::sfinae_once;
-}
-
 #ifndef JLN_MP_ENABLE_DEBUG
 #  define JLN_MP_ENABLE_DEBUG 0
 #endif
@@ -844,7 +838,7 @@ namespace jln::mp
     template<class F> struct _assume_binary_or_more { using type = F; };
     template<class F> struct _assume_lists { using type = F; };
   }
-  
+
   template<class C>
   using assume_number = typename detail::_assume_number<subcontract<C>>::type;
 
@@ -871,7 +865,7 @@ namespace jln::mp
 
   template<class C>
   using assume_unary_or_more = typename detail::_assume_unary_or_more<subcontract<C>>::type;
-  
+
 
   template<class F, class TC = identity, class FC = violation>
   using try_assume_unary_or_more = typename detail::_optimize_try_invoke<
@@ -893,7 +887,7 @@ namespace jln::mp
 
   template<class F>
   using assume_number_barrier = contract_barrier<assume_number<F>>;
-  
+
   template<class F>
   using assume_binary_list_barrier = contract_barrier<assume_binary_list<F>>;
 }
@@ -906,25 +900,25 @@ namespace jln::mp::detail
   {};
 
 #define JLN_MP_UNPACK(...) __VA_ARGS__
-  
+
 #define JLN_MP_MAKE_EXPECTED_ARGUMENT(expected, tpl, spe) \
   template<JLN_MP_UNPACK tpl>                             \
   struct expected_argument<JLN_MP_UNPACK spe>             \
   : number<expected>                                      \
   {}
-  
+
 #define JLN_MP_MAKE_EXPECTED_ARGUMENT1(expected, name) \
   template<class C>                                    \
   struct expected_argument<name<C>>                    \
   : number<expected>                                   \
   {}
-  
+
 #define JLN_MP_MAKE_EXPECTED_ARGUMENT2(expected, name) \
   template<class F, class C>                           \
   struct expected_argument<name<F, C>>                 \
   : number<expected>                                   \
   {}
-  
+
   struct argument_category
   {
     enum tag
@@ -938,19 +932,19 @@ namespace jln::mp::detail
       binary_or_more    = 1 << 6,
       binary_list       = 1 << 7,
       numbers           = 1 << 8,
-      
-      _unary            = unary, 
-      _binary           = binary, 
-      _binary_or_more   = _binary | binary_or_more | binary_list, 
-      _unary_or_more    = _unary | unary_or_more | _binary_or_more, 
-      _positive_number  = positive_number | _unary | number, 
+
+      _unary            = unary,
+      _binary           = binary,
+      _binary_or_more   = _binary | binary_or_more | binary_list,
+      _unary_or_more    = _unary | unary_or_more | _binary_or_more,
+      _positive_number  = positive_number | _unary | number,
       _number           = number | _positive_number,
       _numbers          = _number | numbers,
       _lists            = lists,
       _binary_list      = binary_list | _binary,
     };
   };
-  
+
 #define JLN_MP_MK_ASSUME(cat)                                 \
   template<class F>                                           \
   struct _assume_##cat<try_invoke<F, identity, violation>>    \
@@ -959,16 +953,16 @@ namespace jln::mp::detail
       expected_argument<F>::value & argument_category::_##cat \
     )>::template f<F, try_invoke<F, identity, violation>>;    \
   }
-  
-  JLN_MP_MK_ASSUME(lists);  
-  JLN_MP_MK_ASSUME(numbers);  
-  JLN_MP_MK_ASSUME(number);  
-  JLN_MP_MK_ASSUME(positive_number);  
-  JLN_MP_MK_ASSUME(unary);  
-  JLN_MP_MK_ASSUME(binary);  
-  JLN_MP_MK_ASSUME(binary_list);  
-  JLN_MP_MK_ASSUME(unary_or_more);  
-  JLN_MP_MK_ASSUME(binary_or_more);  
+
+  JLN_MP_MK_ASSUME(lists);
+  JLN_MP_MK_ASSUME(numbers);
+  JLN_MP_MK_ASSUME(number);
+  JLN_MP_MK_ASSUME(positive_number);
+  JLN_MP_MK_ASSUME(unary);
+  JLN_MP_MK_ASSUME(binary);
+  JLN_MP_MK_ASSUME(binary_list);
+  JLN_MP_MK_ASSUME(unary_or_more);
+  JLN_MP_MK_ASSUME(binary_or_more);
 
 #undef JLN_MP_MK_ASSUME
 }
@@ -3840,15 +3834,11 @@ namespace jln::mp::detail
 } // namespace jln::mp
 namespace jln::mp::smp::concepts
 {
-  // TODO remove to_bool ?
-  
-  // TODO output_type<Pred> = number -> if_<subcontract<Pred>, ....>
   template<class Pred, class TC = mp::identity, class FC = mp::always<false_>>
   using predicate = try_invoke<
     mp::fork<assume_unary<Pred>, mp::to_bool<>>,
     TC, FC>;
-    
-  // TODO output_type<Cmp> = number -> if_<subcontract<Cmp>, ....>
+
   template<class Cmp, class TC = mp::identity, class FC = mp::always<false_>>
   using compare = try_invoke<
     mp::fork<assume_binary<Cmp>, mp::to_bool<>>,
@@ -6321,7 +6311,7 @@ namespace jln::mp::detail
     using type = smp::unpack_append<sfinae<C>>;
   };
 
-  
+
   template<>
   struct optimize_useless_unpack<smp::unpack<listify>>
   {
@@ -6381,8 +6371,8 @@ namespace jln::mp::detail
   {
     using type = smp::cfe<F, sfinae<C>>;
   };
-  
-  
+
+
   JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (cfe<std::is_same, C>));
   JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (cfl<std::is_same, C>));
 }
@@ -7488,7 +7478,7 @@ namespace jln::mp
 namespace jln::mp::smp
 {
   template<class Pred, class C = listify>
-  using partition = fork<remove_if<Pred>, copy_if<Pred>, 
+  using partition = fork<remove_if<Pred>, copy_if<Pred>,
     assume_binary_list_barrier<C>>;
 }
 namespace jln::mp
@@ -8340,8 +8330,8 @@ namespace jln::mp::smp
 {
   template<class Pred, class C = listify, class NC = C>
   using take_while = fork_front<index_if<
-    Pred, 
-    contract<mp::fork<mp::identity, mp::always<C>, cfe<take>>>, 
+    Pred,
+    contract<mp::fork<mp::identity, mp::always<C>, cfe<take>>>,
     always<NC>>>;
 }
 namespace jln::mp::smp
@@ -8814,8 +8804,8 @@ namespace jln::mp::detail
   {
     template<class F0, class F1, class C>
     using f = test_contract<size<same_as<number<2>>>, each<
-      assume_unary<F0>, 
-      assume_unary<F1>, 
+      assume_unary<F0>,
+      assume_unary<F1>,
       monadic_xs<assume_binary<C>>>>;
   };
 
@@ -8824,9 +8814,9 @@ namespace jln::mp::detail
   {
     template<class F0, class F1, class F2, class C>
     using f = test_contract<size<same_as<number<3>>>, each<
-      assume_unary<F0>, 
-      assume_unary<F1>, 
-      assume_unary<F2>, 
+      assume_unary<F0>,
+      assume_unary<F1>,
+      assume_unary<F2>,
       monadic_xs<subcontract<C>>>>;
   };
 
@@ -8836,7 +8826,7 @@ namespace jln::mp::detail
     using f = test_contract<size<same_as<number<sizeof...(Fs)>>>,
       _each<monadic_xs<subcontract<C>>, assume_unary<Fs>...>>;
   };
-  
+
   template<>
   struct _smp_each_select<5>
   : mp::rotate<mp::number<-1>, detail::_smp_each>
@@ -9008,14 +8998,14 @@ namespace jln::mp::detail
   {
     using type = smp::partial_eager<sfinae<Fs>...>;
   };
-  
+
   template<>
   struct _smp_partial_eager_select<1>
   {
     template<class C>
     using f = contract<subcontract<C>>;
   };
-  
+
   template<>
   struct _smp_partial_eager_select<2>
   {
@@ -9024,7 +9014,7 @@ namespace jln::mp::detail
       partial_eager<subcontract<F>, monadic_xs<assume_unary<C>>>
     >;
   };
-  
+
   template<>
   struct _smp_partial_eager_select<3>
   {
@@ -9032,13 +9022,13 @@ namespace jln::mp::detail
     using f = test_contract<
       size<>,
       partial_eager<
-        assume_unary<F0>, 
-        subcontract<F1>, 
+        assume_unary<F0>,
+        subcontract<F1>,
         monadic_xs<assume_binary<C>>
       >
     >;
   };
-  
+
   template<>
   struct _smp_partial_eager_select<4>
   {
@@ -9046,29 +9036,29 @@ namespace jln::mp::detail
     using f = test_contract<
       size<greater_equal_than_c<2>>,
       partial_eager<
-        assume_unary<F0>, 
-        assume_unary<F1>, 
-        subcontract<F2>, 
+        assume_unary<F0>,
+        assume_unary<F1>,
+        subcontract<F2>,
         monadic_xs<subcontract<C>>
       >
     >;
   };
-  
+
   struct _smp_partial_eager
   {
     template<class Flast, class C, class... Fs>
     using f = test_contract<
       size<greater_equal_than_c<sizeof...(Fs)>>,
       typename _partial_eager<
-        subcontract<Flast>, 
-        monadic_xs<subcontract<C>>, 
+        subcontract<Flast>,
+        monadic_xs<subcontract<C>>,
         assume_unary<Fs>...
       >::type
     >;
   };
-  
+
   template<>
-  struct _smp_partial_eager_select<5> 
+  struct _smp_partial_eager_select<5>
   : mp::rotate<mp::number<-2>, _smp_partial_eager>
   {};
 }
@@ -9100,17 +9090,17 @@ namespace jln::mp::detail
     template<class C>
     using f = contract<subcontract<C>>;
   };
-  
+
   template<>
   struct _smp_partial_select<2>
   {
     template<class F, class C>
     using f = test_contract<
-      size<>, 
+      size<>,
       partial<assume_unary<F>, monadic_xs<subcontract<C>>>
     >;
   };
-  
+
   template<>
   struct _smp_partial_select<3>
   {
@@ -9118,13 +9108,13 @@ namespace jln::mp::detail
     using f = test_contract<
       size<greater_equal_than_c<2>>,
       partial<
-        assume_unary<F0>, 
-        assume_unary<F1>, 
+        assume_unary<F0>,
+        assume_unary<F1>,
         monadic_xs<subcontract<C>>
       >
     >;
   };
-  
+
   template<>
   struct _smp_partial_select<4>
   {
@@ -9132,14 +9122,14 @@ namespace jln::mp::detail
     using f = test_contract<
       size<greater_equal_than_c<3>>,
       partial<
-        assume_unary<F0>, 
-        assume_unary<F1>, 
-        assume_unary<F2>, 
+        assume_unary<F0>,
+        assume_unary<F1>,
+        assume_unary<F2>,
         monadic_xs<subcontract<C>>
       >
     >;
   };
-  
+
   struct _smp_partial
   {
     template<class C, class... Fs>
@@ -9148,9 +9138,9 @@ namespace jln::mp::detail
       _partial<monadic_xs<subcontract<C>>, assume_unary<Fs>...>
     >;
   };
-  
+
   template<>
-  struct _smp_partial_select<5> 
+  struct _smp_partial_select<5>
   : mp::rotate<mp::number<-1>, _smp_partial>
   {};
 }
@@ -9548,18 +9538,18 @@ namespace jln::mp::detail
   {
     template<int_ i, class C>
     using f = test_contract<
-      size<greater_equal_than_c<i>>, 
+      size<greater_equal_than_c<i>>,
       fork<take_c<i>, always<list<xs...>>, drop_c<i>, join<subcontract<C>>>
     >;
   };
-  
+
   template<>
   struct _smp_insert_range_dispatch<list<>>
   {
     template<int_ i, class C>
     using f = C;
   };
-  
+
   template<class>
   struct _smp_insert_range_dispatch
   {
@@ -10423,7 +10413,7 @@ namespace jln::mp::smp
 JLN_MP_MAKE_REGULAR_SMP3_P(swap_index, (i), (j), (C, smp::listify),
   smp::swap_index_c<i::value, j::value, C>)
 
-  
+
 namespace jln::mp::detail
 {
   template<unsigned i, class C>

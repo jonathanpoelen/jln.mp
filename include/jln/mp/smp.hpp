@@ -1,3 +1,8 @@
 #pragma once
 
-#include "smp/sfinae.hpp"
+#include "smp/algorithm.hpp"
+#include "smp/functional.hpp"
+#include "smp/list.hpp"
+#include "smp/number.hpp"
+#include "smp/utility.hpp"
+#include "smp/value.hpp"
