@@ -6,11 +6,15 @@
 
 namespace jln::mp
 {
-  template<class T, class C = listify>
+  /// \ingroup list
+
+  /// Appends \c x to the beginning of the sequence.
+  /// \return \list
+  template<class x, class C = listify>
   struct push_front
   {
     template<class... xs>
-    using f = call<C, T, xs...>;
+    using f = call<C, x, xs...>;
   };
 
   namespace emp
@@ -19,3 +23,4 @@ namespace jln::mp
     using push_front = unpack<L, mp::push_front<T, C>>;
   }
 }
+

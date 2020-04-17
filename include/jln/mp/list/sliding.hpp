@@ -7,6 +7,7 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     constexpr int_ sliding_stride(int_ size, int_ stride);
@@ -14,7 +15,20 @@ namespace jln::mp
     template<int_ size, int_ stride, int_ = sliding_stride(size, stride)>
     struct mk_sliding;
   }
+  /// \endcond
 
+  /// \ingroup list
+
+  /// Returns sliding windows of width \c size.
+  /// \tparam stride
+  /// \pre stride != 0
+  /// \pre size >= 0
+  /// \return \lists
+  /// Given a sequence and a count n, place a window over the first n elements of the underlying range. Return the contents of that window as the first element of the adapted range, then slide the window forward one element at a time until hitting the end of the underlying range.
+  /// \semantics
+  ///     If \c stride \< 0, then \c stride = \c stride + \c size
+  ///     If sizeof...(xs) \< size, then f = C::f\<xs...\>
+  ///     If \c stride \> 1, the last window may be smaller than \c size
   template<class size, class stride = number<1>, class C = listify>
   using sliding = typename detail::mk_sliding<size::value, stride::value>::template f<C>;
 
@@ -41,6 +55,7 @@ namespace jln::mp
 #include "drop.hpp"
 #include "slice.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   constexpr int_ sliding_stride(int_ size, int_ stride)
@@ -256,3 +271,4 @@ namespace jln::mp::detail
     using f = typename C::template f<typename take_c<size>::template f<xs...>>;
   };
 }
+/// \endcond

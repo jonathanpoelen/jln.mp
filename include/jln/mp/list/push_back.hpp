@@ -6,11 +6,13 @@
 
 namespace jln::mp
 {
-  template<class T, class C = listify>
+  /// Appends \c x to the end of the sequence
+  /// \return \list
+  template<class x, class C = listify>
   struct push_back
   {
     template<class... xs>
-    using f = call<C, xs..., T>;
+    using f = call<C, xs..., x>;
   };
 
   namespace emp

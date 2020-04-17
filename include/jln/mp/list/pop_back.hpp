@@ -5,6 +5,11 @@
 
 namespace jln::mp
 {
+  /// \ingroup list
+
+  /// Remove the last element of sequence
+  /// \pre sizeof...(xs) \> 0
+  /// \return \list
   template<class C = listify>
   using pop_back = rotate<number<-1>, pop_front<C>>;
 

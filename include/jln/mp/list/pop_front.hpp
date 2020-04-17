@@ -4,6 +4,11 @@
 
 namespace jln::mp
 {
+  /// \ingroup list
+
+  /// Remove the first element of sequence
+  /// \pre sizeof...(xs) \> 0
+  /// \return \list
   template<class C = listify>
   using pop_front = drop<number<1>, C>;
 

@@ -6,12 +6,21 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<unsigned i, unsigned j, bool = (i < j), bool = (i == j)>
     struct _select_swap_index;
   }
+  /// \endcond
 
+  /// \ingroup list
+
+  /// Swap elements at indexes \c I and \c J.
+  /// \pre 0 \< I \< sizeof...(xs)
+  /// \pre 0 \< J \< sizeof...(xs)
+  /// \return \list
+  /// \note swap_index\<I, J\> == swap_index\<J, I\>
   template<class I, class J, class C = listify>
   using swap_index = typename detail::_select_swap_index<
     unsigned{I::value}, unsigned{J::value}>::template f<C>;
@@ -37,6 +46,7 @@ namespace jln::mp
 #include "../list/at.hpp"
 #include "../functional/call.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<unsigned i, unsigned j, class C>
@@ -70,7 +80,7 @@ namespace jln::mp::detail
   struct if_valid_index
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(unsigned{int(sizeof...(xs)) - int{i}} < 1000000, C, xs...);
+    using f = JLN_MP_DCALL(unsigned{int(sizeof...(xs)) - int{i}} < JLN_MP_MAX_CALL_ELEMENT, C, xs...);
   };
 
   template<unsigned i, unsigned j>
@@ -80,3 +90,4 @@ namespace jln::mp::detail
     using f = if_valid_index<i, C>;
   };
 }
+/// \endcond

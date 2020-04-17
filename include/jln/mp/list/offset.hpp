@@ -6,6 +6,10 @@
 
 namespace jln::mp
 {
+  /// \ingroup list
+
+  /// Difference between the number of parameter \a xs and \a I::value.
+  /// \return \number
   template <class I, class C = identity>
   struct offset
   {
@@ -13,12 +17,14 @@ namespace jln::mp
     using f = typename C::template f<number<(I::value - int_{sizeof...(xs)})>>;
   };
 
+  /// \cond
   template <class I>
   struct offset<I, identity>
   {
     template <class... xs>
     using f = number<(I::value - int_{sizeof...(xs)})>;
   };
+  /// \endcond
 
   template<int_ i, class C = identity>
   using offset_c = offset<number<i>, C>;
