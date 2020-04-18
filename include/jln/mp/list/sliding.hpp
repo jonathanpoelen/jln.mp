@@ -29,19 +29,32 @@ namespace jln::mp
   ///     If \c stride \< 0, then \c stride = \c stride + \c size
   ///     If sizeof...(xs) \< size, then f = C::f\<xs...\>
   ///     If \c stride \> 1, the last window may be smaller than \c size
-  template<class size, class stride = number<1>, class C = listify>
-  using sliding = typename detail::mk_sliding<size::value, stride::value>::template f<C>;
+  template<class size, class stride, class C = listify>
+  using sliding_with_stride = typename detail::mk_sliding<
+    size::value, stride::value>::template f<C>;
+
+  template<class size, class C = listify>
+  using sliding = sliding_with_stride<size, number<1>, C>;
 
   template<int_ size, int_ stride = 1, class C = listify>
-  using sliding_c = typename detail::mk_sliding<size, stride>::template f<C>;
+  using sliding_with_stride_c = typename detail::mk_sliding<size, stride>::template f<C>;
+
+  template<int_ size, class C = listify>
+  using sliding_c = sliding_with_stride_c<size, 1, C>;
 
   namespace emp
   {
-    template<class L, class size, class stride = number<1>, class C = mp::listify>
-    using sliding = unpack<L, mp::sliding<size, stride, C>>;
+    template<class L, class size, class stride, class C = mp::listify>
+    using sliding_with_stride = unpack<L, mp::sliding_with_stride<size, stride, C>>;
 
-    template<class L, int_ size, int_ stride = 1, class C = mp::listify>
-    using sliding_c = unpack<L, mp::sliding_c<size, stride, C>>;
+    template<class L, int_ size, int_ stride, class C = mp::listify>
+    using sliding_with_stride_c = unpack<L, mp::sliding_with_stride_c<size, stride, C>>;
+
+    template<class L, class size, class C = mp::listify>
+    using sliding = unpack<L, mp::sliding<size, C>>;
+
+    template<class L, int_ size, class C = mp::listify>
+    using sliding_c = unpack<L, mp::sliding_c<size, C>>;
   }
 }
 

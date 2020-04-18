@@ -5,12 +5,19 @@
 
 namespace jln::mp::smp
 {
-  template<int_ size, int_ stride = 1, class C = listify>
-  using sliding_c = try_contract<mp::sliding_c<size, stride, subcontract<C>>>;
+  template<int_ size, class C = listify>
+  using sliding_c = try_contract<mp::sliding_c<size, subcontract<C>>>;
+
+  template<int_ size, int_ stride, class C = listify>
+  using sliding_with_stride_c = try_contract<
+    mp::sliding_with_stride_c<size, stride, subcontract<C>>>;
 }
 
-JLN_MP_MAKE_REGULAR_SMP3_P(sliding, (size), (stride, number<1>), (C, smp::listify),
-  smp::sliding_c<size::value, stride::value, C>)
+JLN_MP_MAKE_REGULAR_SMP2_P(sliding, (size), (C, smp::listify),
+  smp::sliding_c<size::value, C>)
+
+JLN_MP_MAKE_REGULAR_SMP3_P(sliding_with_stride, (size), (stride), (C, smp::listify),
+  smp::sliding_with_stride_c<size::value, stride::value, C>)
 
 namespace jln::mp::detail
 {
@@ -23,7 +30,7 @@ namespace jln::mp::detail
   template<template<class> class sfinae, int_ size, int_ stride, class C>
   struct _sfinae<sfinae, sliding_<size, stride, C>>
   {
-    using type = smp::sliding_c<size, stride, sfinae<C>>;
+    using type = smp::sliding_with_stride_c<size, stride, sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
