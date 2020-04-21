@@ -13,6 +13,7 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<unsigned>
@@ -33,7 +34,13 @@ namespace jln::mp
     using validate_index = number<(0 * std::size_t{int_(n) - i}) + i>;
 #endif
   }
+  /// \endcond
 
+  /// \ingroup list
+
+  /// Removes \c N elements from the beginning of a \sequence.
+  /// \pre 0 \<= N \<= sizeof...(xs)
+  /// \return \sequence
   template<class N, class C = listify>
   struct drop
   {
@@ -48,6 +55,7 @@ namespace jln::mp
   template<int_ n, class C = listify>
   using drop_c = drop<number<n>, C>;
 
+  /// \cond
   template<class C>
   struct drop<number<0>, C>
   {
@@ -89,6 +97,7 @@ namespace jln::mp
     template<class, class, class, class, class, class... xs>
     using f = call<C, xs...>;
   };
+  /// \endcond
 
   namespace emp
   {
@@ -100,6 +109,7 @@ namespace jln::mp
   }
 }
 
+/// \cond
 namespace jln::mp::detail
 {
 #define JLN_MP_DROP_IMPL(n, _, mp_rxs, mp_rep) \
@@ -137,3 +147,4 @@ namespace jln::mp::detail
 #undef JLN_MP_DROP_IMPL2
 #undef JLN_MP_DROP_IMPL
 }
+/// \endcond

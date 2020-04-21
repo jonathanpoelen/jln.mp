@@ -5,6 +5,10 @@
 
 namespace jln::mp
 {
+  /// \ingroup list
+
+  /// Checks whether a sequence has no elements.
+  /// \return \number
   template<class C = identity>
   using is_empty = size<not_<C>>;
 

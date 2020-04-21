@@ -6,21 +6,23 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<int>
     struct _slice;
 
-    constexpr int_ slide_select(int_ nx, int_ size, int_ stride)
-    {
-      return !size ? 0
-        : size == 1 ? 3
-        : stride <= 1 ? 2
-        : nx < stride ? 2
-        : 1;
-    }
+    constexpr int_ slide_select(int_ nx, int_ size, int_ stride);
   }
+  /// \endcond
 
+  /// \ingroup list
+
+  /// Returns a subset of elements in a \c xs picked at regular intervals in range.
+  /// \pre 0 \<= start \< sizeof...(xs)
+  /// \pre stride \> 0
+  /// \pre 0 \<= size * (stride - 1) + 1 \< sizeof...(xs) - start
+  /// \return \sequence
   template<class start, class size, class stride = number<1>, class C = listify>
   struct slice
   {
@@ -58,8 +60,18 @@ namespace jln::mp
 #include "take.hpp"
 #include "front.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
+  constexpr int_ slide_select(int_ nx, int_ size, int_ stride)
+  {
+    return !size ? 0
+      : size == 1 ? 3
+      : stride <= 1 ? 2
+      : nx < stride ? 2
+      : 1;
+  }
+
   template<>
   struct _slice<2>
   {
@@ -116,3 +128,4 @@ namespace jln::mp::detail
     using f = drop_c<start, front<C>>;
   };
 }
+/// \endcond

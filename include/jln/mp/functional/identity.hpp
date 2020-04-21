@@ -2,6 +2,9 @@
 
 namespace jln::mp
 {
+  /// \ingroup functional
+
+  /// \return \value
   struct identity
   {
     template<class x>

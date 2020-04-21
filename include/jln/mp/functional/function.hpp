@@ -5,6 +5,11 @@
 
 namespace jln::mp
 {
+  /// \ingroup functional
+
+  /// Makes a \function from a \lazymetafunction.
+  /// \return \value
+  /// \see cfe
   template<template<class...> class F, class C = identity>
   struct cfl
   {
@@ -15,6 +20,7 @@ namespace jln::mp
     >;
   };
 
+  /// \cond
   template<template<class...> class F>
   struct cfl<F, identity>
   {
@@ -22,7 +28,11 @@ namespace jln::mp
     using f = typename detail::dcallf<sizeof...(xs) < 1000000>
       ::template f<F, xs...>::type;
   };
+  /// \endcond
 
+  /// Makes a \function from a \metafunction.
+  /// \return \value
+  /// \see cfl
   template<template<class...> class F, class C = identity>
   struct cfe
   {
@@ -33,6 +43,7 @@ namespace jln::mp
     >;
   };
 
+  /// \cond
   template<template<class...> class F>
   struct cfe<F, identity>
   {
@@ -40,6 +51,7 @@ namespace jln::mp
     using f = typename detail::dcallf<sizeof...(xs) < 1000000>
       ::template f<F, xs...>;
   };
+  /// \endcond
 
 #if __cplusplus >= 201703L
   template<template<auto...> class F>

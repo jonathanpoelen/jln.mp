@@ -1,9 +1,13 @@
 #pragma once
 
-#include "call.hpp"
+#include "partial.hpp"
 
 namespace jln::mp
 {
+  /// \ingroup functional
+
+  /// Partially apply a function to some arguments.
+  /// \return \sequence
   template<class F, class... xs>
   struct bind
   {
@@ -11,6 +15,8 @@ namespace jln::mp
     using f = call<F, xs..., ys...>;
   };
 
+  /// Partially apply a function to some arguments.
+  /// \return \sequence
   template<class F, class... xs>
   struct reverse_bind
   {
@@ -18,18 +24,9 @@ namespace jln::mp
     using f = call<F, ys..., xs...>;
   };
 
-  // fork_front<front<F, cfe<push_front, cfe<pop_front>>>, C>
   template<class F, class C>
-  struct bind1st
-  {
-    template<class x, class... xs>
-    using f = call<C, JLN_MP_DCALL(sizeof...(xs) < 100000, F, x), xs...>;
-  };
+  using bind1st = partial<F, C>;
 
   template<class F, class C>
-  struct bind2nd
-  {
-    template<class x, class y, class... xs>
-    using f = call<C, x, JLN_MP_DCALL(sizeof...(xs) < 100000, F, y), xs...>;
-  };
+  using bind2nd = partial<identity, F, C>;
 } // namespace jln::mp

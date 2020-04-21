@@ -8,9 +8,13 @@
 
 namespace jln::mp
 {
+  /// \ingroup algorithm
+
+  /// Counts all elements that satisfy a predicate.
   template<class Pred, class C = identity>
   using count_if = transform<Pred, add0<C>>;
 
+  /// Counts all elements identical to a \value.
   template<class x, class C = identity>
   using count = transform<same_as<x>, add0<C>>;
 

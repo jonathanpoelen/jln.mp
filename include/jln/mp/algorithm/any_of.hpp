@@ -5,6 +5,10 @@
 
 namespace jln::mp
 {
+  /// \ingroup algorithm
+
+  /// Checks whether a predicate holds for at least some element of a \sequence.
+  /// \return \boolean
   template<class Pred, class C = identity>
   using any_of = transform<Pred, or_<C>>;
 

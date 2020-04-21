@@ -6,6 +6,10 @@
 
 namespace jln::mp
 {
+  /// \ingroup number
+
+  /// Narrowing convertion from \value to \number.
+  /// \return \number
   template<class C = identity>
   struct as_number
   {

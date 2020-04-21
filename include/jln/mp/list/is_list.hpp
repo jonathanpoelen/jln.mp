@@ -4,12 +4,18 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<class x>
     struct _is_list;
   }
+  /// \endcond
 
+  /// \ingroup list
+
+  /// Checks if \c x is a \list.
+  /// \return \number
   template<class C = identity>
   struct is_list
   {
@@ -27,6 +33,7 @@ namespace jln::mp
 
 #include "../number/number.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class x>
@@ -41,3 +48,4 @@ namespace jln::mp::detail
     using type = true_;
   };
 } // namespace jln::mp::detail
+/// \endcond

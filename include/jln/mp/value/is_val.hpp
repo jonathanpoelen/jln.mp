@@ -6,12 +6,18 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<class x>
     struct _is_val;
   }
+  /// \endcond
 
+  /// \ingroup value
+
+  /// Check is a \value is a \val.
+  /// \return \boolean
   template<class C = identity>
   struct is_val
   {
@@ -29,6 +35,7 @@ namespace jln::mp
 
 #include "../number/number.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class x>
@@ -48,3 +55,4 @@ namespace jln::mp::detail
     using type = true_;
   };
 }
+/// \endcond

@@ -1,9 +1,8 @@
 #pragma once
 
 #include "identity.hpp"
+#include "../functional/partial.hpp"
 #include "../../functional/bind.hpp"
-#include "../../utility/same_as.hpp"
-#include "../../list/front.hpp"
 
 namespace jln::mp::smp
 {
@@ -14,17 +13,10 @@ namespace jln::mp::smp
   using reverse_bind = contract<mp::reverse_bind<subcontract<F>, xs...>>;
 
   template<class F, class C>
-  using bind1st = try_contract<mp::bind1st<
-    assume_unary<F>,
-    mp::if_<mp::front<mp::same_as<na>>, violation, subcontract<C>>
-  >>;
+  using bind1st = partial<F, C>;
 
-  // flip<bind1st, flip<C>>
   template<class F, class C>
-  using bind2nd = try_contract<mp::bind2nd<
-    assume_unary<F>,
-    mp::if_<mp::front<mp::same_as<na>>, violation, subcontract<C>>
-  >>;
+  using bind2nd = partial<identity, F, C>;
 }
 
 namespace jln::mp::detail
@@ -39,17 +31,5 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, reverse_bind<F, xs...>>
   {
     using type = smp::reverse_bind<sfinae<F>, xs...>;
-  };
-
-  template<template<class> class sfinae, class F, class C>
-  struct _sfinae<sfinae, bind1st<F, C>>
-  {
-    using type = smp::bind1st<sfinae<F>, sfinae<C>>;
-  };
-
-  template<template<class> class sfinae, class F, class C>
-  struct _sfinae<sfinae, bind2nd<F, C>>
-  {
-    using type = smp::bind2nd<sfinae<F>, sfinae<C>>;
   };
 }

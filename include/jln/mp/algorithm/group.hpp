@@ -7,12 +7,28 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<bool>
     struct _group;
   }
+  /// \endcond
 
+  /// \ingroup group
+
+  /// Group adjacent elements that respect a predicate.
+  /// \semantics
+  ///   \code
+  ///   call<group<same<>>,
+  ///     void, void, int, void
+  ///   > = list<
+  ///     list<void, void>,
+  ///     list<int>,
+  ///     list<void>
+  ///   >
+  ///   \endcode
+  /// \return \sequence
   template<class Cmp, class C = listify>
   struct group_if
   {
@@ -39,10 +55,10 @@ namespace jln::mp
 #include "../list/take.hpp"
 #include "../list/push_front.hpp"
 #include "../utility/conditional.hpp"
-#include "../functional/fork_front.hpp"
 #include "../functional/function.hpp"
 #include "../functional/partial.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class x, class C>
@@ -99,3 +115,4 @@ namespace jln::mp::detail
     using f = typename C::template f<>;
   };
 }
+/// \endcond

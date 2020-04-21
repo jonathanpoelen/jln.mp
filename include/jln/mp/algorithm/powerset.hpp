@@ -5,12 +5,27 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<class C, bool>
     struct _powerset;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Computes the powerset of a \sequence.
+  /// \semantics
+  ///   \code
+  ///   call<powerset<>, a, b, c> == list<
+  ///     list<>,
+  ///     list<a>, list<b>, list<a, b>, list<c>,
+  ///     list<a, c>, list<b, c>,
+  ///     list<a, b, c>
+  ///   >
+  ///   \endcode
+  /// \return \sequence of \list
   template<class C = listify>
   struct powerset
   {
@@ -26,6 +41,7 @@ namespace jln::mp
   }
 }
 
+
 #include "fold_right.hpp"
 #include "cartesian.hpp"
 #include "../list/front.hpp"
@@ -33,6 +49,7 @@ namespace jln::mp
 #include "../functional/call.hpp"
 #include "../utility/always.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class, class>
@@ -77,3 +94,4 @@ namespace jln::mp::detail
     using type = always<list<>>;
   };
 }
+/// \endcond

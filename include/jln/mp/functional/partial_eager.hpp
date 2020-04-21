@@ -7,18 +7,37 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template <class, class, class...>
     struct _partial_eager;
   }
+  /// \endcond
 
+  /// \ingroup functional
+
+  /// Invoke multiple functions each taking the parameter corresponding to its position
+  /// (the last function takes the remaining parameters or 0)
+  /// then calls `C` with the results
+  /// \pre sizeof...(Fs) >= 1
+  /// \pre sizeof...(xs) + 1 >= sizeof...(Fs) - 1
+  /// \semantics
+  ///   \code
+  ///   partial_eager\<F,G,C\>::f\<a,b,c,d\> == C\<F\<a\>, G\<b, c, d\>\>
+  ///   partial_eager\<F,G,C\>::f\<a\> == C\<F\<a\>, G\<\>\>
+  ///   \endcode
+  /// \return \value
+  /// \see each
+  /// \see fork
+  /// \see partial
   template <class... Fs>
   struct partial_eager
   : rotate<number<-2>, cfe<detail::_partial_eager>>
   ::template f<Fs...>::type
   {};
 
+  /// \cond
   template <class C>
   struct partial_eager<C>
   {
@@ -48,6 +67,7 @@ namespace jln::mp
     using f = JLN_MP_DCALL(sizeof...(xs) < 100000,
       C, call<F0, x0>, call<F1, x1>, call<F2, xs...>);
   };
+  /// \endcond
 }
 
 #include "each.hpp"
@@ -56,6 +76,7 @@ namespace jln::mp
 #include "../list/take.hpp"
 #include "../list/drop.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template <class Flast, class C, class... Fs>
@@ -68,3 +89,4 @@ namespace jln::mp::detail
     >;
   };
 } // namespace jln::mp
+/// \endcond

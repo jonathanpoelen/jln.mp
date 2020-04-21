@@ -5,12 +5,19 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<int_ start, int_ stride, bool inc>
     struct _iota_v_c;
   }
+  /// \endcond
 
+  /// \ingroup ints
+
+  /// Generates a sequence of \c int_.
+  /// \return \sequence
+  /// \see iota
   template<class C = numbers<>>
   struct iota_v
   {
@@ -41,6 +48,7 @@ namespace jln::mp
 
 #include "../algorithm/make_int_sequence.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<int_ start, int_ stride, class C>
@@ -73,3 +81,4 @@ namespace jln::mp::detail
       detail::_iota<start, (count < 0 ? -stride : stride), C>>;
   };
 }
+/// \endcond

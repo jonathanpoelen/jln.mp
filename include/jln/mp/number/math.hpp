@@ -8,10 +8,14 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     struct _pow;
   }
+  /// \endcond
+
+  /// \ingroup number
 
   template<class Cmp = less<>, class C = identity>
   using min = fold_left<if_<flip<Cmp>, at1<>, at0<>>, C>;
@@ -83,6 +87,7 @@ namespace jln::mp
   }
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<int_ b, int_ e, int_ r = 1>
@@ -118,3 +123,4 @@ namespace jln::mp::detail
   struct _ipow<0, -1, r>
   {};
 }
+/// \endcond

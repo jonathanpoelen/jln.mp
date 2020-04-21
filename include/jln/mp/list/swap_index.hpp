@@ -16,10 +16,10 @@ namespace jln::mp
 
   /// \ingroup list
 
-  /// Swap elements at indexes \c I and \c J.
+  /// Swap elements at indexes \c I and \c J of a \sequence.
   /// \pre 0 \< I \< sizeof...(xs)
   /// \pre 0 \< J \< sizeof...(xs)
-  /// \return \list
+  /// \return \sequence
   /// \note swap_index\<I, J\> == swap_index\<J, I\>
   template<class I, class J, class C = listify>
   using swap_index = typename detail::_select_swap_index<

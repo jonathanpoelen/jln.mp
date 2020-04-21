@@ -5,12 +5,17 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<template<class...> class Tpl, class T>
     struct _is_instance_of;
   }
+  /// \endcond
 
+  /// \ingroup trait
+
+  /// \return \boolean
   template<template<class...> class Tpl, class C = identity>
   struct is_instance_of
   {
@@ -26,6 +31,7 @@ namespace jln::mp
   }
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class...> class Tpl, class T>
@@ -40,3 +46,4 @@ namespace jln::mp::detail
     using type = true_;
   };
 }
+/// \endcond

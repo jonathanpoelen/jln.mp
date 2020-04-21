@@ -8,6 +8,7 @@
 
 namespace jln::mp::traits
 {
+  /// \ingroup trait
 
 #define JLN_MP_MAKE_TRAIT(Name)                     \
   template<class C = identity>                      \

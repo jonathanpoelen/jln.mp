@@ -8,6 +8,12 @@
 
 namespace jln::mp
 {
+  /// \ingroup list
+
+  /// Insert all elements of \c seq at an arbitrary position.
+  /// \pre 0 \<= i \< sizeof...(xs)
+  /// \pre seq must be a \list
+  /// \return \sequence
   template<class i, class seq, class C = listify>
   using insert_range = fork<take<i>, always<seq>, drop<i>, join<C>>;
 

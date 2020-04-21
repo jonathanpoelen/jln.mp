@@ -7,12 +7,18 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<unsigned>
     struct _is_sorted;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Checks if a \sequence is sorted.
+  /// \return \number
   template<class Cmp = less<>, class C = identity>
   struct is_sorted
   {
@@ -22,6 +28,7 @@ namespace jln::mp
     )::template f<Cmp, xs...>>;
   };
 
+  /// \cond
   template<class Cmp>
   struct is_sorted<Cmp, identity>
   {
@@ -29,6 +36,7 @@ namespace jln::mp
     using f = typename detail::_is_sorted<detail::min(sizeof...(xs), 3)>
       ::template f<Cmp, xs...>;
   };
+  /// \endcond
 
   namespace emp
   {
@@ -44,6 +52,7 @@ namespace jln::mp
 #include "zip.hpp"
 #include "rotate.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<>
@@ -77,3 +86,4 @@ namespace jln::mp::detail
     >;
   };
 }
+/// \endcond

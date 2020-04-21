@@ -4,6 +4,21 @@
 
 namespace jln::mp
 {
+  /// \ingroup group
+
+  /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
+  /// The split value is inserted at the beginning of the following list.
+  /// \semantics
+  ///   \code
+  ///   call<split_before_if<same_as<void>, _0, _1, _2, _0, _3> == list<
+  ///     list<>,
+  ///     list<_0, _1, _2>,
+  ///     list<_0, _3>
+  ///   >
+  ///   \endcode
+  /// \return \sequence of \list
+  /// \see split_if
+  /// \see split_after_if
   template<class Pred, class C = listify>
   struct split_before_if
   {

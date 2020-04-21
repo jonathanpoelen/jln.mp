@@ -5,6 +5,10 @@
 
 namespace jln::mp
 {
+  /// \ingroup ints
+
+  /// Replaces each element of a \sequence by its corresponding index.
+  /// \return \sequence
   template<class C = listify>
   using indices = size<make_int_sequence<C>>;
 

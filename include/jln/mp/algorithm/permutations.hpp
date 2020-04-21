@@ -7,20 +7,21 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<int>
     struct _permutations;
 
-    constexpr int _permutations_select(int n)
-    {
-      // -1 with big list result (5040 elements)
-      return n > 7 ? -1 : n;
-      // -1 with big list result (40320 elements)
-      // return n > 8 ? -1 : n;
-    }
+    constexpr int _permutations_select(int n);
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Generates all permutations of \sequence.
+  /// \post sizeof...(result) == sizeof...(xs)!
+  /// \return \sequence of \list
   template<class C = listify>
   struct permutations
   {
@@ -37,15 +38,23 @@ namespace jln::mp
 }
 
 
-#include "transform.hpp"
-#include "make_int_sequence.hpp"
-#include "rotate.hpp"
 #include "../list/push_front.hpp"
 #include "../list/join.hpp"
-#include "../functional/function.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
+  constexpr int _permutations_select(int n)
+  {
+#ifdef JLN_MP_BIG_LIST_PERMUTATIONS
+    // -1 with big list result (40320 elements)
+    return n > 8 ? -1 : n;
+#else
+    // -1 with big list result (5040 elements)
+    return n > 7 ? -1 : n;
+#endif
+  }
+
   template<>
   struct _permutations<-1>
   {};
@@ -220,7 +229,7 @@ namespace jln::mp::detail
     using f = typename _permutations7<C>::template f<listify, x0, x1, x2, x3, x4, x5, x6>;
   };
 
-#if 0
+#ifdef JLN_MP_BIG_LIST_PERMUTATIONS
   template<class C>
   struct _permutations8
   {
@@ -245,3 +254,4 @@ namespace jln::mp::detail
   };
 #endif
 }
+/// \endcond

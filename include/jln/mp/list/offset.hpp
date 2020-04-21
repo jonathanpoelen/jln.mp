@@ -6,9 +6,14 @@
 
 namespace jln::mp
 {
-  /// \ingroup list
+  /// \ingroup search
 
   /// Difference between the number of parameter \a xs and \a I::value.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   size<push_front<I, sub<C>>>
+  ///   \endcode
   /// \return \number
   template <class I, class C = identity>
   struct offset

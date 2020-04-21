@@ -7,16 +7,24 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<unsigned> struct _compose_f;
     template<class, class> struct _compose;
   }
+  /// \cond
 
+  /// \ingroup functional
+
+  /// Composition of two \metafunctions or more.
+  /// \return \function
   template<template<class...> class F, template<class...> class... Fs>
   using compose_f = typename detail::_compose_f<sizeof...(Fs)>
     ::template f<F, Fs...>;
 
+  /// Composition of two \functions or more.
+  /// \return \function
   template<class F, class... Fs>
   using compose = typename conditional_c<sizeof...(Fs) == 0>
     ::template f<
@@ -31,6 +39,7 @@ namespace jln::mp
 #include "fork.hpp"
 #include "bind.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
 #define JLN_COMPOSE_IMPL(n, mp_xs, mp_rxs, mp_dup)       \
@@ -102,3 +111,4 @@ namespace jln::mp::detail
     using type = cfl<F, x>;
   };
 }
+/// \endcond

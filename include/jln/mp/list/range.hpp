@@ -6,6 +6,7 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<int_ beg, int_ end, class C, bool _
@@ -15,13 +16,21 @@ namespace jln::mp
       bool = _ && (end >= 0)>
     struct _range;
   }
+  /// \endcond
 
+  /// \ingroup list
+
+  /// Returns a contiguous subsequence of a \sequence.
+  ///
+  /// A negative value represents an index starting from the end. if finally, \c end <= \c beg, then an empty \list is returned
+  /// \return \sequence
   template<class beg, class end, class C = listify>
   struct range : detail::_range<beg::value, end::value, C>::type
   {
-    // TODO doc
-    // template<class... xs>
-    // using f;
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f;
+#endif
   };
 
   template<int_ beg, int_ end, class C = listify>

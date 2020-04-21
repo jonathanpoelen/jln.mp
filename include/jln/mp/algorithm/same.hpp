@@ -6,12 +6,18 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<int>
     struct _same;
   }
+  /// \endcond
 
+  /// \ingroup value
+
+  /// Checks whether all \values are identical.
+  /// \return \boolean
   template<class C = identity>
   struct same
   {
@@ -42,6 +48,7 @@ namespace jln::mp
   };
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<>
@@ -72,3 +79,4 @@ namespace jln::mp::detail
     using f = mp::number<std::is_same<list<x, xs...>, list<xs..., x>>::value>;
   };
 }
+/// \endcond

@@ -7,9 +7,9 @@ namespace jln::mp
 {
   /// \ingroup list
 
-  /// Extract \c N elements of sequence.
+  /// Extract \c N elements of \sequence.
   /// \pre 0 \<= N \<= sizeof...(xs)
-  /// \return \list
+  /// \return \sequence
   template<class N, class C = listify>
   struct take
   {

@@ -4,6 +4,8 @@
 
 namespace jln::mp
 {
+  /// \ingroup list
+
   template<class... xs>
   class list {};
 

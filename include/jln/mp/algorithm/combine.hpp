@@ -6,6 +6,10 @@
 
 namespace jln::mp
 {
+  /// \ingroup algorithm
+
+  /// Computes all possible combinations (with repetition) from the elements in a \sequence.
+  /// \return \sequence of \list
   template<class C = listify>
   struct combine
   {

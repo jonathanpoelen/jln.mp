@@ -7,6 +7,7 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     struct _drop_back;
@@ -14,7 +15,25 @@ namespace jln::mp
     template<class C = listify>
     struct _zip;
   }
+  /// \endcond
 
+  /// \ingroup group
+
+  /// n-ary version of transform.
+  /// \pre all parameters must be \lists
+  /// \pre all lists must be the same size
+  /// \semantics
+  ///   \code
+  ///   call<zip<listify>,
+  ///     list<_1, _2, _3>,
+  ///     list<_a, _b, _c>
+  ///   > = list<
+  ///     list<_1, _a>,
+  ///     list<_2, _b>,
+  ///     list<_3, _c>
+  ///   >
+  ///   \endcode
+  /// \return \sequence of \list
   template<class C = listify>
   using zip = detail::_zip<detail::optimize_useless_transform_unpack_t<C>>;
 
@@ -35,6 +54,7 @@ namespace jln::mp
 #include "../list/join.hpp"
 #include <algorithm>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class...>
@@ -136,3 +156,4 @@ namespace jln::mp::detail
     >::template f<sizeof...(seqs)-8, C, seqs...>;
   };
 }
+/// \endcond

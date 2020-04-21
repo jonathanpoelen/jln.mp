@@ -7,6 +7,9 @@
 
 namespace jln::mp
 {
+  /// \ingroup utility
+
+  /// \return \boolean
   template <class T, class C = identity>
   struct same_as
   {

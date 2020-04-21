@@ -6,6 +6,8 @@
 
 namespace jln::mp
 {
+  /// \ingroup value
+
 #if __cplusplus >= 201703L
 # if !JLN_MP_ENABLE_DEBUG || defined(__clang__)
   template<auto v>

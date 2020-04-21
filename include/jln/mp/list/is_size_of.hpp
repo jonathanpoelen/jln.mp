@@ -6,6 +6,8 @@
 
 namespace jln::mp
 {
+  /// \ingroup list
+
   template<class N, class C = identity>
   using is_size_of = size<same_as<N, C>>;
 

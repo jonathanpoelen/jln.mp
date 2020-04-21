@@ -54,6 +54,7 @@ namespace jln::mp
 
 namespace jln::mp
 {
+  /// \cond
   template<class C, class TC, class FC>
   struct try_invoke<contract<C>, TC, FC>
   {
@@ -75,8 +76,10 @@ namespace jln::mp
     template<class... xs>
     using f = call<C, xs...>;
   };
+  /// \endcond
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class F>
@@ -282,3 +285,5 @@ namespace jln::mp::detail
     using type = contract<F>;
   };
 }
+/// \endcond
+

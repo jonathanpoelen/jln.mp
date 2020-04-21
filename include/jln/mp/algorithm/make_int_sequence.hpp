@@ -32,6 +32,7 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
 #if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
@@ -41,7 +42,15 @@ namespace jln::mp
 #endif
     struct _make_int_sequence;
   }
+  /// \endcond
 
+
+  /// \ingroup ints
+
+  /// Generates an incremental sequence of \c n \c int_.
+  /// \return \sequence
+  /// \see make_int_sequence
+  /// \see iota
   template<class C = numbers<>>
   struct make_int_sequence_v
   {
@@ -74,6 +83,7 @@ namespace jln::mp
   }
 } // namespace jln::mp
 
+/// \cond
 namespace jln::mp::detail
 {
 #if JLN_MP_USE_MAKE_INTEGER_SEQ
@@ -111,6 +121,7 @@ namespace jln::mp::detail
   };
 #endif
 }
+/// \endcond
 
 #undef JLN_MP_USE_INTEGER_PACK
 #undef JLN_MP_USE_MAKE_INTEGER_SEQ

@@ -4,6 +4,11 @@
 
 namespace jln::mp
 {
+  /// \ingroup utility
+
+  /// Always evaluate at an arbitrary value.
+  /// \post result = x
+  /// \return value
   template<class x, class C = identity>
   struct always
   {

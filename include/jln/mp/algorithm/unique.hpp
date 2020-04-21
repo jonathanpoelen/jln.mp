@@ -7,12 +7,18 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<class Cmp, class C>
     struct mk_unique;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Creates a set.
+  /// \return \sequence
   template<class C = listify>
   using unique = typename detail::mk_unique<cfe<std::is_same>, C>::type;
 
@@ -36,6 +42,7 @@ namespace jln::mp
 
 #include <utility>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class x>
@@ -87,13 +94,13 @@ namespace jln::mp::detail
     using type = list<xs..., x>;
   };
 
-  template<class> using to_false = std::false_type;
-
   struct _set_cmp_push_back_impl
   {
+    template<class> using to_false = false_;
+
     template<class Cmp, class x, class... xs>
     using f = typename conditional_c<std::is_same<
-      list<std::bool_constant<Cmp::template f<xs, x>::value>...>,
+      list<number<Cmp::template f<xs, x>::value ? 1 : 0>...>,
       list<to_false<xs>...>
     >::value>::template f<list<xs..., x>, list<xs...>>;
   };
@@ -133,3 +140,4 @@ namespace jln::mp::detail
   : mk_unique<cfe<std::is_same>, C>
   {};
 }
+/// \endcond

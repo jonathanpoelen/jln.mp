@@ -13,6 +13,7 @@ namespace jln::mp
   using is_na = same_as<na>;
   using violation = always<na>;
 
+  /// \cond
   namespace detail
   {
     template<class, class, class = void>
@@ -21,7 +22,14 @@ namespace jln::mp
     template<class x>
     struct _try_invoke_dispatch;
   }
+  /// \endcond
 
+  /// \ingroup functional
+
+  /// If `F::f\<xs...\>` is a valid expression other than `na`,
+  /// `TC::f\<result\>` is used, otherwhise `FC::f\<xs...\>`.
+  /// \pre `F::f\<xs...\>` must be a SFINAE compatible expression
+  /// \return \value
   template<class F, class TC = identity, class FC = violation>
   struct try_invoke;
 
@@ -50,6 +58,7 @@ namespace jln::mp
 
 namespace jln::mp
 {
+  /// \cond
   template<class F>
   struct try_invoke<F, always<true_>, always<false_>>
   {
@@ -65,8 +74,10 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::_try_invoke<F, list<xs...>>::type;
   };
+  /// \endcond
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class, class, class>
@@ -95,3 +106,4 @@ namespace jln::mp::detail
     using f = typename FC::template f<xs...>;
   };
 }
+/// \endcond

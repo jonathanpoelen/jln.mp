@@ -7,12 +7,25 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<int>
     struct _fold_left;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// folds left over a list using a binary predicate.
+  /// fold left consideres the first element in the input pack the state,
+  /// use `push_front<>` to add state if needed
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   F::f<... F::f<state, xs[0]>, x[1]>, ..., x[n-1]>, ...>
+  ///   \endcode
+  /// \return \value
   template<class F, class C = identity>
   struct fold_left
   {
@@ -33,6 +46,7 @@ namespace jln::mp
 }
 
 
+/// \cond
 namespace jln::mp::detail
 {
 #define JLN_MP_FOLD_LEFT_SELECT(n, mp_xs, _, mp_dup)  \
@@ -75,3 +89,4 @@ namespace jln::mp::detail
     using f = state;
   };
 }
+/// \endcond

@@ -7,6 +7,7 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<unsigned>
@@ -18,7 +19,12 @@ namespace jln::mp
         + detail::n_8_or_less_16_64_256(n);
     }
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Reverses the order of the elements of a \sequence.
+  /// \return \sequence
   template<class C = listify>
   struct reverse
   {
@@ -39,6 +45,7 @@ namespace jln::mp
 #include "../list/join.hpp"
 #include "../utility/conditional.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
 #define JLN_MP_REVERSE_IMPL(n, mp_xs, mp_rxs, mp_rep)    \
@@ -92,3 +99,4 @@ namespace jln::mp::detail
 
 #undef JLN_MP_REVERSE_IMPL
 }
+/// \endcond

@@ -8,6 +8,7 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template <unsigned n>
@@ -20,7 +21,25 @@ namespace jln::mp
         : (n < 0 ? (size && n % size ? size + n % size : 0) : n);
     }
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Rotates the elements of a \sequence around a pivot.
+  /// \tparam N  a negative value start to end of sequence. The final offset is a modulo of `sizeof...(xs)`.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///     n = 0
+  ///     len = sizeof...(xs)
+  ///     if (len) {
+  ///       n = N::value
+  ///       if (n < 0) n = len + (n % len)
+  ///       n = n % len
+  ///     }
+  ///     C::f<...xs[n:], ...xs[:n]>
+  ///   \endcode
+  /// \return \sequence
   template <class N, class C = listify>
   struct rotate
   {
@@ -48,6 +67,7 @@ namespace jln::mp
 }
 
 
+/// \cond
 namespace jln::mp::detail
 {
 #define JLN_MP_ROTATE_IMPL(n, mp_xs, mp_rxs, _)           \
@@ -88,3 +108,4 @@ namespace jln::mp::detail
 #undef JLN_MP_ROTATE_IMPL2
 #undef JLN_MP_ROTATE_IMPL
 } // namespace jln::mp
+/// \endcond

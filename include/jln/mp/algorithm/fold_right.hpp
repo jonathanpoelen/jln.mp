@@ -7,12 +7,25 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<int>
     struct _fold_right;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// folds right over a list using a binary predicate.
+  /// fold right consideres the first element in the input pack the state,
+  /// use `push_front<>` to add state if needed
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   F::f<x[0], ..., F::<x[n-2], F::f<xs[n-1], state>>>
+  ///   \endcode
+  /// \return \value
   template<class F, class C = identity>
   struct fold_right
   {
@@ -33,6 +46,7 @@ namespace jln::mp
 }
 
 
+/// \cond
 namespace jln::mp::detail
 {
 #define JLN_MP_FOLD_RIGHT_SELECT(n, mp_xs, mp_rxs, mp_dup) \
@@ -74,3 +88,4 @@ namespace jln::mp::detail
     using f = state;
   };
 }
+/// \endcond

@@ -6,12 +6,32 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<class, unsigned>
     struct _cartesian;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Computes the cartesian product of \lists.
+  /// \pre emp::is_list\<seqs\> && ...
+  /// \post sizeof...(result) == (emp::size\<seqs\> * ...) if sizeof...(xs) != 0 else 0
+  /// \semantics
+  ///   \code
+  ///   call<cartesian<listify>,
+  ///     list<_0, _1, _2>,
+  ///     list<_3, _4>,
+  ///     list<_5>
+  ///   > = list<
+  ///     list<_0, _3, _5>, list<_0, _4, _5>,
+  ///     list<_1, _3, _5>, list<_1, _4, _5>,
+  ///     list<_2, _3, _5>, list<_2, _4, _5>
+  ///   >
+  ///   \endcode
+  /// \return \sequence
   template<class C = listify>
   struct cartesian
   {
@@ -33,6 +53,7 @@ namespace jln::mp
 #include "../list/join.hpp"
 #include "../functional/call.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class, class>
@@ -114,3 +135,4 @@ namespace jln::mp::detail
       ::template f<typename _product1<seq>::type, seqs...>;
   };
 }
+/// \endcond

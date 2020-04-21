@@ -6,6 +6,10 @@
 
 namespace jln::mp
 {
+  /// \ingroup list
+
+  /// Inserts elements at the start of \c L list.
+  /// \return \sequence
   template<class L, class C = listify>
   using prepend = push_front<L, unpack<C>>;
 

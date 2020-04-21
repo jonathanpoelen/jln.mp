@@ -4,6 +4,8 @@
 
 namespace jln::mp
 {
+  /// \ingroup number
+
   using int_ = std::intmax_t;
 
   template<int_ v>

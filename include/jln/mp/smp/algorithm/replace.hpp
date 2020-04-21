@@ -15,5 +15,5 @@ namespace jln::mp::smp
 
   template<class T, class U, class C = listify>
   using replace = contract<
-    mp::replace<T, U, monadic_xs_if_na<U, subcontract<C>>>>;
+    mp::replace<T, U, monadic_if_na<U, monadic_xs, subcontract<C>>>>;
 }

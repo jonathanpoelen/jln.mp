@@ -2,6 +2,7 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<class Pred>
@@ -13,10 +14,19 @@ namespace jln::mp
     template<bool>
     struct _list_wrap_if_c;
   }
+  /// \endcond
 
+  /// \ingroup list
+
+  /// Returns a \list with the first element if the predicate is checked, otherwise returns a empty list.
+  /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
+  /// \return \list
   template<class Pred>
   using list_wrap_if = typename detail::mk_list_wrap_if<Pred>::type;
 
+  /// Returns a \list with the first element if the predicate is not checked, otherwise returns a empty list.
+  /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
+  /// \return \list
   template<class Pred>
   using list_wrap_if_not = typename detail::mk_list_wrap_if_not<Pred>::type;
 
@@ -43,6 +53,7 @@ namespace jln::mp
 #include "../functional/fork.hpp"
 #include "../number/operators.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<>
@@ -127,3 +138,4 @@ namespace jln::mp::detail
   : mk_list_wrap_if<Pred>
   {};
 }
+/// \endcond

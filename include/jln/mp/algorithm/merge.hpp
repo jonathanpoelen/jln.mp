@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../list/as_list.hpp"
 #include "../number/operators.hpp"
 
 #include <type_traits>
@@ -8,21 +7,33 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
-    template<class x>
-    struct _unpack_merge;
-
     template<bool, bool>
     struct _dispatch_merge;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Merges two \list into one sorted \sequence.
+  /// \pre emp::is_sorted\<seq1, Cmp\> == true_
+  /// \pre emp::is_sorted\<seq2, Cmp\> == true_
+  /// \post emp::is_sorted\<result...\> == true_
+  /// \return \sequence
   template<class Cmp = less<>, class C = listify>
   struct merge
   {
     template<class seq1, class seq2>
-    using f = call<unpack<C>, typename detail::_dispatch_merge<std::is_same<seq1, list<>>::value, std::is_same<seq2, list<>>::value>
-      ::template f<seq1, seq2>::template f<Cmp>::type>;
+    using f = call<unpack<C>,
+      typename detail::_dispatch_merge<
+        std::is_same<seq1, list<>>::value,
+        std::is_same<seq2, list<>>::value
+      >
+      ::template f<seq1, seq2>
+      ::template f<Cmp>::type
+    >;
   };
 
   namespace emp
@@ -38,19 +49,23 @@ namespace jln::mp
 #include "../list/drop.hpp"
 #include "../detail/type_identity.hpp"
 
-#include <type_traits>
-
 namespace jln::mp
 {
+  /// \cond
   template<class Cmp>
   struct merge<Cmp, listify>
   {
     template<class seq1, class seq2>
-    using f = typename detail::_dispatch_merge<std::is_same<seq1, list<>>::value, std::is_same<seq2, list<>>::value>
-      ::template f<seq1, seq2>::template f<Cmp>::type;
+    using f = typename detail::_dispatch_merge<
+      std::is_same<seq1, list<>>::value,
+      std::is_same<seq2, list<>>::value
+    >::template f<seq1, seq2>
+    ::template f<Cmp>::type;
   };
+  /// \endcond
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class, class, class, class>
@@ -72,32 +87,6 @@ namespace jln::mp::detail
   {
     template<class x, class y>
     using f = always<type_identity<list<>>>;
-  };
-
-  template<template<class...> class Tpl, class... xs>
-  struct _unpack_merge<Tpl<xs...>>
-  {
-    template<class>
-    struct right
-    {};
-
-    template<template<class...> class Tpl2, class... ys>
-    struct right<Tpl2<ys...>>
-    {
-      template<class cmp>
-      using f = typename _merge<list<xs...>, list<ys...>>::template f<cmp>;
-    };
-  };
-
-  template<template<class...> class Tpl>
-  struct _unpack_merge<Tpl<>>
-  {
-    template<class L>
-    struct right
-    {
-      template<class cmp>
-      using f = unpack<listify>;
-    };
   };
 
   constexpr int _fast_merge_impl_select(bool b, int xn, int yn)
@@ -267,3 +256,4 @@ namespace jln::mp::detail
     using f = _merge_impl<list<>, y, z, cmp>;
   };
 }
+/// \endcond

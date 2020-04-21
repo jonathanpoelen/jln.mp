@@ -4,12 +4,18 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<class Cmp, class C>
     struct mk_is_unique;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Checks whether no \values are identical.
+  /// \return \number
   template<class C = identity>
   using is_unique = typename detail::mk_is_unique<cfe<std::is_same>, C>::type;
 
@@ -30,6 +36,7 @@ namespace jln::mp
 #include "../functional/fork.hpp"
 #include "../number/to_bool.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class C>
@@ -66,3 +73,4 @@ namespace jln::mp::detail
   : mk_is_unique<cfe<std::is_same>, C>
   {};
 }
+/// \endcond

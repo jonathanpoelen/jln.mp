@@ -8,6 +8,8 @@
 #if __cplusplus >= 201703L
 namespace jln::mp
 {
+  /// \ingroup value
+
   template<class C = listify>
   struct values
   {

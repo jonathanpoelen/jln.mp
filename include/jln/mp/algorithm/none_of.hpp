@@ -4,6 +4,10 @@
 
 namespace jln::mp
 {
+  /// \ingroup algorithm
+
+  /// Checks whether a predicate does not hold for any element of a \sequence.
+  /// \return \boolean
   template<class Pred, class C = identity>
   using none_of = any_of<Pred, not_<C>>;
 

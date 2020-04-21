@@ -8,9 +8,15 @@
 
 namespace jln::mp
 {
+  /// \ingroup algorithm
+
+  /// Replaces every occurrence that satisfy a predicate by some \value.
+  /// \return \sequence
   template<class Pred, class T, class C = listify>
   using replace_if = transform<if_<Pred, always<T>, identity>, C>;
 
+  /// Replaces every occurrence of a \value by another \value.
+  /// \return \sequence
   template<class T, class U, class C = listify>
   using replace = replace_if<same_as<T>, U, C>;
 

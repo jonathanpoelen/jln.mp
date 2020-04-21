@@ -15,6 +15,8 @@ JLN_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wlogical-op")
 
 namespace jln::mp
 {
+  /// \ingroup value
+
   template<class C = identity>
   struct or_v
   {

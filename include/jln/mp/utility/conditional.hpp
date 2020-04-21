@@ -2,6 +2,8 @@
 
 namespace jln::mp
 {
+  /// \ingroup utility
+
   template<bool>
   struct conditional_c
   {
@@ -9,12 +11,14 @@ namespace jln::mp
     using f = x;
   };
 
+  /// \cond
   template<>
   struct conditional_c<false>
   {
     template<class x, class y>
     using f = y;
   };
+  /// \endcond
 
   template<class v>
   using conditional = conditional_c<bool(v::value)>;

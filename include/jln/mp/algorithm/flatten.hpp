@@ -7,6 +7,7 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<template<class...> class, class>
@@ -15,7 +16,12 @@ namespace jln::mp
     template<class S>
     struct wrapper;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// converts a tree or list of lists into one list containing the contents of all children.
+  /// \return \sequence
   template<class S = cfe<list>, class C = listify>
   struct flatten;
 
@@ -38,6 +44,7 @@ namespace jln::mp
   }
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class...> class, class T>
@@ -58,3 +65,4 @@ namespace jln::mp::detail
     using type = cfe<S>;
   };
 }
+/// \endcond

@@ -6,12 +6,18 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<int_ n>
     struct _repeat;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Returns a \sequence that contains a \number of copies of the same \sequence.
+  /// \return \sequence
   template<class N, class C = listify>
   struct repeat
   {
@@ -41,6 +47,7 @@ namespace jln::mp
 #include "../functional/call.hpp"
 #include "../utility/always.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<>
@@ -64,3 +71,4 @@ namespace jln::mp::detail
     using f = transform<always<list<xs...>>, join<C>>;
   };
 }
+/// \endcond

@@ -2,6 +2,8 @@
 
 namespace jln::mp
 {
+  /// \ingroup functional
+
   template<class... xs>
   struct capture
   {

@@ -6,6 +6,20 @@
 
 namespace jln::mp
 {
+  /// \ingroup group
+
+  /// Splits a sequence at an arbitrary position.
+  /// \pre i >= 0 && i <= sizeof...(xs)
+  /// \return \sequence of two \values
+  template<class i, class F = listify, class C = listify>
+  using split_at_with = fork<take<i, F>, drop<i, F>, C>;
+
+  template<int_ i, class F = listify, class C = listify>
+  using split_at_with_c = split_at_with<number<i>, F, C>;
+
+  /// Splits a sequence at an arbitrary position.
+  /// \pre i >= 0 && i <= sizeof...(xs)
+  /// \return \sequence of two \lists
   template<class i, class C = listify>
   using split_at = fork<take<i>, drop<i>, C>;
 
@@ -14,6 +28,12 @@ namespace jln::mp
 
   namespace emp
   {
+    template<class L, class i, class F = mp::listify, class C = mp::listify>
+    using split_at_with = unpack<L, mp::split_at_with<i, F, C>>;
+
+    template<class L, int_ i, class F = mp::listify, class C = mp::listify>
+    using split_at_with_c = unpack<L, mp::split_at_with_c<i, F, C>>;
+
     template<class L, class i, class C = mp::listify>
     using split_at = unpack<L, mp::split_at<i, C>>;
 

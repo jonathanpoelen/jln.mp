@@ -6,6 +6,7 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<class, class>
@@ -17,11 +18,19 @@ namespace jln::mp
     template<class F>
     struct _recurse_fix_next;
   }
+  /// \endcond
 
   template<class>
   struct stop_iteration
   {};
 
+  /// \ingroup functional
+
+  /// Recursively calls `F` until `stop_iteration`.
+  /// The first call uses `F::f\<xs...\>`, the following calls `F::f\<result\>`
+  /// \return \value
+  /// \see fix
+  /// \see recurse_fix
   template<class F, class C = identity>
   struct recurse
   {
@@ -30,6 +39,11 @@ namespace jln::mp
       ::template f<C>;
   };
 
+  /// Recursively calls `F` until `stop_iteration`.
+  /// The first call uses `F::f\<F, xs...\>`, the following calls `F::f\<F, result\>`
+  /// \return \value
+  /// \see fix
+  /// \see recurse
   template<class F, class C = identity>
   struct recurse_fix
   {
@@ -52,6 +66,7 @@ namespace jln::mp
 
 #include "../functional/call.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class F, class x>
@@ -191,3 +206,4 @@ namespace jln::mp::detail
     using f = typename C::template f<x>;
   };
 }
+/// \endcond

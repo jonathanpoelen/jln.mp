@@ -5,6 +5,10 @@
 
 namespace jln::mp
 {
+  /// \ingroup list
+
+  /// Returns the number of elements in a \c xs.
+  /// \return \number
   template<class C = identity>
   struct size
   {

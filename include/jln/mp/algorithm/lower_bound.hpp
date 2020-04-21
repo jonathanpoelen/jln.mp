@@ -4,6 +4,7 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<int>
@@ -14,7 +15,14 @@ namespace jln::mp
     template<class>
     struct optimize_cmp;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Finds first element that is not less than (i.e. greater or equal to) `x`.
+  /// Calls `FC` with all the elements since the one found at the end. If no element is found, `NFC` is used
+  /// \pre is_sorted\<Cmp\>::f\<xs...\> == true_
+  /// \return \sequence
   template<class x, class Cmp = less<>, class C = listify, class NC = C>
   struct lower_bound
   {
@@ -62,6 +70,7 @@ namespace jln::mp
 #include "../functional/flip.hpp"
 #include "../functional/try_invoke.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class Cmp>
@@ -224,3 +233,4 @@ namespace jln::mp::detail
 #undef JLN_MP_LOWER_BOUND_PRED_CALL
 #undef JLN_MP_LOWER_BOUND_SMP_PRED_CALL
 }
+/// \endcond

@@ -45,6 +45,8 @@ namespace jln::mp
   }
   /// \endcond
 
+  /// \ingroup functional
+
   /// Memoization version of \link call.
   template<class C, class... xs>
   using memoize_call = typename detail::_memoizer<C, xs...>::type;

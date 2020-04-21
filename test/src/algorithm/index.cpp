@@ -12,10 +12,6 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<index_of, int>();
-
-  ut::same<_2, emp::index_of<seq_0_1_2_3, _2>>();
-
   test_context<
     index_for<always<_3>>,
     smp::index_for<smp::always<_3>>
@@ -35,6 +31,21 @@ TEST()
     .not_invocable<void>()
     ;
 
+  ut::not_invocable<smp::index_for<always<void>, bad_function>, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::index_for<always<_3>, bad_function>, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::index_for<bad_function, bad_function>, _1, _1, _1, _1, _1>();
+}
+
+TEST()
+{
+  using namespace jln::mp;
+  using namespace ut::ints;
+
+  test_pack2<index_of, int>();
+
+  ut::same<_2, emp::index_of<seq_0_1_2_3, _2>>();
+  ut::same<na, emp::index_of<seq_0_1_2_3, int>>();
+
   test_context<
     index_if<equal_than<_3>>,
     smp::index_if<smp::equal_than<_3>>
@@ -47,9 +58,6 @@ TEST()
     ;
 
   ut::not_invocable<smp::index_of<void, bad_function, bad_function>, _1, _1, _1, _1>();
-  ut::not_invocable<smp::index_for<always<void>, bad_function>, _1, _1, _1, _1, _1>();
-  ut::not_invocable<smp::index_for<always<_3>, bad_function>, _1, _1, _1, _1, _1>();
-  ut::not_invocable<smp::index_for<bad_function, bad_function>, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::index_if<always<void>, bad_function, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::index_if<always<_1>, bad_function, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::index_if<bad_function, bad_function, bad_function>, _1, _1, _1, _1>();

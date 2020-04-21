@@ -5,12 +5,18 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<int>
     struct _intersperse;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Insert a \value between each element of a \sequence.
+  /// \return \list
   template<class x, class C = listify>
   struct intersperse
   {
@@ -34,6 +40,7 @@ namespace jln::mp
 #include "../list/pop_front.hpp"
 #include "../utility/always.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<>
@@ -54,3 +61,4 @@ namespace jln::mp::detail
     >::type;
   };
 }
+/// \endcond

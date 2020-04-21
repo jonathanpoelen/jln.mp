@@ -1,12 +1,12 @@
 #pragma once
 
-#include "list.hpp"
+#include "../functional/identity.hpp"
 #include "../../list/as_list.hpp"
 
 namespace jln::mp::smp
 {
-  template<class C = listify>
-  using as_list = try_contract<mp::as_list<subcontract<C>>>;
+  template<class C = identity>
+  using as_list = try_contract<mp::as_list<assume_unary<C>>>;
 }
 
 namespace jln::mp::detail

@@ -9,6 +9,7 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template <bool>
@@ -20,7 +21,22 @@ namespace jln::mp
     inline constexpr int_ split_skip = 3;
     // inline constexpr int_ split_na = 4;
   }
+  /// \endcond
 
+  /// \ingroup group
+
+  /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
+  /// \semantics
+  ///   \code
+  ///   call<split_if<same_as<void>, _0, _1, _2, _0, _3> == list<
+  ///     list<>,
+  ///     list<_1, _2>,
+  ///     list<_3>
+  ///   >
+  ///   \endcode
+  /// \return \sequence of \list
+  /// \see split_before_if
+  /// \see split_after_if
   template<class Pred = identity, class C = listify>
   struct split_if
   {
@@ -42,6 +58,7 @@ namespace jln::mp
   }
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template <class x, class state>
@@ -90,3 +107,4 @@ namespace jln::mp::detail
     using f = typename C::template f<>;
   };
 }
+/// \endcond

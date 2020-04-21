@@ -7,6 +7,10 @@
 
 namespace jln::mp
 {
+  /// \ingroup algorithm
+
+  /// Executes `F` on every element of a \sequence.
+  /// \return \sequence
   template<class F, class C = listify>
   struct transform
   {
@@ -22,6 +26,7 @@ namespace jln::mp
 }
 
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class T>
@@ -55,3 +60,4 @@ namespace jln::mp::detail
       ::template f<C>;
   };
 }
+/// \endcond

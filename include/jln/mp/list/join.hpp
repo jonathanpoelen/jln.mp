@@ -9,12 +9,19 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<std::size_t n JLN_MP_DEBUG_A(class = err::all_parameters_must_be_of_type_mp_list)>
     struct _join_select;
   }
+  /// \endcond
 
+  /// \ingroup list
+
+  /// Concatenates \lists.
+  /// \pre \c seqs must be a \sequence of \list
+  /// \return \sequence
   template<class C = listify>
   struct join
   {
@@ -32,6 +39,7 @@ namespace jln::mp
 #include "../config/enumerate.hpp"
 #include "../../cxx/diagnostic.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<std::size_t n JLN_MP_DEBUG_A(class error)>
@@ -82,3 +90,4 @@ namespace jln::mp::detail
   JLN_DIAGNOSTIC_POP
 
 } // namespace jln::mp::detail
+/// \endcond

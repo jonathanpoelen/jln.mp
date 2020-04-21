@@ -5,12 +5,18 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<class x, class = void>
     struct _has_value;
   }
+  /// \endcond
 
+  /// \ingroup value
+
+  /// Check is a \value to a value member.
+  /// \return \boolean
   template<class C = identity>
   struct has_value
   {
@@ -29,6 +35,7 @@ namespace jln::mp
   }
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class x, class>
@@ -43,3 +50,4 @@ namespace jln::mp::detail
     using type = true_;
   };
 }
+/// \endcond

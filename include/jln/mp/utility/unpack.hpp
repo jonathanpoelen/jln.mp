@@ -2,12 +2,22 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template <class L> struct _unpack;
     template <class L> struct _unpack_append;
   }
+  /// \endcond
 
+  /// \ingroup utility
+
+  /// Turns a \typelist into a \sequence of those types.
+  /// \semantics
+  ///   \code
+  ///   unpack<F>::f<typelist<xs...>, ys...> == F::f<ys..., xs...>
+  ///   \endcode
+  /// \return \sequence
   template<class C>
   struct unpack
   {
@@ -15,6 +25,12 @@ namespace jln::mp
     using f = typename detail::_unpack<seq>::template f<C, xs...>;
   };
 
+  /// Turns a \typelist into a \sequence of those types.
+  /// \semantics
+  ///   \code
+  ///   reverse_unpack<F>::f<typelist<xs...>, ys...> == F::f<xs..., ys...>
+  ///   \endcode
+  /// \return \sequence
   template<class C>
   struct unpack_append
   {
@@ -35,6 +51,7 @@ namespace jln::mp
 
 #include "../list/list.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class...> class Seq, class... ys>
@@ -72,3 +89,4 @@ namespace jln::mp::detail
   template<class C>
   using optimize_useless_unpack_t = typename optimize_useless_unpack<C>::type;
 }
+/// \endcond

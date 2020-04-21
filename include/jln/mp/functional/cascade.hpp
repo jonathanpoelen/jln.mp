@@ -2,12 +2,21 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<class, class...>
     struct _cascade;
   }
+  /// \endcond
 
+  /// \ingroup list
+
+  /// Recursively applies \functions to nested \typelist of \typelists.
+  /// \semantics:
+  ///   \code
+  ///     cascade<F0,F1,F2> = transform<unpack<transform<unpack<F2>, F1>>, F0>
+  ///   \endcode
   template<class F, class... Fs>
   using cascade = typename detail::_cascade<F, Fs...>::type;
 }
@@ -16,6 +25,7 @@ namespace jln::mp
 #include "../algorithm/transform.hpp"
 #include "../utility/unpack.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class F, class... Fs>
@@ -36,3 +46,4 @@ namespace jln::mp::detail
     using type = transform<F>;
   };
 }
+/// \endcond

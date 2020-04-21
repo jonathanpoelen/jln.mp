@@ -6,12 +6,19 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<int n, class Cmp>
     struct _sort;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Sorts the elements of a \sequence according to an ordering relation.
+  /// \post is_sorted\<result...\> == true_
+  /// \return \sequence
   template<class Cmp = less<>, class C = listify>
   struct sort
   {
@@ -39,13 +46,7 @@ namespace jln::mp
 
 namespace jln::mp
 {
-  template<class cmp>
-  struct as_cmp
-  {
-    template<class x, class y>
-    using f = number<bool(cmp::template f<x, y>::value)>;
-  };
-
+  /// \cond
   template<class Cmp>
   struct sort<Cmp, listify>
   {
@@ -53,8 +54,10 @@ namespace jln::mp
     using f = typename detail::_sort<detail::min(3, sizeof...(xs)), Cmp>
       ::template f<xs...>;
   };
+  /// \endcond
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class Cmp>
@@ -103,3 +106,4 @@ namespace jln::mp::detail
     using f = list<>;
   };
 }
+/// \endcond

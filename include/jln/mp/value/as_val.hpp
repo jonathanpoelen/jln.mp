@@ -6,6 +6,10 @@
 
 namespace jln::mp
 {
+  /// \ingroup value
+
+  /// Convert a \value to \val.
+  /// \return \boolean
   template<class C = identity>
   struct as_val
   {

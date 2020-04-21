@@ -7,12 +7,29 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<bool>
     struct _group_n;
   }
+  /// \endcond
 
+  /// \ingroup group
+
+  /// Split a sequence by arbitrary size group.
+  /// \post If n \<= 0, then the result sequence is empty
+  /// \semantics
+  ///   \code
+  ///   call<group_n<number<2>>,
+  ///     void, void, int, void, void
+  ///   > = list<
+  ///     list<void, void>,
+  ///     list<int, void>,
+  ///     list<void>
+  ///   >
+  ///   \endcode
+  /// \return \sequence
   template<class n, class C = listify>
   struct group_n
   {
@@ -39,6 +56,7 @@ namespace jln::mp
 #include "make_int_sequence.hpp"
 #include "../list/pop_front.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<int_... i>
@@ -68,3 +86,4 @@ namespace jln::mp::detail
     using f = typename C::template f<>;
   };
 }
+/// \endcond

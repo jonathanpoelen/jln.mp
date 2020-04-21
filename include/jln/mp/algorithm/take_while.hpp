@@ -9,12 +9,18 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<class>
     struct _take_while;
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Take elements from a \sequence while the predicate is satisfied.
+  /// \return \sequence
   template<class Pred, class C = listify, class NC = C>
   using take_while = fork_front<index_if<
     Pred, fork<identity, always<C>, cfe<take>>, always<NC>>>;
@@ -26,6 +32,7 @@ namespace jln::mp
   }
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class n>
@@ -42,3 +49,4 @@ namespace jln::mp::detail
     using f = NC;
   };
 }
+/// \endcond

@@ -7,6 +7,7 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template<int, unsigned>
@@ -14,7 +15,14 @@ namespace jln::mp
 
     constexpr unsigned _first_find_select(unsigned n);
   }
+  /// \endcond
 
+  /// \ingroup algorithm
+
+  /// Finds the first element that satisfy a predicate.
+  /// Calls `FC` with all the elements since the one found at the end.
+  /// If no element is found, `NFC` is used
+  /// \return \sequence
   template<class Pred, class C = listify, class NC = C>
   struct find_if
   {
@@ -41,6 +49,7 @@ namespace jln::mp
 #include "../config/enumerate.hpp"
 #include "../list/drop.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   constexpr unsigned _first_find_select(unsigned n)
@@ -166,3 +175,4 @@ namespace jln::mp::detail
 
 #undef JLN_MP_FIND_IMPL
 }
+/// \endcond

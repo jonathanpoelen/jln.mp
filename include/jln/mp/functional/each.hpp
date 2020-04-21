@@ -7,18 +7,33 @@
 
 namespace jln::mp
 {
+  /// \cond
   namespace detail
   {
     template <class C, class... Fs>
     struct _each;
   }
+  /// \endcond
 
+  /// \ingroup functional
+
+  /// Invokes multiple functions each taking the parameter corresponding to its position.
+  /// \pre sizeof...(Fs) >= 1
+  /// \pre sizeof...(xs) == sizeof...(Fs) - 1
+  /// \semantics
+  ///   \code
+  ///   each\<Fs...,C\>::f\<xs...\> == C::f\<Fs::f\<xs\>...\>
+  ///   \endcode
+  /// \return \value
+  /// \see fork
+  /// \see partial
   template <class... Fs>
   struct each
   : rotate<number<-1>, cfe<detail::_each>>
   ::template f<Fs...>
   {};
 
+  /// \cond
   template <class C>
   struct each<C> : detail::_each<C>
   {};
@@ -34,8 +49,10 @@ namespace jln::mp
   template <class F0, class F1, class F2, class C>
   struct each<F0, F1, F2, C> : detail::_each<C, F0, F1, F2>
   {};
+  /// \endcond
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template <class C, class... Fs>
@@ -45,3 +62,4 @@ namespace jln::mp::detail
     using f = call<C, call<Fs, xs>...>;
   };
 } // namespace jln::mp
+/// \endcond

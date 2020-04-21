@@ -7,6 +7,10 @@
 
 namespace jln::mp
 {
+  /// \ingroup functional
+
+  /// A conditional expression.
+  /// \return \value
   template<class Pred, class TC, class FC = always<false_>>
   struct if_
   {

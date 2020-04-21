@@ -5,15 +5,19 @@
 
 namespace jln::mp::smp
 {
+  template<class F = listify, class C = listify>
+  using matrix_shortest_with = try_contract<
+    mp::matrix_shortest_with<subcontract<F>, subcontract<C>>>;
+
   template<class C = listify>
-  using matrix_shortest = try_contract<mp::matrix_shortest<subcontract<C>>>;
+  using matrix_shortest = matrix_shortest_with<listify, C>;
 }
 
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, matrix_shortest<C>>
+  template<template<class> class sfinae, class F, class C>
+  struct _sfinae<sfinae, matrix_shortest_with<F, C>>
   {
-    using type = smp::matrix_shortest<sfinae<C>>;
+    using type = smp::matrix_shortest_with<sfinae<F>, sfinae<C>>;
   };
 }

@@ -6,6 +6,10 @@
 
 namespace jln::mp
 {
+  /// \ingroup number
+
+  /// Narrowing convertion from \value to \boolean.
+  /// \return \boolean
   template<class C = identity>
   struct as_bool
   {
