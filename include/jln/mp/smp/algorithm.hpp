@@ -1,6 +1,7 @@
 #pragma once
 
 #include "algorithm/accumulate.hpp"
+#include "algorithm/adjacent_remove.hpp"
 #include "algorithm/all_of.hpp"
 #include "algorithm/any_of.hpp"
 #include "algorithm/cartesian.hpp"
@@ -28,7 +29,6 @@
 #include "algorithm/partition.hpp"
 #include "algorithm/permutations.hpp"
 #include "algorithm/powerset.hpp"
-#include "algorithm/remove_adjacent.hpp"
 #include "algorithm/remove.hpp"
 #include "algorithm/repeat.hpp"
 #include "algorithm/replace.hpp"

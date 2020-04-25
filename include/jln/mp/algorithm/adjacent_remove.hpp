@@ -10,7 +10,7 @@ namespace jln::mp
   namespace detail
   {
     template<class>
-    struct _remove_adjacent;
+    struct _adjacent_remove;
   }
   /// \endcond
 
@@ -19,10 +19,10 @@ namespace jln::mp
   /// Removes each element in a \sequence which respect a predicate with privious element.
   /// \return \sequence
   template<class BinaryPred, class C = listify>
-  struct remove_adjacent_if
+  struct adjacent_remove_if
   {
     template<class... xs>
-    using f = typename detail::_remove_adjacent<
+    using f = typename detail::_adjacent_remove<
       rotate_c<-1>::template f<xs...>
     >::template f<C, BinaryPred, xs...>;
   };
@@ -30,15 +30,15 @@ namespace jln::mp
   /// Removes each element in a \sequence which is the same type as the privious element.
   /// \return \sequence
   template<class C = listify>
-  using remove_adjacent = remove_adjacent_if<same<>, C>;
+  using adjacent_remove = adjacent_remove_if<same<>, C>;
 
   namespace emp
   {
     template<class L, class BinaryPred, class C = mp::listify>
-    using remove_adjacent_if = unpack<L, mp::remove_adjacent_if<BinaryPred, C>>;
+    using adjacent_remove_if = unpack<L, mp::adjacent_remove_if<BinaryPred, C>>;
 
     template<class L, class C = mp::listify>
-    using remove_adjacent = unpack<L, mp::remove_adjacent<C>>;
+    using adjacent_remove = unpack<L, mp::adjacent_remove<C>>;
   }
 }
 
@@ -50,7 +50,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<class y, class... ys>
-  struct _remove_adjacent<list<y, ys...>>
+  struct _adjacent_remove<list<y, ys...>>
   {
     template<class C, class BinaryPred, class x, class... xs>
     using f = typename join<C>::template f<
@@ -59,7 +59,7 @@ namespace jln::mp::detail
   };
 
   template<class>
-  struct _remove_adjacent
+  struct _adjacent_remove
   {
     template<class C, class...>
     using f = typename C::template f<>;

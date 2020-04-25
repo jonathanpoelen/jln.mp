@@ -50,26 +50,26 @@ t_1_11 = executable('partition', 'test/src/algorithm/partition.cpp', dependencie
 t_1_12 = executable('unique', 'test/src/algorithm/unique.cpp', dependencies: test_dep, build_by_default: false)
 t_1_13 = executable('is_unique', 'test/src/algorithm/is_unique.cpp', dependencies: test_dep, build_by_default: false)
 t_1_14 = executable('is_sorted', 'test/src/algorithm/is_sorted.cpp', dependencies: test_dep, build_by_default: false)
-t_1_15 = executable('permutations', 'test/src/algorithm/permutations.cpp', dependencies: test_dep, build_by_default: false)
-t_1_16 = executable('same', 'test/src/algorithm/same.cpp', dependencies: test_dep, build_by_default: false)
-t_1_17 = executable('all_of', 'test/src/algorithm/all_of.cpp', dependencies: test_dep, build_by_default: false)
-t_1_18 = executable('cartesian', 'test/src/algorithm/cartesian.cpp', dependencies: test_dep, build_by_default: false)
-t_1_19 = executable('replace', 'test/src/algorithm/replace.cpp', dependencies: test_dep, build_by_default: false)
-t_1_20 = executable('group', 'test/src/algorithm/group.cpp', dependencies: test_dep, build_by_default: false)
-t_1_21 = executable('make_int_sequence', 'test/src/algorithm/make_int_sequence.cpp', dependencies: test_dep, build_by_default: false)
-t_1_22 = executable('split_after', 'test/src/algorithm/split_after.cpp', dependencies: test_dep, build_by_default: false)
-t_1_23 = executable('none_of', 'test/src/algorithm/none_of.cpp', dependencies: test_dep, build_by_default: false)
-t_1_24 = executable('combine', 'test/src/algorithm/combine.cpp', dependencies: test_dep, build_by_default: false)
-t_1_25 = executable('split_before', 'test/src/algorithm/split_before.cpp', dependencies: test_dep, build_by_default: false)
-t_1_26 = executable('find', 'test/src/algorithm/find.cpp', dependencies: test_dep, build_by_default: false)
-t_1_27 = executable('any_of', 'test/src/algorithm/any_of.cpp', dependencies: test_dep, build_by_default: false)
-t_1_28 = executable('zip', 'test/src/algorithm/zip.cpp', dependencies: test_dep, build_by_default: false)
-t_1_29 = executable('upper_bound', 'test/src/algorithm/upper_bound.cpp', dependencies: test_dep, build_by_default: false)
-t_1_30 = executable('merge', 'test/src/algorithm/merge.cpp', dependencies: test_dep, build_by_default: false)
-t_1_31 = executable('fold_right', 'test/src/algorithm/fold_right.cpp', dependencies: test_dep, build_by_default: false)
-t_1_32 = executable('repeat', 'test/src/algorithm/repeat.cpp', dependencies: test_dep, build_by_default: false)
-t_1_33 = executable('split_at', 'test/src/algorithm/split_at.cpp', dependencies: test_dep, build_by_default: false)
-t_1_34 = executable('remove_adjacent', 'test/src/algorithm/remove_adjacent.cpp', dependencies: test_dep, build_by_default: false)
+t_1_15 = executable('adjacent_remove', 'test/src/algorithm/adjacent_remove.cpp', dependencies: test_dep, build_by_default: false)
+t_1_16 = executable('permutations', 'test/src/algorithm/permutations.cpp', dependencies: test_dep, build_by_default: false)
+t_1_17 = executable('same', 'test/src/algorithm/same.cpp', dependencies: test_dep, build_by_default: false)
+t_1_18 = executable('all_of', 'test/src/algorithm/all_of.cpp', dependencies: test_dep, build_by_default: false)
+t_1_19 = executable('cartesian', 'test/src/algorithm/cartesian.cpp', dependencies: test_dep, build_by_default: false)
+t_1_20 = executable('replace', 'test/src/algorithm/replace.cpp', dependencies: test_dep, build_by_default: false)
+t_1_21 = executable('group', 'test/src/algorithm/group.cpp', dependencies: test_dep, build_by_default: false)
+t_1_22 = executable('make_int_sequence', 'test/src/algorithm/make_int_sequence.cpp', dependencies: test_dep, build_by_default: false)
+t_1_23 = executable('split_after', 'test/src/algorithm/split_after.cpp', dependencies: test_dep, build_by_default: false)
+t_1_24 = executable('none_of', 'test/src/algorithm/none_of.cpp', dependencies: test_dep, build_by_default: false)
+t_1_25 = executable('combine', 'test/src/algorithm/combine.cpp', dependencies: test_dep, build_by_default: false)
+t_1_26 = executable('split_before', 'test/src/algorithm/split_before.cpp', dependencies: test_dep, build_by_default: false)
+t_1_27 = executable('find', 'test/src/algorithm/find.cpp', dependencies: test_dep, build_by_default: false)
+t_1_28 = executable('any_of', 'test/src/algorithm/any_of.cpp', dependencies: test_dep, build_by_default: false)
+t_1_29 = executable('zip', 'test/src/algorithm/zip.cpp', dependencies: test_dep, build_by_default: false)
+t_1_30 = executable('upper_bound', 'test/src/algorithm/upper_bound.cpp', dependencies: test_dep, build_by_default: false)
+t_1_31 = executable('merge', 'test/src/algorithm/merge.cpp', dependencies: test_dep, build_by_default: false)
+t_1_32 = executable('fold_right', 'test/src/algorithm/fold_right.cpp', dependencies: test_dep, build_by_default: false)
+t_1_33 = executable('repeat', 'test/src/algorithm/repeat.cpp', dependencies: test_dep, build_by_default: false)
+t_1_34 = executable('split_at', 'test/src/algorithm/split_at.cpp', dependencies: test_dep, build_by_default: false)
 t_1_35 = executable('count', 'test/src/algorithm/count.cpp', dependencies: test_dep, build_by_default: false)
 t_1_36 = executable('split', 'test/src/algorithm/split.cpp', dependencies: test_dep, build_by_default: false)
 t_1_37 = executable('powerset', 'test/src/algorithm/powerset.cpp', dependencies: test_dep, build_by_default: false)
@@ -220,6 +220,7 @@ executable('check_inc', [
   'test/autogen/algorithm@powerset.hpp.cpp',
   'test/autogen/smp@functional@eval.hpp.cpp',
   'test/autogen/smp@value@values.hpp.cpp',
+  'test/autogen/algorithm@adjacent_remove.hpp.cpp',
   'test/autogen/functional@capture.hpp.cpp',
   'test/autogen/list@front.hpp.cpp',
   'test/autogen/algorithm@zip.hpp.cpp',
@@ -254,6 +255,7 @@ executable('check_inc', [
   'test/autogen/smp@sfinae.hpp.cpp',
   'test/autogen/smp@algorithm@index.hpp.cpp',
   'test/autogen/smp@algorithm@any_of.hpp.cpp',
+  'test/autogen/smp@algorithm@adjacent_remove.hpp.cpp',
   'test/autogen/smp@list@slice.hpp.cpp',
   'test/autogen/smp@number@as_number.hpp.cpp',
   'test/autogen/functional@call.hpp.cpp',
@@ -279,6 +281,7 @@ executable('check_inc', [
   'test/autogen/smp@algorithm@rotate.hpp.cpp',
   'test/autogen/smp@algorithm@repeat.hpp.cpp',
   'test/autogen/smp@algorithm@sort.hpp.cpp',
+  'test/autogen/config@config.hpp.cpp',
   'test/autogen/functional@if.hpp.cpp',
   'test/autogen/algorithm@flatten.hpp.cpp',
   'test/autogen/utility@always.hpp.cpp',
@@ -301,7 +304,6 @@ executable('check_inc', [
   'test/autogen/list@erase.hpp.cpp',
   'test/autogen/list@insert_range.hpp.cpp',
   'test/autogen/list@back.hpp.cpp',
-  'test/autogen/algorithm@remove_adjacent.hpp.cpp',
   'test/autogen/smp@algorithm@copy.hpp.cpp',
   'test/autogen/smp@algorithm@upper_bound.hpp.cpp',
   'test/autogen/algorithm@transform.hpp.cpp',
@@ -352,7 +354,6 @@ executable('check_inc', [
   'test/autogen/smp@utility@always.hpp.cpp',
   'test/autogen/utility@same_as.hpp.cpp',
   'test/autogen/smp@algorithm@accumulate.hpp.cpp',
-  'test/autogen/smp@algorithm@remove_adjacent.hpp.cpp',
   'test/autogen/functional@fix.hpp.cpp',
   'test/autogen/smp@algorithm@split_at.hpp.cpp',
   'test/autogen/smp@algorithm@same.hpp.cpp',
