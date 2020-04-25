@@ -21,9 +21,9 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v1
     - run: |
-        ls --color=always
         python -m pip install ninja meson
-        CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }}
+        CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }} -Djln_color=always
+        ./tools/optimize_ninja.sh build
         CLICOLOR_FORCE= ninja -C build -k10 all mp
     
   macos:
@@ -40,7 +40,8 @@ jobs:
     - uses: actions/setup-python@v1
     - run: |
         python -m pip install ninja meson
-        meson setup build -Dmp_debug=${{ matrix.debug }}
+        meson setup build -Dmp_debug=${{ matrix.debug }} -Djln_color=always
+        ./tools/optimize_ninja.sh build
         CLICOLOR_FORCE= ninja -C build -k10 all mp
 
   windows:
@@ -67,6 +68,6 @@ jobs:
         set CC=clang-cl
         :after_vc
         python -m pip install ninja meson
-        meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }}
+        meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Djln_color=always
         type D:\a\jln.mp\jln.mp\build\meson-logs\meson-log.txt
         ninja -C build -k10 all mp
