@@ -71,6 +71,7 @@ namespace jln::mp
 }
 
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class F>
@@ -144,3 +145,4 @@ namespace jln::mp::detail
 
 #undef JLN_MP_MK_ASSUME
 }
+/// \endcond

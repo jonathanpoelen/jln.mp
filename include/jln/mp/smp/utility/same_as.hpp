@@ -10,6 +10,7 @@ namespace jln::mp::smp
   using same_as = try_contract<mp::same_as<x, assume_unary<C>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class x, class C>
@@ -20,3 +21,4 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT2(argument_category::unary, same_as);
 }
+/// \endcond

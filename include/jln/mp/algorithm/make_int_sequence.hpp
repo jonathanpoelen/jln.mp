@@ -45,7 +45,7 @@ namespace jln::mp
   /// \endcond
 
 
-  /// \ingroup ints
+  /// \ingroup number
 
   /// Generates an incremental sequence of \c n \c int_.
   /// \return \sequence

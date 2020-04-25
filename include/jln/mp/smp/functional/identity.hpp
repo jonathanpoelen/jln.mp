@@ -10,6 +10,7 @@ namespace jln::mp::smp
   using identity = try_contract<mp::identity>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae>
@@ -20,3 +21,4 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::unary, (), (identity));
 }
+/// \endcond

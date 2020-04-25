@@ -12,6 +12,7 @@ namespace jln::mp::smp
 
 JLN_MP_MAKE_REGULAR_SMP1_P(conditional, (x), smp::conditional_c<bool(x::value)>)
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, bool b>
@@ -22,3 +23,4 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (bool b), (conditional_c<b>));
 }
+/// \endcond

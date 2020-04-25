@@ -11,11 +11,13 @@
 #include "../../algorithm/accumulate.hpp"
 #include "../../number/operators.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class F, class C>
   struct _smp_accumulate;
 }
+/// \endcond
 
 namespace jln::mp::smp
 {
@@ -27,6 +29,7 @@ namespace jln::mp::smp
     detail::_smp_accumulate<assume_binary<F>, assume_unary<C>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class F, class C>
@@ -43,3 +46,4 @@ namespace jln::mp::detail
       mp::fold_left<mp::monadic0<F>, mp::monadic<C>>>>, seqs...>;
   };
 }
+/// \endcond

@@ -22,6 +22,7 @@ JLN_MP_MAKE_REGULAR_SMP2_P(is_size_of, (N), (C, smp::identity), smp::is_size_of_
 JLN_MP_MAKE_REGULAR_SMP2_P(is_size_larger_than, (N), (C, smp::identity),
   smp::is_size_larger_than_c<N::value, C>)
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class N, class C>
@@ -30,3 +31,4 @@ namespace jln::mp::detail
     using type = smp::is_size_of<N, sfinae<C>>;
   };
 }
+/// \endcond

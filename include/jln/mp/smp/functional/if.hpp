@@ -26,6 +26,7 @@ namespace jln::mp::smp
   >;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class Pred, class TC, class FC>
@@ -34,3 +35,4 @@ namespace jln::mp::detail
     using type = smp::if_<sfinae<Pred>, sfinae<TC>, sfinae<FC>>;
   };
 }
+/// \endcond

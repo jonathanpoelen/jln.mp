@@ -2,6 +2,7 @@
 
 #include "../../functional/identity.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class x>
@@ -22,8 +23,10 @@ namespace jln::mp::detail
   template<class x>
   using sfinae_once = typename detail::_sfinae<detail::_sfinae_once, x>::type;
 }
+/// \endcond
 
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class x>
@@ -45,3 +48,4 @@ namespace jln::mp::detail
     using type = typename _sfinae<emp::identity, x>::type;
   };
 }
+/// \endcond

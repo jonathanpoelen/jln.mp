@@ -23,6 +23,7 @@ namespace jln::mp::smp
   using zip_with = zip<contract_barrier<transform<unpack<F>, C>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
@@ -31,3 +32,4 @@ namespace jln::mp::detail
     using type = smp::zip<sfinae<C>>;
   };
 }
+/// \endcond

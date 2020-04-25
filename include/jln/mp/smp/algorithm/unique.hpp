@@ -21,6 +21,7 @@ namespace jln::mp::smp
 #include "../algorithm/same.hpp"
 #include "../utility/unpack.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae>
@@ -54,3 +55,4 @@ namespace jln::mp::detail
   : mk_unique<subcontract_barrier<smp::cfe<std::is_same>>, C>
   {};
 }
+/// \endcond

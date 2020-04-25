@@ -3,6 +3,7 @@
 #include "../assume.hpp"
 #include "../../functional/capture.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class... xs>
@@ -15,6 +16,7 @@ namespace jln::mp::detail
 
   bad_contract smp_reverse_capture_v(...);
 }
+/// \endcond
 
 namespace jln::mp::smp
 {
@@ -38,6 +40,7 @@ namespace jln::mp::smp
   using reverse_capture_c = try_contract<mp::reverse_capture_c<xs...>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class... xs>
@@ -76,3 +79,4 @@ namespace jln::mp::detail
     using type = smp::reverse_capture_c<xs...>;
   };
 }
+/// \endcond

@@ -24,6 +24,7 @@ namespace jln::mp::smp
     mp::find<T, subcontract<C>, subcontract<NC>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class Pred, class C, class NC>
@@ -32,3 +33,4 @@ namespace jln::mp::detail
     using type = smp::find_if<sfinae<Pred>, sfinae<C>, sfinae<NC>>;
   };
 }
+/// \endcond

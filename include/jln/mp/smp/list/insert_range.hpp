@@ -7,11 +7,13 @@
 #include "../functional/fork.hpp"
 #include "../../list/insert_range.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class>
   struct _smp_insert_range_dispatch;
 }
+/// \endcond
 
 namespace jln::mp::smp
 {
@@ -23,6 +25,7 @@ namespace jln::mp::smp
 JLN_MP_MAKE_REGULAR_SMP3_P(insert_range, (I), (seq), (C, smp::listify),
   smp::insert_range_c<I::value, seq, C>)
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class... xs>
@@ -49,3 +52,4 @@ namespace jln::mp::detail
     using f = bad_contract;
   };
 }
+/// \endcond

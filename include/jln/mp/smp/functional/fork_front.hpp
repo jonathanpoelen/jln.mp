@@ -11,6 +11,7 @@ namespace jln::mp::smp
     F, mp::cfe<try_subcontract>, mp::always<mp::violation>>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class F>
@@ -19,3 +20,4 @@ namespace jln::mp::detail
     using type = smp::fork_front<sfinae<F>>;
   };
 }
+/// \endcond

@@ -6,6 +6,7 @@
 #include "../list/size.hpp"
 #include "../list/push_back.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class...> class Tpl, class C, int i = 0>
@@ -15,6 +16,7 @@ namespace jln::mp::detail
       try_invoke<Tpl<assume_unary<C>>>,
       always<val<i>, assume_unary<C>>>>;
 }
+/// \endcond
 
 namespace jln::mp::smp
 {
@@ -178,6 +180,7 @@ namespace jln::mp::smp
   using greater_equal_than_c_v = greater_equal_than_v<val<x>, C>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
@@ -324,3 +327,4 @@ namespace jln::mp::detail
     using type = smp::greater_equal_v<sfinae<C>>;
   };
 }
+/// \endcond

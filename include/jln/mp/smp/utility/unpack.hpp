@@ -14,6 +14,7 @@ namespace jln::mp::smp
 
 #include "../list/list.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
@@ -65,3 +66,4 @@ namespace jln::mp::detail
     using type = contract<identity>;
   };
 }
+/// \endcond

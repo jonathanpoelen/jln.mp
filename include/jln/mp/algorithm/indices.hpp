@@ -5,7 +5,7 @@
 
 namespace jln::mp
 {
-  /// \ingroup ints
+  /// \ingroup number
 
   /// Replaces each element of a \sequence by its corresponding index.
   /// \return \sequence

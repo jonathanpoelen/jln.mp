@@ -7,6 +7,7 @@
 #include "../list/size.hpp"
 #include "../list/push_back.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class...> class Tpl, class C, int_ i = 0>
@@ -16,6 +17,7 @@ namespace jln::mp::detail
       try_invoke<Tpl<assume_number<C>>>,
       always<number<i>, assume_number<C>>>>;
 }
+/// \endcond
 
 namespace jln::mp::smp
 {
@@ -179,6 +181,7 @@ namespace jln::mp::smp
   using greater_equal_than_c = greater_equal_than<number<n>, C>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
@@ -341,3 +344,4 @@ namespace jln::mp::detail
   // JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, greater);
   // JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, greater_equal);
 }
+/// \endcond

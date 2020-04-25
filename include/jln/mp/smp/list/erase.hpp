@@ -12,6 +12,7 @@ namespace jln::mp::smp
 JLN_MP_MAKE_REGULAR_SMP3_P(erase, (start), (size, number<1>), (C, smp::listify),
   smp::erase_c<start::value, size::value, C>)
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class start, class size, class C>
@@ -20,3 +21,4 @@ namespace jln::mp::detail
     using type = smp::erase<start, size, sfinae<C>>;
   };
 }
+/// \endcond

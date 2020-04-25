@@ -17,6 +17,7 @@ namespace jln::mp::smp
 }
 
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
@@ -41,3 +42,4 @@ namespace jln::mp::detail
   : mk_is_unique<subcontract_barrier<smp::cfe<std::is_same>>, C>
   {};
 }
+/// \endcond

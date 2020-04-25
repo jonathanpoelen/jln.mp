@@ -12,6 +12,7 @@ namespace jln::mp::smp
   using iota_v = try_contract<mp::iota_v<subcontract<C>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
@@ -20,3 +21,4 @@ namespace jln::mp::detail
     using type = smp::iota_v<sfinae<C>>;
   };
 }
+/// \endcond

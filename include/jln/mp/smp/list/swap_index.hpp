@@ -3,11 +3,13 @@
 #include "../list/list.hpp"
 #include "../../list/swap_index.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class>
   struct _smp_swap_index;
 }
+/// \endcond
 
 namespace jln::mp::smp
 {
@@ -23,6 +25,7 @@ JLN_MP_MAKE_REGULAR_SMP3_P(swap_index, (i), (j), (C, smp::listify),
 #include "../../list/size.hpp"
 #include "../../number/operators.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<unsigned i, class C>
@@ -47,3 +50,4 @@ namespace jln::mp::detail
   : detail::_smp_swap_index<swap_elem<i, j, sfinae<C>>>
   {};
 }
+/// \endcond

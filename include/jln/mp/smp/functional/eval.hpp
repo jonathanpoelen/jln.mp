@@ -12,6 +12,7 @@ namespace jln::mp::smp
   using eval = try_contract<mp::eval<F, assume_unary<C>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, auto F, class C>
@@ -20,5 +21,6 @@ namespace jln::mp::detail
     using type = smp::eval<F, sfinae<C>>;
   };
 }
+/// \endcond
 #endif
 #endif

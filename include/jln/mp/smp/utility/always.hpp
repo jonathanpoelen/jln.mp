@@ -9,6 +9,7 @@ namespace jln::mp::smp
   using always = contract<mp::always<x, assume_unary<C>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class T, class C>
@@ -17,3 +18,4 @@ namespace jln::mp::detail
     using type = smp::always<T, sfinae<C>>;
   };
 }
+/// \endcond

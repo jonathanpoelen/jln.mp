@@ -3,11 +3,13 @@
 #include "../assume.hpp"
 #include "../../functional/each.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<int>
   struct _smp_each_select;
 }
+/// \endcond
 
 namespace jln::mp::smp
 {
@@ -19,6 +21,7 @@ namespace jln::mp::smp
 
 #include "../../functional/monadic.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class... Fs>
@@ -75,3 +78,4 @@ namespace jln::mp::detail
   : mp::rotate<mp::number<-1>, detail::_smp_each>
   {};
 }
+/// \endcond

@@ -14,6 +14,7 @@ namespace jln::mp::smp
   using make_int_sequence = make_int_sequence_v<numbers<C>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
@@ -24,3 +25,4 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::positive_number, make_int_sequence_v);
 }
+/// \endcond

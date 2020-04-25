@@ -8,6 +8,7 @@ namespace jln::mp::smp
   using listify = contract<mp::listify>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae>
@@ -16,3 +17,4 @@ namespace jln::mp::detail
     using type = smp::listify;
   };
 }
+/// \endcond

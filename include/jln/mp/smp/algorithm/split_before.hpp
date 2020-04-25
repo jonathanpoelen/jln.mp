@@ -13,6 +13,7 @@ namespace jln::mp::smp
   using split_before = contract<mp::split_before<x, assume_lists<C>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class F, class C>
@@ -21,3 +22,4 @@ namespace jln::mp::detail
     using type = smp::split_before_if<sfinae<F>, sfinae<C>>;
   };
 }
+/// \endcond

@@ -5,6 +5,7 @@
 
 namespace jln::mp
 {
+  /// @{
   /// \ingroup list
 
   /// Retrieves an element of a sequence at an arbitrary position.
@@ -15,6 +16,10 @@ namespace jln::mp
 
   template<int_ n, class C = identity>
   using at_c = drop<number<n>, front<C>>;
+  /// @}
+
+  /// @{
+  /// \ingroup list
 
   template<class C = identity>
   using at0 = front<C>;
@@ -45,6 +50,7 @@ namespace jln::mp
 
   template<class C = identity>
   using at9 = drop<number<9>, front<C>>;
+  /// @}
 
   namespace emp
   {

@@ -16,6 +16,7 @@ namespace jln::mp::smp
 
 #include <type_traits>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, template<class...> class F, class C>
@@ -34,3 +35,4 @@ namespace jln::mp::detail
   JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (cfe<std::is_same, C>));
   JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (cfl<std::is_same, C>));
 }
+/// \endcond

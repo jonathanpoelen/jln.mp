@@ -3,11 +3,13 @@
 #include "../assume.hpp"
 #include "../../functional/partial_eager.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<int>
   struct _smp_partial_eager_select;
 }
+/// \endcond
 
 namespace jln::mp::smp
 {
@@ -21,6 +23,7 @@ namespace jln::mp::smp
 #include "../../number/operators.hpp"
 #include "../../list/size.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class... Fs>
@@ -92,3 +95,4 @@ namespace jln::mp::detail
   : mp::rotate<mp::number<-2>, _smp_partial_eager>
   {};
 }
+/// \endcond

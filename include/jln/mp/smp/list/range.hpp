@@ -13,6 +13,7 @@ namespace jln::mp::smp
 JLN_MP_MAKE_REGULAR_SMP3_P(range, (beg), (end), (C, smp::listify),
   smp::range_c<beg::value, end::value, C>)
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class beg, class end, class C>
@@ -21,3 +22,4 @@ namespace jln::mp::detail
     using type = smp::range<beg, end, sfinae<C>>;
   };
 }
+/// \endcond

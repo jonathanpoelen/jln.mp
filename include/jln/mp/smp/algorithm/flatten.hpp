@@ -10,6 +10,7 @@ namespace jln::mp::smp
   using flatten = try_contract<mp::flatten<S, subcontract<C>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class S, class C>
@@ -18,3 +19,4 @@ namespace jln::mp::detail
     using type = smp::flatten<S, sfinae<C>>;
   };
 }
+/// \endcond

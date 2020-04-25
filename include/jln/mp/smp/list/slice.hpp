@@ -3,11 +3,13 @@
 #include "../list/list.hpp"
 #include "../../list/slice.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<bool>
   struct smp_slice_select;
 }
+/// \endcond
 
 namespace jln::mp::smp
 {
@@ -20,6 +22,7 @@ JLN_MP_MAKE_REGULAR_SMP4_P(slice, (start), (size), (stride, number<1>), (C, smp:
   smp::slice_c<start::value, size::value, stride::value, C>)
 
 
+/// \cond
 namespace jln::mp::detail
 {
   template<>
@@ -44,3 +47,4 @@ namespace jln::mp::detail
     using type = smp::slice<start, size, stride, sfinae<C>>;
   };
 }
+/// \endcond

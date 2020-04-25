@@ -11,6 +11,7 @@ namespace jln::mp::smp
 
 JLN_MP_MAKE_REGULAR_SMP2_P(repeat, (N), (C, smp::listify), smp::repeat_c<N::value, C>)
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class N, class C>
@@ -19,3 +20,4 @@ namespace jln::mp::detail
     using type = smp::repeat<N, sfinae<C>>;
   };
 }
+/// \endcond

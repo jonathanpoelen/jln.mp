@@ -8,11 +8,13 @@
 #include "../../list/front.hpp"
 #include "../../algorithm/lower_bound.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class x, class Cmp, class C, class NC>
   struct _smp_lower_bound_impl;
 }
+/// \endcond
 
 namespace jln::mp::smp
 {
@@ -30,6 +32,7 @@ namespace jln::mp::smp
   using lower_bound_than_c = lower_bound<number<x>, less<>, C, NC>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class x, class Cmp, class C, class NC>
@@ -47,3 +50,4 @@ namespace jln::mp::detail
     >::template f<sizeof...(xs), push_back<x, Cmp>, C, NC, xs...>;
   };
 }
+/// \endcond

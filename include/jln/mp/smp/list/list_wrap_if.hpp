@@ -15,6 +15,7 @@ namespace jln::mp::smp
     mp::list_wrap_if_not<try_assume_unary_or_more<Pred>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class Pred>
@@ -29,3 +30,4 @@ namespace jln::mp::detail
     using type = smp::list_wrap_if_not<sfinae<Pred>>;
   };
 }
+/// \endcond

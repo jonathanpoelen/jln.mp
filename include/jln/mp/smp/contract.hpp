@@ -286,4 +286,3 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-

@@ -23,6 +23,7 @@ namespace jln::mp::smp
   using stable_sort = sort<Cmp, C>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class Cmp, class C>
@@ -31,3 +32,4 @@ namespace jln::mp::detail
     using type = smp::sort<sfinae<Cmp>, sfinae<C>>;
   };
 }
+/// \endcond

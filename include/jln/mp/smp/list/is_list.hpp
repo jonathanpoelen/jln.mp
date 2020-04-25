@@ -10,6 +10,7 @@ namespace jln::mp::smp
   using is_list = try_contract<mp::is_list<assume_number<C>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
@@ -20,3 +21,4 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, is_list);
 }
+/// \endcond

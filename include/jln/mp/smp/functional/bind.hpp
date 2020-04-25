@@ -19,6 +19,7 @@ namespace jln::mp::smp
   using bind2nd = partial<identity, F, C>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class F, class... xs>
@@ -33,3 +34,4 @@ namespace jln::mp::detail
     using type = smp::reverse_bind<sfinae<F>, xs...>;
   };
 }
+/// \endcond

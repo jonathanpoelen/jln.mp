@@ -9,6 +9,7 @@ namespace jln::mp::smp
   using size = contract<mp::size<assume_positive_number<C>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
@@ -17,3 +18,4 @@ namespace jln::mp::detail
     using type = smp::size<sfinae<C>>;
   };
 }
+/// \endcond

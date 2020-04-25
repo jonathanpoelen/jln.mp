@@ -9,6 +9,7 @@ namespace jln::mp::smp
   using is_instance_of = try_contract<mp::is_instance_of<Tpl, assume_unary<C>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, template<class...> class Tpl, class C>
@@ -17,3 +18,4 @@ namespace jln::mp::detail
     using type = smp::is_instance_of<Tpl, sfinae<C>>;
   };
 }
+/// \endcond

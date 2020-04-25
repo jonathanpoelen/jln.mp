@@ -6,11 +6,13 @@
 #include "../utility/same_as.hpp"
 #include "../../algorithm/index.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class Pred, class C, class NC>
   struct _smp_index_if;
 }
+/// \endcond
 
 namespace jln::mp::smp
 {
@@ -26,6 +28,7 @@ namespace jln::mp::smp
   using index_of = index_if<same_as<T>, C, NC>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class Pred, class C, class NC>
@@ -54,3 +57,4 @@ namespace jln::mp::detail
     using type = smp::index_if<sfinae<F>, sfinae<C>, sfinae<NC>>;
   };
 }
+/// \endcond

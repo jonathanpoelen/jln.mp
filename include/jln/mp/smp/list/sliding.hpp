@@ -19,6 +19,7 @@ JLN_MP_MAKE_REGULAR_SMP2_P(sliding, (size), (C, smp::listify),
 JLN_MP_MAKE_REGULAR_SMP3_P(sliding_with_stride, (size), (stride), (C, smp::listify),
   smp::sliding_with_stride_c<size::value, stride::value, C>)
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class C>
@@ -45,3 +46,4 @@ namespace jln::mp::detail
     using type = smp_sliding_0size<sfinae<C>>;
   };
 }
+/// \endcond

@@ -15,6 +15,7 @@ namespace jln::mp::smp
   using remove_adjacent = contract<mp::remove_adjacent<subcontract<C>>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class BinaryPred, class C>
@@ -23,3 +24,4 @@ namespace jln::mp::detail
     using type = smp::remove_adjacent_if<sfinae<BinaryPred>, sfinae<C>>;
   };
 }
+/// \endcond
