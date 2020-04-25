@@ -1,6 +1,7 @@
 #pragma once
 
 #include "algorithm/accumulate.hpp"
+#include "algorithm/adjacent_difference.hpp"
 #include "algorithm/adjacent_remove.hpp"
 #include "algorithm/all_of.hpp"
 #include "algorithm/any_of.hpp"
