@@ -22,7 +22,7 @@ namespace jln::mp
   /// \pre 0 \<= start \< sizeof...(xs)
   /// \pre stride \> 0
   /// \pre 0 \<= size * (stride - 1) + 1 \< sizeof...(xs) - start
-  /// \return \sequence
+  /// \treturn \sequence
   template<class start, class size, class stride = number<1>, class C = listify>
   struct slice
   {

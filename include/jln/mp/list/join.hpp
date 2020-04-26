@@ -21,7 +21,7 @@ namespace jln::mp
 
   /// Concatenates \lists.
   /// \pre \c seqs must be a \sequence of \list
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   struct join
   {

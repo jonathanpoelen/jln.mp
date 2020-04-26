@@ -39,7 +39,7 @@ namespace jln::mp
   ///     }
   ///     C::f<...xs[n:], ...xs[:n]>
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   template <class N, class C = listify>
   struct rotate
   {

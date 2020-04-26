@@ -8,8 +8,8 @@ namespace jln::mp
 {
   /// \ingroup number
 
-  /// Narrowing convertion from \value to \boolean.
-  /// \return \boolean
+  /// Narrowing convertion from \value to \bool.
+  /// \treturn \bool
   template<class C = identity>
   struct as_bool
   {

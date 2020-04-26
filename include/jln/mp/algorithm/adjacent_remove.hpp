@@ -17,7 +17,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Removes each element in a \sequence which respect a predicate with privious element.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class BinaryPred, class C = listify>
   struct adjacent_remove_if
   {
@@ -28,7 +28,7 @@ namespace jln::mp
   };
 
   /// Removes each element in a \sequence which is the same type as the privious element.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   using adjacent_remove = adjacent_remove_if<same<>, C>;
 

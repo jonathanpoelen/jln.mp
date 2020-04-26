@@ -18,7 +18,7 @@ namespace jln::mp
 
   /// Extract type paramaters of a template class or union, then constructs a \list.
   /// \pre \c seq must be compatible with template\<class...\> class
-  /// \return \list
+  /// \treturn \list
   template<class C = identity>
   struct as_list
   {

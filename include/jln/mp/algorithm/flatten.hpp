@@ -21,7 +21,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// converts a tree or list of lists into one list containing the contents of all children.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class S = cfe<list>, class C = listify>
   struct flatten;
 

@@ -43,7 +43,7 @@ namespace jln::mp
 
   /// Returns the position of the first occurrence of a specified \value.
   /// Use `NC::f<>` if the value to search for never occurs.
-  /// \return \number
+  /// \treturn \number
   template<class T, class C = listify, class NC = always<na>>
   using index_of = index_if<same_as<T>, C, NC>;
 

@@ -5,21 +5,16 @@
 
 namespace jln::mp
 {
-  /// @{
   /// \ingroup list
 
   /// Retrieves an element of a sequence at an arbitrary position.
   /// \pre 0 \<= N \< sizeof...(xs)
-  /// \return \value
+  /// \treturn \value
   template<class N, class C = identity>
   using at = drop<N, front<C>>;
 
   template<int_ n, class C = identity>
   using at_c = drop<number<n>, front<C>>;
-  /// @}
-
-  /// @{
-  /// \ingroup list
 
   template<class C = identity>
   using at0 = front<C>;

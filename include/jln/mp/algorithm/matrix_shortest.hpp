@@ -43,7 +43,7 @@ namespace jln::mp
   ///     list<_1, _2>
   ///   >
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   /// \note A truncated values becomes a \list
   template<class F = listify, class C = listify>
   struct matrix_shortest_with

@@ -8,7 +8,7 @@ namespace jln::mp
   /// \ingroup number
 
   /// Replaces each element of a \sequence by its corresponding index.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   using indices = size<make_int_sequence<C>>;
 

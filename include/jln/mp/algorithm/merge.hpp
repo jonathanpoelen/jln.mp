@@ -21,7 +21,7 @@ namespace jln::mp
   /// \pre emp::is_sorted\<seq1, Cmp\> == true_
   /// \pre emp::is_sorted\<seq2, Cmp\> == true_
   /// \post emp::is_sorted\<result...\> == true_
-  /// \return \sequence
+  /// \treturn \sequence
   template<class Cmp = less<>, class C = listify>
   struct merge
   {

@@ -27,7 +27,7 @@ namespace jln::mp
   ///   partial_eager\<F,G,C\>::f\<a,b,c,d\> == C\<F\<a\>, G\<b, c, d\>\>
   ///   partial_eager\<F,G,C\>::f\<a\> == C\<F\<a\>, G\<\>\>
   ///   \endcode
-  /// \return \value
+  /// \treturn \value
   /// \see each
   /// \see fork
   /// \see partial

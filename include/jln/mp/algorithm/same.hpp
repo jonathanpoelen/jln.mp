@@ -17,7 +17,7 @@ namespace jln::mp
   /// \ingroup value
 
   /// Checks whether all \values are identical.
-  /// \return \boolean
+  /// \treturn \bool
   template<class C = identity>
   struct same
   {

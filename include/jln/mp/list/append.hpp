@@ -9,7 +9,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Inserts elements at the end of \c L list.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class L, class C = listify>
   using append = push_front<L, unpack_append<C>>;
 

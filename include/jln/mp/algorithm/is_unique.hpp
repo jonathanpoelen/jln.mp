@@ -15,7 +15,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks whether no \values are identical.
-  /// \return \number
+  /// \treturn \number
   template<class C = identity>
   using is_unique = typename detail::mk_is_unique<cfe<std::is_same>, C>::type;
 

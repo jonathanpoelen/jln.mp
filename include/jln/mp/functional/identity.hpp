@@ -4,7 +4,7 @@ namespace jln::mp
 {
   /// \ingroup functional
 
-  /// \return \value
+  /// \treturn \value
   struct identity
   {
     template<class x>

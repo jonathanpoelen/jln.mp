@@ -23,7 +23,7 @@ namespace jln::mp
   ///   \code
   ///   fork\<Fs...,C\>::f\<xs...\> == C::f\<Fs::f\<xs...\>...\>
   ///   \endcode
-  /// \return \value
+  /// \treturn \value
   /// \see each
   /// \see partial
   template <class... Fs>

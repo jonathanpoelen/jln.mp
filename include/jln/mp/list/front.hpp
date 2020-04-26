@@ -8,7 +8,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Retrieves the first element of a sequence.
-  /// \return \value
+  /// \treturn \value
   template<class C = identity>
   struct front
   {

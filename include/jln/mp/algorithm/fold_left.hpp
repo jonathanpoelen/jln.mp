@@ -25,7 +25,7 @@ namespace jln::mp
   ///   \code
   ///   F::f<... F::f<state, xs[0]>, x[1]>, ..., x[n-1]>, ...>
   ///   \endcode
-  /// \return \value
+  /// \treturn \value
   template<class F, class C = identity>
   struct fold_left
   {

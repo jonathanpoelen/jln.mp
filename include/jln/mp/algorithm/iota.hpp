@@ -16,7 +16,7 @@ namespace jln::mp
   /// \ingroup number
 
   /// Generates a sequence of \int_.
-  /// \return \sequence of \int_
+  /// \treturn \sequence of \int_
   /// \see iota
   template<class C = numbers<>>
   struct iota_v
@@ -29,7 +29,7 @@ namespace jln::mp
   /// \ingroup number
 
   /// Generates a sequence of \number.
-  /// \return \sequence of number
+  /// \treturn \sequence of number
   template<class C = listify>
   using iota = iota_v<numbers<C>>;
 

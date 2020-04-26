@@ -8,7 +8,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Retrieves the last element of a sequence.
-  /// \return \value
+  /// \treturn \value
   template<class C = identity>
   using back = rotate<number<-1>, front<C>>;
 

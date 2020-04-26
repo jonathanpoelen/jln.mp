@@ -17,7 +17,7 @@ namespace jln::mp
   ///   \code
   ///   unpack<F>::f<typelist<xs...>, ys...> == F::f<ys..., xs...>
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C>
   struct unpack
   {
@@ -30,7 +30,7 @@ namespace jln::mp
   ///   \code
   ///   reverse_unpack<F>::f<typelist<xs...>, ys...> == F::f<xs..., ys...>
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C>
   struct unpack_append
   {

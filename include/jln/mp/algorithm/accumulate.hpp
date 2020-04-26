@@ -17,7 +17,7 @@ namespace jln::mp
   ///   \code
   ///   fold_left\<F, C\>::f\<state, ...seqs[:]\>
   ///   \endcode
-  /// \return \value
+  /// \treturn \value
   template<class F, class C = identity>
   struct accumulate
   {

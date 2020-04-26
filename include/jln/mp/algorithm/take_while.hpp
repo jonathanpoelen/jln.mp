@@ -20,7 +20,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Take elements from a \sequence while the predicate is satisfied.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class Pred, class C = listify, class NC = C>
   using take_while = fork_front<index_if<
     Pred, fork<identity, always<C>, cfe<take>>, always<NC>>>;

@@ -9,12 +9,12 @@ namespace jln::mp
   /// \ingroup group
 
   /// Splits a \list in two according to a predicate.
-  /// \return \sequence of two \values
+  /// \treturn \sequence of two \values
   template<class Pred, class F = listify, class C = listify>
   using partition_with = fork<remove_if<Pred, F>, copy_if<Pred, F>, C>;
 
   /// Splits a \list in two according to a predicate.
-  /// \return \sequence of two \lists
+  /// \treturn \sequence of two \lists
   template<class Pred, class C = listify>
   using partition = fork<remove_if<Pred>, copy_if<Pred>, C>;
 

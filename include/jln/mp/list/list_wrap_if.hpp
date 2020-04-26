@@ -20,13 +20,13 @@ namespace jln::mp
 
   /// Returns a \list with the first element if the predicate is checked, otherwise returns a empty list.
   /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
-  /// \return \list
+  /// \treturn \list
   template<class Pred>
   using list_wrap_if = typename detail::mk_list_wrap_if<Pred>::type;
 
   /// Returns a \list with the first element if the predicate is not checked, otherwise returns a empty list.
   /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
-  /// \return \list
+  /// \treturn \list
   template<class Pred>
   using list_wrap_if_not = typename detail::mk_list_wrap_if_not<Pred>::type;
 

@@ -9,7 +9,7 @@ namespace jln::mp
   template<class... xs>
   class list {};
 
-  /// \return \link list
+  /// \treturn \link list
   using listify = cfe<list>;
 
   /// \cond

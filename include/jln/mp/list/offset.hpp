@@ -14,7 +14,7 @@ namespace jln::mp
   ///   \code
   ///   size<push_front<I, sub<C>>>
   ///   \endcode
-  /// \return \number
+  /// \treturn \number
   template <class I, class C = identity>
   struct offset
   {

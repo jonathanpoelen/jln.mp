@@ -24,7 +24,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Reverses the order of the elements of a \sequence.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   struct reverse
   {

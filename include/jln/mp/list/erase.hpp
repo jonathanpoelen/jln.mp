@@ -14,7 +14,7 @@ namespace jln::mp
   /// Removes all elements between two arbitrary indices of a sequence.
   /// \pre 0 \<= start \< sizeof...(xs)
   /// \pre 0 \<= start + size \< sizeof...(xs)
-  /// \return \sequence
+  /// \treturn \sequence
   template<class start, class size = number<1>, class C = listify>
   struct erase
   {

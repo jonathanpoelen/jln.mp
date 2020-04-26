@@ -10,7 +10,7 @@ namespace jln::mp
 
   /// Splits a sequence at an arbitrary position.
   /// \pre i >= 0 && i <= sizeof...(xs)
-  /// \return \sequence of two \values
+  /// \treturn \sequence of two \values
   template<class i, class F = listify, class C = listify>
   using split_at_with = fork<take<i, F>, drop<i, F>, C>;
 
@@ -19,7 +19,7 @@ namespace jln::mp
 
   /// Splits a sequence at an arbitrary position.
   /// \pre i >= 0 && i <= sizeof...(xs)
-  /// \return \sequence of two \lists
+  /// \treturn \sequence of two \lists
   template<class i, class C = listify>
   using split_at = fork<take<i>, drop<i>, C>;
 

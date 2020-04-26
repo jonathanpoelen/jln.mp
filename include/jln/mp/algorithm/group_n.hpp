@@ -29,7 +29,7 @@ namespace jln::mp
   ///     list<void>
   ///   >
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   template<class n, class C = listify>
   struct group_n
   {

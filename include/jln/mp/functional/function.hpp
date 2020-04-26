@@ -8,7 +8,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Makes a \function from a \lazymetafunction.
-  /// \return \value
+  /// \treturn \value
   /// \see cfe
   template<template<class...> class F, class C = identity>
   struct cfl
@@ -31,7 +31,7 @@ namespace jln::mp
   /// \endcond
 
   /// Makes a \function from a \metafunction.
-  /// \return \value
+  /// \treturn \value
   /// \see cfl
   template<template<class...> class F, class C = identity>
   struct cfe

@@ -16,7 +16,7 @@ namespace jln::mp
   /// \ingroup value
 
   /// Check is a \value to a type member.
-  /// \return \boolean
+  /// \treturn \bool
   template<class C = identity>
   struct has_type
   {

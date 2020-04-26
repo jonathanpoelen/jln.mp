@@ -18,7 +18,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks if a \sequence is sorted.
-  /// \return \number
+  /// \treturn \number
   template<class Cmp = less<>, class C = identity>
   struct is_sorted
   {

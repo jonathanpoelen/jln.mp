@@ -25,7 +25,7 @@ namespace jln::mp
   ///     list<a, b, c>
   ///   >
   ///   \endcode
-  /// \return \sequence of \list
+  /// \treturn \sequence of \list
   template<class C = listify>
   struct powerset
   {

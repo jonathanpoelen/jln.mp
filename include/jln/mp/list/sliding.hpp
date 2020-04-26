@@ -23,7 +23,7 @@ namespace jln::mp
   /// \tparam stride
   /// \pre stride != 0
   /// \pre size >= 0
-  /// \return \sequence of \list
+  /// \treturn \sequence of \list
   /// Given a sequence and a count n, place a window over the first n elements of the underlying range. Return the contents of that window as the first element of the adapted range, then slide the window forward one element at a time until hitting the end of the underlying range.
   /// \semantics
   ///     If \c stride \< 0, then \c stride = \c stride + \c size

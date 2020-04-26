@@ -34,7 +34,7 @@ namespace jln::mp
   ///     list<_3>
   ///   >
   ///   \endcode
-  /// \return \sequence of \list
+  /// \treturn \sequence of \list
   /// \see split_before_if
   /// \see split_after_if
   template<class Pred = identity, class C = listify>

@@ -15,7 +15,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Checks if \c x is a \list.
-  /// \return \number
+  /// \treturn \number
   template<class C = identity>
   struct is_list
   {

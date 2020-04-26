@@ -15,7 +15,7 @@ namespace jln::mp
 
   /// \ingroup trait
 
-  /// \return \boolean
+  /// \treturn \bool
   template<template<class...> class Tpl, class C = identity>
   struct is_instance_of
   {

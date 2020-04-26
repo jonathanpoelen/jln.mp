@@ -8,7 +8,7 @@ namespace jln::mp
 
   /// Insert an elements at an arbitrary position.
   /// \pre 0 \<= i \< sizeof...(xs)
-  /// \return \sequence
+  /// \treturn \sequence
   template<class i, class x, class C = listify>
   using insert = insert_range<i, list<x>, C>;
 

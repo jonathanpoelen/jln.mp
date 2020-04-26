@@ -18,13 +18,13 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Composition of two \metafunctions or more.
-  /// \return \function
+  /// \treturn \function
   template<template<class...> class F, template<class...> class... Fs>
   using compose_f = typename detail::_compose_f<sizeof...(Fs)>
     ::template f<F, Fs...>;
 
   /// Composition of two \functions or more.
-  /// \return \function
+  /// \treturn \function
   template<class F, class... Fs>
   using compose = typename conditional_c<sizeof...(Fs) == 0>
     ::template f<

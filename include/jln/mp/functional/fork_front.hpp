@@ -7,7 +7,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invoke twice.
-  /// \return \value
+  /// \treturn \value
   template<class F>
   struct fork_front
   {

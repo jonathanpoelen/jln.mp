@@ -18,7 +18,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Creates a set.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   using unique = typename detail::mk_unique<cfe<std::is_same>, C>::type;
 

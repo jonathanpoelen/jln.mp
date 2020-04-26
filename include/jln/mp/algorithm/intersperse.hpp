@@ -16,7 +16,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Insert a \value between each element of a \sequence.
-  /// \return \list
+  /// \treturn \list
   template<class x, class C = listify>
   struct intersperse
   {

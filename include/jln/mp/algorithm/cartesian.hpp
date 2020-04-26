@@ -31,7 +31,7 @@ namespace jln::mp
   ///     list<_2, _3, _5>, list<_2, _4, _5>
   ///   >
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   struct cartesian
   {

@@ -28,7 +28,7 @@ namespace jln::mp
 
   /// Recursively calls `F` until `stop_iteration`.
   /// The first call uses `F::f\<xs...\>`, the following calls `F::f\<result\>`
-  /// \return \value
+  /// \treturn \value
   /// \see fix
   /// \see recurse_fix
   template<class F, class C = identity>
@@ -41,7 +41,7 @@ namespace jln::mp
 
   /// Recursively calls `F` until `stop_iteration`.
   /// The first call uses `F::f\<F, xs...\>`, the following calls `F::f\<F, result\>`
-  /// \return \value
+  /// \treturn \value
   /// \see fix
   /// \see recurse
   template<class F, class C = identity>

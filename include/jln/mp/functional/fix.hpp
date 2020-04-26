@@ -7,7 +7,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invoke a function computing the fixed point of a function.
-  /// \return \value
+  /// \treturn \value
   /// \see recurse
   /// \see recurse_fix
   template<class C>

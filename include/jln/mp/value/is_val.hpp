@@ -17,7 +17,7 @@ namespace jln::mp
   /// \ingroup value
 
   /// Check is a \value is a \val.
-  /// \return \boolean
+  /// \treturn \bool
   template<class C = identity>
   struct is_val
   {

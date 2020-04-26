@@ -10,7 +10,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invoke a lambda function
-  /// \return \value
+  /// \treturn \value
   template<auto F, class C = identity>
   struct eval
   {

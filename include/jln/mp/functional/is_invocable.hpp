@@ -9,7 +9,7 @@ namespace jln::mp
 
   /// Checks if `F::f\<xs...\>` is invocable.
   /// \pre `F::f\<xs...\>` must be a SFINAE compatible expression
-  /// \return \boolean
+  /// \treturn \bool
   template<class F, class C = identity>
   using is_invocable = try_invoke<F, always<true_, C>, always<false_, C>>;
 

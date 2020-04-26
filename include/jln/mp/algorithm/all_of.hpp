@@ -8,7 +8,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks whether a predicate holds for all elements of a \sequence.
-  /// \return \boolean
+  /// \treturn \bool
   template<class Pred, class C = identity>
   using all_of = transform<Pred, and_<C>>;
 

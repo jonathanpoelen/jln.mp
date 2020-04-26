@@ -10,7 +10,7 @@ namespace jln::mp
   /// Calls `FC` with all the elements since the one found at the end.
   /// If no element is found, `NFC` is used
   /// \pre is_sorted\<Cmp\>::f\<xs...\> == true_
-  /// \return \sequence
+  /// \treturn \sequence
   template<class x, class Cmp = less<>, class C = listify, class NC = C>
   using upper_bound = lower_bound<x, flip<fork<Cmp, not_<>>>, C, NC>;
 

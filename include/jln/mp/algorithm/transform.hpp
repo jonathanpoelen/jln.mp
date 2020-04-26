@@ -10,7 +10,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Executes `F` on every element of a \sequence.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class F, class C = listify>
   struct transform
   {

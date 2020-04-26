@@ -16,7 +16,7 @@ namespace jln::mp
   ///     list<_3>
   ///   >
   ///   \endcode
-  /// \return \sequence of \list
+  /// \treturn \sequence of \list
   /// \see split_if
   /// \see split_before_if
   template<class Pred, class C = listify>

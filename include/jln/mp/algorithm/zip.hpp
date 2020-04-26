@@ -33,7 +33,7 @@ namespace jln::mp
   ///     list<_3, _c>
   ///   >
   ///   \endcode
-  /// \return \sequence of \list
+  /// \treturn \sequence of \list
   template<class C = listify>
   using zip = detail::_zip<detail::optimize_useless_transform_unpack_t<C>>;
 

@@ -21,7 +21,7 @@ namespace jln::mp
 
   /// Generates all permutations of \sequence.
   /// \post sizeof...(result) == sizeof...(xs)!
-  /// \return \sequence of \list
+  /// \treturn \sequence of \list
   template<class C = listify>
   struct permutations
   {

@@ -9,7 +9,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Appends \c x to the beginning of the sequence.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class x, class C = listify>
   struct push_front
   {

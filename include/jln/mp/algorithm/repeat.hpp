@@ -17,7 +17,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Returns a \sequence that contains a \number of copies of the same \sequence.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class N, class C = listify>
   struct repeat
   {

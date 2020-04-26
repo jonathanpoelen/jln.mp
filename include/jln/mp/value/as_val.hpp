@@ -9,7 +9,7 @@ namespace jln::mp
   /// \ingroup value
 
   /// Convert a \value to \val.
-  /// \return \boolean
+  /// \treturn \bool
   template<class C = identity>
   struct as_val
   {

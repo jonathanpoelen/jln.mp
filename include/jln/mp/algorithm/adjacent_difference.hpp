@@ -20,7 +20,7 @@ namespace jln::mp
   ///   \code
   ///   adjacent_difference_difference<C>::f<a, b, c> = C::f<a, sub::f<a, b>, sub::f<b, c>>
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   struct adjacent_difference
   {

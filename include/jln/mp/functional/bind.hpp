@@ -7,7 +7,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Partially apply a function to some arguments.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class F, class... xs>
   struct bind
   {
@@ -16,7 +16,7 @@ namespace jln::mp
   };
 
   /// Partially apply a function to some arguments.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class F, class... xs>
   struct reverse_bind
   {

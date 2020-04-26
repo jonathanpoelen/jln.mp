@@ -13,7 +13,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Recursively applies \functions to nested \typelist of \typelists.
-  /// \semantics:
+  /// \semantics
   ///   \code
   ///     cascade<F0,F1,F2> = transform<unpack<transform<unpack<F2>, F1>>, F0>
   ///   \endcode

@@ -9,7 +9,7 @@ namespace jln::mp
 
   /// Extract \c N elements of \sequence.
   /// \pre 0 \<= N \<= sizeof...(xs)
-  /// \return \sequence
+  /// \treturn \sequence
   template<class N, class C = listify>
   struct take
   {

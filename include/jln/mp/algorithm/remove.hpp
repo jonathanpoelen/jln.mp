@@ -10,12 +10,12 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Removes all elements that satisfy a predicate.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class Pred, class C = listify>
   using remove_if = transform<list_wrap_if_not<Pred>, join<C>>;
 
   /// Removes all occurence of a \value.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class T, class C = listify>
   using remove = remove_if<same_as<T>, C>;
 

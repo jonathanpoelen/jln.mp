@@ -9,7 +9,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invoke a \function with its two first arguments reversed.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   struct flip
   {
