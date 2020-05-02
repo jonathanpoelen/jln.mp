@@ -6,12 +6,19 @@ endif
 
 jln_default_flags = {}
 sys = build_machine.system()
+
 # quick compilation
-if sys != 'darwin' and sys != 'windows'
+if not ['darwin', 'windows'].contains(sys)
   jln_default_flags = {
     'debug': 'off',
     'whole_program': 'strip_all',
   }
+endif
+
+comp = meson.get_compiler('cpp').get_id()
+# quick compilation
+if 'windows' != sys and ['clang', 'clang-cl', 'gcc', 'intel'].contains(comp)
+  meson.add_postconf_script('./tools/optimize_ninja.sh')
 endif
 
 subdir('meson_jln_flags')
