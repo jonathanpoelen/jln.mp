@@ -138,12 +138,14 @@ namespace jln::mp::traits
     using extent = typename std::extent<x, i::value>::type;
   }
 
+  /// \cond
   template<>
   struct extent<identity>
   {
     template<class x, class i = number<0>>
     using f = typename std::extent<x, i::value>::type;
   };
+  /// \endcond
 
   // type relations:
   JLN_MP_MAKE_TRAIT(is_same);
@@ -215,12 +217,14 @@ namespace jln::mp::traits
       Len::value, Alignment::value...>::type;
   }
 
+  /// \cond
   template<>
   struct aligned_storage<identity>
   {
     template<class Len, class... Alignment>
     using f = typename std::aligned_storage<Len::value, Alignment::value...>::type;
   };
+  /// \endcond
 
   template<class C = identity>
   struct aligned_union
@@ -235,10 +239,12 @@ namespace jln::mp::traits
     using aligned_union = typename std::aligned_union<len::value, xs...>::type;
   }
 
+  /// \cond
   template<>
   struct aligned_union<identity>
   {
     template<class len, class... xs>
     using f = typename std::aligned_union<len::value, xs...>::type;
   };
+  /// \endcond
 }

@@ -17,7 +17,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup search
 
   /// Finds first element that is not less than (i.e. greater or equal to) `x`.
   /// Calls `FC` with all the elements since the one found at the end. If no element is found, `NFC` is used

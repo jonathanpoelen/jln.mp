@@ -49,8 +49,7 @@ namespace jln::mp
 
   /// Generates an incremental sequence of \c n \c int_.
   /// \treturn \sequence
-  /// \see make_int_sequence
-  /// \see iota
+  /// \see make_int_sequence, iota
   template<class C = numbers<>>
   struct make_int_sequence_v
   {

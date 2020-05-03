@@ -13,7 +13,7 @@ namespace jln::mp
   template<auto v>
   struct val
   {
-    static constexpr decltype(v) const value = v;
+    static constexpr decltype(v) value = v;
   };
 
   template<class T, T v>

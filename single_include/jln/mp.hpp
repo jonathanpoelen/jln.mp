@@ -50,7 +50,7 @@ namespace jln::mp
 {
   /// \ingroup functional
 
-  /// \return \value
+  /// \treturn \value
   struct identity
   {
     template<class x>
@@ -80,7 +80,7 @@ namespace jln::mp
   ///   \code
   ///   unpack<F>::f<typelist<xs...>, ys...> == F::f<ys..., xs...>
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C>
   struct unpack
   {
@@ -93,7 +93,7 @@ namespace jln::mp
   ///   \code
   ///   reverse_unpack<F>::f<typelist<xs...>, ys...> == F::f<xs..., ys...>
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C>
   struct unpack_append
   {
@@ -341,7 +341,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Makes a \function from a \lazymetafunction.
-  /// \return \value
+  /// \treturn \value
   /// \see cfe
   template<template<class...> class F, class C = identity>
   struct cfl
@@ -364,7 +364,7 @@ namespace jln::mp
   /// \endcond
 
   /// Makes a \function from a \metafunction.
-  /// \return \value
+  /// \treturn \value
   /// \see cfl
   template<template<class...> class F, class C = identity>
   struct cfe
@@ -427,7 +427,7 @@ namespace jln::mp
   template<class... xs>
   class list {};
 
-  /// \return \link list
+  /// \treturn \link list
   using listify = cfe<list>;
 
   /// \cond
@@ -483,7 +483,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Appends \c x to the beginning of the sequence.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class x, class C = listify>
   struct push_front
   {
@@ -1913,7 +1913,7 @@ namespace jln::mp
   ///   \code
   ///   F::f<... F::f<state, xs[0]>, x[1]>, ..., x[n-1]>, ...>
   ///   \endcode
-  /// \return \value
+  /// \treturn \value
   template<class F, class C = identity>
   struct fold_left
   {
@@ -2010,7 +2010,7 @@ namespace jln::mp
 
   /// Concatenates \lists.
   /// \pre \c seqs must be a \sequence of \list
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   struct join
   {
@@ -2175,7 +2175,7 @@ namespace jln::mp
   ///   \code
   ///   fold_left\<F, C\>::f\<state, ...seqs[:]\>
   ///   \endcode
-  /// \return \value
+  /// \treturn \value
   template<class F, class C = identity>
   struct accumulate
   {
@@ -2207,20 +2207,21 @@ namespace jln::mp
   /// \ingroup utility
 
   template<bool>
-  struct conditional_c
+  struct conditional_c;
+
+  template<>
+  struct conditional_c<true>
   {
     template<class x, class y>
     using f = x;
   };
 
-  /// \cond
   template<>
   struct conditional_c<false>
   {
     template<class x, class y>
     using f = y;
   };
-  /// \endcond
 
   template<class v>
   using conditional = conditional_c<bool(v::value)>;
@@ -2269,7 +2270,7 @@ namespace jln::mp
   ///     }
   ///     C::f<...xs[n:], ...xs[:n]>
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   template <class N, class C = listify>
   struct rotate
   {
@@ -2356,7 +2357,7 @@ namespace jln::mp
   ///   \code
   ///   adjacent_difference_difference<C>::f<a, b, c> = C::f<a, sub::f<a, b>, sub::f<b, c>>
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   struct adjacent_difference
   {
@@ -2405,7 +2406,7 @@ namespace jln::mp
   /// \ingroup value
 
   /// Checks whether all \values are identical.
-  /// \return \boolean
+  /// \treturn \bool
   template<class C = identity>
   struct same
   {
@@ -2477,7 +2478,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Removes each element in a \sequence which respect a predicate with privious element.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class BinaryPred, class C = listify>
   struct adjacent_remove_if
   {
@@ -2488,7 +2489,7 @@ namespace jln::mp
   };
 
   /// Removes each element in a \sequence which is the same type as the privious element.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   using adjacent_remove = adjacent_remove_if<same<>, C>;
 
@@ -2509,13 +2510,10 @@ namespace jln::mp
   namespace detail
   {
     template<class Pred>
-    struct mk_list_wrap_if;
+    struct mk_wrap_in_list_if;
 
     template<class Pred>
-    struct mk_list_wrap_if_not;
-
-    template<bool>
-    struct _list_wrap_if_c;
+    struct mk_wrap_in_list_if_not;
   }
   /// \endcond
 
@@ -2523,29 +2521,49 @@ namespace jln::mp
 
   /// Returns a \list with the first element if the predicate is checked, otherwise returns a empty list.
   /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
-  /// \return \list
+  /// \treturn \list
   template<class Pred>
-  using list_wrap_if = typename detail::mk_list_wrap_if<Pred>::type;
+  using wrap_in_list_if = typename detail::mk_wrap_in_list_if<Pred>::type;
 
   /// Returns a \list with the first element if the predicate is not checked, otherwise returns a empty list.
   /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
-  /// \return \list
+  /// \treturn \list
   template<class Pred>
-  using list_wrap_if_not = typename detail::mk_list_wrap_if_not<Pred>::type;
+  using wrap_in_list_if_not = typename detail::mk_wrap_in_list_if_not<Pred>::type;
 
   template<bool b>
-  using list_wrap_if_c = detail::_list_wrap_if_c<b>;
+  struct wrap_in_list_c;
+
+  template<>
+  struct wrap_in_list_c<true>
+  {
+    template<class... xs>
+    using f = list<xs...>;
+  };
+
+  template<>
+  struct wrap_in_list_c<false>
+  {
+    template<class>
+    using f = list<>;
+  };
+
+  template<class b>
+  using wrap_in_list = wrap_in_list_c<b::value>;
 
   namespace emp
   {
     template<class Pred, class... xs>
-    using list_wrap_if = typename mp::list_wrap_if<Pred>::template f<xs...>;
+    using wrap_in_list_if = typename mp::wrap_in_list_if<Pred>::template f<xs...>;
 
     template<class Pred, class... xs>
-    using list_wrap_if_not = typename mp::list_wrap_if_not<Pred>::template f<xs...>;
+    using wrap_in_list_if_not = typename mp::wrap_in_list_if_not<Pred>::template f<xs...>;
+
+    template<class b, class... xs>
+    using wrap_in_list = typename mp::wrap_in_list_c<b::value>::template f<xs...>;
 
     template<bool b, class... xs>
-    using list_wrap_if_c = typename mp::list_wrap_if_c<b>::template f<xs...>;
+    using wrap_in_list_c = typename mp::wrap_in_list_c<b>::template f<xs...>;
   }
 }
 
@@ -2553,7 +2571,7 @@ namespace jln::mp
 {
   /// \ingroup utility
 
-  /// \return \boolean
+  /// \treturn \bool
   template <class T, class C = identity>
   struct same_as
   {
@@ -2579,14 +2597,18 @@ namespace jln::mp
   ///   \code
   ///   fork\<Fs...,C\>::f\<xs...\> == C::f\<Fs::f\<xs...\>...\>
   ///   \endcode
-  /// \return \value
-  /// \see each
-  /// \see partial
+  /// \treturn \value
+  /// \see each, partial
   template <class... Fs>
   struct fork
   : rotate<number<-1>, cfe<detail::_fork>>
   ::template f<Fs...>
-  {};
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f = /* unspecified */;
+#endif
+  };
 
   /// \cond
   template <class F, class C>
@@ -2629,7 +2651,7 @@ namespace jln::mp
 
   /// Always evaluate at an arbitrary value.
   /// \post result = x
-  /// \return value
+  /// \treturn value
   template<class x, class C = identity>
   struct always
   {
@@ -2642,7 +2664,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// A conditional expression.
-  /// \return \value
+  /// \treturn \value
   template<class Pred, class TC, class FC = always<false_>>
   struct if_
   {
@@ -2664,7 +2686,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Appends \c x to the end of the sequence
-  /// \return \sequence
+  /// \treturn \sequence
   template<class x, class C = listify>
   struct push_back
   {
@@ -2683,7 +2705,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Returns the number of elements in a \c xs.
-  /// \return \number
+  /// \treturn \number
   template<class C = identity>
   struct size
   {
@@ -3225,86 +3247,71 @@ JLN_DIAGNOSTIC_POP
 /// \cond
 namespace jln::mp::detail
 {
-  template<>
-  struct _list_wrap_if_c<false>
-  {
-    template<class>
-    using f = list<>;
-  };
-
-  template<>
-  struct _list_wrap_if_c<true>
-  {
-    template<class x>
-    using f = list<x>;
-  };
-
-
   template<class Pred>
-  struct _list_wrap_if
+  struct _wrap_in_list_if
   {
     template<class x, class... xs>
-    using f = typename _list_wrap_if_c<call<Pred, x, xs...>::value>::template f<x>;
+    using f = typename wrap_in_list_c<call<Pred, x, xs...>::value>::template f<x>;
   };
 
   template<class Pred>
-  struct mk_list_wrap_if
+  struct mk_wrap_in_list_if
   {
-    using type = _list_wrap_if<Pred>;
+    using type = _wrap_in_list_if<Pred>;
   };
 
   template<class x, class C>
-  struct mk_list_wrap_if<same_as<x, not_<C>>>
-  : mk_list_wrap_if_not<same_as<x, C>>
+  struct mk_wrap_in_list_if<same_as<x, not_<C>>>
+  : mk_wrap_in_list_if_not<same_as<x, C>>
   {};
 
   template<class C>
-  struct mk_list_wrap_if<same<not_<C>>>
-  : mk_list_wrap_if_not<same<C>>
+  struct mk_wrap_in_list_if<same<not_<C>>>
+  : mk_wrap_in_list_if_not<same<C>>
   {};
 
   template<class C>
-  struct mk_list_wrap_if<not_<C>>
-  : mk_list_wrap_if_not<C>
+  struct mk_wrap_in_list_if<not_<C>>
+  : mk_wrap_in_list_if_not<C>
   {};
 
   template<class Pred>
-  struct mk_list_wrap_if<fork<Pred, not_<>>>
-  : mk_list_wrap_if_not<Pred>
+  struct mk_wrap_in_list_if<fork<Pred, not_<>>>
+  : mk_wrap_in_list_if_not<Pred>
   {};
 
 
   template<class Pred>
-  struct _list_wrap_if_not
+  struct _wrap_in_list_if_not
   {
     template<class x, class... xs>
-    using f = typename _list_wrap_if_c<!call<Pred, x, xs...>::value>::template f<x>;
+    using f = typename wrap_in_list_c<!call<Pred, x, xs...>::value>::template f<x>;
   };
 
   template<class Pred>
-  struct mk_list_wrap_if_not
+  struct mk_wrap_in_list_if_not
   {
-    using type = _list_wrap_if_not<Pred>;
+    using type = _wrap_in_list_if_not<Pred>;
   };
 
   template<class x, class C>
-  struct mk_list_wrap_if_not<same_as<x, not_<C>>>
-  : mk_list_wrap_if<same_as<x, C>>
+  struct mk_wrap_in_list_if_not<same_as<x, not_<C>>>
+  : mk_wrap_in_list_if<same_as<x, C>>
   {};
 
   template<class C>
-  struct mk_list_wrap_if_not<same<not_<C>>>
-  : mk_list_wrap_if<same<C>>
+  struct mk_wrap_in_list_if_not<same<not_<C>>>
+  : mk_wrap_in_list_if<same<C>>
   {};
 
   template<class C>
-  struct mk_list_wrap_if_not<not_<C>>
-  : mk_list_wrap_if<C>
+  struct mk_wrap_in_list_if_not<not_<C>>
+  : mk_wrap_in_list_if<C>
   {};
 
   template<class Pred>
-  struct mk_list_wrap_if_not<fork<Pred, not_<>>>
-  : mk_list_wrap_if<Pred>
+  struct mk_wrap_in_list_if_not<fork<Pred, not_<>>>
+  : mk_wrap_in_list_if<Pred>
   {};
 }
 /// \endcond
@@ -3317,7 +3324,7 @@ namespace jln::mp::detail
     template<class C, class BinaryPred, class x, class... xs>
     using f = typename join<C>::template f<
       list<x>,
-      typename list_wrap_if_c<!BinaryPred::template f<xs, ys>::value>::template f<xs>...>;
+      typename wrap_in_list_c<!BinaryPred::template f<xs, ys>::value>::template f<xs>...>;
   };
 
   template<class>
@@ -3333,7 +3340,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Executes `F` on every element of a \sequence.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class F, class C = listify>
   struct transform
   {
@@ -3389,7 +3396,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks whether a predicate holds for all elements of a \sequence.
-  /// \return \boolean
+  /// \treturn \bool
   template<class Pred, class C = identity>
   using all_of = transform<Pred, and_<C>>;
 
@@ -3404,7 +3411,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks whether a predicate holds for at least some element of a \sequence.
-  /// \return \boolean
+  /// \treturn \bool
   template<class Pred, class C = identity>
   using any_of = transform<Pred, or_<C>>;
 
@@ -3441,7 +3448,7 @@ namespace jln::mp
   ///     list<_2, _3, _5>, list<_2, _4, _5>
   ///   >
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   struct cartesian
   {
@@ -3609,9 +3616,8 @@ namespace jln::mp
   /// \ingroup number
 
   /// Generates an incremental sequence of \c n \c int_.
-  /// \return \sequence
-  /// \see make_int_sequence
-  /// \see iota
+  /// \treturn \sequence
+  /// \see make_int_sequence, iota
   template<class C = numbers<>>
   struct make_int_sequence_v
   {
@@ -3759,7 +3765,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Returns a \sequence that contains a \number of copies of the same \sequence.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class N, class C = listify>
   struct repeat
   {
@@ -3813,7 +3819,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Computes all possible combinations (with repetition) from the elements in a \sequence.
-  /// \return \sequence of \list
+  /// \treturn \sequence of \list
   template<class C = listify>
   struct combine
   {
@@ -3833,7 +3839,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Check whether a \value is contained in a \list.
-  /// \return \boolean
+  /// \treturn \bool
   template<class x, class C = identity>
   using contains = any_of<same_as<x>, C>;
   // using contains = find<x, always<true_, C>, always<false_, C>>;
@@ -3849,12 +3855,12 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Removes all elements that satisfy a predicate.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class Pred, class C = listify>
-  using remove_if = transform<list_wrap_if_not<Pred>, join<C>>;
+  using remove_if = transform<wrap_in_list_if_not<Pred>, join<C>>;
 
   /// Removes all occurence of a \value.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class T, class C = listify>
   using remove = remove_if<same_as<T>, C>;
 
@@ -3872,12 +3878,12 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Copy all elements that satisfy a predicate.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class Pred, class C = listify>
   using copy_if = remove_if<fork<Pred, not_<>>, C>;
 
   /// Copy all occurence of a \value.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class x, class C = listify>
   using copy = remove_if<same_as<x, not_<>>, C>;
 
@@ -3894,8 +3900,8 @@ namespace jln::mp
 {
   /// \ingroup number
 
-  /// Convert a \value to a \boolean.
-  /// \return \boolean
+  /// Convert a \value to a \bool.
+  /// \treturn \bool
   template<class C = identity>
   struct to_bool
   {
@@ -3942,12 +3948,12 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup search
 
   /// Finds the first element that satisfy a predicate.
   /// Calls `FC` with all the elements since the one found at the end.
   /// If no element is found, `NFC` is used
-  /// \return \sequence
+  /// \treturn \sequence
   template<class Pred, class C = listify, class NC = C>
   struct find_if
   {
@@ -4003,7 +4009,7 @@ namespace jln::mp
 
   /// Removes \c N elements from the beginning of a \sequence.
   /// \pre 0 \<= N \<= sizeof...(xs)
-  /// \return \sequence
+  /// \treturn \sequence
   template<class N, class C = listify>
   struct drop
   {
@@ -4254,7 +4260,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// converts a tree or list of lists into one list containing the contents of all children.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class S = cfe<list>, class C = listify>
   struct flatten;
 
@@ -4319,7 +4325,7 @@ namespace jln::mp
   ///   \code
   ///   F::f<x[0], ..., F::<x[n-2], F::f<xs[n-1], state>>>
   ///   \endcode
-  /// \return \value
+  /// \treturn \value
   template<class F, class C = identity>
   struct fold_right
   {
@@ -4405,7 +4411,7 @@ namespace jln::mp
   /// If `F::f\<xs...\>` is a valid expression other than `na`,
   /// `TC::f\<result\>` is used, otherwhise `FC::f\<xs...\>`.
   /// \pre `F::f\<xs...\>` must be a SFINAE compatible expression
-  /// \return \value
+  /// \treturn \value
   template<class F, class TC = identity, class FC = violation>
   struct try_invoke;
 
@@ -4506,7 +4512,7 @@ namespace jln::mp
   ///     list<void>
   ///   >
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   template<class Cmp, class C = listify>
   struct group_if
   {
@@ -4556,9 +4562,8 @@ namespace jln::mp
   ///     list<_3>
   ///   >
   ///   \endcode
-  /// \return \sequence of \list
-  /// \see split_before_if
-  /// \see split_after_if
+  /// \treturn \sequence of \list
+  /// \see split_before_if, split_after_if
   template<class Pred = identity, class C = listify>
   struct split_if
   {
@@ -4636,7 +4641,7 @@ namespace jln::mp
 
   /// Extract \c N elements of \sequence.
   /// \pre 0 \<= N \<= sizeof...(xs)
-  /// \return \sequence
+  /// \treturn \sequence
   template<class N, class C = listify>
   struct take
   {
@@ -4679,15 +4684,18 @@ namespace jln::mp
   ///   \code
   ///   partial\<F,G,C\>::f\<a,b,c,d\> == C::f\<F::f\<a\>, G::f\<b\>, c, d\>
   ///   \endcode
-  /// \return \value
-  /// \see each
-  /// \see fork
-  /// \see partial_eager
+  /// \treturn \value
+  /// \see each, fork, partial_eager
   template <class... Fs>
   struct partial
   : rotate<number<-1>, cfe<detail::_partial>>
   ::template f<Fs...>
-  {};
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f = /* unspecified */;
+#endif
+  };
 
   /// \cond
   template <class C>
@@ -4739,14 +4747,18 @@ namespace jln::mp
   ///   \code
   ///   each\<Fs...,C\>::f\<xs...\> == C::f\<Fs::f\<xs\>...\>
   ///   \endcode
-  /// \return \value
-  /// \see fork
-  /// \see partial
+  /// \treturn \value
+  /// \see fork, partial
   template <class... Fs>
   struct each
   : rotate<number<-1>, cfe<detail::_each>>
   ::template f<Fs...>
-  {};
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f = /* unspecified */;
+#endif
+  };
 
   /// \cond
   template <class C>
@@ -4875,7 +4887,7 @@ namespace jln::mp
   ///     list<void>
   ///   >
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   template<class n, class C = listify>
   struct group_n
   {
@@ -4904,7 +4916,7 @@ namespace jln::mp
 
   /// Remove the first element of sequence
   /// \pre sizeof...(xs) \> 0
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   using pop_front = drop<number<1>, C>;
 
@@ -4949,13 +4961,13 @@ namespace jln::mp
 {
   /// \ingroup search
 
-  /// Difference between the number of parameter \a xs and \a I::value.
+  /// Difference between the number of parameter \c xs and \c I::value.
   /// \semantics
   ///   Equivalent to
   ///   \code
   ///   size<push_front<I, sub<C>>>
   ///   \endcode
-  /// \return \number
+  /// \treturn \number
   template <class I, class C = identity>
   struct offset
   {
@@ -5018,7 +5030,7 @@ namespace jln::mp
 
   /// Returns the position of the first occurrence of a specified \value.
   /// Use `NC::f<>` if the value to search for never occurs.
-  /// \return \number
+  /// \treturn \number
   template<class T, class C = listify, class NC = always<na>>
   using index_of = index_if<same_as<T>, C, NC>;
 
@@ -5039,7 +5051,7 @@ namespace jln::mp
   /// \ingroup number
 
   /// Replaces each element of a \sequence by its corresponding index.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   using indices = size<make_int_sequence<C>>;
 
@@ -5062,7 +5074,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Insert a \value between each element of a \sequence.
-  /// \return \list
+  /// \treturn \list
   template<class x, class C = listify>
   struct intersperse
   {
@@ -5107,7 +5119,7 @@ namespace jln::mp
   ///     list<_3, _c>
   ///   >
   ///   \endcode
-  /// \return \sequence of \list
+  /// \treturn \sequence of \list
   template<class C = listify>
   using zip = detail::_zip<detail::optimize_useless_transform_unpack_t<C>>;
 
@@ -5262,7 +5274,7 @@ namespace jln::mp
   /// \ingroup number
 
   /// Generates a sequence of \int_.
-  /// \return \sequence of \int_
+  /// \treturn \sequence of \int_
   /// \see iota
   template<class C = numbers<>>
   struct iota_v
@@ -5275,7 +5287,7 @@ namespace jln::mp
   /// \ingroup number
 
   /// Generates a sequence of \number.
-  /// \return \sequence of number
+  /// \treturn \sequence of number
   template<class C = listify>
   using iota = iota_v<numbers<C>>;
 
@@ -5343,7 +5355,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks if a \sequence is sorted.
-  /// \return \number
+  /// \treturn \number
   template<class Cmp = less<>, class C = identity>
   struct is_sorted
   {
@@ -5419,7 +5431,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Creates a set.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   using unique = typename detail::mk_unique<cfe<std::is_same>, C>::type;
 
@@ -5549,7 +5561,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks whether no \values are identical.
-  /// \return \number
+  /// \treturn \number
   template<class C = identity>
   using is_unique = typename detail::mk_is_unique<cfe<std::is_same>, C>::type;
 
@@ -5620,12 +5632,12 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup search
 
   /// Finds first element that is not less than (i.e. greater or equal to) `x`.
   /// Calls `FC` with all the elements since the one found at the end. If no element is found, `NFC` is used
   /// \pre is_sorted\<Cmp\>::f\<xs...\> == true_
-  /// \return \sequence
+  /// \treturn \sequence
   template<class x, class Cmp = less<>, class C = listify, class NC = C>
   struct lower_bound
   {
@@ -5669,7 +5681,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Retrieves the first element of a sequence.
-  /// \return \value
+  /// \treturn \value
   template<class C = identity>
   struct front
   {
@@ -5700,7 +5712,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invoke a \function with its two first arguments reversed.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   struct flip
   {
@@ -5914,7 +5926,7 @@ namespace jln::mp
   ///     list<_1, _2>
   ///   >
   ///   \endcode
-  /// \return \sequence
+  /// \treturn \sequence
   /// \note A truncated values becomes a \list
   template<class F = listify, class C = listify>
   struct matrix_shortest_with
@@ -5952,7 +5964,7 @@ namespace jln::mp
   /// \pre emp::is_sorted\<seq1, Cmp\> == true_
   /// \pre emp::is_sorted\<seq2, Cmp\> == true_
   /// \post emp::is_sorted\<result...\> == true_
-  /// \return \sequence
+  /// \treturn \sequence
   template<class Cmp = less<>, class C = listify>
   struct merge
   {
@@ -5980,7 +5992,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Inserts elements at the start of \c L list.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class L, class C = listify>
   using prepend = push_front<L, unpack<C>>;
 
@@ -6218,7 +6230,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks whether a predicate does not hold for any element of a \sequence.
-  /// \return \boolean
+  /// \treturn \bool
   template<class Pred, class C = identity>
   using none_of = any_of<Pred, not_<C>>;
 
@@ -6233,12 +6245,12 @@ namespace jln::mp
   /// \ingroup group
 
   /// Splits a \list in two according to a predicate.
-  /// \return \sequence of two \values
+  /// \treturn \sequence of two \values
   template<class Pred, class F = listify, class C = listify>
   using partition_with = fork<remove_if<Pred, F>, copy_if<Pred, F>, C>;
 
   /// Splits a \list in two according to a predicate.
-  /// \return \sequence of two \lists
+  /// \treturn \sequence of two \lists
   template<class Pred, class C = listify>
   using partition = fork<remove_if<Pred>, copy_if<Pred>, C>;
 
@@ -6267,7 +6279,7 @@ namespace jln::mp
 
   /// Generates all permutations of \sequence.
   /// \post sizeof...(result) == sizeof...(xs)!
-  /// \return \sequence of \list
+  /// \treturn \sequence of \list
   template<class C = listify>
   struct permutations
   {
@@ -6520,7 +6532,7 @@ namespace jln::mp
   ///     list<a, b, c>
   ///   >
   ///   \endcode
-  /// \return \sequence of \list
+  /// \treturn \sequence of \list
   template<class C = listify>
   struct powerset
   {
@@ -6588,12 +6600,12 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Replaces every occurrence that satisfy a predicate by some \value.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class Pred, class T, class C = listify>
   using replace_if = transform<if_<Pred, always<T>, identity>, C>;
 
   /// Replaces every occurrence of a \value by another \value.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class T, class U, class C = listify>
   using replace = replace_if<same_as<T>, U, C>;
 
@@ -6625,7 +6637,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Reverses the order of the elements of a \sequence.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   struct reverse
   {
@@ -6712,7 +6724,7 @@ namespace jln::mp
 
   /// Sorts the elements of a \sequence according to an ordering relation.
   /// \post is_sorted\<result...\> == true_
-  /// \return \sequence
+  /// \treturn \sequence
   template<class Cmp = less<>, class C = listify>
   struct sort
   {
@@ -6813,9 +6825,8 @@ namespace jln::mp
   ///     list<_3>
   ///   >
   ///   \endcode
-  /// \return \sequence of \list
-  /// \see split_if
-  /// \see split_before_if
+  /// \treturn \sequence of \list
+  /// \see split_if, split_before_if
   template<class Pred, class C = listify>
   struct split_after_if
   {
@@ -6842,7 +6853,7 @@ namespace jln::mp
 
   /// Splits a sequence at an arbitrary position.
   /// \pre i >= 0 && i <= sizeof...(xs)
-  /// \return \sequence of two \values
+  /// \treturn \sequence of two \values
   template<class i, class F = listify, class C = listify>
   using split_at_with = fork<take<i, F>, drop<i, F>, C>;
 
@@ -6851,7 +6862,7 @@ namespace jln::mp
 
   /// Splits a sequence at an arbitrary position.
   /// \pre i >= 0 && i <= sizeof...(xs)
-  /// \return \sequence of two \lists
+  /// \treturn \sequence of two \lists
   template<class i, class C = listify>
   using split_at = fork<take<i>, drop<i>, C>;
 
@@ -6887,9 +6898,8 @@ namespace jln::mp
   ///     list<_0, _3>
   ///   >
   ///   \endcode
-  /// \return \sequence of \list
-  /// \see split_if
-  /// \see split_after_if
+  /// \treturn \sequence of \list
+  /// \see split_if, split_after_if
   template<class Pred, class C = listify>
   struct split_before_if
   {
@@ -6915,7 +6925,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invoke twice.
-  /// \return \value
+  /// \treturn \value
   template<class F>
   struct fork_front
   {
@@ -6936,7 +6946,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Take elements from a \sequence while the predicate is satisfied.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class Pred, class C = listify, class NC = C>
   using take_while = fork_front<index_if<
     Pred, fork<identity, always<C>, cfe<take>>, always<NC>>>;
@@ -6968,13 +6978,13 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp
 {
-  /// \ingroup algorithm
+  /// \ingroup search
 
   /// Finds first element that is greater that `x`.
   /// Calls `FC` with all the elements since the one found at the end.
   /// If no element is found, `NFC` is used
   /// \pre is_sorted\<Cmp\>::f\<xs...\> == true_
-  /// \return \sequence
+  /// \treturn \sequence
   template<class x, class Cmp = less<>, class C = listify, class NC = C>
   using upper_bound = lower_bound<x, flip<fork<Cmp, not_<>>>, C, NC>;
 
@@ -7007,7 +7017,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Partially apply a function to some arguments.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class F, class... xs>
   struct bind
   {
@@ -7016,7 +7026,7 @@ namespace jln::mp
   };
 
   /// Partially apply a function to some arguments.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class F, class... xs>
   struct reverse_bind
   {
@@ -7089,7 +7099,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Recursively applies \functions to nested \typelist of \typelists.
-  /// \semantics:
+  /// \semantics
   ///   \code
   ///     cascade<F0,F1,F2> = transform<unpack<transform<unpack<F2>, F1>>, F0>
   ///   \endcode
@@ -7122,21 +7132,16 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp
 {
-  /// @{
   /// \ingroup list
 
   /// Retrieves an element of a sequence at an arbitrary position.
   /// \pre 0 \<= N \< sizeof...(xs)
-  /// \return \value
+  /// \treturn \value
   template<class N, class C = identity>
   using at = drop<N, front<C>>;
 
   template<int_ n, class C = identity>
   using at_c = drop<number<n>, front<C>>;
-  /// @}
-
-  /// @{
-  /// \ingroup list
 
   template<class C = identity>
   using at0 = front<C>;
@@ -7167,7 +7172,6 @@ namespace jln::mp
 
   template<class C = identity>
   using at9 = drop<number<9>, front<C>>;
-  /// @}
 
   namespace emp
   {
@@ -7216,18 +7220,18 @@ namespace jln::mp
     template<unsigned> struct _compose_f;
     template<class, class> struct _compose;
   }
-  /// \cond
+  /// \endcond
 
   /// \ingroup functional
 
   /// Composition of two \metafunctions or more.
-  /// \return \function
+  /// \treturn \function
   template<template<class...> class F, template<class...> class... Fs>
   using compose_f = typename detail::_compose_f<sizeof...(Fs)>
     ::template f<F, Fs...>;
 
   /// Composition of two \functions or more.
-  /// \return \function
+  /// \treturn \function
   template<class F, class... Fs>
   using compose = typename conditional_c<sizeof...(Fs) == 0>
     ::template f<
@@ -7318,7 +7322,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invoke a lambda function
-  /// \return \value
+  /// \treturn \value
   template<auto F, class C = identity>
   struct eval
   {
@@ -7340,9 +7344,8 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invoke a function computing the fixed point of a function.
-  /// \return \value
-  /// \see recurse
-  /// \see recurse_fix
+  /// \treturn \value
+  /// \see recurse, recurse_fix
   template<class C>
   struct fix
   {
@@ -7360,9 +7363,9 @@ namespace jln::mp
 {
   /// \ingroup functional
 
-  /// Checks if `F::f\<xs...\>` is invocable.
-  /// \pre `F::f\<xs...\>` must be a SFINAE compatible expression
-  /// \return \boolean
+  /// Checks if \c F::f<xs...> is invocable.
+  /// \pre \c F::f<xs...> must be a SFINAE compatible expression
+  /// \treturn \bool
   template<class F, class C = identity>
   using is_invocable = try_invoke<F, always<true_, C>, always<false_, C>>;
 
@@ -7378,25 +7381,25 @@ namespace jln::mp
 }
 namespace jln::mp
 {
-  /// \ingroup \functional
+  /// \ingroup functional
 
   /// Call another \function if the value is `na`.
-  /// \return \value
+  /// \treturn \value
   template<class C, class FC = violation>
   using monadic = if_<same_as<na>, FC, C>;
 
   /// Call another \function if the first value is `na`.
-  /// \return \value
+  /// \treturn \value
   template<class C, class FC = violation>
   using monadic0 = if_<front<same_as<na>>, FC, C>;
 
   /// Call another \function if there is at least some `na` value.
-  /// \return \value
+  /// \treturn \value
   template<class C, class FC = violation>
   using monadic_xs = if_<transform<same_as<na>, or_<>>, FC, C>;
 
   /// Monadify only if `x` is `na`.
-  /// \return \value
+  /// \treturn \value
   template<class x, template<class...> class M, class C, class FC = violation>
   using monadic_if_na = typename conditional_c<std::is_same<na, x>::value>
     ::template f<M<C, FC>, C>;
@@ -7415,7 +7418,7 @@ namespace jln::mp
 
   /// Invoke multiple functions each taking the parameter corresponding to its position
   /// (the last function takes the remaining parameters or 0)
-  /// then calls `C` with the results
+  /// then calls `C` with the results.
   /// \pre sizeof...(Fs) >= 1
   /// \pre sizeof...(xs) + 1 >= sizeof...(Fs) - 1
   /// \semantics
@@ -7423,15 +7426,18 @@ namespace jln::mp
   ///   partial_eager\<F,G,C\>::f\<a,b,c,d\> == C\<F\<a\>, G\<b, c, d\>\>
   ///   partial_eager\<F,G,C\>::f\<a\> == C\<F\<a\>, G\<\>\>
   ///   \endcode
-  /// \return \value
-  /// \see each
-  /// \see fork
-  /// \see partial
+  /// \treturn \value
+  /// \see each, fork, partial
   template <class... Fs>
   struct partial_eager
   : rotate<number<-2>, cfe<detail::_partial_eager>>
   ::template f<Fs...>::type
-  {};
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f = /* unspecified */;
+#endif
+  };
 
   /// \cond
   template <class C>
@@ -7504,9 +7510,8 @@ namespace jln::mp
 
   /// Recursively calls `F` until `stop_iteration`.
   /// The first call uses `F::f\<xs...\>`, the following calls `F::f\<result\>`
-  /// \return \value
-  /// \see fix
-  /// \see recurse_fix
+  /// \treturn \value
+  /// \see fix, recurse_fix
   template<class F, class C = identity>
   struct recurse
   {
@@ -7517,9 +7522,8 @@ namespace jln::mp
 
   /// Recursively calls `F` until `stop_iteration`.
   /// The first call uses `F::f\<F, xs...\>`, the following calls `F::f\<F, result\>`
-  /// \return \value
-  /// \see fix
-  /// \see recurse
+  /// \treturn \value
+  /// \see fix, recurse
   template<class F, class C = identity>
   struct recurse_fix
   {
@@ -7686,7 +7690,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Inserts elements at the end of \c L list.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class L, class C = listify>
   using append = push_front<L, unpack_append<C>>;
 
@@ -7710,8 +7714,8 @@ namespace jln::mp
   /// \ingroup list
 
   /// Extract type paramaters of a template class or union, then constructs a \list.
-  /// \pre \c seq must be compatible with template\<class...\> class
-  /// \return \list
+  /// \pre \c seq must be compatible with \typelist
+  /// \treturn \list
   template<class C = identity>
   struct as_list
   {
@@ -7763,7 +7767,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Retrieves the last element of a sequence.
-  /// \return \value
+  /// \treturn \value
   template<class C = identity>
   using back = rotate<number<-1>, front<C>>;
 
@@ -7780,7 +7784,7 @@ namespace jln::mp
   /// Removes all elements between two arbitrary indices of a sequence.
   /// \pre 0 \<= start \< sizeof...(xs)
   /// \pre 0 \<= start + size \< sizeof...(xs)
-  /// \return \sequence
+  /// \treturn \sequence
   template<class start, class size = number<1>, class C = listify>
   struct erase
   {
@@ -7815,7 +7819,7 @@ namespace jln::mp
   /// Insert all elements of \c seq at an arbitrary position.
   /// \pre 0 \<= i \< sizeof...(xs)
   /// \pre seq must be a \list
-  /// \return \sequence
+  /// \treturn \sequence
   template<class i, class seq, class C = listify>
   using insert_range = fork<take<i>, always<seq>, drop<i>, join<C>>;
 
@@ -7837,7 +7841,7 @@ namespace jln::mp
 
   /// Insert an elements at an arbitrary position.
   /// \pre 0 \<= i \< sizeof...(xs)
-  /// \return \sequence
+  /// \treturn \sequence
   template<class i, class x, class C = listify>
   using insert = insert_range<i, list<x>, C>;
 
@@ -7858,7 +7862,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Checks whether a sequence has no elements.
-  /// \return \number
+  /// \treturn \number
   template<class C = identity>
   using is_empty = size<not_<C>>;
 
@@ -7881,7 +7885,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Checks if \c x is a \list.
-  /// \return \number
+  /// \treturn \number
   template<class C = identity>
   struct is_list
   {
@@ -7923,18 +7927,6 @@ namespace jln::mp
   template<int_ n, class C = identity>
   using is_size_of_c = size<same_as<number<n>, C>>;
 
-  template<class C = identity>
-  using is_size_of_1 = is_size_of<number<1>, C>;
-
-  template<class C = identity>
-  using is_size_of_2 = is_size_of<number<2>, C>;
-
-  template<class N, class C = identity>
-  using is_size_larger_than = size<greater_than<N, C>>;
-
-  template<int_ n, class C = identity>
-  using is_size_larger_than_c = size<greater_than<number<n>, C>>;
-
   namespace emp
   {
     template<class L, class N, class C = mp::identity>
@@ -7942,18 +7934,6 @@ namespace jln::mp
 
     template<class L, int_ n, class C = mp::identity>
     using is_size_of_c = unpack<L, mp::is_size_of_c<n, C>>;
-
-    template<class L, class C = mp::identity>
-    using is_size_of_1 = unpack<L, is_size_of_1<C>>;
-
-    template<class L, class C = mp::identity>
-    using is_size_of_2 = unpack<L, is_size_of_2<C>>;
-
-    template<class L, class N, class C = mp::identity>
-    using is_size_larger_than = unpack<L, is_size_larger_than<N, C>>;
-
-    template<class L, int_ n, class C = mp::identity>
-    using is_size_larger_than_c = unpack<L, is_size_larger_than_c<n, C>>;
   }
 }
 namespace jln::mp
@@ -7962,7 +7942,7 @@ namespace jln::mp
 
   /// Remove the last element of sequence
   /// \pre sizeof...(xs) \> 0
-  /// \return \sequence
+  /// \treturn \sequence
   template<class C = listify>
   using pop_back = rotate<number<-1>, pop_front<C>>;
 
@@ -7991,7 +7971,7 @@ namespace jln::mp
   /// Returns a contiguous subsequence of a \sequence.
   ///
   /// A negative value represents an index starting from the end. if finally, \c end <= \c beg, then an empty \list is returned
-  /// \return \sequence
+  /// \treturn \sequence
   template<class beg, class end, class C = listify>
   struct range : detail::_range<beg::value, end::value, C>::type
   {
@@ -8002,7 +7982,11 @@ namespace jln::mp
   };
 
   template<int_ beg, int_ end, class C = listify>
+#ifdef JLN_MP_DOXYGENATING
+  using range_c = range<number<beg>, number<end>, C>;
+#else
   using range_c = typename detail::_range<beg, end, C>::type;
+#endif
 
   namespace emp
   {
@@ -8014,6 +7998,7 @@ namespace jln::mp
   }
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<int_ beg, int_ end, class C>
@@ -8121,6 +8106,7 @@ namespace jln::mp::detail
     using type = impl;
   };
 }
+/// \endcond
 namespace jln::mp
 {
   /// \cond
@@ -8139,7 +8125,7 @@ namespace jln::mp
   /// \pre 0 \<= start \< sizeof...(xs)
   /// \pre stride \> 0
   /// \pre 0 \<= size * (stride - 1) + 1 \< sizeof...(xs) - start
-  /// \return \sequence
+  /// \treturn \sequence
   template<class start, class size, class stride = number<1>, class C = listify>
   struct slice
   {
@@ -8199,7 +8185,7 @@ namespace jln::mp::detail
     {
       template<class... xs>
       using f = typename join<C>::template f<
-        typename list_wrap_if_c<(ints <= size && ints % stride == 0)>
+        typename wrap_in_list_c<(ints <= size && ints % stride == 0)>
         ::template f<xs>
       ...>;
     };
@@ -8253,10 +8239,9 @@ namespace jln::mp
   /// \ingroup list
 
   /// Returns sliding windows of width \c size.
-  /// \tparam stride
   /// \pre stride != 0
   /// \pre size >= 0
-  /// \return \sequence of \list
+  /// \treturn \sequence of \list
   /// Given a sequence and a count n, place a window over the first n elements of the underlying range. Return the contents of that window as the first element of the adapted range, then slide the window forward one element at a time until hitting the end of the underlying range.
   /// \semantics
   ///     If \c stride \< 0, then \c stride = \c stride + \c size
@@ -8524,7 +8509,7 @@ namespace jln::mp
   /// Swap elements at indexes \c I and \c J of a \sequence.
   /// \pre 0 \< I \< sizeof...(xs)
   /// \pre 0 \< J \< sizeof...(xs)
-  /// \return \sequence
+  /// \treturn \sequence
   /// \note swap_index\<I, J\> == swap_index\<J, I\>
   template<class I, class J, class C = listify>
   using swap_index = typename detail::_select_swap_index<
@@ -8594,8 +8579,8 @@ namespace jln::mp
 {
   /// \ingroup number
 
-  /// Narrowing convertion from \value to \boolean.
-  /// \return \boolean
+  /// Narrowing convertion from \value to \bool.
+  /// \treturn \bool
   template<class C = identity>
   struct as_bool
   {
@@ -8614,7 +8599,7 @@ namespace jln::mp
   /// \ingroup number
 
   /// Narrowing convertion from \value to \number.
-  /// \return \number
+  /// \treturn \number
   template<class C = identity>
   struct as_number
   {
@@ -8641,7 +8626,7 @@ namespace jln::mp
   /// \ingroup number
 
   /// Check is a \value is a \number.
-  /// \return \boolean
+  /// \treturn \bool
   template<class C = identity>
   struct is_number
   {
@@ -8804,7 +8789,7 @@ namespace jln::mp
   /// \ingroup value
 
   /// Check is a \value to a type member.
-  /// \return \boolean
+  /// \treturn \bool
   template<class C = identity>
   struct has_type
   {
@@ -8851,7 +8836,7 @@ namespace jln::mp
 
   /// \ingroup trait
 
-  /// \return \boolean
+  /// \treturn \bool
   template<template<class...> class Tpl, class C = identity>
   struct is_instance_of
   {
@@ -9015,12 +9000,14 @@ namespace jln::mp::traits
     using extent = typename std::extent<x, i::value>::type;
   }
 
+  /// \cond
   template<>
   struct extent<identity>
   {
     template<class x, class i = number<0>>
     using f = typename std::extent<x, i::value>::type;
   };
+  /// \endcond
 
   // type relations:
   JLN_MP_MAKE_TRAIT(is_same);
@@ -9092,12 +9079,14 @@ namespace jln::mp::traits
       Len::value, Alignment::value...>::type;
   }
 
+  /// \cond
   template<>
   struct aligned_storage<identity>
   {
     template<class Len, class... Alignment>
     using f = typename std::aligned_storage<Len::value, Alignment::value...>::type;
   };
+  /// \endcond
 
   template<class C = identity>
   struct aligned_union
@@ -9112,12 +9101,14 @@ namespace jln::mp::traits
     using aligned_union = typename std::aligned_union<len::value, xs...>::type;
   }
 
+  /// \cond
   template<>
   struct aligned_union<identity>
   {
     template<class len, class... xs>
     using f = typename std::aligned_union<len::value, xs...>::type;
   };
+  /// \endcond
 }
 namespace jln::mp
 {
@@ -9128,7 +9119,7 @@ namespace jln::mp
   template<auto v>
   struct val
   {
-    static constexpr decltype(v) const value = v;
+    static constexpr decltype(v) value = v;
   };
 
   template<class T, T v>
@@ -9156,7 +9147,7 @@ namespace jln::mp
   /// \ingroup value
 
   /// Convert a \value to \val.
-  /// \return \boolean
+  /// \treturn \bool
   template<class C = identity>
   struct as_val
   {
@@ -9191,7 +9182,7 @@ namespace jln::mp
   /// \ingroup value
 
   /// Check is a \value to a value member.
-  /// \return \boolean
+  /// \treturn \bool
   template<class C = identity>
   struct has_value
   {
@@ -9239,7 +9230,7 @@ namespace jln::mp
   /// \ingroup value
 
   /// Check is a \value is a \val.
-  /// \return \boolean
+  /// \treturn \bool
   template<class C = identity>
   struct is_val
   {
@@ -9659,6 +9650,7 @@ namespace jln::mp::emp
   using mod_c_v = val<(... % xs)>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<bool, template<auto...> class f, int_ d>
@@ -9678,6 +9670,7 @@ namespace jln::mp::detail
     using f = val<d>;
   };
 }
+/// \endcond
 
 namespace jln::mp::emp
 {

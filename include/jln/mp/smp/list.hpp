@@ -14,7 +14,6 @@
 #include "list/is_size_of.hpp"
 #include "list/join.hpp"
 #include "list/list.hpp"
-#include "list/list_wrap_if.hpp"
 #include "list/offset.hpp"
 #include "list/pop_back.hpp"
 #include "list/pop_front.hpp"
@@ -27,3 +26,4 @@
 #include "list/sliding.hpp"
 #include "list/swap_index.hpp"
 #include "list/take.hpp"
+#include "list/wrap_in_list.hpp"

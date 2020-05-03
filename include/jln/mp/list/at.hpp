@@ -45,7 +45,6 @@ namespace jln::mp
 
   template<class C = identity>
   using at9 = drop<number<9>, front<C>>;
-  /// @}
 
   namespace emp
   {

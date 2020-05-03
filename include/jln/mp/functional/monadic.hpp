@@ -10,7 +10,7 @@
 
 namespace jln::mp
 {
-  /// \ingroup \functional
+  /// \ingroup functional
 
   /// Call another \function if the value is `na`.
   /// \treturn \value

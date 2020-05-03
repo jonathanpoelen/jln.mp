@@ -20,7 +20,6 @@ namespace jln::mp
   /// \ingroup list
 
   /// Returns sliding windows of width \c size.
-  /// \tparam stride
   /// \pre stride != 0
   /// \pre size >= 0
   /// \treturn \sequence of \list

@@ -12,7 +12,6 @@ TEST()
 
   ut::same<_0, emp::is_size_of_c<seq_0_1_2, 2>>();
   ut::same<_1, emp::is_size_of_c<seq_0_1_2, 3>>();
-  ut::same<is_size_of_c<1>, is_size_of_1<>>();
 
   test_context<is_size_of<_1>, smp::is_size_of<_1>>()
     .test<_0>()

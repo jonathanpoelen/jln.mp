@@ -54,7 +54,7 @@ namespace jln::mp
 
 #include "../algorithm/make_int_sequence.hpp"
 #include "../functional/function.hpp"
-#include "list_wrap_if.hpp"
+#include "wrap_in_list.hpp"
 #include "join.hpp"
 #include "drop.hpp"
 #include "take.hpp"
@@ -90,7 +90,7 @@ namespace jln::mp::detail
     {
       template<class... xs>
       using f = typename join<C>::template f<
-        typename list_wrap_if_c<(ints <= size && ints % stride == 0)>
+        typename wrap_in_list_c<(ints <= size && ints % stride == 0)>
         ::template f<xs>
       ...>;
     };

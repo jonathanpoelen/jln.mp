@@ -17,7 +17,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup search
 
   /// Finds the first element that satisfy a predicate.
   /// Calls `FC` with all the elements since the one found at the end.

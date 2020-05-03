@@ -25,13 +25,17 @@ namespace jln::mp
   ///   each\<Fs...,C\>::f\<xs...\> == C::f\<Fs::f\<xs\>...\>
   ///   \endcode
   /// \treturn \value
-  /// \see fork
-  /// \see partial
+  /// \see fork, partial
   template <class... Fs>
   struct each
   : rotate<number<-1>, cfe<detail::_each>>
   ::template f<Fs...>
-  {};
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f = /* unspecified */;
+#endif
+  };
 
   /// \cond
   template <class C>

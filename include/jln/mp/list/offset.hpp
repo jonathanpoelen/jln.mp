@@ -8,7 +8,7 @@ namespace jln::mp
 {
   /// \ingroup search
 
-  /// Difference between the number of parameter \a xs and \a I::value.
+  /// Difference between the number of parameter \c xs and \c I::value.
   /// \semantics
   ///   Equivalent to
   ///   \code

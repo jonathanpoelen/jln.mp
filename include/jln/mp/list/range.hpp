@@ -34,7 +34,11 @@ namespace jln::mp
   };
 
   template<int_ beg, int_ end, class C = listify>
+#ifdef JLN_MP_DOXYGENATING
+  using range_c = range<number<beg>, number<end>, C>;
+#else
   using range_c = typename detail::_range<beg, end, C>::type;
+#endif
 
   namespace emp
   {
@@ -51,6 +55,7 @@ namespace jln::mp
 #include "take.hpp"
 #include "drop.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<int_ beg, int_ end, class C>
@@ -158,3 +163,4 @@ namespace jln::mp::detail
     using type = impl;
   };
 }
+/// \endcond

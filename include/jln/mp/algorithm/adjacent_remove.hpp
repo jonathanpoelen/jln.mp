@@ -44,7 +44,7 @@ namespace jln::mp
 
 
 #include "../list/join.hpp"
-#include "../list/list_wrap_if.hpp"
+#include "../list/wrap_in_list.hpp"
 
 /// \cond
 namespace jln::mp::detail
@@ -55,7 +55,7 @@ namespace jln::mp::detail
     template<class C, class BinaryPred, class x, class... xs>
     using f = typename join<C>::template f<
       list<x>,
-      typename list_wrap_if_c<!BinaryPred::template f<xs, ys>::value>::template f<xs>...>;
+      typename wrap_in_list_c<!BinaryPred::template f<xs, ys>::value>::template f<xs>...>;
   };
 
   template<class>

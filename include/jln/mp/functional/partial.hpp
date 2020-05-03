@@ -26,14 +26,17 @@ namespace jln::mp
   ///   partial\<F,G,C\>::f\<a,b,c,d\> == C::f\<F::f\<a\>, G::f\<b\>, c, d\>
   ///   \endcode
   /// \treturn \value
-  /// \see each
-  /// \see fork
-  /// \see partial_eager
+  /// \see each, fork, partial_eager
   template <class... Fs>
   struct partial
   : rotate<number<-1>, cfe<detail::_partial>>
   ::template f<Fs...>
-  {};
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f = /* unspecified */;
+#endif
+  };
 
   /// \cond
   template <class C>

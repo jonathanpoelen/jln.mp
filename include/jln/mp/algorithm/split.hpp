@@ -35,8 +35,7 @@ namespace jln::mp
   ///   >
   ///   \endcode
   /// \treturn \sequence of \list
-  /// \see split_before_if
-  /// \see split_after_if
+  /// \see split_before_if, split_after_if
   template<class Pred = identity, class C = listify>
   struct split_if
   {

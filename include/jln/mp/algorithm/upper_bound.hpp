@@ -4,7 +4,7 @@
 
 namespace jln::mp
 {
-  /// \ingroup algorithm
+  /// \ingroup search
 
   /// Finds first element that is greater that `x`.
   /// Calls `FC` with all the elements since the one found at the end.

@@ -13,7 +13,7 @@ namespace jln::mp
     template<unsigned> struct _compose_f;
     template<class, class> struct _compose;
   }
-  /// \cond
+  /// \endcond
 
   /// \ingroup functional
 

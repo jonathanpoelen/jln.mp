@@ -30,6 +30,7 @@ test_dep = declare_dependency(include_directories: include_directories('test/inc
 executable('mp_test', 'test/mp.cpp', dependencies: test_dep)
 executable('single_header_test',
            ['test/single_mp.cpp', 'test/single_smp.cpp'],
+           build_by_default: false,
            dependencies: declare_dependency(
              include_directories: include_directories('single_include')))
 
@@ -122,27 +123,27 @@ t_4_4 = executable('math', 'test/src/number/math.cpp', dependencies: test_dep, b
 t_4_5 = executable('to_bool', 'test/src/number/to_bool.cpp', dependencies: test_dep, build_by_default: false)
 t_4_6 = executable('is_number', 'test/src/number/is_number.cpp', dependencies: test_dep, build_by_default: false)
 alias_target('mp.number', t_4_0, t_4_1, t_4_2, t_4_3, t_4_4, t_4_5, t_4_6)
-t_5_0 = executable('list_wrap_if', 'test/src/list/list_wrap_if.cpp', dependencies: test_dep, build_by_default: false)
-t_5_1 = executable('push_front', 'test/src/list/push_front.cpp', dependencies: test_dep, build_by_default: false)
-t_5_2 = executable('insert_range', 'test/src/list/insert_range.cpp', dependencies: test_dep, build_by_default: false)
-t_5_3 = executable('swap_index', 'test/src/list/swap_index.cpp', dependencies: test_dep, build_by_default: false)
-t_5_4 = executable('is_size_of', 'test/src/list/is_size_of.cpp', dependencies: test_dep, build_by_default: false)
-t_5_5 = executable('size', 'test/src/list/size.cpp', dependencies: test_dep, build_by_default: false)
-t_5_6 = executable('prepend', 'test/src/list/prepend.cpp', dependencies: test_dep, build_by_default: false)
-t_5_7 = executable('list', 'test/src/list/list.cpp', dependencies: test_dep, build_by_default: false)
-t_5_8 = executable('drop', 'test/src/list/drop.cpp', dependencies: test_dep, build_by_default: false)
-t_5_9 = executable('sliding', 'test/src/list/sliding.cpp', dependencies: test_dep, build_by_default: false)
-t_5_10 = executable('is_list', 'test/src/list/is_list.cpp', dependencies: test_dep, build_by_default: false)
-t_5_11 = executable('erase', 'test/src/list/erase.cpp', dependencies: test_dep, build_by_default: false)
-t_5_12 = executable('range', 'test/src/list/range.cpp', dependencies: test_dep, build_by_default: false)
-t_5_13 = executable('offset', 'test/src/list/offset.cpp', dependencies: test_dep, build_by_default: false)
-t_5_14 = executable('pop_front', 'test/src/list/pop_front.cpp', dependencies: test_dep, build_by_default: false)
-t_5_15 = executable('push_back', 'test/src/list/push_back.cpp', dependencies: test_dep, build_by_default: false)
-t_5_16 = executable('front', 'test/src/list/front.cpp', dependencies: test_dep, build_by_default: false)
-t_5_17 = executable('join', 'test/src/list/join.cpp', dependencies: test_dep, build_by_default: false)
-t_5_18 = executable('insert', 'test/src/list/insert.cpp', dependencies: test_dep, build_by_default: false)
-t_5_19 = executable('take', 'test/src/list/take.cpp', dependencies: test_dep, build_by_default: false)
-t_5_20 = executable('pop_back', 'test/src/list/pop_back.cpp', dependencies: test_dep, build_by_default: false)
+t_5_0 = executable('push_front', 'test/src/list/push_front.cpp', dependencies: test_dep, build_by_default: false)
+t_5_1 = executable('insert_range', 'test/src/list/insert_range.cpp', dependencies: test_dep, build_by_default: false)
+t_5_2 = executable('swap_index', 'test/src/list/swap_index.cpp', dependencies: test_dep, build_by_default: false)
+t_5_3 = executable('is_size_of', 'test/src/list/is_size_of.cpp', dependencies: test_dep, build_by_default: false)
+t_5_4 = executable('size', 'test/src/list/size.cpp', dependencies: test_dep, build_by_default: false)
+t_5_5 = executable('prepend', 'test/src/list/prepend.cpp', dependencies: test_dep, build_by_default: false)
+t_5_6 = executable('list', 'test/src/list/list.cpp', dependencies: test_dep, build_by_default: false)
+t_5_7 = executable('drop', 'test/src/list/drop.cpp', dependencies: test_dep, build_by_default: false)
+t_5_8 = executable('sliding', 'test/src/list/sliding.cpp', dependencies: test_dep, build_by_default: false)
+t_5_9 = executable('is_list', 'test/src/list/is_list.cpp', dependencies: test_dep, build_by_default: false)
+t_5_10 = executable('erase', 'test/src/list/erase.cpp', dependencies: test_dep, build_by_default: false)
+t_5_11 = executable('range', 'test/src/list/range.cpp', dependencies: test_dep, build_by_default: false)
+t_5_12 = executable('offset', 'test/src/list/offset.cpp', dependencies: test_dep, build_by_default: false)
+t_5_13 = executable('pop_front', 'test/src/list/pop_front.cpp', dependencies: test_dep, build_by_default: false)
+t_5_14 = executable('push_back', 'test/src/list/push_back.cpp', dependencies: test_dep, build_by_default: false)
+t_5_15 = executable('front', 'test/src/list/front.cpp', dependencies: test_dep, build_by_default: false)
+t_5_16 = executable('join', 'test/src/list/join.cpp', dependencies: test_dep, build_by_default: false)
+t_5_17 = executable('insert', 'test/src/list/insert.cpp', dependencies: test_dep, build_by_default: false)
+t_5_18 = executable('take', 'test/src/list/take.cpp', dependencies: test_dep, build_by_default: false)
+t_5_19 = executable('pop_back', 'test/src/list/pop_back.cpp', dependencies: test_dep, build_by_default: false)
+t_5_20 = executable('wrap_in_list', 'test/src/list/wrap_in_list.cpp', dependencies: test_dep, build_by_default: false)
 t_5_21 = executable('at', 'test/src/list/at.cpp', dependencies: test_dep, build_by_default: false)
 t_5_22 = executable('append', 'test/src/list/append.cpp', dependencies: test_dep, build_by_default: false)
 t_5_23 = executable('back', 'test/src/list/back.cpp', dependencies: test_dep, build_by_default: false)
@@ -165,6 +166,7 @@ executable('check_inc', [
   'test/autogen/algorithm@remove.hpp.cpp',
   'test/autogen/algorithm@iota.hpp.cpp',
   'test/autogen/smp@algorithm@count.hpp.cpp',
+  'test/autogen/list@wrap_in_list.hpp.cpp',
   'test/autogen/algorithm@index.hpp.cpp',
   'test/autogen/smp@number@math.hpp.cpp',
   'test/autogen/list@at.hpp.cpp',
@@ -270,7 +272,6 @@ executable('check_inc', [
   'test/autogen/list@as_list.hpp.cpp',
   'test/autogen/algorithm@merge.hpp.cpp',
   'test/autogen/algorithm@repeat.hpp.cpp',
-  'test/autogen/list@list_wrap_if.hpp.cpp',
   'test/autogen/list@take.hpp.cpp',
   'test/autogen/smp@assume.hpp.cpp',
   'test/autogen/smp@algorithm@cartesian.hpp.cpp',
@@ -339,13 +340,13 @@ executable('check_inc', [
   'test/autogen/smp@utility@unpack.hpp.cpp',
   'test/autogen/main.cpp',
   'test/autogen/smp@algorithm@partition.hpp.cpp',
+  'test/autogen/smp@list@wrap_in_list.hpp.cpp',
   'test/autogen/smp@list@back.hpp.cpp',
   'test/autogen/smp@algorithm@is_unique.hpp.cpp',
   'test/autogen/functional@function.hpp.cpp',
   'test/autogen/smp@list@is_empty.hpp.cpp',
   'test/autogen/smp@list@offset.hpp.cpp',
   'test/autogen/smp@functional@capture.hpp.cpp',
-  'test/autogen/smp@list@list_wrap_if.hpp.cpp',
   'test/autogen/smp@algorithm@split_after.hpp.cpp',
   'test/autogen/number@as_bool.hpp.cpp',
   'test/autogen/smp@algorithm@split_before.hpp.cpp',

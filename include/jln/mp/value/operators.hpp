@@ -393,6 +393,7 @@ namespace jln::mp::emp
   using mod_c_v = val<(... % xs)>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
   template<bool, template<auto...> class f, int_ d>
@@ -412,6 +413,7 @@ namespace jln::mp::detail
     using f = val<d>;
   };
 }
+/// \endcond
 
 namespace jln::mp::emp
 {

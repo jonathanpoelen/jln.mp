@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../list/join.hpp"
-#include "../list/list_wrap_if.hpp"
+#include "../list/wrap_in_list.hpp"
 #include "../utility/same_as.hpp"
 #include "transform.hpp"
 
@@ -12,7 +12,7 @@ namespace jln::mp
   /// Removes all elements that satisfy a predicate.
   /// \treturn \sequence
   template<class Pred, class C = listify>
-  using remove_if = transform<list_wrap_if_not<Pred>, join<C>>;
+  using remove_if = transform<wrap_in_list_if_not<Pred>, join<C>>;
 
   /// Removes all occurence of a \value.
   /// \treturn \sequence

@@ -17,8 +17,7 @@ namespace jln::mp
   ///   >
   ///   \endcode
   /// \treturn \sequence of \list
-  /// \see split_if
-  /// \see split_before_if
+  /// \see split_if, split_before_if
   template<class Pred, class C = listify>
   struct split_after_if
   {
