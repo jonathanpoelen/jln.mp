@@ -23,7 +23,8 @@ namespace jln::mp
   /// converts a tree or list of lists into one list containing the contents of all children.
   /// \treturn \sequence
   template<class S = cfe<list>, class C = listify>
-  struct flatten;
+  struct flatten
+  {};
 
   template<template<class...> class S, class C>
   struct flatten<cfe<S, identity>, C>
@@ -34,13 +35,17 @@ namespace jln::mp
       ::type;
   };
 
-  template<class S>
-  using wrapper = typename detail::wrapper<S>::type;
+  /// converts a \typelist to a \c cfe<S>
+  template<class L>
+  using wrapper = typename detail::wrapper<L>::type;
 
   namespace emp
   {
     template<class L, class S = wrapper<L>, class C = mp::listify>
     using flatten = unpack<L, mp::flatten<S, C>>;
+
+    template<class L, class... xs>
+    using rewrap = typename wrapper<L>::template f<xs...>;
   }
 }
 

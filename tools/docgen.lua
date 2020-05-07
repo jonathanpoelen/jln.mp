@@ -1,15 +1,13 @@
 #!/usr/bin/env lua
 
-local reset_parser
-local preproc
-local pattern
+local parseFile
 local htmlify
-local fileinfos
 local linkifier
-local split_short_and_long_desc
-local inlinecode_begin = '<span class="inlinecode highlight"><code class="language-cpp" data-lang="cpp">'
-local inlinecode_end = '</code></span>'
-local internalref = {}
+local splitShortAndLongDesc
+local inlinecode_begin = '<code class="inlinecode highlight" data-lang="cpp">'
+local inlinecode_end = '</code>'
+local blockcode_begin = '<code class="blockcode highlight" data-lang="cpp">'
+local blockcode_end = '</code>'
 local defgroups = {}
 local namespaces = {
   ['traits::emp'] = {},
@@ -63,20 +61,18 @@ for k,v in ipairs(kw) do
   kwpatts[v] = P(v) / f
 end
 
-local ctx_tparams
 local ctx_namespace
 local ctx_ref_namespace
+local fileinfos
 
-function reset_parser()
-  ctx_tparams = nil
+local reset_parser = function()
   ctx_namespace = ''
   ctx_ref_namespace = ''
-  fileinfos = {filename = filename, refs = {}}
+  fileinfos = {}
 end
 
 local f_defgroup = function(name, desc) defgroups[#defgroups+1] = {name, table.concat(desc)} end
 local f_ingroup = function(name) fileinfos.ingroup = name end
-local f_template = function(params) ctx_tparams = params end
 
 local i_tparam = kwindexes.tparam
 local f_push_tparam = function(name, desc)
@@ -96,6 +92,10 @@ local f_desc = function(lines)
 end
 
 function human_template(tparams)
+  if not tparams then
+    return nil
+  end
+
   local t = {}
   local r
   -- 1: template<...>
@@ -112,6 +112,7 @@ function human_template(tparams)
       r = v[2] .. v[3]
     end
     if v[5] then
+      -- sanitize_struct_impl(v[5])
       r = r .. ' = ' .. v[5]
     end
     t[#t+1] = r
@@ -121,41 +122,21 @@ end
 
 local sanitize_struct_impl
 
-local i_using = kwindexes.using
-local f_using = function(name, impl)
+local f_type = function(ctx_tparams, k, name, spe, tparams, mem, impl)
   namespaces[ctx_namespace][name] = true
   fileinfos.firstname = fileinfos.firstname or name
   fileinfos[#fileinfos+1] = {
-    i = i_using,
-    tparams = ctx_tparams,
-    human_tparams = ctx_tparams and human_template(ctx_tparams),
+    i = k,
+    human_tparams = human_template(ctx_tparams),
     namespace = ctx_namespace,
     name = name,
     refid = torefid(ctx_namespace, name),
     fullname = ctx_ref_namespace .. name,
     impl = sanitize_struct_impl(impl),
-  }
-  ctx_tparams = nil
-end
-
-local i_struct = kwindexes.struct
-local f_struct = function(name, spe, tparams, mem, impl)
-  namespaces[ctx_namespace][name] = true
-  fileinfos.firstname = fileinfos.firstname or name
-  fileinfos[#fileinfos+1] = {
-    i = i_struct,
-    tparams = ctx_tparams,
-    human_tparams = ctx_tparams and human_template(ctx_tparams),
-    namespace = ctx_namespace,
-    name = name,
-    refid = torefid(ctx_namespace, name),
-    fullname = ctx_ref_namespace .. name,
-    impl = sanitize_struct_impl(impl),
-    spe = spe and human_template(spe),
+    spe = spe,
     mem = mem,
-    humain_tparams_mem = tparams and human_template(tparams),
+    humain_tparams_mem = human_template(tparams),
   }
-  ctx_tparams = nil
 end
 
 local i_namespace = kwindexes.namespace
@@ -184,31 +165,31 @@ local ws = S' \n'^1
 local ws0 = S' \n'^0
 local unl = Until'\n' * 1
 local cunl = C(Until'\n') * 1
-local innerlines = List(C(unl) * sp0, '/// ' * -P'\\')
-local lines = Ct(innerlines)
 local charid = R('az','09','AZ') + S':_'
 local id = charid^1
 local cid = C(id)
+local balancedparent = P{
+  '(' * (1 - S'()' + V(1))^0 * ')',
+}
 local balancedtag = P{
   '<' * (1 - S'<>()' + V(1) + V(2))^0 * '>',
   '(' * (1 - S'()' + V(2))^0 * ')',
 }
-local tparam = Ct(
-  (C('template' * balancedtag) + Cc('')) * ws0
-  * cid * ws0 * C(P'...'^-1) * ws0 * (cid + Cc(nil)) * ws0
-  * ('=' * ws0 * C(id * ws0 * balancedtag^-1))^-1)
-local tparams = Ct('<' * List(ws0 * tparam, ',') * '>')
-local template = 'template' * ws0 * tparams
--- local template = C('template' * ws0 * balancedtag)
 
-local splitShortAndLongDesc = C(Until('.\n' + -P(1)) * P'.'^-1) * sp0 * C(P(1)^0)
-split_short_and_long_desc = function(desc)
-  return splitShortAndLongDesc:match(htmlify:match(desc))
-end
+splitShortAndLongDesc = C(Until('.\n' + -P(1)) * P'.'^-1) * sp0 * C(P(1)^0)
+
+local sanitize_space = Cs(ws0 / '' * (
+  ' >' * ws / ' > '
++ ' <' * ws / ' < '
++ ',\n' * ws0 / ', '
++ '\n' * ws0 / ''
++ ws / ' '
++ 1
+)^0)
 
 local sanitize_struct_impl_patt = Cs((
   (P'typename ' + 'template ') / ''
-+ 'detail::' * (id * ws0)^1 * (balancedtag * (ws0 * id)^0)^0 * ws0
++ 'detail::' * (id * ws0)^1 * (balancedtag * (ws0 * id)^0 * ws0)^0 * balancedparent^0 * ws0
     / '/* implementation defined */'
 + 1
 )^0)
@@ -219,24 +200,34 @@ sanitize_struct_impl = function(s)
     if s == '/* implementation defined */' then
       return nil
     end
+    s = sanitize_space:match(s)
   end
   return s
 end
 
--- TODO JLN_MP_MAKE_REGULAR_SMP2_P(is_size_of, (N), (C, smp::identity), ...)
-
 local f_ident = function(s) return s end
-preproc = P{
+local preproc = P{
   "S";
-  S=Cs((V'p' + '#' * unl / '' + 1)^0)
+  S=Cs(
+  ( V'p'
+  + '#' * unl / ''
+  + V'c'
+  + 1
+  )^0)
+
+, c=P'JLN_MP_DCALL_XS(' * id * ',' * ws0 * cid * ',' * ws0
+      * C((1-S'()' + balancedparent)^1) * ')'
+      / function(f, args) return f .. '<' .. args .. '>' end
 
 , p='#' * sp0 / '' *
-    ( 'ifdef JLN_MP_DOXYGENATING' * C(Until(P'#else' + P'#endif')) * Until'#endif' * 7 / f_ident
+    ( 'ifdef JLN_MP_DOXYGENATING'
+      * Cs((1 - (P'#else' + P'#endif') + V'c')^0) * Until'#endif' * 7 / f_ident
     + 'if 0' * Until'#endif' * 7 / ''
     + 'if' * unl * Cs(( V'p'
-                     + (1 - P'#')
-                     + '#' * sp0 * -#(P'end' + 'el') * unl / ''
-                     )^1)
+                      + V'c'
+                      + (1 - P'#')
+                      + '#' * sp0 * -#(P'end' + 'el') * unl / ''
+                      )^1)
       * '#' * sp0 * ('el' * unl * V'endif' + unl) / f_ident
     + 'define ' * List(Until(S'\n\\'), P'\\' * 1) * 1 / ''
     )
@@ -247,8 +238,17 @@ preproc = P{
     * ('#' * sp0 * ('if' * unl * V'endif' + 'endif'))
 }
 
-pattern = P{
-  "S";
+local lines = Ct(List(C(unl) * sp0, '///' * P' '^-1 * -P'\\'))
+local tparam = Ct(
+  (C('template' * balancedtag) + Cc('')) * ws0
+  * cid * ws0 * C(P'...'^-1) * ws0 * (cid + Cc(nil)) * ws0
+  * ('=' * ws0 * C(id * ws0 * balancedtag^-1))^-1)
+local tparams = Ct('<' * List(ws0 * tparam, ',') * '>')
+local template = 'template' * ws0 * tparams
+-- local template = C('template' * ws0 * balancedtag)
+
+local pattern = P{
+  (V('e') + 1)^1,
   e=( '/// ' *
       ( '\\' *
         ( 'ingroup ' * cunl / f_ingroup
@@ -266,22 +266,26 @@ pattern = P{
         )
       + lines / f_desc
       ) * sp0)^1
-    + (template / f_template)^-1 * ws0 *
-      ( (P'struct' + 'class') * ws * cid * Until(S':;{<')
-        * (':' * ws0 * id * ws0
-          * (balancedtag * ws0 * (('::template ' * id * balancedtag + id) * ws0)^0)^-1
-          )^-1 *
-        ( P';'
-        + (tparams + Cc(nil)) * ws0 * '{' * ws0 * (template^-1) * ws0
-          * (P'using' + 'class' + 'struct') * ws * cid * ws0 * ('=' * ws0 * C(Until';'))^-1
-        + P'{' * ws0 *
-          ( '};'
-          + 'static const' * P'expr'^-1 * ws0
-            * id * ('(' * Until')' * 1)^-1 * ws0 * Cc(nil) * Cc(nil) * C(Until(P' =' + '='))
-          )
-        ) / f_struct
-      + 'using ' * cid * ws0 * '=' * ws0 * C(Until';') / f_using
-      )
+    + (template + Cc(nil)) * ws0
+      * ( (P'struct' + 'class') * ws * Cc(kwindexes.struct) * cid * Until(S':;{<')
+          * (C(balancedtag) * ws0 + Cc(nil))
+          * (':' * ws0 * id * ws0
+            * (balancedtag * ws0 * (('::template ' * id * balancedtag + id) * ws0)^0)^-1
+            )^-1
+          * ( P';'
+            + P'{' * ws0
+              * ( template^-1 * ws0 * (P'using' + 'class' + 'struct')
+                  * ws * cid * ws0 * ('=' * ws0 * C(Until';'))^-1
+                + ( '};'
+                  + 'static const' * P'expr'^-1 * ws0 * id
+                    * ('(' * Until')' * 1)^-1 * ws0 * Cc(nil) * Cc(nil)
+                    * C(Until(P' =' + '=')) * P' '^-1 * '=' * ws0 * C(Until';')
+                  )
+                )
+            )
+        + 'using ' * Cc(kwindexes.using) * cid * ws0 * '='
+          * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
+        ) / f_type
     + 'namespace ' *
       ( C('emp') * '\n' / f_emp_namespace * ws0 * '{' * (V('e') + (1 - S'{}'))^0
         * (P'}' / f_restore_namespace)
@@ -289,54 +293,29 @@ pattern = P{
       )
     + '//' * Until'\n' * 1
     -- + '/*' * Until'*/' * 2
-  ,
-  S=(V('e') + 1)^1
 }
+
+parseFile = function(contents)
+  reset_parser()
+  pattern:match(preproc:match(contents))
+  return fileinfos
+end
 
 local htmlspecialchars_c = P'<' / '&lt;' + P'&' / '&amp;'
 local htmlspecialchars = Cs((htmlspecialchars_c + 1)^0)
-
-local mk_tag = function(tag)
-  local span = '<span class="'..tag..'">'
-  return function(s)
-    return span .. s .. '</span>'
-  end
-end
-
-local mk_tag_specialchar = function(tag)
-  local span = '<span class="'..tag..'">'
-  return function(s)
-    return span .. htmlspecialchars:match(s) .. '</span>'
-  end
-end
-
-local tokid = R('az','AZ','09') + S'_'
-local highlighting_kw = (
-  (P'template' + 'class' + 'struct' + 'using' + 'typename' + 'decltype' + 'sizeof' + 'auto')
-    / mk_tag'k'
-+ (P'void' + 'int' + 'unsigned' + 'long' + 'char' + 'short') / mk_tag'kt'
-+ (P'true' + 'false') / mk_tag'nb'
-) * -#tokid
-local highlighting_symbol
-= S'{}()[]:;,.'^1 / mk_tag'p'
-+ S'<>:+-/%*=&|'^1 / mk_tag_specialchar'o'
-+ R'09'^1 / mk_tag'mi'
-
-local highlighting = Cs((highlighting_kw + highlighting_symbol + tokid^1 + 1)^0)
 
 local inlinecode = function(s)
   return inlinecode_begin .. linkifier('', s) .. inlinecode_end
 end
 
 local blockcode = function(s)
-  return '<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp">'
-      .. linkifier('', s) .. '</code></pre></div>'
+  return blockcode_begin .. linkifier('', s) .. blockcode_end
 end
 
 htmlify = Cs((
   P'\\c ' / '' * (Until(S' \n' + '.\n') / inlinecode)
 + P'`' * C(Until'`') * '`' / inlinecode
-+ P'\\code' * C(Until'\\endcode') * '\\endcode' / blockcode
++ P'\\code' * ws0 * C(Until(ws0 * '\\endcode')) * ws0 * '\\endcode' / blockcode
 + P'\\ints' / '<a href="#g_ints">ints</a>'
 + (P'\\int_' + '\\int') / '<a href="#g_int">int_</a>'
 + P'\\list' / '<a href="#g_list">list</a>'
@@ -357,7 +336,23 @@ linkifier_init = function()
   local links_by_namespace = {['']={}}
   local global_table = {}
 
-  local hi = Cs((P'::' / mk_tag'p' + 1)^1)
+  local mk_tag = function(tag)
+    local span = '<span class="'..tag..'">'
+    return function(s)
+      return span .. s .. '</span>'
+    end
+  end
+
+  local mk_tag_specialchar = function(tag)
+    local span = '<span class="'..tag..'">'
+    return function(s)
+      return span .. htmlspecialchars:match(s) .. '</span>'
+    end
+  end
+
+  local toHiSymbol = mk_tag'p'
+
+  local hi = Cs((P'::' / toHiSymbol + 1)^1)
 
   for namespace, t in pairs(namespaces) do
     if #namespace == 0 then
@@ -379,15 +374,24 @@ linkifier_init = function()
     end
   end
 
+  local tokid = R('az','AZ','09') + S'_'
+
+  local highlighting_symbol
+  = S'{}()[]:;,.'^1 / toHiSymbol
+  + S'<>:+-/%*=&|'^1 / mk_tag_specialchar'o'
+  + R'09'^1 / mk_tag'mi'
+
   local current_table
-
-  local linkify = function(s)
-    return current_table[s] or global_table[s] or s
-  end
-
   local patt = Cs(
-    ( highlighting_kw
-    + R'az' * (R('az','09','AZ') + S':_')^1 / linkify
+    ( ( ( P'template' + 'class' + 'struct' + 'using'
+        + 'typename' + 'decltype' + 'sizeof' + 'auto'
+        ) / mk_tag'k'
+      + (P'void' + 'int' + 'unsigned' + 'long' + 'char' + 'short') / mk_tag'kt'
+      + (P'true' + 'false') / mk_tag'nb'
+      ) * -#tokid
+    + R'az' * charid^1 / function(s)
+        return current_table[s] or global_table[s] or s
+      end
     + highlighting_symbol
     + tokid^1
     + 1
@@ -402,28 +406,29 @@ end
 end
 
 files = {}
+files_by_group = {}
 groups = {}
 
 function readfile(filename)
-  reset_parser()
   local f = io.open(filename)
   local contents = f:read('*a')
-  local t
   f:close()
-  if pattern:match(preproc:match(contents)) then
-    if not fileinfos.firstname then
-      print('parser failure for ' .. filename)
-      os.exit(1)
-    end
-    fileinfos.filename = filename
-    local g = groups[fileinfos.ingroup]
-    if not g then
-      g = {}
-      groups[fileinfos.ingroup] = g
-    end
-    g[#g+1] = fileinfos
-    files[#files+1] = {fileinfos}
+
+  local fileinfos = parseFile(contents)
+  if not fileinfos.firstname then
+    print('parser failure for ' .. filename)
+    os.exit(1)
   end
+
+  fileinfos.filename = filename:sub(9)
+  fileinfos.filerefid = filename:sub(16)
+  local g = groups[fileinfos.ingroup]
+  if not g then
+    g = {}
+    groups[fileinfos.ingroup] = g
+  end
+  g[#g+1] = fileinfos
+  files[#files+1] = fileinfos
 end
 
 for _,filename in ipairs(arg) do
@@ -446,14 +451,9 @@ do
       print(x)
     end
   end
-  -- recprint(groups, '')
+  -- recprint(groups, '') os.exit()
   -- recprint(namespaces, '')
   -- recprint(defgroups, '')
-  -- recprint(internalref, '')
-end
-
-function comp_by_firstname(f1, f2)
-  return f1.firstname < f2.firstname
 end
 
 i_struct = kwindexes.struct
@@ -476,24 +476,28 @@ function tohtml(namespace, s)
   return nil
 end
 
+local types = {}
+
 for name,g in pairs(groups) do
-  table.sort(g, comp_by_firstname)
+  local short_desc, long_desc, see, tparams, extra_doc
+  local reset_values = function()
+    short_desc = nil
+    long_desc = nil
+    see = {}
+    tparams = {}
+    extra_doc = {
+      [i_post]={},
+      [i_pre]={},
+      [i_note]={},
+      [i_semantics]={}
+    }
+  end
+  reset_values()
+
+  local gtypes = {}
+  g.types = gtypes
 
   for _,f in ipairs(g) do
-    local short_desc, long_desc, see, tparams, extra_doc
-    local reset_values = function()
-      short_desc = nil
-      long_desc = nil
-      see = {}
-      tparams = {}
-      extra_doc = {
-        [i_post]={},
-        [i_pre]={},
-        [i_note]={},
-        [i_semantics]={}
-      }
-    end
-    reset_values()
 
     local types = {}
     f.types = types
@@ -505,15 +509,19 @@ for name,g in pairs(groups) do
       elseif extra_doc[d[1]] then
         table.insert(extra_doc[d[1]], htmlify:match(d[2]))
       elseif d.i == i_desc then
-        short_desc, long_desc = split_short_and_long_desc(d[1])
+        short_desc, long_desc = splitShortAndLongDesc:match(htmlify:match(d[1]))
       elseif d.i == i_using or d.i == i_struct then
         types[#types+1] = d
+        if d.namespace == '' then
+          gtypes[#gtypes+1] = d
+        end
 
         d.human_tparams_html = tohtml(d.namespace, d.human_tparams) or ''
-        d.struct_decl_mem_html = ''
         d.long_desc_html = long_desc
         d.short_desc_html = short_desc
         d.tparams = tparams
+        d.impl_html = tohtml(d.namespace, d.impl)
+        d.inline_impl_html = d.impl and (inlinecode_begin .. d.impl_html .. inlinecode_end)
 
         if #see ~= 0 then
           for k,x in pairs(see) do
@@ -526,17 +534,14 @@ for name,g in pairs(groups) do
           d[kw[i]] = extra
         end
 
+        d.mem_html = d.spe and tohtml(d.namespace, d.spe)
+                  or tohtml(d.namespace, d.human_tparams) or ''
+
         if d.i == i_using then
-          d.impl_html = short_desc
-                    or (d.impl and (inlinecode_begin .. tohtml(d.namespace, d.impl)
-                                    .. inlinecode_end))
+          d.is_alias = true
         elseif d.mem then
-          d.short_desc_html = short_desc
-          d.struct_decl_mem_html = (tohtml(d.namespace, d.spe) or '') .. '::'
-                             .. d.mem .. (tohtml(d.namespace, d.humain_tparams_mem) or '')
-          if d.impl then
-            d.struct_mem_impl_html = inlinecode_begin .. tohtml(d.namespace, d.impl) .. inlinecode_end
-          end
+          d.mem_html = d.mem_html .. '::'
+                    .. d.mem .. (tohtml(d.namespace, d.humain_tparams_mem) or '')
         end
 
         reset_values()
@@ -545,6 +550,7 @@ for name,g in pairs(groups) do
   end
 end
 
+-- os.exit()
 
 htmlfagments = {
   '<!DOCTYPE html><html><head><meta charset="utf-8"/><link rel="stylesheet" type="text/css" media="all" href="default.css"></head><body>\n',
@@ -552,6 +558,8 @@ htmlfagments = {
 function push(s)
   htmlfagments[#htmlfagments + 1] = s
 end
+
+-- group list
 
 push('<nav>\n')
 push('<ul>\n')
@@ -561,21 +569,97 @@ end
 push('</ul>\n')
 push('</nav>\n')
 
+-- filename list by group
+
+function comp_by_filerefid(f1, f2)
+  return f1.filerefid < f2.filerefid
+end
+
+function show_file_list(files)
+  for _,d in ipairs(files) do
+    push('<li><a href="#' .. d.filerefid .. '">' .. d.filename .. '</a></li>\n')
+  end
+end
+
+push('<nav>\n')
+push('<ul class="index_list">\n')
+for name,g in pairs(groups) do
+  table.sort(g, comp_by_filerefid)
+  push('<li>Group: ' .. name .. '</li>\n')
+  show_file_list(g)
+end
+push('</ul>\n')
+push('</nav>\n')
+
+-- filename list
+
+push('<nav>\n')
+push('<ul class="index_list">\n')
+table.sort(files, comp_by_filerefid)
+show_file_list(files)
+push('</ul>\n')
+push('</nav>\n')
+
+-- function list by group
+
+function comp_by_name(f1, f2)
+  return f1.name < f2.name
+end
+
+function show_function_list(files)
+  for _,d in ipairs(files) do
+    push('<li><a href="#' .. d.refid .. '">' .. d.fullname .. '</a></li>\n')
+  end
+end
+
+push('<nav>\n')
+push('<ul class="index_list">\n')
+for name,g in pairs(groups) do
+  table.sort(g.types, comp_by_name)
+  push('<li>Group: ' .. name .. '</li>\n')
+  show_function_list(g.types)
+end
+push('</ul>\n')
+push('</nav>\n')
+
+-- function list
+
+push('<nav>\n')
+push('<ul class="index_list">\n')
+table.sort(types, comp_by_name)
+show_function_list(types)
+push('</ul>\n')
+push('</nav>\n')
+
+-- group definition
+
+push('<dl>\n')
+table.sort(defgroups, function(a, b) return a[1] < b[1] end)
+for _,def in ipairs(defgroups) do
+  push('<dt>' .. def[1] .. '</dt>\n')
+  push('<dd>' .. def[2] .. '</dd>\n')
+end
+push('</dl>\n')
+
 -- short description
+
+function comp_by_firstname(f1, f2)
+  return f1.firstname < f2.firstname
+end
 
 push('<section>\n')
 for name,g in pairs(groups) do
-  push('<article class="post">\n')
+  table.sort(g, comp_by_firstname)
+  push('<article class="group">\n')
   push('<h1>Group: ' .. name .. '</h1>\n')
   push('<table>\n')
   for _,f in ipairs(g) do
     for _,d in ipairs(f.types) do
       if d.namespace ~= 'emp' then
         push('<tr><td>' .. inlinecode_begin .. '<a href="#' .. d.refid .. '">' .. d.fullname
-             .. '</a>' .. d.human_tparams_html .. d.struct_decl_mem_html .. inlinecode_end
-             .. '</td><td>' .. ( (d.impl_html and '= ' .. d.impl_html)
-                               or d.short_desc_html
-                               or (d.struct_mem_impl_html and '= ' .. d.struct_mem_impl_html)
+             .. '</a>' .. d.mem_html .. inlinecode_end
+             .. '</td><td>' .. ( d.short_desc_html
+                               or (d.inline_impl_html and '= ' .. d.inline_impl_html)
                                or '')
              .. '</td></tr>\n')
       end
@@ -589,85 +673,75 @@ push('</section>\n')
 -- long description
 
 function push_block(name, s)
-  push('<div class="InfoBox"><p><strong class="InfoBox-title">' .. name .. ':</strong> ')
+  push('<div class="InfoBox"><p><h4 class="InfoBox-title">' .. name .. '</h4>\n')
   push(s)
   push('</p></div>')
 end
 
+function push_list(name, t)
+  if #t ~= 0 then
+    push_block(name, '<ul><li>' .. table.concat(t,'</li><li>') .. '</li></ul>')
+  end
+end
+
 function push_blocks(name, t)
   if #t ~= 0 then
-    push_block(name, table.concat(t,'<br/>'))
+    push_block(name, '<p>' .. table.concat(t,'<br/>') .. '</p>')
   end
 end
 
 push('<section>\n')
 for name,g in pairs(groups) do
-  push('<article class="post">\n')
-  push('<h1 class="post__title">group: ' .. name .. '</h1>\n')
-  push('<div class="post__content">\n')
+  push('<article class="group">\n')
+  push('<h1 class="group__title">Group: ' .. name .. '</h1>\n')
+  push('<div class="group__content">\n')
   for _,f in ipairs(g) do
-    local dgroup = {{}}
-    local empgroup = {}
-    for k,d in ipairs(f.types) do
-      if d.namespace == 'emp' then
-        empgroup[#empgroup+1] = d
-      elseif k ~= 1 and (d.short_desc_html or d.long_desc_html) then
-        dgroup[#dgroup+1] = {d}
-      else
-        table.insert(dgroup[#dgroup], d)
-      end
-    end
-
-    push('<h2 class="file">&lt;' .. f.filename:sub(9) .. '></h2>')
+    push('<h2 class="file" id="' .. f.filerefid .. '">&lt;' .. f.filename .. '></h2>')
+    push('<div class="group__file">\n')
 
     local refcache = {}
+    local emp = {}
 
-    for _,dg in ipairs(dgroup) do
-      for _,d in ipairs(dg) do
-        push('<h3 id="' .. (refcache[d.refid] and '' or d.refid) .. '"><a href="#'
+    for _,d in ipairs(f.types) do
+      local refid = (refcache[d.refid] and '' or ' id="' .. d.refid .. '"')
+      if d.namespace == 'emp' then
+        emp[#emp+1] = '<h3 class="emp"' .. refid
+            .. '><a href="#' .. d.refid .. '" class="ref">¶</a>'
+            .. inlinecode_begin .. d.fullname .. d.mem_html .. inlinecode_end .. ' = '
+            .. (d.inline_impl_html or '/* implementation defined */')
+            .. '</h3>\n'
+      else
+        push('<h3' .. (refcache[d.refid] and '' or ' id="' .. d.refid .. '"') .. '><a href="#'
              .. d.refid .. '" class="ref">¶</a>'
-             .. inlinecode_begin .. d.fullname .. d.human_tparams_html
-             .. d.struct_decl_mem_html .. inlinecode_end .. '</h3>\n')
+             .. inlinecode_begin .. d.fullname .. d.mem_html .. inlinecode_end .. '</h3>\n')
         refcache[d.refid] = true
-      end
 
-      local d = dg[1]
-      if not d then
-        break
-      end
-
-      if d.short_desc_html or d.long_desc_html then
         if d.short_desc_html then push('<p>' .. d.short_desc_html .. '</p>') end
         if d.long_desc_html then push('<p>' .. d.long_desc_html .. '</p>') end
-        lastcomment = d
-      elseif d.impl_html then
-        push('<p>Alias for ' .. d.impl_html .. '</p>')
-      end
 
-      if d.tparams then
-        push('<dl>')
-        for _, tparam in ipairs(d.tparams) do
-          push('<dt><code>' .. tparam[1] .. '</code></dt><dd>' .. tparam[2] .. '</dd>')
+        if d.tparams then
+          push('<dl>')
+          for _, tparam in ipairs(d.tparams) do
+            push('<dt><code>' .. tparam[1] .. '</code></dt><dd>' .. tparam[2] .. '</dd>')
+          end
+          push('</dl>')
         end
-        push('</dl>')
+
+        if d.impl_html then
+          push_block('Implementation', blockcode_begin .. d.impl_html .. blockcode_end)
+        end
+        push_list('Pre-condition', d.pre)
+        push_list('Post-condition', d.post)
+        push_blocks('Semantics', d.semantics)
+        push_blocks('Note', d.note)
+        if d.see then push('<aside>See: ' .. d.see .. '</aside>') end
       end
-      if d.impl_html or d.struct_mem_impl_html then
-        push_block('Implementation', d.impl_html or d.struct_mem_impl_html)
-      end
-      push_blocks('Pre-condition', d.pre)
-      push_blocks('Post-condition', d.post)
-      push_blocks('Semantics', d.semantics)
-      push_blocks('Note', d.note)
-      if d.see then push('<aside>See: ' .. d.see .. '</aside>') end
     end
 
-    for _,d in ipairs(empgroup) do
-      push('<p id="' .. d.refid .. '"><a href="#' .. d.refid .. '" class="ref">¶</a>'
-           .. inlinecode_begin .. d.fullname .. d.human_tparams_html
-           .. d.struct_decl_mem_html .. inlinecode_end .. ' = '
-           .. inlinecode_begin .. (d.impl_html or '/* implementation defined */')
-           .. inlinecode_end .. '</p>\n')
-    end
+    push('<div class="group__emp">\n')
+    push(table.concat(emp))
+    push('</div>\n')
+    push('</div>\n')
 
   end
   push('</div>\n')

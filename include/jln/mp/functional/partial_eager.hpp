@@ -59,7 +59,7 @@ namespace jln::mp
   struct partial_eager<F0, F1, C>
   {
     template <class x0, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) < 100000,
+    using f = JLN_MP_DCALL_XS(xs,
       C, call<F0, x0>, call<F1, xs...>);
   };
 
@@ -67,7 +67,7 @@ namespace jln::mp
   struct partial_eager<F0, F1, F2, C>
   {
     template <class x0, class x1, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) < 100000,
+    using f = JLN_MP_DCALL_XS(xs,
       C, call<F0, x0>, call<F1, x1>, call<F2, xs...>);
   };
   /// \endcond

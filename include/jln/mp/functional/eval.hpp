@@ -15,7 +15,7 @@ namespace jln::mp
   struct eval
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) < 1000000,
+    using f = JLN_MP_DCALL_XS(xs,
       C, decltype(F.template operator()<xs...>()));
   };
 

@@ -23,9 +23,10 @@ namespace jln::mp
   struct is_sorted
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) < 1000000,
-      C, typename detail::_is_sorted<detail::min(sizeof...(xs), 3)
-    )::template f<Cmp, xs...>>;
+    using f = JLN_MP_DCALL_XS(xs, C,
+      typename detail::_is_sorted<detail::min(sizeof...(xs), 3)>
+      ::template f<Cmp, xs...>
+    );
   };
 
   /// \cond

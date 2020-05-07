@@ -44,9 +44,9 @@ namespace jln::mp::detail
   {
     template<class... xs>
 #ifdef _MSC_VER
-    using f = JLN_MP_DCALL(sizeof...(xs) < 100000, C, typename _is_set<xs...>::type);
+    using f = JLN_MP_DCALL_XS(xs, C, typename _is_set<xs...>::type);
 #else
-    using f = JLN_MP_DCALL(sizeof...(xs) < 100000, C,
+    using f = JLN_MP_DCALL_XS(xs, C,
       mp::number<sizeof(inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>);
 #endif
   };

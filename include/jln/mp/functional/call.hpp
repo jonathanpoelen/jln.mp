@@ -51,6 +51,9 @@ namespace jln::mp
   template<class C, class... xs>
   using memoize_call = typename detail::_memoizer<C, xs...>::type;
 
+#define JLN_MP_DCALL_XS(xs, ...) JLN_MP_DCALL(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
+#define JLN_MP_DCALLF_XS(xs, ...) JLN_MP_DCALLF(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
+
 #if JLN_MP_ENABLE_DEBUG || defined(JLN_MP_DOXYGENATING)
 
   template<class C, class... xs>
