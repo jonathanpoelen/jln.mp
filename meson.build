@@ -13,12 +13,11 @@ if not ['darwin', 'windows'].contains(sys)
     'debug': 'off',
     'whole_program': 'strip_all',
   }
-endif
 
-comp = meson.get_compiler('cpp').get_id()
-# quick compilation
-if 'windows' != sys and ['clang', 'clang-cl', 'gcc', 'intel'].contains(comp)
-  meson.add_postconf_script('./tools/optimize_ninja.sh')
+  comp = meson.get_compiler('cpp').get_id()
+  if ['clang', 'gcc', 'intel'].contains(comp)
+    meson.add_postconf_script('./tools/optimize_ninja.sh')
+  endif
 endif
 
 subdir('meson_jln_flags')

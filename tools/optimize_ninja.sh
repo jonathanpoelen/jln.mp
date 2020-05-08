@@ -7,5 +7,6 @@ fi
 
 sed -i -E '
 s/^( command = .*) -o \$out -c \$in/\1 -fsyntax-only $in \&\& :>$out/;t
+s/-g[0-9]? |-O[1-3] //g;t
 s/^(build [^:]+): cpp_LINKER/\1: phony/;Ta;n;d;:a
 ' "${f:-build.ninja}"
