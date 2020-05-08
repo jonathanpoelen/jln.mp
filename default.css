@@ -218,7 +218,8 @@ pre { border-color: #c4c4c4; }
 .group, table, td, th { border-color: #c4c4c4; }
 
 body, html { background: #252525; }
-body, html, a, a:visited { color: #dedfda; }
+/* body, html, a, a:visited { color: #dedfda; } */
+body, html, a, a:visited { color: #d8d9d4; }
 tr:nth-child(even) { background-color: #090909; }
 tr:hover, tr:focus, tr:active { background-color: #444; }
 th { background-color: #333; }
@@ -251,7 +252,7 @@ h2::before, h3::before, h4::before, h5::before, h6::before { color: #ca8244; }*/
   margin-left: -1em;
 }
 
-h3:hover .ref, p:hover > .ref, .ref:focus {
+h3:hover .ref, h2:hover .ref, p:hover > .ref, .ref:focus {
   opacity: .8;
   visibility: visible;
   text-decoration: none;
@@ -301,19 +302,85 @@ ul {
   column-width: 20.5em;
 }
 
-.index_list > li {
+.index_list.func_list {
+  column-width: 15em;
+}
+
+.index_list, .subindex_list, .index_group {
+  list-style-type: none;
+}
+
+.index_group {
+  padding-bottom: 10px;
+}
+
+.index_group, .index_cat, .index_list {
   border: 1px solid #999;
+}
+
+.index_list {
+  border-width: 1px 0 1px 0;
+  border-color: #777
+}
+
+.index_group, .index_cat {
+  border-top-width: 0;
+}
+
+.index_group:hover, .index_group:focus-within {
+  background: #090909;
+}
+
+.index_cat {
+  background: #111;
+  border-width: 1px 0 1px 0;
+  margin: 10px 0 10px 0;
+  list-style-type: none;
+  display:block;
+}
+
+.index_list {
+  padding: 0.2em;
+  margin-bottom:20px;
+}
+
+.index_cat {
+  font-weight: bold;
+  padding-left: 1em;
+}
+
+.depth1, .ext {
+  opacity: 0.3;
+}
+
+.basename {
+  /* color: #3daee9; */
+  /* color: #ca8244; */
+  color: #da854a;
+  /* color: #ea954f; */
+}
+
+.index_link {
+  text-decoration: none;
+  display:block;
+  padding-left: .5em;
+}
+
+.subindex_list {
+  margin-left:0
+}
+
+.index_link:hover {
+  text-decoration: underline;
+}
+
+.depth2 {
+  opacity: 0.70
 }
 
 a:hover, a:focus {
   color: #ca8244;
 }
-
-/*.group__content h1,
-.group__content h2{
-  border-top: 1px dashed #c4c4c4;
-  padding-top: 10px
-}*/
 
 .group {
   padding: 20px;
@@ -321,12 +388,8 @@ a:hover, a:focus {
   border-bottom: 1px dashed #c4c4c4;
 }
 
-.group__title {
+h1 {
   font-size: 2.8rem;
-}
-
-.group__title a {
-  text-decoration: none;
 }
 
 .group__file {

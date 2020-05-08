@@ -4,6 +4,7 @@ local parseFile
 local htmlify
 local linkifier
 local splitShortAndLongDesc
+local fragmentName
 local inlinecode_begin = '<code class="inlinecode highlight" data-lang="cpp">'
 local inlinecode_end = '</code>'
 local blockcode_begin = '<code class="blockcode highlight" data-lang="cpp">'
@@ -177,6 +178,13 @@ local balancedtag = P{
 }
 
 splitShortAndLongDesc = C(Until('.\n' + -P(1)) * P'.'^-1) * sp0 * C(P(1)^0)
+
+fragmentName = Cs(
+  P'jln/mp/' / function(s) return '<span class="depth1">jln/mp/</span>' end
+* (Until(S'/') * '/' / function(s) return '<span class="depth2">' .. s .. '</span>' end)
+* (Until(S'.') / function(s) return '<span class="basename">' .. s .. '</span>' end)
+* (P'.hpp' / function(s) return '<span class="ext">.hpp</span>' end)
+)
 
 local sanitize_space = Cs(ws0 / '' * (
   ' >' * ws / ' > '
@@ -422,9 +430,10 @@ function readfile(filename)
 
   fileinfos.filename = filename:sub(9)
   fileinfos.filerefid = filename:sub(16)
+  fileinfos.dirname = fileinfos.filerefid:match'%w+'
   local g = groups[fileinfos.ingroup]
   if not g then
-    g = {}
+    g = {name=fileinfos.ingroup}
     groups[fileinfos.ingroup] = g
   end
   g[#g+1] = fileinfos
@@ -476,9 +485,12 @@ function tohtml(namespace, s)
   return nil
 end
 
-local types = {}
+local ttypes = {}
+local tgroups = {}
 
 for name,g in pairs(groups) do
+  tgroups[#tgroups+1] = g
+
   local short_desc, long_desc, see, tparams, extra_doc
   local reset_values = function()
     short_desc = nil
@@ -513,6 +525,7 @@ for name,g in pairs(groups) do
       elseif d.i == i_using or d.i == i_struct then
         types[#types+1] = d
         if d.namespace == '' then
+          ttypes[#ttypes+1] = d
           gtypes[#gtypes+1] = d
         end
 
@@ -561,10 +574,16 @@ end
 
 -- group list
 
-push('<nav>\n')
+function comp_by_name(f1, f2)
+  return f1.name < f2.name
+end
+
+table.sort(tgroups, comp_by_name)
+
+push('<nav class="group">\n')
 push('<ul>\n')
-for name in pairs(groups) do
-  push('<li>' .. name .. '</li>\n')
+for _,g in ipairs(tgroups) do
+  push('<li>' .. g.name .. '</li>\n')
 end
 push('</ul>\n')
 push('</nav>\n')
@@ -575,59 +594,86 @@ function comp_by_filerefid(f1, f2)
   return f1.filerefid < f2.filerefid
 end
 
-function show_file_list(files)
-  for _,d in ipairs(files) do
-    push('<li><a href="#' .. d.filerefid .. '">' .. d.filename .. '</a></li>\n')
-  end
-end
-
-push('<nav>\n')
-push('<ul class="index_list">\n')
-for name,g in pairs(groups) do
+push('<nav class="group">\n')
+push'<h1>Files by group</h1>'
+push('<ul class="index_list file_list">\n')
+for _,g in ipairs(tgroups) do
   table.sort(g, comp_by_filerefid)
-  push('<li>Group: ' .. name .. '</li>\n')
-  show_file_list(g)
+  push('<li class="index_group"><span class="index_cat">Group: ' .. g.name .. '</span><ul class="subindex_list">\n')
+  for _,d in ipairs(g) do
+    d.fragment_filename = fragmentName:match(d.filename)
+    push('<li><a href="#' .. d.filerefid .. '" class="index_link">' .. d.fragment_filename .. '</a></li>\n')
+  end
+  push('</ul></li>')
 end
 push('</ul>\n')
 push('</nav>\n')
 
 -- filename list
 
-push('<nav>\n')
-push('<ul class="index_list">\n')
+push('<nav class="group">\n')
+push'<h1>Files in alphabetical order</h1>'
+push('<ul class="index_list file_list">\n')
 table.sort(files, comp_by_filerefid)
-show_file_list(files)
+local previous_name
+for _,d in ipairs(files) do
+  if previous_name ~= d.dirname then
+    if previous_name then
+      push('</ul></li>')
+    end
+    previous_name = d.dirname
+    push('<li class="index_group"><span class="index_cat">Directory: ' .. d.dirname .. '</span><ul class="subindex_list">\n')
+  end
+  push('<li><a href="#' .. d.filerefid .. '" class="index_link">' .. d.fragment_filename .. '</a></li>\n')
+end
+push('</ul></li>')
 push('</ul>\n')
 push('</nav>\n')
 
 -- function list by group
 
-function comp_by_name(f1, f2)
-  return f1.name < f2.name
-end
-
-function show_function_list(files)
-  for _,d in ipairs(files) do
-    push('<li><a href="#' .. d.refid .. '">' .. d.fullname .. '</a></li>\n')
-  end
-end
-
-push('<nav>\n')
-push('<ul class="index_list">\n')
-for name,g in pairs(groups) do
+push('<nav class="group">\n')
+push'<h1>Functions by group</h1>'
+push('<ul class="index_list func_list">\n')
+for _,g in ipairs(tgroups) do
   table.sort(g.types, comp_by_name)
-  push('<li>Group: ' .. name .. '</li>\n')
-  show_function_list(g.types)
+  push('<li class="index_group"><span class="index_cat">Group: ' .. g.name .. '</span><ul class="subindex_list">\n')
+  previous_name = nil
+  for _,d in ipairs(g.types) do
+    if previous_name ~= d.name then
+      previous_name = d.name
+      push('<li><a href="#' .. d.refid .. '" class="index_link">' .. d.fullname .. '</a></li>\n')
+    end
+  end
+  push('</ul></li>')
 end
 push('</ul>\n')
 push('</nav>\n')
 
 -- function list
 
-push('<nav>\n')
-push('<ul class="index_list">\n')
-table.sort(types, comp_by_name)
-show_function_list(types)
+table.sort(ttypes, comp_by_name)
+
+push('<nav class="group">\n')
+push'<h1>Functions in alphabetical order</h1>'
+push('<ul class="index_list func_list">\n')
+local previous_letter = nil
+previous_name = nil
+for _,d in ipairs(ttypes) do
+  if previous_name ~= d.name then
+    previous_name = d.name
+    local first_letter = d.name:byte()
+    if previous_letter ~= first_letter then
+      if previous_letter then
+        push('</ul></li>')
+      end
+      previous_letter = first_letter
+      push('<li class="index_group"><span class="index_cat">' .. d.name:sub(1,1):upper() .. '</span><ul class="subindex_list">\n')
+    end
+    push('<li><a href="#' .. d.refid .. '" class="index_link">' .. d.fullname .. '</a></li>\n')
+  end
+end
+push('</ul></li>')
 push('</ul>\n')
 push('</nav>\n')
 
@@ -648,10 +694,10 @@ function comp_by_firstname(f1, f2)
 end
 
 push('<section>\n')
-for name,g in pairs(groups) do
+for _,g in ipairs(tgroups) do
   table.sort(g, comp_by_firstname)
   push('<article class="group">\n')
-  push('<h1>Group: ' .. name .. '</h1>\n')
+  push('<h1>Group: ' .. g.name .. '</h1>\n')
   push('<table>\n')
   for _,f in ipairs(g) do
     for _,d in ipairs(f.types) do
@@ -691,12 +737,12 @@ function push_blocks(name, t)
 end
 
 push('<section>\n')
-for name,g in pairs(groups) do
+for _,g in ipairs(tgroups) do
   push('<article class="group">\n')
-  push('<h1 class="group__title">Group: ' .. name .. '</h1>\n')
+  push('<h1 class="group__title">Group: ' .. g.name .. '</h1>\n')
   push('<div class="group__content">\n')
   for _,f in ipairs(g) do
-    push('<h2 class="file" id="' .. f.filerefid .. '">&lt;' .. f.filename .. '></h2>')
+    push('<h2 class="file" id="' .. f.filerefid .. '"><a href="#' .. f.filerefid .. '" class="ref">¶</a>&lt;' .. f.filename .. '></h2>')
     push('<div class="group__file">\n')
 
     local refcache = {}
