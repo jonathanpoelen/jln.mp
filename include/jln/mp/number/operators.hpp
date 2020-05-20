@@ -228,10 +228,10 @@ namespace jln::mp
 
 
   template<class N, class C = identity>
-  using equal_than = push_back<N, equal<C>>;
+  using equal_to = push_back<N, equal<C>>;
 
   template<class N, class C = identity>
-  using not_equal_than = push_back<N, not_equal<C>>;
+  using not_equal_to = push_back<N, not_equal<C>>;
 
   template<class N, class C = identity>
   using less_than = push_back<N, less<C>>;
@@ -247,10 +247,10 @@ namespace jln::mp
 
 
   template<int_ n, class C = identity>
-  using equal_than_c = equal_than<number<n>, C>;
+  using equal_to_c = equal_to<number<n>, C>;
 
   template<int_ n, class C = identity>
-  using not_equal_than_c = not_equal_than<number<n>, C>;
+  using not_equal_to_c = not_equal_to<number<n>, C>;
 
   template<int_ n, class C = identity>
   using less_than_c = less_than<number<n>, C>;

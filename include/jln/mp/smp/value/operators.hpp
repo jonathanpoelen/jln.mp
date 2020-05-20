@@ -132,12 +132,12 @@ namespace jln::mp::smp
   using greater_equal_v = try_contract<mp::greater_equal_v<assume_unary<C>>>;
 
   template<class x, class C = identity>
-  using equal_than_v = contract<
+  using equal_to_v = contract<
     mp::push_back<x,
       mp::try_invoke<mp::equal_v<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
-  using not_equal_than_v = contract<
+  using not_equal_to_v = contract<
     mp::push_back<x,
       mp::try_invoke<mp::not_equal_v<assume_unary<C>>>>>;
 
@@ -162,10 +162,10 @@ namespace jln::mp::smp
       mp::try_invoke<mp::greater_equal_v<assume_unary<C>>>>>;
 
   template<auto x, class C = identity>
-  using equal_than_c_v = equal_than_v<val<x>, C>;
+  using equal_to_c_v = equal_to_v<val<x>, C>;
 
   template<auto x, class C = identity>
-  using not_equal_than_c_v = not_equal_than_v<val<x>, C>;
+  using not_equal_to_c_v = not_equal_to_v<val<x>, C>;
 
   template<auto x, class C = identity>
   using less_than_c_v = less_than_v<val<x>, C>;

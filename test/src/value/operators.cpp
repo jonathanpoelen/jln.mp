@@ -85,8 +85,8 @@ TEST()
   ut::invoke_r<val<1>, smp::div0_v<inc_v<>>>();
   ut::invoke_r<val<2>, smp::div1_v<inc_v<>>>();
 
-  ut::invoke_r<val<true>, smp::equal_than_v<_3>, _3>();
-  ut::invoke_r<val<false>, smp::not_equal_than_v<_3>, _3>();
+  ut::invoke_r<val<true>, smp::equal_to_v<_3>, _3>();
+  ut::invoke_r<val<false>, smp::not_equal_to_v<_3>, _3>();
   ut::invoke_r<val<true>, smp::less_than_v<_3>, _2>();
   ut::invoke_r<val<true>, smp::less_equal_than_v<_3>, _3>();
   ut::invoke_r<val<true>, smp::greater_than_v<_1>, _3>();

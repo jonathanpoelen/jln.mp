@@ -79,8 +79,8 @@ TEST()
   ut::invoke_r<_1, smp::div0<inc<>>>();
   ut::invoke_r<_2, smp::div1<inc<>>>();
 
-  ut::invoke_r<_1, smp::equal_than<_3>, _3>();
-  ut::invoke_r<_0, smp::not_equal_than<_3>, _3>();
+  ut::invoke_r<_1, smp::equal_to<_3>, _3>();
+  ut::invoke_r<_0, smp::not_equal_to<_3>, _3>();
   ut::invoke_r<_1, smp::less_than<_3>, _2>();
   ut::invoke_r<_1, smp::less_equal_than<_3>, _3>();
   ut::invoke_r<_1, smp::greater_than<_1>, _3>();

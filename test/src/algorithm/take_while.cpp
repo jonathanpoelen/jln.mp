@@ -14,11 +14,11 @@ void test_take_while()
   using namespace ut::ints;
 
   using Smp = smp::take_while<
-    smp::equal_than<_2>,
+    smp::equal_to<_2>,
     detail::sfinae<cfe<List>>, detail::sfinae<cfe<List2>>
   >;
 
-  test_context<take_while<equal_than<_2>, cfe<List>, cfe<List2>>, Smp, 0>()
+  test_context<take_while<equal_to<_2>, cfe<List>, cfe<List2>>, Smp, 0>()
     .template test<List2<>>()
     .template test<List2<_0>, _0>()
     .template test<List2<_0, _1>, _0, _1>()

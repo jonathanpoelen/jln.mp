@@ -133,12 +133,12 @@ namespace jln::mp::smp
   using greater_equal = try_contract<mp::greater_equal<assume_number<C>>>;
 
   template<class N, class C = identity>
-  using equal_than = contract<
+  using equal_to = contract<
     mp::push_back<N,
       mp::try_invoke<mp::equal<assume_number<C>>>>>;
 
   template<class N, class C = identity>
-  using not_equal_than = contract<
+  using not_equal_to = contract<
     mp::push_back<N,
       mp::try_invoke<mp::not_equal<assume_number<C>>>>>;
 
@@ -163,10 +163,10 @@ namespace jln::mp::smp
       mp::try_invoke<mp::greater_equal<assume_number<C>>>>>;
 
   template<int_ n, class C = identity>
-  using equal_than_c = equal_than<number<n>, C>;
+  using equal_to_c = equal_to<number<n>, C>;
 
   template<int_ n, class C = identity>
-  using not_equal_than_c = not_equal_than<number<n>, C>;
+  using not_equal_to_c = not_equal_to<number<n>, C>;
 
   template<int_ n, class C = identity>
   using less_than_c = less_than<number<n>, C>;

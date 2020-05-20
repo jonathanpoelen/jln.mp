@@ -47,8 +47,8 @@ TEST()
   ut::same<na, emp::index_of<seq_0_1_2_3, int>>();
 
   test_context<
-    index_if<equal_than<_3>>,
-    smp::index_if<smp::equal_than<_3>>
+    index_if<equal_to<_3>>,
+    smp::index_if<smp::equal_to<_3>>
   >()
     .test<_3, _0, _1, _2, _3>()
     .test<_2, _1, _2, _3>()
