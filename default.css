@@ -299,11 +299,23 @@ ul {
 
 .index_list {
   column-count: auto;
-  column-width: 20.5em;
+  column-width: 22em;
 }
 
 .index_list.func_list {
   column-width: 15em;
+}
+
+.index_group {
+  display: inline-grid;
+}
+
+.func_sublist {
+  width:15em;
+}
+
+.file_sublist {
+  width:22em;
 }
 
 .index_list, .subindex_list, .index_group {
@@ -311,42 +323,40 @@ ul {
 }
 
 .index_group {
-  padding-bottom: 10px;
+  margin-bottom: 10px;
 }
 
-.index_group, .index_cat, .index_list {
+/* .subindex_list, */
+.index_group,
+.index_cat,
+.index_list {
   border: 1px solid #999;
 }
 
 .index_list {
+  margin-top: .5em;
   border-width: 1px 0 1px 0;
   border-color: #777
 }
 
-.index_group, .index_cat {
-  border-top-width: 0;
-}
-
-.index_group:hover, .index_group:focus-within {
+.index_group:hover,
+.index_group:focus-within {
   background: #090909;
 }
 
 .index_cat {
   background: #111;
-  border-width: 1px 0 1px 0;
-  margin: 10px 0 10px 0;
+  border-width: 0 0 1px 0;
   list-style-type: none;
   display:block;
+  font-weight: bold;
+  padding-left: 1em;
+  text-decoration: none;
 }
 
 .index_list {
   padding: 0.2em;
   margin-bottom:20px;
-}
-
-.index_cat {
-  font-weight: bold;
-  padding-left: 1em;
 }
 
 .depth1, .ext {
@@ -363,7 +373,7 @@ ul {
 .index_link {
   text-decoration: none;
   display:block;
-  padding-left: .5em;
+  padding: 0 .5em 0 .5em;
 }
 
 .subindex_list {
@@ -395,4 +405,13 @@ h1 {
 .group__file {
   border-left: 1px solid #444;
   padding: 1px 20px;
+}
+
+.link_group:first-letter {
+  text-transform: uppercase
+}
+.link_group {
+  display: inline-block;
+  padding: 1em;
+  background: #111;
 }

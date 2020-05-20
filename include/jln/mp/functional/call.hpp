@@ -5,17 +5,11 @@
 
 namespace jln::mp
 {
-#ifdef JLN_MP_DOXYGENATING
-  /// \cond
-  template<class... xs>
-  class param_list {};
-  #define JLN_MP_PARAM_LIST param_list
-  /// \endcond
-#else
+#ifndef JLN_MP_DOXYGENATING
   template<class...>
   class list;
-  #define JLN_MP_PARAM_LIST list
 #endif
+  #define JLN_MP_PARAM_LIST list
 
   /// \cond
   namespace detail

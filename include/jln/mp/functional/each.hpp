@@ -18,24 +18,22 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invokes multiple functions each taking the parameter corresponding to its position.
-  /// \pre sizeof...(Fs) >= 1
-  /// \pre sizeof...(xs) == sizeof...(Fs) - 1
-  /// \semantics
-  ///   \code
-  ///   each\<Fs...,C\>::f\<xs...\> == C::f\<Fs::f\<xs\>...\>
-  ///   \endcode
   /// \treturn \value
   /// \see fork, partial
+#ifdef JLN_MP_DOXYGENATING
+  template <class... Fs, class C>
+  struct each
+  {
+    template<class... xs>
+    using f = C::f<Fs::f<xs>...>;
+  };
+#else
   template <class... Fs>
   struct each
   : rotate<number<-1>, cfe<detail::_each>>
   ::template f<Fs...>
-  {
-#ifdef JLN_MP_DOXYGENATING
-    template<class... xs>
-    using f = /* unspecified */;
+  {};
 #endif
-  };
 
   /// \cond
   template <class C>

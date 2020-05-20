@@ -19,24 +19,27 @@ namespace jln::mp
 
   /// Invoke multiple functions each taking the parameter corresponding to its position
   /// then calls `C` with the results and the rest of the parameters.
-  /// \pre sizeof...(Fs) >= 1
-  /// \pre sizeof...(xs) >= sizeof...(Fs) - 1
+  /// \pre sizeof...(xs) >= sizeof...(Fs)
   /// \semantics
   ///   \code
   ///   partial\<F,G,C\>::f\<a,b,c,d\> == C::f\<F::f\<a\>, G::f\<b\>, c, d\>
   ///   \endcode
   /// \treturn \value
   /// \see each, fork, partial_eager
+#ifdef JLN_MP_DOXYGENATING
+  template <class... Fs, class C>
+  struct partial
+  {
+    template<class... xs>
+    using f = /* unspecified */;
+  };
+#else
   template <class... Fs>
   struct partial
   : rotate<number<-1>, cfe<detail::_partial>>
   ::template f<Fs...>
-  {
-#ifdef JLN_MP_DOXYGENATING
-    template<class... xs>
-    using f = /* unspecified */;
+  {};
 #endif
-  };
 
   /// \cond
   template <class C>

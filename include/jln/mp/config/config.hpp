@@ -10,3 +10,6 @@
 /// \defgroup value Value
 /// \defgroup functional Functional
 /// \defgroup utility Utility
+/// \defgroup trait Trait
+/// \defgroup search Search
+/// \defgroup group Group
