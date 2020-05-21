@@ -42,17 +42,16 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-#define JLN_COMPOSE_IMPL(n, mp_xs, mp_rxs, mp_dup)       \
-  template<template<class...> class F                    \
-    mp_xs(JLN_MP_COMMA template<class...> class,         \
-      JLN_MP_NIL, JLN_MP_NIL)>                           \
-  struct _compose_f_impl##n                              \
-  {                                                      \
-    template<class... xs>                                \
-    using f = mp_rxs(JLN_MP_NIL, <, JLN_MP_NIL)          \
-      typename detail::dcallf<(sizeof...(xs) < 1000000)> \
-      ::template f<F, xs...>                             \
-    mp_dup(>, JLN_MP_NIL);                               \
+#define JLN_COMPOSE_IMPL(n, mp_xs, mp_rxs, mp_dup) \
+  template<template<class...> class F              \
+    mp_xs(JLN_MP_COMMA template<class...> class,   \
+      JLN_MP_NIL, JLN_MP_NIL)>                     \
+  struct _compose_f_impl##n                        \
+  {                                                \
+    template<class... xs>                          \
+    using f = mp_rxs(JLN_MP_NIL, <, JLN_MP_NIL)    \
+      JLN_MP_DCALLF_XS(xs, F, xs...)               \
+    mp_dup(>, JLN_MP_NIL);                         \
   };
 
   JLN_MP_GEN_XS_0_TO_8(JLN_COMPOSE_IMPL)
@@ -61,12 +60,12 @@ namespace jln::mp::detail
 
 #define JLN_COMPOSE_IMPL(n, mp_xs, mp_rxs, mp_dup)  \
   template<>                                        \
-  struct _compose_f<n>                                \
+  struct _compose_f<n>                              \
   {                                                 \
     template<template<class...> class F             \
       mp_xs(JLN_MP_COMMA template<class...> class,  \
         JLN_MP_NIL, JLN_MP_NIL)>                    \
-    using f = _compose_f_impl##n<F                    \
+    using f = _compose_f_impl##n<F                  \
       mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)>; \
   };
 

@@ -14,10 +14,7 @@ namespace jln::mp
   struct cfl
   {
     template<class... xs>
-    using f = typename C::template f<
-      typename detail::dcallf<sizeof...(xs) < 1000000>
-      ::template f<F, xs...>::type
-    >;
+    using f = typename C::template f<JLN_MP_DCALLF_XS(xs, F, xs...)::type>;
   };
 
   /// \cond
@@ -25,8 +22,7 @@ namespace jln::mp
   struct cfl<F, identity>
   {
     template<class... xs>
-    using f = typename detail::dcallf<sizeof...(xs) < 1000000>
-      ::template f<F, xs...>::type;
+    using f = JLN_MP_DCALLF_XS(xs, F, xs...)::type;
   };
   /// \endcond
 
@@ -37,10 +33,7 @@ namespace jln::mp
   struct cfe
   {
     template<class... xs>
-    using f = typename C::template f<
-      typename detail::dcallf<sizeof...(xs) < 1000000>
-      ::template f<F, xs...>
-    >;
+    using f = typename C::template f<JLN_MP_DCALLF_XS(xs, F, xs...)>;
   };
 
   /// \cond
@@ -48,8 +41,7 @@ namespace jln::mp
   struct cfe<F, identity>
   {
     template<class... xs>
-    using f = typename detail::dcallf<sizeof...(xs) < 1000000>
-      ::template f<F, xs...>;
+    using f = JLN_MP_DCALLF_XS(xs, F, xs...);
   };
   /// \endcond
 
@@ -58,32 +50,28 @@ namespace jln::mp
   struct cfe_v
   {
     template<class... xs>
-    using f = typename detail::dcallf_c<(sizeof...(xs) < 1000000)>
-      ::template f<F, xs::value...>;
+    using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...);
   };
 
   template<template<auto...> class F>
   struct cfe_c
   {
     template<auto... xs>
-    using f = typename detail::dcallf_c<(sizeof...(xs) < 1000000)>
-      ::template f<F, xs...>;
+    using f = JLN_MP_DCALLF_C_XS(xs, F, xs...);
   };
 
   template<template<class, auto...> class F>
   struct cfe_tv
   {
     template<class x, class... xs>
-    using f = typename detail::dcallf_tc<(sizeof...(xs) < 1000000)>
-      ::template f<F, x, xs::value...>;
+    using f = JLN_MP_DCALLF_TC_XS(xs, F, x, xs::value...);
   };
 
   template<template<class, auto...> class F>
   struct cfe_tc
   {
     template<class x, auto... xs>
-    using f = typename detail::dcallf_tc<(sizeof...(xs) < 1000000)>
-      ::template f<F, x, xs...>;
+    using f = JLN_MP_DCALLF_TC_XS(xs, F, x, xs...);
   };
 #endif
 } // namespace jln::mp

@@ -5,10 +5,11 @@
 
 namespace jln::mp
 {
-#ifndef JLN_MP_DOXYGENATING
+  /// \cond
   template<class...>
   class list;
-#endif
+  /// \endcond
+
   #define JLN_MP_PARAM_LIST list
 
   /// \cond
@@ -55,11 +56,11 @@ namespace jln::mp
   using call = C::f<xs...>;
   #define JLN_MP_DCALL(cond, ...) call<__VA_ARGS__>
   #define JLN_MP_DCALLF(cond, F, ...) F<__VA_ARGS__>
-# else
+#else
   using call = typename detail::_memoizer<C, xs...>::type;
-  #define JLN_MP_DCALL(cond, ...) typename detail::_memoizer<__VA_ARGS__>::type;
-  #define JLN_MP_DCALLF(cond, ...) typename detail::dcallf<(cond)>::template f<__VA_ARGS__>;
-# endif
+  #define JLN_MP_DCALL(cond, ...) typename detail::_memoizer<__VA_ARGS__>::type
+  #define JLN_MP_DCALLF(cond, ...) typename detail::dcallf<(cond)>::template f<__VA_ARGS__>
+#endif
 
   template<class C, class F, class... xs>
   using dispatch = call<C, call<F, xs>...>;
@@ -183,6 +184,18 @@ namespace jln::mp::detail
   };
 
 #if __cplusplus >= 201703L
+
+#ifdef JLN_MP_DOXYGENATING
+  #define JLN_MP_DCALLF_C(cond, F, ...) F<__VA_ARGS__>
+  #define JLN_MP_DCALLF_TC(cond, F, ...) F<__VA_ARGS__>
+#else
+  #define JLN_MP_DCALLF_C(cond, ...) typename detail::dcallf_c<(cond)>::template f<__VA_ARGS__>
+  #define JLN_MP_DCALLF_TC(cond, ...) typename detail::dcallf_tc<(cond)>::template f<__VA_ARGS__>
+#endif
+
+#define JLN_MP_DCALLF_C_XS(xs, ...) JLN_MP_DCALLF_C(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
+#define JLN_MP_DCALLF_TC_XS(xs, ...) JLN_MP_DCALLF_TC(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
+
   template<>
   struct dcallf_c<true>
   {
