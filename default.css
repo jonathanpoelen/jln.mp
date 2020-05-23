@@ -10,7 +10,6 @@ time, mark, audio, video {
 	padding: 0;
 	border: 0;
 	font-size: 100%;
-	/* font: inherit; */
 	vertical-align: baseline;
 }
 
@@ -22,27 +21,6 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-
-b, strong {
-	font-weight: 700;
-}
-
-:focus::-webkit-input-placeholder {
-	color: transparent;
-}
-
-:focus::-moz-placeholder {
-	color: transparent;
-}
-
-:focus:-moz-placeholder {
-	color: transparent;
-}
-
-:focus:-ms-input-placeholder {
-	color: transparent;
-}
-
 
 html {
 	-ms-text-size-adjust: none;
@@ -83,8 +61,6 @@ dd {
 
 /*** Tables ***/
 table {
-	margin-bottom: 20px;
-	margin-bottom: 1.25rem;
 	border-left: 1px solid #c4c4c4;
 	border-top: 1px solid #c4c4c4;
 }
@@ -215,12 +191,14 @@ th {
 
 pre { border-color: #c4c4c4; }
 /* .inlinecode, code { border: none; } */
-.group, table, td, th { border-color: #c4c4c4; }
+table, td, th { border-color: #c4c4c4; }
 
-body, html { background: #252525; }
+/* body, html { background: #252525; } */
+body, html { background: #151515; }
 /* body, html, a, a:visited { color: #dedfda; } */
 body, html, a, a:visited { color: #d8d9d4; }
-tr:nth-child(even) { background-color: #090909; }
+/* tr:nth-child(even) { background-color: #090909; } */
+tr:nth-child(even) { background-color: #252525; }
 tr:hover, tr:focus, tr:active { background-color: #444; }
 th { background-color: #333; }
 pre { background: #2e2e2e; border-color: #999; }
@@ -229,18 +207,20 @@ pre { background: #2e2e2e; border-color: #999; }
 .inlinecode, code, .highlight { background-color: #3a3a3a; border-color: #3a3a3a; color: #e0e1dc }
 table, td, th { border-color: #999; }
 
-/*h2, h3, h4, h5, h6 { color: #d0b993; }
-h2::before, h3::before, h4::before, h5::before, h6::before { color: #ca8244; }*/
-
-
 ::-moz-selection, ::selection {
   color: #222;
   background: #ca8244;
 }
 
 .file {
-  font-size: 1rem;
+  font-size: 1.25rem;
   color: #d0b993;
+  margin-top: 2rem;
+}
+
+.group__file {
+  /* background: #202020; */
+  background: #252525
 }
 
 .ref {
@@ -260,12 +240,31 @@ h3:hover .ref, h2:hover .ref, p:hover > .ref, .ref:focus {
 
 h2, h3, h4, h5, h6 { margin: .5em 0 .5em 0; }
 
+h1 {
+  font-size: 2.8rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1rem;
+}
+h2 {
+  font-size: 2.4rem;
+}
+
+a:hover, a:focus {
+  color: #ca8244;
+}
+
+section {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-bottom: 1px dashed #c4c4c4;
+}
+
 .emp {
   font-weight: normal;
   margin-top: .5em
 }
 
-.group__file > h3:first-child {
+h3:first-child {
   margin-top: .5em
 }
 
@@ -293,21 +292,8 @@ h3, .group__emp {
   content: ": ";
 }
 
-ul {
-  margin-left: .5em;
-}
-
-.index_list {
-  column-count: auto;
-  column-width: 22em;
-}
-
 .index_list.func_list {
   column-width: 15em;
-}
-
-.index_group {
-  display: inline-grid;
 }
 
 .func_sublist {
@@ -318,12 +304,10 @@ ul {
   width:22em;
 }
 
-.index_list, .subindex_list, .index_group {
-  list-style-type: none;
-}
-
+.index_list,
+.subindex_list,
 .index_group {
-  margin-bottom: 10px;
+  list-style-type: none;
 }
 
 /* .subindex_list, */
@@ -334,14 +318,27 @@ ul {
 }
 
 .index_list {
+  column-count: auto;
+  column-width: 22em;
+  border-width: 1px 0 0 0;
+  border-color: #777;
+  padding: 0.2em 0 0 0;
   margin-top: .5em;
-  border-width: 1px 0 1px 0;
-  border-color: #777
+}
+
+.subindex_list {
+  margin-left:0
+}
+
+.index_group {
+  display: inline-grid;
+  margin-bottom: 10px;
+  background: #252525
 }
 
 .index_group:hover,
 .index_group:focus-within {
-  background: #090909;
+  background: #151515;
 }
 
 .index_cat {
@@ -352,11 +349,6 @@ ul {
   font-weight: bold;
   padding-left: 1em;
   text-decoration: none;
-}
-
-.index_list {
-  padding: 0.2em;
-  margin-bottom:20px;
 }
 
 .depth1, .ext {
@@ -376,30 +368,12 @@ ul {
   padding: 0 .5em 0 .5em;
 }
 
-.subindex_list {
-  margin-left:0
-}
-
 .index_link:hover {
   text-decoration: underline;
 }
 
 .depth2 {
   opacity: 0.70
-}
-
-a:hover, a:focus {
-  color: #ca8244;
-}
-
-.group {
-  padding: 20px;
-  padding-top: 20px;
-  border-bottom: 1px dashed #c4c4c4;
-}
-
-h1 {
-  font-size: 2.8rem;
 }
 
 .group__file {
@@ -413,5 +387,5 @@ h1 {
 .link_group {
   display: inline-block;
   padding: 1em;
-  background: #111;
+  background: #101010;
 }

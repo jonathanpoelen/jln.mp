@@ -229,7 +229,8 @@ local preproc = P{
 
 , p='#' * sp0 / '' *
     ( 'ifdef JLN_MP_DOXYGENATING'
-      * Cs((1 - (P'#else' + P'#endif') + V'c')^0) * Until'#endif' * 7 / f_ident
+      * Cs((1 - ('#' * sp0 * (P'else' + P'endif')) + V'c')^0)
+      * Until('#' * sp0 * 'endif') * 7 / f_ident
     + 'if 0' * Until'#endif' * 7 / ''
     + 'if' * unl * Cs(( V'p'
                       + V'c'
@@ -309,58 +310,38 @@ parseFile = function(contents)
   return fileinfos
 end
 
-local htmlspecialchars_c = P'<' / '&lt;' + P'&' / '&amp;'
-local htmlspecialchars = Cs((htmlspecialchars_c + 1)^0)
+htmlifier_init = function()
+  local htmlspecialchars_c = P'<' / '&lt;' + P'&' / '&amp;'
+  local htmlspecialchars = Cs((htmlspecialchars_c + 1)^0)
 
-local inlinecode = function(s)
-  return inlinecode_begin .. linkifier('', s) .. inlinecode_end
-end
-
-local blockcode = function(s)
-  return blockcode_begin .. linkifier('', s) .. blockcode_end
-end
-
-htmlify = Cs((
-  P'\\c ' / '' * (Until(S' \n' + '.\n') / inlinecode)
-+ P'`' * C(Until'`') * '`' / inlinecode
-+ P'\\code' * ws0 * C(Until(ws0 * '\\endcode')) * ws0 * '\\endcode' / blockcode
-+ P'\\ints' / '<a href="#g_ints">ints</a>'
-+ (P'\\int_' + '\\int') / '<a href="#g_int">int_</a>'
-+ P'\\list' / '<a href="#g_list">list</a>'
-+ P'\\number' / '<a href="#g_number">number</a>'
-+ P'\\sequence' / '<a href="#g_sequence">sequence</a>'
-+ P'\\value' / '<a href="#g_value">value</a>'
-+ P'\\val' / '<a href="#g_val">val</a>'
-+ P'\\bool' / '<a href="#g_bool">boolean</a>'
-+ P'\\typelist' / '<a href="#g_typelist">typelist</a>'
-+ P'\\function' / '<a href="#g_function">function</a>'
-+ P'\\metafunction' / '<a href="#g_metafunction">meta-function</a>'
-+ P'\\lazymetafunction' / '<a href="#g_lazymetafunction">lazy meta-function</a>'
-+ htmlspecialchars_c
-+ 1
-)^0)
-
-linkifier_init = function()
   local links_by_namespace = {['']={}}
   local global_table = {}
+
+  local tag_table = {}
 
   local mk_tag = function(tag)
     local span = '<span class="'..tag..'">'
     return function(s)
-      return span .. s .. '</span>'
+      local r = tag_table[s]
+      if not r then
+        r = span .. s .. '</span>'
+        tag_table[s] = r
+      end
+      return r
     end
   end
 
   local mk_tag_specialchar = function(tag)
     local span = '<span class="'..tag..'">'
     return function(s)
-      return span .. htmlspecialchars:match(s) .. '</span>'
+      local r = tag_table[s]
+      if not r then
+        r = span .. htmlspecialchars:match(s) .. '</span>'
+        tag_table[s] = r
+      end
+      return r
     end
   end
-
-  local toHiSymbol = mk_tag'p'
-
-  local hi = Cs((P'::' / toHiSymbol + 1)^1)
 
   for namespace, t in pairs(namespaces) do
     if #namespace == 0 then
@@ -372,7 +353,7 @@ linkifier_init = function()
       links_by_namespace[namespace] = link_table
 
       local prefix = namespace .. '::'
-      local hiprefix = hi:match(prefix)
+      local hiprefix = prefix:gsub('::', '<span class="p">::</span>')
 
       for name in pairs(t) do
         local codename = prefix .. name
@@ -384,11 +365,6 @@ linkifier_init = function()
 
   local tokid = R('az','AZ','09') + S'_'
 
-  local highlighting_symbol
-  = S'{}()[]:;,.'^1 / toHiSymbol
-  + S'<>:+-/%*=&|'^1 / mk_tag_specialchar'o'
-  + R'09'^1 / mk_tag'mi'
-
   local current_table
   local patt = Cs(
     ( ( ( P'template' + 'class' + 'struct' + 'using'
@@ -398,9 +374,11 @@ linkifier_init = function()
       + (P'true' + 'false') / mk_tag'nb'
       ) * -#tokid
     + R'az' * charid^1 / function(s)
-        return current_table[s] or global_table[s] or s
+        return current_table[s] or global_table[s] or s:gsub('::', '<span class="p">::</span>')
       end
-    + highlighting_symbol
+    + S'{}()[]:;,.'^1 / mk_tag'p'
+    + S'<>+-/%*=&|'^1 / mk_tag_specialchar'o'
+    + R'09'^1 / mk_tag'mi'
     + tokid^1
     + 1
     )^0
@@ -410,6 +388,39 @@ linkifier_init = function()
     current_table = links_by_namespace[namespace]
     return patt:match(s)
   end
+
+  local inlinecode = function(s)
+    return inlinecode_begin .. linkifier('', s) .. inlinecode_end
+  end
+
+  local blockcode = function(s)
+    return blockcode_begin .. linkifier('', s) .. blockcode_end
+  end
+
+  local inline_func = function(s)
+    return inlinecode_begin .. global_table[s] .. inlinecode_end
+  end
+
+  htmlify = Cs((
+    P'`' * C(Until'`') * '`' / inlinecode
+  + P'\\c ' / '' * (Until(S' \n' + '.\n') / inlinecode)
+  + P'\\code' * ws0 * C(Until(ws0 * '\\endcode')) * ws0 * '\\endcode' / blockcode
+  + P'\\ints' / ('<a href="#c_sequence">sequence</a> of ' .. inline_func('int_'))
+  + (P'\\int_' + '\\int') / inline_func('int_')
+  + P'\\list' / inline_func('list')
+  + P'\\number' / inline_func('number')
+  + P'\\sequence' / '<a href="#c_sequence">sequence</a>'
+  + P'\\value' / '<a href="#c_value">value</a>'
+  + P'\\val' / inline_func('val')
+  + P'\\bool' / inline_func('number')
+  + P'\\typelist' / '<a href="#c_typelist">typelist</a>'
+  + P'\\function' / '<a href="#c_function">function</a>'
+  + P'\\metafunction' / '<a href="#c_metafunction">meta-function</a>'
+  + P'\\lazymetafunction' / '<a href="#c_lazymetafunction">lazy meta-function</a>'
+  + P'\\link ' * cid / inlinecode
+  + htmlspecialchars_c
+  + 1
+  )^0)
 end
 end
 
@@ -478,7 +489,7 @@ i_post = kwindexes.post
 i_note = kwindexes.note
 i_semantics = kwindexes.semantics
 
-linkifier_init()
+htmlifier_init()
 
 function tohtml(namespace, s)
   if s then
@@ -556,7 +567,7 @@ for name,g in pairs(groups) do
         if d.i == i_using then
           d.is_alias = true
         elseif d.mem then
-          d.mem_html = d.mem_html .. '::'
+          d.mem_html = d.mem_html .. '<span class="p">::</span>'
                     .. d.mem .. (tohtml(d.namespace, d.humain_tparams_mem) or '')
         end
 
@@ -578,36 +589,35 @@ end
 
 -- group definition
 
-push('<section class="group">\n')
-push('<h1>Concepts</h1>\n')
-push('<dl>\n')
-table.sort(defgroups, function(a, b) return a[1] < b[1] end)
-for _,def in ipairs(defgroups) do
-  push('<dt id="g_' .. def[1] .. '">' .. def[1] .. '</dt>\n')
-  push('<dd>' .. def[2] .. '</dd>\n')
-end
-push('</dl>\n')
-push('</section>\n')
+push([[<section><nav><ul>
+<li><a href="#glossary">Glossary</a></li>
+<li><a href="#files_by_group">Files by group</a></li>
+<li><a href="#files_in_alphabetical_order">Files in alphabetical order</a></li>
+<li><a href="#functions_by_group">Functions by group</a></li>
+<li><a href="#functions_in_alphabetical_order">Functions in alphabetical order</a></li>
+<li><a href="#short_descriptions">Short descriptions</a></li>
+<li><a href="#detailed_descriptions">Detailed descriptions</a></li>
+</ul></nav></section>
 
--- group list
-
-function comp_by_name(f1, f2)
-  return f1.name < f2.name
-end
-
-table.sort(tgroups, comp_by_name)
-
-push('<nav class="group">\n')
-push('<ul>\n')
-for _,g in ipairs(tgroups) do
-  push('<li>' .. g.name .. '</li>\n')
-end
-push('</ul>\n')
-push('</nav>\n')
+<section id="glossary">
+<h1>Glossary</h1>
+<dl>
+  <dt id="c_sequence">sequence</dt><dd>.</dd>
+  <dt id="c_value">value</dt><dd>.</dd>
+  <dt id="c_typelist">typelist</dt><dd>.</dd>
+  <dt id="c_function">function</dt><dd>.</dd>
+  <dt id="c_metafunction">metafunction</dt><dd>.</dd>
+  <dt id="c_lazymetafunction">lazymetafunction</dt><dd>.</dd>
+  <dt>]] .. inlinecode_begin .. 'C' .. inlinecode_end .. [[</dt><dd>Continuation function.</dd>
+</dl>
+</section>
+]])
 
 
 function push_nav_by_group(t, gn, type, h1, prefix, idxname, getsubtable, getlink)
-  push('<nav class="group"><h1>' .. h1 .. '</h1><p>')
+  push('<section id="' .. h1:lower():gsub(' ', '_') .. '">')
+  push('<h1 id="' .. h1:lower():gsub(' ', '_') .. '">' .. h1 .. '</h1>')
+  push('<nav><p>')
   for _,g in ipairs(t) do
     push('<a class="link_group" href="#g' .. gn .. '__'
          .. g[idxname] .. '">' .. g[idxname] .. '</a>')
@@ -630,7 +640,7 @@ function push_nav_by_group(t, gn, type, h1, prefix, idxname, getsubtable, getlin
 
     push('</ul></li>')
   end
-  push('</ul></nav>\n')
+  push('</ul></nav></section>\n')
 end
 
 
@@ -639,6 +649,12 @@ end
 function comp_by_filerefid(f1, f2)
   return f1.filerefid < f2.filerefid
 end
+
+function comp_by_name(f1, f2)
+  return f1.name < f2.name
+end
+
+table.sort(tgroups, comp_by_name)
 
 push_nav_by_group(
   tgroups, 1, 'file', 'Files by group', 'Group: ', 'name',
@@ -662,10 +678,11 @@ local previous_name
 for _,d in ipairs(files) do
   if previous_name ~= d.dirname then
     previous_name = d.dirname
-    current_dir = {}
+    current_dir = {d}
     files_by_dir[#files_by_dir+1] = {d.dirname, current_dir}
+  else
+    current_dir[#current_dir+1] = d
   end
-  current_dir[#current_dir+1] = d
 end
 
 push_nav_by_group(
@@ -702,12 +719,9 @@ for _,d in ipairs(ttypes) do
   first_letter = d.name:byte()
   if previous_letter ~= first_letter then
     previous_letter = first_letter
-    if not current_letter or #current_letter ~= 0 then
-      current_letter = {}
-      types_by_letter[#types_by_letter+1] = {string.char(first_letter):upper(), current_letter}
-    else
-      types_by_letter[#types_by_letter][1] = string.char(first_letter):upper()
-    end
+    current_letter = {d}
+    previous_name = d.name
+    types_by_letter[#types_by_letter+1] = {string.char(first_letter):upper(), current_letter}
   elseif previous_name ~= d.name then
     previous_name = d.name
     current_letter[#current_letter+1] = d
@@ -726,18 +740,19 @@ function comp_by_firstname(f1, f2)
   return f1.firstname < f2.firstname
 end
 
-push('<section>\n')
+push('<section id="short_descriptions">\n')
 
-push('<nav class="group"><p>')
+push('<h1>Short descriptions</h1>')
+push('<nav><p>')
 for _,g in ipairs(tgroups) do
-  push('<a class="link_group" href="#g5__' .. g.name .. '">' .. g.name .. '</a>')
+  push('<a class="link_group" href="#g_' .. g.name .. '">' .. g.name .. '</a>')
 end
 push('</p></nav>\n')
 
 for _,g in ipairs(tgroups) do
   table.sort(g, comp_by_firstname)
-  push('<article id="g5__' .. g.name .. '" class="group">\n')
-  push('<h1>Group: ' .. g.name .. '</h1>\n')
+  push('<article id="g_' .. g.name .. '">\n')
+  push('<h2>Group: ' .. g.name .. '</h2>\n')
   push('<table>\n')
   for _,f in ipairs(g) do
     for _,d in ipairs(f.types) do
@@ -776,17 +791,18 @@ function push_blocks(name, t)
   end
 end
 
-push('<section>\n')
+push('<section id="detailed_descriptions">\n')
 
-push('<nav class="group"><p>')
+push('<h1>Detailed descriptions</h1>')
+push('<nav><p>')
 for _,g in ipairs(tgroups) do
   push('<a class="link_group" href="#g6__' .. g.name .. '">' .. g.name .. '</a>')
 end
 push('</p></nav>\n')
 
 for _,g in ipairs(tgroups) do
-  push('<article id="g6__' .. g.name .. '" class="group">\n')
-  push('<h1 class="group__title">Group: ' .. g.name .. '</h1>\n')
+  push('<article id="g6__' .. g.name .. '">\n')
+  push('<h2 class="group__title">Group: ' .. g.name .. '</h2>\n')
   push('<div class="group__content">\n')
   for _,f in ipairs(g) do
     push('<h2 class="file" id="' .. f.filerefid .. '"><a href="#' .. f.filerefid .. '" class="ref">¶</a>&lt;' .. f.filename .. '></h2>')
@@ -800,7 +816,8 @@ for _,g in ipairs(tgroups) do
       if d.namespace == 'emp' then
         emp[#emp+1] = '<h3 class="emp"' .. refid
             .. '><a href="#' .. d.refid .. '" class="ref">¶</a>'
-            .. inlinecode_begin .. d.fullname .. d.mem_html .. inlinecode_end .. ' = '
+            .. inlinecode_begin .. d.fullname:gsub('::', '<span class="p">::</span>')
+            .. d.mem_html .. inlinecode_end .. ' = '
             .. (d.inline_impl_html or '/* implementation defined */')
             .. '</h3>\n'
       else
