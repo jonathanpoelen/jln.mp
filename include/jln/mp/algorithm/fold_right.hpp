@@ -23,7 +23,7 @@ namespace jln::mp
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///   F::f<x[0], ..., F::<x[n-2], F::f<xs[n-1], state>>>
+  ///   F::f<x[0], ..., F::f<x[n-2], F::f<xs[n-1], state>>>
   ///   \endcode
   /// \treturn \value
   template<class F, class C = identity>
