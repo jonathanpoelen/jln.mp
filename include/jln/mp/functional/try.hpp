@@ -9,7 +9,8 @@
 
 namespace jln::mp
 {
-  struct na;
+  struct na {};
+
   using is_na = same_as<na>;
   using violation = always<na>;
 
