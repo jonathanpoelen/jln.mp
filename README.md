@@ -92,6 +92,7 @@ Implementation of `std::tuple_cat` that works with tuple like.
 #include "jln/mp/algorithm/repeat.hpp"
 #include "jln/mp/functional/each.hpp"
 #include "jln/mp/list/as_list.hpp"
+#include "jln/mp/list/join.hpp"
 #include "jln/mp/list/at.hpp"
 
 #include <tuple>
