@@ -3,6 +3,7 @@
 local parseFile
 local htmlify
 local linkifier
+local md2html
 local splitShortAndLongDesc
 local fragmentName
 local inlinecode_begin = '<code class="inlinecode highlight" data-lang="cpp">'
@@ -158,7 +159,6 @@ local f_restore_namespace = function()
 end
 
 local Until = function(p) return (1 - P(p))^0 end
-local AfterS = function(p) return Until(p) * #p end
 local List = function(p, sep) p = P(p) return p * (sep * p)^0 end
 local sp = P' '^1
 local sp0 = P' '^0
@@ -367,15 +367,20 @@ htmlifier_init = function()
 
   local current_table
   local patt = Cs(
-    ( ( ( P'template' + 'class' + 'struct' + 'using'
-        + 'typename' + 'decltype' + 'sizeof' + 'auto'
+    ( ( ( P'template' + 'class' + 'struct' + 'using' + 'typename'
+        + 'decltype' + 'sizeof' + 'auto' + 'static_assert'
+        + 'constexpr' + 'return' + 'namespace'
         ) / mk_tag'k'
-      + (P'void' + 'int' + 'unsigned' + 'long' + 'char' + 'short') / mk_tag'kt'
+      + ( P'void' + 'int' + 'unsigned' + 'long' + 'char' + 'short'
+        + 'double' + 'float'
+        ) / mk_tag'kt'
       + (P'true' + 'false') / mk_tag'nb'
       ) * -#tokid
     + R'az' * charid^1 / function(s)
         return current_table[s] or global_table[s] or s:gsub('::', '<span class="p">::</span>')
       end
+    + S'//' * Until'\n' / mk_tag_specialchar'c1'
+    + S'#' * Until'\n' / mk_tag_specialchar'cp'
     + S'{}()[]:;,.'^1 / mk_tag'p'
     + S'<>+-/%*=&|'^1 / mk_tag_specialchar'o'
     + R'09'^1 / mk_tag'mi'
@@ -398,29 +403,108 @@ htmlifier_init = function()
   end
 
   local inline_func = function(s)
-    return inlinecode_begin .. global_table[s] .. inlinecode_end
+    local e = global_table[s]
+    return e and (inlinecode_begin .. e .. inlinecode_end) or ''
   end
 
+  local mdinlinecodepatt = P'`' * C(Until'`') * '`' / inlinecode
+
   htmlify = Cs((
-    P'`' * C(Until'`') * '`' / inlinecode
+    mdinlinecodepatt
   + P'\\c ' / '' * (Until(S' \n' + '.\n') / inlinecode)
   + P'\\code' * ws0 * C(Until(ws0 * '\\endcode')) * ws0 * '\\endcode' / blockcode
-  + P'\\ints' / ('<a href="#c_sequence">sequence</a> of ' .. inline_func('int_'))
+  + P'\\ints' / ('<a href="#d_sequence">sequence</a> of ' .. inline_func('int_'))
   + (P'\\int_' + '\\int') / inline_func('int_')
   + P'\\list' / inline_func('list')
   + P'\\number' / inline_func('number')
-  + P'\\sequence' / '<a href="#c_sequence">sequence</a>'
-  + P'\\value' / '<a href="#c_value">value</a>'
+  + P'\\sequence' / '<a href="#d_sequence">sequence</a>'
+  + P'\\value' / '<a href="#d_value">value</a>'
   + P'\\val' / inline_func('val')
   + P'\\bool' / inline_func('number')
-  + P'\\typelist' / '<a href="#c_typelist">typelist</a>'
-  + P'\\function' / '<a href="#c_function">function</a>'
-  + P'\\metafunction' / '<a href="#c_metafunction">meta-function</a>'
-  + P'\\lazymetafunction' / '<a href="#c_lazymetafunction">lazy meta-function</a>'
+  + P'\\typelist' / '<a href="#d_typelist">typelist</a>'
+  + P'\\function' / '<a href="#d_function">function</a>'
+  + P'\\metafunction' / '<a href="#d_metafunction">meta-function</a>'
+  + P'\\lazymetafunction' / '<a href="#d_lazymetafunction">lazy meta-function</a>'
   + P'\\link ' * cid / inlinecode
   + htmlspecialchars_c
   + 1
   )^0)
+
+
+  local mdfragment2htmlpatt = Cs((mdinlinecodepatt + 1)^0)
+
+  local def_list = function(word, def)
+    return '<dt id="d_' .. word:gsub('[ -]', ''):lower() .. '">'
+        .. mdfragment2htmlpatt:match(word)
+        .. '</dt><dd>' .. mdfragment2htmlpatt:match(def) .. '</dd>\n'
+  end
+
+  local normal_list = function(line)
+    return '<li>' .. mdfragment2htmlpatt:match(line) .. '</li>'
+  end
+
+  local lvl_stack = {}
+
+  local t2idpatt = Cs(((R('az','AZ','09') + S'_-')^1 + P(1) / '')^1)
+
+  local headers
+
+  local headerize = function(h, title)
+    local current_lvl = #h
+    local id = t2idpatt:match(title):lower()
+    local prefix = ''
+    if current_lvl ~= 1 then
+      id = lvl_stack[current_lvl-1] .. '__' .. id
+    else
+      prefix = #headers == 0 and '</article>\n' or '</section>\n'
+      prefix = prefix .. '<section id="' .. id .. '">'
+      headers[#headers+1] = {id, title}
+    end
+    lvl_stack[current_lvl] = id
+    return prefix .. '<h'..current_lvl..' id="' .. id .. '">' .. title
+        .. '<a href="#' .. id .. '" class="titleref">¶</a>' .. '</h'..current_lvl..'>\n'
+  end
+
+  local wrap_with = function(open, close)
+    return function(s)
+      return open .. s .. close
+    end
+  end
+
+
+  local e = lpeg.Cp()
+
+  local wordid = (R('az', 'AZ') + S'`_-')^1
+
+  local md2htmlpatt = Cs(
+    (unl * P'\n'^0) / ''
+  * ( P'```cpp\n' * C(Until('\n```')) * '\n```' / blockcode
+    + C(P'#'^1) * ' ' * cunl / headerize
+    + #P'-' *
+      ( #(P'- ' * wordid * ':')
+      * ( Cs((P'- ' * C(wordid * (P' ' * wordid)^0) * ': ' * cunl / def_list)^1)
+        / wrap_with('<dl>\n', '</dl>\n')
+        )
+      + ( Cs((P'- ' * cunl / normal_list)^1)
+        / wrap_with('<ul>\n', '</ul>\n')
+        )
+      )
+    + P'\n'^1 / ''
+    + Cs((mdinlinecodepatt + (1 - P'\n'))^1)
+    / wrap_with('<p>', '</p>\n')
+    )^0
+  )
+
+  md2html = function(contents)
+    headers = {}
+    local html = md2htmlpatt:match(contents)
+    if html then
+      -- </article> and <section> added by md2htmlpatt
+      html = '<article id="main">' .. html .. '</section>\n'
+    end
+    return headers, html
+  end
+
 end
 end
 
@@ -544,8 +628,8 @@ for name,g in pairs(groups) do
         end
 
         d.human_tparams_html = tohtml(d.namespace, d.human_tparams) or ''
-        d.long_desc_html = long_desc
-        d.short_desc_html = short_desc
+        d.long_desc_html = long_desc and #long_desc > 0 and long_desc
+        d.short_desc_html = short_desc and #short_desc > 0 and short_desc
         d.tparams = tparams
         d.impl_html = tohtml(d.namespace, d.impl)
         d.inline_impl_html = d.impl and (inlinecode_begin .. d.impl_html .. inlinecode_end)
@@ -587,10 +671,17 @@ function push(s)
 end
 
 
--- group definition
+-- Concept, Glossary and TOC
 
-push([[<section><nav><ul>
-<li><a href="#glossary">Glossary</a></li>
+local f = io.open'README.md'
+local headers, html_intro = md2html(f:read('*a'))
+f:close()
+
+push'<section><h1>Table of contents<a href="#toc" class="titleref">¶</a></h1><nav id="toc"><ul>'
+for _,title in ipairs(headers) do
+  push('<li><a href="#' .. title[1] .. '">' .. title[2] .. '</a></li>')
+end
+push([[
 <li><a href="#files_by_group">Files by group</a></li>
 <li><a href="#files_in_alphabetical_order">Files in alphabetical order</a></li>
 <li><a href="#functions_by_group">Functions by group</a></li>
@@ -598,20 +689,11 @@ push([[<section><nav><ul>
 <li><a href="#short_descriptions">Short descriptions</a></li>
 <li><a href="#detailed_descriptions">Detailed descriptions</a></li>
 </ul></nav></section>
-
-<section id="glossary">
-<h1>Glossary</h1>
-<dl>
-  <dt id="c_sequence">sequence</dt><dd>.</dd>
-  <dt id="c_value">value</dt><dd>.</dd>
-  <dt id="c_typelist">typelist</dt><dd>.</dd>
-  <dt id="c_function">function</dt><dd>.</dd>
-  <dt id="c_metafunction">metafunction</dt><dd>.</dd>
-  <dt id="c_lazymetafunction">lazymetafunction</dt><dd>.</dd>
-  <dt>]] .. inlinecode_begin .. 'C' .. inlinecode_end .. [[</dt><dd>Continuation function.</dd>
-</dl>
-</section>
 ]])
+
+push'<div class="from_mdfile">'
+push(html_intro)
+push'</div>\n'
 
 
 function push_nav_by_group(t, gn, type, h1, prefix, idxname, getsubtable, getlink)
@@ -774,9 +856,9 @@ push('</section>\n')
 -- long description
 
 function push_block(name, s)
-  push('<div class="InfoBox"><p><h4 class="InfoBox-title">' .. name .. '</h4>\n')
+  push('<div class="InfoBox"><h4 class="InfoBox-title">' .. name .. '</h4>\n')
   push(s)
-  push('</p></div>')
+  push('</div>')
 end
 
 function push_list(name, t)
@@ -829,12 +911,12 @@ for _,g in ipairs(tgroups) do
         if d.short_desc_html then push('<p>' .. d.short_desc_html .. '</p>') end
         if d.long_desc_html then push('<p>' .. d.long_desc_html .. '</p>') end
 
-        if d.tparams then
+        if d.tparams and #d.tparams ~= 0 then
           push('<dl>')
           for _, tparam in ipairs(d.tparams) do
-            push('<dt><code>' .. tparam[1] .. '</code></dt><dd>' .. tparam[2] .. '</dd>')
+            push('<dt><code>' .. tparam[1] .. '</code></dt><dd>' .. tparam[2] .. '</dd>\n')
           end
-          push('</dl>')
+          push('</dl>\n')
         end
 
         if d.impl_html then

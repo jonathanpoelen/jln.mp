@@ -99,8 +99,8 @@ th {
 
 .blockcode {
   display: block;
-  padding: 1em;
-  margin: .25em 0;
+  padding: .5em 1em;
+  margin: .5em 0;
 }
 
 /** tomorrow_night.css **/
@@ -205,6 +205,7 @@ pre { background: #2e2e2e; border-color: #999; }
 /* .inlinecode > code { border-color: #3a3a3a; } */
 /* pre > code { color: #d0d0d0 } */
 .inlinecode, code, .highlight { background-color: #3a3a3a; border-color: #3a3a3a; color: #e0e1dc }
+.blockcode.highlight { background-color: #1a1a1a }
 table, td, th { border-color: #999; }
 
 ::-moz-selection, ::selection {
@@ -223,7 +224,7 @@ table, td, th { border-color: #999; }
   background: #252525
 }
 
-.ref {
+.ref, .titleref{
   opacity: 0.2;
   display: inline-block;
   z-index: 5;
@@ -232,10 +233,17 @@ table, td, th { border-color: #999; }
   margin-left: -1em;
 }
 
+.titleref {
+  opacity: 0;
+  margin-left: 0;
+}
+
 h3:hover .ref, h2:hover .ref, p:hover > .ref, .ref:focus {
   opacity: .8;
-  visibility: visible;
-  text-decoration: none;
+}
+
+h1:hover .titleref, h2:hover .titleref, .titleref:focus {
+  opacity: .6;
 }
 
 h2, h3, h4, h5, h6 { margin: .5em 0 .5em 0; }
@@ -253,10 +261,32 @@ a:hover, a:focus {
   color: #ca8244;
 }
 
-section {
-  padding-left: 1rem;
-  padding-right: 1rem;
+section,#main {
+  padding: 1rem;
+  padding-top: 0;
   border-bottom: 1px dashed #c4c4c4;
+}
+
+#main {
+  padding-top: 1rem;
+  font-size: 1.2rem
+}
+
+#toc {
+  padding-left: 1em;
+}
+
+.from_mdfile ul {
+  padding: .5em 1em;
+}
+
+.from_mdfile p {
+  padding: .5em 0;
+}
+
+.from_mdfile h1, .from_mdfile h2, .from_mdfile h3 {
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .emp {
