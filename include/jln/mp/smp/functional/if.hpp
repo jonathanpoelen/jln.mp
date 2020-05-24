@@ -3,16 +3,16 @@
 #include "identity.hpp"
 #include "../concepts.hpp"
 #include "../utility/always.hpp"
-#include "../../functional/fork_front.hpp"
+#include "../../functional/invoke_twice.hpp"
 #include "../../functional/if.hpp"
-#include "../../functional/fork.hpp"
+#include "../../functional/tee.hpp"
 #include "../../number/as_number.hpp"
 
 namespace jln::mp::smp
 {
   template<class Pred, class TC, class FC = always<false_>>
   using if_ = contract<
-    mp::fork_front<
+    mp::invoke_twice<
       concepts::predicate<
         Pred,
         mp::if_<

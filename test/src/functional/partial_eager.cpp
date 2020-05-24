@@ -71,7 +71,7 @@ TEST()
   ut::not_invocable<smp::partial_eager<identity, bad_function>, _1, _1>();
   ut::not_invocable<smp::partial_eager<bad_function, bad_function, bad_function>, _1, _1>();
   ut::not_invocable<smp::partial_eager<identity, identity, bad_function>, _1, _1>();
-  ut::not_invocable<smp::cfe<smp::partial_eager>>();
+  ut::not_invocable<smp::lift<smp::partial_eager>>();
 }
 
 TEST_SUITE_END()

@@ -17,7 +17,7 @@ namespace ut
   struct other_list
   {};
 
-  using other_listify = jln::mp::cfe<other_list>;
+  using other_listify = jln::mp::lift<other_list>;
 
   namespace detail
   {
@@ -115,15 +115,15 @@ namespace ut
   template<template<class...> class Tpl, class... Args>
   void test_pack3()
   {
-    using jln::mp::cfe;
+    using jln::mp::lift;
     using jln::mp::call;
     using jln::mp::is_invocable;
 
-    static_assert(((void)call<is_invocable<cfe<Tpl>>, Args..., void>::value,1));
-    static_assert(((void)call<is_invocable<cfe<Tpl>>, Args..., unary>::value,1));
-    static_assert(((void)call<is_invocable<cfe<Tpl>>, Args..., binary>::value,1));
-    static_assert(((void)call<is_invocable<cfe<Tpl>>, Args..., listify>::value,1));
-    static_assert(((void)call<is_invocable<cfe<Tpl>>, Args..., variadic>::value,1));
+    static_assert(((void)call<is_invocable<lift<Tpl>>, Args..., void>::value,1));
+    static_assert(((void)call<is_invocable<lift<Tpl>>, Args..., unary>::value,1));
+    static_assert(((void)call<is_invocable<lift<Tpl>>, Args..., binary>::value,1));
+    static_assert(((void)call<is_invocable<lift<Tpl>>, Args..., listify>::value,1));
+    static_assert(((void)call<is_invocable<lift<Tpl>>, Args..., variadic>::value,1));
   }
 
   template<template<class...> class Tpl, class... Args>
@@ -180,8 +180,8 @@ using ut::bad_function;
 namespace jln::mp::detail
 {
   template<template<class> class sfinae>
-  struct _sfinae<sfinae, cfe<ut::other_list>>
+  struct _sfinae<sfinae, lift<ut::other_list>>
   {
-    using type = contract<cfe<ut::other_list>>;
+    using type = contract<lift<ut::other_list>>;
   };
 }

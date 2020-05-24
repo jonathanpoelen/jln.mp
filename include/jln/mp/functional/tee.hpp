@@ -11,7 +11,7 @@ namespace jln::mp
   namespace detail
   {
     template <class C, class... Fs>
-    struct _fork;
+    struct _tee;
   }
   /// \endcond
 
@@ -22,36 +22,36 @@ namespace jln::mp
   /// \see each, partial
 #ifdef JLN_MP_DOXYGENATING
   template <class... Fs, class C>
-  struct fork
+  struct tee
   {
     template<class... xs>
     using f = C::f<Fs::f<xs...>...>;
   };
 #else
   template <class... Fs>
-  struct fork
-  : rotate<number<-1>, cfe<detail::_fork>>
+  struct tee
+  : rotate<number<-1>, lift<detail::_tee>>
   ::template f<Fs...>
   {};
 #endif
 
   /// \cond
   template <class F, class C>
-  struct fork<F, C>
+  struct tee<F, C>
   {
     template<class... xs>
     using f = unary_compose_call<C, F, xs...>;
   };
 
   template <class F0, class F1, class C>
-  struct fork<F0, F1, C>
+  struct tee<F0, F1, C>
   {
     template<class... xs>
     using f = binary_compose_call<C, F0, F1, xs...>;
   };
 
   template <class F0, class F1, class F2, class C>
-  struct fork<F0, F1, F2, C>
+  struct tee<F0, F1, F2, C>
   {
     template<class... xs>
     using f = ternary_compose_call<C, F0, F1, F2, xs...>;
@@ -63,7 +63,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template <class C, class... Fs>
-  struct _fork
+  struct _tee
   {
     template <class... xs>
     using f = typename C::template f<call<Fs, xs...>...>;

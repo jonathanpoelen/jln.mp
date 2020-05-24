@@ -10,7 +10,7 @@ namespace jln::mp
   /// Copy all elements that satisfy a predicate.
   /// \treturn \sequence
   template<class Pred, class C = listify>
-  using copy_if = remove_if<fork<Pred, not_<>>, C>;
+  using copy_if = remove_if<tee<Pred, not_<>>, C>;
 
   /// Copy all occurence of a \value.
   /// \treturn \sequence

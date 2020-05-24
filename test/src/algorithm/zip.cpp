@@ -57,8 +57,8 @@ TEST()
     ;
 
   test_context<
-    matrix_shortest<zip_with<cfe<another_list>>>,
-    smp::matrix_shortest<smp::zip_with<smp::cfe<another_list>>>
+    matrix_shortest<zip_with<lift<another_list>>>,
+    smp::matrix_shortest<smp::zip_with<smp::lift<another_list>>>
   >()
     .test<list<>, list<>, list<>>()
     .test<list<>, list<>, list<_1>>()

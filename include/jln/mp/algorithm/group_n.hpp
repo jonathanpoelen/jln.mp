@@ -64,7 +64,7 @@ namespace jln::mp::detail
   {
     template<class C, unsigned long long n, class... xs>
     using f = call<
-      fold_right<cfl<split_state>, unpack<pop_front<C>>>,
+      fold_right<lift_t<split_state>, unpack<pop_front<C>>>,
       list<list<>>,
       list<number<(i % n ? split_keep : split_before)>, xs>...
     >;
@@ -75,7 +75,7 @@ namespace jln::mp::detail
   {
     template<class C, unsigned long long n, class... xs>
     using f = typename emp::make_int_sequence_v_c<
-      sizeof...(xs), cfe_c<_group_n_impl>
+      sizeof...(xs), lift_c<_group_n_impl>
     >::template f<C, n, xs...>;
   };
 

@@ -27,7 +27,7 @@ namespace jln::mp
   ///   partial_eager\<F,G,C\>::f\<a\> == C\<F\<a\>, G\<\>\>
   ///   \endcode
   /// \treturn \value
-  /// \see each, fork, partial
+  /// \see each, tee, partial
 #ifdef JLN_MP_DOXYGENATING
   template <class... Fs, class C>
   struct partial_eager
@@ -38,7 +38,7 @@ namespace jln::mp
 #else
   template <class... Fs>
   struct partial_eager
-  : rotate<number<-2>, cfe<detail::_partial_eager>>
+  : rotate<number<-2>, lift<detail::_partial_eager>>
   ::template f<Fs...>::type
   {};
 #endif
@@ -77,7 +77,7 @@ namespace jln::mp
 }
 
 #include "each.hpp"
-#include "fork.hpp"
+#include "tee.hpp"
 #include "../list/join.hpp"
 #include "../list/take.hpp"
 #include "../list/drop.hpp"
@@ -88,9 +88,9 @@ namespace jln::mp::detail
   template <class Flast, class C, class... Fs>
   struct _partial_eager
   {
-    using type = fork<
+    using type = tee<
       take_c<sizeof...(Fs), _each<listify, Fs...>>,
-      drop_c<sizeof...(Fs), fork<Flast, listify>>,
+      drop_c<sizeof...(Fs), tee<Flast, listify>>,
       join<C>
     >;
   };

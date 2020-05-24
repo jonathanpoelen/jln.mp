@@ -4,7 +4,7 @@
 #include "../list/drop.hpp"
 #include "../list/take.hpp"
 #include "../utility/always.hpp"
-#include "../functional/fork.hpp"
+#include "../functional/tee.hpp"
 
 namespace jln::mp
 {
@@ -15,7 +15,7 @@ namespace jln::mp
   /// \pre seq must be a \list
   /// \treturn \sequence
   template<class i, class seq, class C = listify>
-  using insert_range = fork<take<i>, always<seq>, drop<i>, join<C>>;
+  using insert_range = tee<take<i>, always<seq>, drop<i>, join<C>>;
 
   template<int_ i, class seq, class C = listify>
   using insert_range_c = insert_range<number<i>, seq, C>;

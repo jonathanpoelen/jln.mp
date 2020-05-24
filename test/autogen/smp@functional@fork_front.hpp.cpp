@@ -1,2 +1,2 @@
-#include "jln/mp/smp/functional/fork_front.hpp"
+#include "jln/mp/smp/functional/invoke_twice.hpp"
 

@@ -123,7 +123,7 @@ namespace jln::mp::detail
   struct _cartesian
   {
     template<class seq, class... seqs>
-    using f = typename fold_left<cfl<detail::_cartesian_impl>, unpack<C>>
+    using f = typename fold_left<lift_t<detail::_cartesian_impl>, unpack<C>>
       ::template f<typename _product1<seq>::type, seqs...>;
   };
 
@@ -131,7 +131,7 @@ namespace jln::mp::detail
   struct _cartesian<listify, n>
   {
     template<class seq, class... seqs>
-    using f = typename fold_left<cfl<detail::_cartesian_impl>>
+    using f = typename fold_left<lift_t<detail::_cartesian_impl>>
       ::template f<typename _product1<seq>::type, seqs...>;
   };
 }

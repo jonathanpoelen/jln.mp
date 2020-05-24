@@ -20,9 +20,9 @@ namespace jln::mp
   /// Creates a set.
   /// \treturn \sequence
   template<class C = listify>
-  using unique = typename detail::mk_unique<cfe<std::is_same>, C>::type;
+  using unique = typename detail::mk_unique<lift<std::is_same>, C>::type;
 
-  template<class Cmp = cfe<std::is_same>, class C = listify>
+  template<class Cmp = lift<std::is_same>, class C = listify>
   using unique_if = typename detail::mk_unique<Cmp, C>::type;
 
   namespace emp
@@ -30,7 +30,7 @@ namespace jln::mp
     template<class L, class C = mp::listify>
     using unique = unpack<L, unique<C>>;
 
-    template<class L, class Cmp = cfe<std::is_same>, class C = mp::listify>
+    template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
     using unique_if = unpack<L, unique_if<Cmp, C>>;
   }
 }
@@ -122,22 +122,22 @@ namespace jln::mp::detail
   };
 
   template<class C>
-  struct mk_unique<cfe<std::is_same>, C>
+  struct mk_unique<lift<std::is_same>, C>
   {
     using type = push_front<list<>, fold_left<
-      cfl<_set_push_back>,
+      lift_t<_set_push_back>,
       optimize_useless_unpack_t<unpack<C>>
     >>;
   };
 
   template<class C>
-  struct mk_unique<cfl<std::is_same>, C>
-  : mk_unique<cfe<std::is_same>, C>
+  struct mk_unique<lift_t<std::is_same>, C>
+  : mk_unique<lift<std::is_same>, C>
   {};
 
   template<class C>
   struct mk_unique<same<>, C>
-  : mk_unique<cfe<std::is_same>, C>
+  : mk_unique<lift<std::is_same>, C>
   {};
 }
 /// \endcond

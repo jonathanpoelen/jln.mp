@@ -13,7 +13,7 @@ namespace jln::mp::detail
   using smp_opv_default = contract<
     if_<
       size<>,
-      try_invoke<Tpl<assume_unary<C>>>,
+      try_<Tpl<assume_unary<C>>>,
       always<val<i>, assume_unary<C>>>>;
 }
 /// \endcond
@@ -134,32 +134,32 @@ namespace jln::mp::smp
   template<class x, class C = identity>
   using equal_to_v = contract<
     mp::push_back<x,
-      mp::try_invoke<mp::equal_v<assume_unary<C>>>>>;
+      mp::try_<mp::equal_v<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
   using not_equal_to_v = contract<
     mp::push_back<x,
-      mp::try_invoke<mp::not_equal_v<assume_unary<C>>>>>;
+      mp::try_<mp::not_equal_v<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
   using less_than_v = contract<
     mp::push_back<x,
-      mp::try_invoke<mp::less_v<assume_unary<C>>>>>;
+      mp::try_<mp::less_v<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
   using less_equal_than_v = contract<
     mp::push_back<x,
-      mp::try_invoke<mp::less_equal_v<assume_unary<C>>>>>;
+      mp::try_<mp::less_equal_v<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
   using greater_than_v = contract<
     mp::push_back<x,
-      mp::try_invoke<mp::greater_v<assume_unary<C>>>>>;
+      mp::try_<mp::greater_v<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
   using greater_equal_than_v = contract<
     mp::push_back<x,
-      mp::try_invoke<mp::greater_equal_v<assume_unary<C>>>>>;
+      mp::try_<mp::greater_equal_v<assume_unary<C>>>>>;
 
   template<auto x, class C = identity>
   using equal_to_c_v = equal_to_v<val<x>, C>;

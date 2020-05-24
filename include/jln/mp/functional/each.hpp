@@ -19,7 +19,7 @@ namespace jln::mp
 
   /// Invokes multiple functions each taking the parameter corresponding to its position.
   /// \treturn \value
-  /// \see fork, partial
+  /// \see tee, partial
 #ifdef JLN_MP_DOXYGENATING
   template <class... Fs, class C>
   struct each
@@ -30,7 +30,7 @@ namespace jln::mp
 #else
   template <class... Fs>
   struct each
-  : rotate<number<-1>, cfe<detail::_each>>
+  : rotate<number<-1>, lift<detail::_each>>
   ::template f<Fs...>
   {};
 #endif

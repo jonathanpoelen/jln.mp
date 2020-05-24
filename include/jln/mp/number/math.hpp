@@ -3,7 +3,7 @@
 #include "operators.hpp"
 #include "../list/at.hpp"
 #include "../functional/flip.hpp"
-#include "../functional/fork.hpp"
+#include "../functional/tee.hpp"
 #include "../algorithm/fold_left.hpp"
 
 namespace jln::mp
@@ -40,7 +40,7 @@ namespace jln::mp
 
 
   template<class Cmp = less<>, class C = identity>
-  using abs = fork<identity, neg<>, max<Cmp, C>>;
+  using abs = tee<identity, neg<>, max<Cmp, C>>;
 
 
   template<class C = identity>

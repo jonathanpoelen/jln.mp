@@ -19,8 +19,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<group_if, same_as<int>>();
-  test_pack2<group_if, void>();
+  test_pack2<group_by, same_as<int>>();
+  test_pack2<group_by, void>();
 
   ut::same<list<list<_0>, list<_1, _1>, list<_2, _2, _2>>,
     emp::group<emp::numbers<0, 1, 1, 2, 2, 2>>>();
@@ -31,7 +31,7 @@ TEST()
   using cmp = transform<odd, equal<>>;
   using scmp = detail::sfinae<cmp>;
 
-  test_context<group_if<cmp>, smp::group_if<scmp>>()
+  test_context<group_by<cmp>, smp::group_by<scmp>>()
     .test<list<>>()
     .test<list<seq_0_0_0>, _0, _0, _0>()
     .test<list<list<_0, _0>, list<_1, _3>, seq_2>,
@@ -40,7 +40,7 @@ TEST()
     .not_invocable<bad_number, bad_number>()
     ;
 
-  test_context<group_if<always<na>>, smp::group_if<smp::always<na>>>()
+  test_context<group_by<always<na>>, smp::group_by<smp::always<na>>>()
     .test<list<>>()
     .test<list<seq_0>, _0>()
     .not_invocable<_0, _0>()
@@ -56,11 +56,11 @@ TEST()
 
   ut::not_invocable<smp::group<bad_function>>();
   ut::not_invocable<smp::group<bad_function>, _1, _1, _1, _2>();
-  ut::not_invocable<smp::group_if<always<void>>, _1, _1>();
-  ut::not_invocable<smp::group_if<cmp, bad_function>>();
-  ut::not_invocable<smp::group_if<cmp, bad_function>, _1, _1, _1>();
-  ut::not_invocable<smp::group_if<bad_function, bad_function>>();
-  ut::not_invocable<smp::group_if<bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::group_by<always<void>>, _1, _1>();
+  ut::not_invocable<smp::group_by<cmp, bad_function>>();
+  ut::not_invocable<smp::group_by<cmp, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::group_by<bad_function, bad_function>>();
+  ut::not_invocable<smp::group_by<bad_function, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

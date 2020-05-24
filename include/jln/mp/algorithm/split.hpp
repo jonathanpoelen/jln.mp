@@ -92,7 +92,7 @@ namespace jln::mp::detail
   {
     template<int_ policy, class C, class Pred, class... xs>
     using f = call<
-      fold_right<cfl<split_state>, optimize_useless_unpack_t<unpack<C>>>,
+      fold_right<lift_t<split_state>, optimize_useless_unpack_t<unpack<C>>>,
       list<list<>>,
       list<number<bool{Pred::template f<xs>::value}
         ? policy : split_keep>, xs>...

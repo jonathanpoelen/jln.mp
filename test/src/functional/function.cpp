@@ -21,45 +21,45 @@ TEST()
 {
   using namespace jln::mp;
 
-  (void)cfe<ut::unary::f>();
-  (void)cfe<ut::binary::f>();
-  (void)cfe<ut::listify::f>();
-  (void)cfe<ut::variadic::f>();
+  (void)lift<ut::unary::f>();
+  (void)lift<ut::binary::f>();
+  (void)lift<ut::listify::f>();
+  (void)lift<ut::variadic::f>();
 
-  (void)cfl<ut::unary::f>();
-  (void)cfl<ut::binary::f>();
-  (void)cfl<ut::listify::f>();
-  (void)cfl<ut::variadic::f>();
+  (void)lift_t<ut::unary::f>();
+  (void)lift_t<ut::binary::f>();
+  (void)lift_t<ut::listify::f>();
+  (void)lift_t<ut::variadic::f>();
 
-  test_context<cfe<foo>, smp::cfe<foo>>()
+  test_context<lift<foo>, smp::lift<foo>>()
     .test<x, x>()
     .not_invocable<x, x>()
     ;
 
-  test_context<cfl<bar>, smp::cfl<bar>>()
+  test_context<lift_t<bar>, smp::lift_t<bar>>()
     .test<x, x>()
     .not_invocable<x, x>()
     ;
 
-  test_context<cfe<bar>, smp::cfe<bar>>()
+  test_context<lift<bar>, smp::lift<bar>>()
     .test<bar<x>, x>()
     ;
 
-  test_context<cfl<foo>, smp::cfl<foo>>()
+  test_context<lift_t<foo>, smp::lift_t<foo>>()
     .not_invocable<x>()
     ;
 
-  test_context<cfe<violation::f>, smp::cfe<violation::f>>()
+  test_context<lift<violation::f>, smp::lift<violation::f>>()
     .not_invocable<x>()
     ;
 
-  test_context<cfl<violation::f>, smp::cfl<violation::f>>()
+  test_context<lift_t<violation::f>, smp::lift_t<violation::f>>()
     .not_invocable<x>()
     ;
 
-  ut::not_invocable<smp::cfe<foo, bad_function>>();
-  ut::not_invocable<smp::cfl<bar, bad_function>>();
-  ut::not_invocable<smp::cfe<bar, bad_function>>();
+  ut::not_invocable<smp::lift<foo, bad_function>>();
+  ut::not_invocable<smp::lift_t<bar, bad_function>>();
+  ut::not_invocable<smp::lift<bar, bad_function>>();
 }
 
 TEST_SUITE_END()

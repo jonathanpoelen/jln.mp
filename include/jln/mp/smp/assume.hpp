@@ -46,16 +46,16 @@ namespace jln::mp
 
 
   template<class F, class TC = identity, class FC = violation>
-  using try_assume_unary_or_more = typename detail::_optimize_try_invoke<
-    try_invoke<assume_unary_or_more<F>, TC, FC>>::type;
+  using try_assume_unary_or_more = typename detail::_optimize_try_<
+    try_<assume_unary_or_more<F>, TC, FC>>::type;
 
   template<class F, class TC = identity, class FC = violation>
-  using try_assume_unary = typename detail::_optimize_try_invoke<
-    try_invoke<assume_unary<F>, TC, FC>>::type;
+  using try_assume_unary = typename detail::_optimize_try_<
+    try_<assume_unary<F>, TC, FC>>::type;
 
   template<class F, class TC = identity, class FC = violation>
-  using try_assume_binary = typename detail::_optimize_try_invoke<
-    try_invoke<assume_binary<F>, TC, FC>>::type;
+  using try_assume_binary = typename detail::_optimize_try_<
+    try_<assume_binary<F>, TC, FC>>::type;
 
   template<class F>
   using assume_unary_barrier = contract_barrier<assume_unary<F>>;
@@ -126,11 +126,11 @@ namespace jln::mp::detail
 
 #define JLN_MP_MK_ASSUME(cat)                                 \
   template<class F>                                           \
-  struct _assume_##cat<try_invoke<F, identity, violation>>    \
+  struct _assume_##cat<try_<F, identity, violation>>    \
   {                                                           \
     using type = typename conditional_c<bool(                 \
       expected_argument<F>::value & argument_category::_##cat \
-    )>::template f<F, try_invoke<F, identity, violation>>;    \
+    )>::template f<F, try_<F, identity, violation>>;    \
   }
 
   JLN_MP_MK_ASSUME(lists);

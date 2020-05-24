@@ -60,7 +60,7 @@ TEST()
   ut::not_invocable<smp::partial<bad_function>>();
   ut::not_invocable<smp::partial<bad_function, bad_function, bad_function>, _1, _1>();
   ut::not_invocable<smp::partial<identity, identity, bad_function>, _1, _1>();
-  ut::not_invocable<smp::cfe<smp::partial>>();
+  ut::not_invocable<smp::lift<smp::partial>>();
 }
 
 TEST_SUITE_END()

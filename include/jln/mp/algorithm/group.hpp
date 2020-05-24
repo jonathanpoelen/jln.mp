@@ -2,7 +2,7 @@
 
 #include "same.hpp"
 #include "rotate.hpp"
-#include "../functional/try_invoke.hpp"
+#include "../functional/try.hpp"
 
 
 namespace jln::mp
@@ -30,7 +30,7 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence
   template<class Cmp, class C = listify>
-  struct group_if
+  struct group_by
   {
     template<class... xs>
     using f = typename detail::_group<sizeof...(xs) != 0>
@@ -38,12 +38,12 @@ namespace jln::mp
   };
 
   template<class C = listify>
-  using group = group_if<same<>, C>;
+  using group = group_by<same<>, C>;
 
   namespace emp
   {
     template<class L, class Cmp, class C = mp::listify>
-    using group_if = unpack<L, mp::group_if<Cmp, C>>;
+    using group_by = unpack<L, mp::group_by<Cmp, C>>;
 
     template<class L, class C = mp::listify>
     using group = unpack<L, mp::group<C>>;
@@ -71,7 +71,7 @@ namespace jln::mp::detail
   struct _group_impl<C, Cmp, x, list<ys...>, xs...>
   {
     using type = call<
-      fold_right<cfl<split_state>, unpack<_group_insert_x<x, C>>>,
+      fold_right<lift_t<split_state>, unpack<_group_insert_x<x, C>>>,
       list<list<>>,
       list<number<Cmp::template f<ys, xs>::value
         ? split_keep : split_before>, xs>...
@@ -83,7 +83,7 @@ namespace jln::mp::detail
   {
     template<class C, class cmp, class x, class... xs>
     using f = call<
-        fold_right<cfl<split_state>, unpack<_group_insert_x<x, C>>>,
+        fold_right<lift_t<split_state>, unpack<_group_insert_x<x, C>>>,
         list<list<>>,
         list<number<bool(cmp::template f<ys, xs>::value)
           ? split_keep : split_before>, xs>...
@@ -91,10 +91,10 @@ namespace jln::mp::detail
   };
 
   template<class C, class Cmp, class TC, class FC, class x, class... xs, class... ys>
-  struct _group_impl<C, try_invoke<Cmp, TC, FC>, x, list<ys...>, xs...>
+  struct _group_impl<C, try_<Cmp, TC, FC>, x, list<ys...>, xs...>
   {
-    using type = typename try_invoke<_smp_group_impl<ys...>>
-      ::template f<C, try_invoke<Cmp, TC, FC>, x, xs...>;
+    using type = typename try_<_smp_group_impl<ys...>>
+      ::template f<C, try_<Cmp, TC, FC>, x, xs...>;
   };
 
   template<>

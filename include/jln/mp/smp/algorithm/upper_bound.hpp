@@ -1,7 +1,7 @@
 #pragma once
 
 #include "lower_bound.hpp"
-#include "../functional/fork.hpp"
+#include "../functional/tee.hpp"
 #include "../functional/flip.hpp"
 #include "../../algorithm/upper_bound.hpp"
 
@@ -10,7 +10,7 @@ namespace jln::mp::smp
   template<class x, class Cmp, class C = listify, class NC = C>
   using upper_bound = contract<detail::_smp_lower_bound_impl<
     x, mp::flip<
-      subcontract<fork<try_assume_binary<Cmp>, not_<>>>>,
+      subcontract<tee<try_assume_binary<Cmp>, not_<>>>>,
       subcontract<C>, subcontract<NC>
     >
   >;

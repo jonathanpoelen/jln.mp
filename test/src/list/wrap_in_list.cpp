@@ -13,7 +13,7 @@ TEST()
   using namespace jln::mp;
 
   using pred1 = same_as<int>;
-  using pred2 = cfe<std::is_same>;
+  using pred2 = lift<std::is_same>;
 
   ut::same<list<int>, emp::wrap_in_list_if<pred1, int>>();
   ut::same<list<>, emp::wrap_in_list_if<pred1, char>>();

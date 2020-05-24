@@ -3,7 +3,7 @@
 #include "../../number/math.hpp"
 #include "../number/operators.hpp"
 #include "../algorithm/fold_left.hpp"
-#include "../functional/fork.hpp"
+#include "../functional/tee.hpp"
 #include "../functional/flip.hpp"
 #include "../functional/if.hpp"
 #include "../list/drop.hpp"

@@ -14,7 +14,7 @@ namespace jln::mp::detail
   using smp_op_default = contract<
     if_<
       size<>,
-      try_invoke<Tpl<assume_number<C>>>,
+      try_<Tpl<assume_number<C>>>,
       always<number<i>, assume_number<C>>>>;
 }
 /// \endcond
@@ -135,32 +135,32 @@ namespace jln::mp::smp
   template<class N, class C = identity>
   using equal_to = contract<
     mp::push_back<N,
-      mp::try_invoke<mp::equal<assume_number<C>>>>>;
+      mp::try_<mp::equal<assume_number<C>>>>>;
 
   template<class N, class C = identity>
   using not_equal_to = contract<
     mp::push_back<N,
-      mp::try_invoke<mp::not_equal<assume_number<C>>>>>;
+      mp::try_<mp::not_equal<assume_number<C>>>>>;
 
   template<class N, class C = identity>
   using less_than = contract<
     mp::push_back<N,
-      mp::try_invoke<mp::less<assume_number<C>>>>>;
+      mp::try_<mp::less<assume_number<C>>>>>;
 
   template<class N, class C = identity>
   using less_equal_than = contract<
     mp::push_back<N,
-      mp::try_invoke<mp::less_equal<assume_number<C>>>>>;
+      mp::try_<mp::less_equal<assume_number<C>>>>>;
 
   template<class N, class C = identity>
   using greater_than = contract<
     mp::push_back<N,
-      mp::try_invoke<mp::greater<assume_number<C>>>>>;
+      mp::try_<mp::greater<assume_number<C>>>>>;
 
   template<class N, class C = identity>
   using greater_equal_than = contract<
     mp::push_back<N,
-      mp::try_invoke<mp::greater_equal<assume_number<C>>>>>;
+      mp::try_<mp::greater_equal<assume_number<C>>>>>;
 
   template<int_ n, class C = identity>
   using equal_to_c = equal_to<number<n>, C>;

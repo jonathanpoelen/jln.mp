@@ -10,11 +10,11 @@ namespace jln::mp
   class list {};
 
   /// \treturn \link list
-  using listify = cfe<list>;
+  using listify = lift<list>;
 
   /// \cond
   template<>
-  struct cfe<list, identity>
+  struct lift<list, identity>
   {
     template<class... xs>
     using f = list<xs...>;

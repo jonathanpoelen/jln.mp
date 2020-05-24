@@ -66,9 +66,9 @@ namespace jln::mp
 #include "../list/pop_front.hpp"
 #include "../list/front.hpp"
 #include "../list/drop.hpp"
-#include "../functional/fork.hpp"
+#include "../functional/tee.hpp"
 #include "../functional/flip.hpp"
-#include "../functional/try_invoke.hpp"
+#include "../functional/try.hpp"
 
 /// \cond
 namespace jln::mp::detail
@@ -80,18 +80,18 @@ namespace jln::mp::detail
   };
 
   template<class Cmp>
-  struct optimize_cmp<flip<fork<less<Cmp>, not_<>>>>
+  struct optimize_cmp<flip<tee<less<Cmp>, not_<>>>>
   {
     using type = flip<less<not_<Cmp>>>;
   };
 
   template<class Cmp, class C>
-  struct optimize_cmp<flip<fork<flip<Cmp>, C>>>
-  : optimize_cmp<fork<Cmp, C>>
+  struct optimize_cmp<flip<tee<flip<Cmp>, C>>>
+  : optimize_cmp<tee<Cmp, C>>
   {};
 
   template<class C>
-  struct optimize_cmp<fork<less<>, C>>
+  struct optimize_cmp<tee<less<>, C>>
   {
     using type = less<C>;
   };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "try_invoke.hpp"
+#include "try.hpp"
 #include "../number/operators.hpp"
 
 namespace jln::mp
@@ -11,7 +11,7 @@ namespace jln::mp
   /// \pre \c F::f<xs...> must be a SFINAE compatible expression
   /// \treturn \bool
   template<class F, class C = identity>
-  using is_invocable = try_invoke<F, always<true_, C>, always<false_, C>>;
+  using is_invocable = try_<F, always<true_, C>, always<false_, C>>;
 
   namespace emp
   {

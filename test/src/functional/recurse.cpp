@@ -23,7 +23,7 @@ template<int n>
 using until_rec_c = jln::mp::if_<
   jln::mp::less_than_c<n>,
   jln::mp::inc<>,
-  jln::mp::cfe<jln::mp::stop_iteration>
+  jln::mp::lift<jln::mp::stop_iteration>
 >;
 
 template<

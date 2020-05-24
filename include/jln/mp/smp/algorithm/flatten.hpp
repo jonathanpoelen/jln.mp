@@ -6,7 +6,7 @@
 
 namespace jln::mp::smp
 {
-  template<class S = mp::cfe<list>, class C = listify>
+  template<class S = mp::lift<list>, class C = listify>
   using flatten = try_contract<mp::flatten<S, subcontract<C>>>;
 }
 

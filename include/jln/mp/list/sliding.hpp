@@ -63,7 +63,7 @@ namespace jln::mp
 #include "../algorithm/rotate.hpp"
 #include "../algorithm/transform.hpp"
 #include "../algorithm/group_n.hpp"
-#include "../functional/fork.hpp"
+#include "../functional/tee.hpp"
 #include "drop.hpp"
 #include "slice.hpp"
 
@@ -201,7 +201,7 @@ namespace jln::mp::detail
     struct impl
     {
       template<int_... i>
-      using f = _fork<zip<C>, rotate_c<i-size, drop>...>;
+      using f = _tee<zip<C>, rotate_c<i-size, drop>...>;
     };
 
     template<class C, int_ size, int_, class... xs>
@@ -216,7 +216,7 @@ namespace jln::mp::detail
   {
     template<class C, int_ size, int_, class... xs>
     using f = typename emp::make_int_sequence_v_c<
-      sizeof...(xs), cfe_c<_group_n_impl>
+      sizeof...(xs), lift_c<_group_n_impl>
     >::template f<C, size, xs...>;
   };
 
@@ -227,7 +227,7 @@ namespace jln::mp::detail
     struct impl
     {
       template<size_t... i>
-      using f = _fork<zip<C>, slice_c<i, size, stride>...>;
+      using f = _tee<zip<C>, slice_c<i, size, stride>...>;
     };
 
     template<class C, int_ size, int_ stride, class... xs>
@@ -257,7 +257,7 @@ namespace jln::mp::detail
     struct impl
     {
       template<int_... i>
-      using f = _fork<zip<
+      using f = _tee<zip<
         rotate_c<-1, adjust<unpack<rotate_c<-1, pop_front<>>>, C>>
       >, slice_c<i, size - (pivot < i), stride,
         typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>

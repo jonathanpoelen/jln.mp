@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../assume.hpp"
-#include "../../functional/try_invoke.hpp"
+#include "../../functional/try.hpp"
 #include "../../list/wrap_in_list.hpp"
 
 namespace jln::mp::smp

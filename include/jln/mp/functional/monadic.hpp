@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../functional/try_invoke.hpp"
+#include "../functional/try.hpp"
 #include "../algorithm/transform.hpp"
 #include "../number/operators.hpp"
 #include "../list/front.hpp"

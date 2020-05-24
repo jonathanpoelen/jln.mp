@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../functional/identity.hpp"
-#include "../../functional/try_invoke.hpp"
+#include "../../functional/try.hpp"
 #include "../../list/offset.hpp"
 
 namespace jln::mp::smp

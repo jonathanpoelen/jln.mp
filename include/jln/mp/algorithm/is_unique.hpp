@@ -17,9 +17,9 @@ namespace jln::mp
   /// Checks whether no \values are identical.
   /// \treturn \number
   template<class C = identity>
-  using is_unique = typename detail::mk_is_unique<cfe<std::is_same>, C>::type;
+  using is_unique = typename detail::mk_is_unique<lift<std::is_same>, C>::type;
 
-  template<class Cmp = cfe<std::is_same>, class C = identity>
+  template<class Cmp = lift<std::is_same>, class C = identity>
   using is_unique_if = typename detail::mk_is_unique<Cmp, C>::type;
 
   namespace emp
@@ -27,13 +27,13 @@ namespace jln::mp
     template<class L, class C = mp::identity>
     using is_unique = unpack<L, is_unique<C>>;
 
-    template<class L, class Cmp = cfe<std::is_same>, class C = mp::identity>
+    template<class L, class Cmp = lift<std::is_same>, class C = mp::identity>
     using is_unique_if = unpack<L, is_unique_if<Cmp, C>>;
   }
 }
 
 
-#include "../functional/fork.hpp"
+#include "../functional/tee.hpp"
 #include "../number/to_bool.hpp"
 
 /// \cond
@@ -54,23 +54,23 @@ namespace jln::mp::detail
   template<class Cmp, class C>
   struct mk_is_unique
   {
-    using type = fork<unique_if<Cmp>, listify, cfl<std::is_same, to_bool<C>>>;
+    using type = tee<unique_if<Cmp>, listify, lift_t<std::is_same, to_bool<C>>>;
   };
 
   template<class C>
-  struct mk_is_unique<cfe<std::is_same>, C>
+  struct mk_is_unique<lift<std::is_same>, C>
   {
     using type = _is_unique<C>;
   };
 
   template<class C>
-  struct mk_is_unique<cfl<std::is_same>, C>
-  : mk_is_unique<cfe<std::is_same>, C>
+  struct mk_is_unique<lift_t<std::is_same>, C>
+  : mk_is_unique<lift<std::is_same>, C>
   {};
 
   template<class C>
   struct mk_is_unique<same<>, C>
-  : mk_is_unique<cfe<std::is_same>, C>
+  : mk_is_unique<lift<std::is_same>, C>
   {};
 }
 /// \endcond

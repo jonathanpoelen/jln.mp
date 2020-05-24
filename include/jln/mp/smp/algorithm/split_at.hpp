@@ -3,7 +3,7 @@
 #include "../assume.hpp"
 #include "../list/take.hpp"
 #include "../list/drop.hpp"
-#include "../functional/fork.hpp"
+#include "../functional/tee.hpp"
 #include "../../algorithm/split_at.hpp"
 
 namespace jln::mp::smp

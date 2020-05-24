@@ -68,7 +68,7 @@ namespace jln::mp
 #include "../algorithm/same.hpp"
 #include "../utility/same_as.hpp"
 #include "../functional/call.hpp"
-#include "../functional/fork.hpp"
+#include "../functional/tee.hpp"
 #include "../number/operators.hpp"
 
 /// \cond
@@ -103,7 +103,7 @@ namespace jln::mp::detail
   {};
 
   template<class Pred>
-  struct mk_wrap_in_list_if<fork<Pred, not_<>>>
+  struct mk_wrap_in_list_if<tee<Pred, not_<>>>
   : mk_wrap_in_list_if_not<Pred>
   {};
 
@@ -137,7 +137,7 @@ namespace jln::mp::detail
   {};
 
   template<class Pred>
-  struct mk_wrap_in_list_if_not<fork<Pred, not_<>>>
+  struct mk_wrap_in_list_if_not<tee<Pred, not_<>>>
   : mk_wrap_in_list_if<Pred>
   {};
 }

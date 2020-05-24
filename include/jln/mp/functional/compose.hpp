@@ -29,14 +29,14 @@ namespace jln::mp
   using compose = typename conditional_c<sizeof...(Fs) == 0>
     ::template f<
       at1<F>,
-      mp::fold_right<cfl<detail::_compose>>
+      mp::fold_right<lift_t<detail::_compose>>
     >
     ::template f<identity, F, Fs...>;
 }
 
 
 #include "../config/enumerate.hpp"
-#include "fork.hpp"
+#include "tee.hpp"
 #include "bind.hpp"
 
 /// \cond
@@ -95,19 +95,19 @@ namespace jln::mp::detail
   template<class F, class C>
   struct _compose
   {
-    using type = fork<F, C>;
+    using type = tee<F, C>;
   };
 
   template<template<class...> class F, class x>
-  struct _compose<cfe<F>, x>
+  struct _compose<lift<F>, x>
   {
-    using type = cfe<F, x>;
+    using type = lift<F, x>;
   };
 
   template<template<class...> class F, class x>
-  struct _compose<cfl<F>, x>
+  struct _compose<lift_t<F>, x>
   {
-    using type = cfl<F, x>;
+    using type = lift_t<F, x>;
   };
 }
 /// \endcond

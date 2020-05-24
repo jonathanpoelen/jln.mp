@@ -9,7 +9,7 @@ namespace jln::mp
   /// Invoke twice.
   /// \treturn \value
   template<class F>
-  struct fork_front
+  struct invoke_twice
   {
     template<class... xs>
     using f = typename call<F, xs...>::template f<xs...>;

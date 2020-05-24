@@ -73,13 +73,13 @@ namespace jln::mp::detail
   template<class C, bool>
   struct _powerset
   {
-    using type = fold_right<cfl<_powerset_impl>, unpack<C>>;
+    using type = fold_right<lift_t<_powerset_impl>, unpack<C>>;
   };
 
   template<>
   struct _powerset<listify, true>
   {
-    using type = fold_right<cfl<_powerset_impl>>;
+    using type = fold_right<lift_t<_powerset_impl>>;
   };
 
   template<class C>

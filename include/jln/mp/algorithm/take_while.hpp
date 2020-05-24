@@ -4,8 +4,8 @@
 #include "../list/take.hpp"
 #include "../utility/always.hpp"
 #include "../functional/function.hpp"
-#include "../functional/fork.hpp"
-#include "../functional/fork_front.hpp"
+#include "../functional/tee.hpp"
+#include "../functional/invoke_twice.hpp"
 
 namespace jln::mp
 {
@@ -22,8 +22,8 @@ namespace jln::mp
   /// Take elements from a \sequence while the predicate is satisfied.
   /// \treturn \sequence
   template<class Pred, class C = listify, class NC = C>
-  using take_while = fork_front<index_if<
-    Pred, fork<identity, always<C>, cfe<take>>, always<NC>>>;
+  using take_while = invoke_twice<index_if<
+    Pred, tee<identity, always<C>, lift<take>>, always<NC>>>;
 
   namespace emp
   {

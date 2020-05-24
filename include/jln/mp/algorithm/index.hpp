@@ -7,7 +7,7 @@
 #include "../utility/always.hpp"
 #include "../utility/same_as.hpp"
 #include "../number/operators.hpp"
-#include "../functional/try_invoke.hpp"
+#include "../functional/try.hpp"
 
 namespace jln::mp
 {
@@ -15,7 +15,7 @@ namespace jln::mp
 
   template<class F, class C = identity>
 #ifdef JLN_MP_DOXYGENATING
-  using index_for = fork<size<>, F, sub<C>>;
+  using index_for = tee<size<>, F, sub<C>>;
 #else
   struct index_for
   {

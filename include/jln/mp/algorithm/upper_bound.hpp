@@ -12,7 +12,7 @@ namespace jln::mp
   /// \pre is_sorted\<Cmp\>::f\<xs...\> == true_
   /// \treturn \sequence
   template<class x, class Cmp = less<>, class C = listify, class NC = C>
-  using upper_bound = lower_bound<x, flip<fork<Cmp, not_<>>>, C, NC>;
+  using upper_bound = lower_bound<x, flip<tee<Cmp, not_<>>>, C, NC>;
 
   template<int_ x, class Cmp = less<>, class C = listify, class NC = C>
   using upper_bound_c = upper_bound<number<x>, Cmp, C, NC>;

@@ -25,7 +25,7 @@ namespace jln::mp
   ///   partial\<F,G,C\>::f\<a,b,c,d\> == C::f\<F::f\<a\>, G::f\<b\>, c, d\>
   ///   \endcode
   /// \treturn \value
-  /// \see each, fork, partial_eager
+  /// \see each, tee, partial_eager
 #ifdef JLN_MP_DOXYGENATING
   template <class... Fs, class C>
   struct partial
@@ -36,7 +36,7 @@ namespace jln::mp
 #else
   template <class... Fs>
   struct partial
-  : rotate<number<-1>, cfe<detail::_partial>>
+  : rotate<number<-1>, lift<detail::_partial>>
   ::template f<Fs...>
   {};
 #endif
@@ -86,7 +86,7 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename _join_select<2>::f<
-      cfe<_each>,
+      lift<_each>,
       list<C, Fs...>,
       emp::make_int_sequence_c<sizeof...(xs) - sizeof...(Fs), transform<always<identity>>>
     >::type::template f<xs...>;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "functional/sfinaefwd.hpp"
-#include "../functional/try_invoke.hpp"
+#include "../functional/try.hpp"
 #include "../functional/function.hpp"
 #include "../functional/call.hpp"
 #include "../functional/identity.hpp"
@@ -15,7 +15,7 @@ namespace jln::mp
   namespace detail
   {
     template<class C> struct _subcontract;
-    template<class x> struct _optimize_try_invoke;
+    template<class x> struct _optimize_try_;
   }
 
   template<class C>
@@ -29,7 +29,7 @@ namespace jln::mp
   using test_contract = contract<if_<Pred, TC, FC>>;
 
   template<class F, class TC = identity, class FC = violation>
-  using try_contract = contract<try_invoke<F, TC, FC>>;
+  using try_contract = contract<try_<F, TC, FC>>;
 
   using bad_contract = contract<violation>;
 
@@ -38,8 +38,8 @@ namespace jln::mp
   using subcontract = typename detail::_subcontract<C>::type;
 
   template<class F, class TC = identity, class FC = violation>
-  using try_subcontract = typename detail::_optimize_try_invoke<
-    try_invoke<subcontract<F>, TC, FC>>::type;
+  using try_subcontract = typename detail::_optimize_try_<
+    try_<subcontract<F>, TC, FC>>::type;
 
 
   template<class F>
@@ -56,22 +56,22 @@ namespace jln::mp
 {
   /// \cond
   template<class C, class TC, class FC>
-  struct try_invoke<contract<C>, TC, FC>
+  struct try_<contract<C>, TC, FC>
   {
     template<class... xs>
-    using f = typename detail::_try_invoke_dispatch<call<C, xs...>>
+    using f = typename detail::_try_dispatch<call<C, xs...>>
       ::template f<TC, FC, xs...>;
   };
 
   template<class C>
-  struct try_invoke<contract<C>, always<true_>, always<false_>>
+  struct try_<contract<C>, always<true_>, always<false_>>
   {
     template<class... xs>
     using f = number<!std::is_same<na, call<C, xs...>>::value>;
   };
 
   template<class C>
-  struct try_invoke<contract<C>, identity, violation>
+  struct try_<contract<C>, identity, violation>
   {
     template<class... xs>
     using f = call<C, xs...>;
@@ -85,7 +85,7 @@ namespace jln::mp::detail
   template<class F>
   struct _subcontract
   {
-    using type = try_invoke<F>;
+    using type = try_<F>;
   };
 
   template<class C>
@@ -95,9 +95,9 @@ namespace jln::mp::detail
   };
 
   template<class F, class TC, class FC>
-  struct _subcontract<try_invoke<F, TC, FC>>
+  struct _subcontract<try_<F, TC, FC>>
   {
-    using type = try_invoke<F, TC, FC>;
+    using type = try_<F, TC, FC>;
   };
 
   template<class F>
@@ -107,27 +107,27 @@ namespace jln::mp::detail
   };
 
   template<class x>
-  struct _optimize_try_invoke
+  struct _optimize_try_
   {
     using type = x;
   };
 
   template<class F, class FC>
-  struct _optimize_try_invoke<
-    try_invoke<try_invoke<F, identity, FC>, identity, FC>>
-  : _optimize_try_invoke<try_invoke<F, identity, FC>>
+  struct _optimize_try_<
+    try_<try_<F, identity, FC>, identity, FC>>
+  : _optimize_try_<try_<F, identity, FC>>
   {};
 
   template<class F, class TC, class FC>
-  struct _optimize_try_invoke<
-    try_invoke<try_invoke<F>, TC, FC>>
-  : _optimize_try_invoke<try_invoke<F, TC, FC>>
+  struct _optimize_try_<
+    try_<try_<F>, TC, FC>>
+  : _optimize_try_<try_<F, TC, FC>>
   {};
 
   template<class F>
-  struct _optimize_try_invoke<
-    try_invoke<try_invoke<F>>>
-  : _optimize_try_invoke<try_invoke<F>>
+  struct _optimize_try_<
+    try_<try_<F>>>
+  : _optimize_try_<try_<F>>
   {};
 
 
@@ -274,9 +274,9 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class F, class TC, class FC>
-  struct _sfinae<sfinae, try_invoke<F, TC, FC>>
+  struct _sfinae<sfinae, try_<F, TC, FC>>
   {
-    using type = contract<try_invoke<F, TC, FC>>;
+    using type = contract<try_<F, TC, FC>>;
   };
 
   template<template<class> class sfinae, class F>

@@ -3,7 +3,7 @@
 #include "sfinaefwd.hpp"
 #include "../assume.hpp"
 #include "../../functional/identity.hpp"
-#include "../../functional/try_invoke.hpp"
+#include "../../functional/try.hpp"
 
 namespace jln::mp::smp
 {

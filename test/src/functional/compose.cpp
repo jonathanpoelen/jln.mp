@@ -21,7 +21,7 @@ TEST()
   ut::same<call<compose_f<f, g, h>, _1>, h<g<f<_1>>>>();
   ut::same<call<compose_f<g, h, f>, _1>, f<h<g<_1>>>>();
 
-  ut::same<smp::compose_f<h, g, f>, smp::cfe<h, smp::cfe<g, smp::cfe<f>>>>();
+  ut::same<smp::compose_f<h, g, f>, smp::lift<h, smp::lift<g, smp::lift<f>>>>();
 
   test_context<smp::compose_f<h, g, f>, void>()
     .test<f<g<h<int>>>, int>()

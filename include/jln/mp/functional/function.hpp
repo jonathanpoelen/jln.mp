@@ -9,9 +9,9 @@ namespace jln::mp
 
   /// Makes a \function from a \lazymetafunction.
   /// \treturn \value
-  /// \see cfe
+  /// \see lift
   template<template<class...> class F, class C = identity>
-  struct cfl
+  struct lift_t
   {
     template<class... xs>
     using f = typename C::template f<JLN_MP_DCALLF_XS(xs, F, xs...)::type>;
@@ -19,7 +19,7 @@ namespace jln::mp
 
   /// \cond
   template<template<class...> class F>
-  struct cfl<F, identity>
+  struct lift_t<F, identity>
   {
     template<class... xs>
     using f = JLN_MP_DCALLF_XS(xs, F, xs...)::type;
@@ -28,9 +28,9 @@ namespace jln::mp
 
   /// Makes a \function from a \metafunction.
   /// \treturn \value
-  /// \see cfl
+  /// \see lift_t
   template<template<class...> class F, class C = identity>
-  struct cfe
+  struct lift
   {
     template<class... xs>
     using f = typename C::template f<JLN_MP_DCALLF_XS(xs, F, xs...)>;
@@ -38,7 +38,7 @@ namespace jln::mp
 
   /// \cond
   template<template<class...> class F>
-  struct cfe<F, identity>
+  struct lift<F, identity>
   {
     template<class... xs>
     using f = JLN_MP_DCALLF_XS(xs, F, xs...);
@@ -47,28 +47,28 @@ namespace jln::mp
 
 #if __cplusplus >= 201703L
   template<template<auto...> class F>
-  struct cfe_v
+  struct lift_v
   {
     template<class... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...);
   };
 
   template<template<auto...> class F>
-  struct cfe_c
+  struct lift_c
   {
     template<auto... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs...);
   };
 
   template<template<class, auto...> class F>
-  struct cfe_tv
+  struct lift_tv
   {
     template<class x, class... xs>
     using f = JLN_MP_DCALLF_TC_XS(xs, F, x, xs::value...);
   };
 
   template<template<class, auto...> class F>
-  struct cfe_tc
+  struct lift_tc
   {
     template<class x, auto... xs>
     using f = JLN_MP_DCALLF_TC_XS(xs, F, x, xs...);
