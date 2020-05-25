@@ -476,24 +476,31 @@ htmlifier_init = function()
 
   local wordid = (R('az', 'AZ') + S'`_-')^1
 
-  local md2htmlpatt = Cs(
-    (unl * P'\n'^0) / ''
-  * ( P'```cpp\n' * C(Until('\n```')) * '\n```' / blockcode
-    + C(P'#'^1) * ' ' * cunl / headerize
-    + #P'-' *
-      ( #(P'- ' * wordid * ':')
-      * ( Cs((P'- ' * C(wordid * (P' ' * wordid)^0) * ': ' * cunl / def_list)^1)
-        / wrap_with('<dl>\n', '</dl>\n')
-        )
-      + ( Cs((P'- ' * cunl / normal_list)^1)
-        / wrap_with('<ul>\n', '</ul>\n')
-        )
+  local md2htmlpatt = Cs((
+    P'```cpp\n' * C(Until('\n```')) * '\n```' / blockcode
+  + C(P'#'^1) * ' ' * cunl / headerize
+  + #P'-' *
+    ( #(P'- ' * wordid * ':')
+    * ( Cs((P'- ' * C(wordid * (P' ' * wordid)^0) * ': ' * cunl / def_list)^1)
+      / wrap_with('<dl>\n', '</dl>\n')
       )
-    + P'\n'^1 / ''
-    + Cs((mdinlinecodepatt + (1 - P'\n'))^1)
-    / wrap_with('<p>', '</p>\n')
-    )^0
-  )
+    + ( Cs((P'- ' * cunl / normal_list)^1)
+      / wrap_with('<ul>\n', '</ul>\n')
+      )
+    )
+  + P'\n'^1 / ''
+  + Cs((
+      mdinlinecodepatt
+    + '[![' * C(Until']') * 1 * '(' * C(Until')') * 1 * '](' * C(Until')') * 1
+    / function(text, img, link)
+        return '<a href="' .. link .. '"><img src="' .. img .. '" alt="' .. text .. '"/></a>'
+      end
+    + '[' * C(Until']') * 1 * '(' * C(Until')') * 1
+    / function(text, link) return '<a href="' .. link .. '">' .. text .. '</a>' end
+    + (1 - P'\n')
+  )^1)
+  / wrap_with('<p>', '</p>\n')
+  )^0)
 
   md2html = function(contents)
     headers = {}
