@@ -19,10 +19,10 @@ namespace jln::mp
 
   /// Invoke multiple functions each taking the parameter corresponding to its position
   /// then calls `C` with the results and the rest of the parameters.
-  /// \pre sizeof...(xs) >= sizeof...(Fs)
+  /// \pre `sizeof...(xs) >= sizeof...(Fs)`
   /// \semantics
   ///   \code
-  ///   partial\<F,G,C\>::f\<a,b,c,d\> == C::f\<F::f\<a\>, G::f\<b\>, c, d\>
+  ///   partial<F,G,C>::f<a,b,c,d> == C::f<F::f<a>, G::f<b>, c, d>
   ///   \endcode
   /// \treturn \value
   /// \see each, tee, partial_eager

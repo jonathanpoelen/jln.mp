@@ -7,7 +7,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Insert an elements at an arbitrary position.
-  /// \pre 0 \<= i \< sizeof...(xs)
+  /// \pre `0 <= i < sizeof...(xs)`
   /// \treturn \sequence
   template<class i, class x, class C = listify>
   using insert = insert_range<i, list<x>, C>;

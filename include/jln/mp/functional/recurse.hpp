@@ -27,7 +27,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Recursively calls `F` until `stop_iteration`.
-  /// The first call uses `F::f\<xs...\>`, the following calls `F::f\<result\>`
+  /// The first call uses \c F::f<xs...>, the following calls \c F::f<result>
   /// \treturn \value
   /// \see fix, recurse_fix
   template<class F, class C = identity>
@@ -39,7 +39,7 @@ namespace jln::mp
   };
 
   /// Recursively calls `F` until `stop_iteration`.
-  /// The first call uses `F::f\<F, xs...\>`, the following calls `F::f\<F, result\>`
+  /// The first call uses `F::f<F, xs...>, the following calls `F::f<F, result>`
   /// \treturn \value
   /// \see fix, recurse
   template<class F, class C = identity>

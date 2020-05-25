@@ -19,9 +19,9 @@ namespace jln::mp
   /// \ingroup list
 
   /// Returns a subset of elements in a \c xs picked at regular intervals in range.
-  /// \pre 0 \<= start \< sizeof...(xs)
-  /// \pre stride \> 0
-  /// \pre 0 \<= size * (stride - 1) + 1 \< sizeof...(xs) - start
+  /// \pre `0 <= start < sizeof...(xs)`
+  /// \pre `stride > 0`
+  /// \pre `0 <= size * (stride - 1) + 1 < sizeof...(xs) - start`
   /// \treturn \sequence
   template<class start, class size, class stride = number<1>, class C = listify>
   struct slice

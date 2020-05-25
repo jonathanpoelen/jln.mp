@@ -11,11 +11,11 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Unpack each \c seqs then use \c fold_left.
-  /// \pre emp::is_list\<seqs\> && ...
+  /// \pre `emp::is_list<seqs> && ...`
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///   fold_left\<F, C\>::f\<state, ...seqs[:]\>
+  ///   fold_left<F, C>::f<state, ...seqs[:]>
   ///   \endcode
   /// \treturn \value
   template<class F, class C = identity>

@@ -39,7 +39,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Removes \c N elements from the beginning of a \sequence.
-  /// \pre 0 \<= N \<= sizeof...(xs)
+  /// \pre `0 <= N <= sizeof...(xs)`
   /// \treturn \sequence
   template<class N, class C = listify>
   struct drop

@@ -8,7 +8,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Retrieves an element of a sequence at an arbitrary position.
-  /// \pre 0 \<= N \< sizeof...(xs)
+  /// \pre `0 <= N < sizeof...(xs)`
   /// \treturn \value
   template<class N, class C = identity>
   using at = drop<N, front<C>>;

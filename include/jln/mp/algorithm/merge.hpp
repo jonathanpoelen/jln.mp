@@ -18,9 +18,9 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Merges two \list into one sorted \sequence.
-  /// \pre emp::is_sorted\<seq1, Cmp\> == true_
-  /// \pre emp::is_sorted\<seq2, Cmp\> == true_
-  /// \post emp::is_sorted\<result...\> == true_
+  /// \pre `emp::is_sorted<seq1, Cmp>`
+  /// \pre `emp::is_sorted<seq2, Cmp>`
+  /// \post \c emp::is_sorted<result...>
   /// \treturn \sequence
   template<class Cmp = less<>, class C = listify>
   struct merge

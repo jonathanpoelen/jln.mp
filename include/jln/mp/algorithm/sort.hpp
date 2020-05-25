@@ -17,7 +17,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Sorts the elements of a \sequence according to an ordering relation.
-  /// \post is_sorted\<result...\> == true_
+  /// \post \c is_sorted<result...>
   /// \treturn \sequence
   template<class Cmp = less<>, class C = listify>
   struct sort

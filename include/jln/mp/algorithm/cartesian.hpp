@@ -17,8 +17,8 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Computes the cartesian product of \lists.
-  /// \pre emp::is_list\<seqs\> && ...
-  /// \post sizeof...(result) == (emp::size\<seqs\> * ...) if sizeof...(xs) != 0 else 0
+  /// \pre `emp::is_list<seqs> && ...`
+  /// \post `sizeof...(result) == (emp::size<seqs> * ...)` if `sizeof...(xs) != 0` else `0`
   /// \semantics
   ///   \code
   ///   call<cartesian<listify>,

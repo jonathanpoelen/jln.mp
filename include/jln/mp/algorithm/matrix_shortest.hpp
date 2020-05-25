@@ -27,8 +27,8 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Truncate a \sequence of \typelist on the smallest size.
-  /// \pre sizeof...(result) == sizeof...(xs)
-  /// \post emp::size\<result\> == emp::min\<emp::size\<xs\>\> && ...
+  /// \pre `sizeof...(result) == sizeof...(xs)`
+  /// \post `emp::size<result> == emp::min<emp::size<xs>> && ...`
   /// \semantics
   ///   \code
   ///   call<matrix_shortest<listify>,

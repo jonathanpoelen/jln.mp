@@ -21,7 +21,7 @@ namespace jln::mp
 
   /// Finds first element that is not less than (i.e. greater or equal to) `x`.
   /// Calls `FC` with all the elements since the one found at the end. If no element is found, `NFC` is used
-  /// \pre is_sorted\<Cmp\>::f\<xs...\> == true_
+  /// \pre \c is_sorted<Cmp>::f<xs...>
   /// \treturn \sequence
   template<class x, class Cmp = less<>, class C = listify, class NC = C>
   struct lower_bound

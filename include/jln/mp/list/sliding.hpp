@@ -20,14 +20,14 @@ namespace jln::mp
   /// \ingroup list
 
   /// Returns sliding windows of width \c size.
-  /// \pre stride != 0
-  /// \pre size >= 0
+  /// \pre `stride != 0`
+  /// \pre `size >= 0`
   /// \treturn \sequence of \list
   /// Given a sequence and a count n, place a window over the first n elements of the underlying range. Return the contents of that window as the first element of the adapted range, then slide the window forward one element at a time until hitting the end of the underlying range.
   /// \semantics
-  ///     If \c stride \< 0, then \c stride = \c stride + \c size
-  ///     If sizeof...(xs) \< size, then f = C::f\<xs...\>
-  ///     If \c stride \> 1, the last window may be smaller than \c size
+  ///     If `stride < 0`, then `stride = stride + size`
+  ///     If `sizeof...(xs) < size`, then `f = C::f<xs...>`
+  ///     If `stride > 1`, the last window may be smaller than \c size
   template<class size, class stride, class C = listify>
   using sliding_with_stride = typename detail::mk_sliding<
     size::value, stride::value>::template f<C>;

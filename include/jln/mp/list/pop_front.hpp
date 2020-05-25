@@ -7,7 +7,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Remove the first element of sequence
-  /// \pre sizeof...(xs) \> 0
+  /// \pre `sizeof...(xs) > 0`
   /// \treturn \sequence
   template<class C = listify>
   using pop_front = drop<number<1>, C>;
