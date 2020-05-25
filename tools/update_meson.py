@@ -14,7 +14,7 @@ def new_target(name):
 
 def new_executable(name, path, prefix, i):
   target = f'{prefix}{i}'
-  output_lines.append(f"{target} = executable('{name}', '{path}', dependencies: test_dep, build_by_default: false)")
+  output_lines.append(f"{target} = executable('{name}', '{path}', dependencies: test_dep)")
   return target
 
 def new_alias(name, targets):
@@ -56,7 +56,7 @@ with open('meson.build', 'w') as f:
   f.write(start_str)
   f.write('\n'.join(output_lines))
   f.write('\n')
-  sources = "',\n  '".join(os.path.join('test/autogen', filename) 
+  sources = "',\n  '".join(os.path.join('test/autogen', filename)
                         for filename in os.listdir('test/autogen'))
   f.write(f"executable('check_inc', [\n  '{sources}'\n], dependencies: test_dep)\n")
   f.write(stop_str)
