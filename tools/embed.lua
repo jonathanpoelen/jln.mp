@@ -25,7 +25,7 @@ system_includes = {}
 
 function process_include(type, incpath)
   if type == '<' then
-    tinsert(system_includes, incpath)
+    system_includes[incpath] = true
   else
     eprint('incpath: ', incpath)
     local path, pwd = canonical_path(incpath)
@@ -98,13 +98,19 @@ for path,info in pairs(files) do
   end
 end
 
+includes = {}
+for k in pairs(system_includes) do
+  tinsert(includes, k)
+end
+table.sort(includes)
+
 embed = {
   first_comment or '',
   '#pragma once\n\n',
   '#ifndef JLN_MP_HPP\n',
   '#define JLN_MP_HPP\n\n',
   '#include <',
-  tconcat(system_includes, '>\n#include <'),
+  tconcat(includes, '>\n#include <'),
   '>\n\n',
 }
 
