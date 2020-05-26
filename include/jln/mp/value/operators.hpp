@@ -18,207 +18,207 @@ namespace jln::mp
   /// \ingroup value
 
   template<class C = identity>
-  struct or_v
+  struct val_or
   {
     template<class... xs>
     using f = typename C::template f<val<(false || ... || xs::value)>>;
   };
 
   template<class C = identity>
-  struct and_v
+  struct val_and
   {
     template<class... xs>
     using f = typename C::template f<val<(true && ... && xs::value)>>;
   };
 
   template<class C = identity>
-  struct add_v
+  struct val_add
   {
     template<class... xs>
     using f = typename C::template f<val<(... + xs::value)>>;
   };
 
   template<class C = identity>
-  using add0_v = if_<size<>, add_v<C>, always<val<0>, C>>;
+  using val_add0 = if_<size<>, val_add<C>, always<val<0>, C>>;
 
   template<class C = identity>
-  struct sub_v
+  struct val_sub
   {
     template<class... xs>
     using f = typename C::template f<val<(... - xs::value)>>;
   };
 
   template<class C = identity>
-  using sub0_v = if_<size<>, sub_v<C>, always<val<0>, C>>;
+  using val_sub0 = if_<size<>, val_sub<C>, always<val<0>, C>>;
 
   template<class C = identity>
-  struct lshift_v
+  struct val_lshift
   {
     template<class... xs>
     using f = typename C::template f<val<(... << xs::value)>>;
   };
 
   template<class C = identity>
-  using lshift0_v = if_<size<>, lshift_v<C>, always<val<0>, C>>;
+  using val_lshift0 = if_<size<>, val_lshift<C>, always<val<0>, C>>;
 
   template<class C = identity>
-  struct rshift_v
+  struct val_rshift
   {
     template<class... xs>
     using f = typename C::template f<val<(... >> xs::value)>>;
   };
 
   template<class C = identity>
-  using rshift0_v = if_<size<>, rshift_v<C>, always<val<0>, C>>;
+  using val_rshift0 = if_<size<>, val_rshift<C>, always<val<0>, C>>;
 
   template<class C = identity>
-  struct mul_v
+  struct val_mul
   {
     template<class... xs>
     using f = typename C::template f<val<(... * xs::value)>>;
   };
 
   template<class C = identity>
-  using mul0_v = if_<size<>, mul_v<C>, always<val<0>, C>>;
+  using val_mul0 = if_<size<>, val_mul<C>, always<val<0>, C>>;
 
   template<class C = identity>
-  using mul1_v = if_<size<>, mul_v<C>, always<val<1>, C>>;
+  using val_mul1 = if_<size<>, val_mul<C>, always<val<1>, C>>;
 
   template<class C = identity>
-  struct div_v
+  struct val_div
   {
     template<class... xs>
     using f = typename C::template f<val<(... / xs::value)>>;
   };
 
   template<class C = identity>
-  using div0_v = if_<size<>, div_v<C>, always<val<0>, C>>;
+  using val_div0 = if_<size<>, val_div<C>, always<val<0>, C>>;
 
   template<class C = identity>
-  using div1_v = if_<size<>, div_v<C>, always<val<1>, C>>;
+  using val_div1 = if_<size<>, val_div<C>, always<val<1>, C>>;
 
   template<class C = identity>
-  struct mod_v
+  struct val_mod
   {
     template<class... xs>
     using f = typename C::template f<val<(... %  xs::value)>>;
   };
 
   template<class C = identity>
-  using mod0_v = if_<size<>, mod_v<C>, always<val<0>, C>>;
+  using val_mod0 = if_<size<>, val_mod<C>, always<val<0>, C>>;
 
   template<class C = identity>
-  using mod1_v = if_<size<>, mod_v<C>, always<val<1>, C>>;
+  using val_mod1 = if_<size<>, val_mod<C>, always<val<1>, C>>;
 
   template<class C = identity>
-  struct xor_v
+  struct val_xor
   {
     template<class... xs>
     using f = typename C::template f<val<(... ^ xs::value)>>;
   };
 
   template<class C = identity>
-  using xor0_v = if_<size<>, xor_v<C>, always<val<0>, C>>;
+  using val_xor0 = if_<size<>, val_xor<C>, always<val<0>, C>>;
 
   template<class C = identity>
-  struct bit_and_v
+  struct val_bit_and
   {
     template<class... xs>
     using f = typename C::template f<val<(... & xs::value)>>;
   };
 
   template<class C = identity>
-  using bit_and0_v = if_<size<>, bit_and_v<C>, always<val<0>, C>>;
+  using val_bit_and0 = if_<size<>, val_bit_and<C>, always<val<0>, C>>;
 
   template<class C = identity>
-  struct bit_or_v
+  struct val_bit_or
   {
     template<class... xs>
     using f = typename C::template f<val<(... | xs::value)>>;
   };
 
   template<class C = identity>
-  using bit_or0_v = if_<size<>, bit_or_v<C>, always<val<0>, C>>;
+  using val_bit_or0 = if_<size<>, val_bit_or<C>, always<val<0>, C>>;
 
   template<class C = identity>
-  struct neg_v
+  struct val_neg
   {
     template<class x>
     using f = typename C::template f<val<(-x::value)>>;
   };
 
   template<class C = identity>
-  struct unary_plus_v
+  struct val_unary_plus
   {
     template<class x>
     using f = typename C::template f<val<(+x::value)>>;
   };
 
   template<class C = identity>
-  struct not_v
+  struct val_not
   {
     template<class x>
     using f = typename C::template f<val<(!x::value)>>;
   };
 
   template<class C = identity>
-  struct bit_not_v
+  struct val_bit_not
   {
     template<class x>
     using f = typename C::template f<val<(~x::value)>>;
   };
 
   template<class C = identity>
-  struct inc_v
+  struct val_inc
   {
     template<class x>
     using f = typename C::template f<val<(x::value+1)>>;
   };
 
   template<class C = identity>
-  struct dec_v
+  struct val_dec
   {
     template<class x>
     using f = typename C::template f<val<(x::value-1)>>;
   };
 
   template<class C = identity>
-  struct equal_v
+  struct val_equal
   {
     template<class x, class y>
     using f = typename C::template f<val<(x::value == y::value)>>;
   };
 
   template<class C = identity>
-  struct not_equal_v
+  struct val_not_equal
   {
     template<class x, class y>
     using f = typename C::template f<val<(x::value != y::value)>>;
   };
 
   template<class C = identity>
-  struct less_v
+  struct val_less
   {
     template<class x, class y>
     using f = typename C::template f<val<(x::value < y::value)>>;
   };
 
   template<class C = identity>
-  struct less_equal_v
+  struct val_less_equal
   {
     template<class x, class y>
     using f = typename C::template f<val<(x::value <= y::value)>>;
   };
 
   template<class C = identity>
-  struct greater_v
+  struct val_greater
   {
     template<class x, class y>
     using f = typename C::template f<val<(x::value > y::value)>>;
   };
 
   template<class C = identity>
-  struct greater_equal_v
+  struct val_greater_equal
   {
     template<class x, class y>
     using f = typename C::template f<val<(x::value >= y::value)>>;
@@ -226,188 +226,188 @@ namespace jln::mp
 
 
   template<class N, class C = identity>
-  using equal_to_v = push_back<N, equal_v<C>>;
+  using val_equal_to = push_back<N, val_equal<C>>;
 
   template<class N, class C = identity>
-  using not_equal_to_v = push_back<N, not_equal_v<C>>;
+  using val_not_equal_to = push_back<N, val_not_equal<C>>;
 
   template<class N, class C = identity>
-  using less_than_v = push_back<N, less_v<C>>;
+  using val_less_than = push_back<N, val_less<C>>;
 
   template<class N, class C = identity>
-  using less_equal_than_v = push_back<N, less_equal_v<C>>;
+  using val_less_equal_than = push_back<N, val_less_equal<C>>;
 
   template<class N, class C = identity>
-  using greater_than_v = push_back<N, greater_v<C>>;
+  using val_greater_than = push_back<N, val_greater<C>>;
 
   template<class N, class C = identity>
-  using greater_equal_than_v = push_back<N, greater_equal_v<C>>;
+  using val_greater_equal_than = push_back<N, val_greater_equal<C>>;
 
 
   template<auto x, class C = identity>
-  using equal_to_c_v = equal_to_v<val<x>, C>;
+  using val_equal_to_c = val_equal_to<val<x>, C>;
 
   template<auto x, class C = identity>
-  using not_equal_to_c_v = not_equal_to_v<val<x>, C>;
+  using val_not_equal_to_c = val_not_equal_to<val<x>, C>;
 
   template<auto x, class C = identity>
-  using less_than_c_v = less_than_v<val<x>, C>;
+  using val_less_than_c = val_less_than<val<x>, C>;
 
   template<auto x, class C = identity>
-  using less_equal_than_c_v = less_equal_than_v<val<x>, C>;
+  using val_less_equal_than_c = val_less_equal_than<val<x>, C>;
 
   template<auto x, class C = identity>
-  using greater_than_c_v = greater_than_v<val<x>, C>;
+  using val_greater_than_c = val_greater_than<val<x>, C>;
 
   template<auto x, class C = identity>
-  using greater_equal_than_c_v = greater_equal_than_v<val<x>, C>;
+  using val_greater_equal_than_c = val_greater_equal_than<val<x>, C>;
 }
 
 namespace jln::mp::emp
 {
   template<class L, class C = mp::identity>
-  using or_seq_v = unpack<L, mp::or_v<C>>;
+  using val_or_seq = unpack<L, mp::val_or<C>>;
 
   template<class L, class C = mp::identity>
-  using and_seq_v = unpack<L, mp::and_v<C>>;
+  using val_and_seq = unpack<L, mp::val_and<C>>;
 
   template<class L, class C = mp::identity>
-  using add_seq_v = unpack<L, mp::add_v<C>>;
+  using val_add_seq = unpack<L, mp::val_add<C>>;
 
   template<class L, class C = mp::identity>
-  using add0_seq_v = unpack<L, mp::add0_v<C>>;
+  using val_add0_seq = unpack<L, mp::val_add0<C>>;
 
   template<class L, class C = mp::identity>
-  using sub_seq_v = unpack<L, mp::sub_v<C>>;
+  using val_sub_seq = unpack<L, mp::val_sub<C>>;
 
   template<class L, class C = mp::identity>
-  using sub0_seq_v = unpack<L, mp::sub0_v<C>>;
+  using val_sub0_seq = unpack<L, mp::val_sub0<C>>;
 
   template<class L, class C = mp::identity>
-  using lshift_seq_v = unpack<L, mp::lshift_v<C>>;
+  using val_lshift_seq = unpack<L, mp::val_lshift<C>>;
 
   template<class L, class C = mp::identity>
-  using lshift0_seq_v = unpack<L, mp::lshift0_v<C>>;
+  using val_lshift0_seq = unpack<L, mp::val_lshift0<C>>;
 
   template<class L, class C = mp::identity>
-  using rshift_seq_v = unpack<L, mp::rshift_v<C>>;
+  using val_rshift_seq = unpack<L, mp::val_rshift<C>>;
 
   template<class L, class C = mp::identity>
-  using rshift0_seq_v = unpack<L, mp::rshift0_v<C>>;
+  using val_rshift0_seq = unpack<L, mp::val_rshift0<C>>;
 
   template<class L, class C = mp::identity>
-  using mul_seq_v = unpack<L, mp::mul_v<C>>;
+  using val_mul_seq = unpack<L, mp::val_mul<C>>;
 
   template<class L, class C = mp::identity>
-  using mul0_seq_v = unpack<L, mp::mul0_v<C>>;
+  using val_mul0_seq = unpack<L, mp::val_mul0<C>>;
 
   template<class L, class C = mp::identity>
-  using mul1_seq_v = unpack<L, mp::mul1_v<C>>;
+  using val_mul1_seq = unpack<L, mp::val_mul1<C>>;
 
   template<class L, class C = mp::identity>
-  using div_seq_v = unpack<L, mp::div_v<C>>;
+  using val_div_seq = unpack<L, mp::val_div<C>>;
 
   template<class L, class C = mp::identity>
-  using div0_seq_v = unpack<L, mp::div0_v<C>>;
+  using val_div0_seq = unpack<L, mp::val_div0<C>>;
 
   template<class L, class C = mp::identity>
-  using div1_seq_v = unpack<L, mp::div1_v<C>>;
+  using val_div1_seq = unpack<L, mp::val_div1<C>>;
 
   template<class L, class C = mp::identity>
-  using mod_seq_v = unpack<L, mp::mod_v<C>>;
+  using val_mod_seq = unpack<L, mp::val_mod<C>>;
 
   template<class L, class C = mp::identity>
-  using mod0_seq_v = unpack<L, mp::mod0_v<C>>;
+  using val_mod0_seq = unpack<L, mp::val_mod0<C>>;
 
   template<class L, class C = mp::identity>
-  using mod1_seq_v = unpack<L, mp::mod1_v<C>>;
+  using val_mod1_seq = unpack<L, mp::val_mod1<C>>;
 
   template<class L, class C = mp::identity>
-  using xor_seq_v = unpack<L, mp::xor_v<C>>;
+  using val_xor_seq = unpack<L, mp::val_xor<C>>;
 
   template<class L, class C = mp::identity>
-  using xor0_seq_v = unpack<L, mp::xor0_v<C>>;
+  using val_xor0_seq = unpack<L, mp::val_xor0<C>>;
 
   template<class L, class C = mp::identity>
-  using bit_and_seq_v = unpack<L, mp::bit_and_v<C>>;
+  using val_bit_and_seq = unpack<L, mp::val_bit_and<C>>;
 
   template<class L, class C = mp::identity>
-  using bit_and0_seq_v = unpack<L, mp::bit_and0_v<C>>;
+  using val_bit_and0_seq = unpack<L, mp::val_bit_and0<C>>;
 
   template<class L, class C = mp::identity>
-  using bit_or_seq_v = unpack<L, mp::bit_or_v<C>>;
+  using val_bit_or_seq = unpack<L, mp::val_bit_or<C>>;
 
   template<class L, class C = mp::identity>
-  using bit_or0_seq_v = unpack<L, mp::bit_or0_v<C>>;
+  using val_bit_or0_seq = unpack<L, mp::val_bit_or0<C>>;
 
 
   template<auto... xs>
-  using or_c_v = val<(false || ... || xs)>;
+  using val_or_c = val<(false || ... || xs)>;
 
   template<auto... xs>
-  using and_c_v = val<(true && ... && xs)>;
+  using val_and_c = val<(true && ... && xs)>;
 
   template<auto... xs>
-  using add_c_v = val<(... + xs)>;
+  using val_add_c = val<(... + xs)>;
 
   template<auto... xs>
-  using add0_c_v = add_c_v<xs..., 0>;
+  using val_add0_c = val_add_c<xs..., 0>;
 
   template<auto... xs>
-  using sub_c_v = val<(... - xs)>;
+  using val_sub_c = val<(... - xs)>;
 
   template<auto... xs>
-  using sub0_c_v = sub_c_v<xs..., 0>;
+  using val_sub0_c = val_sub_c<xs..., 0>;
 
   template<auto... xs>
-  using lshift_c_v = val<(... << xs)>;
+  using val_lshift_c = val<(... << xs)>;
 
   template<auto... xs>
-  using lshift0_c_v = lshift_c_v<xs..., 0>;
+  using val_lshift0_c = val_lshift_c<xs..., 0>;
 
   template<auto... xs>
-  using rshift_c_v = val<(... >> xs)>;
+  using val_rshift_c = val<(... >> xs)>;
 
   template<auto... xs>
-  using rshift0_c_v = rshift_c_v<xs..., 0>;
+  using val_rshift0_c = val_rshift_c<xs..., 0>;
 
   template<auto... xs>
-  using mul_c_v = val<(... * xs)>;
+  using val_mul_c = val<(... * xs)>;
 
   template<auto... xs>
-  using mul0_c_v = mul_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
+  using val_mul0_c = val_mul_c<xs..., (sizeof...(xs) ? 1 : 0)>;
 
   template<auto... xs>
-  using mul1_c_v = mul_c_v<xs..., 1>;
+  using val_mul1_c = val_mul_c<xs..., 1>;
 
   template<auto... xs>
-  using div_c_v = val<(... / xs)>;
+  using val_div_c = val<(... / xs)>;
 
   template<auto... xs>
-  using div0_c_v = div_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
+  using val_div0_c = val_div_c<xs..., (sizeof...(xs) ? 1 : 0)>;
 
   template<auto... xs>
-  using div1_c_v = div_c_v<xs..., 1>;
+  using val_div1_c = val_div_c<xs..., 1>;
 
   template<auto... xs>
-  using mod_c_v = val<(... % xs)>;
+  using val_mod_c = val<(... % xs)>;
 }
 
 /// \cond
 namespace jln::mp::detail
 {
   template<bool, template<auto...> class f, int_ d>
-  struct _emp_op_v;
+  struct val__emp_op;
 
   template<template<auto...> class F, int_ d>
-  struct _emp_op_v<true, F, d>
+  struct val__emp_op<true, F, d>
   {
     template<auto... xs>
     using f = F<xs...>;
   };
 
   template<template<auto...> class F, int_ d>
-  struct _emp_op_v<false, F, d>
+  struct val__emp_op<false, F, d>
   {
     template<auto...>
     using f = val<d>;
@@ -418,145 +418,145 @@ namespace jln::mp::detail
 namespace jln::mp::emp
 {
   template<auto... xs>
-  using mod0_c_v = typename detail::_emp_op_v<sizeof...(xs) != 0, mod_c_v, 0>
+  using val_mod0_c = typename detail::val__emp_op<sizeof...(xs) != 0, val_mod_c, 0>
     ::template f<xs...>;
 
   template<auto... xs>
-  using mod1_c_v = typename detail::_emp_op_v<sizeof...(xs) != 0, mod_c_v, 1>
+  using val_mod1_c = typename detail::val__emp_op<sizeof...(xs) != 0, val_mod_c, 1>
     ::template f<xs...>;
 
   template<auto... xs>
-  using xor_c_v = val<(... ^ xs)>;
+  using val_xor_c = val<(... ^ xs)>;
 
   template<auto... xs>
-  using xor0_c_v = xor_c_v<xs..., 0, 0>;
+  using val_xor0_c = val_xor_c<xs..., 0, 0>;
 
   template<auto... xs>
-  using bit_and_c_v = val<(... & xs)>;
+  using val_bit_and_c = val<(... & xs)>;
 
   template<auto... xs>
-  using bit_and0_c_v = typename detail::_emp_op_v<sizeof...(xs) != 0, bit_and_c_v, 0>
+  using val_bit_and0_c = typename detail::val__emp_op<sizeof...(xs) != 0, val_bit_and_c, 0>
     ::template f<xs...>;
 
   template<auto... xs>
-  using bit_or_c_v = val<(... | xs)>;
+  using val_bit_or_c = val<(... | xs)>;
 
   template<auto... xs>
-  using bit_or0_c_v = typename detail::_emp_op_v<sizeof...(xs) != 0, bit_or_c_v, 0>
+  using val_bit_or0_c = typename detail::val__emp_op<sizeof...(xs) != 0, val_bit_or_c, 0>
     ::template f<xs...>;
 
 
   template<class... xs>
-  using or_v = val<(false || ... || xs::value)>;
+  using val_or = val<(false || ... || xs::value)>;
 
   template<class... xs>
-  using and_v = val<(true && ... && xs::value)>;
+  using val_and = val<(true && ... && xs::value)>;
 
   template<class... xs>
-  using add_v = val<(... + xs::value)>;
+  using val_add = val<(... + xs::value)>;
 
   template<class... xs>
-  using add0_v = call<mp::add0_v<>, xs...>;
+  using val_add0 = call<mp::val_add0<>, xs...>;
 
   template<class... xs>
-  using sub_v = val<(... - xs::value)>;
+  using val_sub = val<(... - xs::value)>;
 
   template<class... xs>
-  using sub0_v = call<mp::sub0_v<>, xs...>;
+  using val_sub0 = call<mp::val_sub0<>, xs...>;
 
   template<class... xs>
-  using lshift_v = val<(... << xs::value)>;
+  using val_lshift = val<(... << xs::value)>;
 
   template<class... xs>
-  using lshift0_v = call<mp::lshift0_v<>, xs...>;
+  using val_lshift0 = call<mp::val_lshift0<>, xs...>;
 
   template<class... xs>
-  using rshift_v = val<(... >> xs::value)>;
+  using val_rshift = val<(... >> xs::value)>;
 
   template<class... xs>
-  using rshift0_v = call<mp::rshift0_v<>, xs...>;
+  using val_rshift0 = call<mp::val_rshift0<>, xs...>;
 
   template<class... xs>
-  using mul_v = val<(... * xs::value)>;
+  using val_mul = val<(... * xs::value)>;
 
   template<class... xs>
-  using mul0_v = call<mp::mul0_v<>, xs...>;
+  using val_mul0 = call<mp::val_mul0<>, xs...>;
 
   template<class... xs>
-  using mul1_v = call<mp::mul1_v<>, xs...>;
+  using val_mul1 = call<mp::val_mul1<>, xs...>;
 
   template<class... xs>
-  using div_v = val<(... / xs::value)>;
+  using val_div = val<(... / xs::value)>;
 
   template<class... xs>
-  using div0_v = call<mp::div0_v<>, xs...>;
+  using val_div0 = call<mp::val_div0<>, xs...>;
 
   template<class... xs>
-  using div1_v = call<mp::div1_v<>, xs...>;
+  using val_div1 = call<mp::val_div1<>, xs...>;
 
   template<class... xs>
-  using mod_v = val<(... % xs::value)>;
+  using val_mod = val<(... % xs::value)>;
 
   template<class... xs>
-  using mod0_v = call<mp::mod0_v<>, xs...>;
+  using val_mod0 = call<mp::val_mod0<>, xs...>;
 
   template<class... xs>
-  using mod1_v = call<mp::mod1_v<>, xs...>;
+  using val_mod1 = call<mp::val_mod1<>, xs...>;
 
   template<class... xs>
-  using xor_v = val<(... ^ xs::value)>;
+  using val_xor = val<(... ^ xs::value)>;
 
   template<class... xs>
-  using xor0_v = call<mp::xor0_v<>, xs...>;
+  using val_xor0 = call<mp::val_xor0<>, xs...>;
 
   template<class... xs>
-  using bit_and_v = val<(... & xs::value)>;
+  using val_bit_and = val<(... & xs::value)>;
 
   template<class... xs>
-  using bit_and0_v = call<mp::bit_and0_v<>, xs...>;
+  using val_bit_and0 = call<mp::val_bit_and0<>, xs...>;
 
   template<class... xs>
-  using bit_or_v = val<(... | xs::value)>;
+  using val_bit_or = val<(... | xs::value)>;
 
   template<class... xs>
-  using bit_or0_v = call<mp::bit_or0_v<>, xs...>;
+  using val_bit_or0 = call<mp::val_bit_or0<>, xs...>;
 
 
   template<class x, class C = mp::identity>
-  using neg_v = call<mp::neg_v<C>, x>;
+  using val_neg = call<mp::val_neg<C>, x>;
 
   template<class x, class C = mp::identity>
-  using unary_plus_v = call<mp::unary_plus_v<C>, x>;
+  using val_unary_plus = call<mp::val_unary_plus<C>, x>;
 
   template<class x, class C = mp::identity>
-  using not_v = call<mp::not_v<C>, x>;
+  using val_not = call<mp::val_not<C>, x>;
 
   template<class x, class C = mp::identity>
-  using bit_not_v = call<mp::bit_not_v<C>, x>;
+  using val_bit_not = call<mp::val_bit_not<C>, x>;
 
   template<class x, class C = mp::identity>
-  using inc_v = call<mp::inc_v<C>, x>;
+  using val_inc = call<mp::val_inc<C>, x>;
 
   template<class x, class C = mp::identity>
-  using dec_v = call<mp::dec_v<C>, x>;
+  using val_dec = call<mp::val_dec<C>, x>;
 
   template<class x, class y, class C = mp::identity>
-  using equal_v = call<mp::equal_v<C>, x, y>;
+  using val_equal = call<mp::val_equal<C>, x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using not_equal_v = call<mp::not_equal_v<C>, x, y>;
+  using val_not_equal = call<mp::val_not_equal<C>, x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using less_v = call<mp::less_v<C>, x, y>;
+  using val_less = call<mp::val_less<C>, x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using less_equal_v = call<mp::less_equal_v<C>, x, y>;
+  using val_less_equal = call<mp::val_less_equal<C>, x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using greater_v = call<mp::greater_v<C>, x, y>;
+  using val_greater = call<mp::val_greater<C>, x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using greater_equal_v = call<mp::greater_equal_v<C>, x, y>;
+  using val_greater_equal = call<mp::val_greater_equal<C>, x, y>;
 }
 
 JLN_DIAGNOSTIC_POP

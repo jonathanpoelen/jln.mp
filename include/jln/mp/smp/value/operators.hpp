@@ -21,310 +21,310 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using or_v = try_contract<mp::or_v<assume_unary<C>>>;
+  using val_or = try_contract<mp::val_or<assume_unary<C>>>;
 
   template<class C = identity>
-  using and_v = try_contract<mp::and_v<assume_unary<C>>>;
+  using val_and = try_contract<mp::val_and<assume_unary<C>>>;
 
   template<class C = identity>
-  using add_v = try_contract<mp::add_v<assume_unary<C>>>;
+  using val_add = try_contract<mp::val_add<assume_unary<C>>>;
 
   template<class C = identity>
-  using add0_v = detail::smp_opv_default<mp::add_v, C>;
+  using val_add0 = detail::smp_opv_default<mp::val_add, C>;
 
   template<class C = identity>
-  using sub_v = try_contract<mp::sub_v<assume_unary<C>>>;
+  using val_sub = try_contract<mp::val_sub<assume_unary<C>>>;
 
   template<class C = identity>
-  using sub0_v = detail::smp_opv_default<mp::sub_v, C>;
+  using val_sub0 = detail::smp_opv_default<mp::val_sub, C>;
 
   template<class C = identity>
-  using lshift_v = try_contract<mp::lshift_v<assume_unary<C>>>;
+  using val_lshift = try_contract<mp::val_lshift<assume_unary<C>>>;
 
   template<class C = identity>
-  using lshift0_v = detail::smp_opv_default<mp::lshift_v, C>;
+  using val_lshift0 = detail::smp_opv_default<mp::val_lshift, C>;
 
   template<class C = identity>
-  using rshift_v = try_contract<mp::rshift_v<assume_unary<C>>>;
+  using val_rshift = try_contract<mp::val_rshift<assume_unary<C>>>;
 
   template<class C = identity>
-  using rshift0_v = detail::smp_opv_default<mp::rshift_v, C>;
+  using val_rshift0 = detail::smp_opv_default<mp::val_rshift, C>;
 
   template<class C = identity>
-  using mul_v = try_contract<mp::mul_v<assume_unary<C>>>;
+  using val_mul = try_contract<mp::val_mul<assume_unary<C>>>;
 
   template<class C = identity>
-  using mul0_v = detail::smp_opv_default<mp::mul_v, C>;
+  using val_mul0 = detail::smp_opv_default<mp::val_mul, C>;
 
   template<class C = identity>
-  using mul1_v = detail::smp_opv_default<mp::mul_v, C, 1>;
+  using val_mul1 = detail::smp_opv_default<mp::val_mul, C, 1>;
 
   template<class C = identity>
-  using div_v = try_contract<mp::div_v<assume_unary<C>>>;
+  using val_div = try_contract<mp::val_div<assume_unary<C>>>;
 
   template<class C = identity>
-  using div0_v = detail::smp_opv_default<mp::div_v, C>;
+  using val_div0 = detail::smp_opv_default<mp::val_div, C>;
 
   template<class C = identity>
-  using div1_v = detail::smp_opv_default<mp::div_v, C, 1>;
+  using val_div1 = detail::smp_opv_default<mp::val_div, C, 1>;
 
   template<class C = identity>
-  using mod_v = try_contract<mp::mod_v<assume_unary<C>>>;
+  using val_mod = try_contract<mp::val_mod<assume_unary<C>>>;
 
   template<class C = identity>
-  using mod0_v = detail::smp_opv_default<mp::mod_v, C>;
+  using val_mod0 = detail::smp_opv_default<mp::val_mod, C>;
 
   template<class C = identity>
-  using mod1_v = detail::smp_opv_default<mp::mod_v, C, 1>;
+  using val_mod1 = detail::smp_opv_default<mp::val_mod, C, 1>;
 
   template<class C = identity>
-  using xor_v = try_contract<mp::xor_v<assume_unary<C>>>;
+  using val_xor = try_contract<mp::val_xor<assume_unary<C>>>;
 
   template<class C = identity>
-  using xor0_v = detail::smp_opv_default<mp::xor_v, C>;
+  using val_xor0 = detail::smp_opv_default<mp::val_xor, C>;
 
   template<class C = identity>
-  using bit_and_v = try_contract<mp::bit_and_v<assume_unary<C>>>;
+  using val_bit_and = try_contract<mp::val_bit_and<assume_unary<C>>>;
 
   template<class C = identity>
-  using bit_and0_v = detail::smp_opv_default<mp::bit_and_v, C>;
+  using val_bit_and0 = detail::smp_opv_default<mp::val_bit_and, C>;
 
   template<class C = identity>
-  using bit_or_v = try_contract<mp::bit_or_v<assume_unary<C>>>;
+  using val_bit_or = try_contract<mp::val_bit_or<assume_unary<C>>>;
 
   template<class C = identity>
-  using bit_or0_v = detail::smp_opv_default<mp::bit_or_v, C>;
+  using val_bit_or0 = detail::smp_opv_default<mp::val_bit_or, C>;
 
   template<class C = identity>
-  using neg_v = try_contract<mp::neg_v<assume_unary<C>>>;
+  using val_neg = try_contract<mp::val_neg<assume_unary<C>>>;
 
   template<class C = identity>
-  using unary_plus_v = try_contract<mp::unary_plus_v<assume_unary<C>>>;
+  using val_unary_plus = try_contract<mp::val_unary_plus<assume_unary<C>>>;
 
   template<class C = identity>
-  using not_v = try_contract<mp::not_v<assume_unary<C>>>;
+  using val_not = try_contract<mp::val_not<assume_unary<C>>>;
 
   template<class C = identity>
-  using bit_not_v = try_contract<mp::bit_not_v<assume_unary<C>>>;
+  using val_bit_not = try_contract<mp::val_bit_not<assume_unary<C>>>;
 
   template<class C = identity>
-  using inc_v = try_contract<mp::inc_v<assume_unary<C>>>;
+  using val_inc = try_contract<mp::val_inc<assume_unary<C>>>;
 
   template<class C = identity>
-  using dec_v = try_contract<mp::dec_v<assume_unary<C>>>;
+  using val_dec = try_contract<mp::val_dec<assume_unary<C>>>;
 
   template<class C = identity>
-  using equal_v = try_contract<mp::equal_v<assume_unary<C>>>;
+  using val_equal = try_contract<mp::val_equal<assume_unary<C>>>;
 
   template<class C = identity>
-  using not_equal_v = try_contract<mp::not_equal_v<assume_unary<C>>>;
+  using val_not_equal = try_contract<mp::val_not_equal<assume_unary<C>>>;
 
   template<class C = identity>
-  using less_v = try_contract<mp::less_v<assume_unary<C>>>;
+  using val_less = try_contract<mp::val_less<assume_unary<C>>>;
 
   template<class C = identity>
-  using less_equal_v = try_contract<mp::less_equal_v<assume_unary<C>>>;
+  using val_less_equal = try_contract<mp::val_less_equal<assume_unary<C>>>;
 
   template<class C = identity>
-  using greater_v = try_contract<mp::greater_v<assume_unary<C>>>;
+  using val_greater = try_contract<mp::val_greater<assume_unary<C>>>;
 
   template<class C = identity>
-  using greater_equal_v = try_contract<mp::greater_equal_v<assume_unary<C>>>;
+  using val_greater_equal = try_contract<mp::val_greater_equal<assume_unary<C>>>;
 
   template<class x, class C = identity>
-  using equal_to_v = contract<
+  using val_equal_to = contract<
     mp::push_back<x,
-      mp::try_<mp::equal_v<assume_unary<C>>>>>;
+      mp::try_<mp::val_equal<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
-  using not_equal_to_v = contract<
+  using val_not_equal_to = contract<
     mp::push_back<x,
-      mp::try_<mp::not_equal_v<assume_unary<C>>>>>;
+      mp::try_<mp::val_not_equal<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
-  using less_than_v = contract<
+  using val_less_than = contract<
     mp::push_back<x,
-      mp::try_<mp::less_v<assume_unary<C>>>>>;
+      mp::try_<mp::val_less<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
-  using less_equal_than_v = contract<
+  using val_less_equal_than = contract<
     mp::push_back<x,
-      mp::try_<mp::less_equal_v<assume_unary<C>>>>>;
+      mp::try_<mp::val_less_equal<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
-  using greater_than_v = contract<
+  using val_greater_than = contract<
     mp::push_back<x,
-      mp::try_<mp::greater_v<assume_unary<C>>>>>;
+      mp::try_<mp::val_greater<assume_unary<C>>>>>;
 
   template<class x, class C = identity>
-  using greater_equal_than_v = contract<
+  using val_greater_equal_than = contract<
     mp::push_back<x,
-      mp::try_<mp::greater_equal_v<assume_unary<C>>>>>;
+      mp::try_<mp::val_greater_equal<assume_unary<C>>>>>;
 
   template<auto x, class C = identity>
-  using equal_to_c_v = equal_to_v<val<x>, C>;
+  using val_equal_to_c = val_equal_to<val<x>, C>;
 
   template<auto x, class C = identity>
-  using not_equal_to_c_v = not_equal_to_v<val<x>, C>;
+  using val_not_equal_to_c = val_not_equal_to<val<x>, C>;
 
   template<auto x, class C = identity>
-  using less_than_c_v = less_than_v<val<x>, C>;
+  using val_less_than_c = val_less_than<val<x>, C>;
 
   template<auto x, class C = identity>
-  using less_equal_than_c_v = less_equal_than_v<val<x>, C>;
+  using val_less_equal_than_c = val_less_equal_than<val<x>, C>;
 
   template<auto x, class C = identity>
-  using greater_than_c_v = greater_than_v<val<x>, C>;
+  using val_greater_than_c = val_greater_than<val<x>, C>;
 
   template<auto x, class C = identity>
-  using greater_equal_than_c_v = greater_equal_than_v<val<x>, C>;
+  using val_greater_equal_than_c = val_greater_equal_than<val<x>, C>;
 }
 
 /// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, or_v<C>>
+  struct _sfinae<sfinae, val_or<C>>
   {
-    using type = smp::or_v<sfinae<C>>;
+    using type = smp::val_or<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, and_v<C>>
+  struct _sfinae<sfinae, val_and<C>>
   {
-    using type = smp::and_v<sfinae<C>>;
+    using type = smp::val_and<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, add_v<C>>
+  struct _sfinae<sfinae, val_add<C>>
   {
-    using type = smp::add_v<sfinae<C>>;
+    using type = smp::val_add<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, sub_v<C>>
+  struct _sfinae<sfinae, val_sub<C>>
   {
-    using type = smp::sub_v<sfinae<C>>;
+    using type = smp::val_sub<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, lshift_v<C>>
+  struct _sfinae<sfinae, val_lshift<C>>
   {
-    using type = smp::lshift_v<sfinae<C>>;
+    using type = smp::val_lshift<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, rshift_v<C>>
+  struct _sfinae<sfinae, val_rshift<C>>
   {
-    using type = smp::rshift_v<sfinae<C>>;
+    using type = smp::val_rshift<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, mul_v<C>>
+  struct _sfinae<sfinae, val_mul<C>>
   {
-    using type = smp::mul_v<sfinae<C>>;
+    using type = smp::val_mul<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, div_v<C>>
+  struct _sfinae<sfinae, val_div<C>>
   {
-    using type = smp::div_v<sfinae<C>>;
+    using type = smp::val_div<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, mod_v<C>>
+  struct _sfinae<sfinae, val_mod<C>>
   {
-    using type = smp::mod_v<sfinae<C>>;
+    using type = smp::val_mod<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, xor_v<C>>
+  struct _sfinae<sfinae, val_xor<C>>
   {
-    using type = smp::xor_v<sfinae<C>>;
+    using type = smp::val_xor<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, bit_and_v<C>>
+  struct _sfinae<sfinae, val_bit_and<C>>
   {
-    using type = smp::bit_and_v<sfinae<C>>;
+    using type = smp::val_bit_and<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, bit_or_v<C>>
+  struct _sfinae<sfinae, val_bit_or<C>>
   {
-    using type = smp::bit_or_v<sfinae<C>>;
+    using type = smp::val_bit_or<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, neg_v<C>>
+  struct _sfinae<sfinae, val_neg<C>>
   {
-    using type = smp::neg_v<sfinae<C>>;
+    using type = smp::val_neg<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, unary_plus_v<C>>
+  struct _sfinae<sfinae, val_unary_plus<C>>
   {
-    using type = smp::unary_plus_v<sfinae<C>>;
+    using type = smp::val_unary_plus<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, not_v<C>>
+  struct _sfinae<sfinae, val_not<C>>
   {
-    using type = smp::not_v<sfinae<C>>;
+    using type = smp::val_not<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, bit_not_v<C>>
+  struct _sfinae<sfinae, val_bit_not<C>>
   {
-    using type = smp::bit_not_v<sfinae<C>>;
+    using type = smp::val_bit_not<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, inc_v<C>>
+  struct _sfinae<sfinae, val_inc<C>>
   {
-    using type = smp::inc_v<sfinae<C>>;
+    using type = smp::val_inc<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, dec_v<C>>
+  struct _sfinae<sfinae, val_dec<C>>
   {
-    using type = smp::dec_v<sfinae<C>>;
+    using type = smp::val_dec<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, equal_v<C>>
+  struct _sfinae<sfinae, val_equal<C>>
   {
-    using type = smp::equal_v<sfinae<C>>;
+    using type = smp::val_equal<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, not_equal_v<C>>
+  struct _sfinae<sfinae, val_not_equal<C>>
   {
-    using type = smp::not_equal_v<sfinae<C>>;
+    using type = smp::val_not_equal<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, less_v<C>>
+  struct _sfinae<sfinae, val_less<C>>
   {
-    using type = smp::less_v<sfinae<C>>;
+    using type = smp::val_less<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, less_equal_v<C>>
+  struct _sfinae<sfinae, val_less_equal<C>>
   {
-    using type = smp::less_equal_v<sfinae<C>>;
+    using type = smp::val_less_equal<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, greater_v<C>>
+  struct _sfinae<sfinae, val_greater<C>>
   {
-    using type = smp::greater_v<sfinae<C>>;
+    using type = smp::val_greater<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, greater_equal_v<C>>
+  struct _sfinae<sfinae, val_greater_equal<C>>
   {
-    using type = smp::greater_equal_v<sfinae<C>>;
+    using type = smp::val_greater_equal<sfinae<C>>;
   };
 }
 /// \endcond
