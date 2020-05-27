@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fold_right.hpp"
-#include "../functional/function.hpp"
+#include "../functional/lift.hpp"
 #include "../functional/call.hpp"
 #include "../utility/same_as.hpp"
 #include "../utility/unpack.hpp"

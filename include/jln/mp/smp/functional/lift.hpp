@@ -2,7 +2,7 @@
 
 #include "../assume.hpp"
 #include "identity.hpp"
-#include "../../functional/function.hpp"
+#include "../../functional/lift.hpp"
 
 namespace jln::mp::smp
 {

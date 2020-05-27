@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../functional/function.hpp"
+#include "../functional/lift.hpp"
 
 namespace jln::mp
 {

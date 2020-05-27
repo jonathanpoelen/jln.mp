@@ -3,7 +3,7 @@
 #include "../contract.hpp"
 #include "../../functional/compose.hpp"
 #include "../functional/identity.hpp"
-#include "../functional/function.hpp"
+#include "../functional/lift.hpp"
 #include "../functional/tee.hpp"
 
 namespace jln::mp::smp

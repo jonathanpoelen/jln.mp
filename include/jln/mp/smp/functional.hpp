@@ -8,7 +8,7 @@
 #include "functional/eval.hpp"
 #include "functional/fix.hpp"
 #include "functional/flip.hpp"
-#include "functional/function.hpp"
+#include "functional/lift.hpp"
 #include "functional/identity.hpp"
 #include "functional/if.hpp"
 #include "functional/invoke_twice.hpp"

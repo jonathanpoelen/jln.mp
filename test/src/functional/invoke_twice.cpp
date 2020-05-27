@@ -2,7 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/functional/invoke_twice.hpp"
-#include "jln/mp/smp/functional/function.hpp"
+#include "jln/mp/smp/functional/lift.hpp"
 #include "jln/mp/smp/list/pop_front.hpp"
 #include "jln/mp/smp/list/front.hpp"
 #include "jln/mp/smp/list/take.hpp"

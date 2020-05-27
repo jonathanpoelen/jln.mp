@@ -3,7 +3,7 @@
 #include "../list/list.hpp"
 #include "../algorithm/fold_left.hpp"
 #include "../utility/unpack.hpp"
-#include "../functional/function.hpp"
+#include "../functional/lift.hpp"
 #include "../list/push_front.hpp"
 #include "../list/pop_front.hpp"
 #include "../../algorithm/unique.hpp"

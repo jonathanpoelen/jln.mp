@@ -55,7 +55,7 @@ namespace jln::mp
 #include "../list/take.hpp"
 #include "../list/push_front.hpp"
 #include "../utility/conditional.hpp"
-#include "../functional/function.hpp"
+#include "../functional/lift.hpp"
 #include "../functional/partial.hpp"
 
 /// \cond

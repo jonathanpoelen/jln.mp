@@ -3,7 +3,7 @@
 #include "index.hpp"
 #include "../list/take.hpp"
 #include "../utility/always.hpp"
-#include "../functional/function.hpp"
+#include "../functional/lift.hpp"
 #include "../functional/tee.hpp"
 #include "../functional/invoke_twice.hpp"
 

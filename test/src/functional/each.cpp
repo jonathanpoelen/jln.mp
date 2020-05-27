@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/functional/function.hpp"
+#include "jln/mp/smp/functional/lift.hpp"
 #include "jln/mp/smp/functional/each.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 

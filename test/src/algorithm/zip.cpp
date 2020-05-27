@@ -3,7 +3,7 @@
 
 #include "jln/mp/smp/algorithm/zip.hpp"
 #include "jln/mp/smp/algorithm/matrix_shortest.hpp"
-#include "jln/mp/smp/functional/function.hpp"
+#include "jln/mp/smp/functional/lift.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
