@@ -1,5 +1,11 @@
 #pragma once
 
+#if __cplusplus >= 201703L
+# include "../value/val.hpp"
+#else
+# include "../number/number.hpp"
+#endif
+
 namespace jln::mp
 {
   /// \ingroup functional
@@ -18,11 +24,22 @@ namespace jln::mp
     using f = typename C::template f<xs::value..., ys::value...>;
   };
 
+#if __cplusplus >= 201703L
   template<auto... xs>
-  struct capture_c
+  using capture_c = capture<val<xs>...>;
+
+  template<auto... xs>
+  struct capture_v_c
+#else
+  template<int_... xs>
+  using capture_c = capture<number<xs>...>;
+
+  template<int_... xs>
+  struct capture_v_c
+#endif
   {
-    template<class C, auto... ys>
-    using f = typename C::template f<xs..., ys...>;
+    template<class C, class... ys>
+    using f = typename C::template f<xs..., ys::value...>;
   };
 
   template<class... xs>
@@ -39,10 +56,22 @@ namespace jln::mp
     using f = typename C::template f<ys::value..., xs::value...>;
   };
 
+#if __cplusplus >= 201703L
   template<auto... xs>
-  struct reverse_capture_c
+  using reverse_capture_c = reverse_capture<val<xs>...>;
+
+  template<auto... xs>
+  struct reverse_capture_v_c
+#else
+  template<int_... xs>
+  using reverse_capture_c = reverse_capture<number<xs>...>;
+
+  template<int_... xs>
+  struct reverse_capture_v_c
+#endif
   {
-    template<class C, auto... ys>
-    using f = typename C::template f<ys..., xs...>;
+    template<class C, class... ys>
+    using f = typename C::template f<ys::value..., xs...>;
   };
+
 }

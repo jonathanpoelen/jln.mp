@@ -59,7 +59,7 @@ TEST()
     .not_invocable<listify>()
     ;
 
-  test_context<reverse_capture_c<1, 2>, smp::reverse_capture_c<1, 2>>()
+  test_context<reverse_capture_v_c<1, 2>, smp::reverse_capture_v_c<1, 2>>()
     .test<foo::f<1, 2>, foo>()
     .not_invocable<listify>()
     ;

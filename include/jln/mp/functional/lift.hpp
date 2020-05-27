@@ -47,31 +47,27 @@ namespace jln::mp
 
 #if __cplusplus >= 201703L
   template<template<auto...> class F>
-  struct lift_v
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...);
-  };
-
-  template<template<auto...> class F>
   struct lift_c
   {
     template<auto... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs...);
   };
 
-  template<template<class, auto...> class F>
-  struct lift_tv
+  template<template<auto...> class F>
+  struct lift_v
+#else
+  template<template<int_...> class F>
+  struct lift_c
   {
-    template<class x, class... xs>
-    using f = JLN_MP_DCALLF_TC_XS(xs, F, x, xs::value...);
+    template<int_... xs>
+    using f = JLN_MP_DCALLF_C_XS(xs, F, xs...);
   };
 
-  template<template<class, auto...> class F>
-  struct lift_tc
-  {
-    template<class x, auto... xs>
-    using f = JLN_MP_DCALLF_TC_XS(xs, F, x, xs...);
-  };
+  template<template<int_...> class F>
+  struct lift_v
 #endif
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...);
+  };
 } // namespace jln::mp
