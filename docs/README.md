@@ -1,3 +1,5 @@
+Online documentation: https://jonathanpoelen.github.io/jln.mp/
+
 # Configure
 
 ```sh

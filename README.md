@@ -4,6 +4,7 @@
 
 Licence: MIT
 
+Online documentation: https://jonathanpoelen.github.io/jln.mp/
 
 # Concepts
 
