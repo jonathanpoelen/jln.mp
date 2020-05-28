@@ -14,7 +14,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup value
+  /// \ingroup algorithm
 
   /// Checks whether all \values are identical.
   /// \treturn \bool
