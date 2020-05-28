@@ -10,7 +10,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup list
+  /// \ingroup functional
 
   /// Recursively applies \functions to nested \typelist of \typelists.
   /// \semantics
