@@ -12,7 +12,7 @@ namespace jln::mp
     template<class, class>
     struct _recurse;
 
-    template<class>
+    template<class, class>
     struct _recurse_fix;
 
     template<class F>
@@ -47,7 +47,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_recurse_fix<
-      typename detail::_recurse_fix_next<F>::template f<xs...>
+      F, typename detail::_recurse_fix_next<F>::template f<xs...>
     >::template f<C>;
   };
 
@@ -113,22 +113,10 @@ namespace jln::mp::detail
   >
   {};
 
-  template<class x>
-  struct _recurse_fix<stop_iteration<x>>
-  {
-    template<class C>
-    using f = typename C::template f<x>;
-  };
-
-  template<class... xs>
   struct _recurse_capture
-  {};
-
-  template<class F>
-  struct _bind_recurse
   {
     template<class... xs>
-    using f = _recurse_capture<F, xs...>;
+    struct f;
   };
 
   template<class F>
@@ -137,7 +125,7 @@ namespace jln::mp::detail
     struct f0
     {
       template<class... xs>
-      using f = call<F, _bind_recurse<F>, xs...>;
+      using f = call<F, _recurse_capture, xs...>;
     };
 
     struct f1
@@ -193,11 +181,18 @@ namespace jln::mp::detail
   };
 
   template<class F, class... xs>
-  struct _recurse_fix<_recurse_capture<F, xs...>>
-  : _recurse_fix<typename _recurse_fix_next<F>::template f<xs...>>
+  struct _recurse_fix<F, _recurse_capture::f<xs...>>
+  : _recurse_fix<F, typename _recurse_fix_next<F>::template f<xs...>>
   {};
 
-  template<class x>
+  template<class F, class x>
+  struct _recurse_fix<F, stop_iteration<x>>
+  {
+    template<class C>
+    using f = typename C::template f<x>;
+  };
+
+  template<class, class x>
   struct _recurse_fix
   {
     template<class C>
