@@ -58,7 +58,6 @@
 #include "src/functional/is_invocable.cpp"
 #include "src/functional/lift.cpp"
 #include "src/functional/partial.cpp"
-#include "src/functional/partial_eager.cpp"
 #include "src/functional/recurse.cpp"
 #include "src/functional/tee.cpp"
 #include "src/functional/try.cpp"
