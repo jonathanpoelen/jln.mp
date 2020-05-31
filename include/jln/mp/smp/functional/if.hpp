@@ -3,6 +3,7 @@
 #include "identity.hpp"
 #include "../concepts.hpp"
 #include "../utility/always.hpp"
+#include "../number/to_bool.hpp"
 #include "../../functional/invoke_twice.hpp"
 #include "../../functional/if.hpp"
 #include "../../functional/tee.hpp"
@@ -13,12 +14,16 @@ namespace jln::mp::smp
   template<class Pred, class TC, class FC = always<false_>>
   using if_ = contract<
     mp::invoke_twice<
-      concepts::predicate<
-        Pred,
-        mp::if_<
-          mp::identity,
-          mp::always<subcontract<TC>>,
-          mp::always<subcontract<FC>>
+      mp::try_<
+        subcontract<Pred>,
+        mp::try_<
+          mp::to_bool<>,
+          mp::if_<
+            mp::identity,
+            mp::always<subcontract<TC>>,
+            mp::always<subcontract<FC>>
+          >,
+          mp::always<violation>
         >,
         mp::always<violation>
       >

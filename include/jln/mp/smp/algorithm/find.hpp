@@ -11,9 +11,9 @@ namespace jln::mp::smp
 {
   template<class Pred, class C = listify, class NC = C>
   using find_if = contract<mp::find_if<
-    concepts::predicate<Pred, mp::identity, mp::always<true_>>,
+    concepts::predicate<assume_unary<Pred>, mp::identity, mp::always<true_>>,
     mp::if_<
-      mp::front<concepts::predicate<Pred>>,
+      mp::front<concepts::predicate<assume_unary<Pred>>>,
       subcontract<C>,
       violation
     >,

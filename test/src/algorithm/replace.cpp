@@ -19,7 +19,8 @@ TEST()
 
   test_context<
     replace_if<same_as<_1>, _2>,
-    smp::replace_if<same_as<_1>, _2>
+    smp::replace_if<same_as<_1>, _2>,
+    0
   >()
     .test<list<>>()
     .test<seq_0_0_0, _0, _0, _0>()
@@ -29,7 +30,8 @@ TEST()
 
   test_context<
     replace_if<same_as<_1>, na>,
-    smp::replace_if<same_as<_1>, na>
+    smp::replace_if<same_as<_1>, na>,
+    0
   >()
     .test<list<>>()
     .test<seq_0_0_0, _0, _0, _0>()
