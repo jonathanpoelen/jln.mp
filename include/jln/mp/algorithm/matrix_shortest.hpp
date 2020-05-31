@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../list/size.hpp"
-#include "../list/list.hpp"
 #include "../list/take.hpp"
 #include "../utility/unpack.hpp"
 #include "../functional/each.hpp"

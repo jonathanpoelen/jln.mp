@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../list/list.hpp"
+#include "../list/listify.hpp"
 #include "../../algorithm/reverse.hpp"
 
 namespace jln::mp::smp

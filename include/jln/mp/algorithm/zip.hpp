@@ -1,7 +1,6 @@
 #pragma once
 
 #include "transform.hpp"
-#include "../list/list.hpp"
 #include "../utility/unpack.hpp"
 
 
@@ -10,8 +9,6 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    struct _drop_back;
-
     template<class C = listify>
     struct _zip;
   }

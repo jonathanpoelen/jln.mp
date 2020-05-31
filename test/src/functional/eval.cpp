@@ -8,7 +8,7 @@
 
 #include "jln/mp/smp/functional/eval.hpp"
 #include "jln/mp/smp/list/push_front.hpp"
-#include "jln/mp/smp/list/list.hpp"
+#include "jln/mp/smp/list/listify.hpp"
 
 TEST_SUITE_BEGIN()
 

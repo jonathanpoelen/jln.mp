@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../list/list.hpp"
+#include "../list/listify.hpp"
 #include "../../list/sliding.hpp"
 
 namespace jln::mp::smp

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../assume.hpp"
-#include "../list/list.hpp"
+#include "../list/listify.hpp"
 #include "../../number/numbers.hpp"
 
 namespace jln::mp::smp

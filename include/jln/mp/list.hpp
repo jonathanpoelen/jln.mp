@@ -14,6 +14,7 @@
 #include "list/is_size_of.hpp"
 #include "list/join.hpp"
 #include "list/list.hpp"
+#include "list/listify.hpp"
 #include "list/offset.hpp"
 #include "list/pop_back.hpp"
 #include "list/pop_front.hpp"

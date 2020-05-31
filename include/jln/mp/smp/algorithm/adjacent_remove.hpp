@@ -1,7 +1,7 @@
 #pragma once
 
 #include "same.hpp"
-#include "../list/list.hpp"
+#include "../list/listify.hpp"
 #include "../../functional/monadic.hpp"
 #include "../../algorithm/adjacent_remove.hpp"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../list/list.hpp"
+#include "../list/listify.hpp"
 #include "../../algorithm/adjacent_difference.hpp"
 
 namespace jln::mp::smp

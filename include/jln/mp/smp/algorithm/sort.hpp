@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../contract.hpp"
-#include "../list/list.hpp"
+#include "../list/listify.hpp"
 #include "../number/operators.hpp"
 #include "../algorithm/is_sorted.hpp"
 #include "../../algorithm/sort.hpp"

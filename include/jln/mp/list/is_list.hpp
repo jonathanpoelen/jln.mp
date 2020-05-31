@@ -1,6 +1,7 @@
 #pragma once
 
 #include "list.hpp"
+#include "../functional/identity.hpp"
 
 namespace jln::mp
 {

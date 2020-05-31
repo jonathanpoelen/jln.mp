@@ -3,7 +3,7 @@
 
 #include "jln/mp/smp/algorithm/fold_right.hpp"
 #include "jln/mp/smp/list/at.hpp"
-#include "jln/mp/smp/list/list.hpp"
+#include "jln/mp/smp/list/listify.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
@@ -57,9 +57,9 @@ TEST()
   ut::not_invocable<smp::fold_right<bad_function, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::fold_right<smp::add<>>, _1, _1, _1, _1, _1, void>();
   ut::not_invocable<smp::fold_right<smp::add<>>, void, _1, _1, _1, _1, _1>();
-  ut::not_invocable<smp::fold_right<smp::add<>>, 
+  ut::not_invocable<smp::fold_right<smp::add<>>,
     _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, void>();
-  ut::not_invocable<smp::fold_right<smp::add<>>, 
+  ut::not_invocable<smp::fold_right<smp::add<>>,
     void, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>();
 }
 

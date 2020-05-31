@@ -12,7 +12,7 @@ namespace jln::mp::smp
   using unpack_append = try_contract<mp::unpack_append<subcontract<C>>>;
 }
 
-#include "../list/list.hpp"
+#include "../list/listify.hpp"
 
 /// \cond
 namespace jln::mp::detail

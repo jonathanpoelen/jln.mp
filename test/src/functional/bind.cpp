@@ -4,7 +4,7 @@
 #include "jln/mp/smp/functional/bind.hpp"
 #include "jln/mp/smp/list/push_front.hpp"
 #include "jln/mp/smp/list/pop_front.hpp"
-#include "jln/mp/smp/list/list.hpp"
+#include "jln/mp/smp/list/listify.hpp"
 
 TEST_SUITE_BEGIN()
 

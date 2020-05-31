@@ -2,6 +2,7 @@
 
 #include "../config/debug.hpp"
 #include "../config/config.hpp"
+#include "../list/list.hpp"
 
 #if __cplusplus < 201703L
 # include "../number/number.hpp"
@@ -10,13 +11,6 @@
 
 namespace jln::mp
 {
-  /// \cond
-  template<class...>
-  class list;
-  /// \endcond
-
-  #define JLN_MP_PARAM_LIST list
-
   /// \cond
   namespace detail
   {
@@ -30,14 +24,14 @@ namespace jln::mp
     {};
 
     template<class C, class... xs>
-    using _memoizer = _memoizer_impl<C, JLN_MP_PARAM_LIST<xs...>>;
+    using _memoizer = _memoizer_impl<C, list<xs...>>;
 
     template<template<class...> class F, class L, class = void>
     struct _memoizerf_impl
     {};
 
     template<template<class...> class F, class... xs>
-    using _memoizerf = _memoizerf_impl<F, JLN_MP_PARAM_LIST<xs...>>;
+    using _memoizerf = _memoizerf_impl<F, list<xs...>>;
   }
   /// \endcond
 
@@ -181,14 +175,14 @@ namespace jln::mp::detail
   using _first = x;
 
   template<class C, class... xs>
-  struct _memoizer_impl<C, JLN_MP_PARAM_LIST<xs...>,
+  struct _memoizer_impl<C, list<xs...>,
     _first<void, typename C::template f<xs...>>>
   {
     using type = typename C::template f<xs...>;
   };
 
   template<template<class...> class F, class... xs>
-  struct _memoizerf_impl<F, JLN_MP_PARAM_LIST<xs...>, _first<void, F<xs...>>>
+  struct _memoizerf_impl<F, list<xs...>, _first<void, F<xs...>>>
   {
     using type = F<xs...>;
   };
@@ -228,7 +222,5 @@ namespace jln::mp::detail
 #endif
       using f = F<xs...>;
   };
-
-#undef JLN_MP_PARAM_LIST
 }
 /// \endcond

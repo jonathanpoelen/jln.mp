@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/list/list.hpp"
+#include "jln/mp/smp/list/listify.hpp"
 
 TEST_SUITE_BEGIN()
 
