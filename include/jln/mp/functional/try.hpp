@@ -18,7 +18,7 @@ namespace jln::mp
   namespace detail
   {
     template<class, class, class = void>
-    struct _try_;
+    struct _try;
 
     template<class x>
     struct _try_dispatch;
@@ -42,7 +42,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_try_dispatch<
-      typename detail::_try_<F, list<xs...>>::type
+      typename detail::_try<F, list<xs...>>::type
     >::template f<TC, FC, xs...>;
   };
 
@@ -65,7 +65,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = number<!std::is_same<na,
-      typename detail::_try_<F, list<xs...>>::type
+      typename detail::_try<F, list<xs...>>::type
     >::value>;
   };
 
@@ -73,7 +73,7 @@ namespace jln::mp
   struct try_<F, identity, violation>
   {
     template<class... xs>
-    using f = typename detail::_try_<F, list<xs...>>::type;
+    using f = typename detail::_try<F, list<xs...>>::type;
   };
   /// \endcond
 }
@@ -82,13 +82,13 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<class, class, class>
-  struct _try_
+  struct _try
   {
     using type = na;
   };
 
   template<class F, class... xs>
-  struct _try_<F, list<xs...>, std::void_t<typename F::template f<xs...>>>
+  struct _try<F, list<xs...>, std::void_t<typename F::template f<xs...>>>
   {
     using type = typename F::template f<xs...>;
   };
