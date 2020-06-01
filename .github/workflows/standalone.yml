@@ -1,0 +1,40 @@
+name: standalone
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  standalone:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          ref: gh-action
+          path: standalone
+      - uses: leafo/gh-actions-lua@v5
+      - uses: leafo/gh-actions-luarocks@v2
+      - name: Build standalone header files
+        run: |
+          luarocks install lpeg
+          ./tools/embed.lua include/jln/mp.hpp > standalone/include/jln/mp.hpp
+          ./tools/embed.lua include/jln/mp/smp.hpp > standalone/include/jln/smp.hpp
+      - name: Test
+        run: |
+          for comp in 'g++-7', 'g++-8', 'g++-9', 'clang-6.0', 'clang++-8', 'clang++-9'; do
+            for basename in mp smp ; do
+              $comp -std=c++17 -fsyntax-only -x c++ - <<<'#include "standalone/include/jln/mp/'$basename'.hpp"'
+            done
+          done
+      - name: Push changes
+        run: |
+          cd standalone
+          if ! git diff --quiet ; then
+            git config --global user.name 'Jonathan Poelen'
+            git config --global user.email 'jonathan.poelen@gmail.com'
+            git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+            git add mp.hpp smp.hpp
+            git commit -m "update single header"
+            git push
+          fi

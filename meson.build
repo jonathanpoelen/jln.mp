@@ -27,8 +27,8 @@ add_global_link_arguments(jln_link_flags, language:'cpp')
 test_dep = declare_dependency(include_directories: include_directories('test/include', 'include'))
 
 executable('mp_test', 'test/mp.cpp', dependencies: test_dep)
-executable('single_header_test',
-           ['test/single_mp.cpp', 'test/single_smp.cpp'],
+executable('standalone_test',
+           ['test/standalone_mp.cpp', 'test/standalone_smp.cpp'],
            build_by_default: false,
            dependencies: declare_dependency(
              include_directories: include_directories('single_include')))

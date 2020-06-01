@@ -1,4 +1,4 @@
-#!/bin/env lua
+#!/usr/bin/env lua
 
 function eprint(...)
   io.stderr:write(...)

@@ -23,7 +23,7 @@ jobs:
     - run: |
         python -m pip install ninja meson
         CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
-        CLICOLOR_FORCE= ninja -C build -k10 all mp
+        CLICOLOR_FORCE= ninja -C build -k10
 
   macos:
     name: MacOs clang dbg=${{ matrix.debug }}
@@ -40,7 +40,7 @@ jobs:
     - run: |
         python -m pip install ninja meson
         meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
-        CLICOLOR_FORCE= ninja -C build -k10 all mp
+        CLICOLOR_FORCE= ninja -C build -k10
 
   windows:
     name: Windows ${{ matrix.env }} dbg=${{ matrix.debug }}
@@ -68,4 +68,4 @@ jobs:
         python -m pip install ninja meson
         meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
         type D:\a\jln.mp\jln.mp\build\meson-logs\meson-log.txt
-        ninja -C build -k10 all mp
+        ninja -C build -k10

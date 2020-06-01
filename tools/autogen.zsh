@@ -1,4 +1,4 @@
-#!/bin/env zsh
+#!/usr/bin/env zsh
 
 set -e
 
@@ -44,6 +44,3 @@ echo 'int main(){}' > ../../test/autogen/main.cpp
 
 cd ../../
 ./tools/update_meson.py
-
-./tools/embed.lua include/jln/mp.hpp > single_include/jln/mp.hpp
-./tools/embed.lua include/jln/mp/smp.hpp > single_include/jln/mp/smp.hpp
