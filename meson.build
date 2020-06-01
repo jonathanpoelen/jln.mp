@@ -24,14 +24,16 @@ subdir('meson_jln_flags')
 add_global_arguments(jln_cpp_flags, language:'cpp')
 add_global_link_arguments(jln_link_flags, language:'cpp')
 
+if get_option('standalone')
+  executable('standalone_test',
+             ['test/standalone_mp.cpp', 'test/standalone_smp.cpp'],
+             dependencies: declare_dependency(
+               include_directories: include_directories('standalone/include')))
+endif
+
 test_dep = declare_dependency(include_directories: include_directories('test/include', 'include'))
 
 executable('mp_test', 'test/mp.cpp', dependencies: test_dep)
-executable('standalone_test',
-           ['test/standalone_mp.cpp', 'test/standalone_smp.cpp'],
-           build_by_default: false,
-           dependencies: declare_dependency(
-             include_directories: include_directories('single_include')))
 
 # start tests
 t_algorithm_accumulate = executable('accumulate', 'test/src/algorithm/accumulate.cpp', dependencies: test_dep)

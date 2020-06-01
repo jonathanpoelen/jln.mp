@@ -1,1 +1,1 @@
-#include "jln/mp/smp.hpp"
+#include "jln/smp.hpp"

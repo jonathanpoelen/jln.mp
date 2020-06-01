@@ -1,4 +1,5 @@
 option('mp_debug', type: 'boolean', value: false)
+option('standalone', type: 'boolean', value: false)
 
 option('jln_color', type : 'combo', choices : ['default', 'auto', 'never', 'always'], value : 'default')
 option('jln_control_flow', type : 'combo', choices : ['default', 'off', 'on', 'branch', 'return', 'allow_bugs'], value : 'default')
