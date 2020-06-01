@@ -72,6 +72,8 @@ patt = Cs(
 splitpath = C((1 - P'/')^0)
 splitpath = Ct(splitpath * ('/' * splitpath)^0)
 
+unpack = unpack or table.unpack
+
 function canonical_path(path)
   local parts = splitpath:match(path)
   local t = {unpack(pwd_stack[#pwd_stack])}
