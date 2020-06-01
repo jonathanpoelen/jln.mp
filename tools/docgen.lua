@@ -482,24 +482,24 @@ htmlifier_init = function()
   + #P'-' *
     ( #(P'- ' * wordid * ':')
     * ( Cs((P'- ' * C(wordid * (P' ' * wordid)^0) * ': ' * cunl / def_list)^1)
-      / wrap_with('<dl>\n', '</dl>\n')
+        / wrap_with('<dl>\n', '</dl>\n')
       )
     + ( Cs((P'- ' * cunl / normal_list)^1)
-      / wrap_with('<ul>\n', '</ul>\n')
+        / wrap_with('<ul>\n', '</ul>\n')
       )
     )
   + P'\n'^1 / ''
   + Cs((
       mdinlinecodepatt
     + '[![' * C(Until']') * 1 * '(' * C(Until')') * 1 * '](' * C(Until')') * 1
-    / function(text, img, link)
-        return '<a href="' .. link .. '"><img src="' .. img .. '" alt="' .. text .. '"/></a>'
-      end
+      / function(text, img, link)
+          return '<a href="' .. link .. '"><img src="' .. img .. '" alt="' .. text .. '"/></a>'
+        end
     + '[' * C(Until']') * 1 * '(' * C(Until')') * 1
-    / function(text, link) return '<a href="' .. link .. '">' .. text .. '</a>' end
+      / function(text, link) return '<a href="' .. link .. '">' .. text .. '</a>' end
     + (1 - P'\n')
-  )^1)
-  / wrap_with('<p>', '</p>\n')
+    )^1)
+    / wrap_with('<p>', '</p>\n')
   )^0)
 
   md2html = function(contents)
