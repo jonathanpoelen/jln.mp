@@ -8,41 +8,6 @@ on: [push, pull_request]
 #     branches: [ master ]
 
 jobs:
-  linux:
-    name: Ubuntu ${{ matrix.cxx }} dbg=${{ matrix.debug }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 4
-    strategy:
-      fail-fast: false
-      matrix:
-        debug: ['false', 'true']
-        cxx: ['g++-7', 'g++-8', 'g++-9', 'clang-6.0', 'clang++-8', 'clang++-9']
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
-    - run: |
-        python -m pip install ninja meson
-        CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
-        CLICOLOR_FORCE= ninja -C build -k10
-
-  macos:
-    name: MacOs clang dbg=${{ matrix.debug }}
-    runs-on: macOS-latest
-    timeout-minutes: 4
-    strategy:
-      fail-fast: false
-      matrix:
-        debug: ['false', 'true']
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
-    - run: |
-        python -m pip install ninja meson
-        meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
-        CLICOLOR_FORCE= ninja -C build -k10
-
   windows:
     name: Windows ${{ matrix.env }} dbg=${{ matrix.debug }}
     runs-on: windows-latest
@@ -70,6 +35,41 @@ jobs:
         meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
         type D:\a\jln.mp\jln.mp\build\meson-logs\meson-log.txt
         ninja -C build -k10
+
+  macos:
+    name: MacOs clang dbg=${{ matrix.debug }}
+    runs-on: macOS-latest
+    timeout-minutes: 4
+    strategy:
+      fail-fast: false
+      matrix:
+        debug: ['false', 'true']
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - run: |
+        python -m pip install ninja meson
+        meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
+        CLICOLOR_FORCE= ninja -C build -k10
+
+  linux:
+    name: Ubuntu ${{ matrix.cxx }} dbg=${{ matrix.debug }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    strategy:
+      fail-fast: false
+      matrix:
+        debug: ['false', 'true']
+        cxx: ['g++-7', 'g++-8', 'g++-9', 'clang-6.0', 'clang++-8', 'clang++-9']
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - run: |
+        python -m pip install ninja meson
+        CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
+        CLICOLOR_FORCE= ninja -C build -k10
 
   auto-gen:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
