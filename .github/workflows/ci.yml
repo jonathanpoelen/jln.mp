@@ -1,10 +1,11 @@
 name: CI
 
-on:
-  push:
-    branches: [ master, gh-action ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
+# on:
+#   push:
+#     branches: [ master, gh-action ]
+#   pull_request:
+#     branches: [ master ]
 
 jobs:
   linux:
@@ -69,3 +70,78 @@ jobs:
         meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
         type D:\a\jln.mp\jln.mp\build\meson-logs\meson-log.txt
         ninja -C build -k10
+
+  auto-gen:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: [linux, macos, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: leafo/gh-actions-lua@v5
+      - uses: leafo/gh-actions-luarocks@v2
+
+      - name: Cache luarocks
+        id: cache-luarocks
+        uses: actions/cache@v2
+        with:
+          path: |
+            .luarocks
+            ~/.luarocks
+          key: ${{ runner.os }}-luarocks
+
+      - name: Install LPeg
+        if: steps.cache-luarocks.outputs.cache-hit != 'true'
+        run: luarocks install lpeg
+
+      - name: Build standalone header files
+        run: |
+          mkdir -p standalone/include/jln docs/html/
+
+          ./tools/embed.lua include/jln/mp.hpp > standalone/include/jln/mp.hpp
+          ./tools/embed.lua include/jln/mp/smp.hpp > standalone/include/jln/smp.hpp
+
+          ./tools/docgen.lua \
+            include/jln/mp/algorithm/* \
+            include/jln/mp/functional/* \
+            include/jln/mp/list/* \
+            include/jln/mp/number/* \
+            include/jln/mp/utility/* \
+            include/jln/mp/value/* \
+            > index.html
+
+          for comp in g++-7 g++-8 g++-9 clang-6.0 clang++-8 clang++-9 ; do
+            for basename in mp smp ; do
+              $comp -std=c++17 -fsyntax-only -x c++ - <<<'#include "standalone/include/jln/'$basename'.hpp"'
+            done
+          done
+
+      - uses: actions/checkout@v2
+        with:
+          ref: standalone
+          path: standalone_repo
+
+      - uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+          path: doc_repo
+
+      - name: Push changes
+        run: |
+          mv standalone_repo/include/ standalone_old
+          mv standalone/include standalone_repo/
+          mv index.html doc_repo
+
+          i=0
+          messages=('single header' 'html documentation')
+          for repo_path in standalone_repo doc_repo
+            cd $repo_path
+            if ! git diff --quiet ; then
+              git config --global user.name 'Jonathan Poelen'
+              git config --global user.email 'jonathan.poelen@gmail.com'
+              git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+              git commit -am "update ${messages[$i]}"
+              git push
+            fi
+            cd ..
+            $((++i))
+          done

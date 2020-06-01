@@ -3,7 +3,7 @@ Online documentation: https://jonathanpoelen.github.io/jln.mp/
 # Configure
 
 ```sh
-git worktree add docs/html html_doc
+git worktree add docs/html gh-pages
 ```
 
 # Compile
