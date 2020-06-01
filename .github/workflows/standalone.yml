@@ -11,20 +11,22 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/checkout@v2
         with:
-          ref: gh-action
+          ref: standalone
           path: standalone
       - uses: leafo/gh-actions-lua@v5
       - uses: leafo/gh-actions-luarocks@v2
 
-      - name: Cache luarock
-        id: cache-luarock
+      - name: Cache luarocks
+        id: cache-luarocks
         uses: actions/cache@v2
         with:
-          path: .luarocks
-          key: luarocks
+          path: |
+            .luarocks
+            ~/.luarocks
+          key: ${{ runner.os }}-luarocks
 
-      - name: Configure
-        if: steps.cache-luarock.outputs.cache-hit != 'true'
+      - name: Install LPeg
+        if: steps.cache-luarocks.outputs.cache-hit != 'true'
         run: luarocks install lpeg
 
       - name: Build standalone header files
