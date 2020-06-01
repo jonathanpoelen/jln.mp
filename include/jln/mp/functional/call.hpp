@@ -3,10 +3,7 @@
 #include "../config/debug.hpp"
 #include "../config/config.hpp"
 #include "../list/list.hpp"
-
-#if __cplusplus < 201703L
-# include "../number/number.hpp"
-#endif
+#include "../number/number.hpp"
 
 
 namespace jln::mp

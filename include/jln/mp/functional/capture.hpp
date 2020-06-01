@@ -1,10 +1,7 @@
 #pragma once
 
-#if __cplusplus >= 201703L
-# include "../value/val.hpp"
-#else
-# include "../number/number.hpp"
-#endif
+#include "../value/val.hpp"
+#include "../number/number.hpp"
 
 namespace jln::mp
 {
