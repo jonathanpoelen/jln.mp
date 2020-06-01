@@ -133,7 +133,7 @@ jobs:
 
           i=0
           messages=('single header' 'html documentation')
-          for repo_path in standalone_repo doc_repo
+          for repo_path in standalone_repo doc_repo ; do
             cd $repo_path
             if ! git diff --quiet ; then
               git config --global user.name 'Jonathan Poelen'
