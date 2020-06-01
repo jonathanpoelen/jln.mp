@@ -143,5 +143,5 @@ jobs:
               git push
             fi
             cd ..
-            $((++i))
+            ((++i))
           done
