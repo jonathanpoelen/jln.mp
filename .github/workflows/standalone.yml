@@ -36,7 +36,7 @@ jobs:
         run: |
           for comp in g++-7 g++-8 g++-9 clang-6.0 clang++-8 clang++-9 ; do
             for basename in mp smp ; do
-              $comp -std=c++17 -fsyntax-only -x c++ - <<<'#include "standalone/include/jln/mp/'$basename'.hpp"'
+              $comp -std=c++17 -fsyntax-only -x c++ - <<<'#include "standalone/include/jln/'$basename'.hpp"'
             done
           done
 
