@@ -1,15 +1,15 @@
 #pragma once
 
 #include "../functional/identity.hpp"
-#include "../algorithm/fold_left.hpp"
 #include "../../functional/monadic.hpp"
 #include "../../functional/if.hpp"
-#include "../../list/is_list.hpp"
 #include "../../list/size.hpp"
+#include "../../utility/always.hpp"
 #include "../../list/pop_front.hpp"
-#include "../../algorithm/all_of.hpp"
+#include "../../algorithm/same.hpp"
+#include "../../algorithm/fold_left.hpp"
+#include "../../algorithm/transform.hpp"
 #include "../../algorithm/accumulate.hpp"
-#include "../../number/operators.hpp"
 
 /// \cond
 namespace jln::mp::detail
@@ -25,8 +25,18 @@ namespace jln::mp::smp
   using accumulate = test_contract<
     mp::if_<
       mp::size<>,
-      mp::pop_front<mp::all_of<mp::is_list<>>>>,
-    detail::_smp_accumulate<assume_binary<F>, assume_unary<C>>>;
+      mp::pop_front<
+        mp::if_<
+          mp::size<>,
+          mp::transform<
+            try_<mp::unpack<mp::size<>>>,
+            mp::monadic0<mp::same<>, mp::always<mp::false_>>
+          >,
+          mp::always<mp::true_>
+        >
+      >
+    >,
+    detail::_smp_accumulate<subcontract<F>, assume_unary<C>>>;
 }
 
 /// \cond
@@ -42,8 +52,9 @@ namespace jln::mp::detail
   struct _smp_accumulate
   {
     template<class state, class... seqs>
-    using f = call<join<push_front<state,
-      mp::fold_left<mp::monadic0<F>, mp::monadic<C>>>>, seqs...>;
+    using f = call<zip<push_front<state, fold_left<
+      monadic0<flip<unpack<F>>>, monadic<C>
+    >>>, seqs...>;
   };
 }
 /// \endcond
