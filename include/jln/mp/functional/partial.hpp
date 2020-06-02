@@ -20,8 +20,8 @@ namespace jln::mp
 
   /// \ingroup functional
 
-  /// Invoke multiple functions each taking the parameter corresponding to its position
-  /// then calls `C` with the results and the rest of the parameters.
+  /// Invokes multiple functions each taking the parameter corresponding to its position
+  /// then calls \c C with the results and the rest of the parameters.
   /// \pre `sizeof...(xs) >= sizeof...(Fs)`
   /// \semantics
   ///   \code
@@ -46,7 +46,7 @@ namespace jln::mp
 
   /// Invoke multiple functions each taking the parameter corresponding to its position
   /// (the last function takes the remaining parameters or 0)
-  /// then calls `C` with the results.
+  /// then calls \c C with the results.
   /// \pre `sizeof...(xs) + 1 >= sizeof...(Fs)`
   /// \semantics
   ///   \code

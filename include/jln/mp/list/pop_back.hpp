@@ -7,7 +7,7 @@ namespace jln::mp
 {
   /// \ingroup list
 
-  /// Remove the last element of sequence
+  /// Removes the last element of sequence.
   /// \pre `sizeof...(xs) > 0`
   /// \treturn \sequence
   template<class C = listify>

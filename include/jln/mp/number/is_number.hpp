@@ -16,7 +16,7 @@ namespace jln::mp
 
   /// \ingroup number
 
-  /// Check is a \value is a \number.
+  /// Checks whether a \value is a \number.
   /// \treturn \bool
   template<class C = identity>
   struct is_number

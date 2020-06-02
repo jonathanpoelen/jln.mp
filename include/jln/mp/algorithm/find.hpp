@@ -20,8 +20,8 @@ namespace jln::mp
   /// \ingroup search
 
   /// Finds the first element that satisfy a predicate.
-  /// Calls `FC` with all the elements since the one found at the end.
-  /// If no element is found, `NFC` is used
+  /// Calls \c FC with all the elements since the one found at the end.
+  /// If no element is found, \c NFC is used.
   /// \treturn \sequence
   template<class Pred, class C = listify, class NC = C>
   struct find_if

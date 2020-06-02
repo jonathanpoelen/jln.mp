@@ -7,7 +7,7 @@ namespace jln::mp
 {
   /// \ingroup functional
 
-  /// Checks if \c F::f<xs...> is invocable.
+  /// Checks whether \c F::f<xs...> is invocable.
   /// \pre \c F::f<xs...> must be a SFINAE compatible expression
   /// \treturn \bool
   template<class F, class C = identity>

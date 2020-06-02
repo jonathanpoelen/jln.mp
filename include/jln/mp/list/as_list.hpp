@@ -16,8 +16,8 @@ namespace jln::mp
 
   /// \ingroup list
 
-  /// Extract type paramaters of a template class or union, then constructs a \list.
-  /// \pre \c seq must be compatible with \typelist
+  /// Extracts type paramaters of a template class or union, then constructs a \list.
+  /// \pre \c seq must be compatible with \typelist or \c detail::_as_list<seq>::type.
   /// \treturn \list
   template<class C = identity>
   struct as_list

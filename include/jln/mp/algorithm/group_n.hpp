@@ -17,7 +17,7 @@ namespace jln::mp
 
   /// \ingroup group
 
-  /// Split a sequence by arbitrary size group.
+  /// Splits a sequence by arbitrary size group.
   /// \post If `n <= 0`, then the result sequence is empty
   /// \semantics
   ///   \code

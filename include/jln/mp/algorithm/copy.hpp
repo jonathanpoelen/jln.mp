@@ -7,12 +7,12 @@ namespace jln::mp
 {
   /// \ingroup algorithm
 
-  /// Copy all elements that satisfy a predicate.
+  /// Copies all elements that satisfy a predicate.
   /// \treturn \sequence
   template<class Pred, class C = listify>
   using copy_if = remove_if<tee<Pred, not_<>>, C>;
 
-  /// Copy all occurence of a \value.
+  /// Copies all occurence of a \value.
   /// \treturn \sequence
   template<class x, class C = listify>
   using copy = remove_if<same_as<x, not_<>>, C>;

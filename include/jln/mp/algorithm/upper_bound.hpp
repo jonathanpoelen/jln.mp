@@ -6,9 +6,9 @@ namespace jln::mp
 {
   /// \ingroup search
 
-  /// Finds first element that is greater that `x`.
-  /// Calls `FC` with all the elements since the one found at the end.
-  /// If no element is found, `NFC` is used
+  /// Finds first element that is greater that \c x.
+  /// Invokes \c FC with all the elements since the one found at the end.
+  /// If no element is found, \c NFC is used.
   /// \pre \c is_sorted<Cmp>::f<xs...>
   /// \treturn \sequence
   template<class x, class Cmp = less<>, class C = listify, class NC = C>

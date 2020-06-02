@@ -9,7 +9,7 @@ namespace jln::mp
 #if __cpp_nontype_template_parameter_class >= 201806L
   /// \ingroup functional
 
-  /// Invoke a lambda function
+  /// Invokes a lambda function.
   /// \treturn \value
   template<auto F, class C = identity>
   struct eval

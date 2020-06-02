@@ -27,8 +27,8 @@ namespace jln::mp
 
   /// \ingroup functional
 
-  /// If \c F::f<xs...> is a valid expression other than `na`,
-  /// \c TC::f<result> is used, otherwhise \c FC::f<xs...>.
+  /// Invokes \c TC::f<result> whetehr \c F::f<xs...> is a valid expression
+  /// other than \c na, otherwhise invokes \c FC::f<xs...>.
   /// \pre \c F::f<xs...> must be a SFINAE compatible expression
   /// \treturn \value
   template<class F, class TC = identity, class FC = violation>

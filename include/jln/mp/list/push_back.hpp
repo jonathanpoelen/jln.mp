@@ -8,7 +8,7 @@ namespace jln::mp
 {
   /// \ingroup list
 
-  /// Appends \c x to the end of the sequence
+  /// Appends \c x to the end of the sequence.
   /// \treturn \sequence
   template<class x, class C = listify>
   struct push_back

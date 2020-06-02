@@ -17,9 +17,9 @@ namespace jln::mp
 
   /// \ingroup algorithm
 
-  /// folds right over a list using a binary predicate.
+  /// Folds right over a list using a binary predicate.
   /// fold right consideres the first element in the input pack the state,
-  /// use `push_front<>` to add state if needed
+  /// use \c push_front<> to add state if needed.
   /// \semantics
   ///   Equivalent to
   ///   \code

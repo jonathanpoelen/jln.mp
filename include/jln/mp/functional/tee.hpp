@@ -17,7 +17,7 @@ namespace jln::mp
 
   /// \ingroup functional
 
-  /// Invoke multiple functions passing all parameters to each.
+  /// Invokes multiple functions passing all parameters to each.
   /// \treturn \value
   /// \see each, partial
 #ifdef JLN_MP_DOXYGENATING

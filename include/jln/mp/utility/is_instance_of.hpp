@@ -15,6 +15,7 @@ namespace jln::mp
 
   /// \ingroup trait
 
+  /// Checks whether \c x is \c Tpl<xs...>
   /// \treturn \bool
   template<template<class...> class Tpl, class C = identity>
   struct is_instance_of

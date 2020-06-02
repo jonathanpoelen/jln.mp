@@ -35,8 +35,8 @@ namespace jln::mp
 
   /// \ingroup functional
 
-  /// Recursively calls `F` until `stop_iteration`.
-  /// The first call uses \c F::f<xs...>, the following calls \c F::f<result>
+  /// Recursively invokes \c F until \c stop_iteration.
+  /// The first invocation uses \c F::f<xs...>, the following invocations \c F::f<result>
   /// \treturn \value
   /// \see fix, recurse_fix, infinite_recurse
   template<class F, class C = identity>
@@ -47,8 +47,9 @@ namespace jln::mp
       ::template f<C>;
   };
 
-  /// Version of `fix` that stops if there is `stop_iteration`
-  /// The first call uses `F::f<F, xs...>, the following calls `F::f<F, result>`
+  /// Version of \c fix that stops if there is \c stop_iteration
+  /// The first invocation uses `F::f<F, xs...>`, the following
+  /// invocations `F::f<F, result>`
   /// \treturn \value
   /// \see fix, recurse, infinite_recurse
   template<class F, class C = identity>
@@ -60,11 +61,12 @@ namespace jln::mp
     >::template f<C>;
   };
 
-  /// Recursively calls `F` until the result no longer changes
-  /// \treturn \value
-  /// \code
+  /// Recursively invokes \c F until the result no longer changes
+  /// \semantics
+  ///   \code
   ///   call<infinite_recurse<lift_t<std::remove_pointer>>, int****> == int
-  /// \endcode
+  ///   \endcode
+  /// \treturn \value
   /// \see fix, recurse, infinite_recurse_fix
   template<class F, class C = identity>
   struct infinite_recurse
@@ -83,7 +85,7 @@ namespace jln::mp
     >::template f<C>;
   };
 
-  /// Mix of `fix` and `infinite_recurse`.
+  /// Mix of \c fix and \c infinite_recurse.
   /// \treturn \value
   /// \see fix, recurse, infinite_recurse
   template<class F, class C = identity>

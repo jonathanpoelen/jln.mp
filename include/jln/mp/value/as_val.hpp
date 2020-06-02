@@ -8,7 +8,8 @@ namespace jln::mp
 {
   /// \ingroup value
 
-  /// Convert a \value to \val.
+  /// Converts \c x to \val.
+  /// \pre \c emp::has_value<x> == \c true
   /// \treturn \bool
   template<class C = identity>
   struct as_val

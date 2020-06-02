@@ -8,7 +8,7 @@ namespace jln::mp
 {
   /// \ingroup number
 
-  /// Convert a \value to a \bool.
+  /// Converts a \value to a \bool.
   /// \treturn \bool
   template<class C = identity>
   struct to_bool

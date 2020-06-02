@@ -7,7 +7,7 @@ namespace jln::mp
 {
   /// \ingroup algorithm
 
-  /// Check whether a \value is contained in a \list.
+  /// Checks whether a \value is contained in a \list.
   /// \treturn \bool
   template<class x, class C = identity>
   using contains = any_of<same_as<x>, C>;

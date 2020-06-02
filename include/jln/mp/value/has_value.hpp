@@ -15,7 +15,7 @@ namespace jln::mp
 
   /// \ingroup value
 
-  /// Check is a \value to a value member.
+  /// Checks whether \c x has a value member.
   /// \treturn \bool
   template<class C = identity>
   struct has_value

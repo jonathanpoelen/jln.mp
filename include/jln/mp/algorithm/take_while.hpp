@@ -19,7 +19,7 @@ namespace jln::mp
 
   /// \ingroup algorithm
 
-  /// Take elements from a \sequence while the predicate is satisfied.
+  /// Takes elements from a \sequence while the predicate is satisfied.
   /// \treturn \sequence
   template<class Pred, class C = listify, class NC = C>
   using take_while = invoke_twice<index_if<

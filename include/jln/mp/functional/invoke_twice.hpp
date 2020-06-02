@@ -6,7 +6,7 @@ namespace jln::mp
 {
   /// \ingroup functional
 
-  /// Invoke twice.
+  /// Invokes twice.
   /// \treturn \value
   template<class F>
   struct invoke_twice

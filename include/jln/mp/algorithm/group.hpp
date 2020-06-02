@@ -17,7 +17,7 @@ namespace jln::mp
 
   /// \ingroup group
 
-  /// Group adjacent elements that respect a predicate.
+  /// Groups adjacent elements that respect a predicate.
   /// \semantics
   ///   \code
   ///   call<group<same<>>,

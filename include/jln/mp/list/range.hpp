@@ -21,8 +21,8 @@ namespace jln::mp
   /// \ingroup list
 
   /// Returns a contiguous subsequence of a \sequence.
-  ///
-  /// A negative value represents an index starting from the end. if finally, \c end <= \c beg, then an empty \list is returned
+  /// A negative value represents an index starting from the end.
+  /// if finally, \c end <= \c beg, then an empty \list is returned.
   /// \treturn \sequence
   template<class beg, class end, class C = listify>
   struct range : detail::_range<beg::value, end::value, C>::type
