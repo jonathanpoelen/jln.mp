@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../config/enumerate.hpp"
+#include "../detail/enumerate.hpp"
 #include "../list/listify.hpp"
 #include "../number/number.hpp"
 #include "../utility/unpack.hpp"

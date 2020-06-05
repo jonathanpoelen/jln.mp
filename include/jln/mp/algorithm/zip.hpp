@@ -47,7 +47,7 @@ namespace jln::mp
   }
 }
 
-#include "../config/enumerate.hpp"
+#include "../detail/enumerate.hpp"
 #include "../list/join.hpp"
 #include <algorithm>
 

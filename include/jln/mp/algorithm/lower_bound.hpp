@@ -63,7 +63,7 @@ namespace jln::mp
 
 
 #include "cartesian.hpp"
-#include "../config/enumerate.hpp"
+#include "../detail/enumerate.hpp"
 #include "../list/pop_front.hpp"
 #include "../list/front.hpp"
 #include "../list/drop.hpp"

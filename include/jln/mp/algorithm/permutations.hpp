@@ -2,7 +2,7 @@
 
 #include "../list/listify.hpp"
 #include "../utility/unpack.hpp"
-#include "../config/enumerate.hpp"
+#include "../detail/enumerate.hpp"
 
 
 namespace jln::mp

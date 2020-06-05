@@ -201,7 +201,7 @@ executable('check_inc', [
   'test/autogen/algorithm@zip.hpp.cpp',
   'test/autogen/config@config.hpp.cpp',
   'test/autogen/config@debug.hpp.cpp',
-  'test/autogen/config@enumerate.hpp.cpp',
+  'test/autogen/detail@enumerate.hpp.cpp',
   'test/autogen/detail@type_identity.hpp.cpp',
   'test/autogen/functional@bind.hpp.cpp',
   'test/autogen/functional@call.hpp.cpp',

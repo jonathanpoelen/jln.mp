@@ -35,7 +35,7 @@ namespace jln::mp
 }
 
 
-#include "../config/enumerate.hpp"
+#include "../detail/enumerate.hpp"
 #include "tee.hpp"
 #include "bind.hpp"
 

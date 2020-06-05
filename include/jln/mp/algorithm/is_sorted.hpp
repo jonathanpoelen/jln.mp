@@ -3,7 +3,7 @@
 #include "../functional/identity.hpp"
 #include "../functional/call.hpp"
 #include "../number/operators.hpp"
-#include "../config/enumerate.hpp"
+#include "../detail/enumerate.hpp"
 
 namespace jln::mp
 {

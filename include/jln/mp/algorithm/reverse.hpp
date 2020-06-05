@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../list/listify.hpp"
-#include "../config/enumerate.hpp"
+#include "../detail/enumerate.hpp"
 #include "../utility/unpack.hpp"
 #include "../functional/call.hpp"
 

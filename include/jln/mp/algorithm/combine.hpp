@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../config/enumerate.hpp"
+#include "../detail/enumerate.hpp"
 #include "cartesian.hpp"
 #include "repeat.hpp"
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../number/number.hpp"
-#include "../config/enumerate.hpp"
+#include "../detail/enumerate.hpp"
 #include "../utility/unpack.hpp"
 #include "list.hpp"
 
