@@ -96,11 +96,12 @@ t_functional_if = executable('if', 'test/src/functional/if.cpp', dependencies: t
 t_functional_invoke_twice = executable('invoke_twice', 'test/src/functional/invoke_twice.cpp', dependencies: test_dep)
 t_functional_is_invocable = executable('is_invocable', 'test/src/functional/is_invocable.cpp', dependencies: test_dep)
 t_functional_lift = executable('lift', 'test/src/functional/lift.cpp', dependencies: test_dep)
+t_functional_on = executable('on', 'test/src/functional/on.cpp', dependencies: test_dep)
 t_functional_partial = executable('partial', 'test/src/functional/partial.cpp', dependencies: test_dep)
 t_functional_recurse = executable('recurse', 'test/src/functional/recurse.cpp', dependencies: test_dep)
 t_functional_tee = executable('tee', 'test/src/functional/tee.cpp', dependencies: test_dep)
 t_functional_try = executable('try', 'test/src/functional/try.cpp', dependencies: test_dep)
-alias_target('mp.functional', t_functional_bind, t_functional_capture, t_functional_cascade, t_functional_compose, t_functional_each, t_functional_eval, t_functional_fix, t_functional_flip, t_functional_identity, t_functional_if, t_functional_invoke_twice, t_functional_is_invocable, t_functional_lift, t_functional_partial, t_functional_recurse, t_functional_tee, t_functional_try)
+alias_target('mp.functional', t_functional_bind, t_functional_capture, t_functional_cascade, t_functional_compose, t_functional_each, t_functional_eval, t_functional_fix, t_functional_flip, t_functional_identity, t_functional_if, t_functional_invoke_twice, t_functional_is_invocable, t_functional_lift, t_functional_on, t_functional_partial, t_functional_recurse, t_functional_tee, t_functional_try)
 t_list_append = executable('append', 'test/src/list/append.cpp', dependencies: test_dep)
 t_list_as_list = executable('as_list', 'test/src/list/as_list.cpp', dependencies: test_dep)
 t_list_at = executable('at', 'test/src/list/at.cpp', dependencies: test_dep)
@@ -137,21 +138,23 @@ t_number_numbers = executable('numbers', 'test/src/number/numbers.cpp', dependen
 t_number_operators = executable('operators', 'test/src/number/operators.cpp', dependencies: test_dep)
 t_number_to_bool = executable('to_bool', 'test/src/number/to_bool.cpp', dependencies: test_dep)
 alias_target('mp.number', t_number_as_bool, t_number_as_number, t_number_is_number, t_number_math, t_number_numbers, t_number_operators, t_number_to_bool)
+t_utility_alignof = executable('alignof', 'test/src/utility/alignof.cpp', dependencies: test_dep)
 t_utility_always = executable('always', 'test/src/utility/always.cpp', dependencies: test_dep)
 t_utility_conditional = executable('conditional', 'test/src/utility/conditional.cpp', dependencies: test_dep)
 t_utility_has_type = executable('has_type', 'test/src/utility/has_type.cpp', dependencies: test_dep)
 t_utility_is_instance_of = executable('is_instance_of', 'test/src/utility/is_instance_of.cpp', dependencies: test_dep)
 t_utility_same_as = executable('same_as', 'test/src/utility/same_as.cpp', dependencies: test_dep)
+t_utility_sizeof = executable('sizeof', 'test/src/utility/sizeof.cpp', dependencies: test_dep)
 t_utility_traits = executable('traits', 'test/src/utility/traits.cpp', dependencies: test_dep)
 t_utility_unpack = executable('unpack', 'test/src/utility/unpack.cpp', dependencies: test_dep)
-alias_target('mp.utility', t_utility_always, t_utility_conditional, t_utility_has_type, t_utility_is_instance_of, t_utility_same_as, t_utility_traits, t_utility_unpack)
+alias_target('mp.utility', t_utility_alignof, t_utility_always, t_utility_conditional, t_utility_has_type, t_utility_is_instance_of, t_utility_same_as, t_utility_sizeof, t_utility_traits, t_utility_unpack)
 t_value_as_val = executable('as_val', 'test/src/value/as_val.cpp', dependencies: test_dep)
 t_value_has_value = executable('has_value', 'test/src/value/has_value.cpp', dependencies: test_dep)
 t_value_is_val = executable('is_val', 'test/src/value/is_val.cpp', dependencies: test_dep)
 t_value_operators = executable('operators_', 'test/src/value/operators.cpp', dependencies: test_dep)
 t_value_values = executable('values', 'test/src/value/values.cpp', dependencies: test_dep)
 alias_target('mp.value', t_value_as_val, t_value_has_value, t_value_is_val, t_value_operators, t_value_values)
-alias_target('mp', t_algorithm_accumulate, t_algorithm_adjacent_difference, t_algorithm_adjacent_remove, t_algorithm_all_of, t_algorithm_any_of, t_algorithm_cartesian, t_algorithm_combine, t_algorithm_contains, t_algorithm_copy, t_algorithm_count, t_algorithm_find, t_algorithm_flatten, t_algorithm_fold_left, t_algorithm_fold_right, t_algorithm_group, t_algorithm_group_n, t_algorithm_index, t_algorithm_indices, t_algorithm_intersperse, t_algorithm_iota, t_algorithm_is_sorted, t_algorithm_is_unique, t_algorithm_lower_bound, t_algorithm_make_int_sequence, t_algorithm_matrix_shortest, t_algorithm_merge, t_algorithm_none_of, t_algorithm_partition, t_algorithm_permutations, t_algorithm_powerset, t_algorithm_remove, t_algorithm_repeat, t_algorithm_replace, t_algorithm_reverse, t_algorithm_rotate, t_algorithm_same, t_algorithm_sort, t_algorithm_split, t_algorithm_split_after, t_algorithm_split_at, t_algorithm_split_before, t_algorithm_take_while, t_algorithm_transform, t_algorithm_unique, t_algorithm_upper_bound, t_algorithm_zip, t_functional_bind, t_functional_capture, t_functional_cascade, t_functional_compose, t_functional_each, t_functional_eval, t_functional_fix, t_functional_flip, t_functional_identity, t_functional_if, t_functional_invoke_twice, t_functional_is_invocable, t_functional_lift, t_functional_partial, t_functional_recurse, t_functional_tee, t_functional_try, t_list_append, t_list_as_list, t_list_at, t_list_back, t_list_drop, t_list_erase, t_list_front, t_list_insert, t_list_insert_range, t_list_is_empty, t_list_is_list, t_list_is_size_of, t_list_join, t_list_list, t_list_offset, t_list_pop_back, t_list_pop_front, t_list_prepend, t_list_push_back, t_list_push_front, t_list_range, t_list_size, t_list_slice, t_list_sliding, t_list_swap_index, t_list_take, t_list_wrap_in_list, t_number_as_bool, t_number_as_number, t_number_is_number, t_number_math, t_number_numbers, t_number_operators, t_number_to_bool, t_utility_always, t_utility_conditional, t_utility_has_type, t_utility_is_instance_of, t_utility_same_as, t_utility_traits, t_utility_unpack, t_value_as_val, t_value_has_value, t_value_is_val, t_value_operators, t_value_values)
+alias_target('mp', t_algorithm_accumulate, t_algorithm_adjacent_difference, t_algorithm_adjacent_remove, t_algorithm_all_of, t_algorithm_any_of, t_algorithm_cartesian, t_algorithm_combine, t_algorithm_contains, t_algorithm_copy, t_algorithm_count, t_algorithm_find, t_algorithm_flatten, t_algorithm_fold_left, t_algorithm_fold_right, t_algorithm_group, t_algorithm_group_n, t_algorithm_index, t_algorithm_indices, t_algorithm_intersperse, t_algorithm_iota, t_algorithm_is_sorted, t_algorithm_is_unique, t_algorithm_lower_bound, t_algorithm_make_int_sequence, t_algorithm_matrix_shortest, t_algorithm_merge, t_algorithm_none_of, t_algorithm_partition, t_algorithm_permutations, t_algorithm_powerset, t_algorithm_remove, t_algorithm_repeat, t_algorithm_replace, t_algorithm_reverse, t_algorithm_rotate, t_algorithm_same, t_algorithm_sort, t_algorithm_split, t_algorithm_split_after, t_algorithm_split_at, t_algorithm_split_before, t_algorithm_take_while, t_algorithm_transform, t_algorithm_unique, t_algorithm_upper_bound, t_algorithm_zip, t_functional_bind, t_functional_capture, t_functional_cascade, t_functional_compose, t_functional_each, t_functional_eval, t_functional_fix, t_functional_flip, t_functional_identity, t_functional_if, t_functional_invoke_twice, t_functional_is_invocable, t_functional_lift, t_functional_on, t_functional_partial, t_functional_recurse, t_functional_tee, t_functional_try, t_list_append, t_list_as_list, t_list_at, t_list_back, t_list_drop, t_list_erase, t_list_front, t_list_insert, t_list_insert_range, t_list_is_empty, t_list_is_list, t_list_is_size_of, t_list_join, t_list_list, t_list_offset, t_list_pop_back, t_list_pop_front, t_list_prepend, t_list_push_back, t_list_push_front, t_list_range, t_list_size, t_list_slice, t_list_sliding, t_list_swap_index, t_list_take, t_list_wrap_in_list, t_number_as_bool, t_number_as_number, t_number_is_number, t_number_math, t_number_numbers, t_number_operators, t_number_to_bool, t_utility_alignof, t_utility_always, t_utility_conditional, t_utility_has_type, t_utility_is_instance_of, t_utility_same_as, t_utility_sizeof, t_utility_traits, t_utility_unpack, t_value_as_val, t_value_has_value, t_value_is_val, t_value_operators, t_value_values)
 executable('check_inc', [
   'test/autogen/algorithm@accumulate.hpp.cpp',
   'test/autogen/algorithm@adjacent_difference.hpp.cpp',
@@ -218,6 +221,7 @@ executable('check_inc', [
   'test/autogen/functional@is_invocable.hpp.cpp',
   'test/autogen/functional@lift.hpp.cpp',
   'test/autogen/functional@monadic.hpp.cpp',
+  'test/autogen/functional@on.hpp.cpp',
   'test/autogen/functional@partial.hpp.cpp',
   'test/autogen/functional@recurse.hpp.cpp',
   'test/autogen/functional@tee.hpp.cpp',
@@ -321,6 +325,7 @@ executable('check_inc', [
   'test/autogen/smp@functional@invoke_twice.hpp.cpp',
   'test/autogen/smp@functional@is_invocable.hpp.cpp',
   'test/autogen/smp@functional@lift.hpp.cpp',
+  'test/autogen/smp@functional@on.hpp.cpp',
   'test/autogen/smp@functional@partial.hpp.cpp',
   'test/autogen/smp@functional@recurse.hpp.cpp',
   'test/autogen/smp@functional@sfinaefwd.hpp.cpp',
@@ -360,11 +365,13 @@ executable('check_inc', [
   'test/autogen/smp@number@operators.hpp.cpp',
   'test/autogen/smp@number@to_bool.hpp.cpp',
   'test/autogen/smp@sfinae.hpp.cpp',
+  'test/autogen/smp@utility@alignof.hpp.cpp',
   'test/autogen/smp@utility@always.hpp.cpp',
   'test/autogen/smp@utility@conditional.hpp.cpp',
   'test/autogen/smp@utility@has_type.hpp.cpp',
   'test/autogen/smp@utility@is_instance_of.hpp.cpp',
   'test/autogen/smp@utility@same_as.hpp.cpp',
+  'test/autogen/smp@utility@sizeof.hpp.cpp',
   'test/autogen/smp@utility@traits.hpp.cpp',
   'test/autogen/smp@utility@unpack.hpp.cpp',
   'test/autogen/smp@value.hpp.cpp',
@@ -373,11 +380,13 @@ executable('check_inc', [
   'test/autogen/smp@value@is_val.hpp.cpp',
   'test/autogen/smp@value@operators.hpp.cpp',
   'test/autogen/smp@value@values.hpp.cpp',
+  'test/autogen/utility@alignof.hpp.cpp',
   'test/autogen/utility@always.hpp.cpp',
   'test/autogen/utility@conditional.hpp.cpp',
   'test/autogen/utility@has_type.hpp.cpp',
   'test/autogen/utility@is_instance_of.hpp.cpp',
   'test/autogen/utility@same_as.hpp.cpp',
+  'test/autogen/utility@sizeof.hpp.cpp',
   'test/autogen/utility@traits.hpp.cpp',
   'test/autogen/utility@unpack.hpp.cpp',
   'test/autogen/value@as_val.hpp.cpp',

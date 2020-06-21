@@ -15,6 +15,7 @@
 #include "functional/is_invocable.hpp"
 #include "functional/lift.hpp"
 #include "functional/monadic.hpp"
+#include "functional/on.hpp"
 #include "functional/partial.hpp"
 #include "functional/recurse.hpp"
 #include "functional/tee.hpp"

@@ -13,6 +13,7 @@
 #include "functional/invoke_twice.hpp"
 #include "functional/is_invocable.hpp"
 #include "functional/lift.hpp"
+#include "functional/on.hpp"
 #include "functional/partial.hpp"
 #include "functional/recurse.hpp"
 #include "functional/sfinaefwd.hpp"
