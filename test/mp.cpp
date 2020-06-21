@@ -5,6 +5,7 @@
 #include "src/algorithm/any_of.cpp"
 #include "src/algorithm/cartesian.cpp"
 #include "src/algorithm/combine.cpp"
+#include "src/algorithm/compare_with.cpp"
 #include "src/algorithm/contains.cpp"
 #include "src/algorithm/copy.cpp"
 #include "src/algorithm/count.cpp"

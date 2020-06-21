@@ -7,6 +7,7 @@
 #include "algorithm/any_of.hpp"
 #include "algorithm/cartesian.hpp"
 #include "algorithm/combine.hpp"
+#include "algorithm/compare_with.hpp"
 #include "algorithm/contains.hpp"
 #include "algorithm/copy.hpp"
 #include "algorithm/count.hpp"
