@@ -27,7 +27,7 @@ namespace jln::mp
 
   namespace emp
   {
-    template<template<class...> class Tpl, typename x>
+    template<template<class...> class Tpl, class x>
     using is_instance_of = typename detail::_is_instance_of<Tpl, x>::type;
   }
 }
