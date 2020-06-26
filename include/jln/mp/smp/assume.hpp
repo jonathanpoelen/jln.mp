@@ -111,26 +111,33 @@ namespace jln::mp::detail
       binary_or_more    = 1 << 6,
       binary_list       = 1 << 7,
       numbers           = 1 << 8,
-
-      _unary            = unary,
-      _binary           = binary,
-      _binary_or_more   = _binary | binary_or_more | binary_list,
-      _unary_or_more    = _unary | unary_or_more | _binary_or_more,
-      _positive_number  = positive_number | _unary | number,
-      _number           = number | _positive_number,
-      _numbers          = _number | numbers,
-      _lists            = lists,
-      _binary_list      = binary_list | _binary,
     };
   };
 
-#define JLN_MP_MK_ASSUME(cat)                                 \
-  template<class F>                                           \
-  struct _assume_##cat<try_<F, identity, violation>>    \
-  {                                                           \
-    using type = typename conditional_c<bool(                 \
-      expected_argument<F>::value & argument_category::_##cat \
-    )>::template f<F, try_<F, identity, violation>>;    \
+  struct _expected_argument_category : argument_category
+  {
+    enum tag
+    {
+      _lists            = lists,
+      _numbers          = numbers,
+      _number           = number | numbers | unary | unary_or_more,
+      _positive_number  = positive_number | number | numbers | unary | unary_or_more,
+      _unary            = unary | unary_or_more,
+      _binary           = binary | unary_or_more | binary_or_more,
+      _binary_list      = binary_list | lists | binary | unary_or_more | binary_or_more,
+      _unary_or_more    = unary_or_more,
+      _binary_or_more   = binary_or_more | unary_or_more,
+    };
+  };
+
+#define JLN_MP_MK_ASSUME(cat)                        \
+  template<class F>                                  \
+  struct _assume_##cat<try_<F, identity, violation>> \
+  {                                                  \
+    using type = typename conditional_c<bool(        \
+      expected_argument<F>::value                    \
+      & _expected_argument_category::_##cat          \
+    )>::template f<F, try_<F, identity, violation>>; \
   }
 
   JLN_MP_MK_ASSUME(lists);
