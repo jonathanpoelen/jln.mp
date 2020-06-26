@@ -17,7 +17,7 @@ namespace jln::mp
 
   /// \ingroup algorithm
 
-  /// Creates a set.
+  /// Returns a list of the same form as L with the duplicate elements removed.
   /// \treturn \sequence
   template<class C = listify>
   using unique = typename detail::mk_unique<lift<std::is_same>, C>::type;
