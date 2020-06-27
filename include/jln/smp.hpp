@@ -994,26 +994,33 @@ namespace jln::mp::detail
       binary_or_more    = 1 << 6,
       binary_list       = 1 << 7,
       numbers           = 1 << 8,
-
-      _unary            = unary,
-      _binary           = binary,
-      _binary_or_more   = _binary | binary_or_more | binary_list,
-      _unary_or_more    = _unary | unary_or_more | _binary_or_more,
-      _positive_number  = positive_number | _unary | number,
-      _number           = number | _positive_number,
-      _numbers          = _number | numbers,
-      _lists            = lists,
-      _binary_list      = binary_list | _binary,
     };
   };
 
-#define JLN_MP_MK_ASSUME(cat)                                 \
-  template<class F>                                           \
-  struct _assume_##cat<try_<F, identity, violation>>    \
-  {                                                           \
-    using type = typename conditional_c<bool(                 \
-      expected_argument<F>::value & argument_category::_##cat \
-    )>::template f<F, try_<F, identity, violation>>;    \
+  struct _expected_argument_category : argument_category
+  {
+    enum tag
+    {
+      _lists            = lists,
+      _numbers          = numbers,
+      _number           = number | numbers | unary | unary_or_more,
+      _positive_number  = positive_number | number | numbers | unary | unary_or_more,
+      _unary            = unary | unary_or_more,
+      _binary           = binary | unary_or_more | binary_or_more,
+      _binary_list      = binary_list | lists | binary | unary_or_more | binary_or_more,
+      _unary_or_more    = unary_or_more,
+      _binary_or_more   = binary_or_more | unary_or_more,
+    };
+  };
+
+#define JLN_MP_MK_ASSUME(cat)                        \
+  template<class F>                                  \
+  struct _assume_##cat<try_<F, identity, violation>> \
+  {                                                  \
+    using type = typename conditional_c<bool(        \
+      expected_argument<F>::value                    \
+      & _expected_argument_category::_##cat          \
+    )>::template f<F, try_<F, identity, violation>>; \
   }
 
   JLN_MP_MK_ASSUME(lists);
@@ -5537,6 +5544,160 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template <class C, class... Fs>
+    struct _each;
+  }
+  /// \endcond
+
+  /// \ingroup functional
+
+  /// Invokes multiple functions each taking the parameter corresponding to its position.
+  /// \treturn \value
+  /// \see tee, partial
+#ifdef JLN_MP_DOXYGENATING
+  template <class... Fs, class C>
+  struct each
+  {
+    template<class... xs>
+    using f = C::f<Fs::f<xs>...>;
+  };
+#else
+  template <class... Fs>
+  struct each
+  : rotate<number<-1>, lift<detail::_each>>
+  ::template f<Fs...>
+  {};
+#endif
+
+  /// \cond
+  template <class C>
+  struct each<C> : detail::_each<C>
+  {};
+
+  template <class F, class C>
+  struct each<F, C> : detail::_each<C, F>
+  {};
+
+  template <class F0, class F1, class C>
+  struct each<F0, F1, C> : detail::_each<C, F0, F1>
+  {};
+
+  template <class F0, class F1, class F2, class C>
+  struct each<F0, F1, F2, C> : detail::_each<C, F0, F1, F2>
+  {};
+  /// \endcond
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template <class C, class... Fs>
+  struct _each
+  {
+    template <class... xs>
+    using f = call<C, call<Fs, xs>...>;
+  };
+} // namespace jln::mp
+/// \endcond
+/// \cond
+namespace jln::mp::detail
+{
+  template<int>
+  struct _smp_each_select;
+}
+/// \endcond
+
+namespace jln::mp::smp
+{
+  template <class... Fs>
+  using each = typename detail::_smp_each_select<detail::min(5, sizeof...(Fs))>
+    ::template f<Fs...>;
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class... Fs>
+  struct _sfinae<sfinae, each<Fs...>>
+  {
+    using type = smp::each<sfinae<Fs>...>;
+  };
+
+  template<>
+  struct _smp_each_select<1>
+  {
+    template<class C>
+    using f = test_contract<size<not_<>>, subcontract<C>>;
+  };
+
+  template<>
+  struct _smp_each_select<2>
+  {
+    template<class F, class C>
+    using f = test_contract<size<same_as<number<1>>>, each<
+      assume_unary<F>, monadic_xs<assume_unary<C>>>>;
+  };
+
+  template<>
+  struct _smp_each_select<3>
+  {
+    template<class F0, class F1, class C>
+    using f = test_contract<size<same_as<number<2>>>, each<
+      assume_unary<F0>,
+      assume_unary<F1>,
+      monadic_xs<assume_binary<C>>>>;
+  };
+
+  template<>
+  struct _smp_each_select<4>
+  {
+    template<class F0, class F1, class F2, class C>
+    using f = test_contract<size<same_as<number<3>>>, each<
+      assume_unary<F0>,
+      assume_unary<F1>,
+      assume_unary<F2>,
+      monadic_xs<subcontract<C>>>>;
+  };
+
+  struct _smp_each
+  {
+    template<class C, class... Fs>
+    using f = test_contract<size<same_as<number<sizeof...(Fs)>>>,
+      _each<monadic_xs<subcontract<C>>, assume_unary<Fs>...>>;
+  };
+
+  template<>
+  struct _smp_each_select<5>
+  : mp::rotate<mp::number<-1>, detail::_smp_each>
+  {};
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup functional
+
+  /// comparison on the result of a function.
+  /// \treturn \bool
+  template<class F, class Cmp = less<>>
+  using compare_with = each<F, F, Cmp>;
+
+  namespace emp
+  {
+    template<class F, class x, class y>
+    using compare_with = less<call<F, x>, call<F, y>>;
+  }
+}
+namespace jln::mp::smp
+{
+  template<class F, class Cmp = less<>>
+  using compare_with = each<F, F, Cmp>;
+}
 namespace jln::mp::smp
 {
   template<class x, class C = identity>
@@ -6343,9 +6504,6 @@ namespace jln::mp
   {
     template <class, class...>
     struct _partial;
-
-    template <class, class, class...>
-    struct _partial_eager;
   }
   /// \endcond
 
@@ -6359,7 +6517,7 @@ namespace jln::mp
   ///   partial<F,G,C>::f<a,b,c,d> == C::f<F::f<a>, G::f<b>, c, d>
   ///   \endcode
   /// \treturn \value
-  /// \see each, tee, partial_eager
+  /// \see each, tee, on
 #ifdef JLN_MP_DOXYGENATING
   template <class... Fs, class C>
   struct partial
@@ -6372,32 +6530,6 @@ namespace jln::mp
   struct partial
   : rotate<number<-1>, lift<detail::_partial>>
   ::template f<Fs...>
-  {};
-#endif
-
-  /// Invoke multiple functions each taking the parameter corresponding to its position
-  /// (the last function takes the remaining parameters or 0)
-  /// then calls \c C with the results.
-  /// \pre `sizeof...(xs) + 1 >= sizeof...(Fs)`
-  /// \semantics
-  ///   \code
-  ///   partial_eagerF,G,C::fa,b,c,d == CFa, Gb, c, d
-  ///   partial_eagerF,G,C::fa == CFa, G
-  ///   \endcode
-  /// \treturn \value
-  /// \see each, tee, partial
-#ifdef JLN_MP_DOXYGENATING
-  template <class... Fs, class C>
-  struct partial_eager
-  {
-    template<class... xs>
-    using f = /* unspecified */;
-  };
-#else
-  template <class... Fs>
-  struct partial_eager
-  : rotate<number<-2>, lift<detail::_partial_eager>>
-  ::template f<Fs...>::type
   {};
 #endif
 
@@ -6429,99 +6561,9 @@ namespace jln::mp
     template <class x0, class x1, class x2, class... xs>
     using f = call<C, call<F0, x0>, call<F1, x1>, call<F2, x2>, xs...>;
   };
-
-  template <class C>
-  struct partial_eager<C>
-  {
-    template <class... xs>
-    using f = call<C, xs...>;
-  };
-
-  template <class F, class C>
-  struct partial_eager<F, C>
-  {
-    template <class... xs>
-    using f = unary_compose_call<C, F, xs...>;
-  };
-
-  template <class F0, class F1, class C>
-  struct partial_eager<F0, F1, C>
-  {
-    template <class x0, class... xs>
-    using f = JLN_MP_DCALL_XS(xs,
-      C, call<F0, x0>, call<F1, xs...>);
-  };
-
-  template <class F0, class F1, class F2, class C>
-  struct partial_eager<F0, F1, F2, C>
-  {
-    template <class x0, class x1, class... xs>
-    using f = JLN_MP_DCALL_XS(xs,
-      C, call<F0, x0>, call<F1, x1>, call<F2, xs...>);
-  };
   /// \endcond
 }
 
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template <class C, class... Fs>
-    struct _each;
-  }
-  /// \endcond
-
-  /// \ingroup functional
-
-  /// Invokes multiple functions each taking the parameter corresponding to its position.
-  /// \treturn \value
-  /// \see tee, partial
-#ifdef JLN_MP_DOXYGENATING
-  template <class... Fs, class C>
-  struct each
-  {
-    template<class... xs>
-    using f = C::f<Fs::f<xs>...>;
-  };
-#else
-  template <class... Fs>
-  struct each
-  : rotate<number<-1>, lift<detail::_each>>
-  ::template f<Fs...>
-  {};
-#endif
-
-  /// \cond
-  template <class C>
-  struct each<C> : detail::_each<C>
-  {};
-
-  template <class F, class C>
-  struct each<F, C> : detail::_each<C, F>
-  {};
-
-  template <class F0, class F1, class C>
-  struct each<F0, F1, C> : detail::_each<C, F0, F1>
-  {};
-
-  template <class F0, class F1, class F2, class C>
-  struct each<F0, F1, F2, C> : detail::_each<C, F0, F1, F2>
-  {};
-  /// \endcond
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template <class C, class... Fs>
-  struct _each
-  {
-    template <class... xs>
-    using f = call<C, call<Fs, xs>...>;
-  };
-} // namespace jln::mp
-/// \endcond
 /// \cond
 namespace jln::mp::detail
 {
@@ -6530,20 +6572,10 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename _join_select<2>::f<
-      lift<_each>,
-      list<C, Fs...>,
-      emp::make_int_sequence_c<sizeof...(xs) - sizeof...(Fs), transform<always<identity>>>
-    >::type::template f<xs...>;
-  };
-
-  template <class Flast, class C, class... Fs>
-  struct _partial_eager
-  {
-    using type = tee<
-      take_c<sizeof...(Fs), _each<listify, Fs...>>,
-      drop_c<sizeof...(Fs), tee<Flast, listify>>,
-      join<C>
-    >;
+      C,
+      JLN_MP_DCALL_XS(xs, take_c<sizeof...(Fs), _each<listify, Fs...>>, xs...),
+      JLN_MP_DCALL_XS(xs, drop_c<sizeof...(Fs)>, xs...)
+    >::type;
   };
 } // namespace jln::mp
 /// \endcond
@@ -7358,7 +7390,7 @@ namespace jln::mp
 
   /// \ingroup algorithm
 
-  /// Creates a set.
+  /// Returns a list of the same form as L with the duplicate elements removed.
   /// \treturn \sequence
   template<class C = listify>
   using unique = typename detail::mk_unique<lift<std::is_same>, C>::type;
@@ -7625,6 +7657,692 @@ namespace jln::mp::detail
   struct mk_is_unique<subcontract_barrier<smp::same<>>, C>
   : mk_is_unique<subcontract_barrier<smp::lift<std::is_same>>, C>
   {};
+}
+/// \endcond
+namespace jln::mp::smp
+{
+  template<class C = identity>
+  using front = try_contract<mp::front<assume_unary<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, front<C>>
+  {
+    using type = smp::front<sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup list
+
+  /// Retrieves an element of a sequence at an arbitrary position.
+  /// \pre `0 <= N < sizeof...(xs)`
+  /// \treturn \value
+  template<class N, class C = identity>
+  using at = drop<N, front<C>>;
+
+  template<int_ n, class C = identity>
+  using at_c = drop<number<n>, front<C>>;
+
+  template<class C = identity>
+  using at0 = front<C>;
+
+  template<class C = identity>
+  using at1 = drop<number<1>, front<C>>;
+
+  template<class C = identity>
+  using at2 = drop<number<2>, front<C>>;
+
+  template<class C = identity>
+  using at3 = drop<number<3>, front<C>>;
+
+  template<class C = identity>
+  using at4 = drop<number<4>, front<C>>;
+
+  template<class C = identity>
+  using at5 = drop<number<5>, front<C>>;
+
+  template<class C = identity>
+  using at6 = drop<number<6>, front<C>>;
+
+  template<class C = identity>
+  using at7 = drop<number<7>, front<C>>;
+
+  template<class C = identity>
+  using at8 = drop<number<8>, front<C>>;
+
+  template<class C = identity>
+  using at9 = drop<number<9>, front<C>>;
+
+  namespace emp
+  {
+    template<class L, class i, class C = mp::identity>
+    using at = unpack<L, mp::drop<number<i::value>, mp::front<C>>>;
+
+    template<class L, int_ i, class C = mp::identity>
+    using at_c = unpack<L, mp::drop<number<i>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at0 = unpack<L, mp::front<C>>;
+
+    template<class L, class C = mp::identity>
+    using at1 = unpack<L, mp::drop<number<1>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at2 = unpack<L, mp::drop<number<2>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at3 = unpack<L, mp::drop<number<3>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at4 = unpack<L, mp::drop<number<4>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at5 = unpack<L, mp::drop<number<5>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at6 = unpack<L, mp::drop<number<6>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at7 = unpack<L, mp::drop<number<7>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at8 = unpack<L, mp::drop<number<8>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at9 = unpack<L, mp::drop<number<9>, mp::front<C>>>;
+  }
+}
+namespace jln::mp::smp
+{
+  template<int_ n, class C = identity>
+  using at_c = detail::sfinae<mp::at_c<n, subcontract_barrier<C>>>;
+
+  template<class C = identity>
+  using at0 = detail::sfinae<mp::at0<subcontract_barrier<C>>>;
+
+  template<class C = identity>
+  using at1 = detail::sfinae<mp::at1<subcontract_barrier<C>>>;
+
+  template<class C = identity>
+  using at2 = detail::sfinae<mp::at2<subcontract_barrier<C>>>;
+
+  template<class C = identity>
+  using at3 = detail::sfinae<mp::at3<subcontract_barrier<C>>>;
+
+  template<class C = identity>
+  using at4 = detail::sfinae<mp::at4<subcontract_barrier<C>>>;
+
+  template<class C = identity>
+  using at5 = detail::sfinae<mp::at5<subcontract_barrier<C>>>;
+
+  template<class C = identity>
+  using at6 = detail::sfinae<mp::at6<subcontract_barrier<C>>>;
+
+  template<class C = identity>
+  using at7 = detail::sfinae<mp::at7<subcontract_barrier<C>>>;
+
+  template<class C = identity>
+  using at8 = detail::sfinae<mp::at8<subcontract_barrier<C>>>;
+
+  template<class C = identity>
+  using at9 = detail::sfinae<mp::at9<subcontract_barrier<C>>>;
+}
+
+JLN_MP_MAKE_REGULAR_SMP2_P(at, (N), (C, smp::identity), smp::at_c<N::value, C>)
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class, class>
+    struct _mismatch;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Returns mismatching info of elements from two sequences.
+  /// Uses \c C when a element mismatch and \c NC when one of
+  /// the sequences equals the start of the other.
+  /// \semantic
+  ///   `NC::f<number<-1>, number<emp::size<seq1>>>` if \c seq1 == \c seq2.
+  ///   `NC::f<number<i>, number<-1>>` if \c seq2 starts with \c seq1.
+  ///   `NC::f<number<i>, number<1>>` if \c seq1 starts with \c seq2.
+  ///   otherwise `C::f<number<i>, number<0>>`.
+  /// \treturn pair or \number
+  template<class Cmp = equal<>, class C = listify, class NC = C>
+  struct mismatch
+  {
+    template<class seq1, class seq2>
+    using f = typename detail::_mismatch<seq1, seq2>::template f<Cmp, C, NC>;
+  };
+
+  namespace emp
+  {
+    template<class seq1, class seq2, class Cmp = mp::equal<>, class C = mp::listify, class NC = C>
+    using mismatch = call<mismatch<Cmp, C, NC>, seq1, seq2>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class Cmp, int n>
+  struct _mismatch_tree;
+
+  template<class Cmp>
+  struct _mismatch_tree<Cmp, 1>
+  {
+    struct type
+    {
+      template<class x, class y>
+      using f = number<call<Cmp, x, y>::value>;
+    };
+  };
+
+  template<class Cmp>
+  struct _mismatch_tree<Cmp, 2>
+  {
+    struct type
+    {
+      template<class x0, class x1, class y0, class y1>
+      using f = number<
+        !call<Cmp, x0, y0>::value ? 0
+      : !call<Cmp, x1, y1>::value ? 1
+      : 2
+      >;
+    };
+  };
+
+  template<class Cmp>
+  struct _mismatch_tree<Cmp, 3>
+  {
+    struct type
+    {
+      template<class x0, class x1, class x2, class y0, class y1, class y2>
+      using f = number<
+        !call<Cmp, x0, y0>::value ? 0
+      : !call<Cmp, x1, y1>::value ? 1
+      : !call<Cmp, x2, y2>::value ? 2
+      : 3
+      >;
+    };
+  };
+
+  template<class Cmp>
+  struct _mismatch_tree<Cmp, 4>
+  {
+    struct type
+    {
+      template<class x0, class x1, class x2, class x3, class y0, class y1, class y2, class y3>
+      using f = number<
+        !call<Cmp, x0, y0>::value ? 0
+      : !call<Cmp, x1, y1>::value ? 1
+      : !call<Cmp, x2, y2>::value ? 2
+      : !call<Cmp, x3, y3>::value ? 3
+      : 4
+      >;
+    };
+  };
+
+  constexpr int_ _mismatch_size(int n)
+  {
+    // is pow 2
+    if ((-n ^ n) <  -n) {
+      return n/2;
+    }
+
+    if (n > 0xffff) {
+      return 0x10000;
+    }
+
+    // std::bit_floor (c++20)
+    int r = 1;
+
+    if (n > 0xff) {
+      r <<= 8;
+      n >>= 8;
+    }
+
+    if (n > 0xf) {
+      r <<= 4;
+      n >>= 4;
+    }
+
+    if (n > 0b11) {
+      r <<= 2;
+      n >>= 2;
+    }
+
+    return (n > 0b1) ? (r << 1) : r;
+  }
+
+  template<class Cmp, int_ n, int_ size = _mismatch_size(n)>
+  struct _mismatch_tree_next
+  {
+    template<class i, class = void>
+    struct dispatch
+    {
+      template<class...>
+      using f = i;
+    };
+
+    template<class v>
+    struct dispatch<number<size>, v>
+    {
+      template<class... xs>
+      using f = number<size + call<
+        drop_c<size,
+          rotate_c<n-size,
+            drop_c<size,
+              typename _mismatch_tree<Cmp, n-size>::type
+            >
+          >
+        >,
+        xs...
+      >::value>;
+    };
+
+    template<class... xs>
+    using f = typename dispatch<
+      typename rotate_c<size,
+        drop_c<n-size,
+          rotate_c<size,
+            drop_c<n-size,
+              typename _mismatch_tree<Cmp, size>::type
+            >
+          >
+        >
+      >::template f<xs...>
+    >::template f<xs...>;
+  };
+
+  template<class Cmp, int n>
+  struct _mismatch_tree
+  {
+    using type = _mismatch_tree_next<Cmp, n>;
+  };
+
+  template<
+    template<class...> class Txs, class... xs,
+    template<class...> class Tys, class... ys>
+  struct _mismatch<Txs<xs...>, Tys<ys...>>
+  {
+    template<class i, class n>
+    struct apply_index
+    {
+      template<class C, class NC, class, class>
+      using f = typename C::template f<i, number<0>>;
+    };
+
+    template<class n>
+    struct apply_index<n, n>
+    {
+      template<class C, class NC, class i, class r>
+      using f = typename NC::template f<i, r>;
+    };
+
+    template<bool, bool>
+    struct impl
+    {
+      template<class Cmp, class C, class NC>
+      using f = typename apply_index<
+        typename _mismatch_tree<Cmp, sizeof...(xs)>::type
+        ::template f<xs..., ys...>,
+        number<sizeof...(xs)>
+      >::template f<C, NC, number<-1>, number<sizeof...(xs)>>;
+    };
+
+    template<bool b>
+    struct impl<true, b>
+    {
+      template<class Cmp, class C, class NC>
+      using f = typename apply_index<
+        typename take_c<
+          sizeof...(xs) * 2,
+          typename _mismatch_tree<Cmp, sizeof...(xs)>::type
+        >::template f<xs..., ys...>,
+        number<sizeof...(xs)>
+      >::template f<C, NC, number<sizeof...(xs)>, number<-1>>;
+    };
+
+    template<bool b>
+    struct impl<b, true>
+    {
+      template<class Cmp, class C, class NC>
+      using f = typename apply_index<
+        typename take_c<
+          sizeof...(ys) * 2,
+          typename _mismatch_tree<Cmp, sizeof...(ys)>::type
+        >::template f<ys..., xs...>,
+        number<sizeof...(ys)>
+      >::template f<C, NC, number<sizeof...(ys)>, number<1>>;
+    };
+
+    template<class Cmp, class C, class NC>
+    using f = typename impl<
+      (sizeof...(xs) < sizeof...(ys)),
+      (sizeof...(ys) < sizeof...(xs))
+    >::template f<Cmp, C, NC>;
+  };
+
+  template<
+    template<class...> class Txs,
+    template<class...> class Tys, class... ys>
+  struct _mismatch<Txs<>, Tys<ys...>>
+  {
+    template<class Cmp, class C, class NC>
+    using f = typename NC::template f<number<0>, number<-1>>;
+  };
+
+  template<
+    template<class...> class Txs, class... xs,
+    template<class...> class Tys>
+  struct _mismatch<Txs<xs...>, Tys<>>
+  {
+    template<class Cmp, class C, class NC>
+    using f = typename NC::template f<number<0>, number<1>>;
+  };
+
+  template<template<class...> class Txs, template<class...> class Tys>
+  struct _mismatch<Txs<>, Tys<>>
+  {
+    template<class Cmp, class C, class NC>
+    using f = typename NC::template f<number<-1>, number<0>>;
+  };
+}
+/// \endcond
+/// \cond
+namespace jln::mp::detail
+{
+  template<class Cmp, class C, class NC>
+  struct _smp_mismatch;
+}
+/// \endcond
+
+namespace jln::mp::smp
+{
+  template<class Cmp = equal<>, class C = listify, class NC = C>
+  using mismatch = try_contract<detail::_smp_mismatch<
+    assume_binary<Cmp>, assume_numbers<C>, assume_numbers<NC>>>;
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class Cmp, class C, class NC>
+  struct _sfinae<sfinae, mismatch<Cmp, C, NC>>
+  {
+    using type = smp::mismatch<sfinae<Cmp>, sfinae<C>, sfinae<NC>>;
+  };
+
+  template<class C>
+  struct _smp_mismatch_check
+  {
+    template<class i, class direction, class = void>
+    struct f
+    {
+      template<class Cmp, class seq1, class seq2>
+      using impl = call<C, i, direction>;
+    };
+
+    template<class i>
+    struct f<i, number<0>, std::enable_if_t<(i::value != -1)>>
+    {
+      template<class Cmp, class seq1, class seq2>
+      using impl = typename conditional<
+        typename smp::concepts::predicate<Cmp, always<true_>, always<false_>>
+        ::template f<emp::at<seq1, i>, emp::at<seq2, i>>
+      >::template f<C, violation>
+      ::template f<i, number<0>>;
+    };
+  };
+
+  template<class Cmp, class C, class NC>
+  struct _smp_mismatch
+  {
+    template<class seq1, class seq2>
+    using f = typename mismatch<
+      smp::concepts::predicate<Cmp, mp::identity, mp::always<false_>>,
+      _smp_mismatch_check<C>,
+      _smp_mismatch_check<NC>
+    >
+    ::template f<seq1, seq2>
+    ::template impl<Cmp, seq1, seq2>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class, class>
+    struct _lexicographical_compare;
+
+    template<class Cmp>
+    struct _lexicographical_compare_equal;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Checks if \c seq1  is lexicographically less than \c seq2.
+  /// \treturn \bool
+  template<class Cmp = less<>, class C = identity>
+  struct lexicographical_compare
+  {
+    template<class seq1, class seq2>
+    using f = typename C::template f<
+      typename mismatch<
+        detail::_lexicographical_compare_equal<Cmp>,
+        lift<detail::_lexicographical_compare>
+      >
+      ::template f<seq1, seq2>
+      ::template f<Cmp, seq1, seq2>
+    >;
+  };
+
+  template<class CmpLess = less<>, class CmpEq = equal<>, class C = identity>
+  struct lexicographical_compare2
+  {
+    template<class seq1, class seq2>
+    using f = typename C::template f<
+      typename mismatch<CmpEq, lift<detail::_lexicographical_compare>>
+      ::template f<seq1, seq2>
+      ::template f<CmpLess, seq1, seq2>
+    >;
+  };
+
+  namespace emp
+  {
+    template<class seq1, class seq2, class Cmp = mp::less<>, class C = mp::identity>
+    using lexicographical_compare = call<lexicographical_compare<Cmp, C>, seq1, seq2>;
+
+    template<
+      class seq1, class seq2,
+      class CmpLess = mp::less<>, class CmpEq = mp::equal<>, class C = mp::identity>
+    using lexicographical_compare2 = call<
+      lexicographical_compare2<CmpLess, CmpEq, C>, seq1, seq2>;
+  }
+
+  /// \cond
+  template<class Cmp>
+  struct lexicographical_compare<Cmp, identity>
+  {
+    template<class seq1, class seq2>
+    using f = typename mismatch<
+      detail::_lexicographical_compare_equal<Cmp>,
+      lift<detail::_lexicographical_compare>
+    >
+    ::template f<seq1, seq2>
+    ::template f<Cmp, seq1, seq2>;
+  };
+
+  template<class CmpLess, class CmpEq>
+  struct lexicographical_compare2<CmpLess, CmpEq, identity>
+  {
+    template<class seq1, class seq2>
+    using f = typename mismatch<CmpEq, lift<detail::_lexicographical_compare>>
+      ::template f<seq1, seq2>
+      ::template f<CmpLess, seq1, seq2>;
+  };
+  /// \endcond
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class Cmp>
+  struct _lexicographical_compare_equal
+  {
+    template<class x, class y>
+    using f = number<!call<Cmp, x, y>::value && !call<Cmp, y, x>::value>;
+  };
+
+  template<class i, class n>
+  struct _lexicographical_compare
+  {
+    template<class Cmp, class seq1, class seq2>
+    using f = false_;
+  };
+
+  template<>
+  struct _lexicographical_compare<number<-1>, number<0>>
+  {
+    template<class Cmp, class seq1, class seq2>
+    using f = false_;
+  };
+
+  template<class i>
+  struct _lexicographical_compare<i, number<0>>
+  {
+    template<class Cmp, class seq1, class seq2>
+    using f = typename Cmp::template f<emp::at<seq1, i>, emp::at<seq2, i>>;
+  };
+
+  template<class i>
+  struct _lexicographical_compare<i, number<-1>>
+  {
+    template<class Cmp, class seq1, class seq2>
+    using f = true_;
+  };
+}
+/// \endcond
+/// \cond
+namespace jln::mp::detail
+{
+  template<class Cmp, class C>
+  struct _smp_lexicographical_compare;
+
+  template<class CmpLess, class CmpEq, class C>
+  struct _smp_lexicographical_compare2;
+}
+/// \endcond
+
+namespace jln::mp::smp
+{
+  template<class Cmp = less<>, class C = identity>
+  using lexicographical_compare = try_contract<detail::_smp_lexicographical_compare<
+    assume_binary<Cmp>, assume_positive_number<C>>>;
+
+  template<class CmpLess = less<>, class CmpEq = equal<>, class C = identity>
+  using lexicographical_compare2 = try_contract<detail::_smp_lexicographical_compare2<
+    assume_binary<CmpLess>, assume_binary<CmpEq>, assume_positive_number<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class Cmp, class C>
+  struct _sfinae<sfinae, lexicographical_compare<Cmp, C>>
+  {
+    using type = smp::lexicographical_compare<sfinae<Cmp>, sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class CmpLess, class CmpEq, class C>
+  struct _sfinae<sfinae, lexicographical_compare2<CmpLess, CmpEq, C>>
+  {
+    using type = smp::lexicographical_compare2<sfinae<CmpLess>, sfinae<CmpEq>, sfinae<C>>;
+  };
+
+  template<class Cmp, class C>
+  struct _smp_lexicographical_compare
+  {
+    template<class seq1, class seq2>
+    using f = typename monadic<C>::template f<
+      typename mismatch<
+        _lexicographical_compare_equal<
+          smp::concepts::predicate<Cmp, mp::identity, mp::always<true_>>
+        >,
+        lift<_lexicographical_compare>
+      >
+      ::template f<seq1, seq2>
+      ::template f<smp::concepts::predicate<Cmp, mp::identity, violation>, seq1, seq2>
+    >;
+  };
+
+  template<class Cmp>
+  struct _smp_lexicographical_compare<Cmp, identity>
+  {
+    template<class seq1, class seq2>
+    using f = typename mismatch<
+      _lexicographical_compare_equal<
+        smp::concepts::predicate<Cmp, mp::identity, mp::always<true_>>
+      >,
+      lift<_lexicographical_compare>
+    >
+    ::template f<seq1, seq2>
+    ::template f<smp::concepts::predicate<Cmp, mp::identity, violation>, seq1, seq2>;
+  };
+
+  template<class CmpLess, class CmpEq, class C>
+  struct _smp_lexicographical_compare2
+  {
+    template<class seq1, class seq2>
+    using f = typename monadic<C>::template f<
+      typename mismatch<
+        smp::concepts::predicate<CmpEq, mp::identity, mp::always<false_>>,
+        lift<_lexicographical_compare>
+      >
+      ::template f<seq1, seq2>
+      ::template f<
+        if_<
+          smp::concepts::predicate<CmpEq, always<true_>, always<false_>>,
+          CmpLess,
+          violation
+        >,
+        seq1, seq2
+      >
+    >;
+  };
+
+  template<class CmpLess, class CmpEq>
+  struct _smp_lexicographical_compare2<CmpLess, CmpEq, identity>
+  {
+    template<class seq1, class seq2>
+    using f = typename mismatch<
+      smp::concepts::predicate<CmpEq, mp::identity, mp::always<false_>>,
+      lift<_lexicographical_compare>
+    >
+    ::template f<seq1, seq2>
+    ::template f<
+      if_<
+        smp::concepts::predicate<CmpEq, always<true_>, always<false_>>,
+        CmpLess,
+        violation
+      >,
+      seq1, seq2
+    >;
+  };
 }
 /// \endcond
 namespace jln::mp
@@ -8249,88 +8967,6 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-namespace jln::mp
-{
-  /// \ingroup list
-
-  /// Retrieves an element of a sequence at an arbitrary position.
-  /// \pre `0 <= N < sizeof...(xs)`
-  /// \treturn \value
-  template<class N, class C = identity>
-  using at = drop<N, front<C>>;
-
-  template<int_ n, class C = identity>
-  using at_c = drop<number<n>, front<C>>;
-
-  template<class C = identity>
-  using at0 = front<C>;
-
-  template<class C = identity>
-  using at1 = drop<number<1>, front<C>>;
-
-  template<class C = identity>
-  using at2 = drop<number<2>, front<C>>;
-
-  template<class C = identity>
-  using at3 = drop<number<3>, front<C>>;
-
-  template<class C = identity>
-  using at4 = drop<number<4>, front<C>>;
-
-  template<class C = identity>
-  using at5 = drop<number<5>, front<C>>;
-
-  template<class C = identity>
-  using at6 = drop<number<6>, front<C>>;
-
-  template<class C = identity>
-  using at7 = drop<number<7>, front<C>>;
-
-  template<class C = identity>
-  using at8 = drop<number<8>, front<C>>;
-
-  template<class C = identity>
-  using at9 = drop<number<9>, front<C>>;
-
-  namespace emp
-  {
-    template<class L, class i, class C = mp::identity>
-    using at = unpack<L, mp::drop<number<i::value>, mp::front<C>>>;
-
-    template<class L, int_ i, class C = mp::identity>
-    using at_c = unpack<L, mp::drop<number<i>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at0 = unpack<L, mp::front<C>>;
-
-    template<class L, class C = mp::identity>
-    using at1 = unpack<L, mp::drop<number<1>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at2 = unpack<L, mp::drop<number<2>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at3 = unpack<L, mp::drop<number<3>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at4 = unpack<L, mp::drop<number<4>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at5 = unpack<L, mp::drop<number<5>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at6 = unpack<L, mp::drop<number<6>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at7 = unpack<L, mp::drop<number<7>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at8 = unpack<L, mp::drop<number<8>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at9 = unpack<L, mp::drop<number<9>, mp::front<C>>>;
-  }
-}
 namespace jln::mp::smp
 {
   template<class Cmp = less<>, class C = listify>
@@ -8357,6 +8993,60 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp::smp
+{
+  template<class F>
+  using invoke_twice = contract<mp::invoke_twice<mp::try_subcontract<
+    F, mp::lift<try_subcontract>, mp::always<mp::violation>>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class F>
+  struct _sfinae<sfinae, invoke_twice<F>>
+  {
+    using type = smp::invoke_twice<sfinae<F>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup algorithm
+
+  /// Returns the first mismatching index of elements from two sequences, otherwise the size of the sequences.
+  /// \treturn \number
+  template<class Cmp = equal<>, class C = identity>
+  using mismatch_index = mismatch<Cmp, at0<C>, if_<at0<same_as<number<-1>>>, at1<C>, at0<C>>>;
+
+  namespace emp
+  {
+    template<class seq1, class seq2, class Cmp = mp::equal<>, class C = mp::identity>
+    using mismatch_index = call<mismatch_index<Cmp, C>, seq1, seq2>;
+  }
+}
+namespace jln::mp::smp
+{
+  template<class Cmp = equal<>, class C = identity>
+  using mismatch_index = mismatch<
+    Cmp,
+    mp::at0<assume_number<C>>,
+    mp::if_<
+      mp::at0<mp::same_as<number<-1>>>,
+      mp::at1<assume_number<C>>,
+      mp::at0<assume_number<C>>
+    >
+  >;
+}
+
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class Cmp, class C>
+  struct _sfinae<sfinae, mismatch<Cmp, at0<C>, if_<at0<same_as<number<-1>>>, at1<C>, at0<C>>>>
+  {
+    using type = smp::mismatch_index<sfinae<Cmp>, sfinae<C>>;
+  };
+}
 namespace jln::mp
 {
   /// \ingroup algorithm
@@ -9259,23 +9949,6 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-namespace jln::mp::smp
-{
-  template<class F>
-  using invoke_twice = contract<mp::invoke_twice<mp::try_subcontract<
-    F, mp::lift<try_subcontract>, mp::always<mp::violation>>>>;
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, class F>
-  struct _sfinae<sfinae, invoke_twice<F>>
-  {
-    using type = smp::invoke_twice<sfinae<F>>;
-  };
-}
-/// \endcond
 namespace jln::mp
 {
   /// \cond
@@ -9429,9 +10102,6 @@ namespace jln::mp::detail
 {
   template<int>
   struct _smp_partial_select;
-
-  template<int>
-  struct _smp_partial_eager_select;
 }
 /// \endcond
 
@@ -9439,10 +10109,6 @@ namespace jln::mp::smp
 {
   template <class... Fs>
   using partial = typename detail::_smp_partial_select<detail::min(5, sizeof...(Fs))>
-    ::template f<Fs...>;
-
-  template <class... Fs>
-  using partial_eager = typename detail::_smp_partial_eager_select<detail::min(5, sizeof...(Fs))>
     ::template f<Fs...>;
 }
 
@@ -9454,12 +10120,6 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, partial<Fs...>>
   {
     using type = smp::partial<sfinae<Fs>...>;
-  };
-
-  template<template<class> class sfinae, class... Fs>
-  struct _sfinae<sfinae, partial_eager<Fs...>>
-  {
-    using type = smp::partial_eager<sfinae<Fs>...>;
   };
 
   template<>
@@ -9520,69 +10180,6 @@ namespace jln::mp::detail
   template<>
   struct _smp_partial_select<5>
   : mp::rotate<mp::number<-1>, _smp_partial>
-  {};
-
-  template<>
-  struct _smp_partial_eager_select<1>
-  {
-    template<class C>
-    using f = contract<subcontract<C>>;
-  };
-
-  template<>
-  struct _smp_partial_eager_select<2>
-  {
-    template<class F, class C>
-    using f = contract<
-      partial_eager<subcontract<F>, monadic_xs<assume_unary<C>>>
-    >;
-  };
-
-  template<>
-  struct _smp_partial_eager_select<3>
-  {
-    template<class F0, class F1, class C>
-    using f = test_contract<
-      size<>,
-      partial_eager<
-        assume_unary<F0>,
-        subcontract<F1>,
-        monadic_xs<assume_binary<C>>
-      >
-    >;
-  };
-
-  template<>
-  struct _smp_partial_eager_select<4>
-  {
-    template<class F0, class F1, class F2, class C>
-    using f = test_contract<
-      size<greater_equal_than_c<2>>,
-      partial_eager<
-        assume_unary<F0>,
-        assume_unary<F1>,
-        subcontract<F2>,
-        monadic_xs<subcontract<C>>
-      >
-    >;
-  };
-
-  struct _smp_partial_eager
-  {
-    template<class Flast, class C, class... Fs>
-    using f = test_contract<
-      size<greater_equal_than_c<sizeof...(Fs)>>,
-      typename _partial_eager<
-        subcontract<Flast>,
-        monadic_xs<subcontract<C>>,
-        assume_unary<Fs>...
-      >::type
-    >;
-  };
-
-  template<>
-  struct _smp_partial_eager_select<5>
-  : mp::rotate<mp::number<-2>, _smp_partial_eager>
   {};
 }
 /// \endcond
@@ -10009,80 +10606,6 @@ namespace jln::mp::smp
     mp::compose<subcontract_barrier<F>, subcontract_barrier<Fs>...>
   >;
 }
-/// \cond
-namespace jln::mp::detail
-{
-  template<int>
-  struct _smp_each_select;
-}
-/// \endcond
-
-namespace jln::mp::smp
-{
-  template <class... Fs>
-  using each = typename detail::_smp_each_select<detail::min(5, sizeof...(Fs))>
-    ::template f<Fs...>;
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, class... Fs>
-  struct _sfinae<sfinae, each<Fs...>>
-  {
-    using type = smp::each<sfinae<Fs>...>;
-  };
-
-  template<>
-  struct _smp_each_select<1>
-  {
-    template<class C>
-    using f = test_contract<size<not_<>>, subcontract<C>>;
-  };
-
-  template<>
-  struct _smp_each_select<2>
-  {
-    template<class F, class C>
-    using f = test_contract<size<same_as<number<1>>>, each<
-      assume_unary<F>, monadic_xs<assume_unary<C>>>>;
-  };
-
-  template<>
-  struct _smp_each_select<3>
-  {
-    template<class F0, class F1, class C>
-    using f = test_contract<size<same_as<number<2>>>, each<
-      assume_unary<F0>,
-      assume_unary<F1>,
-      monadic_xs<assume_binary<C>>>>;
-  };
-
-  template<>
-  struct _smp_each_select<4>
-  {
-    template<class F0, class F1, class F2, class C>
-    using f = test_contract<size<same_as<number<3>>>, each<
-      assume_unary<F0>,
-      assume_unary<F1>,
-      assume_unary<F2>,
-      monadic_xs<subcontract<C>>>>;
-  };
-
-  struct _smp_each
-  {
-    template<class C, class... Fs>
-    using f = test_contract<size<same_as<number<sizeof...(Fs)>>>,
-      _each<monadic_xs<subcontract<C>>, assume_unary<Fs>...>>;
-  };
-
-  template<>
-  struct _smp_each_select<5>
-  : mp::rotate<mp::number<-1>, detail::_smp_each>
-  {};
-}
-/// \endcond
 namespace jln::mp
 {
 #ifdef __cpp_nontype_template_parameter_class
@@ -10185,6 +10708,127 @@ namespace jln::mp::smp
   template<class F, class C = identity>
   using is_invocable = contract<mp::is_invocable<subcontract<F>, assume_unary<C>>>;
 }
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template <class C, class... Fs>
+    struct _on;
+  }
+  /// \endcond
+
+  /// \ingroup functional
+
+  /// Invokes multiple functions each taking the parameter corresponding to its position
+  /// (or without parameter whether it does not exist)
+  /// then calls \c C with the results and the rest of the parameters.
+  /// \semantics
+  ///   \code
+  ///   on<F,G,C>::f<a> == C::f<F::f<a>, G::f<>>
+  ///   on<F,G,C>::f<a,b,c,d> == C::f<F::f<a>, G::f<b>, c, d>
+  ///   \endcode
+  /// \treturn \value
+  /// \see each, tee, partial
+#ifdef JLN_MP_DOXYGENATING
+  template <class... Fs, class C>
+  struct on
+  {
+    template<class... xs>
+    using f = /* unspecified */;
+  };
+#else
+  template <class... Fs>
+  struct on
+  : rotate<number<-1>, lift<detail::_on>>
+  ::template f<Fs...>
+  {};
+#endif
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  constexpr int on_select(std::size_t nf, std::size_t nx)
+  {
+    return (nf < nx) ? 1 : (nf > nx) ? 2 : 0;
+  }
+
+  template <int, class C, class... Fs>
+  struct _on_select;
+
+  // each
+  template <class C, class... Fs>
+  struct _on_select<0, C, Fs...>
+  {
+    template<class... xs>
+    using f = call<C, call<Fs, xs>...>;
+  };
+
+  // partial
+  template <class C, class... Fs>
+  struct _on_select<1, C, Fs...>
+  {
+    template<class... xs>
+    using f = typename _join_select<2>::f<
+      C,
+      JLN_MP_DCALL_XS(xs, take_c<sizeof...(Fs), _each<listify, Fs...>>, xs...),
+      JLN_MP_DCALL_XS(xs, drop_c<sizeof...(Fs)>, xs...)
+    >::type;
+  };
+
+  template <class C, class... Fs>
+  struct _on_select<2, C, Fs...>
+  {
+    template<class... xs>
+    using f = typename _join_select<2>::f<
+      C,
+      typename take_c<sizeof...(xs)+1, lift<_each>>
+        ::template f<listify, Fs...>
+        ::template f<xs...>,
+      typename drop_c<sizeof...(xs), lift<tee>>
+        ::template f<Fs..., listify>
+        ::template f<>
+    >::type;
+  };
+
+  template <class C, class... Fs>
+  struct _on
+  {
+    template<class... xs>
+    using f = typename _on_select<on_select(sizeof...(Fs), sizeof...(xs)), C, Fs...>
+      ::template f<xs...>;
+  };
+} // namespace jln::mp
+/// \endcond
+/// \cond
+namespace jln::mp::detail
+{
+  struct _smp_on
+  {
+    template<class C, class... Fs>
+    using f = contract<mp::on<Fs..., monadic_xs<C>>>;
+  };
+}
+/// \endcond
+
+namespace jln::mp::smp
+{
+  template <class... Fs>
+  using on = typename rotate<number<-1>, detail::_smp_on>::f<subcontract<Fs>...>;
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class... Fs>
+  struct _sfinae<sfinae, on<Fs...>>
+  {
+    using type = smp::on<sfinae<Fs>...>;
+  };
+}
+/// \endcond
 namespace jln::mp
 {
   /// \cond
@@ -10584,59 +11228,6 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-namespace jln::mp::smp
-{
-  template<class C = identity>
-  using front = try_contract<mp::front<assume_unary<C>>>;
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, front<C>>
-  {
-    using type = smp::front<sfinae<C>>;
-  };
-}
-/// \endcond
-namespace jln::mp::smp
-{
-  template<int_ n, class C = identity>
-  using at_c = detail::sfinae<mp::at_c<n, subcontract_barrier<C>>>;
-
-  template<class C = identity>
-  using at0 = detail::sfinae<mp::at0<subcontract_barrier<C>>>;
-
-  template<class C = identity>
-  using at1 = detail::sfinae<mp::at1<subcontract_barrier<C>>>;
-
-  template<class C = identity>
-  using at2 = detail::sfinae<mp::at2<subcontract_barrier<C>>>;
-
-  template<class C = identity>
-  using at3 = detail::sfinae<mp::at3<subcontract_barrier<C>>>;
-
-  template<class C = identity>
-  using at4 = detail::sfinae<mp::at4<subcontract_barrier<C>>>;
-
-  template<class C = identity>
-  using at5 = detail::sfinae<mp::at5<subcontract_barrier<C>>>;
-
-  template<class C = identity>
-  using at6 = detail::sfinae<mp::at6<subcontract_barrier<C>>>;
-
-  template<class C = identity>
-  using at7 = detail::sfinae<mp::at7<subcontract_barrier<C>>>;
-
-  template<class C = identity>
-  using at8 = detail::sfinae<mp::at8<subcontract_barrier<C>>>;
-
-  template<class C = identity>
-  using at9 = detail::sfinae<mp::at9<subcontract_barrier<C>>>;
-}
-
-JLN_MP_MAKE_REGULAR_SMP2_P(at, (N), (C, smp::identity), smp::at_c<N::value, C>)
 namespace jln::mp
 {
   /// \ingroup list
@@ -11985,6 +12576,46 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp
+{
+  using detail::sfinae;
+  using detail::sfinae_once;
+}
+namespace jln::mp
+{
+  /// \ingroup trait
+
+  /// Wrapper for alignof keyword
+  /// \treturn \number
+  template<class C = identity>
+  struct alignof_
+  {
+    template<class x>
+    using f = typename C::template f<number<alignof(x)>>;
+  };
+
+  namespace emp
+  {
+    template<class x>
+    using alignof_ = number<alignof(x)>;
+  }
+}
+namespace jln::mp::smp
+{
+  template<class C = identity>
+  using alignof_ = try_contract<mp::alignof_<assume_unary<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, alignof_<C>>
+  {
+    using type = smp::alignof_<sfinae<C>>;
+  };
+}
+/// \endcond
 namespace jln::mp::smp
 {
   template<bool b>
@@ -12095,7 +12726,7 @@ namespace jln::mp
 
   namespace emp
   {
-    template<template<class...> class Tpl, typename x>
+    template<template<class...> class Tpl, class x>
     using is_instance_of = typename detail::_is_instance_of<Tpl, x>::type;
   }
 }
@@ -12129,6 +12760,41 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, is_instance_of<Tpl, C>>
   {
     using type = smp::is_instance_of<Tpl, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup trait
+
+  /// Wrapper for sizeof keyword
+  /// \treturn \number
+  template<class C = identity>
+  struct sizeof_
+  {
+    template<class x>
+    using f = typename C::template f<number<sizeof(x)>>;
+  };
+
+  namespace emp
+  {
+    template<class x>
+    using sizeof_ = number<sizeof(x)>;
+  }
+}
+namespace jln::mp::smp
+{
+  template<class C = identity>
+  using sizeof_ = try_contract<mp::sizeof_<assume_unary<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, sizeof_<C>>
+  {
+    using type = smp::sizeof_<sfinae<C>>;
   };
 }
 /// \endcond
