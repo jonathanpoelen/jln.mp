@@ -9,7 +9,7 @@
 <div class="from_mdfile"><article id="main"><p><a href="https://github.com/jonathanpoelen/jln.mp/actions?query=workflow%3ACI"><img src="https://github.com/jonathanpoelen/jln.mp/workflows/CI/badge.svg?branch=master&event=push" alt="CI"/></a></p>
 <p><a href="https://github.com/jonathanpoelen/jln.mp">Jln.mp</a> is a single header C++17 metaprogramming library designed for fast compilation speed.</p>
 <p>Licence: MIT</p>
-<p>Online documentation: https://jonathanpoelen.github.io/jln.mp/</p>
+<p>Online documentation: <a href="https://jonathanpoelen.github.io/jln.mp/">https://jonathanpoelen.github.io/jln.mp/</a></p>
 </article>
 <section id="concepts"><h1 id="concepts">Concepts<a href="#concepts" class="titleref">¶</a></h1>
 <p>Functions of jln.mp are used in 2 stages:</p>
@@ -62,6 +62,7 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <span class="cp">#include "jln/mp/algorithm/transform.hpp"</span>
 <span class="cp">#include "jln/mp/algorithm/repeat.hpp"</span>
 <span class="cp">#include "jln/mp/functional/each.hpp"</span>
+<span class="cp">#include "jln/mp/functional/lift.hpp"</span>
 <span class="cp">#include "jln/mp/list/as_list.hpp"</span>
 <span class="cp">#include "jln/mp/list/join.hpp"</span>
 <span class="cp">#include "jln/mp/list/at.hpp"</span>
@@ -74,70 +75,70 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> Tuple<span class="o">></span>
 <span class="k">struct</span> my_tuple_element
 <span class="p">{</span>
-  <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> I<span class="o">></span>
-  <span class="k">using</span> f <span class="o">=</span> std<span class="p">::</span>tuple_element_t<span class="o">&lt;</span>I<span class="p">::</span>value<span class="p">,</span> Tuple<span class="o">></span><span class="p">;</span>
+    <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> I<span class="o">></span>
+    <span class="k">using</span> f <span class="o">=</span> std<span class="p">::</span>tuple_element_t<span class="o">&lt;</span>I<span class="p">::</span>value<span class="p">,</span> Tuple<span class="o">></span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span> Tuples<span class="o">></span>
 <span class="k">using</span> my_tuple_cat_result_type <span class="o">=</span> <a href="#mp::call">mp<span class="p">::</span>call</a><span class="o">&lt;</span>
-  <span class="c1">// convert a sequence of mp::list to std::tuple</span>
-  <a href="#mp::join">mp<span class="p">::</span>join</a><span class="o">&lt;</span>mp<span class="p">::</span>cfe<span class="o">&lt;</span>std<span class="p">::</span>tuple<span class="o">>></span><span class="p">,</span>
-  <span class="c1">// convert a tuple like to mp::list</span>
-  <a href="#emp::make_int_sequence">emp<span class="p">::</span>make_int_sequence</a><span class="o">&lt;</span>
-    std<span class="p">::</span>tuple_size<span class="o">&lt;</span>std<span class="p">::</span>remove_reference_t<span class="o">&lt;</span>Tuples<span class="o">>></span><span class="p">,</span>
-    <span class="c1">// convert a sequence of tuple index to a mp::list of tuple element</span>
-    <a href="#mp::transform">mp<span class="p">::</span>transform</a><span class="o">&lt;</span>my_tuple_element<span class="o">&lt;</span>std<span class="p">::</span>decay_t<span class="o">&lt;</span>Tuples<span class="o">>>></span>
-  <span class="o">></span><span class="p">...</span>
+    <span class="c1">// convert a sequence of mp::list to std::tuple</span>
+    <a href="#mp::join">mp<span class="p">::</span>join</a><span class="o">&lt;</span><a href="#mp::lift">mp<span class="p">::</span>lift</a><span class="o">&lt;</span>std<span class="p">::</span>tuple<span class="o">>></span><span class="p">,</span>
+    <span class="c1">// convert a tuple like to mp::list</span>
+    <a href="#emp::make_int_sequence">emp<span class="p">::</span>make_int_sequence</a><span class="o">&lt;</span>
+        std<span class="p">::</span>tuple_size<span class="o">&lt;</span>std<span class="p">::</span>remove_reference_t<span class="o">&lt;</span>Tuples<span class="o">>></span><span class="p">,</span>
+        <span class="c1">// convert a sequence of tuple index to a mp::list of tuple element</span>
+        <a href="#mp::transform">mp<span class="p">::</span>transform</a><span class="o">&lt;</span>my_tuple_element<span class="o">&lt;</span>std<span class="p">::</span>decay_t<span class="o">&lt;</span>Tuples<span class="o">>>></span>
+    <span class="o">></span><span class="p">...</span>
 <span class="o">></span><span class="p">;</span>
 
 <span class="k">template</span><span class="o">&lt;</span><a href="#mp::int_">mp<span class="p">::</span>int_</a><span class="p">...</span> ituples<span class="p">,</span> <a href="#mp::int_">mp<span class="p">::</span>int_</a><span class="p">...</span> ivalues<span class="p">,</span> <span class="k">class</span><span class="p">...</span> Tuples<span class="o">></span>
 <span class="k">constexpr</span> <span class="k">auto</span> my_tuple_cat_impl<span class="p">(</span>
-  <a href="#emp::numbers">emp<span class="p">::</span>numbers</a><span class="o">&lt;</span>ituples<span class="p">...</span><span class="o">></span><span class="p">,</span> <a href="#emp::numbers">emp<span class="p">::</span>numbers</a><span class="o">&lt;</span>ivalues<span class="p">...</span><span class="o">></span><span class="p">,</span> std<span class="p">::</span>tuple<span class="o">&lt;</span>Tuples<span class="p">...</span><span class="o">></span> t<span class="p">)</span>
+    <a href="#emp::numbers">emp<span class="p">::</span>numbers</a><span class="o">&lt;</span>ituples<span class="p">...</span><span class="o">></span><span class="p">,</span> <a href="#emp::numbers">emp<span class="p">::</span>numbers</a><span class="o">&lt;</span>ivalues<span class="p">...</span><span class="o">></span><span class="p">,</span> std<span class="p">::</span>tuple<span class="o">&lt;</span>Tuples<span class="p">...</span><span class="o">></span> t<span class="p">)</span>
 <span class="p">{</span>
-  <span class="c1">// get is looked up by argument-dependent lookup</span>
-  <span class="k">using</span> std<span class="p">::</span>get<span class="p">;</span>
-  <span class="k">return</span> my_tuple_cat_result_type<span class="o">&lt;</span>Tuples<span class="p">...</span><span class="o">></span><span class="p">{</span>
-    get<span class="o">&lt;</span>ivalues<span class="o">></span><span class="p">(</span>get<span class="o">&lt;</span>ituples<span class="o">></span><span class="p">(</span>t<span class="p">))...</span>
-  <span class="p">};</span>
+    <span class="c1">// get is looked up by argument-dependent lookup</span>
+    <span class="k">using</span> std<span class="p">::</span>get<span class="p">;</span>
+    <span class="k">return</span> my_tuple_cat_result_type<span class="o">&lt;</span>Tuples<span class="p">...</span><span class="o">></span><span class="p">{</span>
+        get<span class="o">&lt;</span>ivalues<span class="o">></span><span class="p">(</span>get<span class="o">&lt;</span>ituples<span class="o">></span><span class="p">(</span>t<span class="p">))...</span>
+    <span class="p">};</span>
 <span class="p">}</span>
 
 <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span> Tuples<span class="o">></span>
 <span class="k">constexpr</span> my_tuple_cat_result_type<span class="o">&lt;</span>Tuples<span class="p">...</span><span class="o">></span> my_tuple_cat<span class="p">(</span>Tuples<span class="o">&amp;&amp;</span><span class="p">...</span> args<span class="p">)</span>
 <span class="p">{</span>
-  <span class="c1">// ex:  tuple_size=3   tuple_size=2   tuple_size=4</span>
-  <span class="c1">// list&lt;  0, 0, 0,         1, 1,       2, 2, 2, 2 ></span>
-  <span class="k">using</span> index_by_tuple <span class="o">=</span> <a href="#emp::make_int_sequence_c">emp<span class="p">::</span>make_int_sequence_c</a><span class="o">&lt;</span>
-    <span class="k">sizeof</span><span class="p">...(</span>Tuples<span class="p">),</span>
-    <span class="c1">// repeat each index by number of element</span>
-    <a href="#mp::each">mp<span class="p">::</span>each</a><span class="o">&lt;</span><a href="#mp::repeat">mp<span class="p">::</span>repeat</a><span class="o">&lt;</span>std<span class="p">::</span>tuple_size<span class="o">&lt;</span>std<span class="p">::</span>remove_reference_t<span class="o">&lt;</span>Tuples<span class="o">>>></span><span class="p">...,</span>
-      <a href="#mp::join">mp<span class="p">::</span>join</a><span class="o">&lt;></span>
-    <span class="o">></span>
-  <span class="o">></span><span class="p">;</span>
+    <span class="c1">// ex:    tuple_size=3     tuple_size=2     tuple_size=4</span>
+    <span class="c1">// list&lt;    0, 0, 0,                 1, 1,             2, 2, 2, 2 ></span>
+    <span class="k">using</span> index_by_tuple <span class="o">=</span> <a href="#emp::make_int_sequence_c">emp<span class="p">::</span>make_int_sequence_c</a><span class="o">&lt;</span>
+        <span class="k">sizeof</span><span class="p">...(</span>Tuples<span class="p">),</span>
+        <span class="c1">// repeat each index by number of element</span>
+        <a href="#mp::each">mp<span class="p">::</span>each</a><span class="o">&lt;</span><a href="#mp::repeat">mp<span class="p">::</span>repeat</a><span class="o">&lt;</span>std<span class="p">::</span>tuple_size<span class="o">&lt;</span>std<span class="p">::</span>remove_reference_t<span class="o">&lt;</span>Tuples<span class="o">>>></span><span class="p">...,</span>
+            <a href="#mp::join">mp<span class="p">::</span>join</a><span class="o">&lt;></span>
+        <span class="o">></span>
+    <span class="o">></span><span class="p">;</span>
 
-  <span class="c1">// ex:  tuple_size=3   tuple_size=2   tuple_size=4</span>
-  <span class="c1">// list&lt;  0, 1, 2,         0, 1,       0, 1, 2, 3 ></span>
-  <span class="k">using</span> index_by_value <span class="o">=</span> <a href="#emp::join">emp<span class="p">::</span>join</a><span class="o">&lt;</span>
-    <a href="#emp::make_int_sequence">emp<span class="p">::</span>make_int_sequence</a><span class="o">&lt;</span>std<span class="p">::</span>tuple_size<span class="o">&lt;</span>std<span class="p">::</span>remove_reference_t<span class="o">&lt;</span>Tuples<span class="o">>>></span><span class="p">...</span>
-  <span class="o">></span><span class="p">;</span>
+    <span class="c1">// ex:    tuple_size=3     tuple_size=2     tuple_size=4</span>
+    <span class="c1">// list&lt;    0, 1, 2,                 0, 1,             0, 1, 2, 3 ></span>
+    <span class="k">using</span> index_by_value <span class="o">=</span> <a href="#emp::join">emp<span class="p">::</span>join</a><span class="o">&lt;</span>
+        <a href="#emp::make_int_sequence">emp<span class="p">::</span>make_int_sequence</a><span class="o">&lt;</span>std<span class="p">::</span>tuple_size<span class="o">&lt;</span>std<span class="p">::</span>remove_reference_t<span class="o">&lt;</span>Tuples<span class="o">>>></span><span class="p">...</span>
+    <span class="o">></span><span class="p">;</span>
 
-  <span class="k">return</span> my_tuple_cat_impl<span class="p">(</span>index_by_tuple<span class="p">{},</span> index_by_value<span class="p">{},</span> std<span class="p">::</span>tuple<span class="o">&lt;</span>Tuples<span class="o">&amp;&amp;</span><span class="p">...</span><span class="o">></span><span class="p">(</span>args<span class="p">...));</span>
+    <span class="k">return</span> my_tuple_cat_impl<span class="p">(</span>index_by_tuple<span class="p">{},</span> index_by_value<span class="p">{},</span> std<span class="p">::</span>tuple<span class="o">&lt;</span>Tuples<span class="o">&amp;&amp;</span><span class="p">...</span><span class="o">></span><span class="p">(</span>args<span class="p">...));</span>
 <span class="p">}</span>
 
 <span class="c1">// defines a tuple like</span>
 <span class="c1">//@{</span>
 <span class="k">namespace</span> toy
 <span class="p">{</span>
-  <span class="c1">// tuple like</span>
-  <span class="k">struct</span> Vector2D
-  <span class="p">{</span>
-    <span class="kt">int</span> x<span class="p">,</span> y<span class="p">;</span>
-  <span class="p">};</span>
+    <span class="c1">// tuple like</span>
+    <span class="k">struct</span> Vector2D
+    <span class="p">{</span>
+        <span class="kt">int</span> x<span class="p">,</span> y<span class="p">;</span>
+    <span class="p">};</span>
 
-  <span class="k">template</span><span class="o">&lt;</span>std<span class="p">::</span>size_t i<span class="o">></span>
-  <span class="k">constexpr</span> <span class="kt">int</span> get<span class="p">(</span>Vector2D const<span class="o">&amp;</span> t<span class="p">)</span>
-  <span class="p">{</span>
-    <span class="k">return</span> i <span class="o">==</span> <span class="mi">0</span> ? t<span class="p">.</span>x <span class="p">:</span> t<span class="p">.</span>y<span class="p">;</span>
-  <span class="p">}</span>
+    <span class="k">template</span><span class="o">&lt;</span>std<span class="p">::</span>size_t i<span class="o">></span>
+    <span class="k">constexpr</span> <span class="kt">int</span> get<span class="p">(</span>Vector2D const<span class="o">&amp;</span> t<span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> i <span class="o">==</span> <span class="mi">0</span> ? t<span class="p">.</span>x <span class="p">:</span> t<span class="p">.</span>y<span class="p">;</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 
 <span class="k">template</span><span class="o">&lt;></span>
@@ -148,7 +149,7 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <span class="k">template</span><span class="o">&lt;</span>size_t i<span class="o">></span>
 <span class="k">struct</span> std<span class="p">::</span>tuple_element<span class="o">&lt;</span>i<span class="p">,</span> <span class="p">::</span>toy<span class="p">::</span>Vector2D<span class="o">></span>
 <span class="p">{</span>
-  <span class="k">using</span> type <span class="o">=</span> <span class="kt">int</span><span class="p">;</span>
+    <span class="k">using</span> type <span class="o">=</span> <span class="kt">int</span><span class="p">;</span>
 <span class="p">};</span>
 <span class="c1">//@}</span>
 
@@ -164,11 +165,11 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 
 <span class="k">using</span> my_tuple_type <span class="o">=</span> std<span class="p">::</span>remove_const_t<span class="o">&lt;</span><span class="k">decltype</span><span class="p">(</span>my_tuple<span class="p">)</span><span class="o">></span><span class="p">;</span>
 <span class="k">using</span> std_tuple <span class="o">=</span> std<span class="p">::</span>tuple<span class="o">&lt;</span>
-  <span class="kt">int</span><span class="p">,</span> <span class="kt">float</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span>
-  <span class="kt">char</span><span class="p">,</span> <span class="kt">unsigned</span><span class="p">,</span>
-  <span class="kt">long</span><span class="p">,</span>
-  <span class="kt">short</span><span class="p">,</span> <span class="kt">short</span><span class="p">,</span> <span class="kt">short</span><span class="p">,</span> <span class="kt">short</span><span class="p">,</span>
-  <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="o">></span><span class="p">;</span>
+    <span class="kt">int</span><span class="p">,</span> <span class="kt">float</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span>
+    <span class="kt">char</span><span class="p">,</span> <span class="kt">unsigned</span><span class="p">,</span>
+    <span class="kt">long</span><span class="p">,</span>
+    <span class="kt">short</span><span class="p">,</span> <span class="kt">short</span><span class="p">,</span> <span class="kt">short</span><span class="p">,</span> <span class="kt">short</span><span class="p">,</span>
+    <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="o">></span><span class="p">;</span>
 
 <span class="k">static_assert</span><span class="p">(</span>std<span class="p">::</span>is_same_v<span class="o">&lt;</span>my_tuple_type<span class="p">,</span> std_tuple<span class="o">></span><span class="p">);</span>
 <span class="k">static_assert</span><span class="p">(</span>my_tuple <span class="o">==</span> std<span class="p">::</span>tuple<span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">});</span>
@@ -192,8 +193,11 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#algorithm/intersperse.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">intersperse</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/is_sorted.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">is_sorted</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/is_unique.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">is_unique</span><span class="ext">.hpp</span></a></li>
+<li><a href="#algorithm/lexicographical_compare.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">lexicographical_compare</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/matrix_shortest.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">matrix_shortest</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/merge.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">merge</span><span class="ext">.hpp</span></a></li>
+<li><a href="#algorithm/mismatch.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">mismatch</span><span class="ext">.hpp</span></a></li>
+<li><a href="#algorithm/mismatch_index.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">mismatch_index</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/none_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">none_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/permutations.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">permutations</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/powerset.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">powerset</span><span class="ext">.hpp</span></a></li>
@@ -208,6 +212,7 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#algorithm/transform.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">transform</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/unique.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">unique</span><span class="ext">.hpp</span></a></li>
 </ul></li><li id="g1__functional" class="index_group"><a class="index_cat" href="#g1__functional">Group: functional</a><ul class="subindex_list file_sublist">
+<li><a href="#algorithm/compare_with.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">compare_with</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/bind.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">bind</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/call.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">call</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/capture.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">capture</span><span class="ext">.hpp</span></a></li>
@@ -223,6 +228,7 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#functional/is_invocable.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">is_invocable</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/lift.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">lift</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/monadic.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">monadic</span><span class="ext">.hpp</span></a></li>
+<li><a href="#functional/on.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">on</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/partial.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">partial</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/recurse.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">recurse</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/tee.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">tee</span><span class="ext">.hpp</span></a></li>
@@ -283,8 +289,10 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#algorithm/upper_bound.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">upper_bound</span><span class="ext">.hpp</span></a></li>
 <li><a href="#list/offset.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">offset</span><span class="ext">.hpp</span></a></li>
 </ul></li><li id="g1__trait" class="index_group"><a class="index_cat" href="#g1__trait">Group: trait</a><ul class="subindex_list file_sublist">
+<li><a href="#utility/alignof.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">alignof</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/is_instance_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">is_instance_of</span><span class="ext">.hpp</span></a></li>
-<li><a href="#utility/traits.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">traits</span><span class="ext">.hpp</span></a></li>
+<li><a href="#utility/sizeof.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">sizeof</span><span class="ext">.hpp</span></a></li>
+<li><a href="#utility/stl_traits.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">stl_traits</span><span class="ext">.hpp</span></a></li>
 </ul></li><li id="g1__utility" class="index_group"><a class="index_cat" href="#g1__utility">Group: utility</a><ul class="subindex_list file_sublist">
 <li><a href="#utility/always.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">always</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/conditional.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">conditional</span><span class="ext">.hpp</span></a></li>
@@ -308,6 +316,7 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#algorithm/any_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">any_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/cartesian.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">cartesian</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/combine.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">combine</span><span class="ext">.hpp</span></a></li>
+<li><a href="#algorithm/compare_with.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">compare_with</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/contains.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">contains</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/copy.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">copy</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/count.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">count</span><span class="ext">.hpp</span></a></li>
@@ -323,10 +332,13 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#algorithm/iota.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">iota</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/is_sorted.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">is_sorted</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/is_unique.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">is_unique</span><span class="ext">.hpp</span></a></li>
+<li><a href="#algorithm/lexicographical_compare.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">lexicographical_compare</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/lower_bound.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">lower_bound</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/make_int_sequence.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">make_int_sequence</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/matrix_shortest.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">matrix_shortest</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/merge.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">merge</span><span class="ext">.hpp</span></a></li>
+<li><a href="#algorithm/mismatch.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">mismatch</span><span class="ext">.hpp</span></a></li>
+<li><a href="#algorithm/mismatch_index.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">mismatch_index</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/none_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">none_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/partition.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">partition</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/permutations.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">permutations</span><span class="ext">.hpp</span></a></li>
@@ -363,6 +375,7 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#functional/is_invocable.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">is_invocable</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/lift.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">lift</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/monadic.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">monadic</span><span class="ext">.hpp</span></a></li>
+<li><a href="#functional/on.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">on</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/partial.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">partial</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/recurse.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">recurse</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/tee.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">tee</span><span class="ext">.hpp</span></a></li>
@@ -406,12 +419,14 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#number/operators.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">number/</span><span class="basename">operators</span><span class="ext">.hpp</span></a></li>
 <li><a href="#number/to_bool.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">number/</span><span class="basename">to_bool</span><span class="ext">.hpp</span></a></li>
 </ul></li><li id="g2__utility" class="index_group"><a class="index_cat" href="#g2__utility">Directory: utility</a><ul class="subindex_list file_sublist">
+<li><a href="#utility/alignof.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">alignof</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/always.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">always</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/conditional.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">conditional</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/has_type.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">has_type</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/is_instance_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">is_instance_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/same_as.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">same_as</span><span class="ext">.hpp</span></a></li>
-<li><a href="#utility/traits.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">traits</span><span class="ext">.hpp</span></a></li>
+<li><a href="#utility/sizeof.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">sizeof</span><span class="ext">.hpp</span></a></li>
+<li><a href="#utility/stl_traits.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">stl_traits</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/unpack.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">unpack</span><span class="ext">.hpp</span></a></li>
 </ul></li><li id="g2__value" class="index_group"><a class="index_cat" href="#g2__value">Directory: value</a><ul class="subindex_list file_sublist">
 <li><a href="#value/as_val.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">value/</span><span class="basename">as_val</span><span class="ext">.hpp</span></a></li>
@@ -443,9 +458,13 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#mp::is_sorted" class="index_link">is_sorted</a></li>
 <li><a href="#mp::is_unique" class="index_link">is_unique</a></li>
 <li><a href="#mp::is_unique_if" class="index_link">is_unique_if</a></li>
+<li><a href="#mp::lexicographical_compare" class="index_link">lexicographical_compare</a></li>
+<li><a href="#mp::lexicographical_compare2" class="index_link">lexicographical_compare2</a></li>
 <li><a href="#mp::matrix_shortest" class="index_link">matrix_shortest</a></li>
 <li><a href="#mp::matrix_shortest_with" class="index_link">matrix_shortest_with</a></li>
 <li><a href="#mp::merge" class="index_link">merge</a></li>
+<li><a href="#mp::mismatch" class="index_link">mismatch</a></li>
+<li><a href="#mp::mismatch_index" class="index_link">mismatch_index</a></li>
 <li><a href="#mp::none_of" class="index_link">none_of</a></li>
 <li><a href="#mp::permutations" class="index_link">permutations</a></li>
 <li><a href="#mp::powerset" class="index_link">powerset</a></li>
@@ -480,6 +499,7 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#mp::capture_v" class="index_link">capture_v</a></li>
 <li><a href="#mp::capture_v_c" class="index_link">capture_v_c</a></li>
 <li><a href="#mp::cascade" class="index_link">cascade</a></li>
+<li><a href="#mp::compare_with" class="index_link">compare_with</a></li>
 <li><a href="#mp::compose" class="index_link">compose</a></li>
 <li><a href="#mp::compose_f" class="index_link">compose_f</a></li>
 <li><a href="#mp::dispatch" class="index_link">dispatch</a></li>
@@ -507,8 +527,8 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#mp::monadic_if_na" class="index_link">monadic_if_na</a></li>
 <li><a href="#mp::monadic_xs" class="index_link">monadic_xs</a></li>
 <li><a href="#mp::na" class="index_link">na</a></li>
+<li><a href="#mp::on" class="index_link">on</a></li>
 <li><a href="#mp::partial" class="index_link">partial</a></li>
-<li><a href="#mp::partial_eager" class="index_link">partial_eager</a></li>
 <li><a href="#mp::recurse" class="index_link">recurse</a></li>
 <li><a href="#mp::recurse_fix" class="index_link">recurse_fix</a></li>
 <li><a href="#mp::reverse_bind" class="index_link">reverse_bind</a></li>
@@ -689,7 +709,9 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#mp::upper_bound_than" class="index_link">upper_bound_than</a></li>
 <li><a href="#mp::upper_bound_than_c" class="index_link">upper_bound_than_c</a></li>
 </ul></li><li id="g3__trait" class="index_group"><a class="index_cat" href="#g3__trait">Group: trait</a><ul class="subindex_list func_sublist">
+<li><a href="#mp::alignof_" class="index_link">alignof_</a></li>
 <li><a href="#mp::is_instance_of" class="index_link">is_instance_of</a></li>
+<li><a href="#mp::sizeof_" class="index_link">sizeof_</a></li>
 </ul></li><li id="g3__utility" class="index_group"><a class="index_cat" href="#g3__utility">Group: utility</a><ul class="subindex_list func_sublist">
 <li><a href="#mp::always" class="index_link">always</a></li>
 <li><a href="#mp::conditional" class="index_link">conditional</a></li>
@@ -765,6 +787,7 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#mp::adjacent_difference" class="index_link">adjacent_difference</a></li>
 <li><a href="#mp::adjacent_remove" class="index_link">adjacent_remove</a></li>
 <li><a href="#mp::adjacent_remove_if" class="index_link">adjacent_remove_if</a></li>
+<li><a href="#mp::alignof_" class="index_link">alignof_</a></li>
 <li><a href="#mp::all_of" class="index_link">all_of</a></li>
 <li><a href="#mp::always" class="index_link">always</a></li>
 <li><a href="#mp::and_" class="index_link">and_</a></li>
@@ -811,6 +834,7 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#mp::clamp" class="index_link">clamp</a></li>
 <li><a href="#mp::clamp_c" class="index_link">clamp_c</a></li>
 <li><a href="#mp::combine" class="index_link">combine</a></li>
+<li><a href="#mp::compare_with" class="index_link">compare_with</a></li>
 <li><a href="#mp::compose" class="index_link">compose</a></li>
 <li><a href="#mp::compose_f" class="index_link">compose_f</a></li>
 <li><a href="#mp::conditional" class="index_link">conditional</a></li>
@@ -903,6 +927,8 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#mp::less_equal_than_c" class="index_link">less_equal_than_c</a></li>
 <li><a href="#mp::less_than" class="index_link">less_than</a></li>
 <li><a href="#mp::less_than_c" class="index_link">less_than_c</a></li>
+<li><a href="#mp::lexicographical_compare" class="index_link">lexicographical_compare</a></li>
+<li><a href="#mp::lexicographical_compare2" class="index_link">lexicographical_compare2</a></li>
 <li><a href="#mp::lift" class="index_link">lift</a></li>
 <li><a href="#mp::lift_c" class="index_link">lift_c</a></li>
 <li><a href="#mp::lift_t" class="index_link">lift_t</a></li>
@@ -926,6 +952,8 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#mp::merge" class="index_link">merge</a></li>
 <li><a href="#mp::min" class="index_link">min</a></li>
 <li><a href="#mp::min0" class="index_link">min0</a></li>
+<li><a href="#mp::mismatch" class="index_link">mismatch</a></li>
+<li><a href="#mp::mismatch_index" class="index_link">mismatch_index</a></li>
 <li><a href="#mp::mod" class="index_link">mod</a></li>
 <li><a href="#mp::mod0" class="index_link">mod0</a></li>
 <li><a href="#mp::mod1" class="index_link">mod1</a></li>
@@ -949,10 +977,10 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 </ul></li><li id="g4__O" class="index_group"><a class="index_cat" href="#g4__O">O</a><ul class="subindex_list func_sublist">
 <li><a href="#mp::offset" class="index_link">offset</a></li>
 <li><a href="#mp::offset_c" class="index_link">offset_c</a></li>
+<li><a href="#mp::on" class="index_link">on</a></li>
 <li><a href="#mp::or_" class="index_link">or_</a></li>
 </ul></li><li id="g4__P" class="index_group"><a class="index_cat" href="#g4__P">P</a><ul class="subindex_list func_sublist">
 <li><a href="#mp::partial" class="index_link">partial</a></li>
-<li><a href="#mp::partial_eager" class="index_link">partial_eager</a></li>
 <li><a href="#mp::partition" class="index_link">partition</a></li>
 <li><a href="#mp::partition_with" class="index_link">partition_with</a></li>
 <li><a href="#mp::permutations" class="index_link">permutations</a></li>
@@ -990,6 +1018,7 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#mp::same" class="index_link">same</a></li>
 <li><a href="#mp::same_as" class="index_link">same_as</a></li>
 <li><a href="#mp::size" class="index_link">size</a></li>
+<li><a href="#mp::sizeof_" class="index_link">sizeof_</a></li>
 <li><a href="#mp::slice" class="index_link">slice</a></li>
 <li><a href="#mp::slice_c" class="index_link">slice_c</a></li>
 <li><a href="#mp::sliding" class="index_link">sliding</a></li>
@@ -1135,9 +1164,14 @@ from the beginning to the end.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_sorted">is_sorted</a><span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Checks wheteher a <a href="#d_sequence">sequence</a> is sorted.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_unique">is_unique</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Checks whether no <a href="#d_value">value</a>s are identical.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_unique_if">is_unique_if</a><span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::lift">lift</a><span class="o">&lt;</span>std<span class="p">::</span>is_same<span class="o">></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td></td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::lexicographical_compare">lexicographical_compare</a><span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="o">></span></code></td><td>Checks if <code class="inlinecode highlight" data-lang="cpp">seq1</code>  is lexicographically less than <code class="inlinecode highlight" data-lang="cpp">seq2</code>.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::lexicographical_compare2">lexicographical_compare2</a><span class="o">&lt;</span>CmpLess <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;></span><span class="p">,</span> CmpEq <span class="o">=</span> <a href="#mp::equal">equal</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::mismatch">mismatch</a><span class="o">&lt;</span>CmpEq<span class="p">,</span> <a href="#mp::lift">lift</a><span class="o">&lt;/*</span> implementation defined <span class="o">*/>></span><span class="p">::</span>f<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>CmpLess<span class="p">,</span> seq1<span class="p">,</span> seq2<span class="o">>></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::matrix_shortest_with">matrix_shortest_with</a><span class="o">&lt;</span>F <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seqs<span class="p">...</span><span class="o">></span></code></td><td>Truncates a <a href="#d_sequence">sequence</a> of <a href="#d_typelist">typelist</a> on the smallest size.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::matrix_shortest">matrix_shortest</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::matrix_shortest_with">matrix_shortest_with</a><span class="o">&lt;</span><a href="#mp::listify">listify</a><span class="p">,</span> C<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::merge">merge</a><span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="o">></span></code></td><td>Merges two <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code> into one sorted <a href="#d_sequence">sequence</a>.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::mismatch">mismatch</a><span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::equal">equal</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> NC <span class="o">=</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="o">></span></code></td><td>\semantic
+  <code class="inlinecode highlight" data-lang="cpp">NC<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;-</span><span class="mi">1</span><span class="o">></span><span class="p">,</span> <a href="#mp::number">number</a><span class="o">&lt;</span><a href="#emp::size">emp<span class="p">::</span>size</a><span class="o">&lt;</span>seq1<span class="o">>>></span></code> if <code class="inlinecode highlight" data-lang="cpp">seq1</code> == <code class="inlinecode highlight" data-lang="cpp">seq2</code>.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::mismatch_index">mismatch_index</a><span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::equal">equal</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Returns the first mismatching index of elements from two sequences, otherwise the size of the sequences.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::none_of">none_of</a><span class="o">&lt;</span>Pred<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Checks whether a predicate does not hold for any element of a <a href="#d_sequence">sequence</a>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::permutations">permutations</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Generates all permutations of <a href="#d_sequence">sequence</a>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::powerset">powerset</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Computes the powerset of a <a href="#d_sequence">sequence</a>.</td></tr>
@@ -1156,7 +1190,7 @@ from the beginning to the end.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::stable_sort">stable_sort</a><span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::sort">sort</a><span class="o">&lt;</span>Cmp<span class="p">,</span> C<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::take_while">take_while</a><span class="o">&lt;</span>Pred<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> NC <span class="o">=</span> C<span class="o">></span></code></td><td>Takes elements from a <a href="#d_sequence">sequence</a> while the predicate is satisfied.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::transform">transform</a><span class="o">&lt;</span>F<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Executes <code class="inlinecode highlight" data-lang="cpp">F</code> on every element of a <a href="#d_sequence">sequence</a>.</td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::unique">unique</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>Creates a set.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::unique">unique</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>Returns a list of the same form as L with the duplicate elements removed.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::unique_if">unique_if</a><span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::lift">lift</a><span class="o">&lt;</span>std<span class="p">::</span>is_same<span class="o">></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td></td></tr>
 </table>
 </article>
@@ -1176,6 +1210,7 @@ from the beginning to the end.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::reverse_capture_c">reverse_capture_c</a><span class="o">&lt;</span><span class="k">auto</span><span class="p">...</span> xs<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::reverse_capture">reverse_capture</a><span class="o">&lt;</span><a href="#mp::val">val</a><span class="o">&lt;</span>xs<span class="o">></span><span class="p">...</span><span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::reverse_capture_v_c">reverse_capture_v_c</a><span class="o">&lt;</span><span class="k">auto</span><span class="p">...</span> xs<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>C<span class="p">,</span> ys<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span>ys<span class="p">::</span>value<span class="p">...,</span> xs<span class="p">...</span><span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::cascade">cascade</a><span class="o">&lt;</span>F<span class="p">,</span> Fs<span class="p">...</span><span class="o">></span></code></td><td>Recursively invokes <a href="#d_function">function</a>s to nested <a href="#d_typelist">typelist</a> of <a href="#d_typelist">typelist</a>s.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::compare_with">compare_with</a><span class="o">&lt;</span>F<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;>></span></code></td><td>comparison on the result of a function.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::compose_f">compose_f</a><span class="o">&lt;</span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> F<span class="p">,</span> <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> Fs<span class="p">...</span><span class="o">></span></code></td><td>Composition of two <a href="#d_metafunction">meta-function</a>s or more.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::compose">compose</a><span class="o">&lt;</span>F<span class="p">,</span> Fs<span class="p">...</span><span class="o">></span></code></td><td>Composition of two <a href="#d_function">function</a>s or more.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::each">each</a><span class="o">&lt;</span>Fs<span class="p">...,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Invokes multiple functions each taking the parameter corresponding to its position.</td></tr>
@@ -1221,11 +1256,11 @@ from the beginning to the end.</td></tr>
 other than <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::na">na</a><span class="p">,</span></code> otherwhise invokes <code class="inlinecode highlight" data-lang="cpp">FC<span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::try_or">try_or</a><span class="o">&lt;</span>F<span class="p">,</span> FC<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::try_">try_</a><span class="o">&lt;</span>F<span class="p">,</span> <a href="#mp::identity">identity</a><span class="p">,</span> FC<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::try_">try_</a><span class="o">&lt;</span>F<span class="p">,</span> TC<span class="p">,</span> FC<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td></td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::on">on</a><span class="o">&lt;</span>Fs<span class="p">...,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Invokes multiple functions each taking the parameter corresponding to its position
+(or without parameter whether it does not exist)
+then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the results and the rest of the parameters.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::partial">partial</a><span class="o">&lt;</span>Fs<span class="p">...,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Invokes multiple functions each taking the parameter corresponding to its position
 then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the results and the rest of the parameters.</td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::partial_eager">partial_eager</a><span class="o">&lt;</span>Fs<span class="p">...,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Invoke multiple functions each taking the parameter corresponding to its position
-(the last function takes the remaining parameters or 0)
-then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the results.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::stop_iteration">stop_iteration</a><span class="o">&lt;</span>_<span class="o">></span></code></td><td></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::recurse">recurse</a><span class="o">&lt;</span>F<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Recursively invokes <code class="inlinecode highlight" data-lang="cpp">F</code> until <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::stop_iteration">stop_iteration</a></code>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::recurse_fix">recurse_fix</a><span class="o">&lt;</span>F<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Version of <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::fix">fix</a></code> that stops if there is <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::stop_iteration">stop_iteration</a></code>
@@ -1423,6 +1458,8 @@ invocations <code class="inlinecode highlight" data-lang="cpp">F<span class="p">
 <article id="g_trait">
 <h2>Group: trait</h2>
 <table>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::alignof_">alignof_</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Wrapper for alignof keyword
+</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#traits::extent">traits::extent</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="p">,</span> i<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span>C<span class="p">,</span> std<span class="p">::</span>extent<span class="o">&lt;</span>x<span class="p">,</span> i<span class="p">::</span>value<span class="p">...</span><span class="o">></span><span class="p">::</span>type<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#traits::emp::extent">traits::emp::extent</a><span class="o">&lt;</span>x<span class="p">,</span> i <span class="o">=</span> <a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">0</span><span class="o">>></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">std<span class="p">::</span>extent<span class="o">&lt;</span>x<span class="p">,</span> i<span class="p">::</span>value<span class="o">></span><span class="p">::</span>type</code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#traits::aligned_storage">traits::aligned_storage</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>Len<span class="p">,</span> Alignment<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span>C<span class="p">,</span> std<span class="p">::</span>aligned_storage<span class="o">&lt;</span>Len<span class="p">::</span>value<span class="p">,</span> Alignment<span class="p">::</span>value<span class="p">...</span><span class="o">></span><span class="p">::</span>type<span class="o">></span></code></td></tr>
@@ -1430,6 +1467,8 @@ invocations <code class="inlinecode highlight" data-lang="cpp">F<span class="p">
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#traits::aligned_union">traits::aligned_union</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>len<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span>C<span class="p">,</span> std<span class="p">::</span>aligned_union<span class="o">&lt;</span>len<span class="p">::</span>value<span class="p">,</span> xs<span class="p">...</span><span class="o">></span><span class="p">::</span>type<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#traits::emp::aligned_union">traits::emp::aligned_union</a><span class="o">&lt;</span>len<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">std<span class="p">::</span>aligned_union<span class="o">&lt;</span>len<span class="p">::</span>value<span class="p">,</span> xs<span class="p">...</span><span class="o">></span><span class="p">::</span>type</code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_instance_of">is_instance_of</a><span class="o">&lt;</span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> Tpl<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Checks whether <code class="inlinecode highlight" data-lang="cpp">x</code> is <code class="inlinecode highlight" data-lang="cpp">Tpl<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code>
+</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::sizeof_">sizeof_</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Wrapper for sizeof keyword
 </td></tr>
 </table>
 </article>
@@ -1692,6 +1731,17 @@ use <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::push_front"
 <h3 class="emp" id="emp::is_unique_if"><a href="#emp::is_unique_if" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>is_unique_if<span class="o">&lt;</span>L<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::lift">lift</a><span class="o">&lt;</span>std<span class="p">::</span>is_same<span class="o">></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">mp<span class="p">::</span>identity</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#emp::is_unique_if">is_unique_if</a><span class="o">&lt;</span>Cmp<span class="p">,</span> C<span class="o">>></span></code></h3>
 </div>
 </div>
+<h2 class="file" id="algorithm/lexicographical_compare.hpp"><a href="#algorithm/lexicographical_compare.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/lexicographical_compare.hpp></h2><div class="group__file">
+<h3 id="mp::lexicographical_compare"><a href="#mp::lexicographical_compare" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">lexicographical_compare<span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="o">></span></code></h3>
+<p>Checks if <code class="inlinecode highlight" data-lang="cpp">seq1</code>  is lexicographically less than <code class="inlinecode highlight" data-lang="cpp">seq2</code>.</p><p>
+</p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
+<code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::mismatch">mismatch</a><span class="o">&lt;/*</span> implementation defined <span class="o">*/</span><span class="p">,</span> <a href="#mp::lift">lift</a><span class="o">&lt;/*</span> implementation defined <span class="o">*/>></span><span class="p">::</span>f<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>Cmp<span class="p">,</span> seq1<span class="p">,</span> seq2<span class="o">>></span></code></div><h3 id="mp::lexicographical_compare2"><a href="#mp::lexicographical_compare2" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">lexicographical_compare2<span class="o">&lt;</span>CmpLess <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;></span><span class="p">,</span> CmpEq <span class="o">=</span> <a href="#mp::equal">equal</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="o">></span></code></h3>
+<div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
+<code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::mismatch">mismatch</a><span class="o">&lt;</span>CmpEq<span class="p">,</span> <a href="#mp::lift">lift</a><span class="o">&lt;/*</span> implementation defined <span class="o">*/>></span><span class="p">::</span>f<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>CmpLess<span class="p">,</span> seq1<span class="p">,</span> seq2<span class="o">>></span></code></div><div class="group__emp">
+<h3 class="emp" id="emp::lexicographical_compare"><a href="#emp::lexicographical_compare" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>lexicographical_compare<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">mp<span class="p">::</span>less</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">mp<span class="p">::</span>identity</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span><a href="#emp::lexicographical_compare">lexicographical_compare</a><span class="o">&lt;</span>Cmp<span class="p">,</span> C<span class="o">></span><span class="p">,</span> seq1<span class="p">,</span> seq2<span class="o">></span></code></h3>
+<h3 class="emp" id="emp::lexicographical_compare2"><a href="#emp::lexicographical_compare2" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>lexicographical_compare2<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="p">,</span> CmpLess <span class="o">=</span> <a href="#mp::less">mp<span class="p">::</span>less</a><span class="o">&lt;></span><span class="p">,</span> CmpEq <span class="o">=</span> <a href="#mp::equal">mp<span class="p">::</span>equal</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">mp<span class="p">::</span>identity</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span><a href="#emp::lexicographical_compare2">lexicographical_compare2</a><span class="o">&lt;</span>CmpLess<span class="p">,</span> CmpEq<span class="p">,</span> C<span class="o">></span><span class="p">,</span> seq1<span class="p">,</span> seq2<span class="o">></span></code></h3>
+</div>
+</div>
 <h2 class="file" id="algorithm/matrix_shortest.hpp"><a href="#algorithm/matrix_shortest.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/matrix_shortest.hpp></h2><div class="group__file">
 <h3 id="mp::matrix_shortest_with"><a href="#mp::matrix_shortest_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">matrix_shortest_with<span class="o">&lt;</span>F <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seqs<span class="p">...</span><span class="o">></span></code></h3>
 <p>Truncates a <a href="#d_sequence">sequence</a> of <a href="#d_typelist">typelist</a> on the smallest size.</p><p>
@@ -1731,6 +1781,25 @@ use <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::push_front"
 <ul><li><code class="inlinecode highlight" data-lang="cpp"><a href="#emp::is_sorted">emp<span class="p">::</span>is_sorted</a><span class="o">&lt;</span>result<span class="p">...</span><span class="o">></span></code>
 </li></ul></div><div class="group__emp">
 <h3 class="emp" id="emp::merge"><a href="#emp::merge" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>merge<span class="o">&lt;</span>L<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">mp<span class="p">::</span>less</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::merge">mp<span class="p">::</span>merge</a><span class="o">&lt;</span>Cmp<span class="p">,</span> C<span class="o">>></span></code></h3>
+</div>
+</div>
+<h2 class="file" id="algorithm/mismatch.hpp"><a href="#algorithm/mismatch.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/mismatch.hpp></h2><div class="group__file">
+<h3 id="mp::mismatch"><a href="#mp::mismatch" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">mismatch<span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::equal">equal</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> NC <span class="o">=</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="o">></span></code></h3>
+<p>\semantic
+  <code class="inlinecode highlight" data-lang="cpp">NC<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;-</span><span class="mi">1</span><span class="o">></span><span class="p">,</span> <a href="#mp::number">number</a><span class="o">&lt;</span><a href="#emp::size">emp<span class="p">::</span>size</a><span class="o">&lt;</span>seq1<span class="o">>>></span></code> if <code class="inlinecode highlight" data-lang="cpp">seq1</code> == <code class="inlinecode highlight" data-lang="cpp">seq2</code>.</p><p>
+  <code class="inlinecode highlight" data-lang="cpp">NC<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>i<span class="o">></span><span class="p">,</span> <a href="#mp::number">number</a><span class="o">&lt;-</span><span class="mi">1</span><span class="o">>></span></code> if <code class="inlinecode highlight" data-lang="cpp">seq2</code> starts with <code class="inlinecode highlight" data-lang="cpp">seq1</code>.
+  <code class="inlinecode highlight" data-lang="cpp">NC<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>i<span class="o">></span><span class="p">,</span> <a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">1</span><span class="o">>></span></code> if <code class="inlinecode highlight" data-lang="cpp">seq1</code> starts with <code class="inlinecode highlight" data-lang="cpp">seq2</code>.
+  otherwise <code class="inlinecode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>i<span class="o">></span><span class="p">,</span> <a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">0</span><span class="o">>></span></code>.
+</p><div class="group__emp">
+<h3 class="emp" id="emp::mismatch"><a href="#emp::mismatch" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>mismatch<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::equal">mp<span class="p">::</span>equal</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">mp<span class="p">::</span>listify</a><span class="p">,</span> NC <span class="o">=</span> C<span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span><a href="#emp::mismatch">mismatch</a><span class="o">&lt;</span>Cmp<span class="p">,</span> C<span class="p">,</span> NC<span class="o">></span><span class="p">,</span> seq1<span class="p">,</span> seq2<span class="o">></span></code></h3>
+</div>
+</div>
+<h2 class="file" id="algorithm/mismatch_index.hpp"><a href="#algorithm/mismatch_index.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/mismatch_index.hpp></h2><div class="group__file">
+<h3 id="mp::mismatch_index"><a href="#mp::mismatch_index" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">mismatch_index<span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::equal">equal</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h3>
+<p>Returns the first mismatching index of elements from two sequences, otherwise the size of the sequences.</p><p>
+</p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
+<code class="blockcode highlight" data-lang="cpp"><a href="#mp::mismatch">mismatch</a><span class="o">&lt;</span>Cmp<span class="p">,</span> <a href="#mp::at0">at0</a><span class="o">&lt;</span>C<span class="o">></span><span class="p">,</span> <a href="#mp::if_">if_</a><span class="o">&lt;</span><a href="#mp::at0">at0</a><span class="o">&lt;</span><a href="#mp::same_as">same_as</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;-</span><span class="mi">1</span><span class="o">>>></span><span class="p">,</span> <a href="#mp::at1">at1</a><span class="o">&lt;</span>C<span class="o">></span><span class="p">,</span> <a href="#mp::at0">at0</a><span class="o">&lt;</span>C<span class="o">>>></span></code></div><div class="group__emp">
+<h3 class="emp" id="emp::mismatch_index"><a href="#emp::mismatch_index" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>mismatch_index<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::equal">mp<span class="p">::</span>equal</a><span class="o">&lt;></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">mp<span class="p">::</span>identity</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span><a href="#emp::mismatch_index">mismatch_index</a><span class="o">&lt;</span>Cmp<span class="p">,</span> C<span class="o">></span><span class="p">,</span> seq1<span class="p">,</span> seq2<span class="o">></span></code></h3>
 </div>
 </div>
 <h2 class="file" id="algorithm/none_of.hpp"><a href="#algorithm/none_of.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/none_of.hpp></h2><div class="group__file">
@@ -1869,7 +1938,7 @@ use <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::push_front"
 </div>
 <h2 class="file" id="algorithm/unique.hpp"><a href="#algorithm/unique.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/unique.hpp></h2><div class="group__file">
 <h3 id="mp::unique"><a href="#mp::unique" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">unique<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></h3>
-<p>Creates a set.</p><p>
+<p>Returns a list of the same form as L with the duplicate elements removed.</p><p>
 </p><h3 id="mp::unique_if"><a href="#mp::unique_if" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">unique_if<span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::lift">lift</a><span class="o">&lt;</span>std<span class="p">::</span>is_same<span class="o">></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></h3>
 <div class="group__emp">
 <h3 class="emp" id="emp::unique"><a href="#emp::unique" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>unique<span class="o">&lt;</span>L<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">mp<span class="p">::</span>listify</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#emp::unique">unique</a><span class="o">&lt;</span>C<span class="o">>></span></code></h3>
@@ -1921,6 +1990,14 @@ use <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::push_front"
 </p><div class="InfoBox"><h4 class="InfoBox-title">Semantics</h4>
 <p>  <code class="blockcode highlight" data-lang="cpp"><a href="#mp::cascade">cascade</a><span class="o">&lt;</span>F0<span class="p">,</span>F1<span class="p">,</span>F2<span class="o">></span> <span class="o">=</span> <a href="#mp::transform">transform</a><span class="o">&lt;</span><a href="#mp::unpack">unpack</a><span class="o">&lt;</span><a href="#mp::transform">transform</a><span class="o">&lt;</span><a href="#mp::unpack">unpack</a><span class="o">&lt;</span>F2<span class="o">></span><span class="p">,</span> F1<span class="o">>></span><span class="p">,</span> F0<span class="o">></span></code>
 </p></div><div class="group__emp">
+</div>
+</div>
+<h2 class="file" id="algorithm/compare_with.hpp"><a href="#algorithm/compare_with.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/compare_with.hpp></h2><div class="group__file">
+<h3 id="mp::compare_with"><a href="#mp::compare_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">compare_with<span class="o">&lt;</span>F<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;>></span></code></h3>
+<p>comparison on the result of a function.</p><p>
+</p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
+<code class="blockcode highlight" data-lang="cpp"><a href="#mp::each">each</a><span class="o">&lt;</span>F<span class="p">,</span> F<span class="p">,</span> Cmp<span class="o">></span></code></div><div class="group__emp">
+<h3 class="emp" id="emp::compare_with"><a href="#emp::compare_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>compare_with<span class="o">&lt;</span>F<span class="p">,</span> x<span class="p">,</span> y<span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::less">less</a><span class="o">&lt;</span><a href="#mp::call">call</a><span class="o">&lt;</span>F<span class="p">,</span> x<span class="o">></span><span class="p">,</span> <a href="#mp::call">call</a><span class="o">&lt;</span>F<span class="p">,</span> y<span class="o">>></span></code></h3>
 </div>
 </div>
 <h2 class="file" id="functional/compose.hpp"><a href="#functional/compose.hpp" class="ref">¶</a>&lt;jln/mp/functional/compose.hpp></h2><div class="group__file">
@@ -2086,6 +2163,19 @@ other than <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::na">
 <h3 class="emp" id="emp::try_or"><a href="#emp::try_or" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>try_or<span class="o">&lt;</span>F<span class="p">,</span> FC<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::try_">try_</a><span class="o">&lt;</span>F<span class="p">,</span> <a href="#mp::identity">mp<span class="p">::</span>identity</a><span class="p">,</span> FC<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
 </div>
 </div>
+<h2 class="file" id="functional/on.hpp"><a href="#functional/on.hpp" class="ref">¶</a>&lt;jln/mp/functional/on.hpp></h2><div class="group__file">
+<h3 id="mp::on"><a href="#mp::on" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">on<span class="o">&lt;</span>Fs<span class="p">...,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
+<p>Invokes multiple functions each taking the parameter corresponding to its position
+(or without parameter whether it does not exist)
+then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the results and the rest of the parameters.</p><p>
+</p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
+<code class="blockcode highlight" data-lang="cpp"><span class="c1">/* unspecified */</span></code></div><div class="InfoBox"><h4 class="InfoBox-title">Semantics</h4>
+<p>  <code class="blockcode highlight" data-lang="cpp"><a href="#mp::on">on</a><span class="o">&lt;</span>F<span class="p">,</span>G<span class="p">,</span>C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>a<span class="o">></span> <span class="o">==</span> C<span class="p">::</span>f<span class="o">&lt;</span>F<span class="p">::</span>f<span class="o">&lt;</span>a<span class="o">></span><span class="p">,</span> G<span class="p">::</span>f<span class="o">&lt;>></span>
+  <a href="#mp::on">on</a><span class="o">&lt;</span>F<span class="p">,</span>G<span class="p">,</span>C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>a<span class="p">,</span>b<span class="p">,</span>c<span class="p">,</span>d<span class="o">></span> <span class="o">==</span> C<span class="p">::</span>f<span class="o">&lt;</span>F<span class="p">::</span>f<span class="o">&lt;</span>a<span class="o">></span><span class="p">,</span> G<span class="p">::</span>f<span class="o">&lt;</span>b<span class="o">></span><span class="p">,</span> c<span class="p">,</span> d<span class="o">></span></code>
+</p></div><aside>See: <a href="#mp::each">each</a><span class="p">,</span> <a href="#mp::tee">tee</a><span class="p">,</span> <a href="#mp::partial">partial</a>
+</aside><div class="group__emp">
+</div>
+</div>
 <h2 class="file" id="functional/partial.hpp"><a href="#functional/partial.hpp" class="ref">¶</a>&lt;jln/mp/functional/partial.hpp></h2><div class="group__file">
 <h3 id="mp::partial"><a href="#mp::partial" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">partial<span class="o">&lt;</span>Fs<span class="p">...,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
 <p>Invokes multiple functions each taking the parameter corresponding to its position
@@ -2095,18 +2185,7 @@ then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the 
 <ul><li><code class="inlinecode highlight" data-lang="cpp"><span class="k">sizeof</span><span class="p">...(</span>xs<span class="p">)</span> <span class="o">>=</span> <span class="k">sizeof</span><span class="p">...(</span>Fs<span class="p">)</span></code>
 </li></ul></div><div class="InfoBox"><h4 class="InfoBox-title">Semantics</h4>
 <p>  <code class="blockcode highlight" data-lang="cpp"><a href="#mp::partial">partial</a><span class="o">&lt;</span>F<span class="p">,</span>G<span class="p">,</span>C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>a<span class="p">,</span>b<span class="p">,</span>c<span class="p">,</span>d<span class="o">></span> <span class="o">==</span> C<span class="p">::</span>f<span class="o">&lt;</span>F<span class="p">::</span>f<span class="o">&lt;</span>a<span class="o">></span><span class="p">,</span> G<span class="p">::</span>f<span class="o">&lt;</span>b<span class="o">></span><span class="p">,</span> c<span class="p">,</span> d<span class="o">></span></code>
-</p></div><aside>See: <a href="#mp::each">each</a><span class="p">,</span> <a href="#mp::tee">tee</a><span class="p">,</span> <a href="#mp::partial_eager">partial_eager</a>
-</aside><h3 id="mp::partial_eager"><a href="#mp::partial_eager" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">partial_eager<span class="o">&lt;</span>Fs<span class="p">...,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
-<p>Invoke multiple functions each taking the parameter corresponding to its position
-(the last function takes the remaining parameters or 0)
-then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the results.</p><p>
-</p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
-<code class="blockcode highlight" data-lang="cpp"><span class="c1">/* unspecified */</span></code></div><div class="InfoBox"><h4 class="InfoBox-title">Pre-condition</h4>
-<ul><li><code class="inlinecode highlight" data-lang="cpp"><span class="k">sizeof</span><span class="p">...(</span>xs<span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">>=</span> <span class="k">sizeof</span><span class="p">...(</span>Fs<span class="p">)</span></code>
-</li></ul></div><div class="InfoBox"><h4 class="InfoBox-title">Semantics</h4>
-<p>  <code class="blockcode highlight" data-lang="cpp">partial_eagerF<span class="p">,</span>G<span class="p">,</span>C<span class="p">::</span>fa<span class="p">,</span>b<span class="p">,</span>c<span class="p">,</span>d <span class="o">==</span> CFa<span class="p">,</span> Gb<span class="p">,</span> c<span class="p">,</span> d
-  partial_eagerF<span class="p">,</span>G<span class="p">,</span>C<span class="p">::</span>fa <span class="o">==</span> CFa<span class="p">,</span> G</code>
-</p></div><aside>See: <a href="#mp::each">each</a><span class="p">,</span> <a href="#mp::tee">tee</a><span class="p">,</span> <a href="#mp::partial">partial</a>
+</p></div><aside>See: <a href="#mp::each">each</a><span class="p">,</span> <a href="#mp::tee">tee</a><span class="p">,</span> <a href="#mp::on">on</a>
 </aside><div class="group__emp">
 </div>
 </div>
@@ -3033,7 +3112,15 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 <article id="g6__trait">
 <h2 class="group__title">Group: trait</h2>
 <div class="group__content">
-<h2 class="file" id="utility/traits.hpp"><a href="#utility/traits.hpp" class="ref">¶</a>&lt;jln/mp/utility/traits.hpp></h2><div class="group__file">
+<h2 class="file" id="utility/alignof.hpp"><a href="#utility/alignof.hpp" class="ref">¶</a>&lt;jln/mp/utility/alignof.hpp></h2><div class="group__file">
+<h3 id="mp::alignof_"><a href="#mp::alignof_" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">alignof_<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
+<p>Wrapper for alignof keyword
+</p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
+<code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>alignof<span class="p">(</span>x<span class="p">)</span><span class="o">>></span></code></div><div class="group__emp">
+<h3 class="emp" id="emp::alignof_"><a href="#emp::alignof_" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>alignof_<span class="o">&lt;</span>x<span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span>alignof<span class="p">(</span>x<span class="p">)</span><span class="o">></span></code></h3>
+</div>
+</div>
+<h2 class="file" id="utility/stl_traits.hpp"><a href="#utility/stl_traits.hpp" class="ref">¶</a>&lt;jln/mp/utility/stl_traits.hpp></h2><div class="group__file">
 <h3 id="traits::extent"><a href="#traits::extent" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">traits::extent<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="p">,</span> i<span class="p">...</span><span class="o">></span></code></h3>
 <div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span>C<span class="p">,</span> std<span class="p">::</span>extent<span class="o">&lt;</span>x<span class="p">,</span> i<span class="p">::</span>value<span class="p">...</span><span class="o">></span><span class="p">::</span>type<span class="o">></span></code></div><h3 id="traits::emp::extent"><a href="#traits::emp::extent" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">traits::emp::extent<span class="o">&lt;</span>x<span class="p">,</span> i <span class="o">=</span> <a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">0</span><span class="o">>></span></code></h3>
@@ -3054,7 +3141,15 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 <p>Checks whether <code class="inlinecode highlight" data-lang="cpp">x</code> is <code class="inlinecode highlight" data-lang="cpp">Tpl<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;/*</span> implementation defined <span class="o">*/></span></code></div><div class="group__emp">
-<h3 class="emp" id="emp::is_instance_of"><a href="#emp::is_instance_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>is_instance_of<span class="o">&lt;</span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> Tpl<span class="p">,</span> <span class="k">typename</span> x<span class="o">></span></code> = /* implementation defined */</h3>
+<h3 class="emp" id="emp::is_instance_of"><a href="#emp::is_instance_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>is_instance_of<span class="o">&lt;</span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> Tpl<span class="p">,</span> x<span class="o">></span></code> = /* implementation defined */</h3>
+</div>
+</div>
+<h2 class="file" id="utility/sizeof.hpp"><a href="#utility/sizeof.hpp" class="ref">¶</a>&lt;jln/mp/utility/sizeof.hpp></h2><div class="group__file">
+<h3 id="mp::sizeof_"><a href="#mp::sizeof_" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">sizeof_<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
+<p>Wrapper for sizeof keyword
+</p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
+<code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span><span class="k">sizeof</span><span class="p">(</span>x<span class="p">)</span><span class="o">>></span></code></div><div class="group__emp">
+<h3 class="emp" id="emp::sizeof_"><a href="#emp::sizeof_" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>sizeof_<span class="o">&lt;</span>x<span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span><span class="k">sizeof</span><span class="p">(</span>x<span class="p">)</span><span class="o">></span></code></h3>
 </div>
 </div>
 </div>
