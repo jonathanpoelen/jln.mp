@@ -322,16 +322,21 @@ h3, .group__emp {
   content: ": ";
 }
 
+:root {
+  --file-width: 25em;
+  --func-width: 15em;
+}
+
 .index_list.func_list {
-  column-width: 15em;
+  column-width: var(--func-width);
 }
 
 .func_sublist {
-  width:15em;
+  width: var(--func-width);
 }
 
 .file_sublist {
-  width:22em;
+  width: var(--file-width);
 }
 
 .index_list,
@@ -349,7 +354,7 @@ h3, .group__emp {
 
 .index_list {
   column-count: auto;
-  column-width: 22em;
+  column-width: var(--file-width);
   border-width: 1px 0 0 0;
   border-color: #777;
   padding: 0.2em 0 0 0;
