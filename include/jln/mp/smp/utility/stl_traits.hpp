@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../utility/traits.hpp"
+#include "../../utility/stl_traits.hpp"
 #include "../functional/identity.hpp"
 
 namespace jln::mp

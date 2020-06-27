@@ -1,6 +1,6 @@
 #include "test.hpp"
 
-#include "jln/mp/smp/utility/traits.hpp"
+#include "jln/mp/smp/utility/stl_traits.hpp"
 
 TEST_SUITE_BEGIN()
 
