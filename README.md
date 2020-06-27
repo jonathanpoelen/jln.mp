@@ -6,6 +6,8 @@ Licence: MIT
 
 Online documentation: https://jonathanpoelen.github.io/jln.mp/
 
+Single file version in [standalone branch](https://github.com/jonathanpoelen/jln.mp/tree/standalone).
+
 # Concepts
 
 Functions of jln.mp are used in 2 stages:
