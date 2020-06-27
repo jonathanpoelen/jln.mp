@@ -19,6 +19,10 @@ local namespaces = {
   mp = {},
 }
 namespaces[''] = namespaces.mp
+local exclude_namespaces = {
+  'detail'
+}
+local _global_filename
 
 local kw = {
   'treturn',
@@ -143,6 +147,10 @@ end
 
 local i_namespace = kwindexes.namespace
 local f_namespace = function(name)
+  if not namespaces[name] then
+    error('missing \\cond ... \\endcond with\n  namespace: '
+          .. name .. '\n  filename: ' .. _global_filename)
+  end
   local ref_name = (name == '') and '' or name .. '::'
   ctx_namespace = name
   ctx_ref_namespace = ref_name
@@ -160,6 +168,9 @@ end
 
 local Until = function(p) return (1 - P(p))^0 end
 local List = function(p, sep) p = P(p) return p * (sep * p)^0 end
+local Balanced = function(open, close)
+  return P{ open * (1 - S(open..close) + V(1))^0 * close, }
+end
 local sp = P' '^1
 local sp0 = P' '^0
 local ws = S' \n'^1
@@ -169,9 +180,7 @@ local cunl = C(Until'\n') * 1
 local charid = R('az','09','AZ') + S':_'
 local id = charid^1
 local cid = C(id)
-local balancedparent = P{
-  '(' * (1 - S'()' + V(1))^0 * ')',
-}
+local balancedparent = Balanced('(', ')')
 local balancedtag = P{
   '<' * (1 - S'<>()' + V(1) + V(2))^0 * '>',
   '(' * (1 - S'()' + V(2))^0 * ')',
@@ -256,6 +265,16 @@ local tparams = Ct('<' * List(ws0 * tparam, ',') * '>')
 local template = 'template' * ws0 * tparams
 -- local template = C('template' * ws0 * balancedtag)
 
+local ignore_namespace
+for k,name in ipairs(exclude_namespaces) do
+  if ignore_namespace then
+    ignore_namespace = ignore_namespace + P(name)
+  else
+    ignore_namespace = P(name)
+  end
+  ignore_namespace = ignore_namespace + P('jln::mp::' .. name)
+end
+
 local pattern = P{
   (V('e') + 1)^1,
   e=( '/// ' *
@@ -295,11 +314,13 @@ local pattern = P{
         + 'using ' * Cc(kwindexes.using) * cid * ws0 * '='
           * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
         ) / f_type
-    + 'namespace ' *
-      ( C('emp') * '\n' / f_emp_namespace * ws0 * '{' * (V('e') + (1 - S'{}'))^0
-        * (P'}' / f_restore_namespace)
-      + ws0 * ('jln::mp' * P'::'^-1)^-1 * (cid + Cc('')) / f_namespace
-      )
+    + 'namespace '
+      * ( ignore_namespace * ws0 * Balanced('{', '}')
+        + ( C('emp') * '\n' / f_emp_namespace * ws0 * '{' * (V('e') + (1 - S'{}'))^0
+            * (P'}' / f_restore_namespace)
+          + ws0 * ('jln::mp' * P'::'^-1)^-1 * (cid + Cc('')) / f_namespace
+          )
+        )
     + '//' * Until'\n' * 1
     -- + '/*' * Until'*/' * 2
 }
@@ -475,6 +496,7 @@ htmlifier_init = function()
   local e = lpeg.Cp()
 
   local wordid = (R('az', 'AZ') + S'`_-')^1
+  local urlchar = 1 - S' \n.!?'
 
   local md2htmlpatt = Cs((
     P'```cpp\n' * C(Until('\n```')) * '\n```' / blockcode
@@ -497,6 +519,8 @@ htmlifier_init = function()
         end
     + '[' * C(Until']') * 1 * '(' * C(Until')') * 1
       / function(text, link) return '<a href="' .. link .. '">' .. text .. '</a>' end
+    + 'https://' * urlchar^1 * (S'!?.'^1 * urlchar^1)^0
+      / function(link) return '<a href="' .. link .. '">' .. link .. '</a>' end
     + (1 - P'\n')
     )^1)
     / wrap_with('<p>', '</p>\n')
@@ -520,6 +544,7 @@ files_by_group = {}
 groups = {}
 
 function readfile(filename)
+  _global_filename = filename
   local f = io.open(filename)
   local contents = f:read('*a')
   f:close()

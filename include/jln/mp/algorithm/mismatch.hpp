@@ -41,6 +41,7 @@ namespace jln::mp
 #include "../list/drop.hpp"
 #include "../list/take.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class Cmp, int n>
@@ -267,3 +268,4 @@ namespace jln::mp::detail
     using f = typename NC::template f<number<-1>, number<0>>;
   };
 }
+/// \endcond

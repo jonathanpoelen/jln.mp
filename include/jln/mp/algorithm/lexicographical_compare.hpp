@@ -84,6 +84,7 @@ namespace jln::mp
 
 #include "../list/at.hpp"
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class Cmp>
@@ -121,3 +122,4 @@ namespace jln::mp::detail
     using f = true_;
   };
 }
+/// \endcond
