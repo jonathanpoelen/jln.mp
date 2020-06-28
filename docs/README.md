@@ -19,4 +19,6 @@ luajit ./tools/docgen.lua \
   include/jln/mp/utility/* \
   include/jln/mp/value/* \
   > docs/html/index.html
+
+cp docs/default.css docs/html/
 ```

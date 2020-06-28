@@ -93,13 +93,8 @@ jobs:
         if: steps.cache-luarocks.outputs.cache-hit != 'true'
         run: luarocks install lpeg
 
-      - name: Build standalone header files
+      - name: Build documentation
         run: |
-          mkdir -p standalone/include/jln docs/html/
-
-          ./tools/amalgamated.lua include/jln/mp.hpp > standalone/include/jln/mp.hpp
-          ./tools/amalgamated.lua include/jln/mp/smp.hpp > standalone/include/jln/smp.hpp
-
           ./tools/docgen.lua \
             include/jln/mp/algorithm/* \
             include/jln/mp/functional/* \
@@ -108,6 +103,13 @@ jobs:
             include/jln/mp/utility/* \
             include/jln/mp/value/* \
             > index.html
+
+      - name: Build standalone header files
+        run: |
+          mkdir -p standalone/include/jln
+
+          ./tools/amalgamated.lua include/jln/mp.hpp > standalone/include/jln/mp.hpp
+          ./tools/amalgamated.lua include/jln/mp/smp.hpp > standalone/include/jln/smp.hpp
 
           for comp in g++-7 g++-8 g++-9 clang-6.0 clang++-8 clang++-9 ; do
             for basename in mp smp ; do
@@ -130,6 +132,7 @@ jobs:
           mv standalone_repo/include/ standalone_old
           mv standalone/include standalone_repo/
           mv index.html doc_repo
+          cp docs/default.css doc_repo
 
           i=0
           messages=('single header' 'html documentation')
