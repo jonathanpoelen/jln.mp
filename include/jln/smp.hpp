@@ -5680,7 +5680,7 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp
 {
-  /// \ingroup functional
+  /// \ingroup algorithm
 
   /// comparison on the result of a function.
   /// \treturn \bool
@@ -14316,7 +14316,7 @@ namespace jln::mp
   struct values
   {
     template<class... xs>
-    using f = call<C, typed_val<decltye(xs::value), xs::value>...>;
+    using f = call<C, typed_val<decltype(xs::value), xs::value>...>;
   };
 
   template<class C>
