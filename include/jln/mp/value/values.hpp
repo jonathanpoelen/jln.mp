@@ -40,7 +40,7 @@ namespace jln::mp
   struct values
   {
     template<class... xs>
-    using f = call<C, typed_val<decltye(xs::value), xs::value>...>;
+    using f = call<C, typed_val<decltype(xs::value), xs::value>...>;
   };
 
   template<class C>
