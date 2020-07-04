@@ -5,7 +5,7 @@
 
 namespace jln::mp
 {
-  /// \ingroup functional
+  /// \ingroup algorithm
 
   /// comparison on the result of a function.
   /// \treturn \bool
