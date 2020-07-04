@@ -136,8 +136,8 @@ constexpr auto my_tuple_cat_impl(
     };
 }
 
-template<class... Tuples>
-constexpr my_tuple_cat_result_type<Tuples...> my_tuple_cat(Tuples&&... args)
+template<class... Tuples, class R = my_tuple_cat_result_type<Tuples...>>
+constexpr R my_tuple_cat(Tuples&&... args)
 {
     // ex:    tuple_size=3     tuple_size=2     tuple_size=4
     // list<    0, 0, 0,                 1, 1,             2, 2, 2, 2 >
@@ -208,4 +208,24 @@ using std_tuple = std::tuple<
 static_assert(std::is_same_v<my_tuple_type, std_tuple>);
 static_assert(my_tuple == std::tuple{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
 // @}
+```
+
+# FAQ
+
+> Functions are missing in the stacktrace when the compiler displays an error message, how to display them?
+
+Compile with the define `JLN_MP_ENABLE_DEBUG` at `1` to have errors with more context.
+
+> Error: `sorry, unimplemented: mangling record_type` or `sorry, unimplemented: mangling typename_type` with Gcc.
+
+This is a [Gcc bug](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=95299) when an algorithm is used in the prototype of a function.
+
+```cpp
+template<class... Ts>
+mp::call<func, Ts...> foo();
+
+// Must be replaced by
+
+template<class... Ts, class R = mp::call<func, Ts...>>
+R foo();
 ```
