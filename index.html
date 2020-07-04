@@ -1,5 +1,5 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"/><link rel="stylesheet" type="text/css" media="all" href="default.css"></head><body>
-<section><h1>Table of contents<a href="#toc" class="titleref">¶</a></h1><nav id="toc"><ul><li><a href="#concepts">Concepts</a></li><li><a href="#glossary">Glossary</a></li><li><a href="#exampleofreallife">Example of real life</a></li><li><a href="#files_by_group">Files by group</a></li>
+<section><h1>Table of contents<a href="#toc" class="titleref">¶</a></h1><nav id="toc"><ul><li><a href="#concepts">Concepts</a></li><li><a href="#glossary">Glossary</a></li><li><a href="#exampleofreallife">Example of real life</a></li><li><a href="#faq">FAQ</a></li><li><a href="#files_by_group">Files by group</a></li>
 <li><a href="#files_in_alphabetical_order">Files in alphabetical order</a></li>
 <li><a href="#functions_by_group">Functions by group</a></li>
 <li><a href="#functions_in_alphabetical_order">Functions in alphabetical order</a></li>
@@ -103,8 +103,8 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
     <span class="p">};</span>
 <span class="p">}</span>
 
-<span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span> Tuples<span class="o">></span>
-<span class="k">constexpr</span> my_tuple_cat_result_type<span class="o">&lt;</span>Tuples<span class="p">...</span><span class="o">></span> my_tuple_cat<span class="p">(</span>Tuples<span class="o">&amp;&amp;</span><span class="p">...</span> args<span class="p">)</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span> Tuples<span class="p">,</span> <span class="k">class</span> R <span class="o">=</span> my_tuple_cat_result_type<span class="o">&lt;</span>Tuples<span class="p">...</span><span class="o">>></span>
+<span class="k">constexpr</span> R my_tuple_cat<span class="p">(</span>Tuples<span class="o">&amp;&amp;</span><span class="p">...</span> args<span class="p">)</span>
 <span class="p">{</span>
     <span class="c1">// ex:    tuple_size=3     tuple_size=2     tuple_size=4</span>
     <span class="c1">// list&lt;    0, 0, 0,                 1, 1,             2, 2, 2, 2 ></span>
@@ -175,6 +175,18 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <span class="k">static_assert</span><span class="p">(</span>std<span class="p">::</span>is_same_v<span class="o">&lt;</span>my_tuple_type<span class="p">,</span> std_tuple<span class="o">></span><span class="p">);</span>
 <span class="k">static_assert</span><span class="p">(</span>my_tuple <span class="o">==</span> std<span class="p">::</span>tuple<span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">});</span>
 <span class="c1">// @}</span></code></section>
+<section id="faq"><h1 id="faq">FAQ<a href="#faq" class="titleref">¶</a></h1>
+<p>> Functions are missing in the stacktrace when the compiler displays an error message, how to display them?</p>
+<p>Compile with the define <code class="inlinecode highlight" data-lang="cpp">JLN_MP_ENABLE_DEBUG</code> at <code class="inlinecode highlight" data-lang="cpp"><span class="mi">1</span></code> to have errors with more context.</p>
+<p>> Error: <code class="inlinecode highlight" data-lang="cpp">sorry<span class="p">,</span> unimplemented: mangling record_type</code> or <code class="inlinecode highlight" data-lang="cpp">sorry<span class="p">,</span> unimplemented: mangling typename_type</code> with Gcc.</p>
+<p>This is a <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=95299">Gcc bug</a> when an algorithm is used in the prototype of a function.</p>
+<code class="blockcode highlight" data-lang="cpp"><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span> Ts<span class="o">></span>
+<a href="#mp::call">mp<span class="p">::</span>call</a><span class="o">&lt;</span>func<span class="p">,</span> Ts<span class="p">...</span><span class="o">></span> foo<span class="p">();</span>
+
+<span class="c1">// Must be replaced by</span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span> Ts<span class="p">,</span> <span class="k">class</span> R <span class="o">=</span> <a href="#mp::call">mp<span class="p">::</span>call</a><span class="o">&lt;</span>func<span class="p">,</span> Ts<span class="p">...</span><span class="o">>></span>
+R foo<span class="p">();</span></code></section>
 </div>
 <section id="files_by_group"><h1 id="files_by_group">Files by group</h1><nav><p><a class="link_group" href="#g1__algorithm">algorithm</a><a class="link_group" href="#g1__functional">functional</a><a class="link_group" href="#g1__group">group</a><a class="link_group" href="#g1__list">list</a><a class="link_group" href="#g1__number">number</a><a class="link_group" href="#g1__search">search</a><a class="link_group" href="#g1__trait">trait</a><a class="link_group" href="#g1__utility">utility</a><a class="link_group" href="#g1__value">value</a></p><ul class="index_list file_list">
 <li id="g1__algorithm" class="index_group"><a class="index_cat" href="#g1__algorithm">Group: algorithm</a><ul class="subindex_list file_sublist">
@@ -185,6 +197,7 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#algorithm/any_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">any_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/cartesian.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">cartesian</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/combine.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">combine</span><span class="ext">.hpp</span></a></li>
+<li><a href="#algorithm/compare_with.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">compare_with</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/contains.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">contains</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/copy.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">copy</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/count.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">count</span><span class="ext">.hpp</span></a></li>
@@ -213,7 +226,6 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#algorithm/transform.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">transform</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/unique.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">unique</span><span class="ext">.hpp</span></a></li>
 </ul></li><li id="g1__functional" class="index_group"><a class="index_cat" href="#g1__functional">Group: functional</a><ul class="subindex_list file_sublist">
-<li><a href="#algorithm/compare_with.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">compare_with</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/bind.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">bind</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/call.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">call</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/capture.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">capture</span><span class="ext">.hpp</span></a></li>
@@ -447,6 +459,7 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#mp::any_of" class="index_link">any_of</a></li>
 <li><a href="#mp::cartesian" class="index_link">cartesian</a></li>
 <li><a href="#mp::combine" class="index_link">combine</a></li>
+<li><a href="#mp::compare_with" class="index_link">compare_with</a></li>
 <li><a href="#mp::contains" class="index_link">contains</a></li>
 <li><a href="#mp::copy" class="index_link">copy</a></li>
 <li><a href="#mp::copy_if" class="index_link">copy_if</a></li>
@@ -500,7 +513,6 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <li><a href="#mp::capture_v" class="index_link">capture_v</a></li>
 <li><a href="#mp::capture_v_c" class="index_link">capture_v_c</a></li>
 <li><a href="#mp::cascade" class="index_link">cascade</a></li>
-<li><a href="#mp::compare_with" class="index_link">compare_with</a></li>
 <li><a href="#mp::compose" class="index_link">compose</a></li>
 <li><a href="#mp::compose_f" class="index_link">compose_f</a></li>
 <li><a href="#mp::dispatch" class="index_link">dispatch</a></li>
@@ -1150,6 +1162,7 @@ from the beginning to the end.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::any_of">any_of</a><span class="o">&lt;</span>Pred<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Checks whether a predicate holds for at least some element of a <a href="#d_sequence">sequence</a>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::cartesian">cartesian</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seqs<span class="p">...</span><span class="o">></span></code></td><td>Computes the cartesian product of <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code>s.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::combine">combine</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Computes all possible combinations (with repetition) from the elements in a <a href="#d_sequence">sequence</a>.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::compare_with">compare_with</a><span class="o">&lt;</span>F<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;>></span></code></td><td>comparison on the result of a function.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::contains">contains</a><span class="o">&lt;</span>x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Checks whether a <a href="#d_value">value</a> is contained in a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::copy_if">copy_if</a><span class="o">&lt;</span>Pred<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>Copies all elements that satisfy a predicate.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::copy">copy</a><span class="o">&lt;</span>x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>Copies all occurence of a <a href="#d_value">value</a>.</td></tr>
@@ -1211,7 +1224,6 @@ from the beginning to the end.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::reverse_capture_c">reverse_capture_c</a><span class="o">&lt;</span><span class="k">auto</span><span class="p">...</span> xs<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::reverse_capture">reverse_capture</a><span class="o">&lt;</span><a href="#mp::val">val</a><span class="o">&lt;</span>xs<span class="o">></span><span class="p">...</span><span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::reverse_capture_v_c">reverse_capture_v_c</a><span class="o">&lt;</span><span class="k">auto</span><span class="p">...</span> xs<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>C<span class="p">,</span> ys<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span>ys<span class="p">::</span>value<span class="p">...,</span> xs<span class="p">...</span><span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::cascade">cascade</a><span class="o">&lt;</span>F<span class="p">,</span> Fs<span class="p">...</span><span class="o">></span></code></td><td>Recursively invokes <a href="#d_function">function</a>s to nested <a href="#d_typelist">typelist</a> of <a href="#d_typelist">typelist</a>s.</td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::compare_with">compare_with</a><span class="o">&lt;</span>F<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;>></span></code></td><td>comparison on the result of a function.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::compose_f">compose_f</a><span class="o">&lt;</span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> F<span class="p">,</span> <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> Fs<span class="p">...</span><span class="o">></span></code></td><td>Composition of two <a href="#d_metafunction">meta-function</a>s or more.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::compose">compose</a><span class="o">&lt;</span>F<span class="p">,</span> Fs<span class="p">...</span><span class="o">></span></code></td><td>Composition of two <a href="#d_function">function</a>s or more.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::each">each</a><span class="o">&lt;</span>Fs<span class="p">...,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Invokes multiple functions each taking the parameter corresponding to its position.</td></tr>
@@ -1639,6 +1651,14 @@ from the beginning to the end.</p><p>
 <h3 class="emp" id="emp::combine"><a href="#emp::combine" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>combine<span class="o">&lt;</span>L<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">mp<span class="p">::</span>listify</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::combine">mp<span class="p">::</span>combine</a><span class="o">&lt;</span>C<span class="o">>></span></code></h3>
 </div>
 </div>
+<h2 class="file" id="algorithm/compare_with.hpp"><a href="#algorithm/compare_with.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/compare_with.hpp></h2><div class="group__file">
+<h3 id="mp::compare_with"><a href="#mp::compare_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">compare_with<span class="o">&lt;</span>F<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;>></span></code></h3>
+<p>comparison on the result of a function.</p><p>
+</p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
+<code class="blockcode highlight" data-lang="cpp"><a href="#mp::each">each</a><span class="o">&lt;</span>F<span class="p">,</span> F<span class="p">,</span> Cmp<span class="o">></span></code></div><div class="group__emp">
+<h3 class="emp" id="emp::compare_with"><a href="#emp::compare_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>compare_with<span class="o">&lt;</span>F<span class="p">,</span> x<span class="p">,</span> y<span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::less">less</a><span class="o">&lt;</span><a href="#mp::call">call</a><span class="o">&lt;</span>F<span class="p">,</span> x<span class="o">></span><span class="p">,</span> <a href="#mp::call">call</a><span class="o">&lt;</span>F<span class="p">,</span> y<span class="o">>></span></code></h3>
+</div>
+</div>
 <h2 class="file" id="algorithm/contains.hpp"><a href="#algorithm/contains.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/contains.hpp></h2><div class="group__file">
 <h3 id="mp::contains"><a href="#mp::contains" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">contains<span class="o">&lt;</span>x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h3>
 <p>Checks whether a <a href="#d_value">value</a> is contained in a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code>.</p><p>
@@ -1991,14 +2011,6 @@ use <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::push_front"
 </p><div class="InfoBox"><h4 class="InfoBox-title">Semantics</h4>
 <p>  <code class="blockcode highlight" data-lang="cpp"><a href="#mp::cascade">cascade</a><span class="o">&lt;</span>F0<span class="p">,</span>F1<span class="p">,</span>F2<span class="o">></span> <span class="o">=</span> <a href="#mp::transform">transform</a><span class="o">&lt;</span><a href="#mp::unpack">unpack</a><span class="o">&lt;</span><a href="#mp::transform">transform</a><span class="o">&lt;</span><a href="#mp::unpack">unpack</a><span class="o">&lt;</span>F2<span class="o">></span><span class="p">,</span> F1<span class="o">>></span><span class="p">,</span> F0<span class="o">></span></code>
 </p></div><div class="group__emp">
-</div>
-</div>
-<h2 class="file" id="algorithm/compare_with.hpp"><a href="#algorithm/compare_with.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/compare_with.hpp></h2><div class="group__file">
-<h3 id="mp::compare_with"><a href="#mp::compare_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">compare_with<span class="o">&lt;</span>F<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;>></span></code></h3>
-<p>comparison on the result of a function.</p><p>
-</p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
-<code class="blockcode highlight" data-lang="cpp"><a href="#mp::each">each</a><span class="o">&lt;</span>F<span class="p">,</span> F<span class="p">,</span> Cmp<span class="o">></span></code></div><div class="group__emp">
-<h3 class="emp" id="emp::compare_with"><a href="#emp::compare_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>compare_with<span class="o">&lt;</span>F<span class="p">,</span> x<span class="p">,</span> y<span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::less">less</a><span class="o">&lt;</span><a href="#mp::call">call</a><span class="o">&lt;</span>F<span class="p">,</span> x<span class="o">></span><span class="p">,</span> <a href="#mp::call">call</a><span class="o">&lt;</span>F<span class="p">,</span> y<span class="o">>></span></code></h3>
 </div>
 </div>
 <h2 class="file" id="functional/compose.hpp"><a href="#functional/compose.hpp" class="ref">¶</a>&lt;jln/mp/functional/compose.hpp></h2><div class="group__file">
