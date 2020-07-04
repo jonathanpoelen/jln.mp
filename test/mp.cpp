@@ -105,7 +105,7 @@
 #include "src/utility/always.cpp"
 #include "src/utility/conditional.cpp"
 #include "src/utility/has_type.cpp"
-#include "src/utility/is_instance_of.cpp"
+#include "src/utility/is_specialization_of.cpp"
 #include "src/utility/same_as.cpp"
 #include "src/utility/sizeof.cpp"
 #include "src/utility/stl_traits.cpp"
