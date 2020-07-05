@@ -303,7 +303,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#list/offset.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">offset</span><span class="ext">.hpp</span></a></li>
 </ul></li><li id="g1__trait" class="index_group"><a class="index_cat" href="#g1__trait">Group: trait</a><ul class="subindex_list file_sublist">
 <li><a href="#utility/alignof.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">alignof</span><span class="ext">.hpp</span></a></li>
-<li><a href="#utility/is_instance_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">is_instance_of</span><span class="ext">.hpp</span></a></li>
+<li><a href="#utility/is_specialization_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">is_specialization_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/sizeof.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">sizeof</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/stl_traits.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">stl_traits</span><span class="ext">.hpp</span></a></li>
 </ul></li><li id="g1__utility" class="index_group"><a class="index_cat" href="#g1__utility">Group: utility</a><ul class="subindex_list file_sublist">
@@ -436,7 +436,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#utility/always.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">always</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/conditional.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">conditional</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/has_type.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">has_type</span><span class="ext">.hpp</span></a></li>
-<li><a href="#utility/is_instance_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">is_instance_of</span><span class="ext">.hpp</span></a></li>
+<li><a href="#utility/is_specialization_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">is_specialization_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/same_as.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">same_as</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/sizeof.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">sizeof</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/stl_traits.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">stl_traits</span><span class="ext">.hpp</span></a></li>
@@ -723,7 +723,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#mp::upper_bound_than_c" class="index_link">upper_bound_than_c</a></li>
 </ul></li><li id="g3__trait" class="index_group"><a class="index_cat" href="#g3__trait">Group: trait</a><ul class="subindex_list func_sublist">
 <li><a href="#mp::alignof_" class="index_link">alignof_</a></li>
-<li><a href="#mp::is_instance_of" class="index_link">is_instance_of</a></li>
+<li><a href="#mp::is_specialization_of" class="index_link">is_specialization_of</a></li>
 <li><a href="#mp::sizeof_" class="index_link">sizeof_</a></li>
 </ul></li><li id="g3__utility" class="index_group"><a class="index_cat" href="#g3__utility">Group: utility</a><ul class="subindex_list func_sublist">
 <li><a href="#mp::always" class="index_link">always</a></li>
@@ -920,7 +920,6 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#mp::iota" class="index_link">iota</a></li>
 <li><a href="#mp::iota_v" class="index_link">iota_v</a></li>
 <li><a href="#mp::is_empty" class="index_link">is_empty</a></li>
-<li><a href="#mp::is_instance_of" class="index_link">is_instance_of</a></li>
 <li><a href="#mp::is_invocable" class="index_link">is_invocable</a></li>
 <li><a href="#mp::is_list" class="index_link">is_list</a></li>
 <li><a href="#mp::is_na" class="index_link">is_na</a></li>
@@ -928,6 +927,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#mp::is_size_of" class="index_link">is_size_of</a></li>
 <li><a href="#mp::is_size_of_c" class="index_link">is_size_of_c</a></li>
 <li><a href="#mp::is_sorted" class="index_link">is_sorted</a></li>
+<li><a href="#mp::is_specialization_of" class="index_link">is_specialization_of</a></li>
 <li><a href="#mp::is_unique" class="index_link">is_unique</a></li>
 <li><a href="#mp::is_unique_if" class="index_link">is_unique_if</a></li>
 <li><a href="#mp::is_val" class="index_link">is_val</a></li>
@@ -1479,7 +1479,7 @@ invocations <code class="inlinecode highlight" data-lang="cpp">F<span class="p">
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#traits::emp::aligned_storage">traits::emp::aligned_storage</a><span class="o">&lt;</span>Len<span class="p">,</span> Alignment<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">std<span class="p">::</span>aligned_storage<span class="o">&lt;</span>Len<span class="p">::</span>value<span class="p">,</span> Alignment<span class="p">::</span>value<span class="p">...</span><span class="o">></span><span class="p">::</span>type</code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#traits::aligned_union">traits::aligned_union</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>len<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span>C<span class="p">,</span> std<span class="p">::</span>aligned_union<span class="o">&lt;</span>len<span class="p">::</span>value<span class="p">,</span> xs<span class="p">...</span><span class="o">></span><span class="p">::</span>type<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#traits::emp::aligned_union">traits::emp::aligned_union</a><span class="o">&lt;</span>len<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">std<span class="p">::</span>aligned_union<span class="o">&lt;</span>len<span class="p">::</span>value<span class="p">,</span> xs<span class="p">...</span><span class="o">></span><span class="p">::</span>type</code></td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_instance_of">is_instance_of</a><span class="o">&lt;</span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> Tpl<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Checks whether <code class="inlinecode highlight" data-lang="cpp">x</code> is <code class="inlinecode highlight" data-lang="cpp">Tpl<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_specialization_of">is_specialization_of</a><span class="o">&lt;</span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> Tpl<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Checks whether <code class="inlinecode highlight" data-lang="cpp">x</code> is <code class="inlinecode highlight" data-lang="cpp">Tpl<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code>
 </td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::sizeof_">sizeof_</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Wrapper for sizeof keyword
 </td></tr>
@@ -3149,12 +3149,12 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 <code class="blockcode highlight" data-lang="cpp">std<span class="p">::</span>aligned_union<span class="o">&lt;</span>len<span class="p">::</span>value<span class="p">,</span> xs<span class="p">...</span><span class="o">></span><span class="p">::</span>type</code></div><div class="group__emp">
 </div>
 </div>
-<h2 class="file" id="utility/is_instance_of.hpp"><a href="#utility/is_instance_of.hpp" class="ref">¶</a>&lt;jln/mp/utility/is_instance_of.hpp></h2><div class="group__file">
-<h3 id="mp::is_instance_of"><a href="#mp::is_instance_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">is_instance_of<span class="o">&lt;</span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> Tpl<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
+<h2 class="file" id="utility/is_specialization_of.hpp"><a href="#utility/is_specialization_of.hpp" class="ref">¶</a>&lt;jln/mp/utility/is_specialization_of.hpp></h2><div class="group__file">
+<h3 id="mp::is_specialization_of"><a href="#mp::is_specialization_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">is_specialization_of<span class="o">&lt;</span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> Tpl<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
 <p>Checks whether <code class="inlinecode highlight" data-lang="cpp">x</code> is <code class="inlinecode highlight" data-lang="cpp">Tpl<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;/*</span> implementation defined <span class="o">*/></span></code></div><div class="group__emp">
-<h3 class="emp" id="emp::is_instance_of"><a href="#emp::is_instance_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>is_instance_of<span class="o">&lt;</span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> Tpl<span class="p">,</span> x<span class="o">></span></code> = /* implementation defined */</h3>
+<h3 class="emp" id="emp::is_specialization_of"><a href="#emp::is_specialization_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>is_specialization_of<span class="o">&lt;</span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> Tpl<span class="p">,</span> x<span class="o">></span></code> = /* implementation defined */</h3>
 </div>
 </div>
 <h2 class="file" id="utility/sizeof.hpp"><a href="#utility/sizeof.hpp" class="ref">¶</a>&lt;jln/mp/utility/sizeof.hpp></h2><div class="group__file">
