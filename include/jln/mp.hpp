@@ -9381,7 +9381,7 @@ namespace jln::mp
   namespace detail
   {
     template<template<class...> class Tpl, class T>
-    struct _is_instance_of;
+    struct _is_specialization_of;
   }
   /// \endcond
 
@@ -9390,17 +9390,17 @@ namespace jln::mp
   /// Checks whether \c x is \c Tpl<xs...>
   /// \treturn \bool
   template<template<class...> class Tpl, class C = identity>
-  struct is_instance_of
+  struct is_specialization_of
   {
     template<class x>
     using f = typename C::template f<
-      typename detail::_is_instance_of<Tpl, x>::type>;
+      typename detail::_is_specialization_of<Tpl, x>::type>;
   };
 
   namespace emp
   {
     template<template<class...> class Tpl, class x>
-    using is_instance_of = typename detail::_is_instance_of<Tpl, x>::type;
+    using is_specialization_of = typename detail::_is_specialization_of<Tpl, x>::type;
   }
 }
 
@@ -9408,13 +9408,13 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<template<class...> class Tpl, class T>
-  struct _is_instance_of
+  struct _is_specialization_of
   {
     using type = false_;
   };
 
   template<template<class...> class Tpl, class... Ts>
-  struct _is_instance_of<Tpl, Tpl<Ts...>>
+  struct _is_specialization_of<Tpl, Tpl<Ts...>>
   {
     using type = true_;
   };
