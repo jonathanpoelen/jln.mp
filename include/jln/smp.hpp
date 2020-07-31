@@ -7809,7 +7809,7 @@ namespace jln::mp
   /// Returns mismatching info of elements from two sequences.
   /// Uses \c C when a element mismatch and \c NC when one of
   /// the sequences equals the start of the other.
-  /// \semantic
+  /// \semantics
   ///   `NC::f<number<-1>, number<emp::size<seq1>>>` if \c seq1 == \c seq2.
   ///   `NC::f<number<i>, number<-1>>` if \c seq2 starts with \c seq1.
   ///   `NC::f<number<i>, number<1>>` if \c seq1 starts with \c seq2.
