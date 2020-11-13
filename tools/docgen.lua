@@ -420,6 +420,15 @@ htmlifier_init = function()
   end
 
   local blockcode = function(s)
+    local first_space = s:match('^\n +')
+    if first_space then
+      first = true
+      s = s:gsub(first_space, function()
+        r = first and '' or '\n'
+        first = false
+        return r
+      end)
+    end
     return blockcode_begin .. linkifier('', s) .. blockcode_end
   end
 
@@ -433,7 +442,7 @@ htmlifier_init = function()
   htmlify = Cs((
     mdinlinecodepatt
   + P'\\c ' / '' * (Until(S' \n' + '.\n') / inlinecode)
-  + P'\\code' * ws0 * C(Until(ws0 * '\\endcode')) * ws0 * '\\endcode' / blockcode
+  + P'\\code' * C(Until(ws0 * '\\endcode')) * ws0 * '\\endcode' / blockcode
   + P'\\ints' / ('<a href="#d_sequence">sequence</a> of ' .. inline_func('int_'))
   + (P'\\int_' + '\\int') / inline_func('int_')
   + P'\\list' / inline_func('list')
