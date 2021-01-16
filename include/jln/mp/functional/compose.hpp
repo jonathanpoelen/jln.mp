@@ -3,6 +3,7 @@
 #include "../algorithm/fold_right.hpp"
 #include "../functional/lift.hpp"
 #include "../utility/always.hpp"
+#include "../utility/conditional.hpp"
 #include "../list/at.hpp"
 
 namespace jln::mp

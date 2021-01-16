@@ -4,7 +4,6 @@
 #include "../list/listify.hpp"
 #include "../number/number.hpp"
 #include "../utility/unpack.hpp"
-#include "../utility/conditional.hpp"
 
 #include <cstddef>
 #if defined(_MSC_VER) || defined(__clang__)
