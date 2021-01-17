@@ -81,11 +81,11 @@ namespace jln::mp::detail
   template<class... ys>
   struct _smp_group_impl
   {
-    template<class C, class cmp, class x, class... xs>
+    template<class C, class Cmp, class x, class... xs>
     using f = call<
         fold_right<lift_t<split_state>, unpack<_group_insert_x<x, C>>>,
         list<list<>>,
-        list<number<bool(cmp::template f<ys, xs>::value)
+        list<number<Cmp::template f<ys, xs>::value
           ? split_keep : split_before>, xs>...
       >;
   };

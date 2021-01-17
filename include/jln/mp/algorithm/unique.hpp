@@ -96,6 +96,12 @@ namespace jln::mp::detail
 
   struct _set_cmp_push_back_impl
   {
+#ifdef __clang__
+    template<class Cmp, class x, class... xs>
+    using f = typename conditional_c<
+      (!Cmp::template f<xs, x>::value && ...)
+    >::template f<list<xs..., x>, list<xs...>>;
+#else
     template<class> using to_false = false_;
 
     template<class Cmp, class x, class... xs>
@@ -103,6 +109,7 @@ namespace jln::mp::detail
       list<number<Cmp::template f<xs, x>::value ? 1 : 0>...>,
       list<to_false<xs>...>
     >::value>::template f<list<xs..., x>, list<xs...>>;
+#endif
   };
 
   template<class Cmp>

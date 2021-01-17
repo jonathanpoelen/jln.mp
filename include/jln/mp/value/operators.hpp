@@ -101,7 +101,7 @@ namespace jln::mp
   struct val_mod
   {
     template<class... xs>
-    using f = typename C::template f<val<(... %  xs::value)>>;
+    using f = typename C::template f<val<(... % xs::value)>>;
   };
 
   template<class C = identity>

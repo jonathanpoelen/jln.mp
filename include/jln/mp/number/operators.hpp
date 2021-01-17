@@ -103,7 +103,7 @@ namespace jln::mp
   struct mod
   {
     template<class... xs>
-    using f = typename C::template f<number<(... %  xs::value)>>;
+    using f = typename C::template f<number<(... % xs::value)>>;
   };
 
   template<class C = identity>
