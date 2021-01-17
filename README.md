@@ -63,6 +63,7 @@ jln::mp::call<to_tuple, int, double> == std::tuple<int, double>
 In the mind of the library, functions should at least take a continuation.
 
 ```cpp
+// equivalent to jln::mp::lift<std::tuple, C>
 template<class C = jln::mp::identity>
 struct to_tuple
 {
@@ -140,7 +141,7 @@ template<class... Tuples, class R = my_tuple_cat_result_type<Tuples...>>
 constexpr R my_tuple_cat(Tuples&&... args)
 {
     // ex:    tuple_size=3     tuple_size=2     tuple_size=4
-    // list<    0, 0, 0,                 1, 1,             2, 2, 2, 2 >
+    // list<    0, 0, 0,           1, 1,         2, 2, 2, 2   >
     using index_by_tuple = emp::make_int_sequence_c<
         sizeof...(Tuples),
         // repeat each index by number of element
@@ -150,7 +151,7 @@ constexpr R my_tuple_cat(Tuples&&... args)
     >;
 
     // ex:    tuple_size=3     tuple_size=2     tuple_size=4
-    // list<    0, 1, 2,                 0, 1,             0, 1, 2, 3 >
+    // list<    0, 1, 2,           0, 1,         0, 1, 2, 3   >
     using index_by_value = emp::join<
         emp::make_int_sequence<std::tuple_size<std::remove_reference_t<Tuples>>>...
     >;
