@@ -153,7 +153,7 @@ namespace jln::mp
   namespace detail
   {
     template<class, class, class = void>
-    struct _try;
+    struct _try_impl;
 
     template<class x>
     struct _try_dispatch;
@@ -177,7 +177,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_try_dispatch<
-      typename detail::_try<F, list<xs...>>::type
+      typename detail::_try_impl<F, list<xs...>>::type
     >::template f<TC, FC, xs...>;
   };
 
@@ -200,7 +200,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = number<!std::is_same<na,
-      typename detail::_try<F, list<xs...>>::type
+      typename detail::_try_impl<F, list<xs...>>::type
     >::value>;
   };
 
@@ -208,7 +208,7 @@ namespace jln::mp
   struct try_<F, identity, violation>
   {
     template<class... xs>
-    using f = typename detail::_try<F, list<xs...>>::type;
+    using f = typename detail::_try_impl<F, list<xs...>>::type;
   };
   /// \endcond
 }
@@ -217,13 +217,13 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<class, class, class>
-  struct _try
+  struct _try_impl
   {
     using type = na;
   };
 
   template<class F, class... xs>
-  struct _try<F, list<xs...>, std::void_t<typename F::template f<xs...>>>
+  struct _try_impl<F, list<xs...>, std::void_t<typename F::template f<xs...>>>
   {
     using type = typename F::template f<xs...>;
   };
@@ -269,6 +269,19 @@ namespace jln::mp::detail
 /// \defgroup trait Trait
 /// \defgroup search Search
 /// \defgroup group Group
+/// \cond
+#ifdef _MSC_VER
+# ifdef JLN_MP_ENABLE_DEBUG
+#  ifndef JLN_MP_ENABLE_DEBUG_FORCE
+#   undef JLN_MP_ENABLE_DEBUG
+#   define JLN_MP_ENABLE_DEBUG 1
+#  endif
+# else
+#  define JLN_MP_ENABLE_DEBUG 1
+# endif
+#endif
+/// \endcond
+
 namespace jln::mp
 {
   /// \cond
@@ -1429,7 +1442,7 @@ namespace jln::mp
   struct mod
   {
     template<class... xs>
-    using f = typename C::template f<number<(... %  xs::value)>>;
+    using f = typename C::template f<number<(... % xs::value)>>;
   };
 
   template<class C = identity>
@@ -4147,11 +4160,21 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
+#ifdef _MSC_VER
+  template<class C, class x, int_... xs>
+  using _adjacent_difference_msvc = JLN_MP_DCALL_XS(xs, C, x, number<xs>...);
+#endif
+
   template<class y, class... ys>
   struct _adjacent_difference<list<y, ys...>>
   {
+#ifdef _MSC_VER
     template<class C, class x, class... xs>
-    using f = typename C::template f<x, number<xs::value - ys::value>...>;
+    using f = _adjacent_difference_msvc<C, x, (xs::value - ys::value)...>;
+#else
+    template<class C, class x, class... xs>
+    using f = JLN_MP_DCALL_XS(xs, C, x, number<xs::value - ys::value>...);
+#endif
   };
 
   template<>
@@ -4674,6 +4697,47 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp::smp
+{
+  template <int_ n, class C = listify>
+  using rotate_c = rotate<number<n>, C>;
+}
+
+JLN_MP_MAKE_REGULAR_SMP2_P(rotate, (N), (C, smp::listify), smp::rotate_c<N::value, C>)
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class N, class C>
+  struct _sfinae<sfinae, rotate<N, C>>
+  {
+    using type = smp::rotate<N, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp::smp
+{
+  template<int_ n, class C = listify>
+  using drop_c = try_contract<mp::drop<mp::number<n>, subcontract<C>>>;
+}
+
+JLN_MP_MAKE_REGULAR_SMP2_P(drop, (N), (C, smp::listify), smp::drop_c<N::value, C>)
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class N, class C>
+  struct _sfinae<sfinae, drop<N, C>>
+  {
+    using type = smp::drop<N, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp::smp
+{
+  template<class C = listify>
+  using pop_front = drop_c<1, C>;
+}
 /// \cond
 namespace jln::mp::detail
 {
@@ -4682,7 +4746,42 @@ namespace jln::mp::detail
     if_<
       size<>,
       try_<Tpl<assume_number<C>>>,
-      always<number<i>, assume_number<C>>>>;
+      always<number<i>, assume_number<C>>
+    >
+  >;
+
+#ifdef _MSC_VER
+  template<template<class...> class Tpl, class C, int_ i = 0>
+  using smp_op_without_zero = contract<
+    if_<
+      size<>,
+      if_<
+        pop_front<and_<>>,
+        try_<Tpl<assume_number<C>>>,
+        violation
+      >,
+      always<number<i>, assume_number<C>>
+    >
+  >;
+
+  template<class C>
+  using smp_op_without_zero_and_with_value = contract<
+    if_<
+      size<>,
+      if_<
+        pop_front<and_<>>,
+        try_<C>,
+        violation
+      >,
+      violation
+    >
+  >;
+# define JLN_smp_op_without_zero detail::smp_op_without_zero
+# define JLN_smp_op_without_zero_and_with_value detail::smp_op_without_zero_and_with_value
+#else
+# define JLN_smp_op_without_zero detail::smp_op_default
+# define JLN_smp_op_without_zero_and_with_value try_contract
+#endif
 }
 /// \endcond
 
@@ -4728,22 +4827,22 @@ namespace jln::mp::smp
   using mul1 = detail::smp_op_default<mp::mul, C, 1>;
 
   template<class C = identity>
-  using div = try_contract<mp::div<assume_number<C>>>;
+  using div = JLN_smp_op_without_zero_and_with_value<mp::div<assume_number<C>>>;
 
   template<class C = identity>
-  using div0 = detail::smp_op_default<mp::div, C>;
+  using div0 = JLN_smp_op_without_zero<mp::div, C>;
 
   template<class C = identity>
-  using div1 = detail::smp_op_default<mp::div, C, 1>;
+  using div1 = JLN_smp_op_without_zero<mp::div, C, 1>;
 
   template<class C = identity>
-  using mod = try_contract<mp::mod<assume_number<C>>>;
+  using mod = JLN_smp_op_without_zero_and_with_value<mp::mod<assume_number<C>>>;
 
   template<class C = identity>
-  using mod0 = detail::smp_op_default<mp::mod, C>;
+  using mod0 = JLN_smp_op_without_zero<mp::mod, C>;
 
   template<class C = identity>
-  using mod1 = detail::smp_op_default<mp::mod, C, 1>;
+  using mod1 = JLN_smp_op_without_zero<mp::mod, C, 1>;
 
   template<class C = identity>
   using xor_ = try_contract<mp::xor_<assume_number<C>>>;
@@ -5011,6 +5110,9 @@ namespace jln::mp::detail
   // JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, greater);
   // JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, greater_equal);
 }
+
+#undef JLN_smp_op_without_zero
+#undef JLN_smp_op_without_zero_and_with_value
 /// \endcond
 namespace jln::mp
 {
@@ -6602,11 +6704,11 @@ namespace jln::mp::detail
   template<class... ys>
   struct _smp_group_impl
   {
-    template<class C, class cmp, class x, class... xs>
+    template<class C, class Cmp, class x, class... xs>
     using f = call<
         fold_right<lift_t<split_state>, unpack<_group_insert_x<x, C>>>,
         list<list<>>,
-        list<number<bool(cmp::template f<ys, xs>::value)
+        list<number<Cmp::template f<ys, xs>::value
           ? split_keep : split_before>, xs>...
       >;
   };
@@ -7337,47 +7439,6 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-namespace jln::mp::smp
-{
-  template <int_ n, class C = listify>
-  using rotate_c = rotate<number<n>, C>;
-}
-
-JLN_MP_MAKE_REGULAR_SMP2_P(rotate, (N), (C, smp::listify), smp::rotate_c<N::value, C>)
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, class N, class C>
-  struct _sfinae<sfinae, rotate<N, C>>
-  {
-    using type = smp::rotate<N, sfinae<C>>;
-  };
-}
-/// \endcond
-namespace jln::mp::smp
-{
-  template<int_ n, class C = listify>
-  using drop_c = try_contract<mp::drop<mp::number<n>, subcontract<C>>>;
-}
-
-JLN_MP_MAKE_REGULAR_SMP2_P(drop, (N), (C, smp::listify), smp::drop_c<N::value, C>)
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, class N, class C>
-  struct _sfinae<sfinae, drop<N, C>>
-  {
-    using type = smp::drop<N, sfinae<C>>;
-  };
-}
-/// \endcond
-namespace jln::mp::smp
-{
-  template<class C = listify>
-  using pop_front = drop_c<1, C>;
-}
 namespace jln::mp
 {
   /// \cond
@@ -7463,6 +7524,12 @@ namespace jln::mp::detail
 
   struct _set_cmp_push_back_impl
   {
+#ifdef __clang__
+    template<class Cmp, class x, class... xs>
+    using f = typename conditional_c<
+      (!Cmp::template f<xs, x>::value && ...)
+    >::template f<list<xs..., x>, list<xs...>>;
+#else
     template<class> using to_false = false_;
 
     template<class Cmp, class x, class... xs>
@@ -7470,6 +7537,7 @@ namespace jln::mp::detail
       list<number<Cmp::template f<xs, x>::value ? 1 : 0>...>,
       list<to_false<xs>...>
     >::value>::template f<list<xs..., x>, list<xs...>>;
+#endif
   };
 
   template<class Cmp>
@@ -11724,12 +11792,16 @@ namespace jln::mp
     ::template f<
       start::value, size::value,
       // verify that stride is strictly greater than 0
+#ifdef _MSC_VER
+      emp::conditional_c<(stride::value > 0), stride, void>::value,
+#else
       unsigned{int_(stride::value)-1}+1u,
+#endif
       C, sizeof...(xs)>
     ::template f<xs...>;
   };
 
-  template<unsigned start, unsigned size, unsigned stride = 1, class C = listify>
+  template<int_ start, int_ size, int_ stride = 1, class C = listify>
   using slice_c = slice<number<start>, number<size>, number<stride>, C>;
 
   namespace emp
@@ -11737,7 +11809,7 @@ namespace jln::mp
     template<class L, class start, class size, class stride = number<1>, class C = mp::listify>
     using slice = unpack<L, slice<start, size, stride, C>>;
 
-    template<class L, unsigned start, unsigned size, unsigned stride = 1, class C = mp::listify>
+    template<class L, int_ start, int_ size, int_ stride = 1, class C = mp::listify>
     using slice_c = slice<L, number<start>, number<size>, number<stride>, C>;
   }
 }
@@ -11758,31 +11830,46 @@ namespace jln::mp::detail
   template<>
   struct _slice<2>
   {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, unsigned len>
+    template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
     using f = drop_c<start, take_c<
-      detail::validate_index<size - 1u,
-        unsigned{int_(len) - start}>::value + 1u,
+      detail::validate_index<size - 1,
+#ifdef _MSC_VER
+        (start < int_(len) ? int_(len) - start : 0)
+#else
+        unsigned{len - start}
+#endif
+      >::value + 1,
       C>>;
   };
 
-  template<unsigned size, unsigned stride, class C>
+  template<int_ size, int_ stride, class C>
   struct _slice_impl
   {
+#ifdef _MSC_VER
+    template<int_ i, class x>
+    using g = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
+#endif
+
     template<int_... ints>
     struct impl
     {
+#ifdef _MSC_VER
+      template<class... xs>
+      using f = call<join<C>, g<ints, xs>...>;
+#else
       template<class... xs>
       using f = typename join<C>::template f<
         typename wrap_in_list_c<(ints <= size && ints % stride == 0)>
         ::template f<xs>
       ...>;
+#endif
     };
   };
 
   template<>
   struct _slice<1>
   {
-    template<unsigned start, unsigned size, unsigned stride, class C, unsigned len>
+    template<int_ start, int_ size, unsigned stride, class C, std::size_t len>
     using f = drop_c<
       start,
       typename emp::make_int_sequence_v_c<
@@ -11798,7 +11885,7 @@ namespace jln::mp::detail
   template<>
   struct _slice<0>
   {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, unsigned len>
+    template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
     using f = typename conditional_c<
       bool(detail::validate_index<start, len>::value)
     >::template f<C, C>;
@@ -11807,7 +11894,7 @@ namespace jln::mp::detail
   template<>
   struct _slice<3>
   {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, unsigned len>
+    template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
     using f = drop_c<start, front<C>>;
   };
 }
@@ -11864,7 +11951,7 @@ namespace jln::mp
   {
     constexpr int_ sliding_stride(int_ size, int_ stride);
 
-    template<int_ size, int_ stride, int_ = sliding_stride(size, stride)>
+    template<int_ size, int_ stride, int_>
     struct mk_sliding;
   }
   /// \endcond
@@ -11882,13 +11969,17 @@ namespace jln::mp
   ///     If `stride > 1`, the last window may be smaller than \c size
   template<class size, class stride, class C = listify>
   using sliding_with_stride = typename detail::mk_sliding<
-    size::value, stride::value>::template f<C>;
+    size::value, stride::value,
+    detail::sliding_stride(size::value, stride::value)
+  >::template f<C>;
 
   template<class size, class C = listify>
   using sliding = sliding_with_stride<size, number<1>, C>;
 
   template<int_ size, int_ stride = 1, class C = listify>
-  using sliding_with_stride_c = typename detail::mk_sliding<size, stride>::template f<C>;
+  using sliding_with_stride_c = typename detail::mk_sliding<size, stride,
+    detail::sliding_stride(size, stride)
+  >::template f<C>;
 
   template<int_ size, class C = listify>
   using sliding_c = sliding_with_stride_c<size, 1, C>;
@@ -13235,28 +13326,76 @@ namespace jln::mp
 {
   /// \ingroup value
 
+  /// \cond
+#ifdef _MSC_VER
+  namespace detail
+  {
+    template<class x>
+    struct _one
+    {
+      using type = x;
+    };
+  }
+#endif
+  /// \endcond
+
   /// Converts \c x to \val.
   /// \pre \c emp::has_value<x> == \c true
   /// \treturn \bool
   template<class C = identity>
   struct as_val
   {
-    template<class x>
 #if __cplusplus >= 201703L
-    using f = mp::call<C, val<x::value>>;
+# ifndef _MSC_VER
+    template<class x>
+    using f = JLN_MP_DCALL(sizeof(C), C, val<x::value>);
+# else
+    template<class... xs>
+    using f = typename detail::_memoizer_impl<C, list<
+      typename detail::_one<val<xs::value>...>::type
+    >>::type;
+# endif
 #else
-    using f = mp::call<C, typed_value<decltype(x::value), x::value>>;
+# ifndef _MSC_VER
+    template<class x>
+    using f = JLN_MP_DCALL(sizeof(C), C, typed_value<decltype(x::value), x::value>);
+# else
+    template<class... xs>
+    using f = typename detail::_memoizer_impl<C, list<
+      typename detail::_one<typed_value<decltype(x::value), x::value>...>::type
+    >>::type;
+# endif
 #endif
   };
 
+  /// \cond
+  template<>
+  struct as_val<identity>
+  {
+#if __cplusplus >= 201703L
+# ifndef _MSC_VER
+    template<class x>
+    using f = val<x::value>;
+# else
+    template<class... xs>
+    using f = typename detail::_one<val<xs::value>...>::type;
+# endif
+#else
+# ifndef _MSC_VER
+    template<class x>
+    using f = typed_value<decltype(x::value), x::value>;
+# else
+    template<class... xs>
+    using f = typename detail::_one<typed_value<decltype(xs::value), xs::value>...>::type;
+# endif
+#endif
+  };
+  /// \endcond
+
   namespace emp
   {
-    template<class x>
-#if __cplusplus >= 201703L
-    using f = val<x::value>;
-#else
-    using f = typed_value<decltype(x::value), x::value>;
-#endif
+    template<class x, class C = mp::identity>
+    using as_val = typename mp::as_val<C>::template f<x>;
   }
 }
 namespace jln::mp::smp
@@ -13500,7 +13639,7 @@ namespace jln::mp
   struct val_mod
   {
     template<class... xs>
-    using f = typename C::template f<val<(... %  xs::value)>>;
+    using f = typename C::template f<val<(... % xs::value)>>;
   };
 
   template<class C = identity>
@@ -13967,7 +14106,42 @@ namespace jln::mp::detail
     if_<
       size<>,
       try_<Tpl<assume_unary<C>>>,
-      always<val<i>, assume_unary<C>>>>;
+      always<val<i>, assume_unary<C>>
+    >
+  >;
+
+#ifdef _MSC_VER
+  template<template<class...> class Tpl, class C, int i = 0>
+  using smp_opv_without_zero = contract<
+    if_<
+      size<>,
+      if_<
+        pop_front<and_<>>,
+        try_<Tpl<assume_unary<C>>>,
+        violation
+      >,
+      always<val<i>, assume_unary<C>>
+    >
+  >;
+
+  template<class C>
+  using smp_opv_without_zero_and_with_value = contract<
+    if_<
+      size<>,
+      if_<
+        pop_front<and_<>>,
+        try_<C>,
+        violation
+      >,
+      violation
+    >
+  >;
+# define JLN_smp_opv_without_zero detail::smp_opv_without_zero
+# define JLN_smp_opv_without_zero_and_with_value detail::smp_opv_without_zero_and_with_value
+#else
+# define JLN_smp_opv_without_zero detail::smp_opv_default
+# define JLN_smp_opv_without_zero_and_with_value try_contract
+#endif
 }
 /// \endcond
 
@@ -14013,22 +14187,22 @@ namespace jln::mp::smp
   using val_mul1 = detail::smp_opv_default<mp::val_mul, C, 1>;
 
   template<class C = identity>
-  using val_div = try_contract<mp::val_div<assume_unary<C>>>;
+  using val_div = JLN_smp_opv_without_zero_and_with_value<mp::val_div<assume_unary<C>>>;
 
   template<class C = identity>
-  using val_div0 = detail::smp_opv_default<mp::val_div, C>;
+  using val_div0 = JLN_smp_opv_without_zero<mp::val_div, C>;
 
   template<class C = identity>
-  using val_div1 = detail::smp_opv_default<mp::val_div, C, 1>;
+  using val_div1 = JLN_smp_opv_without_zero<mp::val_div, C, 1>;
 
   template<class C = identity>
-  using val_mod = try_contract<mp::val_mod<assume_unary<C>>>;
+  using val_mod = JLN_smp_opv_without_zero_and_with_value<mp::val_mod<assume_unary<C>>>;
 
   template<class C = identity>
-  using val_mod0 = detail::smp_opv_default<mp::val_mod, C>;
+  using val_mod0 = JLN_smp_opv_without_zero<mp::val_mod, C>;
 
   template<class C = identity>
-  using val_mod1 = detail::smp_opv_default<mp::val_mod, C, 1>;
+  using val_mod1 = JLN_smp_opv_without_zero<mp::val_mod, C, 1>;
 
   template<class C = identity>
   using val_xor = try_contract<mp::val_xor<assume_unary<C>>>;
@@ -14280,6 +14454,9 @@ namespace jln::mp::detail
     using type = smp::val_greater_equal<sfinae<C>>;
   };
 }
+
+#undef JLN_smp_opv_without_zero
+#undef JLN_smp_opv_without_zero_and_with_value
 /// \endcond
 #if __cplusplus >= 201703L
 namespace jln::mp
