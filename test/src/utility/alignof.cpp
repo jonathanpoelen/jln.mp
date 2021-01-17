@@ -3,6 +3,9 @@
 
 #include "jln/mp/smp/utility/alignof.hpp"
 
+JLN_DIAGNOSTIC_PUSH
+JLN_DIAGNOSTIC_MSVC_IGNORE(4324)
+
 TEST_SUITE_BEGIN()
 
 template<std::size_t n>
@@ -32,3 +35,5 @@ TEST()
 }
 
 TEST_SUITE_END()
+
+JLN_DIAGNOSTIC_POP

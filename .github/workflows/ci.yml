@@ -29,8 +29,34 @@ jobs:
         call "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86
         IF ERRORLEVEL 1 EXIT
         set PATH=%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Tools\Llvm\bin;%PATH%
-        set CC=clang-cl
         :after_vc
+        set CC=%CXX%
+        python -m pip install ninja meson
+        meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
+        type D:\a\jln.mp\jln.mp\build\meson-logs\meson-log.txt
+        ninja -C build -k10
+
+  windows-cl:
+    name: Windows ${{ matrix.env }} dbg=${{ matrix.debug }}
+    runs-on: windows-latest
+    timeout-minutes: 4
+    strategy:
+      fail-fast: false
+      matrix:
+        env: [cl]
+        debug: ['false']
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - shell: cmd
+      env:
+        CXX: ${{ matrix.env }}
+      run: |
+        call "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86
+        IF ERRORLEVEL 1 EXIT
+        set PATH=%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Tools\Llvm\bin;%PATH%
+        set CC=%CXX%
         python -m pip install ninja meson
         meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
         type D:\a\jln.mp\jln.mp\build\meson-logs\meson-log.txt

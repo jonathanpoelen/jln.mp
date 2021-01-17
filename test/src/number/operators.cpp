@@ -75,6 +75,7 @@ TEST()
   ut::invoke_r<_1, smp::div1<>>();
   ut::invoke_r<_0, smp::div0<>, _0>();
   ut::invoke_r<_1, smp::div0<>, _1>();
+  ut::invoke_r<_2, smp::div0<>, _2>();
   ut::not_invocable<smp::div0<>, _1, _0>();
   ut::invoke_r<_1, smp::div0<inc<>>>();
   ut::invoke_r<_2, smp::div1<inc<>>>();

@@ -12,7 +12,7 @@ namespace jln::mp
   {
     constexpr int_ sliding_stride(int_ size, int_ stride);
 
-    template<int_ size, int_ stride, int_ = sliding_stride(size, stride)>
+    template<int_ size, int_ stride, int_>
     struct mk_sliding;
   }
   /// \endcond
@@ -30,13 +30,17 @@ namespace jln::mp
   ///     If `stride > 1`, the last window may be smaller than \c size
   template<class size, class stride, class C = listify>
   using sliding_with_stride = typename detail::mk_sliding<
-    size::value, stride::value>::template f<C>;
+    size::value, stride::value,
+    detail::sliding_stride(size::value, stride::value)
+  >::template f<C>;
 
   template<class size, class C = listify>
   using sliding = sliding_with_stride<size, number<1>, C>;
 
   template<int_ size, int_ stride = 1, class C = listify>
-  using sliding_with_stride_c = typename detail::mk_sliding<size, stride>::template f<C>;
+  using sliding_with_stride_c = typename detail::mk_sliding<size, stride,
+    detail::sliding_stride(size, stride)
+  >::template f<C>;
 
   template<int_ size, class C = listify>
   using sliding_c = sliding_with_stride_c<size, 1, C>;

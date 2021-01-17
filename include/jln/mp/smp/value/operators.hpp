@@ -1,10 +1,12 @@
 #pragma once
 
 #include "../../value/operators.hpp"
+#include "../../number/operators.hpp"
 #include "../functional/identity.hpp"
 #include "../functional/if.hpp"
 #include "../list/size.hpp"
 #include "../list/push_back.hpp"
+#include "../list/pop_front.hpp"
 
 /// \cond
 namespace jln::mp::detail
@@ -14,7 +16,42 @@ namespace jln::mp::detail
     if_<
       size<>,
       try_<Tpl<assume_unary<C>>>,
-      always<val<i>, assume_unary<C>>>>;
+      always<val<i>, assume_unary<C>>
+    >
+  >;
+
+#ifdef _MSC_VER
+  template<template<class...> class Tpl, class C, int i = 0>
+  using smp_opv_without_zero = contract<
+    if_<
+      size<>,
+      if_<
+        pop_front<and_<>>,
+        try_<Tpl<assume_unary<C>>>,
+        violation
+      >,
+      always<val<i>, assume_unary<C>>
+    >
+  >;
+
+  template<class C>
+  using smp_opv_without_zero_and_with_value = contract<
+    if_<
+      size<>,
+      if_<
+        pop_front<and_<>>,
+        try_<C>,
+        violation
+      >,
+      violation
+    >
+  >;
+# define JLN_smp_opv_without_zero detail::smp_opv_without_zero
+# define JLN_smp_opv_without_zero_and_with_value detail::smp_opv_without_zero_and_with_value
+#else
+# define JLN_smp_opv_without_zero detail::smp_opv_default
+# define JLN_smp_opv_without_zero_and_with_value try_contract
+#endif
 }
 /// \endcond
 
@@ -60,22 +97,22 @@ namespace jln::mp::smp
   using val_mul1 = detail::smp_opv_default<mp::val_mul, C, 1>;
 
   template<class C = identity>
-  using val_div = try_contract<mp::val_div<assume_unary<C>>>;
+  using val_div = JLN_smp_opv_without_zero_and_with_value<mp::val_div<assume_unary<C>>>;
 
   template<class C = identity>
-  using val_div0 = detail::smp_opv_default<mp::val_div, C>;
+  using val_div0 = JLN_smp_opv_without_zero<mp::val_div, C>;
 
   template<class C = identity>
-  using val_div1 = detail::smp_opv_default<mp::val_div, C, 1>;
+  using val_div1 = JLN_smp_opv_without_zero<mp::val_div, C, 1>;
 
   template<class C = identity>
-  using val_mod = try_contract<mp::val_mod<assume_unary<C>>>;
+  using val_mod = JLN_smp_opv_without_zero_and_with_value<mp::val_mod<assume_unary<C>>>;
 
   template<class C = identity>
-  using val_mod0 = detail::smp_opv_default<mp::val_mod, C>;
+  using val_mod0 = JLN_smp_opv_without_zero<mp::val_mod, C>;
 
   template<class C = identity>
-  using val_mod1 = detail::smp_opv_default<mp::val_mod, C, 1>;
+  using val_mod1 = JLN_smp_opv_without_zero<mp::val_mod, C, 1>;
 
   template<class C = identity>
   using val_xor = try_contract<mp::val_xor<assume_unary<C>>>;
@@ -327,4 +364,7 @@ namespace jln::mp::detail
     using type = smp::val_greater_equal<sfinae<C>>;
   };
 }
+
+#undef JLN_smp_opv_without_zero
+#undef JLN_smp_opv_without_zero_and_with_value
 /// \endcond

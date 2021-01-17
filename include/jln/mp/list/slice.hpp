@@ -3,6 +3,7 @@
 #include "list.hpp"
 #include "../number/number.hpp"
 #include "../utility/unpack.hpp"
+#include "../utility/conditional.hpp"
 
 namespace jln::mp
 {
@@ -33,12 +34,16 @@ namespace jln::mp
     ::template f<
       start::value, size::value,
       // verify that stride is strictly greater than 0
+#ifdef _MSC_VER
+      emp::conditional_c<(stride::value > 0), stride, void>::value,
+#else
       unsigned{int_(stride::value)-1}+1u,
+#endif
       C, sizeof...(xs)>
     ::template f<xs...>;
   };
 
-  template<unsigned start, unsigned size, unsigned stride = 1, class C = listify>
+  template<int_ start, int_ size, int_ stride = 1, class C = listify>
   using slice_c = slice<number<start>, number<size>, number<stride>, C>;
 
   namespace emp
@@ -46,7 +51,7 @@ namespace jln::mp
     template<class L, class start, class size, class stride = number<1>, class C = mp::listify>
     using slice = unpack<L, slice<start, size, stride, C>>;
 
-    template<class L, unsigned start, unsigned size, unsigned stride = 1, class C = mp::listify>
+    template<class L, int_ start, int_ size, int_ stride = 1, class C = mp::listify>
     using slice_c = slice<L, number<start>, number<size>, number<stride>, C>;
   }
 }
@@ -75,31 +80,46 @@ namespace jln::mp::detail
   template<>
   struct _slice<2>
   {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, unsigned len>
+    template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
     using f = drop_c<start, take_c<
-      detail::validate_index<size - 1u,
-        unsigned{int_(len) - start}>::value + 1u,
+      detail::validate_index<size - 1,
+#ifdef _MSC_VER
+        (start < int_(len) ? int_(len) - start : 0)
+#else
+        unsigned{len - start}
+#endif
+      >::value + 1,
       C>>;
   };
 
-  template<unsigned size, unsigned stride, class C>
+  template<int_ size, int_ stride, class C>
   struct _slice_impl
   {
+#ifdef _MSC_VER
+    template<int_ i, class x>
+    using g = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
+#endif
+
     template<int_... ints>
     struct impl
     {
+#ifdef _MSC_VER
+      template<class... xs>
+      using f = call<join<C>, g<ints, xs>...>;
+#else
       template<class... xs>
       using f = typename join<C>::template f<
         typename wrap_in_list_c<(ints <= size && ints % stride == 0)>
         ::template f<xs>
       ...>;
+#endif
     };
   };
 
   template<>
   struct _slice<1>
   {
-    template<unsigned start, unsigned size, unsigned stride, class C, unsigned len>
+    template<int_ start, int_ size, unsigned stride, class C, std::size_t len>
     using f = drop_c<
       start,
       typename emp::make_int_sequence_v_c<
@@ -115,7 +135,7 @@ namespace jln::mp::detail
   template<>
   struct _slice<0>
   {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, unsigned len>
+    template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
     using f = typename conditional_c<
       bool(detail::validate_index<start, len>::value)
     >::template f<C, C>;
@@ -124,7 +144,7 @@ namespace jln::mp::detail
   template<>
   struct _slice<3>
   {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, unsigned len>
+    template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
     using f = drop_c<start, front<C>>;
   };
 }

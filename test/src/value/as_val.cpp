@@ -11,6 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  ut::same<v2, emp::as_val<_2>>();
+
   test_pack<as_val>().test_unary();
   test_pack3<as_val>();
 

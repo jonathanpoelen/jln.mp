@@ -5,6 +5,18 @@
 #include "../list/list.hpp"
 #include "../number/number.hpp"
 
+/// \cond
+#ifdef _MSC_VER
+# ifdef JLN_MP_ENABLE_DEBUG
+#  ifndef JLN_MP_ENABLE_DEBUG_FORCE
+#   undef JLN_MP_ENABLE_DEBUG
+#   define JLN_MP_ENABLE_DEBUG 1
+#  endif
+# else
+#  define JLN_MP_ENABLE_DEBUG 1
+# endif
+#endif
+/// \endcond
 
 namespace jln::mp
 {

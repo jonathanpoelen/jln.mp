@@ -6,6 +6,7 @@
 #include "../functional/if.hpp"
 #include "../list/size.hpp"
 #include "../list/push_back.hpp"
+#include "../list/pop_front.hpp"
 
 /// \cond
 namespace jln::mp::detail
@@ -15,7 +16,42 @@ namespace jln::mp::detail
     if_<
       size<>,
       try_<Tpl<assume_number<C>>>,
-      always<number<i>, assume_number<C>>>>;
+      always<number<i>, assume_number<C>>
+    >
+  >;
+
+#ifdef _MSC_VER
+  template<template<class...> class Tpl, class C, int_ i = 0>
+  using smp_op_without_zero = contract<
+    if_<
+      size<>,
+      if_<
+        pop_front<and_<>>,
+        try_<Tpl<assume_number<C>>>,
+        violation
+      >,
+      always<number<i>, assume_number<C>>
+    >
+  >;
+
+  template<class C>
+  using smp_op_without_zero_and_with_value = contract<
+    if_<
+      size<>,
+      if_<
+        pop_front<and_<>>,
+        try_<C>,
+        violation
+      >,
+      violation
+    >
+  >;
+# define JLN_smp_op_without_zero detail::smp_op_without_zero
+# define JLN_smp_op_without_zero_and_with_value detail::smp_op_without_zero_and_with_value
+#else
+# define JLN_smp_op_without_zero detail::smp_op_default
+# define JLN_smp_op_without_zero_and_with_value try_contract
+#endif
 }
 /// \endcond
 
@@ -61,22 +97,22 @@ namespace jln::mp::smp
   using mul1 = detail::smp_op_default<mp::mul, C, 1>;
 
   template<class C = identity>
-  using div = try_contract<mp::div<assume_number<C>>>;
+  using div = JLN_smp_op_without_zero_and_with_value<mp::div<assume_number<C>>>;
 
   template<class C = identity>
-  using div0 = detail::smp_op_default<mp::div, C>;
+  using div0 = JLN_smp_op_without_zero<mp::div, C>;
 
   template<class C = identity>
-  using div1 = detail::smp_op_default<mp::div, C, 1>;
+  using div1 = JLN_smp_op_without_zero<mp::div, C, 1>;
 
   template<class C = identity>
-  using mod = try_contract<mp::mod<assume_number<C>>>;
+  using mod = JLN_smp_op_without_zero_and_with_value<mp::mod<assume_number<C>>>;
 
   template<class C = identity>
-  using mod0 = detail::smp_op_default<mp::mod, C>;
+  using mod0 = JLN_smp_op_without_zero<mp::mod, C>;
 
   template<class C = identity>
-  using mod1 = detail::smp_op_default<mp::mod, C, 1>;
+  using mod1 = JLN_smp_op_without_zero<mp::mod, C, 1>;
 
   template<class C = identity>
   using xor_ = try_contract<mp::xor_<assume_number<C>>>;
@@ -344,4 +380,7 @@ namespace jln::mp::detail
   // JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, greater);
   // JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::binary_number, greater_equal);
 }
+
+#undef JLN_smp_op_without_zero
+#undef JLN_smp_op_without_zero_and_with_value
 /// \endcond

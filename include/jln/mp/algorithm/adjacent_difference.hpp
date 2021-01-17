@@ -41,11 +41,21 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
+#ifdef _MSC_VER
+  template<class C, class x, int_... xs>
+  using _adjacent_difference_msvc = JLN_MP_DCALL_XS(xs, C, x, number<xs>...);
+#endif
+
   template<class y, class... ys>
   struct _adjacent_difference<list<y, ys...>>
   {
+#ifdef _MSC_VER
     template<class C, class x, class... xs>
-    using f = typename C::template f<x, number<xs::value - ys::value>...>;
+    using f = _adjacent_difference_msvc<C, x, (xs::value - ys::value)...>;
+#else
+    template<class C, class x, class... xs>
+    using f = JLN_MP_DCALL_XS(xs, C, x, number<xs::value - ys::value>...);
+#endif
   };
 
   template<>

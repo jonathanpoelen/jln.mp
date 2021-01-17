@@ -81,6 +81,7 @@ TEST()
   }
   ut::invoke_r<val<int_(0)>, smp::val_div0<>, _0>();
   ut::invoke_r<val<int_(1)>, smp::val_div0<>, _1>();
+  ut::invoke_r<val<int_(2)>, smp::val_div0<>, _2>();
   ut::not_invocable<smp::val_div0<>, _1, _0>();
   ut::invoke_r<val<1>, smp::val_div0<val_inc<>>>();
   ut::invoke_r<val<2>, smp::val_div1<val_inc<>>>();
