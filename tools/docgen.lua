@@ -232,10 +232,13 @@ local preproc = P{
   + 1
   )^0)
 
-, c=P'JLN_MP_DCALL_XS(' * id * ',' * ws0 * cid * ',' * ws0
-      * C((1-S'()' + balancedparent)^1) * ')'
-      / function(f, args) return f .. '<' .. args .. '>' end
-
+, c=(P'JLN_MP_DCALL' * (P'F'^0) * (P'_C'^0) * (P'_XS'^0) * '('
+      * ((1-S'()<,' + balancedparent + balancedtag)^1)
+      * ',' * ws0 * cid
+      * ',' * ws0 * C((1-S'()' + balancedparent)^1)
+      * ')'
+      / function(f, args) return f .. '::f<' .. args .. '>' end
+  )
 , p='#' * sp0 / '' *
     ( 'ifdef JLN_MP_DOXYGENATING'
       * Cs((1 - ('#' * sp0 * (P'else' + P'endif')) + V'c')^0)
