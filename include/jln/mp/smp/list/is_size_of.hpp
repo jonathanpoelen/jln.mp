@@ -2,7 +2,7 @@
 
 #include "../functional/identity.hpp"
 #include "../list/size.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 #include "../../list/is_size_of.hpp"
 
 namespace jln::mp::smp

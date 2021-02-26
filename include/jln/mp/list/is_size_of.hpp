@@ -1,17 +1,17 @@
 #pragma once
 
 #include "size.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 
 namespace jln::mp
 {
   /// \ingroup list
 
   template<class N, class C = identity>
-  using is_size_of = size<same_as<N, C>>;
+  using is_size_of = size<is<N, C>>;
 
   template<int_ n, class C = identity>
-  using is_size_of_c = size<same_as<number<n>, C>>;
+  using is_size_of_c = size<is<number<n>, C>>;
 
   namespace emp
   {

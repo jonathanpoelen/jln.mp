@@ -1,7 +1,7 @@
 #pragma once
 
 #include "transform.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 #include "../number/operators.hpp"
 #include "../../algorithm/count.hpp"
 

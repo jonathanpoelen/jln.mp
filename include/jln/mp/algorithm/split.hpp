@@ -3,7 +3,7 @@
 #include "fold_right.hpp"
 #include "../functional/lift.hpp"
 #include "../functional/call.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 #include "../utility/unpack.hpp"
 
 
@@ -28,7 +28,7 @@ namespace jln::mp
   /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
   /// \semantics
   ///   \code
-  ///   call<split_if<same_as<void>, _0, _1, _2, _0, _3> == list<
+  ///   call<split_if<is<void>, _0, _1, _2, _0, _3> == list<
   ///     list<>,
   ///     list<_1, _2>,
   ///     list<_3>
@@ -45,7 +45,7 @@ namespace jln::mp
   };
 
   template<class x, class C = listify>
-  using split = split_if<same_as<x>, C>;
+  using split = split_if<is<x>, C>;
 
   namespace emp
   {

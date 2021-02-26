@@ -5,7 +5,7 @@
 #include "../list/offset.hpp"
 #include "../list/push_front.hpp"
 #include "../utility/always.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 #include "../number/operators.hpp"
 #include "../functional/try.hpp"
 
@@ -45,7 +45,7 @@ namespace jln::mp
   /// Use \c NC::f<> if the value to search for never occurs.
   /// \treturn \number
   template<class T, class C = listify, class NC = always<na>>
-  using index_of = index_if<same_as<T>, C, NC>;
+  using index_of = index_if<is<T>, C, NC>;
 
   namespace emp
   {

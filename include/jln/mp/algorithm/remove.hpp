@@ -2,7 +2,7 @@
 
 #include "../list/join.hpp"
 #include "../list/wrap_in_list.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 #include "transform.hpp"
 
 namespace jln::mp
@@ -17,7 +17,7 @@ namespace jln::mp
   /// Removes all occurence of a \value.
   /// \treturn \sequence
   template<class T, class C = listify>
-  using remove = remove_if<same_as<T>, C>;
+  using remove = remove_if<is<T>, C>;
 
   namespace emp
   {

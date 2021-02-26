@@ -2,7 +2,7 @@
 
 #include "transform.hpp"
 #include "../utility/always.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 #include "../number/operators.hpp"
 #include "../number/to_bool.hpp"
 
@@ -16,7 +16,7 @@ namespace jln::mp
 
   /// Counts all elements identical to a \value.
   template<class x, class C = identity>
-  using count = transform<same_as<x>, add0<C>>;
+  using count = transform<is<x>, add0<C>>;
 
   namespace emp
   {

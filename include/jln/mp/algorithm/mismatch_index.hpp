@@ -3,7 +3,7 @@
 #include "mismatch.hpp"
 #include "../list/at.hpp"
 #include "../utility/always.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 #include "../functional/lift.hpp"
 #include "../functional/identity.hpp"
 #include "../functional/invoke_twice.hpp"
@@ -15,7 +15,7 @@ namespace jln::mp
   /// Returns the first mismatching index of elements from two sequences, otherwise the size of the sequences.
   /// \treturn \number
   template<class Cmp = equal<>, class C = identity>
-  using mismatch_index = mismatch<Cmp, at0<C>, if_<at0<same_as<number<-1>>>, at1<C>, at0<C>>>;
+  using mismatch_index = mismatch<Cmp, at0<C>, if_<at0<is<number<-1>>>, at1<C>, at0<C>>>;
 
   namespace emp
   {

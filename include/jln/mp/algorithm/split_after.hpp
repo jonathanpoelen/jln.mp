@@ -10,7 +10,7 @@ namespace jln::mp
   /// The split value is inserted at the end of the previous list.
   /// \semantics
   ///   \code
-  ///   call<split_after_if<same_as<void>, _0, _1, _2, _0, _3> == list<
+  ///   call<split_after_if<is<void>, _0, _1, _2, _0, _3> == list<
   ///     list<_0>,
   ///     list<_1, _2, _0>,
   ///     list<_3>
@@ -27,7 +27,7 @@ namespace jln::mp
   };
 
   template<class x, class C = listify>
-  using split_after = split_after_if<same_as<x>, C>;
+  using split_after = split_after_if<is<x>, C>;
 
   namespace emp
   {

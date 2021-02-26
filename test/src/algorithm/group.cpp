@@ -19,7 +19,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<group_by, same_as<int>>();
+  test_pack2<group_by, is<int>>();
   test_pack2<group_by, void>();
 
   ut::same<list<list<_0>, list<_1, _1>, list<_2, _2, _2>>,

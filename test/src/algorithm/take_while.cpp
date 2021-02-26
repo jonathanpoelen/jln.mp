@@ -3,7 +3,7 @@
 
 #include "jln/mp/smp/algorithm/take_while.hpp"
 #include "jln/mp/smp/number/operators.hpp"
-#include "jln/mp/smp/utility/same_as.hpp"
+#include "jln/mp/smp/utility/is.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -40,8 +40,8 @@ TEST()
 
   test_pack2<take_while>();
 
-  ut::same<seq_0_1, emp::take_while<list<_0, _1, _2, _3>, same_as<_2>>>();
-  ut::same<ut::other_list<_0, _1>, emp::take_while<list<_0, _1>, same_as<_2>, listify, ut::other_listify>>();
+  ut::same<seq_0_1, emp::take_while<list<_0, _1, _2, _3>, is<_2>>>();
+  ut::same<ut::other_list<_0, _1>, emp::take_while<list<_0, _1>, is<_2>, listify, ut::other_listify>>();
 
   test_take_while<list, list>();
   test_take_while<list, ut::other_list>();

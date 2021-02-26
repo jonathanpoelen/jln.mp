@@ -10,7 +10,7 @@ namespace jln::mp
   /// The split value is inserted at the beginning of the following list.
   /// \semantics
   ///   \code
-  ///   call<split_before_if<same_as<void>, _0, _1, _2, _0, _3> == list<
+  ///   call<split_before_if<is<void>, _0, _1, _2, _0, _3> == list<
   ///     list<>,
   ///     list<_0, _1, _2>,
   ///     list<_0, _3>
@@ -27,7 +27,7 @@ namespace jln::mp
   };
 
   template<class x, class C = listify>
-  using split_before = split_before_if<same_as<x>, C>;
+  using split_before = split_before_if<is<x>, C>;
 
   namespace emp
   {

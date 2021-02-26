@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../list/listify.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 #include "../utility/unpack.hpp"
 #include "../functional/identity.hpp"
 
@@ -33,7 +33,7 @@ namespace jln::mp
   };
 
   template<class T, class C = listify, class NC = C>
-  using find = find_if<same_as<T>, C, NC>;
+  using find = find_if<is<T>, C, NC>;
 
   namespace emp
   {
@@ -41,7 +41,7 @@ namespace jln::mp
     using find_if = unpack<L, mp::find_if<Pred, C, NC>>;
 
     template<class L, class T, class C = mp::listify, class NC = C>
-    using find = unpack<L, mp::find_if<mp::same_as<T>, C, NC>>;
+    using find = unpack<L, mp::find_if<mp::is<T>, C, NC>>;
   }
 }
 

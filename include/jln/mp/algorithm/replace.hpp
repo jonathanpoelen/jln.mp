@@ -2,7 +2,7 @@
 
 #include "../list/join.hpp"
 #include "../functional/if.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 #include "transform.hpp"
 
 namespace jln::mp
@@ -17,7 +17,7 @@ namespace jln::mp
   /// Replaces every occurrence of a \value by another \value.
   /// \treturn \sequence
   template<class T, class U, class C = listify>
-  using replace = replace_if<same_as<T>, U, C>;
+  using replace = replace_if<is<T>, U, C>;
 
   namespace emp
   {

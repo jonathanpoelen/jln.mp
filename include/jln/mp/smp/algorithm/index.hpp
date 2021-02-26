@@ -3,7 +3,7 @@
 #include "find.hpp"
 #include "../number/operators.hpp"
 #include "../utility/always.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 #include "../../algorithm/index.hpp"
 
 /// \cond
@@ -25,7 +25,7 @@ namespace jln::mp::smp
     assume_unary<Pred>, assume_number<C>, assume_unary<NC>>>;
 
   template<class T, class C = identity, class NC = always<na>>
-  using index_of = index_if<same_as<T>, C, NC>;
+  using index_of = index_if<is<T>, C, NC>;
 }
 
 /// \cond

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../list/listify.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 #include "../../algorithm/split.hpp"
 
 namespace jln::mp::smp

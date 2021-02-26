@@ -2,7 +2,7 @@
 
 #include "jln/mp/smp/list/wrap_in_list.hpp"
 #include "jln/mp/smp/functional/lift.hpp"
-#include "jln/mp/smp/utility/same_as.hpp"
+#include "jln/mp/smp/utility/is.hpp"
 
 #include <type_traits>
 
@@ -12,7 +12,7 @@ TEST()
 {
   using namespace jln::mp;
 
-  using pred1 = same_as<int>;
+  using pred1 = is<int>;
   using pred2 = lift<std::is_same>;
 
   ut::same<list<int>, emp::wrap_in_list_if<pred1, int>>();

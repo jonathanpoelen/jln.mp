@@ -66,7 +66,7 @@ namespace jln::mp
 }
 
 #include "../algorithm/same.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 #include "../functional/call.hpp"
 #include "../functional/tee.hpp"
 #include "../number/operators.hpp"
@@ -88,8 +88,8 @@ namespace jln::mp::detail
   };
 
   template<class x, class C>
-  struct mk_wrap_in_list_if<same_as<x, not_<C>>>
-  : mk_wrap_in_list_if_not<same_as<x, C>>
+  struct mk_wrap_in_list_if<is<x, not_<C>>>
+  : mk_wrap_in_list_if_not<is<x, C>>
   {};
 
   template<class C>
@@ -122,8 +122,8 @@ namespace jln::mp::detail
   };
 
   template<class x, class C>
-  struct mk_wrap_in_list_if_not<same_as<x, not_<C>>>
-  : mk_wrap_in_list_if<same_as<x, C>>
+  struct mk_wrap_in_list_if_not<is<x, not_<C>>>
+  : mk_wrap_in_list_if<is<x, C>>
   {};
 
   template<class C>

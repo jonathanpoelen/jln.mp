@@ -41,7 +41,7 @@ namespace jln::mp::detail
   struct _smp_each_select<2>
   {
     template<class F, class C>
-    using f = test_contract<size<same_as<number<1>>>, each<
+    using f = test_contract<size<is<number<1>>>, each<
       assume_unary<F>, monadic_xs<assume_unary<C>>>>;
   };
 
@@ -49,7 +49,7 @@ namespace jln::mp::detail
   struct _smp_each_select<3>
   {
     template<class F0, class F1, class C>
-    using f = test_contract<size<same_as<number<2>>>, each<
+    using f = test_contract<size<is<number<2>>>, each<
       assume_unary<F0>,
       assume_unary<F1>,
       monadic_xs<assume_binary<C>>>>;
@@ -59,7 +59,7 @@ namespace jln::mp::detail
   struct _smp_each_select<4>
   {
     template<class F0, class F1, class F2, class C>
-    using f = test_contract<size<same_as<number<3>>>, each<
+    using f = test_contract<size<is<number<3>>>, each<
       assume_unary<F0>,
       assume_unary<F1>,
       assume_unary<F2>,
@@ -69,7 +69,7 @@ namespace jln::mp::detail
   struct _smp_each
   {
     template<class C, class... Fs>
-    using f = test_contract<size<same_as<number<sizeof...(Fs)>>>,
+    using f = test_contract<size<is<number<sizeof...(Fs)>>>,
       _each<monadic_xs<subcontract<C>>, assume_unary<Fs>...>>;
   };
 

@@ -15,17 +15,17 @@ namespace jln::mp
   /// Invokes \c FC whether `na`, otherwise \c C.
   /// \treturn \value
   template<class C, class FC = violation>
-  using monadic = if_<same_as<na>, FC, C>;
+  using monadic = if_<is<na>, FC, C>;
 
   /// Invokes \c FC whether any value is `na`, otherwise \c C.
   /// \treturn \value
   template<class C, class FC = violation>
-  using monadic0 = if_<front<same_as<na>>, FC, C>;
+  using monadic0 = if_<front<is<na>>, FC, C>;
 
   /// Invokes \c FC whether first value is `na`, otherwise \c C.
   /// \treturn \value
   template<class C, class FC = violation>
-  using monadic_xs = if_<transform<same_as<na>, or_<>>, FC, C>;
+  using monadic_xs = if_<transform<is<na>, or_<>>, FC, C>;
 
   /// Monadify only if \c x is \c na.
   /// \treturn \value

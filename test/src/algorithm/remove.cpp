@@ -11,15 +11,15 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<remove_if, same_as<int>>();
+  test_pack2<remove_if, is<int>>();
   test_pack2<remove_if, void>();
 
-  ut::same<emp::numbers<1, 2>, emp::remove_if<seq_0_1_2, same_as<_0>>>();
+  ut::same<emp::numbers<1, 2>, emp::remove_if<seq_0_1_2, is<_0>>>();
   ut::same<emp::numbers<0, 2>, emp::remove<seq_0_1_2, _1>>();
 
   test_context<
-    remove_if<same_as<_1>>,
-    smp::remove_if<same_as<_1>>,
+    remove_if<is<_1>>,
+    smp::remove_if<is<_1>>,
     0
   >()
     .test<list<>>()

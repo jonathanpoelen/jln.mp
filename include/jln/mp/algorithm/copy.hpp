@@ -15,7 +15,7 @@ namespace jln::mp
   /// Copies all occurence of a \value.
   /// \treturn \sequence
   template<class x, class C = listify>
-  using copy = remove_if<same_as<x, not_<>>, C>;
+  using copy = remove_if<is<x, not_<>>, C>;
 
   namespace emp
   {

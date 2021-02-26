@@ -4,14 +4,14 @@
 #include "../list/list.hpp"
 #include "../number/number.hpp"
 #include "../utility/always.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 
 
 namespace jln::mp
 {
   struct na {};
 
-  using is_na = same_as<na>;
+  using is_na = is<na>;
   using violation = always<na>;
 
   /// \cond

@@ -4,7 +4,7 @@
 #include "transform.hpp"
 #include "../functional/if.hpp"
 #include "../utility/always.hpp"
-#include "../utility/same_as.hpp"
+#include "../utility/is.hpp"
 #include "../../algorithm/replace.hpp"
 
 namespace jln::mp::smp
