@@ -4,9 +4,11 @@
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/utility/has_type.hpp>
+#include <jln/mp/utility/has_value_type.hpp>
 #include <jln/mp/utility/is.hpp>
 #include <jln/mp/utility/is_specialization_of.hpp>
 #include <jln/mp/utility/sizeof.hpp>
 #include <jln/mp/utility/stl_traits.hpp>
 #include <jln/mp/utility/type.hpp>
 #include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/utility/value_type.hpp>
