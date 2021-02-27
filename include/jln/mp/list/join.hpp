@@ -37,7 +37,7 @@ namespace jln::mp
 }
 
 #include <jln/mp/detail/enumerate.hpp>
-#include <jln/mp/../cxx/diagnostic.hpp>
+#include <jln/cxx/diagnostic.hpp>
 
 /// \cond
 namespace jln::mp::detail

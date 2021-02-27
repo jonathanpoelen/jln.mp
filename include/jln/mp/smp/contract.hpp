@@ -1,13 +1,13 @@
 #pragma once
 
 #include <jln/mp/smp/functional/sfinaefwd.hpp>
-#include <jln/mp/smp/../functional/try.hpp>
-#include <jln/mp/smp/../functional/lift.hpp>
-#include <jln/mp/smp/../functional/call.hpp>
-#include <jln/mp/smp/../functional/identity.hpp>
-#include <jln/mp/smp/../functional/if.hpp>
-#include <jln/mp/smp/../number/number.hpp>
-#include <jln/mp/smp/../utility/always.hpp>
+#include <jln/mp/functional/try.hpp>
+#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/call.hpp>
+#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/functional/if.hpp>
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/utility/always.hpp>
 
 
 namespace jln::mp

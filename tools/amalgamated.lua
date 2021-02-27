@@ -15,7 +15,7 @@ end
 
 files={}
 for i=1,#arg do
-  files[arg[i]] = {readfile(arg[i]), true}
+  files[arg[i]:gsub('.*jln/', '')] = {readfile(arg[i]), true}
 end
 
 tinsert = table.insert

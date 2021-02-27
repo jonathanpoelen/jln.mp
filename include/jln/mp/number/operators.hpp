@@ -8,7 +8,7 @@
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/unpack.hpp>
 
-#include <jln/mp/../cxx/diagnostic.hpp>
+#include <jln/cxx/diagnostic.hpp>
 
 #include <limits>
 

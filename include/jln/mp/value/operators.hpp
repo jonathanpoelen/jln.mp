@@ -8,7 +8,7 @@
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/value/val.hpp>
 
-#include <jln/mp/../cxx/diagnostic.hpp>
+#include <jln/cxx/diagnostic.hpp>
 
 JLN_DIAGNOSTIC_PUSH
 JLN_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wlogical-op")
