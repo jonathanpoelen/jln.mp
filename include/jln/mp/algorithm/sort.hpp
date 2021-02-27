@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../number/operators.hpp"
-#include "../detail/enumerate.hpp"
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/number/operators.hpp>
+#include <jln/mp/detail/enumerate.hpp>
 
 namespace jln::mp
 {
@@ -42,7 +42,7 @@ namespace jln::mp
 }
 
 
-#include "merge.hpp"
+#include <jln/mp/algorithm/merge.hpp>
 
 namespace jln::mp
 {

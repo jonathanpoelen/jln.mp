@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../functional/identity.hpp"
-#include "../utility/unpack.hpp"
+#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/utility/unpack.hpp>
 
 namespace jln::mp
 {

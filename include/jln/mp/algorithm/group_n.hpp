@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../utility/unpack.hpp"
-#include "../number/number.hpp"
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/number/number.hpp>
 
 
 namespace jln::mp
@@ -52,9 +52,9 @@ namespace jln::mp
 }
 
 
-#include "split.hpp"
-#include "make_int_sequence.hpp"
-#include "../list/pop_front.hpp"
+#include <jln/mp/algorithm/split.hpp>
+#include <jln/mp/algorithm/make_int_sequence.hpp>
+#include <jln/mp/list/pop_front.hpp>
 
 /// \cond
 namespace jln::mp::detail

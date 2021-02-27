@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../assume.hpp"
-#include "../../algorithm/permutations.hpp"
+#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/algorithm/permutations.hpp>
 
 namespace jln::mp::smp
 {

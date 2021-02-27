@@ -1,7 +1,7 @@
 #pragma once
 
-#include "same.hpp"
-#include "rotate.hpp"
+#include <jln/mp/algorithm/same.hpp>
+#include <jln/mp/algorithm/rotate.hpp>
 
 
 namespace jln::mp
@@ -43,8 +43,8 @@ namespace jln::mp
 }
 
 
-#include "../list/join.hpp"
-#include "../list/wrap_in_list.hpp"
+#include <jln/mp/list/join.hpp>
+#include <jln/mp/list/wrap_in_list.hpp>
 
 /// \cond
 namespace jln::mp::detail

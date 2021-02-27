@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../utility/unpack.hpp"
-#include "../detail/enumerate.hpp"
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/detail/enumerate.hpp>
 
 
 namespace jln::mp
@@ -38,8 +38,8 @@ namespace jln::mp
 }
 
 
-#include "../list/push_front.hpp"
-#include "../list/join.hpp"
+#include <jln/mp/list/push_front.hpp>
+#include <jln/mp/list/join.hpp>
 
 /// \cond
 namespace jln::mp::detail

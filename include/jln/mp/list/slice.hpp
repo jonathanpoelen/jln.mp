@@ -1,9 +1,9 @@
 #pragma once
 
-#include "list.hpp"
-#include "../number/number.hpp"
-#include "../utility/unpack.hpp"
-#include "../utility/conditional.hpp"
+#include <jln/mp/list/list.hpp>
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/utility/conditional.hpp>
 
 namespace jln::mp
 {
@@ -57,13 +57,13 @@ namespace jln::mp
 }
 
 
-#include "../algorithm/make_int_sequence.hpp"
-#include "../functional/lift.hpp"
-#include "wrap_in_list.hpp"
-#include "join.hpp"
-#include "drop.hpp"
-#include "take.hpp"
-#include "front.hpp"
+#include <jln/mp/algorithm/make_int_sequence.hpp>
+#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/list/wrap_in_list.hpp>
+#include <jln/mp/list/join.hpp>
+#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/front.hpp>
 
 /// \cond
 namespace jln::mp::detail

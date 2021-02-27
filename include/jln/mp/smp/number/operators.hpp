@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../assume.hpp"
-#include "../../number/operators.hpp"
-#include "../functional/identity.hpp"
-#include "../functional/if.hpp"
-#include "../list/size.hpp"
-#include "../list/push_back.hpp"
-#include "../list/pop_front.hpp"
+#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/number/operators.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/smp/functional/if.hpp>
+#include <jln/mp/smp/list/size.hpp>
+#include <jln/mp/smp/list/push_back.hpp>
+#include <jln/mp/smp/list/pop_front.hpp>
 
 /// \cond
 namespace jln::mp::detail

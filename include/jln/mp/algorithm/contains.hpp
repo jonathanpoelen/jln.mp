@@ -1,7 +1,7 @@
 #pragma once
 
-#include "any_of.hpp"
-#include "../utility/is.hpp"
+#include <jln/mp/algorithm/any_of.hpp>
+#include <jln/mp/utility/is.hpp>
 
 namespace jln::mp
 {

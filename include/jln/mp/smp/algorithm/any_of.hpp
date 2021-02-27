@@ -1,8 +1,8 @@
 #pragma once
 
-#include "transform.hpp"
-#include "../number/operators.hpp"
-#include "../../algorithm/any_of.hpp"
+#include <jln/mp/smp/algorithm//transform.hpp>
+#include <jln/mp/smp/number/operators.hpp>
+#include <jln/mp/algorithm/any_of.hpp>
 
 namespace jln::mp::smp
 {

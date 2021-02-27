@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../functional/identity.hpp"
-#include "../../functional/try.hpp"
-#include "../../list/offset.hpp"
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/functional/try.hpp>
+#include <jln/mp/list/offset.hpp>
 
 namespace jln::mp::smp
 {

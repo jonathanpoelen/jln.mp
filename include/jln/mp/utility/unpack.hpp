@@ -49,7 +49,7 @@ namespace jln::mp
 } // namespace jln::mp
 
 
-#include "../list/listify.hpp"
+#include <jln/mp/list/listify.hpp>
 
 /// \cond
 namespace jln::mp::detail

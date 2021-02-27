@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../utility/unpack.hpp"
-#include "../number/number.hpp"
-#include "list.hpp"
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/list/list.hpp>
 
 namespace jln::mp
 {
@@ -50,10 +50,10 @@ namespace jln::mp
   }
 }
 
-#include "../algorithm/cartesian.hpp"
-#include "../utility/always.hpp"
-#include "take.hpp"
-#include "drop.hpp"
+#include <jln/mp/algorithm/cartesian.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/drop.hpp>
 
 /// \cond
 namespace jln::mp::detail

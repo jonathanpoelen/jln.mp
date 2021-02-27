@@ -1,9 +1,9 @@
 #pragma once
 
-#include "same.hpp"
-#include "../list/listify.hpp"
-#include "../../functional/monadic.hpp"
-#include "../../algorithm/adjacent_remove.hpp"
+#include <jln/mp/smp/algorithm//same.hpp>
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/functional/monadic.hpp>
+#include <jln/mp/algorithm/adjacent_remove.hpp>
 
 namespace jln::mp::smp
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../utility/is.hpp"
-#include "../../algorithm/split.hpp"
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/algorithm/split.hpp>
 
 namespace jln::mp::smp
 {

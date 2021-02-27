@@ -1,6 +1,6 @@
 #pragma once
 
-#include "unique.hpp"
+#include <jln/mp/algorithm/unique.hpp>
 
 namespace jln::mp
 {
@@ -33,8 +33,8 @@ namespace jln::mp
 }
 
 
-#include "../functional/tee.hpp"
-#include "../number/to_bool.hpp"
+#include <jln/mp/functional/tee.hpp>
+#include <jln/mp/number/to_bool.hpp>
 
 /// \cond
 namespace jln::mp::detail

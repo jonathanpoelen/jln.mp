@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../functional/call.hpp"
+#include <jln/mp/functional/call.hpp>
 
 namespace jln::mp
 {

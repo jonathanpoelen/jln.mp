@@ -1,11 +1,11 @@
 #pragma once
 
-#include "remove.hpp"
-#include "transform.hpp"
-#include "../functional/if.hpp"
-#include "../utility/always.hpp"
-#include "../utility/is.hpp"
-#include "../../algorithm/replace.hpp"
+#include <jln/mp/smp/algorithm//remove.hpp>
+#include <jln/mp/smp/algorithm//transform.hpp>
+#include <jln/mp/smp/functional/if.hpp>
+#include <jln/mp/smp/utility/always.hpp>
+#include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/algorithm/replace.hpp>
 
 namespace jln::mp::smp
 {

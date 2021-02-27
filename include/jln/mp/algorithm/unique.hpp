@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../functional/lift.hpp"
-#include "../utility/unpack.hpp"
+#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/utility/unpack.hpp>
 
 #include <type_traits>
 
@@ -36,9 +36,9 @@ namespace jln::mp
 }
 
 
-#include "same.hpp"
-#include "fold_left.hpp"
-#include "../utility/conditional.hpp"
+#include <jln/mp/algorithm/same.hpp>
+#include <jln/mp/algorithm/fold_left.hpp>
+#include <jln/mp/utility/conditional.hpp>
 
 #include <utility>
 

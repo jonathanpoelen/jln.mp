@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../functional/call.hpp"
-#include "../utility/conditional.hpp"
-#include "val.hpp"
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/functional/call.hpp>
+#include <jln/mp/utility/conditional.hpp>
+#include <jln/mp/value/val.hpp>
 
 #if __cplusplus >= 201703L
 namespace jln::mp

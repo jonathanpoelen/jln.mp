@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../utility/conditional.hpp"
-#include "../utility/always.hpp"
-#include "../number/number.hpp"
-#include "../functional/call.hpp"
+#include <jln/mp/utility/conditional.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/functional/call.hpp>
 
 namespace jln::mp
 {

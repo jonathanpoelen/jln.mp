@@ -1,10 +1,10 @@
 #pragma once
 
-#include "transform.hpp"
-#include "../list/join.hpp"
-#include "../list/wrap_in_list.hpp"
-#include "../utility/is.hpp"
-#include "../../algorithm/remove.hpp"
+#include <jln/mp/smp/algorithm//transform.hpp>
+#include <jln/mp/smp/list/join.hpp>
+#include <jln/mp/smp/list/wrap_in_list.hpp>
+#include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/algorithm/remove.hpp>
 
 
 namespace jln::mp::smp

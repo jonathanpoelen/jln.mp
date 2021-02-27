@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../algorithm/fold_left.hpp"
-#include "../utility/unpack.hpp"
-#include "../functional/lift.hpp"
-#include "../list/push_front.hpp"
-#include "../list/pop_front.hpp"
-#include "../../algorithm/unique.hpp"
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/algorithm/fold_left.hpp>
+#include <jln/mp/smp/utility/unpack.hpp>
+#include <jln/mp/smp/functional/lift.hpp>
+#include <jln/mp/smp/list/push_front.hpp>
+#include <jln/mp/smp/list/pop_front.hpp>
+#include <jln/mp/algorithm/unique.hpp>
 
 namespace jln::mp::smp
 {
@@ -18,8 +18,8 @@ namespace jln::mp::smp
     assume_binary_barrier<Cmp>, subcontract_barrier<C>>>;
 }
 
-#include "../algorithm/same.hpp"
-#include "../utility/unpack.hpp"
+#include <jln/mp/smp/algorithm/same.hpp>
+#include <jln/mp/smp/utility/unpack.hpp>
 
 /// \cond
 namespace jln::mp::detail

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../concepts.hpp"
-#include "../list/listify.hpp"
-#include "../utility/is.hpp"
-#include "../functional/identity.hpp"
-#include "../../list/front.hpp"
-#include "../../algorithm/find.hpp"
+#include <jln/mp/smp/concepts.hpp>
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/list/front.hpp>
+#include <jln/mp/algorithm/find.hpp>
 
 namespace jln::mp::smp
 {

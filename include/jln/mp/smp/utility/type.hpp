@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../assume.hpp"
-#include "../functional/identity.hpp"
-#include "../../utility/type.hpp"
+#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/utility/type.hpp>
 
 namespace jln::mp::smp
 {

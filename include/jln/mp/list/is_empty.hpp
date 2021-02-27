@@ -1,7 +1,7 @@
 #pragma once
 
-#include "size.hpp"
-#include "../number/operators.hpp"
+#include <jln/mp/list/size.hpp>
+#include <jln/mp/number/operators.hpp>
 
 namespace jln::mp
 {

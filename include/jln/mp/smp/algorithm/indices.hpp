@@ -1,8 +1,8 @@
 #pragma once
 
-#include "make_int_sequence.hpp"
-#include "../list/size.hpp"
-#include "../../algorithm/indices.hpp"
+#include <jln/mp/smp/algorithm//make_int_sequence.hpp>
+#include <jln/mp/smp/list/size.hpp>
+#include <jln/mp/algorithm/indices.hpp>
 
 namespace jln::mp::smp
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "split.hpp"
-#include "../../algorithm/split_before.hpp"
+#include <jln/mp/smp/algorithm//split.hpp>
+#include <jln/mp/algorithm/split_before.hpp>
 
 namespace jln::mp::smp
 {

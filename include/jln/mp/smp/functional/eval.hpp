@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../contract.hpp"
-#include "../../functional/eval.hpp"
+#include <jln/mp/smp/contract.hpp>
+#include <jln/mp/functional/eval.hpp>
 
 #ifdef __cpp_nontype_template_parameter_class
 #if __cpp_nontype_template_parameter_class >= 201806L

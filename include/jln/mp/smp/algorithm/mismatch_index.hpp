@@ -1,13 +1,13 @@
 #pragma once
 
-#include "mismatch.hpp"
-#include "../list/at.hpp"
-#include "../utility/always.hpp"
-#include "../utility/is.hpp"
-#include "../functional/lift.hpp"
-#include "../functional/identity.hpp"
-#include "../functional/invoke_twice.hpp"
-#include "../../algorithm/mismatch_index.hpp"
+#include <jln/mp/smp/algorithm//mismatch.hpp>
+#include <jln/mp/smp/list/at.hpp>
+#include <jln/mp/smp/utility/always.hpp>
+#include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/smp/functional/lift.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/smp/functional/invoke_twice.hpp>
+#include <jln/mp/algorithm/mismatch_index.hpp>
 
 namespace jln::mp::smp
 {

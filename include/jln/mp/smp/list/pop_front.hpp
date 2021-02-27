@@ -1,7 +1,7 @@
 #pragma once
 
-#include "drop.hpp"
-#include "../../list/pop_front.hpp"
+#include <jln/mp/smp/list//drop.hpp>
+#include <jln/mp/list/pop_front.hpp>
 
 namespace jln::mp::smp
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../assume.hpp"
-#include "../functional/sfinaefwd.hpp"
-#include "../../utility/conditional.hpp"
+#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/smp/functional/sfinaefwd.hpp>
+#include <jln/mp/utility/conditional.hpp>
 
 namespace jln::mp::smp
 {

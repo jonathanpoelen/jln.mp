@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../contract.hpp"
-#include "../../algorithm/matrix_shortest.hpp"
+#include <jln/mp/smp/contract.hpp>
+#include <jln/mp/algorithm/matrix_shortest.hpp>
 
 namespace jln::mp::smp
 {

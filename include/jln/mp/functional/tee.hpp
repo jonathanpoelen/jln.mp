@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../algorithm/rotate.hpp"
-#include "../number/number.hpp"
-#include "lift.hpp"
-#include "call.hpp"
+#include <jln/mp/algorithm/rotate.hpp>
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/call.hpp>
 
 namespace jln::mp
 {

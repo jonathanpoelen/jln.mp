@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../concepts.hpp"
-#include "../list/listify.hpp"
-#include "../utility/is.hpp"
-#include "../number/operators.hpp"
-#include "../functional/identity.hpp"
-#include "../../list/front.hpp"
-#include "../../algorithm/lower_bound.hpp"
+#include <jln/mp/smp/concepts.hpp>
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/smp/number/operators.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/list/front.hpp>
+#include <jln/mp/algorithm/lower_bound.hpp>
 
 /// \cond
 namespace jln::mp::detail

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../functional/identity.hpp"
-#include "../functional/call.hpp"
-#include "../number/operators.hpp"
-#include "../detail/enumerate.hpp"
+#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/functional/call.hpp>
+#include <jln/mp/number/operators.hpp>
+#include <jln/mp/detail/enumerate.hpp>
 
 namespace jln::mp
 {
@@ -47,11 +47,11 @@ namespace jln::mp
 }
 
 
-#include "../number/operators.hpp"
-#include "../list/pop_front.hpp"
-#include "../list/push_front.hpp"
-#include "zip.hpp"
-#include "rotate.hpp"
+#include <jln/mp/number/operators.hpp>
+#include <jln/mp/list/pop_front.hpp>
+#include <jln/mp/list/push_front.hpp>
+#include <jln/mp/algorithm/zip.hpp>
+#include <jln/mp/algorithm/rotate.hpp>
 
 /// \cond
 namespace jln::mp::detail

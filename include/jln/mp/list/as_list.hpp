@@ -1,7 +1,7 @@
 #pragma once
 
-#include "list.hpp"
-#include "../functional/identity.hpp"
+#include <jln/mp/list/list.hpp>
+#include <jln/mp/functional/identity.hpp>
 
 namespace jln::mp
 {
@@ -33,7 +33,7 @@ namespace jln::mp
   }
 }
 
-#include "../number/number.hpp"
+#include <jln/mp/number/number.hpp>
 
 /// \cond
 namespace jln::mp

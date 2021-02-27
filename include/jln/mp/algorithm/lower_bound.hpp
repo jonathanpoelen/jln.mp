@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../number/operators.hpp"
+#include <jln/mp/number/operators.hpp>
 
 namespace jln::mp
 {
@@ -62,14 +62,14 @@ namespace jln::mp
 }
 
 
-#include "cartesian.hpp"
-#include "../detail/enumerate.hpp"
-#include "../list/pop_front.hpp"
-#include "../list/front.hpp"
-#include "../list/drop.hpp"
-#include "../functional/tee.hpp"
-#include "../functional/flip.hpp"
-#include "../functional/try.hpp"
+#include <jln/mp/algorithm/cartesian.hpp>
+#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/list/pop_front.hpp>
+#include <jln/mp/list/front.hpp>
+#include <jln/mp/list/drop.hpp>
+#include <jln/mp/functional/tee.hpp>
+#include <jln/mp/functional/flip.hpp>
+#include <jln/mp/functional/try.hpp>
 
 /// \cond
 namespace jln::mp::detail

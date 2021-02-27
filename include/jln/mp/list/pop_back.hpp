@@ -1,7 +1,7 @@
 #pragma once
 
-#include "pop_front.hpp"
-#include "../algorithm/rotate.hpp"
+#include <jln/mp/list/pop_front.hpp>
+#include <jln/mp/algorithm/rotate.hpp>
 
 namespace jln::mp
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../utility/is.hpp"
-#include "../utility/unpack.hpp"
-#include "../functional/identity.hpp"
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/utility/is.hpp>
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/functional/identity.hpp>
 
 namespace jln::mp
 {
@@ -46,8 +46,8 @@ namespace jln::mp
 }
 
 
-#include "../detail/enumerate.hpp"
-#include "../list/drop.hpp"
+#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/list/drop.hpp>
 
 /// \cond
 namespace jln::mp::detail

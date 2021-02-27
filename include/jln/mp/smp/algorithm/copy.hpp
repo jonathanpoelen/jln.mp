@@ -1,9 +1,9 @@
 #pragma once
 
-#include "remove.hpp"
-#include "../functional/tee.hpp"
-#include "../number/operators.hpp"
-#include "../../algorithm/copy.hpp"
+#include <jln/mp/smp/algorithm//remove.hpp>
+#include <jln/mp/smp/functional/tee.hpp>
+#include <jln/mp/smp/number/operators.hpp>
+#include <jln/mp/algorithm/copy.hpp>
 
 
 namespace jln::mp::smp

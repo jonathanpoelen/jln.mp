@@ -1,6 +1,6 @@
 #pragma once
 
-#include "partial.hpp"
+#include <jln/mp/functional/partial.hpp>
 
 namespace jln::mp
 {

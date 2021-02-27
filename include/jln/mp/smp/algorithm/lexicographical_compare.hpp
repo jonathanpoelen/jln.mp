@@ -1,8 +1,8 @@
 #pragma once
 
-#include "mismatch.hpp"
-#include "../../functional/monadic.hpp"
-#include "../../algorithm/lexicographical_compare.hpp"
+#include <jln/mp/smp/algorithm//mismatch.hpp>
+#include <jln/mp/functional/monadic.hpp>
+#include <jln/mp/algorithm/lexicographical_compare.hpp>
 
 /// \cond
 namespace jln::mp::detail

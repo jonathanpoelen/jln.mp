@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../assume.hpp"
-#include "../list/listify.hpp"
-#include "../../list/is_list.hpp"
-#include "../../number/operators.hpp"
-#include "../../algorithm/all_of.hpp"
-#include "../../algorithm/cartesian.hpp"
+#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/list/is_list.hpp>
+#include <jln/mp/number/operators.hpp>
+#include <jln/mp/algorithm/all_of.hpp>
+#include <jln/mp/algorithm/cartesian.hpp>
 
 namespace jln::mp::smp
 {

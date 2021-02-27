@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../functional/identity.hpp"
-#include "../../functional/monadic.hpp"
-#include "../../functional/recurse.hpp"
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/functional/monadic.hpp>
+#include <jln/mp/functional/recurse.hpp>
 
 namespace jln::mp::smp
 {

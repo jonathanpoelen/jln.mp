@@ -1,10 +1,10 @@
 #pragma once
 
-#include "fold_right.hpp"
-#include "../functional/lift.hpp"
-#include "../functional/call.hpp"
-#include "../utility/is.hpp"
-#include "../utility/unpack.hpp"
+#include <jln/mp/algorithm/fold_right.hpp>
+#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/call.hpp>
+#include <jln/mp/utility/is.hpp>
+#include <jln/mp/utility/unpack.hpp>
 
 
 namespace jln::mp

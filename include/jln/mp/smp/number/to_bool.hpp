@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../assume.hpp"
-#include "../../number/to_bool.hpp"
-#include "../functional/identity.hpp"
+#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/number/to_bool.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
 
 namespace jln::mp::smp
 {

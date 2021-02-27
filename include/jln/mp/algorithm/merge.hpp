@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../number/operators.hpp"
+#include <jln/mp/number/operators.hpp>
 
 #include <type_traits>
 
@@ -44,10 +44,10 @@ namespace jln::mp
 }
 
 
-#include "../list/prepend.hpp"
-#include "../list/take.hpp"
-#include "../list/drop.hpp"
-#include "../detail/type_identity.hpp"
+#include <jln/mp/list/prepend.hpp>
+#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/drop.hpp>
+#include <jln/mp/detail/type_identity.hpp>
 
 namespace jln::mp
 {

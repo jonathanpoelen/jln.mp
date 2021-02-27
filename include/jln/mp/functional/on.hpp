@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../algorithm/rotate.hpp"
-#include "../number/number.hpp"
-#include "lift.hpp"
-#include "call.hpp"
+#include <jln/mp/algorithm/rotate.hpp>
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/call.hpp>
 
 namespace jln::mp
 {
@@ -43,11 +43,11 @@ namespace jln::mp
 #endif
 }
 
-#include "../list/join.hpp"
-#include "../list/take.hpp"
-#include "../list/drop.hpp"
-#include "each.hpp"
-#include "tee.hpp"
+#include <jln/mp/list/join.hpp>
+#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/drop.hpp>
+#include <jln/mp/functional/each.hpp>
+#include <jln/mp/functional/tee.hpp>
 
 /// \cond
 namespace jln::mp::detail

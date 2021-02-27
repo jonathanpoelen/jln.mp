@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../assume.hpp"
-#include "../list/listify.hpp"
-#include "../../functional/monadic.hpp"
-#include "../../algorithm/transform.hpp"
+#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/functional/monadic.hpp>
+#include <jln/mp/algorithm/transform.hpp>
 
 namespace jln::mp::smp
 {

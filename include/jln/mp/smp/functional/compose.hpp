@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../contract.hpp"
-#include "../../functional/compose.hpp"
-#include "../functional/identity.hpp"
-#include "../functional/lift.hpp"
-#include "../functional/tee.hpp"
+#include <jln/mp/smp/contract.hpp>
+#include <jln/mp/functional/compose.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/smp/functional/lift.hpp>
+#include <jln/mp/smp/functional/tee.hpp>
 
 namespace jln::mp::smp
 {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../contract.hpp"
-#include "../../functional/lift.hpp"
-#include "../../functional/invoke_twice.hpp"
+#include <jln/mp/smp/contract.hpp>
+#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/invoke_twice.hpp>
 
 namespace jln::mp::smp
 {

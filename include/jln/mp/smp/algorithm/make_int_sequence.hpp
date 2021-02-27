@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../assume.hpp"
-#include "../number/numbers.hpp"
-#include "../../algorithm/make_int_sequence.hpp"
+#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/smp/number/numbers.hpp>
+#include <jln/mp/algorithm/make_int_sequence.hpp>
 
 namespace jln::mp::smp
 {

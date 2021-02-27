@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../algorithm/rotate.hpp"
-#include "front.hpp"
-#include "../../list/back.hpp"
+#include <jln/mp/smp/algorithm/rotate.hpp>
+#include <jln/mp/smp/list//front.hpp>
+#include <jln/mp/list/back.hpp>
 
 namespace jln::mp::smp
 {

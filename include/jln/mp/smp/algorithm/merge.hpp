@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../contract.hpp"
-#include "../list/listify.hpp"
-#include "../number/operators.hpp"
-#include "../algorithm/is_sorted.hpp"
-#include "../../algorithm/merge.hpp"
-#include "../../list/at.hpp"
-#include "../../list/is_list.hpp"
-#include "../concepts.hpp"
+#include <jln/mp/smp/contract.hpp>
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/number/operators.hpp>
+#include <jln/mp/smp/algorithm/is_sorted.hpp>
+#include <jln/mp/algorithm/merge.hpp>
+#include <jln/mp/list/at.hpp>
+#include <jln/mp/list/is_list.hpp>
+#include <jln/mp/smp/concepts.hpp>
 
 namespace jln::mp::smp
 {

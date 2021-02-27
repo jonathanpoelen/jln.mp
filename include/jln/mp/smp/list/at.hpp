@@ -1,9 +1,9 @@
 #pragma once
 
-#include "drop.hpp"
-#include "front.hpp"
-#include "../functional/identity.hpp"
-#include "../../list/at.hpp"
+#include <jln/mp/smp/list//drop.hpp>
+#include <jln/mp/smp/list//front.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/list/at.hpp>
 
 namespace jln::mp::smp
 {

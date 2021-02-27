@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../list/join.hpp"
-#include "../list/drop.hpp"
-#include "../list/take.hpp"
-#include "../functional/call.hpp"
+#include <jln/mp/list/join.hpp>
+#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/take.hpp>
+#include <jln/mp/functional/call.hpp>
 
 #include <algorithm>
 

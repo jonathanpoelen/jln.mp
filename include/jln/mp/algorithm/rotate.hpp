@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../detail/enumerate.hpp"
-#include "../list/listify.hpp"
-#include "../number/number.hpp"
-#include "../utility/unpack.hpp"
-#include "../utility/conditional.hpp"
+#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/utility/conditional.hpp>
 
 namespace jln::mp
 {

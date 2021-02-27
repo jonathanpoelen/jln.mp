@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../utility/unpack.hpp"
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/utility/unpack.hpp>
 
 namespace jln::mp
 {
@@ -33,12 +33,12 @@ namespace jln::mp
 }
 
 
-#include "zip.hpp"
-#include "make_int_sequence.hpp"
-#include "transform.hpp"
-#include "../list/join.hpp"
-#include "../list/pop_front.hpp"
-#include "../utility/always.hpp"
+#include <jln/mp/algorithm/zip.hpp>
+#include <jln/mp/algorithm/make_int_sequence.hpp>
+#include <jln/mp/algorithm/transform.hpp>
+#include <jln/mp/list/join.hpp>
+#include <jln/mp/list/pop_front.hpp>
+#include <jln/mp/utility/always.hpp>
 
 /// \cond
 namespace jln::mp::detail

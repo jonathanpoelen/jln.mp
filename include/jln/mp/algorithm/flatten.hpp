@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../list/join.hpp"
-#include "../functional/call.hpp"
-#include "../functional/lift.hpp"
-#include "../utility/unpack.hpp"
+#include <jln/mp/list/join.hpp>
+#include <jln/mp/functional/call.hpp>
+#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/utility/unpack.hpp>
 
 namespace jln::mp
 {

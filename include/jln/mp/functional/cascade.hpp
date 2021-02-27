@@ -22,8 +22,8 @@ namespace jln::mp
 }
 
 
-#include "../algorithm/transform.hpp"
-#include "../utility/unpack.hpp"
+#include <jln/mp/algorithm/transform.hpp>
+#include <jln/mp/utility/unpack.hpp>
 
 /// \cond
 namespace jln::mp::detail

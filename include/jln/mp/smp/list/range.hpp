@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../../list/range.hpp"
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/list/range.hpp>
 
 namespace jln::mp::smp
 {

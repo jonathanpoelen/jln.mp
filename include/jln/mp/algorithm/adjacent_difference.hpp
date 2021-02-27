@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rotate.hpp"
+#include <jln/mp/algorithm/rotate.hpp>
 
 
 namespace jln::mp

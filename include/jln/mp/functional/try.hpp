@@ -1,10 +1,10 @@
 #pragma once
 
-#include "identity.hpp"
-#include "../list/list.hpp"
-#include "../number/number.hpp"
-#include "../utility/always.hpp"
-#include "../utility/is.hpp"
+#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/list/list.hpp>
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/utility/is.hpp>
 
 
 namespace jln::mp

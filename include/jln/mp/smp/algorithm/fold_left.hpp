@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../functional/identity.hpp"
-#include "../../algorithm/fold_left.hpp"
-#include "../../functional/monadic.hpp"
-#include "../../list/size.hpp"
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/algorithm/fold_left.hpp>
+#include <jln/mp/functional/monadic.hpp>
+#include <jln/mp/list/size.hpp>
 
 namespace jln::mp::smp
 {

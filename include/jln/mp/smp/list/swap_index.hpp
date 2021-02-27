@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../../list/swap_index.hpp"
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/list/swap_index.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -22,8 +22,8 @@ JLN_MP_MAKE_REGULAR_SMP3_P(swap_index, (i), (j), (C, smp::listify),
   smp::swap_index_c<i::value, j::value, C>)
 
 
-#include "../../list/size.hpp"
-#include "../../number/operators.hpp"
+#include <jln/mp/list/size.hpp>
+#include <jln/mp/number/operators.hpp>
 
 /// \cond
 namespace jln::mp::detail

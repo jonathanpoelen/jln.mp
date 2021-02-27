@@ -1,10 +1,10 @@
 #pragma once
 
-#include "number/as_bool.hpp"
-#include "number/as_number.hpp"
-#include "number/is_number.hpp"
-#include "number/math.hpp"
-#include "number/number.hpp"
-#include "number/numbers.hpp"
-#include "number/operators.hpp"
-#include "number/to_bool.hpp"
+#include <jln/mp/number/as_bool.hpp>
+#include <jln/mp/number/as_number.hpp>
+#include <jln/mp/number/is_number.hpp>
+#include <jln/mp/number/math.hpp>
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/number/numbers.hpp>
+#include <jln/mp/number/operators.hpp>
+#include <jln/mp/number/to_bool.hpp>

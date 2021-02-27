@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../functional/identity.hpp"
-#include "../../list/front.hpp"
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/list/front.hpp>
 
 namespace jln::mp::smp
 {

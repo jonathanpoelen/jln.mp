@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../assume.hpp"
-#include "../../functional/partial.hpp"
+#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/functional/partial.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -19,9 +19,9 @@ namespace jln::mp::smp
 }
 
 
-#include "../../functional/monadic.hpp"
-#include "../../number/operators.hpp"
-#include "../../list/size.hpp"
+#include <jln/mp/functional/monadic.hpp>
+#include <jln/mp/number/operators.hpp>
+#include <jln/mp/list/size.hpp>
 
 /// \cond
 namespace jln::mp::detail

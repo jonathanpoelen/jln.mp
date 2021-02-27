@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../algorithm/make_int_sequence.hpp"
-#include "../list/size.hpp"
+#include <jln/mp/algorithm/make_int_sequence.hpp>
+#include <jln/mp/list/size.hpp>
 
 namespace jln::mp
 {

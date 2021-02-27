@@ -1,9 +1,9 @@
 #pragma once
 
-#include "listify.hpp"
-#include "../algorithm/all_of.hpp"
-#include "../../list/join.hpp"
-#include "../../list/is_list.hpp"
+#include <jln/mp/smp/list//listify.hpp>
+#include <jln/mp/smp/algorithm/all_of.hpp>
+#include <jln/mp/list/join.hpp>
+#include <jln/mp/list/is_list.hpp>
 
 namespace jln::mp::smp
 {

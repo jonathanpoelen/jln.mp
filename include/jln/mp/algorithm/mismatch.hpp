@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../number/operators.hpp"
+#include <jln/mp/number/operators.hpp>
 
 namespace jln::mp
 {
@@ -38,8 +38,8 @@ namespace jln::mp
 }
 
 
-#include "../list/drop.hpp"
-#include "../list/take.hpp"
+#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/take.hpp>
 
 /// \cond
 namespace jln::mp::detail

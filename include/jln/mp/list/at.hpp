@@ -1,7 +1,7 @@
 #pragma once
 
-#include "drop.hpp"
-#include "front.hpp"
+#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/front.hpp>
 
 namespace jln::mp
 {

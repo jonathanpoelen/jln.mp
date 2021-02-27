@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../functional/try.hpp"
-#include "../algorithm/transform.hpp"
-#include "../number/operators.hpp"
-#include "../list/front.hpp"
+#include <jln/mp/functional/try.hpp>
+#include <jln/mp/algorithm/transform.hpp>
+#include <jln/mp/number/operators.hpp>
+#include <jln/mp/list/front.hpp>
 
 #include <type_traits>
 

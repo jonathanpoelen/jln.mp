@@ -1,14 +1,14 @@
 #pragma once
 
-#include "../functional/identity.hpp"
-#include "../functional/if.hpp"
-#include "../list/push_back.hpp"
-#include "../list/size.hpp"
-#include "../utility/always.hpp"
-#include "../utility/unpack.hpp"
-#include "val.hpp"
+#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/functional/if.hpp>
+#include <jln/mp/list/push_back.hpp>
+#include <jln/mp/list/size.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/value/val.hpp>
 
-#include "../../cxx/diagnostic.hpp"
+#include <jln/mp/../cxx/diagnostic.hpp>
 
 JLN_DIAGNOSTIC_PUSH
 JLN_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wlogical-op")

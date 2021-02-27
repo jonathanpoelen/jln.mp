@@ -1,15 +1,15 @@
 #pragma once
 
-#include "../functional/identity.hpp"
-#include "../../functional/monadic.hpp"
-#include "../../functional/if.hpp"
-#include "../../list/size.hpp"
-#include "../../utility/always.hpp"
-#include "../../list/pop_front.hpp"
-#include "../../algorithm/same.hpp"
-#include "../../algorithm/fold_left.hpp"
-#include "../../algorithm/transform.hpp"
-#include "../../algorithm/accumulate.hpp"
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/functional/monadic.hpp>
+#include <jln/mp/functional/if.hpp>
+#include <jln/mp/list/size.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/list/pop_front.hpp>
+#include <jln/mp/algorithm/same.hpp>
+#include <jln/mp/algorithm/fold_left.hpp>
+#include <jln/mp/algorithm/transform.hpp>
+#include <jln/mp/algorithm/accumulate.hpp>
 
 /// \cond
 namespace jln::mp::detail

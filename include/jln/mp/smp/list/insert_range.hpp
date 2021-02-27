@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../list/join.hpp"
-#include "../list/take.hpp"
-#include "../list/drop.hpp"
-#include "../utility/always.hpp"
-#include "../functional/tee.hpp"
-#include "../../list/insert_range.hpp"
+#include <jln/mp/smp/list/join.hpp>
+#include <jln/mp/smp/list/take.hpp>
+#include <jln/mp/smp/list/drop.hpp>
+#include <jln/mp/smp/utility/always.hpp>
+#include <jln/mp/smp/functional/tee.hpp>
+#include <jln/mp/list/insert_range.hpp>
 
 /// \cond
 namespace jln::mp::detail

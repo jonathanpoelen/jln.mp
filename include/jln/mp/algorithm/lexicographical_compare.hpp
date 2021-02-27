@@ -1,7 +1,7 @@
 #pragma once
 
-#include "mismatch.hpp"
-#include "../functional/lift.hpp"
+#include <jln/mp/algorithm/mismatch.hpp>
+#include <jln/mp/functional/lift.hpp>
 
 namespace jln::mp
 {
@@ -82,7 +82,7 @@ namespace jln::mp
 }
 
 
-#include "../list/at.hpp"
+#include <jln/mp/list/at.hpp>
 
 /// \cond
 namespace jln::mp::detail

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "sfinaefwd.hpp"
-#include "../assume.hpp"
-#include "../../functional/identity.hpp"
-#include "../../functional/try.hpp"
+#include <jln/mp/smp/functional//sfinaefwd.hpp>
+#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/functional/try.hpp>
 
 namespace jln::mp::smp
 {

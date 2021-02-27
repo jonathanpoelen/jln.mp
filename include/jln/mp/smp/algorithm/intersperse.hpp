@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../algorithm/intersperse.hpp"
-#include "../list/listify.hpp"
+#include <jln/mp/algorithm/intersperse.hpp>
+#include <jln/mp/smp/list/listify.hpp>
 
 namespace jln::mp::smp
 {

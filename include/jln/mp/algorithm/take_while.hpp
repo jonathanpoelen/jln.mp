@@ -1,11 +1,11 @@
 #pragma once
 
-#include "index.hpp"
-#include "../list/take.hpp"
-#include "../utility/always.hpp"
-#include "../functional/lift.hpp"
-#include "../functional/tee.hpp"
-#include "../functional/invoke_twice.hpp"
+#include <jln/mp/algorithm/index.hpp>
+#include <jln/mp/list/take.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/tee.hpp>
+#include <jln/mp/functional/invoke_twice.hpp>
 
 namespace jln::mp
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../functional/identity.hpp"
-#include "../../utility/unpack.hpp"
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/utility/unpack.hpp>
 
 namespace jln::mp::smp
 {
@@ -12,7 +12,7 @@ namespace jln::mp::smp
   using unpack_append = try_contract<mp::unpack_append<subcontract<C>>>;
 }
 
-#include "../list/listify.hpp"
+#include <jln/mp/smp/list/listify.hpp>
 
 /// \cond
 namespace jln::mp::detail

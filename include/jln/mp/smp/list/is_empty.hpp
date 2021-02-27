@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../number/operators.hpp"
-#include "../list/size.hpp"
-#include "../../list/is_empty.hpp"
+#include <jln/mp/smp/number/operators.hpp>
+#include <jln/mp/smp/list/size.hpp>
+#include <jln/mp/list/is_empty.hpp>
 
 namespace jln::mp::smp
 {

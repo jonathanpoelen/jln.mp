@@ -1,7 +1,7 @@
 #pragma once
 
-#include "size.hpp"
-#include "../utility/is.hpp"
+#include <jln/mp/list/size.hpp>
+#include <jln/mp/utility/is.hpp>
 
 namespace jln::mp
 {

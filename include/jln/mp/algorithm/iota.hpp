@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../number/numbers.hpp"
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/number/numbers.hpp>
 
 namespace jln::mp
 {
@@ -50,7 +50,7 @@ namespace jln::mp
   }
 }
 
-#include "../algorithm/make_int_sequence.hpp"
+#include <jln/mp/algorithm/make_int_sequence.hpp>
 
 /// \cond
 namespace jln::mp::detail

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "list.hpp"
-#include "../functional/lift.hpp"
+#include <jln/mp/list/list.hpp>
+#include <jln/mp/functional/lift.hpp>
 
 namespace jln::mp
 {

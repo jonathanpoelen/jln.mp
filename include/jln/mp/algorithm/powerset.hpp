@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../utility/unpack.hpp"
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/utility/unpack.hpp>
 
 namespace jln::mp
 {
@@ -42,12 +42,12 @@ namespace jln::mp
 }
 
 
-#include "fold_right.hpp"
-#include "cartesian.hpp"
-#include "../list/front.hpp"
-#include "../list/join.hpp"
-#include "../functional/call.hpp"
-#include "../utility/always.hpp"
+#include <jln/mp/algorithm/fold_right.hpp>
+#include <jln/mp/algorithm/cartesian.hpp>
+#include <jln/mp/list/front.hpp>
+#include <jln/mp/list/join.hpp>
+#include <jln/mp/functional/call.hpp>
+#include <jln/mp/utility/always.hpp>
 
 /// \cond
 namespace jln::mp::detail

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../algorithm/rotate.hpp"
-#include "drop.hpp"
+#include <jln/mp/algorithm/rotate.hpp>
+#include <jln/mp/list/drop.hpp>
 
 namespace jln::mp
 {

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "find.hpp"
-#include "../list/size.hpp"
-#include "../list/offset.hpp"
-#include "../list/push_front.hpp"
-#include "../utility/always.hpp"
-#include "../utility/is.hpp"
-#include "../number/operators.hpp"
-#include "../functional/try.hpp"
+#include <jln/mp/algorithm/find.hpp>
+#include <jln/mp/list/size.hpp>
+#include <jln/mp/list/offset.hpp>
+#include <jln/mp/list/push_front.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/utility/is.hpp>
+#include <jln/mp/number/operators.hpp>
+#include <jln/mp/functional/try.hpp>
 
 namespace jln::mp
 {

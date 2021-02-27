@@ -1,8 +1,8 @@
 #pragma once
 
-#include "same.hpp"
-#include "rotate.hpp"
-#include "../functional/try.hpp"
+#include <jln/mp/algorithm/same.hpp>
+#include <jln/mp/algorithm/rotate.hpp>
+#include <jln/mp/functional/try.hpp>
 
 
 namespace jln::mp
@@ -51,12 +51,12 @@ namespace jln::mp
 }
 
 
-#include "split.hpp"
-#include "../list/take.hpp"
-#include "../list/push_front.hpp"
-#include "../utility/conditional.hpp"
-#include "../functional/lift.hpp"
-#include "../functional/partial.hpp"
+#include <jln/mp/algorithm/split.hpp>
+#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/push_front.hpp>
+#include <jln/mp/utility/conditional.hpp>
+#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/partial.hpp>
 
 /// \cond
 namespace jln::mp::detail

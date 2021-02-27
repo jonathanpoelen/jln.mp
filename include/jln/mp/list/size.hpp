@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../number/number.hpp"
-#include "../utility/unpack.hpp"
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/utility/unpack.hpp>
 
 namespace jln::mp
 {

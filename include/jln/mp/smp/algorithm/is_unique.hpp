@@ -1,10 +1,10 @@
 #pragma once
 
-#include "unique.hpp"
-#include "../number/to_bool.hpp"
-#include "../functional/tee.hpp"
-#include "../algorithm/same.hpp"
-#include "../../algorithm/is_unique.hpp"
+#include <jln/mp/smp/algorithm//unique.hpp>
+#include <jln/mp/smp/number/to_bool.hpp>
+#include <jln/mp/smp/functional/tee.hpp>
+#include <jln/mp/smp/algorithm/same.hpp>
+#include <jln/mp/algorithm/is_unique.hpp>
 
 namespace jln::mp::smp
 {

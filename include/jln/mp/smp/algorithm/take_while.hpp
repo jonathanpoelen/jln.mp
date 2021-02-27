@@ -1,12 +1,12 @@
 #pragma once
 
-#include "index.hpp"
-#include "../list/take.hpp"
-#include "../functional/lift.hpp"
-#include "../functional/tee.hpp"
-#include "../functional/invoke_twice.hpp"
-#include "../utility/always.hpp"
-#include "../../algorithm/take_while.hpp"
+#include <jln/mp/smp/algorithm//index.hpp>
+#include <jln/mp/smp/list/take.hpp>
+#include <jln/mp/smp/functional/lift.hpp>
+#include <jln/mp/smp/functional/tee.hpp>
+#include <jln/mp/smp/functional/invoke_twice.hpp>
+#include <jln/mp/smp/utility/always.hpp>
+#include <jln/mp/algorithm/take_while.hpp>
 
 namespace jln::mp::smp
 {

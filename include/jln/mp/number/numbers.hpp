@@ -1,8 +1,8 @@
 #pragma once
 
-#include "number.hpp"
-#include "../list/listify.hpp"
-#include "../functional/call.hpp"
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/functional/call.hpp>
 
 namespace jln::mp
 {

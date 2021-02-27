@@ -1,6 +1,6 @@
 #pragma once
 
-#include "list.hpp"
+#include <jln/mp/list/list.hpp>
 
 namespace jln::mp
 {
@@ -65,11 +65,11 @@ namespace jln::mp
   }
 }
 
-#include "../algorithm/same.hpp"
-#include "../utility/is.hpp"
-#include "../functional/call.hpp"
-#include "../functional/tee.hpp"
-#include "../number/operators.hpp"
+#include <jln/mp/algorithm/same.hpp>
+#include <jln/mp/utility/is.hpp>
+#include <jln/mp/functional/call.hpp>
+#include <jln/mp/functional/tee.hpp>
+#include <jln/mp/number/operators.hpp>
 
 /// \cond
 namespace jln::mp::detail

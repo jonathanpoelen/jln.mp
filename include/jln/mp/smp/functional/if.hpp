@@ -1,13 +1,13 @@
 #pragma once
 
-#include "identity.hpp"
-#include "../concepts.hpp"
-#include "../utility/always.hpp"
-#include "../number/to_bool.hpp"
-#include "../../functional/invoke_twice.hpp"
-#include "../../functional/if.hpp"
-#include "../../functional/tee.hpp"
-#include "../../number/as_number.hpp"
+#include <jln/mp/smp/functional//identity.hpp>
+#include <jln/mp/smp/concepts.hpp>
+#include <jln/mp/smp/utility/always.hpp>
+#include <jln/mp/smp/number/to_bool.hpp>
+#include <jln/mp/functional/invoke_twice.hpp>
+#include <jln/mp/functional/if.hpp>
+#include <jln/mp/functional/tee.hpp>
+#include <jln/mp/number/as_number.hpp>
 
 namespace jln::mp::smp
 {

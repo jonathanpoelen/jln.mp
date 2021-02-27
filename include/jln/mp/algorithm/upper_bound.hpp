@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lower_bound.hpp"
+#include <jln/mp/algorithm/lower_bound.hpp>
 
 namespace jln::mp
 {

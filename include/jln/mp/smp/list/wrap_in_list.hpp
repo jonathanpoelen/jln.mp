@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../assume.hpp"
-#include "../../functional/try.hpp"
-#include "../../list/wrap_in_list.hpp"
+#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/functional/try.hpp>
+#include <jln/mp/list/wrap_in_list.hpp>
 
 namespace jln::mp::smp
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../contract.hpp"
-#include "../../functional/tee.hpp"
+#include <jln/mp/smp/contract.hpp>
+#include <jln/mp/functional/tee.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -20,7 +20,7 @@ namespace jln::mp::smp
 }
 
 
-#include "../../functional/monadic.hpp"
+#include <jln/mp/functional/monadic.hpp>
 
 /// \cond
 namespace jln::mp::detail

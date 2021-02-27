@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../functional/identity.hpp"
-#include "../utility/always.hpp"
-#include "../number/operators.hpp"
-#include "../../functional/tee.hpp"
-#include "../../functional/if.hpp"
-#include "../../list/size.hpp"
-#include "../../algorithm/is_sorted.hpp"
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/smp/utility/always.hpp>
+#include <jln/mp/smp/number/operators.hpp>
+#include <jln/mp/functional/tee.hpp>
+#include <jln/mp/functional/if.hpp>
+#include <jln/mp/list/size.hpp>
+#include <jln/mp/algorithm/is_sorted.hpp>
 
 namespace jln::mp::smp
 {

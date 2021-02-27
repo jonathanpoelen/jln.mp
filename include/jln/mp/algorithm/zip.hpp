@@ -1,7 +1,7 @@
 #pragma once
 
-#include "transform.hpp"
-#include "../utility/unpack.hpp"
+#include <jln/mp/algorithm/transform.hpp>
+#include <jln/mp/utility/unpack.hpp>
 
 
 namespace jln::mp
@@ -47,8 +47,8 @@ namespace jln::mp
   }
 }
 
-#include "../detail/enumerate.hpp"
-#include "../list/join.hpp"
+#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/list/join.hpp>
 #include <algorithm>
 
 /// \cond

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "remove.hpp"
-#include "../number/operators.hpp"
+#include <jln/mp/algorithm/remove.hpp>
+#include <jln/mp/number/operators.hpp>
 
 namespace jln::mp
 {

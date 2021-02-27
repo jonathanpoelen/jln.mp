@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../algorithm/fold_right.hpp"
-#include "../functional/lift.hpp"
-#include "../utility/always.hpp"
-#include "../utility/conditional.hpp"
-#include "../list/at.hpp"
+#include <jln/mp/algorithm/fold_right.hpp>
+#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/utility/conditional.hpp>
+#include <jln/mp/list/at.hpp>
 
 namespace jln::mp
 {
@@ -36,9 +36,9 @@ namespace jln::mp
 }
 
 
-#include "../detail/enumerate.hpp"
-#include "tee.hpp"
-#include "bind.hpp"
+#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/functional/tee.hpp>
+#include <jln/mp/functional/bind.hpp>
 
 /// \cond
 namespace jln::mp::detail

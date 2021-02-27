@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../../algorithm/adjacent_difference.hpp"
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/algorithm/adjacent_difference.hpp>
 
 namespace jln::mp::smp
 {

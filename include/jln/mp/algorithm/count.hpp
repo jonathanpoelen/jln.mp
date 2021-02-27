@@ -1,10 +1,10 @@
 #pragma once
 
-#include "transform.hpp"
-#include "../utility/always.hpp"
-#include "../utility/is.hpp"
-#include "../number/operators.hpp"
-#include "../number/to_bool.hpp"
+#include <jln/mp/algorithm/transform.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/utility/is.hpp>
+#include <jln/mp/number/operators.hpp>
+#include <jln/mp/number/to_bool.hpp>
 
 namespace jln::mp
 {

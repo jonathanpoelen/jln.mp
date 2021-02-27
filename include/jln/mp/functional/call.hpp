@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../config/debug.hpp"
-#include "../config/config.hpp"
-#include "../list/list.hpp"
-#include "../number/number.hpp"
+#include <jln/mp/config/debug.hpp>
+#include <jln/mp/config/config.hpp>
+#include <jln/mp/list/list.hpp>
+#include <jln/mp/number/number.hpp>
 
 /// \cond
 #ifdef _MSC_VER

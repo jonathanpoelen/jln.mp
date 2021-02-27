@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../algorithm/transform.hpp"
-#include "../utility/unpack.hpp"
-#include "../../list/size.hpp"
-#include "../../list/is_list.hpp"
-#include "../../functional/if.hpp"
-#include "../../number/operators.hpp"
-#include "../../algorithm/same.hpp"
-#include "../../algorithm/zip.hpp"
+#include <jln/mp/smp/algorithm/transform.hpp>
+#include <jln/mp/smp/utility/unpack.hpp>
+#include <jln/mp/list/size.hpp>
+#include <jln/mp/list/is_list.hpp>
+#include <jln/mp/functional/if.hpp>
+#include <jln/mp/number/operators.hpp>
+#include <jln/mp/algorithm/same.hpp>
+#include <jln/mp/algorithm/zip.hpp>
 
 namespace jln::mp::smp
 {

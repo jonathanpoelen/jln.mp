@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../number/as_bool.hpp"
-#include "../functional/identity.hpp"
+#include <jln/mp/number/as_bool.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
 
 namespace jln::mp::smp
 {

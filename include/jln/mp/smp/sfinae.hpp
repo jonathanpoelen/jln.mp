@@ -1,7 +1,7 @@
 #pragma once
 
-#include "functional/sfinaefwd.hpp"
-#include "../smp.hpp"
+#include <jln/mp/smp/functional/sfinaefwd.hpp>
+#include <jln/mp/smp/../smp.hpp>
 
 namespace jln::mp
 {

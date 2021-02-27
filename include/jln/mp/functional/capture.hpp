@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../value/val.hpp"
-#include "../number/number.hpp"
+#include <jln/mp/value/val.hpp>
+#include <jln/mp/number/number.hpp>
 
 namespace jln::mp
 {

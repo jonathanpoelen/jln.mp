@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../detail/enumerate.hpp"
-#include "../functional/identity.hpp"
-#include "../utility/unpack.hpp"
+#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/utility/unpack.hpp>
 
 namespace jln::mp
 {
@@ -34,8 +34,8 @@ namespace jln::mp
 }
 
 
-#include "../number/number.hpp"
-#include "../list/list.hpp"
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/list/list.hpp>
 #include <type_traits>
 
 namespace jln::mp

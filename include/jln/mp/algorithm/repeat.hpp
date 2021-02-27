@@ -1,8 +1,8 @@
 #pragma once
 
-#include "make_int_sequence.hpp"
-#include "../utility/unpack.hpp"
-#include "../detail/enumerate.hpp"
+#include <jln/mp/algorithm/make_int_sequence.hpp>
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/detail/enumerate.hpp>
 
 namespace jln::mp
 {
@@ -41,11 +41,11 @@ namespace jln::mp
 }
 
 
-#include "transform.hpp"
-#include "cartesian.hpp"
-#include "../list/join.hpp"
-#include "../functional/call.hpp"
-#include "../utility/always.hpp"
+#include <jln/mp/algorithm/transform.hpp>
+#include <jln/mp/algorithm/cartesian.hpp>
+#include <jln/mp/list/join.hpp>
+#include <jln/mp/functional/call.hpp>
+#include <jln/mp/utility/always.hpp>
 
 /// \cond
 namespace jln::mp::detail

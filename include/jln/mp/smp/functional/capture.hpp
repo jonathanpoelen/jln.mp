@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../assume.hpp"
-#include "../../functional/capture.hpp"
+#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/functional/capture.hpp>
 
 /// \cond
 namespace jln::mp::detail

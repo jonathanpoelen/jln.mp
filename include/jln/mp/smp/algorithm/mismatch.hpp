@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../list/at.hpp"
-#include "../list/listify.hpp"
-#include "../number/operators.hpp"
-#include "../../algorithm/mismatch.hpp"
-#include "../concepts.hpp"
+#include <jln/mp/smp/list/at.hpp>
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/number/operators.hpp>
+#include <jln/mp/algorithm/mismatch.hpp>
+#include <jln/mp/smp/concepts.hpp>
 
 /// \cond
 namespace jln::mp::detail

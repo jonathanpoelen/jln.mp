@@ -1,8 +1,8 @@
 #pragma once
 
-#include "value/as_val.hpp"
-#include "value/has_value.hpp"
-#include "value/is_val.hpp"
-#include "value/operators.hpp"
-#include "value/val.hpp"
-#include "value/values.hpp"
+#include <jln/mp/value/as_val.hpp>
+#include <jln/mp/value/has_value.hpp>
+#include <jln/mp/value/is_val.hpp>
+#include <jln/mp/value/operators.hpp>
+#include <jln/mp/value/val.hpp>
+#include <jln/mp/value/values.hpp>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "contract.hpp"
+#include <jln/mp/smp/contract.hpp>
 
 namespace jln::mp
 {

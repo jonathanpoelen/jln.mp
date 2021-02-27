@@ -1,9 +1,9 @@
 #pragma once
 
-#include "transform.hpp"
-#include "../utility/is.hpp"
-#include "../number/operators.hpp"
-#include "../../algorithm/count.hpp"
+#include <jln/mp/smp/algorithm//transform.hpp>
+#include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/smp/number/operators.hpp>
+#include <jln/mp/algorithm/count.hpp>
 
 
 namespace jln::mp::smp

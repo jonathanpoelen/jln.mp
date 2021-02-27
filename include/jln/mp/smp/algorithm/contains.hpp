@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../algorithm/any_of.hpp"
-#include "../utility/is.hpp"
-#include "../../algorithm/contains.hpp"
+#include <jln/mp/smp/algorithm/any_of.hpp>
+#include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/algorithm/contains.hpp>
 
 namespace jln::mp::smp
 {

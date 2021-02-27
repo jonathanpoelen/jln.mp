@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../number/number.hpp"
-#include "../detail/enumerate.hpp"
-#include "../utility/unpack.hpp"
-#include "list.hpp"
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/list/list.hpp>
 
 namespace jln::mp
 {
@@ -62,14 +62,14 @@ namespace jln::mp
 }
 
 
-#include "../algorithm/zip.hpp"
-#include "../algorithm/make_int_sequence.hpp"
-#include "../algorithm/rotate.hpp"
-#include "../algorithm/transform.hpp"
-#include "../algorithm/group_n.hpp"
-#include "../functional/tee.hpp"
-#include "drop.hpp"
-#include "slice.hpp"
+#include <jln/mp/algorithm/zip.hpp>
+#include <jln/mp/algorithm/make_int_sequence.hpp>
+#include <jln/mp/algorithm/rotate.hpp>
+#include <jln/mp/algorithm/transform.hpp>
+#include <jln/mp/algorithm/group_n.hpp>
+#include <jln/mp/functional/tee.hpp>
+#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/slice.hpp>
 
 /// \cond
 namespace jln::mp::detail

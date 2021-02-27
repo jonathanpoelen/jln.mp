@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../contract.hpp"
-#include "../../functional/on.hpp"
-#include "../../functional/monadic.hpp"
+#include <jln/mp/smp/contract.hpp>
+#include <jln/mp/functional/on.hpp>
+#include <jln/mp/functional/monadic.hpp>
 
 /// \cond
 namespace jln::mp::detail

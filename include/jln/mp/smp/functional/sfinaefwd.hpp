@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../functional/identity.hpp"
+#include <jln/mp/functional/identity.hpp>
 
 /// \cond
 namespace jln::mp::detail

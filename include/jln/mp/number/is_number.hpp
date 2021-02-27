@@ -1,8 +1,8 @@
 #pragma once
 
-#include "number.hpp"
-#include "../functional/identity.hpp"
-#include "../functional/call.hpp"
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/functional/call.hpp>
 
 namespace jln::mp
 {
@@ -33,7 +33,7 @@ namespace jln::mp
 }
 
 
-#include "number.hpp"
+#include <jln/mp/number/number.hpp>
 
 /// \cond
 namespace jln::mp::detail

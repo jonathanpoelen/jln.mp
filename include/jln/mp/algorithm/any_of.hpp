@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../algorithm/transform.hpp"
-#include "../number/operators.hpp"
+#include <jln/mp/algorithm/transform.hpp>
+#include <jln/mp/number/operators.hpp>
 
 namespace jln::mp
 {

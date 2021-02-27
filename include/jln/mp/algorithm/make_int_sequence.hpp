@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../number/numbers.hpp"
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/number/numbers.hpp>
 
 #include <utility>
 

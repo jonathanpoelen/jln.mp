@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../number/number.hpp"
-#include "../functional/identity.hpp"
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/functional/identity.hpp>
 
 #include <type_traits>
 

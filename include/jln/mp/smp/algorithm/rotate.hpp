@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../../algorithm/rotate.hpp"
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/algorithm/rotate.hpp>
 
 namespace jln::mp::smp
 {

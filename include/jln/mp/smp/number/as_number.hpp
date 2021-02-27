@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../number/as_number.hpp"
-#include "../functional/identity.hpp"
+#include <jln/mp/number/as_number.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
 
 namespace jln::mp::smp
 {

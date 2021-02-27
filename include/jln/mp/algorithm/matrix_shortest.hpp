@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../list/size.hpp"
-#include "../list/take.hpp"
-#include "../utility/unpack.hpp"
-#include "../functional/each.hpp"
+#include <jln/mp/list/size.hpp>
+#include <jln/mp/list/take.hpp>
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/functional/each.hpp>
 #include <algorithm>
 
 namespace jln::mp

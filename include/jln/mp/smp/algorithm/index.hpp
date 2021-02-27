@@ -1,10 +1,10 @@
 #pragma once
 
-#include "find.hpp"
-#include "../number/operators.hpp"
-#include "../utility/always.hpp"
-#include "../utility/is.hpp"
-#include "../../algorithm/index.hpp"
+#include <jln/mp/smp/algorithm//find.hpp>
+#include <jln/mp/smp/number/operators.hpp>
+#include <jln/mp/smp/utility/always.hpp>
+#include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/algorithm/index.hpp>
 
 /// \cond
 namespace jln::mp::detail

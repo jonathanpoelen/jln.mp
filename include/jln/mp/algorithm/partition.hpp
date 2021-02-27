@@ -1,8 +1,8 @@
 #pragma once
 
-#include "remove.hpp"
-#include "copy.hpp"
-#include "../functional/tee.hpp"
+#include <jln/mp/algorithm/remove.hpp>
+#include <jln/mp/algorithm/copy.hpp>
+#include <jln/mp/functional/tee.hpp>
 
 namespace jln::mp
 {

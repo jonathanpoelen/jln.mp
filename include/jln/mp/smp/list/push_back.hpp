@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../../list/push_back.hpp"
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/list/push_back.hpp>
 
 namespace jln::mp
 {

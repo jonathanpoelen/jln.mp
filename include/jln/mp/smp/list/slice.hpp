@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../../list/slice.hpp"
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/list/slice.hpp>
 
 /// \cond
 namespace jln::mp::detail

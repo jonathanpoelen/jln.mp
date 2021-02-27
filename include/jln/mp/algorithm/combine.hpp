@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../detail/enumerate.hpp"
-#include "cartesian.hpp"
-#include "repeat.hpp"
+#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/algorithm/cartesian.hpp>
+#include <jln/mp/algorithm/repeat.hpp>
 
 namespace jln::mp
 {

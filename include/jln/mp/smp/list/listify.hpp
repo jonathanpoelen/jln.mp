@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../contract.hpp"
-#include "../../list/listify.hpp"
+#include <jln/mp/smp/contract.hpp>
+#include <jln/mp/list/listify.hpp>
 
 namespace jln::mp::smp
 {

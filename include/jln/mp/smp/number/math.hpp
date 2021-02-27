@@ -1,15 +1,15 @@
 #pragma once
 
-#include "../../number/math.hpp"
-#include "../number/operators.hpp"
-#include "../algorithm/fold_left.hpp"
-#include "../functional/tee.hpp"
-#include "../functional/flip.hpp"
-#include "../functional/if.hpp"
-#include "../list/drop.hpp"
-#include "../list/front.hpp"
-#include "../list/push_back.hpp"
-#include "../list/push_front.hpp"
+#include <jln/mp/number/math.hpp>
+#include <jln/mp/smp/number/operators.hpp>
+#include <jln/mp/smp/algorithm/fold_left.hpp>
+#include <jln/mp/smp/functional/tee.hpp>
+#include <jln/mp/smp/functional/flip.hpp>
+#include <jln/mp/smp/functional/if.hpp>
+#include <jln/mp/smp/list/drop.hpp>
+#include <jln/mp/smp/list/front.hpp>
+#include <jln/mp/smp/list/push_back.hpp>
+#include <jln/mp/smp/list/push_front.hpp>
 
 namespace jln::mp::smp
 {

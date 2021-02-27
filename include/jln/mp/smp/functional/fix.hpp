@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../contract.hpp"
-#include "../../functional/fix.hpp"
+#include <jln/mp/smp/contract.hpp>
+#include <jln/mp/functional/fix.hpp>
 
 namespace jln::mp::smp
 {

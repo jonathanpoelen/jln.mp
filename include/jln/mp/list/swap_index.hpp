@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../utility/unpack.hpp"
-#include "../number/number.hpp"
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/number/number.hpp>
 
 namespace jln::mp
 {
@@ -40,11 +40,11 @@ namespace jln::mp
 }
 
 
-#include "../list/join.hpp"
-#include "../list/drop.hpp"
-#include "../list/take.hpp"
-#include "../list/at.hpp"
-#include "../functional/call.hpp"
+#include <jln/mp/list/join.hpp>
+#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/at.hpp>
+#include <jln/mp/functional/call.hpp>
 
 /// \cond
 namespace jln::mp::detail

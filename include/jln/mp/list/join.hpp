@@ -1,9 +1,9 @@
 #pragma once
 
-#include "listify.hpp"
-#include "../functional/call.hpp"
-#include "../error.hpp"
-#include "../config/debug.hpp"
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/functional/call.hpp>
+#include <jln/mp/error.hpp>
+#include <jln/mp/config/debug.hpp>
 
 #include <cstddef>
 
@@ -36,8 +36,8 @@ namespace jln::mp
   }
 }
 
-#include "../detail/enumerate.hpp"
-#include "../../cxx/diagnostic.hpp"
+#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/../cxx/diagnostic.hpp>
 
 /// \cond
 namespace jln::mp::detail

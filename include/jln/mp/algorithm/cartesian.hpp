@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../utility/unpack.hpp"
-#include "../detail/enumerate.hpp"
+#include <jln/mp/list/listify.hpp>
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/detail/enumerate.hpp>
 
 namespace jln::mp
 {
@@ -48,10 +48,10 @@ namespace jln::mp
 }
 
 
-#include "transform.hpp"
-#include "fold_left.hpp"
-#include "../list/join.hpp"
-#include "../functional/call.hpp"
+#include <jln/mp/algorithm/transform.hpp>
+#include <jln/mp/algorithm/fold_left.hpp>
+#include <jln/mp/list/join.hpp>
+#include <jln/mp/functional/call.hpp>
 
 /// \cond
 namespace jln::mp::detail

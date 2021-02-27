@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../config/debug.hpp"
+#include <jln/mp/config/debug.hpp>
 
 #include <type_traits>
 

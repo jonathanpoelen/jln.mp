@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../list/drop.hpp"
-#include "../list/take.hpp"
-#include "../functional/tee.hpp"
+#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/take.hpp>
+#include <jln/mp/functional/tee.hpp>
 
 namespace jln::mp
 {

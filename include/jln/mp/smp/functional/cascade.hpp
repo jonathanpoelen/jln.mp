@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../algorithm/transform.hpp"
-#include "../utility/unpack.hpp"
-#include "../../functional/cascade.hpp"
+#include <jln/mp/smp/algorithm/transform.hpp>
+#include <jln/mp/smp/utility/unpack.hpp>
+#include <jln/mp/functional/cascade.hpp>
 
 namespace jln::mp::smp
 {

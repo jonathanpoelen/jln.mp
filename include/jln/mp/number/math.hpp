@@ -1,10 +1,10 @@
 #pragma once
 
-#include "operators.hpp"
-#include "../list/at.hpp"
-#include "../functional/flip.hpp"
-#include "../functional/tee.hpp"
-#include "../algorithm/fold_left.hpp"
+#include <jln/mp/number/operators.hpp>
+#include <jln/mp/list/at.hpp>
+#include <jln/mp/functional/flip.hpp>
+#include <jln/mp/functional/tee.hpp>
+#include <jln/mp/algorithm/fold_left.hpp>
 
 namespace jln::mp
 {

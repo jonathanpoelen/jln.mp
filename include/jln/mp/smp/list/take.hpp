@@ -1,9 +1,9 @@
 #pragma once
 
-#include "drop.hpp"
-#include "../algorithm/rotate.hpp"
-#include "../../list/take.hpp"
-#include "../../list/front.hpp"
+#include <jln/mp/smp/list//drop.hpp>
+#include <jln/mp/smp/algorithm/rotate.hpp>
+#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/front.hpp>
 
 namespace jln::mp::smp
 {

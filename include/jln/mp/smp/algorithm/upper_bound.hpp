@@ -1,9 +1,9 @@
 #pragma once
 
-#include "lower_bound.hpp"
-#include "../functional/tee.hpp"
-#include "../functional/flip.hpp"
-#include "../../algorithm/upper_bound.hpp"
+#include <jln/mp/smp/algorithm//lower_bound.hpp>
+#include <jln/mp/smp/functional/tee.hpp>
+#include <jln/mp/smp/functional/flip.hpp>
+#include <jln/mp/algorithm/upper_bound.hpp>
 
 namespace jln::mp::smp
 {

@@ -59,7 +59,6 @@ def genfiles(dir_path):
   path = f'include/jln/{dir_path}'
   seppos = dir_path.find('/')
   test_prefix = '' if seppos == -1 else f'{dir_path[seppos+1:]}/'
-  current_dir = dir_path if seppos == -1 else dir_path[seppos+1:]
   with open(f'{path}.hpp', 'w') as outfile:
     outfile.write("#pragma once\n\n")
 
@@ -69,15 +68,15 @@ def genfiles(dir_path):
 
       newpath = f'{path}/{d}'
       if os.path.isdir(newpath):
-        outfile.write(f'#include "{current_dir}/{d}.hpp"\n')
+        outfile.write(f'#include <jln/{dir_path}/{d}.hpp>\n')
         with open(f'{newpath}.hpp', 'w') as flist:
           flist.write("#pragma once\n\n")
           for filename in ordered_listdir(newpath):
             if filename.endswith('.hpp'):
-              flist.write(f'#include "{d}/{filename}"\n')
+              flist.write(f'#include <jln/{dir_path}/{d}/{filename}>\n')
               gentest(test_prefix, dir_path, f'{d}/{filename}')
       elif not os.path.isdir(newpath[:-4]):
-        outfile.write(f'#include "{current_dir}/{d}"\n')
+        outfile.write(f'#include <jln/{dir_path}/{d}>\n')
         gentest(test_prefix, dir_path, d)
 
 

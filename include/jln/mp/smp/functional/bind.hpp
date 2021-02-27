@@ -1,8 +1,8 @@
 #pragma once
 
-#include "identity.hpp"
-#include "../functional/partial.hpp"
-#include "../../functional/bind.hpp"
+#include <jln/mp/smp/functional//identity.hpp>
+#include <jln/mp/smp/functional/partial.hpp>
+#include <jln/mp/functional/bind.hpp>
 
 namespace jln::mp::smp
 {

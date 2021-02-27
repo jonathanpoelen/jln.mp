@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../assume.hpp"
-#include "../list/take.hpp"
-#include "../list/drop.hpp"
-#include "../functional/tee.hpp"
-#include "../../algorithm/split_at.hpp"
+#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/smp/list/take.hpp>
+#include <jln/mp/smp/list/drop.hpp>
+#include <jln/mp/smp/functional/tee.hpp>
+#include <jln/mp/algorithm/split_at.hpp>
 
 namespace jln::mp::smp
 {

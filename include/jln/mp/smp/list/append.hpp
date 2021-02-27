@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../list/listify.hpp"
-#include "../list/push_front.hpp"
-#include "../utility/unpack.hpp"
-#include "../../list/append.hpp"
+#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/list/push_front.hpp>
+#include <jln/mp/smp/utility/unpack.hpp>
+#include <jln/mp/list/append.hpp>
 
 namespace jln::mp::smp
 {
