@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm//transform.hpp>
+#include <jln/mp/smp/algorithm/transform.hpp>
 #include <jln/mp/smp/list/join.hpp>
 #include <jln/mp/smp/list/wrap_in_list.hpp>
 #include <jln/mp/smp/utility/is.hpp>

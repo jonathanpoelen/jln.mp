@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm//make_int_sequence.hpp>
+#include <jln/mp/smp/algorithm/make_int_sequence.hpp>
 #include <jln/mp/smp/list/size.hpp>
 #include <jln/mp/algorithm/indices.hpp>
 

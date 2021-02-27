@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm//mismatch.hpp>
+#include <jln/mp/smp/algorithm/mismatch.hpp>
 #include <jln/mp/smp/list/at.hpp>
 #include <jln/mp/smp/utility/always.hpp>
 #include <jln/mp/smp/utility/is.hpp>

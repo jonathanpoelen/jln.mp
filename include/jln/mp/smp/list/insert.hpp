@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/list//insert_range.hpp>
+#include <jln/mp/smp/list/insert_range.hpp>
 #include <jln/mp/list/insert.hpp>
 
 namespace jln::mp::smp

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/functional//sfinaefwd.hpp>
+#include <jln/mp/smp/functional/sfinaefwd.hpp>
 #include <jln/mp/smp/assume.hpp>
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/try.hpp>

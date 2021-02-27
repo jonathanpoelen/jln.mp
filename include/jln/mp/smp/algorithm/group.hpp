@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm//same.hpp>
+#include <jln/mp/smp/algorithm/same.hpp>
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/algorithm/group.hpp>
 

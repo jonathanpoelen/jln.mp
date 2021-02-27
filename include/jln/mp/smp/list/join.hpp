@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/list//listify.hpp>
+#include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/smp/algorithm/all_of.hpp>
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/is_list.hpp>

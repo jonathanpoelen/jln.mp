@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm//remove.hpp>
+#include <jln/mp/smp/algorithm/remove.hpp>
 #include <jln/mp/smp/functional/tee.hpp>
 #include <jln/mp/smp/number/operators.hpp>
 #include <jln/mp/algorithm/copy.hpp>

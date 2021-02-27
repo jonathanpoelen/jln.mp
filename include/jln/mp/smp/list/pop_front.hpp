@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/list//drop.hpp>
+#include <jln/mp/smp/list/drop.hpp>
 #include <jln/mp/list/pop_front.hpp>
 
 namespace jln::mp::smp

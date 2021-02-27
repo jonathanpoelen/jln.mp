@@ -1,9 +1,9 @@
 #pragma once
 
 #include <jln/mp/smp/assume.hpp>
-#include <jln/mp/smp/../utility/always.hpp>
-#include <jln/mp/smp/../number/to_bool.hpp>
-#include <jln/mp/smp/../functional/tee.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/number/to_bool.hpp>
+#include <jln/mp/functional/tee.hpp>
 
 namespace jln::mp::smp::concepts
 {

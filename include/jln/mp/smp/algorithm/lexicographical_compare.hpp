@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm//mismatch.hpp>
+#include <jln/mp/smp/algorithm/mismatch.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/algorithm/lexicographical_compare.hpp>
 

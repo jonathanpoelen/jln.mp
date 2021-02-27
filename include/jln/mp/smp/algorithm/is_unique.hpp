@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm//unique.hpp>
+#include <jln/mp/smp/algorithm/unique.hpp>
 #include <jln/mp/smp/number/to_bool.hpp>
 #include <jln/mp/smp/functional/tee.hpp>
 #include <jln/mp/smp/algorithm/same.hpp>

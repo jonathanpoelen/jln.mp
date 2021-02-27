@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm//any_of.hpp>
+#include <jln/mp/smp/algorithm/any_of.hpp>
 #include <jln/mp/algorithm/none_of.hpp>
 
 namespace jln::mp::smp

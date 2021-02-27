@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/functional//identity.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
 #include <jln/mp/smp/concepts.hpp>
 #include <jln/mp/smp/utility/always.hpp>
 #include <jln/mp/smp/number/to_bool.hpp>

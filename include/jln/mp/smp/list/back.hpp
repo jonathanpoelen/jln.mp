@@ -1,7 +1,7 @@
 #pragma once
 
 #include <jln/mp/smp/algorithm/rotate.hpp>
-#include <jln/mp/smp/list//front.hpp>
+#include <jln/mp/smp/list/front.hpp>
 #include <jln/mp/list/back.hpp>
 
 namespace jln::mp::smp

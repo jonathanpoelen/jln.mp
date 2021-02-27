@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/list//drop.hpp>
+#include <jln/mp/smp/list/drop.hpp>
 #include <jln/mp/smp/algorithm/rotate.hpp>
 #include <jln/mp/list/drop.hpp>
 #include <jln/mp/list/front.hpp>

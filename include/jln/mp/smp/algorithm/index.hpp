@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm//find.hpp>
+#include <jln/mp/smp/algorithm/find.hpp>
 #include <jln/mp/smp/number/operators.hpp>
 #include <jln/mp/smp/utility/always.hpp>
 #include <jln/mp/smp/utility/is.hpp>

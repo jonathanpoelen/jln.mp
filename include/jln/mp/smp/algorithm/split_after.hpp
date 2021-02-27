@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm//split.hpp>
+#include <jln/mp/smp/algorithm/split.hpp>
 #include <jln/mp/algorithm/split_after.hpp>
 
 namespace jln::mp::smp

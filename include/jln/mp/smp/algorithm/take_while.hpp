@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm//index.hpp>
+#include <jln/mp/smp/algorithm/index.hpp>
 #include <jln/mp/smp/list/take.hpp>
 #include <jln/mp/smp/functional/lift.hpp>
 #include <jln/mp/smp/functional/tee.hpp>

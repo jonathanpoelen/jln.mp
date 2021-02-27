@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/functional//identity.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
 #include <jln/mp/functional/is_invocable.hpp>
 
 namespace jln::mp::smp
