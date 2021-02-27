@@ -136,7 +136,7 @@ namespace jln::mp
 
   /// \treturn \bool
   template <class T, class C = identity>
-  struct same_as
+  struct is
   {
     template <class x>
     using f = typename C::template f<number<std::is_same<T, x>::value>>;
@@ -146,7 +146,7 @@ namespace jln::mp
 {
   struct na {};
 
-  using is_na = same_as<na>;
+  using is_na = is<na>;
   using violation = always<na>;
 
   /// \cond
@@ -1914,17 +1914,17 @@ namespace jln::mp
   /// Invokes \c FC whether `na`, otherwise \c C.
   /// \treturn \value
   template<class C, class FC = violation>
-  using monadic = if_<same_as<na>, FC, C>;
+  using monadic = if_<is<na>, FC, C>;
 
   /// Invokes \c FC whether any value is `na`, otherwise \c C.
   /// \treturn \value
   template<class C, class FC = violation>
-  using monadic0 = if_<front<same_as<na>>, FC, C>;
+  using monadic0 = if_<front<is<na>>, FC, C>;
 
   /// Invokes \c FC whether first value is `na`, otherwise \c C.
   /// \treturn \value
   template<class C, class FC = violation>
-  using monadic_xs = if_<transform<same_as<na>, or_<>>, FC, C>;
+  using monadic_xs = if_<transform<is<na>, or_<>>, FC, C>;
 
   /// Monadify only if \c x is \c na.
   /// \treturn \value
@@ -4401,8 +4401,8 @@ namespace jln::mp::detail
   };
 
   template<class x, class C>
-  struct mk_wrap_in_list_if<same_as<x, not_<C>>>
-  : mk_wrap_in_list_if_not<same_as<x, C>>
+  struct mk_wrap_in_list_if<is<x, not_<C>>>
+  : mk_wrap_in_list_if_not<is<x, C>>
   {};
 
   template<class C>
@@ -4435,8 +4435,8 @@ namespace jln::mp::detail
   };
 
   template<class x, class C>
-  struct mk_wrap_in_list_if_not<same_as<x, not_<C>>>
-  : mk_wrap_in_list_if<same_as<x, C>>
+  struct mk_wrap_in_list_if_not<is<x, not_<C>>>
+  : mk_wrap_in_list_if<is<x, C>>
   {};
 
   template<class C>
@@ -5742,7 +5742,7 @@ namespace jln::mp::detail
   struct _smp_each_select<2>
   {
     template<class F, class C>
-    using f = test_contract<size<same_as<number<1>>>, each<
+    using f = test_contract<size<is<number<1>>>, each<
       assume_unary<F>, monadic_xs<assume_unary<C>>>>;
   };
 
@@ -5750,7 +5750,7 @@ namespace jln::mp::detail
   struct _smp_each_select<3>
   {
     template<class F0, class F1, class C>
-    using f = test_contract<size<same_as<number<2>>>, each<
+    using f = test_contract<size<is<number<2>>>, each<
       assume_unary<F0>,
       assume_unary<F1>,
       monadic_xs<assume_binary<C>>>>;
@@ -5760,7 +5760,7 @@ namespace jln::mp::detail
   struct _smp_each_select<4>
   {
     template<class F0, class F1, class F2, class C>
-    using f = test_contract<size<same_as<number<3>>>, each<
+    using f = test_contract<size<is<number<3>>>, each<
       assume_unary<F0>,
       assume_unary<F1>,
       assume_unary<F2>,
@@ -5770,7 +5770,7 @@ namespace jln::mp::detail
   struct _smp_each
   {
     template<class C, class... Fs>
-    using f = test_contract<size<same_as<number<sizeof...(Fs)>>>,
+    using f = test_contract<size<is<number<sizeof...(Fs)>>>,
       _each<monadic_xs<subcontract<C>>, assume_unary<Fs>...>>;
   };
 
@@ -5803,19 +5803,19 @@ namespace jln::mp::smp
 namespace jln::mp::smp
 {
   template<class x, class C = identity>
-  using same_as = try_contract<mp::same_as<x, assume_unary<C>>>;
+  using is = try_contract<mp::is<x, assume_unary<C>>>;
 }
 
 /// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class x, class C>
-  struct _sfinae<sfinae, same_as<x, C>>
+  struct _sfinae<sfinae, is<x, C>>
   {
-    using type = smp::same_as<x, sfinae<C>>;
+    using type = smp::is<x, sfinae<C>>;
   };
 
-  JLN_MP_MAKE_EXPECTED_ARGUMENT2(argument_category::unary, same_as);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT2(argument_category::unary, is);
 }
 /// \endcond
 namespace jln::mp
@@ -5825,7 +5825,7 @@ namespace jln::mp
   /// Checks whether a \value is contained in a \list.
   /// \treturn \bool
   template<class x, class C = identity>
-  using contains = any_of<same_as<x>, C>;
+  using contains = any_of<is<x>, C>;
   // using contains = find<x, always<true_, C>, always<false_, C>>;
 
   namespace emp
@@ -5837,7 +5837,7 @@ namespace jln::mp
 namespace jln::mp::smp
 {
   template<class x, class C = identity>
-  using contains = any_of<contract_barrier<mp::same_as<x>>, C>;
+  using contains = any_of<contract_barrier<mp::is<x>>, C>;
 }
 namespace jln::mp::smp
 {
@@ -5908,7 +5908,7 @@ namespace jln::mp
   /// Removes all occurence of a \value.
   /// \treturn \sequence
   template<class T, class C = listify>
-  using remove = remove_if<same_as<T>, C>;
+  using remove = remove_if<is<T>, C>;
 
   namespace emp
   {
@@ -5974,7 +5974,7 @@ namespace jln::mp
   /// Copies all occurence of a \value.
   /// \treturn \sequence
   template<class x, class C = listify>
-  using copy = remove_if<same_as<x, not_<>>, C>;
+  using copy = remove_if<is<x, not_<>>, C>;
 
   namespace emp
   {
@@ -6004,7 +6004,7 @@ namespace jln::mp
 
   /// Counts all elements identical to a \value.
   template<class x, class C = identity>
-  using count = transform<same_as<x>, add0<C>>;
+  using count = transform<is<x>, add0<C>>;
 
   namespace emp
   {
@@ -6051,7 +6051,7 @@ namespace jln::mp
   };
 
   template<class T, class C = listify, class NC = C>
-  using find = find_if<same_as<T>, C, NC>;
+  using find = find_if<is<T>, C, NC>;
 
   namespace emp
   {
@@ -6059,7 +6059,7 @@ namespace jln::mp
     using find_if = unpack<L, mp::find_if<Pred, C, NC>>;
 
     template<class L, class T, class C = mp::listify, class NC = C>
-    using find = unpack<L, mp::find_if<mp::same_as<T>, C, NC>>;
+    using find = unpack<L, mp::find_if<mp::is<T>, C, NC>>;
   }
 }
 
@@ -6491,7 +6491,7 @@ namespace jln::mp
   /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
   /// \semantics
   ///   \code
-  ///   call<split_if<same_as<void>, _0, _1, _2, _0, _3> == list<
+  ///   call<split_if<is<void>, _0, _1, _2, _0, _3> == list<
   ///     list<>,
   ///     list<_1, _2>,
   ///     list<_3>
@@ -6508,7 +6508,7 @@ namespace jln::mp
   };
 
   template<class x, class C = listify>
-  using split = split_if<same_as<x>, C>;
+  using split = split_if<is<x>, C>;
 
   namespace emp
   {
@@ -6930,7 +6930,7 @@ namespace jln::mp
   /// Use \c NC::f<> if the value to search for never occurs.
   /// \treturn \number
   template<class T, class C = listify, class NC = always<na>>
-  using index_of = index_if<same_as<T>, C, NC>;
+  using index_of = index_if<is<T>, C, NC>;
 
   namespace emp
   {
@@ -6963,7 +6963,7 @@ namespace jln::mp::smp
     assume_unary<Pred>, assume_number<C>, assume_unary<NC>>>;
 
   template<class T, class C = identity, class NC = always<na>>
-  using index_of = index_if<same_as<T>, C, NC>;
+  using index_of = index_if<is<T>, C, NC>;
 }
 
 /// \cond
@@ -9085,7 +9085,7 @@ namespace jln::mp
   /// Returns the first mismatching index of elements from two sequences, otherwise the size of the sequences.
   /// \treturn \number
   template<class Cmp = equal<>, class C = identity>
-  using mismatch_index = mismatch<Cmp, at0<C>, if_<at0<same_as<number<-1>>>, at1<C>, at0<C>>>;
+  using mismatch_index = mismatch<Cmp, at0<C>, if_<at0<is<number<-1>>>, at1<C>, at0<C>>>;
 
   namespace emp
   {
@@ -9100,7 +9100,7 @@ namespace jln::mp::smp
     Cmp,
     mp::at0<assume_number<C>>,
     mp::if_<
-      mp::at0<mp::same_as<number<-1>>>,
+      mp::at0<mp::is<number<-1>>>,
       mp::at1<assume_number<C>>,
       mp::at0<assume_number<C>>
     >
@@ -9110,7 +9110,7 @@ namespace jln::mp::smp
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class Cmp, class C>
-  struct _sfinae<sfinae, mismatch<Cmp, at0<C>, if_<at0<same_as<number<-1>>>, at1<C>, at0<C>>>>
+  struct _sfinae<sfinae, mismatch<Cmp, at0<C>, if_<at0<is<number<-1>>>, at1<C>, at0<C>>>>
   {
     using type = smp::mismatch_index<sfinae<Cmp>, sfinae<C>>;
   };
@@ -9561,7 +9561,7 @@ namespace jln::mp
   /// Replaces every occurrence of a \value by another \value.
   /// \treturn \sequence
   template<class T, class U, class C = listify>
-  using replace = replace_if<same_as<T>, U, C>;
+  using replace = replace_if<is<T>, U, C>;
 
   namespace emp
   {
@@ -9845,7 +9845,7 @@ namespace jln::mp
   /// The split value is inserted at the end of the previous list.
   /// \semantics
   ///   \code
-  ///   call<split_after_if<same_as<void>, _0, _1, _2, _0, _3> == list<
+  ///   call<split_after_if<is<void>, _0, _1, _2, _0, _3> == list<
   ///     list<_0>,
   ///     list<_1, _2, _0>,
   ///     list<_3>
@@ -9862,7 +9862,7 @@ namespace jln::mp
   };
 
   template<class x, class C = listify>
-  using split_after = split_after_if<same_as<x>, C>;
+  using split_after = split_after_if<is<x>, C>;
 
   namespace emp
   {
@@ -9969,7 +9969,7 @@ namespace jln::mp
   /// The split value is inserted at the beginning of the following list.
   /// \semantics
   ///   \code
-  ///   call<split_before_if<same_as<void>, _0, _1, _2, _0, _3> == list<
+  ///   call<split_before_if<is<void>, _0, _1, _2, _0, _3> == list<
   ///     list<>,
   ///     list<_0, _1, _2>,
   ///     list<_0, _3>
@@ -9986,7 +9986,7 @@ namespace jln::mp
   };
 
   template<class x, class C = listify>
-  using split_before = split_before_if<same_as<x>, C>;
+  using split_before = split_before_if<is<x>, C>;
 
   namespace emp
   {
@@ -11512,10 +11512,10 @@ namespace jln::mp
   /// \ingroup list
 
   template<class N, class C = identity>
-  using is_size_of = size<same_as<N, C>>;
+  using is_size_of = size<is<N, C>>;
 
   template<int_ n, class C = identity>
-  using is_size_of_c = size<same_as<number<n>, C>>;
+  using is_size_of_c = size<is<number<n>, C>>;
 
   namespace emp
   {
@@ -12737,7 +12737,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup value
+  /// \ingroup trait
 
   /// Checks whether a \value to a type member.
   /// \treturn \bool
@@ -12791,6 +12791,72 @@ namespace jln::mp::detail
   };
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, has_type);
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class x, class = void>
+    struct _has_value_type;
+  }
+  /// \endcond
+
+  /// \ingroup trait
+
+  /// Checks whether a \value to a type member.
+  /// \treturn \bool
+  template<class C = identity>
+  struct has_value_type
+  {
+    template<class x>
+    using f = typename C::template f<
+      typename detail::_has_value_type<x>::type>;
+  };
+
+  namespace emp
+  {
+    template<class x>
+    using has_value_type = typename detail::_has_value_type<x>::type;
+
+    template<class x>
+    inline constexpr bool has_value_type_v = detail::_has_value_type<x>::type::value;
+  }
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class x, class>
+  struct _has_value_type
+  {
+    using type = false_;
+  };
+
+  template<class x>
+  struct _has_value_type<x, std::void_t<typename x::type>>
+  {
+    using type = true_;
+  };
+}
+/// \endcond
+namespace jln::mp::smp
+{
+  template<class C = identity>
+  using has_value_type = try_contract<mp::has_value_type<assume_unary<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, has_value_type<C>>
+  {
+    using type = smp::has_value_type<sfinae<C>>;
+  };
+
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, has_value_type);
 }
 /// \endcond
 namespace jln::mp
@@ -13322,6 +13388,94 @@ namespace jln::mp
   JLN_MP_SMP_MAKE_TRAIT(aligned_storage)
   JLN_MP_SMP_MAKE_TRAIT(aligned_union)
 }
+namespace jln::mp
+{
+  /// \ingroup trait
+
+  /// Function for \c x::type.
+  /// \treturn \value
+  template<class C = identity>
+  struct type_
+  {
+    template<class x>
+    using f = typename C::template f<typename x::type>;
+  };
+
+  template<>
+  struct type_<identity>
+  {
+    template<class x>
+    using f = typename x::type;
+  };
+
+  namespace emp
+  {
+    template<class x>
+    using type_ = typename x::type;
+  }
+}
+namespace jln::mp::smp
+{
+  template<class C = identity>
+  using type_ = try_contract<mp::type_<assume_unary<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, type_<C>>
+  {
+    using type = smp::type_<sfinae<C>>;
+  };
+
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, type_);
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup trait
+
+  /// Function for \c x::value_type.
+  /// \treturn \value
+  template<class C = identity>
+  struct value_type
+  {
+    template<class x>
+    using f = typename C::template f<typename x::value_type>;
+  };
+
+  template<>
+  struct value_type<identity>
+  {
+    template<class x>
+    using f = typename x::value_type;
+  };
+
+  namespace emp
+  {
+    template<class x>
+    using value_type = typename x::value_type;
+  }
+}
+namespace jln::mp::smp
+{
+  template<class C = identity>
+  using value_type = try_contract<mp::value_type<assume_unary<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, value_type<C>>
+  {
+    using type = smp::value_type<sfinae<C>>;
+  };
+
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, value_type);
+}
+/// \endcond
 namespace jln::mp
 {
   /// \ingroup value
