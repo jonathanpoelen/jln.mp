@@ -8,4 +8,5 @@
 #include "utility/is_specialization_of.hpp"
 #include "utility/sizeof.hpp"
 #include "utility/stl_traits.hpp"
+#include "utility/type.hpp"
 #include "utility/unpack.hpp"

@@ -109,6 +109,7 @@
 #include "src/utility/is_specialization_of.cpp"
 #include "src/utility/sizeof.cpp"
 #include "src/utility/stl_traits.cpp"
+#include "src/utility/type.cpp"
 #include "src/utility/unpack.cpp"
 #include "src/value/as_val.cpp"
 #include "src/value/has_value.cpp"

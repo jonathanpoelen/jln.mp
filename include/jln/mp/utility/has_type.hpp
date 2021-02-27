@@ -13,7 +13,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup value
+  /// \ingroup trait
 
   /// Checks whether a \value to a type member.
   /// \treturn \bool
