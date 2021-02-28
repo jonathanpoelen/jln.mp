@@ -17,6 +17,6 @@
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/functional/on.hpp>
 #include <jln/mp/functional/partial.hpp>
-#include <jln/mp/functional/recurse.hpp>
+#include <jln/mp/functional/recursively.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/functional/try.hpp>

@@ -15,6 +15,6 @@
 #include <jln/mp/smp/functional/lift.hpp>
 #include <jln/mp/smp/functional/on.hpp>
 #include <jln/mp/smp/functional/partial.hpp>
-#include <jln/mp/smp/functional/recurse.hpp>
+#include <jln/mp/smp/functional/recursively.hpp>
 #include <jln/mp/smp/functional/sfinaefwd.hpp>
 #include <jln/mp/smp/functional/tee.hpp>

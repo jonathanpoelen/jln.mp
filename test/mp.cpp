@@ -64,7 +64,7 @@
 #include "src/functional/lift.cpp"
 #include "src/functional/on.cpp"
 #include "src/functional/partial.cpp"
-#include "src/functional/recurse.cpp"
+#include "src/functional/recursively.cpp"
 #include "src/functional/tee.cpp"
 #include "src/functional/try.cpp"
 #include "src/list/append.cpp"
