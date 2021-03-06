@@ -20,8 +20,8 @@ namespace jln::mp
   /// \ingroup search
 
   /// Finds the first element that satisfy a predicate.
-  /// Calls \c FC with all the elements since the one found at the end.
-  /// If no element is found, \c NFC is used.
+  /// Calls \c C with all the elements since the one found at the end.
+  /// If no element is found, \c NC is used.
   /// \treturn \sequence
   template<class Pred, class C = listify, class NC = C>
   struct find_if
@@ -47,7 +47,7 @@ namespace jln::mp
 
 
 #include <jln/mp/detail/enumerate.hpp>
-#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/drop_front.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -66,7 +66,7 @@ namespace jln::mp::detail
   struct _find
   {
     template<class Pred, class C, class NC, class... xs>
-    using f = typename drop_c<i, C>::template f<xs...>;
+    using f = typename drop_front_c<i, C>::template f<xs...>;
   };
 
   template<>

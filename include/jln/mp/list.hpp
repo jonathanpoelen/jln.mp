@@ -4,7 +4,10 @@
 #include <jln/mp/list/as_list.hpp>
 #include <jln/mp/list/at.hpp>
 #include <jln/mp/list/back.hpp>
-#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/clear.hpp>
+#include <jln/mp/list/drop_back.hpp>
+#include <jln/mp/list/drop_front.hpp>
+#include <jln/mp/list/drop_while.hpp>
 #include <jln/mp/list/erase.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/insert.hpp>
@@ -26,5 +29,7 @@
 #include <jln/mp/list/slice.hpp>
 #include <jln/mp/list/sliding.hpp>
 #include <jln/mp/list/swap_index.hpp>
-#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/take_back.hpp>
+#include <jln/mp/list/take_front.hpp>
+#include <jln/mp/list/take_while.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>

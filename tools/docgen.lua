@@ -451,6 +451,7 @@ htmlifier_init = function()
   + P'\\list' / inline_func('list')
   + P'\\number' / inline_func('number')
   + P'\\sequence' / '<a href="#d_sequence">sequence</a>'
+  + P'\\predicate' / '<a href="#d_predicate">sequence</a>'
   + P'\\value' / '<a href="#d_value">value</a>'
   + P'\\val' / inline_func('val')
   + P'\\bool' / inline_func('number')

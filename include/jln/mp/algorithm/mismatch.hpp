@@ -38,8 +38,8 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/list/drop.hpp>
-#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/drop_front.hpp>
+#include <jln/mp/list/take_front.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -149,9 +149,9 @@ namespace jln::mp::detail
     {
       template<class... xs>
       using f = number<size + call<
-        drop_c<size,
+        drop_front_c<size,
           rotate_c<n-size,
-            drop_c<size,
+            drop_front_c<size,
               typename _mismatch_tree<Cmp, n-size>::type
             >
           >
@@ -163,9 +163,9 @@ namespace jln::mp::detail
     template<class... xs>
     using f = typename dispatch<
       typename rotate_c<size,
-        drop_c<n-size,
+        drop_front_c<n-size,
           rotate_c<size,
-            drop_c<n-size,
+            drop_front_c<n-size,
               typename _mismatch_tree<Cmp, size>::type
             >
           >
@@ -215,7 +215,7 @@ namespace jln::mp::detail
     {
       template<class Cmp, class C, class NC>
       using f = typename apply_index<
-        typename take_c<
+        typename take_front_c<
           sizeof...(xs) * 2,
           typename _mismatch_tree<Cmp, sizeof...(xs)>::type
         >::template f<xs..., ys...>,
@@ -228,7 +228,7 @@ namespace jln::mp::detail
     {
       template<class Cmp, class C, class NC>
       using f = typename apply_index<
-        typename take_c<
+        typename take_front_c<
           sizeof...(ys) * 2,
           typename _mismatch_tree<Cmp, sizeof...(ys)>::type
         >::template f<ys..., xs...>,

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <jln/mp/list/join.hpp>
-#include <jln/mp/list/drop.hpp>
-#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/drop_front.hpp>
+#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/functional/call.hpp>
 
 #include <algorithm>
@@ -21,8 +21,8 @@ namespace jln::mp
     template<class... xs>
     using f = call<
       join<C>,
-      typename take<start>::template f<xs...>,
-      call<drop_c<std::min<std::size_t>(
+      call<take_front<start>, xs...>,
+      call<drop_front_c<std::min<std::size_t>(
         sizeof...(xs),
         detail::validate_index<start::value, sizeof...(xs)>::value
         + std::size_t{size::value}

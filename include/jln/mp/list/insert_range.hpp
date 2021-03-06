@@ -1,8 +1,8 @@
 #pragma once
 
 #include <jln/mp/list/join.hpp>
-#include <jln/mp/list/drop.hpp>
-#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/drop_front.hpp>
+#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/functional/tee.hpp>
 
@@ -15,7 +15,7 @@ namespace jln::mp
   /// \pre seq must be a \list
   /// \treturn \sequence
   template<class i, class seq, class C = listify>
-  using insert_range = tee<take<i>, always<seq>, drop<i>, join<C>>;
+  using insert_range = tee<take_front<i>, always<seq>, drop_front<i>, join<C>>;
 
   template<int_ i, class seq, class C = listify>
   using insert_range_c = insert_range<number<i>, seq, C>;

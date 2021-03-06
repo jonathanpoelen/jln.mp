@@ -8,6 +8,9 @@ namespace jln::mp
 {
   /// \ingroup group
 
+  // TODO remove <-> copy
+  // Pred::f<xs>::value... -> mk_list<b>::f<xs> | mk_list<!b>::f<xs>
+
   /// Splits a \list in two according to a predicate.
   /// \treturn \sequence of two \values
   template<class Pred, class F = listify, class C = listify>

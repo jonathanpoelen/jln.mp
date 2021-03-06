@@ -1,7 +1,7 @@
 #pragma once
 
 #include <jln/mp/list/size.hpp>
-#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/functional/each.hpp>
 #include <algorithm>
@@ -15,7 +15,7 @@ namespace jln::mp
     {
       template<class F, int_ min, class n>
       using impl = typename conditional_c<min != n::value>
-        ::template f<unpack<take_c<min, F>>, identity>;
+        ::template f<unpack<take_front_c<min, F>>, identity>;
 
       template<class F, class C, class... ns>
       using f = _each<C, impl<F, std::min({int_(~0u), ns::value...}), ns>...>;

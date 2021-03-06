@@ -45,7 +45,6 @@
 #include <jln/mp/smp/algorithm/split_after.hpp>
 #include <jln/mp/smp/algorithm/split_at.hpp>
 #include <jln/mp/smp/algorithm/split_before.hpp>
-#include <jln/mp/smp/algorithm/take_while.hpp>
 #include <jln/mp/smp/algorithm/transform.hpp>
 #include <jln/mp/smp/algorithm/unique.hpp>
 #include <jln/mp/smp/algorithm/upper_bound.hpp>

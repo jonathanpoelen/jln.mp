@@ -52,7 +52,7 @@ namespace jln::mp
 
 
 #include <jln/mp/algorithm/split.hpp>
-#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/push_front.hpp>
 #include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/functional/lift.hpp>
@@ -103,7 +103,7 @@ namespace jln::mp::detail
     template<class C, class Cmp, class x, class... xs>
     using f = typename _group_impl<
       C, Cmp, x,
-      call<take_c<sizeof...(xs)>, x, xs...>,
+      call<take_front_c<sizeof...(xs)>, x, xs...>,
       xs...
     >::type;
   };

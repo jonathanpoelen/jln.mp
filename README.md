@@ -81,6 +81,7 @@ jln::mp::call<to_tuple<>, int, double> == std::tuple<int, double>
 - Value: a type with a `value` member.
 - Typelist: an instance compatible with `template<class...> class T`, such as `list<>`.
 - Function: a type with a `f` template member. The number and the nature of the parameters depend on the context of use.
+- Predicate: a function which takes 1 argument and returns a value convertible to boolean.
 - Meta-function: a template class `template<class...> class M`.
 - Lazy meta-function: a meta-function with a `type` member.
 - `C`: Continuation function. Represents the function used to chain calls, typically `listify` or `identity`.

@@ -68,7 +68,7 @@ namespace jln::mp
 #include <jln/mp/algorithm/transform.hpp>
 #include <jln/mp/algorithm/group_n.hpp>
 #include <jln/mp/functional/tee.hpp>
-#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/list/slice.hpp>
 
 /// \cond
@@ -146,7 +146,7 @@ namespace jln::mp::detail
   {
     return n <= size ? (n ? 1 : 0)         // C<list<xs...>>
       : size == 1 ? (stride == 1 ? 2 : 3)  // C<list<xs>...> / slice<0, n/stride, stride>
-      : stride > n ? 9                     // take
+      : stride > n ? 9                     // take_front
       : stride == 1 ? (size == 2 ? 4 : 5)  // common case
       : stride == size ? 6                 // group_n
       // slice<zip_longest> / slice<zip>
@@ -193,7 +193,7 @@ namespace jln::mp::detail
     template<class C, int_, int_, class x, class... xs>
     using f = typename _zip_impl<
       C,
-      mp::rotate_c<-1, drop_c<1>>::f<x, xs...>,
+      mp::rotate_c<-1, drop_front_c<1>>::f<x, xs...>,
       list<xs...>
     >::type;
   };
@@ -201,16 +201,16 @@ namespace jln::mp::detail
   template<>
   struct _sliding<5>
   {
-    template<class C, int_ size, class drop>
+    template<class C, int_ size, class drop_front>
     struct impl
     {
       template<int_... i>
-      using f = _tee<zip<C>, rotate_c<i-size, drop>...>;
+      using f = _tee<zip<C>, rotate_c<i-size, drop_front>...>;
     };
 
     template<class C, int_ size, int_, class... xs>
     using f = typename memoize_call<
-      make_int_sequence_v<impl<C, size-1, drop_c<size-1>>>,
+      make_int_sequence_v<impl<C, size-1, drop_front_c<size-1>>>,
       number<size>
     >::template f<xs...>;
   };
@@ -284,7 +284,7 @@ namespace jln::mp::detail
   struct _sliding<9>
   {
     template<class C, int_ size, int_, class... xs>
-    using f = typename C::template f<typename take_c<size>::template f<xs...>>;
+    using f = typename C::template f<typename take_front_c<size>::template f<xs...>>;
   };
 }
 /// \endcond

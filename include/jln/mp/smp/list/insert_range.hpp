@@ -1,8 +1,8 @@
 #pragma once
 
 #include <jln/mp/smp/list/join.hpp>
-#include <jln/mp/smp/list/take.hpp>
-#include <jln/mp/smp/list/drop.hpp>
+#include <jln/mp/smp/list/take_front.hpp>
+#include <jln/mp/smp/list/drop_front.hpp>
 #include <jln/mp/smp/utility/always.hpp>
 #include <jln/mp/smp/functional/tee.hpp>
 #include <jln/mp/list/insert_range.hpp>
@@ -34,7 +34,7 @@ namespace jln::mp::detail
     template<int_ i, class C>
     using f = test_contract<
       size<greater_equal_than_c<i>>,
-      tee<take_c<i>, always<list<xs...>>, drop_c<i>, join<subcontract<C>>>
+      tee<take_front_c<i>, always<list<xs...>>, drop_front_c<i>, join<subcontract<C>>>
     >;
   };
 

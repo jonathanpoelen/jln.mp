@@ -5,7 +5,7 @@
 #include "jln/mp/smp/functional/lift.hpp"
 #include "jln/mp/smp/list/pop_front.hpp"
 #include "jln/mp/smp/list/front.hpp"
-#include "jln/mp/smp/list/take.hpp"
+#include "jln/mp/smp/list/take_front.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -16,12 +16,12 @@ TEST()
 
   test_pack2<invoke_twice>();
 
-  ut::same<list<void, int>, invoke_twice<front<lift<take, lift<pop_front>>>>
+  ut::same<list<void, int>, invoke_twice<front<lift<take_front, lift<pop_front>>>>
     ::template f<_2, void, int, char, long>>();
 
   test_context<
-    invoke_twice<front<lift<take, lift<pop_front>>>>,
-    smp::invoke_twice<smp::front<smp::lift<smp::take, smp::lift<smp::pop_front>>>>,
+    invoke_twice<front<lift<take_front, lift<pop_front>>>>,
+    smp::invoke_twice<smp::front<smp::lift<smp::take_front, smp::lift<smp::pop_front>>>>,
     -1
   >()
     .test<list<void, int>, _2, void, int, char, long>()

@@ -73,8 +73,8 @@ namespace jln::mp
 }
 
 #include <jln/mp/list/join.hpp>
-#include <jln/mp/list/take.hpp>
-#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/take_front.hpp>
+#include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/functional/each.hpp>
 
 /// \cond
@@ -86,8 +86,8 @@ namespace jln::mp::detail
     template<class... xs>
     using f = typename _join_select<2>::f<
       C,
-      JLN_MP_DCALL_XS(xs, take_c<sizeof...(Fs), _each<listify, Fs...>>, xs...),
-      JLN_MP_DCALL_XS(xs, drop_c<sizeof...(Fs)>, xs...)
+      JLN_MP_DCALL_XS(xs, take_front_c<sizeof...(Fs), _each<listify, Fs...>>, xs...),
+      JLN_MP_DCALL_XS(xs, drop_front_c<sizeof...(Fs)>, xs...)
     >::type;
   };
 } // namespace jln::mp

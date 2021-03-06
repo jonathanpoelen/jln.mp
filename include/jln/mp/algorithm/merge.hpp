@@ -45,8 +45,8 @@ namespace jln::mp
 
 
 #include <jln/mp/list/prepend.hpp>
-#include <jln/mp/list/take.hpp>
-#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/take_front.hpp>
+#include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/detail/type_identity.hpp>
 
 namespace jln::mp
@@ -221,11 +221,11 @@ namespace jln::mp::detail
     using xm = number<(sizeof...(xs) + 1) / 2>;
     using ym = number<(sizeof...(ys) + 1) / 2>;
 
-    using xl = call<take<xm>, xs...>;
-    using yl = call<take<ym>, ys...>;
+    using xl = call<take_front<xm>, xs...>;
+    using yl = call<take_front<ym>, ys...>;
 
-    using xr = call<drop<xm>, xs...>;
-    using yr = call<drop<ym>, ys...>;
+    using xr = call<drop_front<xm>, xs...>;
+    using yr = call<drop_front<ym>, ys...>;
 
     using l = _merge<xl, yl, z>;
 

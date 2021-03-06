@@ -52,8 +52,8 @@ namespace jln::mp
 
 #include <jln/mp/algorithm/cartesian.hpp>
 #include <jln/mp/utility/always.hpp>
-#include <jln/mp/list/take.hpp>
-#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/take_front.hpp>
+#include <jln/mp/list/drop_front.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -104,19 +104,19 @@ namespace jln::mp::detail
     bool = (beg < n), bool = (end < n)>
   struct _range_impl // true, true
   {
-    using type = drop_c<beg, take_c<end - beg, C>>;
+    using type = drop_front_c<beg, take_front_c<end - beg, C>>;
   };
 
   template<int_ end, int_ n, class C>
   struct _range_impl<0, end, n, C, true, true>
   {
-    using type = take_c<end, C>;
+    using type = take_front_c<end, C>;
   };
 
   template<int_ beg, int_ end, int_ n, class C>
   struct _range_impl<beg, end, n, C, true, false>
   {
-    using type = drop_c<beg, C>;
+    using type = drop_front_c<beg, C>;
   };
 
   template<int_ end, int_ n, class C>

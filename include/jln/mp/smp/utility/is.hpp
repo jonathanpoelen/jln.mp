@@ -7,7 +7,7 @@
 namespace jln::mp::smp
 {
   template<class x, class C = identity>
-  using is = try_contract<mp::is<x, assume_unary<C>>>;
+  using is = try_contract<mp::is<x, assume_number<C>>>;
 }
 
 /// \cond

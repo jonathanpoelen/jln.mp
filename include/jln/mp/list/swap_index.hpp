@@ -41,8 +41,8 @@ namespace jln::mp
 
 
 #include <jln/mp/list/join.hpp>
-#include <jln/mp/list/drop.hpp>
-#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/drop_front.hpp>
+#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/at.hpp>
 #include <jln/mp/functional/call.hpp>
 
@@ -54,11 +54,11 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename join<C>::template f<
-      call<take_c<i>, xs...>,
+      call<take_front_c<i>, xs...>,
       list<call<at_c<j>, xs...>>,
-      call<drop_c<i+1, take_c<j-i-1>>, xs...>,
+      call<drop_front_c<i+1, take_front_c<j-i-1>>, xs...>,
       list<call<at_c<i>, xs...>>,
-      call<drop_c<j+1>, xs...>
+      call<drop_front_c<j+1>, xs...>
     >;
   };
 

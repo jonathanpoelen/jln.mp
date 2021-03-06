@@ -1,0 +1,40 @@
+#pragma once
+
+#include <jln/mp/algorithm/rotate.hpp>
+#include <jln/mp/list/drop_front.hpp>
+
+namespace jln::mp
+{
+  /// \ingroup list
+
+  /// Removes \c N elements from the end of a \sequence.
+  /// \pre `0 <= N <= sizeof...(xs)`
+  /// \treturn \sequence
+  template<class N, class C = listify>
+  struct drop_back
+  {
+    template<class... xs>
+    using f = call<rotate<number<-N::value>, drop_front<N, C>>, xs...>;
+  };
+
+  template<int_ n, class C = listify>
+  using drop_back_c = drop_back<number<n>, C>;
+
+  namespace emp
+  {
+    template<class L, class N, class C = mp::listify>
+    using drop_back = unpack<L, mp::drop_back<N, C>>;
+
+    template<class L, int_ n, class C = mp::listify>
+    using drop_back_c = unpack<L, mp::drop_back<number<n>, C>>;
+  }
+
+  /// \cond
+  template<class C>
+  struct drop_back<number<0>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+  /// \endcond
+}

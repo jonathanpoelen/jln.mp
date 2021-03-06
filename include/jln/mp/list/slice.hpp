@@ -61,8 +61,8 @@ namespace jln::mp
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
 #include <jln/mp/list/join.hpp>
-#include <jln/mp/list/drop.hpp>
-#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/drop_front.hpp>
+#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/front.hpp>
 
 /// \cond
@@ -81,7 +81,7 @@ namespace jln::mp::detail
   struct _slice<2>
   {
     template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
-    using f = drop_c<start, take_c<
+    using f = drop_front_c<start, take_front_c<
       detail::validate_index<size - 1,
 #ifdef _MSC_VER
         (start < int_(len) ? int_(len) - start : 0)
@@ -120,7 +120,7 @@ namespace jln::mp::detail
   struct _slice<1>
   {
     template<int_ start, int_ size, unsigned stride, class C, std::size_t len>
-    using f = drop_c<
+    using f = drop_front_c<
       start,
       typename emp::make_int_sequence_v_c<
         detail::validate_index<int_(len) - start, len>::value,
@@ -145,7 +145,7 @@ namespace jln::mp::detail
   struct _slice<3>
   {
     template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
-    using f = drop_c<start, front<C>>;
+    using f = drop_front_c<start, front<C>>;
   };
 }
 /// \endcond

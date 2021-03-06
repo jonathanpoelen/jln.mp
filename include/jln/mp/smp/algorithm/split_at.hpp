@@ -1,8 +1,8 @@
 #pragma once
 
 #include <jln/mp/smp/assume.hpp>
-#include <jln/mp/smp/list/take.hpp>
-#include <jln/mp/smp/list/drop.hpp>
+#include <jln/mp/smp/list/take_front.hpp>
+#include <jln/mp/smp/list/drop_front.hpp>
 #include <jln/mp/smp/functional/tee.hpp>
 #include <jln/mp/algorithm/split_at.hpp>
 

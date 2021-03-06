@@ -66,7 +66,7 @@ namespace jln::mp
 #include <jln/mp/detail/enumerate.hpp>
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/list/front.hpp>
-#include <jln/mp/list/drop.hpp>
+#include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/functional/flip.hpp>
 #include <jln/mp/functional/try.hpp>
@@ -190,12 +190,12 @@ namespace jln::mp::detail
 
 #undef JLN_MP_LOWER_BOUND_IMPL
 
-  template<unsigned> struct _lower_bound_drop;
-  template<unsigned> struct _smp_lower_bound_drop;
+  template<unsigned> struct _lower_bound_drop_front;
+  template<unsigned> struct _smp_lower_bound_drop_front;
 
 #define JLN_MP_LOWER_BOUND_IMPL2(prefix, Cond, n, mp_xs) \
   template<>                                             \
-  struct prefix##lower_bound_drop<n>                     \
+  struct prefix##lower_bound_drop_front<n>                     \
   {                                                      \
     template<int count, class Pred, class C, class NC,   \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),            \
@@ -212,7 +212,7 @@ namespace jln::mp::detail
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),            \
       class... xs>                                       \
     using f = typename Cond(_##n)::template f<           \
-      prefix##lower_bound_drop<n>,                       \
+      prefix##lower_bound_drop_front<n>,                       \
       prefix##lower_bound<n/2>                           \
     >::template f<count, Pred, C, NC,                    \
       mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA),       \

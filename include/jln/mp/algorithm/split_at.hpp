@@ -1,7 +1,7 @@
 #pragma once
 
-#include <jln/mp/list/drop.hpp>
-#include <jln/mp/list/take.hpp>
+#include <jln/mp/list/drop_front.hpp>
+#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/functional/tee.hpp>
 
 namespace jln::mp
@@ -12,7 +12,7 @@ namespace jln::mp
   /// \pre i >= 0 && i <= sizeof...(xs)
   /// \treturn \sequence of two \values
   template<class i, class F = listify, class C = listify>
-  using split_at_with = tee<take<i, F>, drop<i, F>, C>;
+  using split_at_with = tee<take_front<i, F>, drop_front<i, F>, C>;
 
   template<int_ i, class F = listify, class C = listify>
   using split_at_with_c = split_at_with<number<i>, F, C>;
@@ -21,7 +21,7 @@ namespace jln::mp
   /// \pre i >= 0 && i <= sizeof...(xs)
   /// \treturn \sequence of two \lists
   template<class i, class C = listify>
-  using split_at = tee<take<i>, drop<i>, C>;
+  using split_at = tee<take_front<i>, drop_front<i>, C>;
 
   template<int_ i, class C = listify>
   using split_at_c = split_at<number<i>, C>;

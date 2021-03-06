@@ -16,7 +16,7 @@ namespace jln::mp
   namespace detail
   {
     template<unsigned>
-    struct _drop;
+    struct _drop_front;
 
 #if defined(_MSC_VER) || defined(__clang__)
     template<int_ i, std::size_t n, class = void>
@@ -41,10 +41,10 @@ namespace jln::mp
   /// \pre `0 <= N <= sizeof...(xs)`
   /// \treturn \sequence
   template<class N, class C = listify>
-  struct drop
+  struct drop_front
   {
     template<class... xs>
-    using f = typename detail::_drop<
+    using f = typename detail::_drop_front<
       detail::n_8_or_less_16_64_256(
         detail::validate_index<N::value, sizeof...(xs)>::value
       )
@@ -52,60 +52,60 @@ namespace jln::mp
   };
 
   template<int_ n, class C = listify>
-  using drop_c = drop<number<n>, C>;
-
-  /// \cond
-  template<class C>
-  struct drop<number<0>, C>
-  {
-    template<class... xs>
-    using f = call<C, xs...>;
-  };
-
-  template<class C>
-  struct drop<number<1>, C>
-  {
-    template<class, class... xs>
-    using f = call<C, xs...>;
-  };
-
-  template<class C>
-  struct drop<number<2>, C>
-  {
-    template<class, class, class... xs>
-    using f = call<C, xs...>;
-  };
-
-  template<class C>
-  struct drop<number<3>, C>
-  {
-    template<class, class, class, class... xs>
-    using f = call<C, xs...>;
-  };
-
-  template<class C>
-  struct drop<number<4>, C>
-  {
-    template<class, class, class, class, class... xs>
-    using f = call<C, xs...>;
-  };
-
-  template<class C>
-  struct drop<number<5>, C>
-  {
-    template<class, class, class, class, class, class... xs>
-    using f = call<C, xs...>;
-  };
-  /// \endcond
+  using drop_front_c = drop_front<number<n>, C>;
 
   namespace emp
   {
     template<class L, class N, class C = mp::listify>
-    using drop = unpack<L, mp::drop<N, C>>;
+    using drop_front = unpack<L, mp::drop_front<N, C>>;
 
     template<class L, int_ n, class C = mp::listify>
-    using drop_c = unpack<L, mp::drop<number<n>, C>>;
+    using drop_front_c = unpack<L, mp::drop_front<number<n>, C>>;
   }
+
+  /// \cond
+  template<class C>
+  struct drop_front<number<0>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<1>, C>
+  {
+    template<class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<2>, C>
+  {
+    template<class, class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<3>, C>
+  {
+    template<class, class, class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<4>, C>
+  {
+    template<class, class, class, class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<5>, C>
+  {
+    template<class, class, class, class, class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+  /// \endcond
 }
 
 /// \cond
@@ -113,7 +113,7 @@ namespace jln::mp::detail
 {
 #define JLN_MP_DROP_IMPL(n, _, mp_rxs, mp_rep) \
   template<>                                   \
-  struct _drop<n>                              \
+  struct _drop_front<n>                              \
   {                                            \
     template<unsigned size, class C,           \
       mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)   \
@@ -131,12 +131,12 @@ namespace jln::mp::detail
 
 #define JLN_MP_DROP_IMPL2(n, _, mp_rxs, mp_rep, next_int) \
   template<>                                              \
-  struct _drop<n>                                         \
+  struct _drop_front<n>                                         \
   {                                                       \
     template<unsigned size, class C,                      \
       mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)              \
       class... xs>                                        \
-    using f = typename _drop<next_int (size-n)>           \
+    using f = typename _drop_front<next_int (size-n)>           \
       ::template f<(size-n), C, xs...>;                   \
   };
 
