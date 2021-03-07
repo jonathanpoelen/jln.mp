@@ -2254,8 +2254,18 @@ namespace jln::mp::detail
   before _1 after sep before _2 after sep before _3 after sep before _4 after sep \
   before _5 after sep before _6 after sep before _7 after sep before _8 after
 
+#define JLN_MP_XS_2_TO_8(before, after, sep)                                      \
+                      before _2 after sep before _3 after sep before _4 after sep \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after
+
 #define JLN_MP_XS_16(before, after, sep)                                             \
   before _1 after sep before _2 after sep before _3 after sep before _4 after sep    \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep    \
+  before _9 after sep before _10 after sep before _11 after sep before _12 after sep \
+  before _13 after sep before _14 after sep before _15 after sep before _16 after
+
+#define JLN_MP_XS_2_TO_16(before, after, sep)                                        \
+                      before _2 after sep before _3 after sep before _4 after sep    \
   before _5 after sep before _6 after sep before _7 after sep before _8 after sep    \
   before _9 after sep before _10 after sep before _11 after sep before _12 after sep \
   before _13 after sep before _14 after sep before _15 after sep before _16 after
@@ -2270,8 +2280,36 @@ namespace jln::mp::detail
   before _25 after sep before _26 after sep before _27 after sep before _28 after sep \
   before _29 after sep before _30 after sep before _31 after sep before _32 after
 
+#define JLN_MP_XS_2_TO_32(before, after, sep)                                         \
+                      before _2 after sep before _3 after sep before _4 after sep     \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep     \
+  before _9 after sep before _10 after sep before _11 after sep before _12 after sep  \
+  before _13 after sep before _14 after sep before _15 after sep before _16 after sep \
+  before _17 after sep before _18 after sep before _19 after sep before _20 after sep \
+  before _21 after sep before _22 after sep before _23 after sep before _24 after sep \
+  before _25 after sep before _26 after sep before _27 after sep before _28 after sep \
+  before _29 after sep before _30 after sep before _31 after sep before _32 after
+
 #define JLN_MP_XS_64(before, after, sep)                                              \
   before _1 after sep before _2 after sep before _3 after sep before _4 after sep     \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep     \
+  before _9 after sep before _10 after sep before _11 after sep before _12 after sep  \
+  before _13 after sep before _14 after sep before _15 after sep before _16 after sep \
+  before _17 after sep before _18 after sep before _19 after sep before _20 after sep \
+  before _21 after sep before _22 after sep before _23 after sep before _24 after sep \
+  before _25 after sep before _26 after sep before _27 after sep before _28 after sep \
+  before _29 after sep before _30 after sep before _31 after sep before _32 after sep \
+  before _33 after sep before _34 after sep before _35 after sep before _36 after sep \
+  before _37 after sep before _38 after sep before _39 after sep before _40 after sep \
+  before _41 after sep before _42 after sep before _43 after sep before _44 after sep \
+  before _45 after sep before _46 after sep before _47 after sep before _48 after sep \
+  before _49 after sep before _50 after sep before _51 after sep before _52 after sep \
+  before _53 after sep before _54 after sep before _55 after sep before _56 after sep \
+  before _57 after sep before _58 after sep before _59 after sep before _60 after sep \
+  before _61 after sep before _62 after sep before _63 after sep before _64 after
+
+#define JLN_MP_XS_2_TO_64(before, after, sep)                                         \
+                      before _2 after sep before _3 after sep before _4 after sep     \
   before _5 after sep before _6 after sep before _7 after sep before _8 after sep     \
   before _9 after sep before _10 after sep before _11 after sep before _12 after sep  \
   before _13 after sep before _14 after sep before _15 after sep before _16 after sep \
@@ -2322,8 +2360,108 @@ namespace jln::mp::detail
   before _121 after sep before _122 after sep before _123 after sep before _124 after sep \
   before _125 after sep before _126 after sep before _127 after sep before _128 after
 
+#define JLN_MP_XS_1_TO_128(before, after, sep)                                            \
+                      before _2 after sep before _3 after sep before _4 after sep         \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep         \
+  before _9 after sep before _10 after sep before _11 after sep before _12 after sep      \
+  before _13 after sep before _14 after sep before _15 after sep before _16 after sep     \
+  before _17 after sep before _18 after sep before _19 after sep before _20 after sep     \
+  before _21 after sep before _22 after sep before _23 after sep before _24 after sep     \
+  before _25 after sep before _26 after sep before _27 after sep before _28 after sep     \
+  before _29 after sep before _30 after sep before _31 after sep before _32 after sep     \
+  before _33 after sep before _34 after sep before _35 after sep before _36 after sep     \
+  before _37 after sep before _38 after sep before _39 after sep before _40 after sep     \
+  before _41 after sep before _42 after sep before _43 after sep before _44 after sep     \
+  before _45 after sep before _46 after sep before _47 after sep before _48 after sep     \
+  before _49 after sep before _50 after sep before _51 after sep before _52 after sep     \
+  before _53 after sep before _54 after sep before _55 after sep before _56 after sep     \
+  before _57 after sep before _58 after sep before _59 after sep before _60 after sep     \
+  before _61 after sep before _62 after sep before _63 after sep before _64 after sep     \
+  before _65 after sep before _66 after sep before _67 after sep before _68 after sep     \
+  before _69 after sep before _70 after sep before _71 after sep before _72 after sep     \
+  before _73 after sep before _74 after sep before _75 after sep before _76 after sep     \
+  before _77 after sep before _78 after sep before _79 after sep before _80 after sep     \
+  before _81 after sep before _82 after sep before _83 after sep before _84 after sep     \
+  before _85 after sep before _86 after sep before _87 after sep before _88 after sep     \
+  before _89 after sep before _90 after sep before _91 after sep before _92 after sep     \
+  before _93 after sep before _94 after sep before _95 after sep before _96 after sep     \
+  before _97 after sep before _98 after sep before _99 after sep before _100 after sep    \
+  before _101 after sep before _102 after sep before _103 after sep before _104 after sep \
+  before _105 after sep before _106 after sep before _107 after sep before _108 after sep \
+  before _109 after sep before _110 after sep before _111 after sep before _112 after sep \
+  before _113 after sep before _114 after sep before _115 after sep before _116 after sep \
+  before _117 after sep before _118 after sep before _119 after sep before _120 after sep \
+  before _121 after sep before _122 after sep before _123 after sep before _124 after sep \
+  before _125 after sep before _126 after sep before _127 after sep before _128 after
+
 #define JLN_MP_XS_256(before, after, sep)                                                 \
   before _1 after sep before _2 after sep before _3 after sep before _4 after sep         \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep         \
+  before _9 after sep before _10 after sep before _11 after sep before _12 after sep      \
+  before _13 after sep before _14 after sep before _15 after sep before _16 after sep     \
+  before _17 after sep before _18 after sep before _19 after sep before _20 after sep     \
+  before _21 after sep before _22 after sep before _23 after sep before _24 after sep     \
+  before _25 after sep before _26 after sep before _27 after sep before _28 after sep     \
+  before _29 after sep before _30 after sep before _31 after sep before _32 after sep     \
+  before _33 after sep before _34 after sep before _35 after sep before _36 after sep     \
+  before _37 after sep before _38 after sep before _39 after sep before _40 after sep     \
+  before _41 after sep before _42 after sep before _43 after sep before _44 after sep     \
+  before _45 after sep before _46 after sep before _47 after sep before _48 after sep     \
+  before _49 after sep before _50 after sep before _51 after sep before _52 after sep     \
+  before _53 after sep before _54 after sep before _55 after sep before _56 after sep     \
+  before _57 after sep before _58 after sep before _59 after sep before _60 after sep     \
+  before _61 after sep before _62 after sep before _63 after sep before _64 after sep     \
+  before _65 after sep before _66 after sep before _67 after sep before _68 after sep     \
+  before _69 after sep before _70 after sep before _71 after sep before _72 after sep     \
+  before _73 after sep before _74 after sep before _75 after sep before _76 after sep     \
+  before _77 after sep before _78 after sep before _79 after sep before _80 after sep     \
+  before _81 after sep before _82 after sep before _83 after sep before _84 after sep     \
+  before _85 after sep before _86 after sep before _87 after sep before _88 after sep     \
+  before _89 after sep before _90 after sep before _91 after sep before _92 after sep     \
+  before _93 after sep before _94 after sep before _95 after sep before _96 after sep     \
+  before _97 after sep before _98 after sep before _99 after sep before _100 after sep    \
+  before _101 after sep before _102 after sep before _103 after sep before _104 after sep \
+  before _105 after sep before _106 after sep before _107 after sep before _108 after sep \
+  before _109 after sep before _110 after sep before _111 after sep before _112 after sep \
+  before _113 after sep before _114 after sep before _115 after sep before _116 after sep \
+  before _117 after sep before _118 after sep before _119 after sep before _120 after sep \
+  before _121 after sep before _122 after sep before _123 after sep before _124 after sep \
+  before _125 after sep before _126 after sep before _127 after sep before _128 after sep \
+  before _129 after sep before _130 after sep before _131 after sep before _132 after sep \
+  before _133 after sep before _134 after sep before _135 after sep before _136 after sep \
+  before _137 after sep before _138 after sep before _139 after sep before _140 after sep \
+  before _141 after sep before _142 after sep before _143 after sep before _144 after sep \
+  before _145 after sep before _146 after sep before _147 after sep before _148 after sep \
+  before _149 after sep before _150 after sep before _151 after sep before _152 after sep \
+  before _153 after sep before _154 after sep before _155 after sep before _156 after sep \
+  before _157 after sep before _158 after sep before _159 after sep before _160 after sep \
+  before _161 after sep before _162 after sep before _163 after sep before _164 after sep \
+  before _165 after sep before _166 after sep before _167 after sep before _168 after sep \
+  before _169 after sep before _170 after sep before _171 after sep before _172 after sep \
+  before _173 after sep before _174 after sep before _175 after sep before _176 after sep \
+  before _177 after sep before _178 after sep before _179 after sep before _180 after sep \
+  before _181 after sep before _182 after sep before _183 after sep before _184 after sep \
+  before _185 after sep before _186 after sep before _187 after sep before _188 after sep \
+  before _189 after sep before _190 after sep before _191 after sep before _192 after sep \
+  before _193 after sep before _194 after sep before _195 after sep before _196 after sep \
+  before _197 after sep before _198 after sep before _199 after sep before _200 after sep \
+  before _201 after sep before _202 after sep before _203 after sep before _204 after sep \
+  before _205 after sep before _206 after sep before _207 after sep before _208 after sep \
+  before _209 after sep before _210 after sep before _211 after sep before _212 after sep \
+  before _213 after sep before _214 after sep before _215 after sep before _216 after sep \
+  before _217 after sep before _218 after sep before _219 after sep before _220 after sep \
+  before _221 after sep before _222 after sep before _223 after sep before _224 after sep \
+  before _225 after sep before _226 after sep before _227 after sep before _228 after sep \
+  before _229 after sep before _230 after sep before _231 after sep before _232 after sep \
+  before _233 after sep before _234 after sep before _235 after sep before _236 after sep \
+  before _237 after sep before _238 after sep before _239 after sep before _240 after sep \
+  before _241 after sep before _242 after sep before _243 after sep before _244 after sep \
+  before _245 after sep before _246 after sep before _247 after sep before _248 after sep \
+  before _249 after sep before _250 after sep before _251 after sep before _252 after sep \
+  before _253 after sep before _254 after sep before _255 after sep before _256 after
+
+#define JLN_MP_XS_2_TO_256(before, after, sep)                                            \
+                      before _2 after sep before _3 after sep before _4 after sep         \
   before _5 after sep before _6 after sep before _7 after sep before _8 after sep         \
   before _9 after sep before _10 after sep before _11 after sep before _12 after sep      \
   before _13 after sep before _14 after sep before _15 after sep before _16 after sep     \
@@ -2518,8 +2656,396 @@ namespace jln::mp::detail
   before _505 after sep before _506 after sep before _507 after sep before _508 after sep \
   before _509 after sep before _510 after sep before _511 after sep before _512 after
 
+#define JLN_MP_XS_2_TO_512(before, after, sep)                                            \
+                      before _2 after sep before _3 after sep before _4 after sep         \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep         \
+  before _9 after sep before _10 after sep before _11 after sep before _12 after sep      \
+  before _13 after sep before _14 after sep before _15 after sep before _16 after sep     \
+  before _17 after sep before _18 after sep before _19 after sep before _20 after sep     \
+  before _21 after sep before _22 after sep before _23 after sep before _24 after sep     \
+  before _25 after sep before _26 after sep before _27 after sep before _28 after sep     \
+  before _29 after sep before _30 after sep before _31 after sep before _32 after sep     \
+  before _33 after sep before _34 after sep before _35 after sep before _36 after sep     \
+  before _37 after sep before _38 after sep before _39 after sep before _40 after sep     \
+  before _41 after sep before _42 after sep before _43 after sep before _44 after sep     \
+  before _45 after sep before _46 after sep before _47 after sep before _48 after sep     \
+  before _49 after sep before _50 after sep before _51 after sep before _52 after sep     \
+  before _53 after sep before _54 after sep before _55 after sep before _56 after sep     \
+  before _57 after sep before _58 after sep before _59 after sep before _60 after sep     \
+  before _61 after sep before _62 after sep before _63 after sep before _64 after sep     \
+  before _65 after sep before _66 after sep before _67 after sep before _68 after sep     \
+  before _69 after sep before _70 after sep before _71 after sep before _72 after sep     \
+  before _73 after sep before _74 after sep before _75 after sep before _76 after sep     \
+  before _77 after sep before _78 after sep before _79 after sep before _80 after sep     \
+  before _81 after sep before _82 after sep before _83 after sep before _84 after sep     \
+  before _85 after sep before _86 after sep before _87 after sep before _88 after sep     \
+  before _89 after sep before _90 after sep before _91 after sep before _92 after sep     \
+  before _93 after sep before _94 after sep before _95 after sep before _96 after sep     \
+  before _97 after sep before _98 after sep before _99 after sep before _100 after sep    \
+  before _101 after sep before _102 after sep before _103 after sep before _104 after sep \
+  before _105 after sep before _106 after sep before _107 after sep before _108 after sep \
+  before _109 after sep before _110 after sep before _111 after sep before _112 after sep \
+  before _113 after sep before _114 after sep before _115 after sep before _116 after sep \
+  before _117 after sep before _118 after sep before _119 after sep before _120 after sep \
+  before _121 after sep before _122 after sep before _123 after sep before _124 after sep \
+  before _125 after sep before _126 after sep before _127 after sep before _128 after sep \
+  before _129 after sep before _130 after sep before _131 after sep before _132 after sep \
+  before _133 after sep before _134 after sep before _135 after sep before _136 after sep \
+  before _137 after sep before _138 after sep before _139 after sep before _140 after sep \
+  before _141 after sep before _142 after sep before _143 after sep before _144 after sep \
+  before _145 after sep before _146 after sep before _147 after sep before _148 after sep \
+  before _149 after sep before _150 after sep before _151 after sep before _152 after sep \
+  before _153 after sep before _154 after sep before _155 after sep before _156 after sep \
+  before _157 after sep before _158 after sep before _159 after sep before _160 after sep \
+  before _161 after sep before _162 after sep before _163 after sep before _164 after sep \
+  before _165 after sep before _166 after sep before _167 after sep before _168 after sep \
+  before _169 after sep before _170 after sep before _171 after sep before _172 after sep \
+  before _173 after sep before _174 after sep before _175 after sep before _176 after sep \
+  before _177 after sep before _178 after sep before _179 after sep before _180 after sep \
+  before _181 after sep before _182 after sep before _183 after sep before _184 after sep \
+  before _185 after sep before _186 after sep before _187 after sep before _188 after sep \
+  before _189 after sep before _190 after sep before _191 after sep before _192 after sep \
+  before _193 after sep before _194 after sep before _195 after sep before _196 after sep \
+  before _197 after sep before _198 after sep before _199 after sep before _200 after sep \
+  before _201 after sep before _202 after sep before _203 after sep before _204 after sep \
+  before _205 after sep before _206 after sep before _207 after sep before _208 after sep \
+  before _209 after sep before _210 after sep before _211 after sep before _212 after sep \
+  before _213 after sep before _214 after sep before _215 after sep before _216 after sep \
+  before _217 after sep before _218 after sep before _219 after sep before _220 after sep \
+  before _221 after sep before _222 after sep before _223 after sep before _224 after sep \
+  before _225 after sep before _226 after sep before _227 after sep before _228 after sep \
+  before _229 after sep before _230 after sep before _231 after sep before _232 after sep \
+  before _233 after sep before _234 after sep before _235 after sep before _236 after sep \
+  before _237 after sep before _238 after sep before _239 after sep before _240 after sep \
+  before _241 after sep before _242 after sep before _243 after sep before _244 after sep \
+  before _245 after sep before _246 after sep before _247 after sep before _248 after sep \
+  before _249 after sep before _250 after sep before _251 after sep before _252 after sep \
+  before _253 after sep before _254 after sep before _255 after sep before _256 after sep \
+  before _257 after sep before _258 after sep before _259 after sep before _260 after sep \
+  before _261 after sep before _262 after sep before _263 after sep before _264 after sep \
+  before _265 after sep before _266 after sep before _267 after sep before _268 after sep \
+  before _269 after sep before _270 after sep before _271 after sep before _272 after sep \
+  before _273 after sep before _274 after sep before _275 after sep before _276 after sep \
+  before _277 after sep before _278 after sep before _279 after sep before _280 after sep \
+  before _281 after sep before _282 after sep before _283 after sep before _284 after sep \
+  before _285 after sep before _286 after sep before _287 after sep before _288 after sep \
+  before _289 after sep before _290 after sep before _291 after sep before _292 after sep \
+  before _293 after sep before _294 after sep before _295 after sep before _296 after sep \
+  before _297 after sep before _298 after sep before _299 after sep before _300 after sep \
+  before _301 after sep before _302 after sep before _303 after sep before _304 after sep \
+  before _305 after sep before _306 after sep before _307 after sep before _308 after sep \
+  before _309 after sep before _310 after sep before _311 after sep before _312 after sep \
+  before _313 after sep before _314 after sep before _315 after sep before _316 after sep \
+  before _317 after sep before _318 after sep before _319 after sep before _320 after sep \
+  before _321 after sep before _322 after sep before _323 after sep before _324 after sep \
+  before _325 after sep before _326 after sep before _327 after sep before _328 after sep \
+  before _329 after sep before _330 after sep before _331 after sep before _332 after sep \
+  before _333 after sep before _334 after sep before _335 after sep before _336 after sep \
+  before _337 after sep before _338 after sep before _339 after sep before _340 after sep \
+  before _341 after sep before _342 after sep before _343 after sep before _344 after sep \
+  before _345 after sep before _346 after sep before _347 after sep before _348 after sep \
+  before _349 after sep before _350 after sep before _351 after sep before _352 after sep \
+  before _353 after sep before _354 after sep before _355 after sep before _356 after sep \
+  before _357 after sep before _358 after sep before _359 after sep before _360 after sep \
+  before _361 after sep before _362 after sep before _363 after sep before _364 after sep \
+  before _365 after sep before _366 after sep before _367 after sep before _368 after sep \
+  before _369 after sep before _370 after sep before _371 after sep before _372 after sep \
+  before _373 after sep before _374 after sep before _375 after sep before _376 after sep \
+  before _377 after sep before _378 after sep before _379 after sep before _380 after sep \
+  before _381 after sep before _382 after sep before _383 after sep before _384 after sep \
+  before _385 after sep before _386 after sep before _387 after sep before _388 after sep \
+  before _389 after sep before _390 after sep before _391 after sep before _392 after sep \
+  before _393 after sep before _394 after sep before _395 after sep before _396 after sep \
+  before _397 after sep before _398 after sep before _399 after sep before _400 after sep \
+  before _401 after sep before _402 after sep before _403 after sep before _404 after sep \
+  before _405 after sep before _406 after sep before _407 after sep before _408 after sep \
+  before _409 after sep before _410 after sep before _411 after sep before _412 after sep \
+  before _413 after sep before _414 after sep before _415 after sep before _416 after sep \
+  before _417 after sep before _418 after sep before _419 after sep before _420 after sep \
+  before _421 after sep before _422 after sep before _423 after sep before _424 after sep \
+  before _425 after sep before _426 after sep before _427 after sep before _428 after sep \
+  before _429 after sep before _430 after sep before _431 after sep before _432 after sep \
+  before _433 after sep before _434 after sep before _435 after sep before _436 after sep \
+  before _437 after sep before _438 after sep before _439 after sep before _440 after sep \
+  before _441 after sep before _442 after sep before _443 after sep before _444 after sep \
+  before _445 after sep before _446 after sep before _447 after sep before _448 after sep \
+  before _449 after sep before _450 after sep before _451 after sep before _452 after sep \
+  before _453 after sep before _454 after sep before _455 after sep before _456 after sep \
+  before _457 after sep before _458 after sep before _459 after sep before _460 after sep \
+  before _461 after sep before _462 after sep before _463 after sep before _464 after sep \
+  before _465 after sep before _466 after sep before _467 after sep before _468 after sep \
+  before _469 after sep before _470 after sep before _471 after sep before _472 after sep \
+  before _473 after sep before _474 after sep before _475 after sep before _476 after sep \
+  before _477 after sep before _478 after sep before _479 after sep before _480 after sep \
+  before _481 after sep before _482 after sep before _483 after sep before _484 after sep \
+  before _485 after sep before _486 after sep before _487 after sep before _488 after sep \
+  before _489 after sep before _490 after sep before _491 after sep before _492 after sep \
+  before _493 after sep before _494 after sep before _495 after sep before _496 after sep \
+  before _497 after sep before _498 after sep before _499 after sep before _500 after sep \
+  before _501 after sep before _502 after sep before _503 after sep before _504 after sep \
+  before _505 after sep before _506 after sep before _507 after sep before _508 after sep \
+  before _509 after sep before _510 after sep before _511 after sep before _512 after
+
 #define JLN_MP_XS_1024(before, after, sep)                                                    \
   before _1 after sep before _2 after sep before _3 after sep before _4 after sep             \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep             \
+  before _9 after sep before _10 after sep before _11 after sep before _12 after sep          \
+  before _13 after sep before _14 after sep before _15 after sep before _16 after sep         \
+  before _17 after sep before _18 after sep before _19 after sep before _20 after sep         \
+  before _21 after sep before _22 after sep before _23 after sep before _24 after sep         \
+  before _25 after sep before _26 after sep before _27 after sep before _28 after sep         \
+  before _29 after sep before _30 after sep before _31 after sep before _32 after sep         \
+  before _33 after sep before _34 after sep before _35 after sep before _36 after sep         \
+  before _37 after sep before _38 after sep before _39 after sep before _40 after sep         \
+  before _41 after sep before _42 after sep before _43 after sep before _44 after sep         \
+  before _45 after sep before _46 after sep before _47 after sep before _48 after sep         \
+  before _49 after sep before _50 after sep before _51 after sep before _52 after sep         \
+  before _53 after sep before _54 after sep before _55 after sep before _56 after sep         \
+  before _57 after sep before _58 after sep before _59 after sep before _60 after sep         \
+  before _61 after sep before _62 after sep before _63 after sep before _64 after sep         \
+  before _65 after sep before _66 after sep before _67 after sep before _68 after sep         \
+  before _69 after sep before _70 after sep before _71 after sep before _72 after sep         \
+  before _73 after sep before _74 after sep before _75 after sep before _76 after sep         \
+  before _77 after sep before _78 after sep before _79 after sep before _80 after sep         \
+  before _81 after sep before _82 after sep before _83 after sep before _84 after sep         \
+  before _85 after sep before _86 after sep before _87 after sep before _88 after sep         \
+  before _89 after sep before _90 after sep before _91 after sep before _92 after sep         \
+  before _93 after sep before _94 after sep before _95 after sep before _96 after sep         \
+  before _97 after sep before _98 after sep before _99 after sep before _100 after sep        \
+  before _101 after sep before _102 after sep before _103 after sep before _104 after sep     \
+  before _105 after sep before _106 after sep before _107 after sep before _108 after sep     \
+  before _109 after sep before _110 after sep before _111 after sep before _112 after sep     \
+  before _113 after sep before _114 after sep before _115 after sep before _116 after sep     \
+  before _117 after sep before _118 after sep before _119 after sep before _120 after sep     \
+  before _121 after sep before _122 after sep before _123 after sep before _124 after sep     \
+  before _125 after sep before _126 after sep before _127 after sep before _128 after sep     \
+  before _129 after sep before _130 after sep before _131 after sep before _132 after sep     \
+  before _133 after sep before _134 after sep before _135 after sep before _136 after sep     \
+  before _137 after sep before _138 after sep before _139 after sep before _140 after sep     \
+  before _141 after sep before _142 after sep before _143 after sep before _144 after sep     \
+  before _145 after sep before _146 after sep before _147 after sep before _148 after sep     \
+  before _149 after sep before _150 after sep before _151 after sep before _152 after sep     \
+  before _153 after sep before _154 after sep before _155 after sep before _156 after sep     \
+  before _157 after sep before _158 after sep before _159 after sep before _160 after sep     \
+  before _161 after sep before _162 after sep before _163 after sep before _164 after sep     \
+  before _165 after sep before _166 after sep before _167 after sep before _168 after sep     \
+  before _169 after sep before _170 after sep before _171 after sep before _172 after sep     \
+  before _173 after sep before _174 after sep before _175 after sep before _176 after sep     \
+  before _177 after sep before _178 after sep before _179 after sep before _180 after sep     \
+  before _181 after sep before _182 after sep before _183 after sep before _184 after sep     \
+  before _185 after sep before _186 after sep before _187 after sep before _188 after sep     \
+  before _189 after sep before _190 after sep before _191 after sep before _192 after sep     \
+  before _193 after sep before _194 after sep before _195 after sep before _196 after sep     \
+  before _197 after sep before _198 after sep before _199 after sep before _200 after sep     \
+  before _201 after sep before _202 after sep before _203 after sep before _204 after sep     \
+  before _205 after sep before _206 after sep before _207 after sep before _208 after sep     \
+  before _209 after sep before _210 after sep before _211 after sep before _212 after sep     \
+  before _213 after sep before _214 after sep before _215 after sep before _216 after sep     \
+  before _217 after sep before _218 after sep before _219 after sep before _220 after sep     \
+  before _221 after sep before _222 after sep before _223 after sep before _224 after sep     \
+  before _225 after sep before _226 after sep before _227 after sep before _228 after sep     \
+  before _229 after sep before _230 after sep before _231 after sep before _232 after sep     \
+  before _233 after sep before _234 after sep before _235 after sep before _236 after sep     \
+  before _237 after sep before _238 after sep before _239 after sep before _240 after sep     \
+  before _241 after sep before _242 after sep before _243 after sep before _244 after sep     \
+  before _245 after sep before _246 after sep before _247 after sep before _248 after sep     \
+  before _249 after sep before _250 after sep before _251 after sep before _252 after sep     \
+  before _253 after sep before _254 after sep before _255 after sep before _256 after sep     \
+  before _257 after sep before _258 after sep before _259 after sep before _260 after sep     \
+  before _261 after sep before _262 after sep before _263 after sep before _264 after sep     \
+  before _265 after sep before _266 after sep before _267 after sep before _268 after sep     \
+  before _269 after sep before _270 after sep before _271 after sep before _272 after sep     \
+  before _273 after sep before _274 after sep before _275 after sep before _276 after sep     \
+  before _277 after sep before _278 after sep before _279 after sep before _280 after sep     \
+  before _281 after sep before _282 after sep before _283 after sep before _284 after sep     \
+  before _285 after sep before _286 after sep before _287 after sep before _288 after sep     \
+  before _289 after sep before _290 after sep before _291 after sep before _292 after sep     \
+  before _293 after sep before _294 after sep before _295 after sep before _296 after sep     \
+  before _297 after sep before _298 after sep before _299 after sep before _300 after sep     \
+  before _301 after sep before _302 after sep before _303 after sep before _304 after sep     \
+  before _305 after sep before _306 after sep before _307 after sep before _308 after sep     \
+  before _309 after sep before _310 after sep before _311 after sep before _312 after sep     \
+  before _313 after sep before _314 after sep before _315 after sep before _316 after sep     \
+  before _317 after sep before _318 after sep before _319 after sep before _320 after sep     \
+  before _321 after sep before _322 after sep before _323 after sep before _324 after sep     \
+  before _325 after sep before _326 after sep before _327 after sep before _328 after sep     \
+  before _329 after sep before _330 after sep before _331 after sep before _332 after sep     \
+  before _333 after sep before _334 after sep before _335 after sep before _336 after sep     \
+  before _337 after sep before _338 after sep before _339 after sep before _340 after sep     \
+  before _341 after sep before _342 after sep before _343 after sep before _344 after sep     \
+  before _345 after sep before _346 after sep before _347 after sep before _348 after sep     \
+  before _349 after sep before _350 after sep before _351 after sep before _352 after sep     \
+  before _353 after sep before _354 after sep before _355 after sep before _356 after sep     \
+  before _357 after sep before _358 after sep before _359 after sep before _360 after sep     \
+  before _361 after sep before _362 after sep before _363 after sep before _364 after sep     \
+  before _365 after sep before _366 after sep before _367 after sep before _368 after sep     \
+  before _369 after sep before _370 after sep before _371 after sep before _372 after sep     \
+  before _373 after sep before _374 after sep before _375 after sep before _376 after sep     \
+  before _377 after sep before _378 after sep before _379 after sep before _380 after sep     \
+  before _381 after sep before _382 after sep before _383 after sep before _384 after sep     \
+  before _385 after sep before _386 after sep before _387 after sep before _388 after sep     \
+  before _389 after sep before _390 after sep before _391 after sep before _392 after sep     \
+  before _393 after sep before _394 after sep before _395 after sep before _396 after sep     \
+  before _397 after sep before _398 after sep before _399 after sep before _400 after sep     \
+  before _401 after sep before _402 after sep before _403 after sep before _404 after sep     \
+  before _405 after sep before _406 after sep before _407 after sep before _408 after sep     \
+  before _409 after sep before _410 after sep before _411 after sep before _412 after sep     \
+  before _413 after sep before _414 after sep before _415 after sep before _416 after sep     \
+  before _417 after sep before _418 after sep before _419 after sep before _420 after sep     \
+  before _421 after sep before _422 after sep before _423 after sep before _424 after sep     \
+  before _425 after sep before _426 after sep before _427 after sep before _428 after sep     \
+  before _429 after sep before _430 after sep before _431 after sep before _432 after sep     \
+  before _433 after sep before _434 after sep before _435 after sep before _436 after sep     \
+  before _437 after sep before _438 after sep before _439 after sep before _440 after sep     \
+  before _441 after sep before _442 after sep before _443 after sep before _444 after sep     \
+  before _445 after sep before _446 after sep before _447 after sep before _448 after sep     \
+  before _449 after sep before _450 after sep before _451 after sep before _452 after sep     \
+  before _453 after sep before _454 after sep before _455 after sep before _456 after sep     \
+  before _457 after sep before _458 after sep before _459 after sep before _460 after sep     \
+  before _461 after sep before _462 after sep before _463 after sep before _464 after sep     \
+  before _465 after sep before _466 after sep before _467 after sep before _468 after sep     \
+  before _469 after sep before _470 after sep before _471 after sep before _472 after sep     \
+  before _473 after sep before _474 after sep before _475 after sep before _476 after sep     \
+  before _477 after sep before _478 after sep before _479 after sep before _480 after sep     \
+  before _481 after sep before _482 after sep before _483 after sep before _484 after sep     \
+  before _485 after sep before _486 after sep before _487 after sep before _488 after sep     \
+  before _489 after sep before _490 after sep before _491 after sep before _492 after sep     \
+  before _493 after sep before _494 after sep before _495 after sep before _496 after sep     \
+  before _497 after sep before _498 after sep before _499 after sep before _500 after sep     \
+  before _501 after sep before _502 after sep before _503 after sep before _504 after sep     \
+  before _505 after sep before _506 after sep before _507 after sep before _508 after sep     \
+  before _509 after sep before _510 after sep before _511 after sep before _512 after sep     \
+  before _513 after sep before _514 after sep before _515 after sep before _516 after sep     \
+  before _517 after sep before _518 after sep before _519 after sep before _520 after sep     \
+  before _521 after sep before _522 after sep before _523 after sep before _524 after sep     \
+  before _525 after sep before _526 after sep before _527 after sep before _528 after sep     \
+  before _529 after sep before _530 after sep before _531 after sep before _532 after sep     \
+  before _533 after sep before _534 after sep before _535 after sep before _536 after sep     \
+  before _537 after sep before _538 after sep before _539 after sep before _540 after sep     \
+  before _541 after sep before _542 after sep before _543 after sep before _544 after sep     \
+  before _545 after sep before _546 after sep before _547 after sep before _548 after sep     \
+  before _549 after sep before _550 after sep before _551 after sep before _552 after sep     \
+  before _553 after sep before _554 after sep before _555 after sep before _556 after sep     \
+  before _557 after sep before _558 after sep before _559 after sep before _560 after sep     \
+  before _561 after sep before _562 after sep before _563 after sep before _564 after sep     \
+  before _565 after sep before _566 after sep before _567 after sep before _568 after sep     \
+  before _569 after sep before _570 after sep before _571 after sep before _572 after sep     \
+  before _573 after sep before _574 after sep before _575 after sep before _576 after sep     \
+  before _577 after sep before _578 after sep before _579 after sep before _580 after sep     \
+  before _581 after sep before _582 after sep before _583 after sep before _584 after sep     \
+  before _585 after sep before _586 after sep before _587 after sep before _588 after sep     \
+  before _589 after sep before _590 after sep before _591 after sep before _592 after sep     \
+  before _593 after sep before _594 after sep before _595 after sep before _596 after sep     \
+  before _597 after sep before _598 after sep before _599 after sep before _600 after sep     \
+  before _601 after sep before _602 after sep before _603 after sep before _604 after sep     \
+  before _605 after sep before _606 after sep before _607 after sep before _608 after sep     \
+  before _609 after sep before _610 after sep before _611 after sep before _612 after sep     \
+  before _613 after sep before _614 after sep before _615 after sep before _616 after sep     \
+  before _617 after sep before _618 after sep before _619 after sep before _620 after sep     \
+  before _621 after sep before _622 after sep before _623 after sep before _624 after sep     \
+  before _625 after sep before _626 after sep before _627 after sep before _628 after sep     \
+  before _629 after sep before _630 after sep before _631 after sep before _632 after sep     \
+  before _633 after sep before _634 after sep before _635 after sep before _636 after sep     \
+  before _637 after sep before _638 after sep before _639 after sep before _640 after sep     \
+  before _641 after sep before _642 after sep before _643 after sep before _644 after sep     \
+  before _645 after sep before _646 after sep before _647 after sep before _648 after sep     \
+  before _649 after sep before _650 after sep before _651 after sep before _652 after sep     \
+  before _653 after sep before _654 after sep before _655 after sep before _656 after sep     \
+  before _657 after sep before _658 after sep before _659 after sep before _660 after sep     \
+  before _661 after sep before _662 after sep before _663 after sep before _664 after sep     \
+  before _665 after sep before _666 after sep before _667 after sep before _668 after sep     \
+  before _669 after sep before _670 after sep before _671 after sep before _672 after sep     \
+  before _673 after sep before _674 after sep before _675 after sep before _676 after sep     \
+  before _677 after sep before _678 after sep before _679 after sep before _680 after sep     \
+  before _681 after sep before _682 after sep before _683 after sep before _684 after sep     \
+  before _685 after sep before _686 after sep before _687 after sep before _688 after sep     \
+  before _689 after sep before _690 after sep before _691 after sep before _692 after sep     \
+  before _693 after sep before _694 after sep before _695 after sep before _696 after sep     \
+  before _697 after sep before _698 after sep before _699 after sep before _700 after sep     \
+  before _701 after sep before _702 after sep before _703 after sep before _704 after sep     \
+  before _705 after sep before _706 after sep before _707 after sep before _708 after sep     \
+  before _709 after sep before _710 after sep before _711 after sep before _712 after sep     \
+  before _713 after sep before _714 after sep before _715 after sep before _716 after sep     \
+  before _717 after sep before _718 after sep before _719 after sep before _720 after sep     \
+  before _721 after sep before _722 after sep before _723 after sep before _724 after sep     \
+  before _725 after sep before _726 after sep before _727 after sep before _728 after sep     \
+  before _729 after sep before _730 after sep before _731 after sep before _732 after sep     \
+  before _733 after sep before _734 after sep before _735 after sep before _736 after sep     \
+  before _737 after sep before _738 after sep before _739 after sep before _740 after sep     \
+  before _741 after sep before _742 after sep before _743 after sep before _744 after sep     \
+  before _745 after sep before _746 after sep before _747 after sep before _748 after sep     \
+  before _749 after sep before _750 after sep before _751 after sep before _752 after sep     \
+  before _753 after sep before _754 after sep before _755 after sep before _756 after sep     \
+  before _757 after sep before _758 after sep before _759 after sep before _760 after sep     \
+  before _761 after sep before _762 after sep before _763 after sep before _764 after sep     \
+  before _765 after sep before _766 after sep before _767 after sep before _768 after sep     \
+  before _769 after sep before _770 after sep before _771 after sep before _772 after sep     \
+  before _773 after sep before _774 after sep before _775 after sep before _776 after sep     \
+  before _777 after sep before _778 after sep before _779 after sep before _780 after sep     \
+  before _781 after sep before _782 after sep before _783 after sep before _784 after sep     \
+  before _785 after sep before _786 after sep before _787 after sep before _788 after sep     \
+  before _789 after sep before _790 after sep before _791 after sep before _792 after sep     \
+  before _793 after sep before _794 after sep before _795 after sep before _796 after sep     \
+  before _797 after sep before _798 after sep before _799 after sep before _800 after sep     \
+  before _801 after sep before _802 after sep before _803 after sep before _804 after sep     \
+  before _805 after sep before _806 after sep before _807 after sep before _808 after sep     \
+  before _809 after sep before _810 after sep before _811 after sep before _812 after sep     \
+  before _813 after sep before _814 after sep before _815 after sep before _816 after sep     \
+  before _817 after sep before _818 after sep before _819 after sep before _820 after sep     \
+  before _821 after sep before _822 after sep before _823 after sep before _824 after sep     \
+  before _825 after sep before _826 after sep before _827 after sep before _828 after sep     \
+  before _829 after sep before _830 after sep before _831 after sep before _832 after sep     \
+  before _833 after sep before _834 after sep before _835 after sep before _836 after sep     \
+  before _837 after sep before _838 after sep before _839 after sep before _840 after sep     \
+  before _841 after sep before _842 after sep before _843 after sep before _844 after sep     \
+  before _845 after sep before _846 after sep before _847 after sep before _848 after sep     \
+  before _849 after sep before _850 after sep before _851 after sep before _852 after sep     \
+  before _853 after sep before _854 after sep before _855 after sep before _856 after sep     \
+  before _857 after sep before _858 after sep before _859 after sep before _860 after sep     \
+  before _861 after sep before _862 after sep before _863 after sep before _864 after sep     \
+  before _865 after sep before _866 after sep before _867 after sep before _868 after sep     \
+  before _869 after sep before _870 after sep before _871 after sep before _872 after sep     \
+  before _873 after sep before _874 after sep before _875 after sep before _876 after sep     \
+  before _877 after sep before _878 after sep before _879 after sep before _880 after sep     \
+  before _881 after sep before _882 after sep before _883 after sep before _884 after sep     \
+  before _885 after sep before _886 after sep before _887 after sep before _888 after sep     \
+  before _889 after sep before _890 after sep before _891 after sep before _892 after sep     \
+  before _893 after sep before _894 after sep before _895 after sep before _896 after sep     \
+  before _897 after sep before _898 after sep before _899 after sep before _900 after sep     \
+  before _901 after sep before _902 after sep before _903 after sep before _904 after sep     \
+  before _905 after sep before _906 after sep before _907 after sep before _908 after sep     \
+  before _909 after sep before _910 after sep before _911 after sep before _912 after sep     \
+  before _913 after sep before _914 after sep before _915 after sep before _916 after sep     \
+  before _917 after sep before _918 after sep before _919 after sep before _920 after sep     \
+  before _921 after sep before _922 after sep before _923 after sep before _924 after sep     \
+  before _925 after sep before _926 after sep before _927 after sep before _928 after sep     \
+  before _929 after sep before _930 after sep before _931 after sep before _932 after sep     \
+  before _933 after sep before _934 after sep before _935 after sep before _936 after sep     \
+  before _937 after sep before _938 after sep before _939 after sep before _940 after sep     \
+  before _941 after sep before _942 after sep before _943 after sep before _944 after sep     \
+  before _945 after sep before _946 after sep before _947 after sep before _948 after sep     \
+  before _949 after sep before _950 after sep before _951 after sep before _952 after sep     \
+  before _953 after sep before _954 after sep before _955 after sep before _956 after sep     \
+  before _957 after sep before _958 after sep before _959 after sep before _960 after sep     \
+  before _961 after sep before _962 after sep before _963 after sep before _964 after sep     \
+  before _965 after sep before _966 after sep before _967 after sep before _968 after sep     \
+  before _969 after sep before _970 after sep before _971 after sep before _972 after sep     \
+  before _973 after sep before _974 after sep before _975 after sep before _976 after sep     \
+  before _977 after sep before _978 after sep before _979 after sep before _980 after sep     \
+  before _981 after sep before _982 after sep before _983 after sep before _984 after sep     \
+  before _985 after sep before _986 after sep before _987 after sep before _988 after sep     \
+  before _989 after sep before _990 after sep before _991 after sep before _992 after sep     \
+  before _993 after sep before _994 after sep before _995 after sep before _996 after sep     \
+  before _997 after sep before _998 after sep before _999 after sep before _1000 after sep    \
+  before _1001 after sep before _1002 after sep before _1003 after sep before _1004 after sep \
+  before _1005 after sep before _1006 after sep before _1007 after sep before _1008 after sep \
+  before _1009 after sep before _1010 after sep before _1011 after sep before _1012 after sep \
+  before _1013 after sep before _1014 after sep before _1015 after sep before _1016 after sep \
+  before _1017 after sep before _1018 after sep before _1019 after sep before _1020 after sep \
+  before _1021 after sep before _1022 after sep before _1023 after sep before _1024 after
+
+#define JLN_MP_XS_2_TO_1024(before, after, sep)                                               \
+                      before _2 after sep before _3 after sep before _4 after sep             \
   before _5 after sep before _6 after sep before _7 after sep before _8 after sep             \
   before _9 after sep before _10 after sep before _11 after sep before _12 after sep          \
   before _13 after sep before _14 after sep before _15 after sep before _16 after sep         \
@@ -3336,7 +3862,7 @@ namespace jln::mp
   namespace detail
   {
     template<unsigned>
-    struct _drop;
+    struct _drop_front;
 
 #if defined(_MSC_VER) || defined(__clang__)
     template<int_ i, std::size_t n, class = void>
@@ -3361,10 +3887,10 @@ namespace jln::mp
   /// \pre `0 <= N <= sizeof...(xs)`
   /// \treturn \sequence
   template<class N, class C = listify>
-  struct drop
+  struct drop_front
   {
     template<class... xs>
-    using f = typename detail::_drop<
+    using f = typename detail::_drop_front<
       detail::n_8_or_less_16_64_256(
         detail::validate_index<N::value, sizeof...(xs)>::value
       )
@@ -3372,60 +3898,60 @@ namespace jln::mp
   };
 
   template<int_ n, class C = listify>
-  using drop_c = drop<number<n>, C>;
-
-  /// \cond
-  template<class C>
-  struct drop<number<0>, C>
-  {
-    template<class... xs>
-    using f = call<C, xs...>;
-  };
-
-  template<class C>
-  struct drop<number<1>, C>
-  {
-    template<class, class... xs>
-    using f = call<C, xs...>;
-  };
-
-  template<class C>
-  struct drop<number<2>, C>
-  {
-    template<class, class, class... xs>
-    using f = call<C, xs...>;
-  };
-
-  template<class C>
-  struct drop<number<3>, C>
-  {
-    template<class, class, class, class... xs>
-    using f = call<C, xs...>;
-  };
-
-  template<class C>
-  struct drop<number<4>, C>
-  {
-    template<class, class, class, class, class... xs>
-    using f = call<C, xs...>;
-  };
-
-  template<class C>
-  struct drop<number<5>, C>
-  {
-    template<class, class, class, class, class, class... xs>
-    using f = call<C, xs...>;
-  };
-  /// \endcond
+  using drop_front_c = drop_front<number<n>, C>;
 
   namespace emp
   {
     template<class L, class N, class C = mp::listify>
-    using drop = unpack<L, mp::drop<N, C>>;
+    using drop_front = unpack<L, mp::drop_front<N, C>>;
 
     template<class L, int_ n, class C = mp::listify>
-    using drop_c = unpack<L, mp::drop<number<n>, C>>;
+    using drop_front_c = unpack<L, mp::drop_front<number<n>, C>>;
   }
+
+  /// \cond
+  template<class C>
+  struct drop_front<number<0>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<1>, C>
+  {
+    template<class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<2>, C>
+  {
+    template<class, class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<3>, C>
+  {
+    template<class, class, class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<4>, C>
+  {
+    template<class, class, class, class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<5>, C>
+  {
+    template<class, class, class, class, class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+  /// \endcond
 }
 
 /// \cond
@@ -3433,7 +3959,7 @@ namespace jln::mp::detail
 {
 #define JLN_MP_DROP_IMPL(n, _, mp_rxs, mp_rep) \
   template<>                                   \
-  struct _drop<n>                              \
+  struct _drop_front<n>                              \
   {                                            \
     template<unsigned size, class C,           \
       mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)   \
@@ -3451,12 +3977,12 @@ namespace jln::mp::detail
 
 #define JLN_MP_DROP_IMPL2(n, _, mp_rxs, mp_rep, next_int) \
   template<>                                              \
-  struct _drop<n>                                         \
+  struct _drop_front<n>                                         \
   {                                                       \
     template<unsigned size, class C,                      \
       mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)              \
       class... xs>                                        \
-    using f = typename _drop<next_int (size-n)>           \
+    using f = typename _drop_front<next_int (size-n)>           \
       ::template f<(size-n), C, xs...>;                   \
   };
 
@@ -3475,12 +4001,12 @@ namespace jln::mp
   /// \pre `sizeof...(xs) > 0`
   /// \treturn \sequence
   template<class C = listify>
-  using pop_front = drop<number<1>, C>;
+  using pop_front = drop_front<number<1>, C>;
 
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using pop_front = drop<L, mp::number<1>, C>;
+    using pop_front = drop_front<L, mp::number<1>, C>;
   }
 }
 namespace jln::mp
@@ -4261,69 +4787,6 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<class Pred>
-    struct mk_wrap_in_list_if;
-
-    template<class Pred>
-    struct mk_wrap_in_list_if_not;
-  }
-  /// \endcond
-
-  /// \ingroup list
-
-  /// Returns a \list with the first element if the predicate is checked, otherwise returns a empty list.
-  /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
-  /// \treturn \list
-  template<class Pred>
-  using wrap_in_list_if = typename detail::mk_wrap_in_list_if<Pred>::type;
-
-  /// Returns a \list with the first element if the predicate is not checked, otherwise returns a empty list.
-  /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
-  /// \treturn \list
-  template<class Pred>
-  using wrap_in_list_if_not = typename detail::mk_wrap_in_list_if_not<Pred>::type;
-
-  template<bool b>
-  struct wrap_in_list_c;
-
-  template<>
-  struct wrap_in_list_c<true>
-  {
-    template<class... xs>
-    using f = list<xs...>;
-  };
-
-  template<>
-  struct wrap_in_list_c<false>
-  {
-    template<class>
-    using f = list<>;
-  };
-
-  template<class b>
-  using wrap_in_list = wrap_in_list_c<b::value>;
-
-  namespace emp
-  {
-    template<class Pred, class... xs>
-    using wrap_in_list_if = typename mp::wrap_in_list_if<Pred>::template f<xs...>;
-
-    template<class Pred, class... xs>
-    using wrap_in_list_if_not = typename mp::wrap_in_list_if_not<Pred>::template f<xs...>;
-
-    template<class b, class... xs>
-    using wrap_in_list = typename mp::wrap_in_list_c<b::value>::template f<xs...>;
-
-    template<bool b, class... xs>
-    using wrap_in_list_c = typename mp::wrap_in_list_c<b>::template f<xs...>;
-  }
-}
-
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
     template <class C, class... Fs>
     struct _tee;
   }
@@ -4384,6 +4847,171 @@ namespace jln::mp::detail
   };
 } // namespace jln::mp
 /// \endcond
+namespace jln::mp::detail
+{
+  template<class Pred>
+  struct to_predicate_not;
+
+  template<class Pred>
+  using to_predicate_not_t = typename to_predicate_not<Pred>::type;
+
+  template<class x>
+  struct to_predicate_not<is<x>>
+  {
+    using type = is<x, not_<>>;
+  };
+
+  template<class x>
+  struct to_predicate_not<is<x, not_<>>>
+  {
+    using type = is<x>;
+  };
+
+  template<>
+  struct to_predicate_not<same<>>
+  {
+    using type = same<not_<>>;
+  };
+
+  template<>
+  struct to_predicate_not<same<not_<>>>
+  {
+    using type = same<>;
+  };
+
+  template<template<class...> class F>
+  struct to_predicate_not<lift<F>>
+  {
+    using type = lift<F, not_<>>;
+  };
+
+  template<template<class...> class F>
+  struct to_predicate_not<lift<F, not_<>>>
+  {
+    using type = lift<F>;
+  };
+
+  template<template<class...> class F>
+  struct to_predicate_not<tee<lift<F>, not_<>>>
+  {
+    using type = lift<F>;
+  };
+
+  template<>
+  struct to_predicate_not<not_<>>
+  {
+    using type = identity;
+  };
+
+  template<>
+  struct to_predicate_not<identity>
+  {
+    using type = not_<>;
+  };
+
+  template<>
+  struct to_predicate_not<not_<not_<>>>
+  {
+    using type = not_<>;
+  };
+
+  template<class C>
+  struct to_predicate_not<not_<not_<not_<C>>>>
+  : to_predicate_not<not_<C>>
+  {};
+
+  template<class Pred>
+  struct to_predicate_not_tee;
+
+  template<class Pred>
+  struct to_predicate_not_tee<tee<Pred, not_<>>>
+  {
+    using type = Pred;
+  };
+
+  template<class Pred>
+  struct to_predicate_not_tee
+  : to_predicate_not<Pred>
+  {};
+
+  template<class Pred>
+  struct to_predicate_not<tee<Pred, not_<>>>
+  : to_predicate_not_tee<to_predicate_not_t<Pred>>
+  {};
+
+  template<class Pred>
+  struct to_predicate_not
+  {
+    using type = tee<Pred, not_<>>;
+  };
+}
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class Pred>
+    struct mk_wrap_in_list_if;
+
+    template<class Pred>
+    struct mk_wrap_in_list_if_not;
+  }
+  /// \endcond
+
+  /// \ingroup list
+
+  /// Returns a \list with the first element if the predicate is checked, otherwise returns a empty list.
+  /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
+  /// \treturn \list
+  template<class Pred>
+  using wrap_in_list_if = typename detail::mk_wrap_in_list_if_not<
+    detail::to_predicate_not_t<Pred>
+  >::type;
+
+  /// Returns a \list with the first element if the predicate is not checked, otherwise returns a empty list.
+  /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
+  /// \treturn \list
+  template<class Pred>
+  using wrap_in_list_if_not = typename detail::mk_wrap_in_list_if<
+    detail::to_predicate_not_t<Pred>
+  >::type;
+
+  template<bool b>
+  struct wrap_in_list_c;
+
+  template<>
+  struct wrap_in_list_c<true>
+  {
+    template<class... xs>
+    using f = list<xs...>;
+  };
+
+  template<>
+  struct wrap_in_list_c<false>
+  {
+    template<class>
+    using f = list<>;
+  };
+
+  template<class b>
+  using wrap_in_list = wrap_in_list_c<b::value>;
+
+  namespace emp
+  {
+    template<class Pred, class... xs>
+    using wrap_in_list_if = typename mp::wrap_in_list_if<Pred>::template f<xs...>;
+
+    template<class Pred, class... xs>
+    using wrap_in_list_if_not = typename mp::wrap_in_list_if_not<Pred>::template f<xs...>;
+
+    template<class b, class... xs>
+    using wrap_in_list = typename mp::wrap_in_list_c<b::value>::template f<xs...>;
+
+    template<bool b, class... xs>
+    using wrap_in_list_c = typename mp::wrap_in_list_c<b>::template f<xs...>;
+  }
+}
+
 /// \cond
 namespace jln::mp::detail
 {
@@ -4395,37 +5023,16 @@ namespace jln::mp::detail
   };
 
   template<class Pred>
-  struct mk_wrap_in_list_if
-  {
-    using type = _wrap_in_list_if<Pred>;
-  };
-
-  template<class x, class C>
-  struct mk_wrap_in_list_if<is<x, not_<C>>>
-  : mk_wrap_in_list_if_not<is<x, C>>
-  {};
-
-  template<class C>
-  struct mk_wrap_in_list_if<same<not_<C>>>
-  : mk_wrap_in_list_if_not<same<C>>
-  {};
-
-  template<class C>
-  struct mk_wrap_in_list_if<not_<C>>
-  : mk_wrap_in_list_if_not<C>
-  {};
-
-  template<class Pred>
-  struct mk_wrap_in_list_if<tee<Pred, not_<>>>
-  : mk_wrap_in_list_if_not<Pred>
-  {};
-
-
-  template<class Pred>
   struct _wrap_in_list_if_not
   {
     template<class x, class... xs>
     using f = typename wrap_in_list_c<!call<Pred, x, xs...>::value>::template f<x>;
+  };
+
+  template<class Pred>
+  struct mk_wrap_in_list_if
+  {
+    using type = _wrap_in_list_if<Pred>;
   };
 
   template<class Pred>
@@ -4434,25 +5041,55 @@ namespace jln::mp::detail
     using type = _wrap_in_list_if_not<Pred>;
   };
 
-  template<class x, class C>
-  struct mk_wrap_in_list_if_not<is<x, not_<C>>>
-  : mk_wrap_in_list_if<is<x, C>>
-  {};
 
-  template<class C>
-  struct mk_wrap_in_list_if_not<same<not_<C>>>
-  : mk_wrap_in_list_if<same<C>>
-  {};
+  template<class x>
+  struct mk_wrap_in_list_if<is<x, not_<>>>
+  {
+    using type = _wrap_in_list_if_not<is<x>>;
+  };
 
-  template<class C>
-  struct mk_wrap_in_list_if_not<not_<C>>
-  : mk_wrap_in_list_if<C>
-  {};
+  template<>
+  struct mk_wrap_in_list_if<same<not_<>>>
+  {
+    using type = _wrap_in_list_if_not<same<>>;
+  };
+
+  template<template<class...> class F>
+  struct mk_wrap_in_list_if<lift<F, not_<>>>
+  {
+    using type = _wrap_in_list_if_not<lift<F>>;
+  };
+
+  template<class Pred>
+  struct mk_wrap_in_list_if<tee<Pred, not_<>>>
+  {
+    using type = _wrap_in_list_if_not<Pred>;
+  };
+
+
+  template<class x>
+  struct mk_wrap_in_list_if_not<is<x, not_<>>>
+  {
+    using type = _wrap_in_list_if<is<x>>;
+  };
+
+  template<>
+  struct mk_wrap_in_list_if_not<same<not_<>>>
+  {
+    using type = _wrap_in_list_if<same<>>;
+  };
+
+  template<template<class...> class F>
+  struct mk_wrap_in_list_if_not<lift<F, not_<>>>
+  {
+    using type = _wrap_in_list_if<lift<F>>;
+  };
 
   template<class Pred>
   struct mk_wrap_in_list_if_not<tee<Pred, not_<>>>
-  : mk_wrap_in_list_if<Pred>
-  {};
+  {
+    using type = _wrap_in_list_if<Pred>;
+  };
 }
 /// \endcond
 /// \cond
@@ -4699,44 +5336,26 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp::smp
 {
-  template <int_ n, class C = listify>
-  using rotate_c = rotate<number<n>, C>;
-}
-
-JLN_MP_MAKE_REGULAR_SMP2_P(rotate, (N), (C, smp::listify), smp::rotate_c<N::value, C>)
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, class N, class C>
-  struct _sfinae<sfinae, rotate<N, C>>
-  {
-    using type = smp::rotate<N, sfinae<C>>;
-  };
-}
-/// \endcond
-namespace jln::mp::smp
-{
   template<int_ n, class C = listify>
-  using drop_c = try_contract<mp::drop<mp::number<n>, subcontract<C>>>;
+  using drop_front_c = try_contract<mp::drop_front<mp::number<n>, subcontract<C>>>;
 }
 
-JLN_MP_MAKE_REGULAR_SMP2_P(drop, (N), (C, smp::listify), smp::drop_c<N::value, C>)
+JLN_MP_MAKE_REGULAR_SMP2_P(drop_front, (N), (C, smp::listify), smp::drop_front_c<N::value, C>)
 
 /// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class N, class C>
-  struct _sfinae<sfinae, drop<N, C>>
+  struct _sfinae<sfinae, drop_front<N, C>>
   {
-    using type = smp::drop<N, sfinae<C>>;
+    using type = smp::drop_front<N, sfinae<C>>;
   };
 }
 /// \endcond
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using pop_front = drop_c<1, C>;
+  using pop_front = drop_front_c<1, C>;
 }
 /// \cond
 namespace jln::mp::detail
@@ -5803,7 +6422,7 @@ namespace jln::mp::smp
 namespace jln::mp::smp
 {
   template<class x, class C = identity>
-  using is = try_contract<mp::is<x, assume_unary<C>>>;
+  using is = try_contract<mp::is<x, assume_number<C>>>;
 }
 
 /// \cond
@@ -5857,6 +6476,69 @@ namespace jln::mp::detail
     using type = smp::join<sfinae<C>>;
   };
 } // namespace jln::mp::detail
+/// \endcond
+/// \cond
+namespace jln::mp::detail
+{
+  struct _smp_tee;
+}
+/// \endcond
+
+namespace jln::mp::smp
+{
+  template <class... Fs>
+  using tee = contract<typename mp::rotate<
+      mp::number<-1>,
+      detail::_smp_tee
+    >::template f<subcontract<Fs>...>>;
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class... Fs>
+  struct _sfinae<sfinae, tee<Fs...>>
+  {
+    using type = smp::tee<sfinae<Fs>...>;
+  };
+
+  struct _smp_tee
+  {
+    template<class C, class... Fs>
+    using f = _tee<monadic_xs<C>, Fs...>;
+  };
+}
+/// \endcond
+namespace jln::mp::smp
+{
+  template<template<class...> class F, class C = identity>
+  using lift = try_contract<mp::lift<F, assume_unary<C>>>;
+
+  template<template<class...> class F, class C = identity>
+  using lift_t = try_contract<mp::lift_t<F, assume_unary<C>>>;
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, template<class...> class F, class C>
+  struct _sfinae<sfinae, lift_t<F, C>>
+  {
+    using type = smp::lift_t<F, sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, template<class...> class F, class C>
+  struct _sfinae<sfinae, lift<F, C>>
+  {
+    using type = smp::lift<F, sfinae<C>>;
+  };
+
+
+  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (lift<std::is_same, C>));
+  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (lift_t<std::is_same, C>));
+}
 /// \endcond
 namespace jln::mp::smp
 {
@@ -5929,39 +6611,6 @@ namespace jln::mp::smp
   template<class x, class C = listify>
   using remove = contract<mp::remove<x, subcontract<C>>>;
 }
-/// \cond
-namespace jln::mp::detail
-{
-  struct _smp_tee;
-}
-/// \endcond
-
-namespace jln::mp::smp
-{
-  template <class... Fs>
-  using tee = contract<typename mp::rotate<
-      mp::number<-1>,
-      detail::_smp_tee
-    >::template f<subcontract<Fs>...>>;
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, class... Fs>
-  struct _sfinae<sfinae, tee<Fs...>>
-  {
-    using type = smp::tee<sfinae<Fs>...>;
-  };
-
-  struct _smp_tee
-  {
-    template<class C, class... Fs>
-    using f = _tee<monadic_xs<C>, Fs...>;
-  };
-}
-/// \endcond
 namespace jln::mp
 {
   /// \ingroup algorithm
@@ -6025,41 +6674,245 @@ namespace jln::mp::smp
 }
 namespace jln::mp
 {
+  /// \ingroup list
+
+  /// Removes all elements from the \sequence.
+  /// \treturn \number
+  template<class C = listify>
+  struct clear
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
+  };
+}
+namespace jln::mp::smp
+{
+  template<class C = listify>
+  using clear = contract<mp::clear<subcontract<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, clear<C>>
+  {
+    using type = smp::clear<sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
   /// \cond
   namespace detail
   {
-    template<int, unsigned>
-    struct _find;
+    template<int, bool found>
+    struct _drop_while;
 
-    constexpr unsigned _first_find_select(unsigned n);
+    template<class>
+    struct drop_while_impl;
+
+    constexpr unsigned _drop_while_select(unsigned n);
+  }
+  /// \endcond
+
+  /// \ingroup list
+
+  /// Remove the first elements of a \sequence that satisfy a \predicate.
+  /// \treturn \sequence
+  template<class Pred, class C = listify>
+  struct drop_while
+  {
+    template<class... xs>
+    using f = typename detail::drop_while_impl<
+      typename detail::_drop_while<
+        detail::_drop_while_select(sizeof...(xs)), true
+      >::template f<0, Pred, xs...>
+    >::template f<C, xs...>;
+  };
+
+  namespace emp
+  {
+    template<class L, class Pred, class C = mp::listify>
+    using drop_while = unpack<L, mp::drop_while<Pred, C>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<std::size_t n>
+  struct _drop_while_result
+  {
+    template<class C, std::size_t truncated, class Pred, class... xs>
+    using f = _drop_while_result;
+  };
+
+  struct _drop_while_continue
+  {
+    template<class C, std::size_t truncated, class Pred, class... xs>
+    using f = typename C::template f<truncated, Pred, xs...>;
+  };
+
+  template<>
+  struct drop_while_impl<_drop_while_continue>
+  {
+    template<class C, class...>
+    using f = typename C::template f<>;
+  };
+
+  template<std::size_t n>
+  struct drop_while_impl<_drop_while_result<n>>
+  {
+    template<class C, class... xs>
+    using f = typename drop_front<number<sizeof...(xs)-n-1>, C>::template f<xs...>;
+  };
+
+  constexpr unsigned _drop_while_select(unsigned n)
+  {
+    return n <= 8 ? n
+         : n <= 16 ? 16
+         : n <= 32 ? 32
+         : n <= 64 ? 64
+         : n <= 128 ? 128
+         : 256;
+  }
+
+#define JLN_DROP_WHILE_IMPL(n, m)                                     \
+  template<>                                                          \
+  struct _drop_while<n, true>                                         \
+  {                                                                   \
+    template<std::size_t truncated, class Pred, class x, class... xs> \
+    using f = typename _drop_while<m, Pred::template f<x>::value>     \
+            ::template f<truncated, Pred, xs...>;                     \
+  };                                                                  \
+                                                                      \
+  template<>                                                          \
+  struct _drop_while<n, false>                                        \
+  {                                                                   \
+    template<std::size_t truncated, class Pred, class... xs>          \
+    using f = _drop_while_result<truncated+sizeof...(xs)>;            \
+  }
+
+  JLN_DROP_WHILE_IMPL(7, 6);
+  JLN_DROP_WHILE_IMPL(6, 5);
+  JLN_DROP_WHILE_IMPL(5, 4);
+  JLN_DROP_WHILE_IMPL(4, 3);
+  JLN_DROP_WHILE_IMPL(3, 2);
+  JLN_DROP_WHILE_IMPL(2, 1);
+  JLN_DROP_WHILE_IMPL(1, 0);
+
+#undef JLN_DROP_WHILE_IMPL
+
+  template<>
+  struct _drop_while<0, true>
+  {
+    template<std::size_t truncated, class Pred, class... xs>
+    using f = _drop_while_continue;
+  };
+
+  template<>
+  struct _drop_while<0, false>
+  {
+    template<std::size_t truncated, class Pred, class... xs>
+    using f = _drop_while_result<truncated+sizeof...(xs)>;
+  };
+
+  template<>
+  struct _drop_while<8, true>
+  {
+    template<
+      std::size_t truncated,
+      class Pred,
+      JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA),
+      class... xs>
+    using f = typename _drop_while<7, Pred::template f<_1>::value>
+      ::template f<
+          truncated+sizeof...(xs), Pred,
+          JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>;
+  };
+
+  template<>
+  struct _drop_while<16, true>
+  {
+    template<
+      std::size_t truncated,
+      class Pred,
+      JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA),
+      class... xs>
+    using f = typename _drop_while<7, Pred::template f<_1>::value>
+      ::template f<
+          truncated+sizeof...(xs), Pred,
+          JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>
+      ::template f<
+          _drop_while<_drop_while_select(sizeof...(xs)), true>,
+          truncated, Pred, xs...>;
+  };
+
+#define JLN_DROP_WHILE_IMPL(n, m, xs)                           \
+  template<>                                                    \
+  struct _drop_while<n, true>                                   \
+  {                                                             \
+    template<                                                   \
+      std::size_t truncated,                                    \
+      class Pred,                                               \
+      xs(class, JLN_MP_NIL, JLN_MP_COMMA),                      \
+      class... xs>                                              \
+    using f = typename _drop_while<m, true>                     \
+      ::template f<                                             \
+          truncated+sizeof...(xs), Pred,                        \
+          xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>             \
+      ::template f<                                             \
+          _drop_while<_drop_while_select(sizeof...(xs)), true>, \
+          truncated, Pred, xs...>;                              \
+  }
+
+  JLN_DROP_WHILE_IMPL(32, 16, JLN_MP_XS_16);
+  JLN_DROP_WHILE_IMPL(64, 32, JLN_MP_XS_32);
+  JLN_DROP_WHILE_IMPL(128, 64, JLN_MP_XS_64);
+  JLN_DROP_WHILE_IMPL(256, 128, JLN_MP_XS_128);
+
+#undef JLN_DROP_WHILE_IMPL
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class>
+    struct find_if_impl;
   }
   /// \endcond
 
   /// \ingroup search
 
-  /// Finds the first element that satisfy a predicate.
-  /// Calls \c FC with all the elements since the one found at the end.
-  /// If no element is found, \c NFC is used.
+  /// Finds the first element that satisfy a \predicate.
+  /// Calls \c TC with all the elements since the one found at the end.
+  /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence
-  template<class Pred, class C = listify, class NC = C>
+  template<class Pred, class TC = listify, class FC = clear<TC>>
   struct find_if
   {
     template<class... xs>
-    using f = typename detail::_find<-1,
-      detail::_first_find_select(sizeof...(xs))
-    >::template f<Pred, C, NC, xs...>;
+    using f = typename detail::find_if_impl<
+      typename detail::_drop_while<
+        detail::_drop_while_select(sizeof...(xs)), true
+      >::template f<0, detail::to_predicate_not_t<Pred>, xs...>
+    >::template f<TC, FC, xs...>;
   };
 
-  template<class T, class C = listify, class NC = C>
-  using find = find_if<is<T>, C, NC>;
+  template<class T, class TC = listify, class FC = clear<TC>>
+  using find = find_if<is<T>, TC, FC>;
 
   namespace emp
   {
-    template<class L, class Pred, class C = mp::listify, class NC = C>
-    using find_if = unpack<L, mp::find_if<Pred, C, NC>>;
+    template<class L, class Pred, class TC = mp::listify, class FC = clear<TC>>
+    using find_if = unpack<L, mp::find_if<Pred, TC, FC>>;
 
-    template<class L, class T, class C = mp::listify, class NC = C>
-    using find = unpack<L, mp::find_if<mp::is<T>, C, NC>>;
+    template<class L, class T, class TC = mp::listify, class FC = clear<TC>>
+    using find = unpack<L, mp::find_if<mp::is<T>, TC, FC>>;
   }
 }
 
@@ -6067,154 +6920,94 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  constexpr unsigned _first_find_select(unsigned n)
-  {
-    return
-      n == 0 ? 0
-    : n < 64 ? 17
-    : n < 256 ? 65
-    : 257
-    ;
-  }
-
-  template<int i, unsigned>
-  struct _find
-  {
-    template<class Pred, class C, class NC, class... xs>
-    using f = typename drop_c<i, C>::template f<xs...>;
-  };
-
   template<>
-  struct _find<-1, 0>
+  struct find_if_impl<_drop_while_continue>
   {
-    template<class Pred, class C, class NC, class... xs>
-    using f = typename NC::template f<>;
+    template<class TC, class FC, class... xs>
+    using f = typename FC::template f<xs...>;
   };
 
-  template<bool... xs>
-  constexpr int _index_of()
+  template<std::size_t n>
+  struct find_if_impl<_drop_while_result<n>>
   {
-    unsigned i = 0;
-    (void)(... && (!xs && ++i));
-    return i >= sizeof...(xs) ? -1 : int(i);
-  }
-
-#define JLN_MP_FIND_IMPL(nprev, mp_dup)                  \
-  template<>                                             \
-  struct _find<-1, nprev+16>                             \
-  {                                                      \
-    template<class Pred, class C, class NC,              \
-      mp_dup(class, JLN_MP_COMMA),                       \
-      class... xs>                                       \
-    using f = typename _find<                            \
-      _index_of<bool(Pred::template f<xs>::value)...>(), \
-      0>                                                 \
-    ::template f<Pred, C, NC, xs...>;                    \
+    template<class TC, class FC, class... xs>
+    using f = typename drop_front<number<sizeof...(xs)-n-1>, TC>::template f<xs...>;
   };
-
-  JLN_MP_FIND_IMPL(0, JLN_MP_REPEAT_16)
-  JLN_MP_FIND_IMPL(64, JLN_MP_REPEAT_64)
-  JLN_MP_FIND_IMPL(256, JLN_MP_REPEAT_256)
-
-#undef JLN_MP_FIND_IMPL
-
-  template<>
-  struct _find<-1, 17>
-  {
-    template<class Pred, class C, class NC, class... xs>
-    using f = typename _find<
-      _index_of<bool(Pred::template f<xs>::value)...>(),
-      0>
-    ::template f<Pred, C, NC, xs...>;
-  };
-
-  constexpr unsigned _find_select(unsigned n, unsigned r)
-  {
-    return
-      n == 0 ? 0
-    : (n < 64 ? 16
-    : n < 256 ? 64
-    : 256) + r
-    ;
-  }
-
-#define JLN_MP_FIND_IMPL(nprev, n, mp_skip, mp_xs) \
-  template<>                                       \
-  struct _find<-1, nprev+n>                        \
-  {                                                \
-    template<class Pred, class C, class NC,        \
-      mp_skip(class, JLN_MP_COMMA),                \
-      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),      \
-      class... xs>                                 \
-    using f = typename _find<                      \
-      _index_of<mp_xs(                             \
-        bool JLN_MP_PAREN_OPEN Pred::template f<,  \
-        >::value JLN_MP_PAREN_CLOSE, JLN_MP_COMMA  \
-      )>(),                                        \
-      _find_select(sizeof...(xs), n)               \
-    >                                              \
-    ::template f<                                  \
-      Pred, C, NC,                                 \
-      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), \
-      xs...                                        \
-    >;                                             \
-  };
-
-  JLN_MP_FIND_IMPL(64, 64, JLN_MP_REPEAT_64, JLN_MP_XS_64)
-  JLN_MP_FIND_IMPL(256, 64, JLN_MP_REPEAT_256, JLN_MP_XS_64)
-  JLN_MP_FIND_IMPL(256, 256, JLN_MP_REPEAT_256, JLN_MP_XS_256)
-
-#undef JLN_MP_FIND_IMPL
-
-#define JLN_MP_FIND_IMPL(n, mp_xs)                 \
-  template<>                                       \
-  struct _find<-1, n+1>                            \
-  {                                                \
-    template<class Pred, class C, class NC,        \
-      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),      \
-      class... xs>                                 \
-    using f = typename _find<                      \
-      _index_of<mp_xs(                             \
-        bool JLN_MP_PAREN_OPEN Pred::template f<,  \
-        >::value JLN_MP_PAREN_CLOSE, JLN_MP_COMMA  \
-      )>(),                                        \
-      _find_select(sizeof...(xs), n)>              \
-    ::template f<                                  \
-      Pred, C, NC,                                 \
-      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), \
-      xs...>;                                      \
-  };
-
-  JLN_MP_FIND_IMPL(64, JLN_MP_XS_64)
-  JLN_MP_FIND_IMPL(256, JLN_MP_XS_256)
-
-#undef JLN_MP_FIND_IMPL
 }
 /// \endcond
+namespace jln::mp
+{
+  /// \ingroup list
+
+  /// Extracts \c N elements from the end of a \sequence.
+  /// \pre `0 <= N <= sizeof...(xs)`
+  /// \treturn \sequence
+  template<class N, class C = listify>
+  struct take_back
+  {
+    template<class... xs>
+    using f = typename detail::_drop_front<
+      detail::n_8_or_less_16_64_256(
+        sizeof...(xs) - detail::validate_index<N::value, sizeof...(xs)>::value
+      )
+    >::template f<sizeof...(xs) - N::value, C, xs...>;
+  };
+
+  template<int_ n, class C = listify>
+  using take_back_c = take_back<number<n>, C>;
+
+  namespace emp
+  {
+    template<class L, class N, class C = mp::listify>
+    using take_back = unpack<L, mp::take_back<N, C>>;
+
+    template<class L, int_ n, class C = mp::listify>
+    using take_back_c = unpack<L, mp::take_back<number<n>, C>>;
+  }
+
+  /// \cond
+  template<class C>
+  struct take_back<number<0>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
+  };
+  /// \endcond
+}
 namespace jln::mp::smp
 {
-  template<class Pred, class C = listify, class NC = C>
-  using find_if = contract<mp::find_if<
-    concepts::predicate<assume_unary<Pred>, mp::identity, mp::always<true_>>,
-    mp::if_<
-      mp::front<concepts::predicate<assume_unary<Pred>>>,
-      subcontract<C>,
-      violation
-    >,
-    subcontract<NC>>>;
+  template<class Pred, class TC = listify, class FC = clear<TC>>
+  using find_if = contract<mp::invoke_twice<
+    mp::drop_while<
+      concepts::predicate<assume_unary<Pred>, mp::not_<>>,
+      mp::if_<
+        mp::size<>,
+        mp::if_<
+          mp::front<concepts::predicate<assume_unary<Pred>, mp::always<mp::true_>>>,
+          mp::size<
+            mp::push_back<
+              subcontract<TC>,
+              mp::lift<mp::take_back>
+            >
+          >,
+          mp::always<violation>
+        >,
+        mp::always<subcontract<FC>>
+      >
+    >
+  >>;
 
-  template<class T, class C = listify, class NC = C>
-  using find = contract<
-    mp::find<T, subcontract<C>, subcontract<NC>>>;
+  template<class T, class TC = listify, class FC = clear<TC>>
+  using find = contract<mp::find<T, subcontract<TC>, subcontract<FC>>>;
 }
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class Pred, class C, class NC>
-  struct _sfinae<sfinae, find_if<Pred, C, NC>>
+  template<template<class> class sfinae, class Pred, class TC, class FC>
+  struct _sfinae<sfinae, find_if<Pred, TC, FC>>
   {
-    using type = smp::find_if<sfinae<Pred>, sfinae<C>, sfinae<NC>>;
+    using type = smp::find_if<sfinae<Pred>, sfinae<TC>, sfinae<FC>>;
   };
 }
 /// \endcond
@@ -6574,29 +7367,73 @@ namespace jln::mp
 {
   /// \ingroup list
 
-  /// Extracts \c N elements of \sequence.
+  /// Extracts \c N elements from the beginning of a \sequence.
   /// \pre `0 <= N <= sizeof...(xs)`
   /// \treturn \sequence
   template<class N, class C = listify>
-  struct take
+  struct take_front
   {
     template<class... xs>
     using f = call<
-      rotate<N, drop<number<sizeof...(xs) - N::value>, C>>,
+      rotate<N, drop_front<number<sizeof...(xs) - N::value>, C>>,
       xs...>;
   };
 
   template<int_ n, class C = listify>
-  using take_c = take<number<n>, C>;
+  using take_front_c = take_front<number<n>, C>;
 
   namespace emp
   {
     template<class L, class N, class C = mp::listify>
-    using take = unpack<L, mp::take<N, C>>;
+    using take_front = unpack<L, mp::take_front<N, C>>;
 
     template<class L, int_ n, class C = mp::listify>
-    using take_c = unpack<L, mp::take<number<n>, C>>;
+    using take_front_c = unpack<L, mp::take_front<number<n>, C>>;
   }
+
+  /// \cond
+  template<class C>
+  struct take_front<number<0>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
+  };
+
+  template<class C>
+  struct take_front<number<1>, C>
+  {
+    template<class _1, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1);
+  };
+
+  template<class C>
+  struct take_front<number<2>, C>
+  {
+    template<class _1, class _2, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2);
+  };
+
+  template<class C>
+  struct take_front<number<3>, C>
+  {
+    template<class _1, class _2, class _3, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2, _3);
+  };
+
+  template<class C>
+  struct take_front<number<4>, C>
+  {
+    template<class _1, class _2, class _3, class _4, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2, _3, _4);
+  };
+
+  template<class C>
+  struct take_front<number<5>, C>
+  {
+    template<class _1, class _2, class _3, class _4, class _5, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2, _3, _4, _5);
+  };
+  /// \endcond
 }
 
 namespace jln::mp
@@ -6675,8 +7512,8 @@ namespace jln::mp::detail
     template<class... xs>
     using f = typename _join_select<2>::f<
       C,
-      JLN_MP_DCALL_XS(xs, take_c<sizeof...(Fs), _each<listify, Fs...>>, xs...),
-      JLN_MP_DCALL_XS(xs, drop_c<sizeof...(Fs)>, xs...)
+      JLN_MP_DCALL_XS(xs, take_front_c<sizeof...(Fs), _each<listify, Fs...>>, xs...),
+      JLN_MP_DCALL_XS(xs, drop_front_c<sizeof...(Fs)>, xs...)
     >::type;
   };
 } // namespace jln::mp
@@ -6726,7 +7563,7 @@ namespace jln::mp::detail
     template<class C, class Cmp, class x, class... xs>
     using f = typename _group_impl<
       C, Cmp, x,
-      call<take_c<sizeof...(xs)>, x, xs...>,
+      call<take_front_c<sizeof...(xs)>, x, xs...>,
       xs...
     >::type;
   };
@@ -6857,138 +7694,307 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp
 {
-  /// \ingroup search
-
-  /// Difference between the number of parameter \c xs and \c I::value.
-  /// \semantics
-  ///   Equivalent to
-  ///   \code
-  ///   size<push_front<I, sub<C>>>
-  ///   \endcode
-  /// \treturn \number
-  template <class I, class C = identity>
-  struct offset
-  {
-    template <class... xs>
-    using f = typename C::template f<number<(I::value - int_{sizeof...(xs)})>>;
-  };
-
   /// \cond
-  template <class I>
-  struct offset<I, identity>
+  namespace detail
   {
-    template <class... xs>
-    using f = number<(I::value - int_{sizeof...(xs)})>;
-  };
+    template<class>
+    struct index_if_impl;
+  }
   /// \endcond
 
-  template<int_ i, class C = identity>
-  using offset_c = offset<number<i>, C>;
+  /// \ingroup search
+
+  /// Finds the index of the first element of \sequence
+  /// that satisfies the \predicate \c Pred.
+  /// Calls \c TC with the index found or \c FC with the whole \sequence.
+  /// \treturn \number
+  template<class Pred, class TC = identity, class FC = size<>>
+  struct index_if
+  {
+    template<class... xs>
+    using f = typename detail::index_if_impl<
+      typename detail::_drop_while<
+        detail::_drop_while_select(sizeof...(xs)), true
+      >::template f<0, detail::to_predicate_not_t<Pred>, xs...>
+    >::template f<TC, FC, xs...>;
+  };
+
+  /// Finds the index of the first element of \sequence that is a type \c T.
+  /// Calls \c TC with the index found or \c FC with the whole \sequence.
+  /// \treturn \number
+  template<class T, class TC = identity, class FC = size<>>
+  using index_of = index_if<is<T>, TC, FC>;
 
   namespace emp
   {
-    template<class L, class I, class C = mp::identity>
-    using offset = unpack<L, mp::offset<I, C>>;
+    template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
+    using index_if = unpack<L, mp::index_if<Pred, TC, FC>>;
+
+    template<class L, class T, class TC = mp::identity, class FC = mp::size<>>
+    using index_of = unpack<L, mp::index_of<T, TC, FC>>;
+  }
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct index_if_impl<_drop_while_continue>
+  {
+    template<class TC, class FC, class... xs>
+    using f = typename FC::template f<xs...>;
+  };
+
+  template<std::size_t n>
+  struct index_if_impl<_drop_while_result<n>>
+  {
+    template<class TC, class FC, class... xs>
+    using f = typename TC::template f<number<sizeof...(xs)-n-1>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup list
+
+  /// Retrieves an element of a sequence at an arbitrary position.
+  /// \pre `0 <= N < sizeof...(xs)`
+  /// \treturn \value
+  template<class N, class C = identity>
+  using at = drop_front<N, front<C>>;
+
+  template<int_ n, class C = identity>
+  using at_c = drop_front<number<n>, front<C>>;
+
+  template<class C = identity>
+  using at0 = front<C>;
+
+  template<class C = identity>
+  using at1 = drop_front<number<1>, front<C>>;
+
+  template<class C = identity>
+  using at2 = drop_front<number<2>, front<C>>;
+
+  template<class C = identity>
+  using at3 = drop_front<number<3>, front<C>>;
+
+  template<class C = identity>
+  using at4 = drop_front<number<4>, front<C>>;
+
+  template<class C = identity>
+  using at5 = drop_front<number<5>, front<C>>;
+
+  template<class C = identity>
+  using at6 = drop_front<number<6>, front<C>>;
+
+  template<class C = identity>
+  using at7 = drop_front<number<7>, front<C>>;
+
+  template<class C = identity>
+  using at8 = drop_front<number<8>, front<C>>;
+
+  template<class C = identity>
+  using at9 = drop_front<number<9>, front<C>>;
+
+  namespace emp
+  {
+    template<class L, class i, class C = mp::identity>
+    using at = unpack<L, mp::drop_front<number<i::value>, mp::front<C>>>;
 
     template<class L, int_ i, class C = mp::identity>
-    using offset_c = unpack<L, mp::offset<number<i>, C>>;
+    using at_c = unpack<L, mp::drop_front<number<i>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at0 = unpack<L, mp::front<C>>;
+
+    template<class L, class C = mp::identity>
+    using at1 = unpack<L, mp::drop_front<number<1>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at2 = unpack<L, mp::drop_front<number<2>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at3 = unpack<L, mp::drop_front<number<3>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at4 = unpack<L, mp::drop_front<number<4>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at5 = unpack<L, mp::drop_front<number<5>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at6 = unpack<L, mp::drop_front<number<6>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at7 = unpack<L, mp::drop_front<number<7>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at8 = unpack<L, mp::drop_front<number<8>, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at9 = unpack<L, mp::drop_front<number<9>, mp::front<C>>>;
   }
 }
 namespace jln::mp
 {
-  /// \ingroup search
-
-  template<class F, class C = identity>
-#ifdef JLN_MP_DOXYGENATING
-  using index_for = tee<size<>, F, sub<C>>;
-#else
-  struct index_for
-  {
-    template<class... xs>
-    using f = typename C::template f<number<int_(sizeof...(xs)) - call<F, xs...>::value>>;
-  };
-#endif
-
   /// \cond
-  template<class F>
-  struct index_for<F, identity>
+  namespace detail
   {
-    template<class... xs>
-    using f = number<int_(sizeof...(xs)) - call<F, xs...>::value>;
-  };
+    template<unsigned> struct _compose_f;
+    template<class, class> struct _compose;
+  }
   /// \endcond
 
-  template<class Pred, class C = identity, class NC = always<na>>
-  struct index_if
+  /// \ingroup functional
+
+  /// Composition of two \metafunctions or more.
+  /// \treturn \function
+  template<template<class...> class F, template<class...> class... Fs>
+  using compose_f = typename detail::_compose_f<sizeof...(Fs)>
+    ::template f<F, Fs...>;
+
+  /// Composition of two \functions or more.
+  /// \treturn \function
+  template<class F, class... Fs>
+  using compose = typename conditional_c<sizeof...(Fs) == 0>
+    ::template f<
+      at1<F>,
+      mp::fold_right<lift_t<detail::_compose>>
+    >
+    ::template f<identity, F, Fs...>;
+}
+
+
+namespace jln::mp
+{
+  /// \ingroup functional
+
+  /// Partially apply a function to some arguments.
+  /// \treturn \sequence
+  template<class F, class... xs>
+  struct bind
   {
-    template<class... xs>
-    using f = typename find_if<Pred, offset_c<sizeof...(xs), C>, NC>
-      ::template f<xs...>;
+    template<class... ys>
+    using f = call<F, xs..., ys...>;
   };
 
-  /// Returns the position of the first occurrence of a specified \value.
-  /// Use \c NC::f<> if the value to search for never occurs.
-  /// \treturn \number
-  template<class T, class C = listify, class NC = always<na>>
-  using index_of = index_if<is<T>, C, NC>;
-
-  namespace emp
+  /// Partially apply a function to some arguments.
+  /// \treturn \sequence
+  template<class F, class... xs>
+  struct reverse_bind
   {
-    template<class L, class F, class C = mp::identity>
-    using index_for = unpack<L, mp::index_for<F, C>>;
+    template<class... ys>
+    using f = call<F, ys..., xs...>;
+  };
 
-    template<class L, class Pred, class C = mp::identity, class NC = mp::always<na>>
-    using index_if = unpack<L, mp::index_if<Pred, C, NC>>;
+  template<class F, class C>
+  using bind1st = partial<F, C>;
 
-    template<class L, class T, class C = mp::identity, class NC = mp::always<na>>
-    using index_of = unpack<L, mp::index_of<T, C, NC>>;
-  }
-}
+  template<class F, class C>
+  using bind2nd = partial<identity, F, C>;
+} // namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<class Pred, class C, class NC>
-  struct _smp_index_if;
+#define JLN_COMPOSE_IMPL(n, mp_xs, mp_rxs, mp_dup) \
+  template<template<class...> class F              \
+    mp_xs(JLN_MP_COMMA template<class...> class,   \
+      JLN_MP_NIL, JLN_MP_NIL)>                     \
+  struct _compose_f_impl##n                        \
+  {                                                \
+    template<class... xs>                          \
+    using f = mp_rxs(JLN_MP_NIL, <, JLN_MP_NIL)    \
+      JLN_MP_DCALLF_XS(xs, F, xs...)               \
+    mp_dup(>, JLN_MP_NIL);                         \
+  };
+
+  JLN_MP_GEN_XS_0_TO_8(JLN_COMPOSE_IMPL)
+
+#undef JLN_COMPOSE_IMPL
+
+#define JLN_COMPOSE_IMPL(n, mp_xs, mp_rxs, mp_dup)  \
+  template<>                                        \
+  struct _compose_f<n>                              \
+  {                                                 \
+    template<template<class...> class F             \
+      mp_xs(JLN_MP_COMMA template<class...> class,  \
+        JLN_MP_NIL, JLN_MP_NIL)>                    \
+    using f = _compose_f_impl##n<F                  \
+      mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)>; \
+  };
+
+  JLN_MP_GEN_XS_0_TO_8(JLN_COMPOSE_IMPL)
+
+#undef JLN_COMPOSE_IMPL
+
+  template<unsigned n>
+  struct _compose_f
+  {
+    template<
+      template<class...> class F0,
+      template<class...> class F1,
+      template<class...> class F2,
+      template<class...> class F3,
+      template<class...> class F4,
+      template<class...> class F5,
+      template<class...> class F6,
+      template<class...> class F7,
+      template<class...> class... Fs>
+    using f = typename _compose_f<n-8>::template f<
+      _compose_f_impl7<F0, F1, F2, F3, F4, F5, F6, F7>::template f,
+      Fs...
+    >;
+  };
+
+  template<class F, class C>
+  struct _compose
+  {
+    using type = tee<F, C>;
+  };
+
+  template<template<class...> class F, class x>
+  struct _compose<lift<F>, x>
+  {
+    using type = lift<F, x>;
+  };
+
+  template<template<class...> class F, class x>
+  struct _compose<lift_t<F>, x>
+  {
+    using type = lift_t<F, x>;
+  };
 }
 /// \endcond
-
 namespace jln::mp::smp
 {
-  template<class F, class C = identity>
-  using index_for = try_contract<
-    mp::index_for<subcontract<F>, assume_number<C>>>;
+  template<class Pred, class TC = identity, class FC = size<>>
+  using index_if = contract<mp::invoke_twice<
+    mp::drop_while<
+      concepts::predicate<assume_unary<Pred>, mp::not_<>>,
+      mp::if_<
+        mp::size<>,
+        mp::if_<
+          mp::front<concepts::predicate<assume_unary<Pred>, mp::always<mp::true_>>>,
+          mp::size<
+            mp::push_back<
+              sub<subcontract<TC>>,
+              mp::compose_f<mp::push_back, mp::size>
+            >
+          >,
+          mp::always<violation>
+        >,
+        mp::always<subcontract<FC>>
+      >
+    >
+  >>;
 
-  template<class Pred, class C = identity, class NC = always<na>>
-  using index_if = contract<detail::_smp_index_if<
-    assume_unary<Pred>, assume_number<C>, assume_unary<NC>>>;
-
-  template<class T, class C = identity, class NC = always<na>>
-  using index_of = index_if<is<T>, C, NC>;
+  template<class T, class TC = identity, class FC = size<>>
+  using index_of = contract<mp::index_if<is<T>, subcontract<TC>, subcontract<FC>>>;
 }
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<class Pred, class C, class NC>
-  struct _smp_index_if
-  {
-    template<class... xs>
-    using f = typename subcontract<smp::find_if<
-      contract_barrier<Pred>,
-      contract_barrier<size<push_front<
-        number<sizeof...(xs)>,
-        subcontract<smp::sub<contract_barrier<C>>>
-      >>>,
-      contract_barrier<NC>
-    >>::template f<xs...>;
-  };
-
-  template<template<class> class sfinae, class F, class C>
-  struct _sfinae<sfinae, index_for<F, C>>
-  {
-    using type = smp::index_for<sfinae<F>, sfinae<C>>;
-  };
-
   template<template<class> class sfinae, class F, class C, class NC>
   struct _sfinae<sfinae, index_if<F, C, NC>>
   {
@@ -7390,36 +8396,6 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-namespace jln::mp::smp
-{
-  template<template<class...> class F, class C = identity>
-  using lift = try_contract<mp::lift<F, assume_unary<C>>>;
-
-  template<template<class...> class F, class C = identity>
-  using lift_t = try_contract<mp::lift_t<F, assume_unary<C>>>;
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, template<class...> class F, class C>
-  struct _sfinae<sfinae, lift_t<F, C>>
-  {
-    using type = smp::lift_t<F, sfinae<C>>;
-  };
-
-  template<template<class> class sfinae, template<class...> class F, class C>
-  struct _sfinae<sfinae, lift<F, C>>
-  {
-    using type = smp::lift<F, sfinae<C>>;
-  };
-
-
-  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (lift<std::is_same, C>));
-  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (lift_t<std::is_same, C>));
-}
-/// \endcond
 namespace jln::mp
 {
   namespace smp
@@ -7743,88 +8719,6 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-namespace jln::mp
-{
-  /// \ingroup list
-
-  /// Retrieves an element of a sequence at an arbitrary position.
-  /// \pre `0 <= N < sizeof...(xs)`
-  /// \treturn \value
-  template<class N, class C = identity>
-  using at = drop<N, front<C>>;
-
-  template<int_ n, class C = identity>
-  using at_c = drop<number<n>, front<C>>;
-
-  template<class C = identity>
-  using at0 = front<C>;
-
-  template<class C = identity>
-  using at1 = drop<number<1>, front<C>>;
-
-  template<class C = identity>
-  using at2 = drop<number<2>, front<C>>;
-
-  template<class C = identity>
-  using at3 = drop<number<3>, front<C>>;
-
-  template<class C = identity>
-  using at4 = drop<number<4>, front<C>>;
-
-  template<class C = identity>
-  using at5 = drop<number<5>, front<C>>;
-
-  template<class C = identity>
-  using at6 = drop<number<6>, front<C>>;
-
-  template<class C = identity>
-  using at7 = drop<number<7>, front<C>>;
-
-  template<class C = identity>
-  using at8 = drop<number<8>, front<C>>;
-
-  template<class C = identity>
-  using at9 = drop<number<9>, front<C>>;
-
-  namespace emp
-  {
-    template<class L, class i, class C = mp::identity>
-    using at = unpack<L, mp::drop<number<i::value>, mp::front<C>>>;
-
-    template<class L, int_ i, class C = mp::identity>
-    using at_c = unpack<L, mp::drop<number<i>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at0 = unpack<L, mp::front<C>>;
-
-    template<class L, class C = mp::identity>
-    using at1 = unpack<L, mp::drop<number<1>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at2 = unpack<L, mp::drop<number<2>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at3 = unpack<L, mp::drop<number<3>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at4 = unpack<L, mp::drop<number<4>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at5 = unpack<L, mp::drop<number<5>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at6 = unpack<L, mp::drop<number<6>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at7 = unpack<L, mp::drop<number<7>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at8 = unpack<L, mp::drop<number<8>, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at9 = unpack<L, mp::drop<number<9>, mp::front<C>>>;
-  }
-}
 namespace jln::mp::smp
 {
   template<int_ n, class C = identity>
@@ -8006,9 +8900,9 @@ namespace jln::mp::detail
     {
       template<class... xs>
       using f = number<size + call<
-        drop_c<size,
+        drop_front_c<size,
           rotate_c<n-size,
-            drop_c<size,
+            drop_front_c<size,
               typename _mismatch_tree<Cmp, n-size>::type
             >
           >
@@ -8020,9 +8914,9 @@ namespace jln::mp::detail
     template<class... xs>
     using f = typename dispatch<
       typename rotate_c<size,
-        drop_c<n-size,
+        drop_front_c<n-size,
           rotate_c<size,
-            drop_c<n-size,
+            drop_front_c<n-size,
               typename _mismatch_tree<Cmp, size>::type
             >
           >
@@ -8072,7 +8966,7 @@ namespace jln::mp::detail
     {
       template<class Cmp, class C, class NC>
       using f = typename apply_index<
-        typename take_c<
+        typename take_front_c<
           sizeof...(xs) * 2,
           typename _mismatch_tree<Cmp, sizeof...(xs)>::type
         >::template f<xs..., ys...>,
@@ -8085,7 +8979,7 @@ namespace jln::mp::detail
     {
       template<class Cmp, class C, class NC>
       using f = typename apply_index<
-        typename take_c<
+        typename take_front_c<
           sizeof...(ys) * 2,
           typename _mismatch_tree<Cmp, sizeof...(ys)>::type
         >::template f<ys..., xs...>,
@@ -8592,12 +9486,12 @@ namespace jln::mp::detail
 
 #undef JLN_MP_LOWER_BOUND_IMPL
 
-  template<unsigned> struct _lower_bound_drop;
-  template<unsigned> struct _smp_lower_bound_drop;
+  template<unsigned> struct _lower_bound_drop_front;
+  template<unsigned> struct _smp_lower_bound_drop_front;
 
 #define JLN_MP_LOWER_BOUND_IMPL2(prefix, Cond, n, mp_xs) \
   template<>                                             \
-  struct prefix##lower_bound_drop<n>                     \
+  struct prefix##lower_bound_drop_front<n>                     \
   {                                                      \
     template<int count, class Pred, class C, class NC,   \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),            \
@@ -8614,7 +9508,7 @@ namespace jln::mp::detail
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),            \
       class... xs>                                       \
     using f = typename Cond(_##n)::template f<           \
-      prefix##lower_bound_drop<n>,                       \
+      prefix##lower_bound_drop_front<n>,                       \
       prefix##lower_bound<n/2>                           \
     >::template f<count, Pred, C, NC,                    \
       mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA),       \
@@ -8689,7 +9583,7 @@ namespace jln::mp
     {
       template<class F, int_ min, class n>
       using impl = typename conditional_c<min != n::value>
-        ::template f<unpack<take_c<min, F>>, identity>;
+        ::template f<unpack<take_front_c<min, F>>, identity>;
 
       template<class F, class C, class... ns>
       using f = _each<C, impl<F, std::min({int_(~0u), ns::value...}), ns>...>;
@@ -8999,11 +9893,11 @@ namespace jln::mp::detail
     using xm = number<(sizeof...(xs) + 1) / 2>;
     using ym = number<(sizeof...(ys) + 1) / 2>;
 
-    using xl = call<take<xm>, xs...>;
-    using yl = call<take<ym>, ys...>;
+    using xl = call<take_front<xm>, xs...>;
+    using yl = call<take_front<ym>, ys...>;
 
-    using xr = call<drop<xm>, xs...>;
-    using yr = call<drop<ym>, ys...>;
+    using xr = call<drop_front<xm>, xs...>;
+    using yr = call<drop_front<ym>, ys...>;
 
     using l = _merge<xl, yl, z>;
 
@@ -9138,6 +10032,9 @@ namespace jln::mp::smp
 namespace jln::mp
 {
   /// \ingroup group
+
+  // TODO remove <-> copy
+  // Pred::f<xs>::value... -> mk_list<b>::f<xs> | mk_list<!b>::f<xs>
 
   /// Splits a \list in two according to a predicate.
   /// \treturn \sequence of two \values
@@ -9690,6 +10587,24 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp::smp
+{
+  template <int_ n, class C = listify>
+  using rotate_c = rotate<number<n>, C>;
+}
+
+JLN_MP_MAKE_REGULAR_SMP2_P(rotate, (N), (C, smp::listify), smp::rotate_c<N::value, C>)
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class N, class C>
+  struct _sfinae<sfinae, rotate<N, C>>
+  {
+    using type = smp::rotate<N, sfinae<C>>;
+  };
+}
+/// \endcond
 namespace jln::mp
 {
   /// \cond
@@ -9749,8 +10664,8 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename memoize_call<_merge<
-      call<take_c<sizeof...(xs) / 2, _sort<min(3, sizeof...(xs) / 2), Cmp>>, xs...>,
-      call<drop_c<sizeof...(xs) / 2, _sort<min(3, (sizeof...(xs) + 1) / 2), Cmp>>, xs...>
+      call<take_front_c<sizeof...(xs) / 2, _sort<min(3, sizeof...(xs) / 2), Cmp>>, xs...>,
+      call<drop_front_c<sizeof...(xs) / 2, _sort<min(3, (sizeof...(xs) + 1) / 2), Cmp>>, xs...>
     >, Cmp>::type;
   };
 
@@ -9896,18 +10811,18 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template<int_ n, class C = listify>
-  using take_c = try_contract<mp::take<mp::number<n>, subcontract<C>>>;
+  using take_front_c = try_contract<mp::take_front<mp::number<n>, subcontract<C>>>;
 }
 
-JLN_MP_MAKE_REGULAR_SMP2_P(take, (N), (C, smp::listify), smp::take_c<N::value, C>)
+JLN_MP_MAKE_REGULAR_SMP2_P(take_front, (N), (C, smp::listify), smp::take_front_c<N::value, C>)
 
 /// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class N, class C>
-  struct _sfinae<sfinae, take<N, C>>
+  struct _sfinae<sfinae, take_front<N, C>>
   {
-    using type = smp::take<N, sfinae<C>>;
+    using type = smp::take_front<N, sfinae<C>>;
   };
 }
 /// \endcond
@@ -9919,7 +10834,7 @@ namespace jln::mp
   /// \pre i >= 0 && i <= sizeof...(xs)
   /// \treturn \sequence of two \values
   template<class i, class F = listify, class C = listify>
-  using split_at_with = tee<take<i, F>, drop<i, F>, C>;
+  using split_at_with = tee<take_front<i, F>, drop_front<i, F>, C>;
 
   template<int_ i, class F = listify, class C = listify>
   using split_at_with_c = split_at_with<number<i>, F, C>;
@@ -9928,7 +10843,7 @@ namespace jln::mp
   /// \pre i >= 0 && i <= sizeof...(xs)
   /// \treturn \sequence of two \lists
   template<class i, class C = listify>
-  using split_at = tee<take<i>, drop<i>, C>;
+  using split_at = tee<take_front<i>, drop_front<i>, C>;
 
   template<int_ i, class C = listify>
   using split_at_c = split_at<number<i>, C>;
@@ -10017,57 +10932,6 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class>
-    struct _take_while;
-  }
-  /// \endcond
-
-  /// \ingroup algorithm
-
-  /// Takes elements from a \sequence while the predicate is satisfied.
-  /// \treturn \sequence
-  template<class Pred, class C = listify, class NC = C>
-  using take_while = invoke_twice<index_if<
-    Pred, tee<identity, always<C>, lift<take>>, always<NC>>>;
-
-  namespace emp
-  {
-    template<class L, class Pred, class C = mp::listify, class NC = C>
-    using take_while = unpack<L, mp::take_while<Pred, C, NC>>;
-  }
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<class n>
-  struct _take_while
-  {
-    template<class C, class NC>
-    using f = take<n, C>;
-  };
-
-  template<>
-  struct _take_while<number<-1>>
-  {
-    template<class C, class NC>
-    using f = NC;
-  };
-}
-/// \endcond
-namespace jln::mp::smp
-{
-  template<class Pred, class C = listify, class NC = C>
-  using take_while = invoke_twice<index_if<
-    Pred,
-    contract<mp::tee<mp::identity, mp::always<C>, lift<take>>>,
-    always<NC>>>;
-}
 namespace jln::mp::smp
 {
   template<class C = listify>
@@ -10251,34 +11115,6 @@ namespace jln::mp::detail
   {};
 }
 /// \endcond
-namespace jln::mp
-{
-  /// \ingroup functional
-
-  /// Partially apply a function to some arguments.
-  /// \treturn \sequence
-  template<class F, class... xs>
-  struct bind
-  {
-    template<class... ys>
-    using f = call<F, xs..., ys...>;
-  };
-
-  /// Partially apply a function to some arguments.
-  /// \treturn \sequence
-  template<class F, class... xs>
-  struct reverse_bind
-  {
-    template<class... ys>
-    using f = call<F, ys..., xs...>;
-  };
-
-  template<class F, class C>
-  using bind1st = partial<F, C>;
-
-  template<class F, class C>
-  using bind2nd = partial<identity, F, C>;
-} // namespace jln::mp
 namespace jln::mp::smp
 {
   template<class F, class... xs>
@@ -10560,108 +11396,6 @@ namespace jln::mp::smp
     subcontract_barrier<Fs>...
   >>;
 }
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<unsigned> struct _compose_f;
-    template<class, class> struct _compose;
-  }
-  /// \endcond
-
-  /// \ingroup functional
-
-  /// Composition of two \metafunctions or more.
-  /// \treturn \function
-  template<template<class...> class F, template<class...> class... Fs>
-  using compose_f = typename detail::_compose_f<sizeof...(Fs)>
-    ::template f<F, Fs...>;
-
-  /// Composition of two \functions or more.
-  /// \treturn \function
-  template<class F, class... Fs>
-  using compose = typename conditional_c<sizeof...(Fs) == 0>
-    ::template f<
-      at1<F>,
-      mp::fold_right<lift_t<detail::_compose>>
-    >
-    ::template f<identity, F, Fs...>;
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-#define JLN_COMPOSE_IMPL(n, mp_xs, mp_rxs, mp_dup) \
-  template<template<class...> class F              \
-    mp_xs(JLN_MP_COMMA template<class...> class,   \
-      JLN_MP_NIL, JLN_MP_NIL)>                     \
-  struct _compose_f_impl##n                        \
-  {                                                \
-    template<class... xs>                          \
-    using f = mp_rxs(JLN_MP_NIL, <, JLN_MP_NIL)    \
-      JLN_MP_DCALLF_XS(xs, F, xs...)               \
-    mp_dup(>, JLN_MP_NIL);                         \
-  };
-
-  JLN_MP_GEN_XS_0_TO_8(JLN_COMPOSE_IMPL)
-
-#undef JLN_COMPOSE_IMPL
-
-#define JLN_COMPOSE_IMPL(n, mp_xs, mp_rxs, mp_dup)  \
-  template<>                                        \
-  struct _compose_f<n>                              \
-  {                                                 \
-    template<template<class...> class F             \
-      mp_xs(JLN_MP_COMMA template<class...> class,  \
-        JLN_MP_NIL, JLN_MP_NIL)>                    \
-    using f = _compose_f_impl##n<F                  \
-      mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)>; \
-  };
-
-  JLN_MP_GEN_XS_0_TO_8(JLN_COMPOSE_IMPL)
-
-#undef JLN_COMPOSE_IMPL
-
-  template<unsigned n>
-  struct _compose_f
-  {
-    template<
-      template<class...> class F0,
-      template<class...> class F1,
-      template<class...> class F2,
-      template<class...> class F3,
-      template<class...> class F4,
-      template<class...> class F5,
-      template<class...> class F6,
-      template<class...> class F7,
-      template<class...> class... Fs>
-    using f = typename _compose_f<n-8>::template f<
-      _compose_f_impl7<F0, F1, F2, F3, F4, F5, F6, F7>::template f,
-      Fs...
-    >;
-  };
-
-  template<class F, class C>
-  struct _compose
-  {
-    using type = tee<F, C>;
-  };
-
-  template<template<class...> class F, class x>
-  struct _compose<lift<F>, x>
-  {
-    using type = lift<F, x>;
-  };
-
-  template<template<class...> class F, class x>
-  struct _compose<lift_t<F>, x>
-  {
-    using type = lift_t<F, x>;
-  };
-}
-/// \endcond
 namespace jln::mp::smp
 {
   template <template<class...> class F, template<class...> class... Fs>
@@ -10840,8 +11574,8 @@ namespace jln::mp::detail
     template<class... xs>
     using f = typename _join_select<2>::f<
       C,
-      JLN_MP_DCALL_XS(xs, take_c<sizeof...(Fs), _each<listify, Fs...>>, xs...),
-      JLN_MP_DCALL_XS(xs, drop_c<sizeof...(Fs)>, xs...)
+      JLN_MP_DCALL_XS(xs, take_front_c<sizeof...(Fs), _each<listify, Fs...>>, xs...),
+      JLN_MP_DCALL_XS(xs, drop_front_c<sizeof...(Fs)>, xs...)
     >::type;
   };
 
@@ -10851,10 +11585,10 @@ namespace jln::mp::detail
     template<class... xs>
     using f = typename _join_select<2>::f<
       C,
-      typename take_c<sizeof...(xs)+1, lift<_each>>
+      typename take_front_c<sizeof...(xs)+1, lift<_each>>
         ::template f<listify, Fs...>
         ::template f<xs...>,
-      typename drop_c<sizeof...(xs), lift<tee>>
+      typename drop_front_c<sizeof...(xs), lift<tee>>
         ::template f<Fs..., listify>
         ::template f<>
     >::type;
@@ -10902,107 +11636,88 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<class, class>
-    struct _recurse;
+    template<class>
+    struct _recursively;
 
-    template<class, class>
-    struct _recurse_fix;
+    template<class>
+    struct _recursively_as_much_as_possible;
 
-    template<class F>
-    struct _recurse_fix_next;
+    template<class x>
+    struct _recursively_next;
 
-    template<class, class>
-    struct _infinite_recurse_next;
+    template<class x>
+    struct _recursively_as_much_as_possible_next;
 
-    template<class, class>
-    struct _infinite_recurse;
+    template<class...>
+    struct _recursion_result;
 
-    template<class F, class x, class y>
-    struct _infinite_recurse_fix;
+    template<class...>
+    struct _next_recursion;
   }
   /// \endcond
 
-  template<class>
-  struct stop_iteration
-  {};
+  /// Stop the recursion, the input values will be used as result.
+  struct stop_recursion
+  {
+    template<class...>
+    using f = stop_recursion;
+  };
+
+  /// Specify result values and stop recursion.
+  struct recursion_result
+  {
+    template<class... xs>
+    using f = detail::_recursion_result<xs...>;
+  };
+
+  /// Specify values for the next iteration.
+  struct next_recursion
+  {
+    template<class... xs>
+    using f = detail::_next_recursion<xs...>;
+  };
 
   /// \ingroup functional
 
-  /// Recursively invokes \c F until \c stop_iteration.
-  /// The first invocation uses \c F::f<xs...>, the following invocations \c F::f<result>
+  /// Recursively invokes \c F until \c stop_recursion or \c recursion_result.
   /// \treturn \value
-  /// \see fix, recurse_fix, infinite_recurse
+  /// \see recursively_as_much_as_possible, stop_recursion, recursion_result, next_recursion
   template<class F, class C = identity>
-  struct recurse
+  struct recursively
   {
     template<class... xs>
-    using f = typename detail::_recurse<F, call<F, xs...>>
-      ::template f<C>;
+    using f = typename detail::_recursively<
+      typename detail::_recursively_next<call<F, xs...>>
+      ::template g<xs...>
+      ::template f<F>
+      ::template f<F>
+      ::template f<F>
+    >::template f<F, C>;
   };
 
-  /// Version of \c fix that stops if there is \c stop_iteration
-  /// The first invocation uses `F::f<F, xs...>`, the following
-  /// invocations `F::f<F, result>`
+  /// Recursively invokes \c F until the result is \c stop_recursion, \c recursion_result or no longer changes.
   /// \treturn \value
-  /// \see fix, recurse, infinite_recurse
+  /// \see recursively, stop_recursion, recursion_result, next_recursion
   template<class F, class C = identity>
-  struct recurse_fix
+  struct recursively_as_much_as_possible
   {
     template<class... xs>
-    using f = typename detail::_recurse_fix<
-      F, typename detail::_recurse_fix_next<F>::template f<xs...>
-    >::template f<C>;
-  };
-
-  /// Recursively invokes \c F until the result no longer changes
-  /// \semantics
-  ///   \code
-  ///   call<infinite_recurse<lift_t<std::remove_pointer>>, int****> == int
-  ///   \endcode
-  /// \treturn \value
-  /// \see fix, recurse, infinite_recurse_fix
-  template<class F, class C = identity>
-  struct infinite_recurse
-  {
-    template<class x>
-    using f = typename detail::_infinite_recurse<F,
-      typename detail::_infinite_recurse_next<call<F, x>, x>
-      ::template f<F>
-      ::template f<F>
-      ::template f<F>
-      ::template f<F>
-      ::template f<F>
-      ::template f<F>
-      ::template f<F>
-      ::template f<F>
-    >::template f<C>;
-  };
-
-  /// Mix of \c fix and \c infinite_recurse.
-  /// \treturn \value
-  /// \see fix, recurse, infinite_recurse
-  template<class F, class C = identity>
-  struct infinite_recurse_fix
-  {
-    template<class... xs>
-    using f = typename detail::_infinite_recurse_fix<
-      F, list<xs...>, typename detail::_recurse_fix_next<F>::template f<xs...>
-    >::template f<C>;
+    using f = typename detail::_recursively_as_much_as_possible<
+      typename detail::_recursively_as_much_as_possible_next<call<F, xs...>>
+        ::template g<xs...>
+        ::template f<F>
+        ::template f<F>
+        ::template f<F>
+    >::template f<F, C>;
   };
 
   namespace emp
   {
     template<class L, class F, class C = mp::identity>
-    using recurse = unpack<L, mp::recurse<F, C>>;
+    using recursively = unpack<L, mp::recursively<F, C>>;
 
     template<class L, class F, class C = mp::identity>
-    using recurse_fix = unpack<L, mp::recurse_fix<F, C>>;
-
-    template<class L, class F, class C = mp::identity>
-    using infinite_recurse = unpack<L, mp::infinite_recurse<F, C>>;
-
-    template<class L, class F, class C = mp::identity>
-    using infinite_recurse_fix = unpack<L, mp::infinite_recurse_fix<F, C>>;
+    using recursively_as_much_as_possible = unpack<L, mp::recursively_as_much_as_possible<F, C>>;
   }
 }
 
@@ -11010,191 +11725,203 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<class F, class x>
-  struct _recurse<F, stop_iteration<x>>
+  template<class x>
+  struct _recursively_next
   {
-    template<class C>
-    using f = typename C::template f<x>;
+    template<class>
+    using f = _recursively_next;
+
+    template<class...>
+    using g = _recursively_next<_next_recursion<x>>;
+  };
+
+  template<>
+  struct _recursively_next<stop_recursion>
+  {
+    template<class>
+    using f = _recursively_next;
+
+    template<class... xs>
+    using g = _recursively_next<_recursion_result<xs...>>;
+  };
+
+  template<class... xs>
+  struct _recursively_next<_recursion_result<xs...>>
+  {
+    template<class>
+    using f = _recursively_next;
+
+    template<class...>
+    using g = _recursively_next;
+  };
+
+  template<class... xs>
+  struct _recursively_next<_next_recursion<xs...>>
+  {
+    template<class F>
+    using f = typename _recursively_next<typename F::template f<xs...>>
+              ::template g<xs...>;
+
+    template<class...>
+    using g = _recursively_next;
+  };
+
+  template<class... xs>
+  struct _recursively<_recursively_next<_next_recursion<xs...>>>
+  {
+    template<class F, class C>
+    using f = typename _recursively<
+      typename _recursively_next<typename F::template f<xs...>>
+      ::template g<xs...>
+      ::template f<F>
+      ::template f<F>
+      ::template f<F>
+      ::template f<F>
+      ::template f<F>
+      ::template f<F>
+      ::template f<F>
+    >::template f<F, C>;
+  };
+
+  template<class... xs>
+  struct _recursively<_recursively_next<_recursion_result<xs...>>>
+  {
+    template<class F, class C>
+    using f = typename C::template f<xs...>;
+  };
+
+  template<bool>
+  struct recursively_next_step;
+
+  template<>
+  struct recursively_next_step<true>
+  {
+    template<class x>
+    using f = _recursively_as_much_as_possible_next<_recursion_result<x>>;
+  };
+
+  template<>
+  struct recursively_next_step<false>
+  {
+    template<class x>
+    using f = _recursively_as_much_as_possible_next<_next_recursion<x>>;
   };
 
   template<class x>
-  struct _recurse_next
+  struct _recursively_as_much_as_possible_next
   {
-    template<class F>
-    using f = typename F::template f<x>;
-  };
-
-  template<class x>
-  struct _recurse_next<stop_iteration<x>>
-  {
-    template<class F>
-    using f = stop_iteration<x>;
-  };
-
-  template<class F, class x>
-  struct _recurse
-  : _recurse<F,
-    typename _recurse_next<
-      typename _recurse_next<
-        typename _recurse_next<
-          typename _recurse_next<
-            typename _recurse_next<
-              typename _recurse_next<
-                typename _recurse_next<
-                  typename _recurse_next<
-                    typename _recurse_next<
-                      typename F::template f<x>
-                    >::template f<F>
-                  >::template f<F>
-                >::template f<F>
-              >::template f<F>
-            >::template f<F>
-          >::template f<F>
-        >::template f<F>
-      >::template f<F>
-    >::template f<F>
-  >
-  {};
-
-
-  struct _recurse_capture
-  {
-    template<class... xs>
-    struct f;
-  };
-
-  template<class F>
-  struct _recurse_fix_next
-  {
-    struct f0 { template<class... xs> using f = call<F, _recurse_capture, xs...>; };
-    struct f1 { template<class... xs> using f = call<F, f0, xs...>; };
-    struct f2 { template<class... xs> using f = call<F, f1, xs...>; };
-    struct f3 { template<class... xs> using f = call<F, f2, xs...>; };
-    struct f4 { template<class... xs> using f = call<F, f3, xs...>; };
-    struct f5 { template<class... xs> using f = call<F, f4, xs...>; };
-    struct f6 { template<class... xs> using f = call<F, f5, xs...>; };
-    struct f7 { template<class... xs> using f = call<F, f6, xs...>; };
-    struct f8 { template<class... xs> using f = call<F, f7, xs...>; };
+    template<class>
+    using f = _recursively_as_much_as_possible_next;
 
     template<class... xs>
-    using f = call<F, f8, xs...>;
+    using g = typename recursively_next_step<std::is_same<list<x>, list<xs...>>::value>
+      ::template f<x>;
   };
 
-  template<class F, class... xs>
-  struct _recurse_fix<F, _recurse_capture::f<xs...>>
-  : _recurse_fix<F, typename _recurse_fix_next<F>::template f<xs...>>
-  {};
-
-  template<class F, class x>
-  struct _recurse_fix<F, stop_iteration<x>>
+  template<>
+  struct _recursively_as_much_as_possible_next<stop_recursion>
   {
-    template<class C>
-    using f = typename C::template f<x>;
+    template<class>
+    using f = _recursively_as_much_as_possible_next;
+
+    template<class... xs>
+    using g = _recursively_as_much_as_possible_next<_recursion_result<xs...>>;
   };
 
-  template<class, class x>
-  struct _recurse_fix
+  template<class... xs>
+  struct _recursively_as_much_as_possible_next<_recursion_result<xs...>>
   {
-    template<class C>
-    using f = typename C::template f<x>;
+    template<class>
+    using f = _recursively_as_much_as_possible_next;
+
+    template<class...>
+    using g = _recursively_as_much_as_possible_next;
   };
 
-
-  template<class x, class old>
-  struct _infinite_recurse_next
+  template<class... xs>
+  struct _recursively_as_much_as_possible_next<_next_recursion<xs...>>
   {
     template<class F>
-    using f = _infinite_recurse_next<typename F::template f<x>, x>;
+    using f = typename _recursively_as_much_as_possible_next<typename F::template f<xs...>>
+              ::template g<xs...>;
+
+    template<class...>
+    using g = _recursively_as_much_as_possible_next;
   };
 
-  template<class F, class x>
-  struct _infinite_recurse<F, _infinite_recurse_next<x, x>>
+  template<class... xs>
+  struct _recursively_as_much_as_possible<_recursively_as_much_as_possible_next<_next_recursion<xs...>>>
   {
-    template<class C>
-    using f = typename C::template f<x>;
+    template<class F, class C>
+    using f = typename _recursively_as_much_as_possible<
+      typename _recursively_as_much_as_possible_next<typename F::template f<xs...>>
+      ::template g<xs...>
+      ::template f<F>
+      ::template f<F>
+      ::template f<F>
+      ::template f<F>
+      ::template f<F>
+      ::template f<F>
+      ::template f<F>
+    >::template f<F, C>;
   };
 
-  template<class F, class x, class old>
-  struct _infinite_recurse<F, _infinite_recurse_next<x, old>>
-  : _infinite_recurse<F,
-    typename _infinite_recurse_next<typename F::template f<x>, x>
-    ::template f<F>
-    ::template f<F>
-    ::template f<F>
-    ::template f<F>
-    ::template f<F>
-    ::template f<F>
-    ::template f<F>
-    ::template f<F>
-  >
-  {};
-
-  template<class F, class x, class y>
-  struct _infinite_recurse_fix
+  template<class... xs>
+  struct _recursively_as_much_as_possible<_recursively_as_much_as_possible_next<_recursion_result<xs...>>>
   {
-      template<class C>
-      using f = typename C::template f<y>;
+    template<class F, class C>
+    using f = typename C::template f<xs...>;
   };
-
-  template<class F, class... xs>
-  struct _infinite_recurse_fix<F, list<xs...>, _recurse_capture::f<xs...>>
-  {
-      template<class C>
-      using f = typename C::template f<xs...>;
-  };
-
-  template<class F, class... xs, class... ys>
-  struct _infinite_recurse_fix<F, list<xs...>, _recurse_capture::f<ys...>>
-  : _infinite_recurse_fix<F, list<ys...>,
-      typename _recurse_fix_next<F>::template f<ys...>>
-  {};
 }
 /// \endcond
 namespace jln::mp::smp
 {
   template<class F, class C = identity>
-  using recurse = contract<mp::recurse<
-    try_subcontract<F, mp::identity, mp::always<mp::stop_iteration<na>>>,
-    monadic<assume_unary<C>>>>;
+  using recursively = contract<mp::recursively<
+    try_subcontract<F, mp::identity, mp::always<na, mp::recursion_result>>,
+    monadic<subcontract<C>>>>;
 
   template<class F, class C = identity>
-  using recurse_fix = contract<mp::recurse_fix<
-    try_subcontract<F>, monadic<assume_unary<C>>>>;
+  using recursively_as_much_as_possible = contract<mp::recursively_as_much_as_possible<
+    try_subcontract<F, mp::identity, mp::always<na, mp::recursion_result>>,
+    monadic<subcontract<C>>>>;
 
-  template<class F, class C = identity>
-  using infinite_recurse = try_contract<mp::infinite_recurse<
-    try_subcontract<F>, monadic<assume_unary<C>>>>;
-
-  template<class F, class C = identity>
-  using infinite_recurse_fix = try_contract<mp::infinite_recurse_fix<
-    try_subcontract<F>, monadic<assume_unary<C>>>>;
+  using stop_recursion = contract<mp::stop_recursion>;
+  using next_recursion = contract<mp::next_recursion>;
+  using recursion_result = contract<mp::recursion_result>;
 }
 
 /// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class F, class C>
-  struct _sfinae<sfinae, recurse<F, C>>
+  struct _sfinae<sfinae, recursively<F, C>>
   {
-    using type = smp::recurse<sfinae<F>, sfinae<C>>;
+    using type = smp::recursively<sfinae<F>, sfinae<C>>;
   };
 
   template<template<class> class sfinae, class F, class C>
-  struct _sfinae<sfinae, recurse_fix<F, C>>
+  struct _sfinae<sfinae, recursively_as_much_as_possible<F, C>>
   {
-    using type = smp::recurse_fix<sfinae<F>, sfinae<C>>;
+    using type = smp::recursively_as_much_as_possible<sfinae<F>, sfinae<C>>;
   };
 
-  template<template<class> class sfinae, class F, class C>
-  struct _sfinae<sfinae, infinite_recurse<F, C>>
+  template<template<class> class sfinae>
+  struct _sfinae<sfinae, stop_recursion>
   {
-    using type = smp::infinite_recurse<sfinae<F>, sfinae<C>>;
+    using type = smp::stop_recursion;
   };
 
-  template<template<class> class sfinae, class F, class C>
-  struct _sfinae<sfinae, infinite_recurse_fix<F, C>>
+  template<template<class> class sfinae>
+  struct _sfinae<sfinae, next_recursion>
   {
-    using type = smp::infinite_recurse_fix<sfinae<F>, sfinae<C>>;
+    using type = smp::next_recursion;
+  };
+
+  template<template<class> class sfinae>
+  struct _sfinae<sfinae, recursion_result>
+  {
+    using type = smp::recursion_result;
   };
 }
 /// \endcond
@@ -11320,6 +12047,86 @@ namespace jln::mp
 {
   /// \ingroup list
 
+  /// Removes \c N elements from the end of a \sequence.
+  /// \pre `0 <= N <= sizeof...(xs)`
+  /// \treturn \sequence
+  template<class N, class C = listify>
+  struct drop_back
+  {
+    template<class... xs>
+    using f = call<rotate<number<-N::value>, drop_front<N, C>>, xs...>;
+  };
+
+  template<int_ n, class C = listify>
+  using drop_back_c = drop_back<number<n>, C>;
+
+  namespace emp
+  {
+    template<class L, class N, class C = mp::listify>
+    using drop_back = unpack<L, mp::drop_back<N, C>>;
+
+    template<class L, int_ n, class C = mp::listify>
+    using drop_back_c = unpack<L, mp::drop_back<number<n>, C>>;
+  }
+
+  /// \cond
+  template<class C>
+  struct drop_back<number<0>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+  /// \endcond
+}
+namespace jln::mp::smp
+{
+  template<int_ n, class C = listify>
+  using drop_back_c = try_contract<mp::drop_back<mp::number<n>, subcontract<C>>>;
+}
+
+JLN_MP_MAKE_REGULAR_SMP2_P(drop_back, (N), (C, smp::listify), smp::drop_back_c<N::value, C>)
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class N, class C>
+  struct _sfinae<sfinae, drop_back<N, C>>
+  {
+    using type = smp::drop_back<N, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp::smp
+{
+  template<class Pred, class C = listify>
+  using drop_while = contract<mp::drop_while<
+    concepts::predicate<assume_unary<Pred>>,
+    mp::if_<
+      mp::if_<
+        mp::size<>,
+        mp::front<concepts::predicate<assume_unary<Pred>, mp::always<mp::true_>>>,
+        mp::always<mp::true_>
+      >,
+      subcontract<C>,
+      violation
+    >
+  >>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class Pred, class C>
+  struct _sfinae<sfinae, drop_while<Pred, C>>
+  {
+    using type = smp::drop_while<Pred, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup list
+
   /// Removes all elements between two arbitrary indices of a sequence.
   /// \pre `0 <= start < sizeof...(xs)`
   /// \pre `0 <= start + size < sizeof...(xs)`
@@ -11330,8 +12137,8 @@ namespace jln::mp
     template<class... xs>
     using f = call<
       join<C>,
-      typename take<start>::template f<xs...>,
-      call<drop_c<std::min<std::size_t>(
+      call<take_front<start>, xs...>,
+      call<drop_front_c<std::min<std::size_t>(
         sizeof...(xs),
         detail::validate_index<start::value, sizeof...(xs)>::value
         + std::size_t{size::value}
@@ -11379,7 +12186,7 @@ namespace jln::mp
   /// \pre seq must be a \list
   /// \treturn \sequence
   template<class i, class seq, class C = listify>
-  using insert_range = tee<take<i>, always<seq>, drop<i>, join<C>>;
+  using insert_range = tee<take_front<i>, always<seq>, drop_front<i>, join<C>>;
 
   template<int_ i, class seq, class C = listify>
   using insert_range_c = insert_range<number<i>, seq, C>;
@@ -11420,7 +12227,7 @@ namespace jln::mp::detail
     template<int_ i, class C>
     using f = test_contract<
       size<greater_equal_than_c<i>>,
-      tee<take_c<i>, always<list<xs...>>, drop_c<i>, join<subcontract<C>>>
+      tee<take_front_c<i>, always<list<xs...>>, drop_front_c<i>, join<subcontract<C>>>
     >;
   };
 
@@ -11544,6 +12351,45 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp
+{
+  /// \ingroup search
+
+  /// Difference between the number of parameter \c xs and \c I::value.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   size<push_front<I, sub<C>>>
+  ///   \endcode
+  /// \treturn \number
+  template <class I, class C = identity>
+  struct offset
+  {
+    template <class... xs>
+    using f = typename C::template f<number<(I::value - int_{sizeof...(xs)})>>;
+  };
+
+  /// \cond
+  template <class I>
+  struct offset<I, identity>
+  {
+    template <class... xs>
+    using f = number<(I::value - int_{sizeof...(xs)})>;
+  };
+  /// \endcond
+
+  template<int_ i, class C = identity>
+  using offset_c = offset<number<i>, C>;
+
+  namespace emp
+  {
+    template<class L, class I, class C = mp::identity>
+    using offset = unpack<L, mp::offset<I, C>>;
+
+    template<class L, int_ i, class C = mp::identity>
+    using offset_c = unpack<L, mp::offset<number<i>, C>>;
+  }
+}
 namespace jln::mp::smp
 {
   template <int_ i, class C = identity>
@@ -11683,19 +12529,19 @@ namespace jln::mp::detail
     bool = (beg < n), bool = (end < n)>
   struct _range_impl // true, true
   {
-    using type = drop_c<beg, take_c<end - beg, C>>;
+    using type = drop_front_c<beg, take_front_c<end - beg, C>>;
   };
 
   template<int_ end, int_ n, class C>
   struct _range_impl<0, end, n, C, true, true>
   {
-    using type = take_c<end, C>;
+    using type = take_front_c<end, C>;
   };
 
   template<int_ beg, int_ end, int_ n, class C>
   struct _range_impl<beg, end, n, C, true, false>
   {
-    using type = drop_c<beg, C>;
+    using type = drop_front_c<beg, C>;
   };
 
   template<int_ end, int_ n, class C>
@@ -11831,7 +12677,7 @@ namespace jln::mp::detail
   struct _slice<2>
   {
     template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
-    using f = drop_c<start, take_c<
+    using f = drop_front_c<start, take_front_c<
       detail::validate_index<size - 1,
 #ifdef _MSC_VER
         (start < int_(len) ? int_(len) - start : 0)
@@ -11870,7 +12716,7 @@ namespace jln::mp::detail
   struct _slice<1>
   {
     template<int_ start, int_ size, unsigned stride, class C, std::size_t len>
-    using f = drop_c<
+    using f = drop_front_c<
       start,
       typename emp::make_int_sequence_v_c<
         detail::validate_index<int_(len) - start, len>::value,
@@ -11895,7 +12741,7 @@ namespace jln::mp::detail
   struct _slice<3>
   {
     template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
-    using f = drop_c<start, front<C>>;
+    using f = drop_front_c<start, front<C>>;
   };
 }
 /// \endcond
@@ -12076,7 +12922,7 @@ namespace jln::mp::detail
   {
     return n <= size ? (n ? 1 : 0)         // C<list<xs...>>
       : size == 1 ? (stride == 1 ? 2 : 3)  // C<list<xs>...> / slice<0, n/stride, stride>
-      : stride > n ? 9                     // take
+      : stride > n ? 9                     // take_front
       : stride == 1 ? (size == 2 ? 4 : 5)  // common case
       : stride == size ? 6                 // group_n
       // slice<zip_longest> / slice<zip>
@@ -12123,7 +12969,7 @@ namespace jln::mp::detail
     template<class C, int_, int_, class x, class... xs>
     using f = typename _zip_impl<
       C,
-      mp::rotate_c<-1, drop_c<1>>::f<x, xs...>,
+      mp::rotate_c<-1, drop_front_c<1>>::f<x, xs...>,
       list<xs...>
     >::type;
   };
@@ -12131,16 +12977,16 @@ namespace jln::mp::detail
   template<>
   struct _sliding<5>
   {
-    template<class C, int_ size, class drop>
+    template<class C, int_ size, class drop_front>
     struct impl
     {
       template<int_... i>
-      using f = _tee<zip<C>, rotate_c<i-size, drop>...>;
+      using f = _tee<zip<C>, rotate_c<i-size, drop_front>...>;
     };
 
     template<class C, int_ size, int_, class... xs>
     using f = typename memoize_call<
-      make_int_sequence_v<impl<C, size-1, drop_c<size-1>>>,
+      make_int_sequence_v<impl<C, size-1, drop_front_c<size-1>>>,
       number<size>
     >::template f<xs...>;
   };
@@ -12214,7 +13060,7 @@ namespace jln::mp::detail
   struct _sliding<9>
   {
     template<class C, int_ size, int_, class... xs>
-    using f = typename C::template f<typename take_c<size>::template f<xs...>>;
+    using f = typename C::template f<typename take_front_c<size>::template f<xs...>>;
   };
 }
 /// \endcond
@@ -12306,11 +13152,11 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename join<C>::template f<
-      call<take_c<i>, xs...>,
+      call<take_front_c<i>, xs...>,
       list<call<at_c<j>, xs...>>,
-      call<drop_c<i+1, take_c<j-i-1>>, xs...>,
+      call<drop_front_c<i+1, take_front_c<j-i-1>>, xs...>,
       list<call<at_c<i>, xs...>>,
-      call<drop_c<j+1>, xs...>
+      call<drop_front_c<j+1>, xs...>
     >;
   };
 
@@ -12386,6 +13232,103 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, swap_elem<i, j, C>>
   : detail::_smp_swap_index<swap_elem<i, j, sfinae<C>>>
   {};
+}
+/// \endcond
+namespace jln::mp::smp
+{
+  template<int_ n, class C = listify>
+  using take_back_c = try_contract<mp::take_back<mp::number<n>, subcontract<C>>>;
+}
+
+JLN_MP_MAKE_REGULAR_SMP2_P(take_back, (N), (C, smp::listify), smp::take_back_c<N::value, C>)
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class N, class C>
+  struct _sfinae<sfinae, take_back<N, C>>
+  {
+    using type = smp::take_back<N, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class>
+    struct take_while_impl;
+  }
+  /// \endcond
+
+  /// \ingroup list
+
+  /// Extracts the first elements of a \sequence that satisfy a \predicate.
+  /// \treturn \sequence
+  template<class Pred, class C = listify>
+  struct take_while
+  {
+    template<class... xs>
+    using f = typename detail::take_while_impl<
+      typename detail::_drop_while<
+        detail::_drop_while_select(sizeof...(xs)), true
+      >::template f<0, Pred, xs...>
+    >::template f<C, xs...>;
+  };
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct take_while_impl<_drop_while_continue>
+  {
+    template<class C, class... xs>
+    using f = typename C::template f<xs...>;
+  };
+
+  template<std::size_t n>
+  struct take_while_impl<_drop_while_result<n>>
+  {
+    template<class C, class... xs>
+    using f = typename take_front<number<sizeof...(xs)-n-1>, C>::template f<xs...>;
+  };
+}
+/// \encond
+namespace jln::mp::smp
+{
+  template<class Pred, class C = listify>
+  using take_while = contract<mp::invoke_twice<
+    mp::drop_while<
+      concepts::predicate<assume_unary<Pred>>,
+      mp::if_<
+        mp::if_<
+          mp::size<>,
+          mp::front<concepts::predicate<assume_unary<Pred>, mp::always<mp::true_>>>,
+          mp::always<mp::true_>
+        >,
+        mp::size<
+          mp::push_back<
+            subcontract<C>,
+            mp::lift<mp::drop_back>
+          >
+        >,
+        mp::always<violation>
+      >
+    >
+  >>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class Pred, class C>
+  struct _sfinae<sfinae, take_while<Pred, C>>
+  {
+    using type = smp::take_while<Pred, sfinae<C>>;
+  };
 }
 /// \endcond
 namespace jln::mp
