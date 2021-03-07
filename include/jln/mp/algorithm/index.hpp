@@ -1,61 +1,70 @@
 #pragma once
 
-#include <jln/mp/algorithm/find.hpp>
+#include <jln/mp/list/drop_while.hpp>
 #include <jln/mp/list/size.hpp>
-#include <jln/mp/list/offset.hpp>
-#include <jln/mp/list/push_front.hpp>
-#include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/is.hpp>
-#include <jln/mp/number/operators.hpp>
-#include <jln/mp/functional/try.hpp>
+#include <jln/mp/detail/to_predicate_not.hpp>
 
 namespace jln::mp
 {
-  /// \ingroup search
-
-  template<class F, class C = identity>
-#ifdef JLN_MP_DOXYGENATING
-  using index_for = tee<size<>, F, sub<C>>;
-#else
-  struct index_for
-  {
-    template<class... xs>
-    using f = typename C::template f<number<int_(sizeof...(xs)) - call<F, xs...>::value>>;
-  };
-#endif
-
   /// \cond
-  template<class F>
-  struct index_for<F, identity>
+  namespace detail
   {
-    template<class... xs>
-    using f = number<int_(sizeof...(xs)) - call<F, xs...>::value>;
-  };
+    template<class>
+    struct index_if_impl;
+  }
   /// \endcond
 
-  template<class Pred, class C = identity, class NC = always<na>>
+  /// \ingroup search
+
+  /// Finds the index of the first element of \sequence
+  /// that satisfies the \predicate \c Pred.
+  /// Calls \c TC with the index found or \c FC with the whole \sequence.
+  /// \treturn \number
+  template<class Pred, class TC = identity, class FC = size<>>
   struct index_if
   {
     template<class... xs>
-    using f = typename find_if<Pred, offset_c<sizeof...(xs), C>, NC>
-      ::template f<xs...>;
+    using f = typename detail::index_if_impl<
+      typename detail::_drop_while<
+        detail::_drop_while_select(sizeof...(xs)), true
+      >::template f<0, detail::to_predicate_not_t<Pred>, xs...>
+    >::template f<TC, FC, xs...>;
   };
 
-  /// Returns the position of the first occurrence of a specified \value.
-  /// Use \c NC::f<> if the value to search for never occurs.
+  /// Finds the index of the first element of \sequence that is a type \c T.
+  /// Calls \c TC with the index found or \c FC with the whole \sequence.
   /// \treturn \number
-  template<class T, class C = listify, class NC = always<na>>
-  using index_of = index_if<is<T>, C, NC>;
+  template<class T, class TC = identity, class FC = size<>>
+  using index_of = index_if<is<T>, TC, FC>;
 
   namespace emp
   {
-    template<class L, class F, class C = mp::identity>
-    using index_for = unpack<L, mp::index_for<F, C>>;
+    template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
+    using index_if = unpack<L, mp::index_if<Pred, TC, FC>>;
 
-    template<class L, class Pred, class C = mp::identity, class NC = mp::always<na>>
-    using index_if = unpack<L, mp::index_if<Pred, C, NC>>;
-
-    template<class L, class T, class C = mp::identity, class NC = mp::always<na>>
-    using index_of = unpack<L, mp::index_of<T, C, NC>>;
+    template<class L, class T, class TC = mp::identity, class FC = mp::size<>>
+    using index_of = unpack<L, mp::index_of<T, TC, FC>>;
   }
 }
+
+#include <jln/mp/number/number.hpp>
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct index_if_impl<_drop_while_continue>
+  {
+    template<class TC, class FC, class... xs>
+    using f = typename FC::template f<xs...>;
+  };
+
+  template<std::size_t n>
+  struct index_if_impl<_drop_while_result<n>>
+  {
+    template<class TC, class FC, class... xs>
+    using f = typename TC::template f<number<sizeof...(xs)-n-1>>;
+  };
+}
+/// \endcond

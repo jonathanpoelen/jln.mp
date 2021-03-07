@@ -52,6 +52,10 @@ TEST()
     ;
 
   ut::not_invocable<smp::take_while<is<_3>, bad_function>>();
+  ut::not_invocable<smp::take_while<is<_3>, bad_function>, void>();
+  ut::not_invocable<smp::take_while<is<_3>, void>>();
+  ut::not_invocable<smp::take_while<always<void>>, void>();
+  ut::not_invocable<smp::take_while<void>, void>();
 }
 
 TEST_SUITE_END()

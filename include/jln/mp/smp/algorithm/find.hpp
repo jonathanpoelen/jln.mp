@@ -4,13 +4,12 @@
 #include <jln/mp/smp/list/clear.hpp>
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/algorithm/find.hpp>
 #include <jln/mp/list/take_back.hpp>
 #include <jln/mp/list/drop_while.hpp>
 #include <jln/mp/list/front.hpp>
-#include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/list/push_back.hpp>
 #include <jln/mp/list/size.hpp>
-#include <jln/mp/algorithm/find.hpp>
 #include <jln/mp/functional/invoke_twice.hpp>
 #include <jln/mp/functional/if.hpp>
 
