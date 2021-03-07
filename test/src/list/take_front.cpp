@@ -10,7 +10,6 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<take_front, _0>();
   test_pack3<take_front>();
 
   ut::same<seq_0_1, emp::take_front_c<list<_0, _1, _2, _3>, 2>>();

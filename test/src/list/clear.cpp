@@ -8,7 +8,7 @@ TEST()
 {
   using namespace jln::mp;
 
-  test_pack2<clear>();
+  test_pack3<clear>();
 
   test_context<clear<>, smp::clear<>>()
     .test<list<>>()
