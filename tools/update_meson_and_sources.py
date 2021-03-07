@@ -63,20 +63,26 @@ def genfiles(dir_path):
     outfile.write("#pragma once\n\n")
 
     for d in ordered_listdir(f'{path}'):
-      if d in ('smp', 'config', 'detail'):
+      if d in ('smp', 'config'):
         continue
 
       newpath = f'{path}/{d}'
       if os.path.isdir(newpath):
-        outfile.write(f'#include <jln/{dir_path}/{d}.hpp>\n')
-        with open(f'{newpath}.hpp', 'w') as flist:
-          flist.write("#pragma once\n\n")
-          for filename in ordered_listdir(newpath):
+        if d == 'detail':
+          for filename in os.listdir(newpath):
             if filename.endswith('.hpp'):
-              flist.write(f'#include <jln/{dir_path}/{d}/{filename}>\n')
               gentest(test_prefix, dir_path, f'{d}/{filename}')
+        else:
+          outfile.write(f'#include <jln/{dir_path}/{d}.hpp>\n')
+          with open(f'{newpath}.hpp', 'w') as flist:
+            flist.write("#pragma once\n\n")
+            for filename in ordered_listdir(newpath):
+              if filename.endswith('.hpp'):
+                flist.write(f'#include <jln/{dir_path}/{d}/{filename}>\n')
+                gentest(test_prefix, dir_path, f'{d}/{filename}')
       elif not os.path.isdir(newpath[:-4]):
-        outfile.write(f'#include <jln/{dir_path}/{d}>\n')
+        if d != 'detail':
+          outfile.write(f'#include <jln/{dir_path}/{d}>\n')
         gentest(test_prefix, dir_path, d)
 
 

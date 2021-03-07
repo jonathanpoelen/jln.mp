@@ -1,178 +1,66 @@
 #pragma once
 
-#include <jln/mp/list/listify.hpp>
+#include <jln/mp/list/drop_while.hpp>
+#include <jln/mp/list/clear.hpp>
 #include <jln/mp/utility/is.hpp>
-#include <jln/mp/utility/unpack.hpp>
-#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/detail/to_predicate_not.hpp>
 
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-    template<int, unsigned>
-    struct _find;
-
-    constexpr unsigned _first_find_select(unsigned n);
+    template<class>
+    struct find_if_impl;
   }
   /// \endcond
 
   /// \ingroup search
 
-  /// Finds the first element that satisfy a predicate.
-  /// Calls \c C with all the elements since the one found at the end.
-  /// If no element is found, \c NC is used.
+  /// Finds the first element that satisfy a \predicate.
+  /// Calls \c TC with all the elements since the one found at the end.
+  /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence
-  template<class Pred, class C = listify, class NC = C>
+  template<class Pred, class TC = listify, class FC = clear<TC>>
   struct find_if
   {
     template<class... xs>
-    using f = typename detail::_find<-1,
-      detail::_first_find_select(sizeof...(xs))
-    >::template f<Pred, C, NC, xs...>;
+    using f = typename detail::find_if_impl<
+      typename detail::_drop_while<
+        detail::_drop_while_select(sizeof...(xs)), true
+      >::template f<0, detail::to_predicate_not_t<Pred>, xs...>
+    >::template f<TC, FC, xs...>;
   };
 
-  template<class T, class C = listify, class NC = C>
-  using find = find_if<is<T>, C, NC>;
+  template<class T, class TC = listify, class FC = clear<TC>>
+  using find = find_if<is<T>, TC, FC>;
 
   namespace emp
   {
-    template<class L, class Pred, class C = mp::listify, class NC = C>
-    using find_if = unpack<L, mp::find_if<Pred, C, NC>>;
+    template<class L, class Pred, class TC = mp::listify, class FC = clear<TC>>
+    using find_if = unpack<L, mp::find_if<Pred, TC, FC>>;
 
-    template<class L, class T, class C = mp::listify, class NC = C>
-    using find = unpack<L, mp::find_if<mp::is<T>, C, NC>>;
+    template<class L, class T, class TC = mp::listify, class FC = clear<TC>>
+    using find = unpack<L, mp::find_if<mp::is<T>, TC, FC>>;
   }
 }
 
 
-#include <jln/mp/detail/enumerate.hpp>
-#include <jln/mp/list/drop_front.hpp>
-
 /// \cond
 namespace jln::mp::detail
 {
-  constexpr unsigned _first_find_select(unsigned n)
-  {
-    return
-      n == 0 ? 0
-    : n < 64 ? 17
-    : n < 256 ? 65
-    : 257
-    ;
-  }
-
-  template<int i, unsigned>
-  struct _find
-  {
-    template<class Pred, class C, class NC, class... xs>
-    using f = typename drop_front_c<i, C>::template f<xs...>;
-  };
-
   template<>
-  struct _find<-1, 0>
+  struct find_if_impl<_drop_while_continue>
   {
-    template<class Pred, class C, class NC, class... xs>
-    using f = typename NC::template f<>;
+    template<class TC, class FC, class... xs>
+    using f = typename FC::template f<xs...>;
   };
 
-  template<bool... xs>
-  constexpr int _index_of()
+  template<std::size_t n>
+  struct find_if_impl<_drop_while_result<n>>
   {
-    unsigned i = 0;
-    (void)(... && (!xs && ++i));
-    return i >= sizeof...(xs) ? -1 : int(i);
-  }
-
-#define JLN_MP_FIND_IMPL(nprev, mp_dup)                  \
-  template<>                                             \
-  struct _find<-1, nprev+16>                             \
-  {                                                      \
-    template<class Pred, class C, class NC,              \
-      mp_dup(class, JLN_MP_COMMA),                       \
-      class... xs>                                       \
-    using f = typename _find<                            \
-      _index_of<bool(Pred::template f<xs>::value)...>(), \
-      0>                                                 \
-    ::template f<Pred, C, NC, xs...>;                    \
+    template<class TC, class FC, class... xs>
+    using f = typename drop_front<number<sizeof...(xs)-n-1>, TC>::template f<xs...>;
   };
-
-  JLN_MP_FIND_IMPL(0, JLN_MP_REPEAT_16)
-  JLN_MP_FIND_IMPL(64, JLN_MP_REPEAT_64)
-  JLN_MP_FIND_IMPL(256, JLN_MP_REPEAT_256)
-
-#undef JLN_MP_FIND_IMPL
-
-  template<>
-  struct _find<-1, 17>
-  {
-    template<class Pred, class C, class NC, class... xs>
-    using f = typename _find<
-      _index_of<bool(Pred::template f<xs>::value)...>(),
-      0>
-    ::template f<Pred, C, NC, xs...>;
-  };
-
-  constexpr unsigned _find_select(unsigned n, unsigned r)
-  {
-    return
-      n == 0 ? 0
-    : (n < 64 ? 16
-    : n < 256 ? 64
-    : 256) + r
-    ;
-  }
-
-#define JLN_MP_FIND_IMPL(nprev, n, mp_skip, mp_xs) \
-  template<>                                       \
-  struct _find<-1, nprev+n>                        \
-  {                                                \
-    template<class Pred, class C, class NC,        \
-      mp_skip(class, JLN_MP_COMMA),                \
-      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),      \
-      class... xs>                                 \
-    using f = typename _find<                      \
-      _index_of<mp_xs(                             \
-        bool JLN_MP_PAREN_OPEN Pred::template f<,  \
-        >::value JLN_MP_PAREN_CLOSE, JLN_MP_COMMA  \
-      )>(),                                        \
-      _find_select(sizeof...(xs), n)               \
-    >                                              \
-    ::template f<                                  \
-      Pred, C, NC,                                 \
-      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), \
-      xs...                                        \
-    >;                                             \
-  };
-
-  JLN_MP_FIND_IMPL(64, 64, JLN_MP_REPEAT_64, JLN_MP_XS_64)
-  JLN_MP_FIND_IMPL(256, 64, JLN_MP_REPEAT_256, JLN_MP_XS_64)
-  JLN_MP_FIND_IMPL(256, 256, JLN_MP_REPEAT_256, JLN_MP_XS_256)
-
-#undef JLN_MP_FIND_IMPL
-
-#define JLN_MP_FIND_IMPL(n, mp_xs)                 \
-  template<>                                       \
-  struct _find<-1, n+1>                            \
-  {                                                \
-    template<class Pred, class C, class NC,        \
-      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),      \
-      class... xs>                                 \
-    using f = typename _find<                      \
-      _index_of<mp_xs(                             \
-        bool JLN_MP_PAREN_OPEN Pred::template f<,  \
-        >::value JLN_MP_PAREN_CLOSE, JLN_MP_COMMA  \
-      )>(),                                        \
-      _find_select(sizeof...(xs), n)>              \
-    ::template f<                                  \
-      Pred, C, NC,                                 \
-      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), \
-      xs...>;                                      \
-  };
-
-  JLN_MP_FIND_IMPL(64, JLN_MP_XS_64)
-  JLN_MP_FIND_IMPL(256, JLN_MP_XS_256)
-
-#undef JLN_MP_FIND_IMPL
 }
 /// \endcond

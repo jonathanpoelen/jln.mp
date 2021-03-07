@@ -1,6 +1,7 @@
 #pragma once
 
 #include <jln/mp/list/list.hpp>
+#include <jln/mp/detail/to_predicate_not.hpp>
 
 namespace jln::mp
 {
@@ -21,13 +22,17 @@ namespace jln::mp
   /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
   /// \treturn \list
   template<class Pred>
-  using wrap_in_list_if = typename detail::mk_wrap_in_list_if<Pred>::type;
+  using wrap_in_list_if = typename detail::mk_wrap_in_list_if_not<
+    detail::to_predicate_not_t<Pred>
+  >::type;
 
   /// Returns a \list with the first element if the predicate is not checked, otherwise returns a empty list.
   /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
   /// \treturn \list
   template<class Pred>
-  using wrap_in_list_if_not = typename detail::mk_wrap_in_list_if_not<Pred>::type;
+  using wrap_in_list_if_not = typename detail::mk_wrap_in_list_if<
+    detail::to_predicate_not_t<Pred>
+  >::type;
 
   template<bool b>
   struct wrap_in_list_c;
@@ -69,6 +74,7 @@ namespace jln::mp
 #include <jln/mp/utility/is.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/tee.hpp>
+#include <jln/mp/functional/lift.hpp>
 #include <jln/mp/number/operators.hpp>
 
 /// \cond
@@ -82,37 +88,16 @@ namespace jln::mp::detail
   };
 
   template<class Pred>
-  struct mk_wrap_in_list_if
-  {
-    using type = _wrap_in_list_if<Pred>;
-  };
-
-  template<class x, class C>
-  struct mk_wrap_in_list_if<is<x, not_<C>>>
-  : mk_wrap_in_list_if_not<is<x, C>>
-  {};
-
-  template<class C>
-  struct mk_wrap_in_list_if<same<not_<C>>>
-  : mk_wrap_in_list_if_not<same<C>>
-  {};
-
-  template<class C>
-  struct mk_wrap_in_list_if<not_<C>>
-  : mk_wrap_in_list_if_not<C>
-  {};
-
-  template<class Pred>
-  struct mk_wrap_in_list_if<tee<Pred, not_<>>>
-  : mk_wrap_in_list_if_not<Pred>
-  {};
-
-
-  template<class Pred>
   struct _wrap_in_list_if_not
   {
     template<class x, class... xs>
     using f = typename wrap_in_list_c<!call<Pred, x, xs...>::value>::template f<x>;
+  };
+
+  template<class Pred>
+  struct mk_wrap_in_list_if
+  {
+    using type = _wrap_in_list_if<Pred>;
   };
 
   template<class Pred>
@@ -121,24 +106,54 @@ namespace jln::mp::detail
     using type = _wrap_in_list_if_not<Pred>;
   };
 
-  template<class x, class C>
-  struct mk_wrap_in_list_if_not<is<x, not_<C>>>
-  : mk_wrap_in_list_if<is<x, C>>
-  {};
 
-  template<class C>
-  struct mk_wrap_in_list_if_not<same<not_<C>>>
-  : mk_wrap_in_list_if<same<C>>
-  {};
+  template<class x>
+  struct mk_wrap_in_list_if<is<x, not_<>>>
+  {
+    using type = _wrap_in_list_if_not<is<x>>;
+  };
 
-  template<class C>
-  struct mk_wrap_in_list_if_not<not_<C>>
-  : mk_wrap_in_list_if<C>
-  {};
+  template<>
+  struct mk_wrap_in_list_if<same<not_<>>>
+  {
+    using type = _wrap_in_list_if_not<same<>>;
+  };
+
+  template<template<class...> class F>
+  struct mk_wrap_in_list_if<lift<F, not_<>>>
+  {
+    using type = _wrap_in_list_if_not<lift<F>>;
+  };
+
+  template<class Pred>
+  struct mk_wrap_in_list_if<tee<Pred, not_<>>>
+  {
+    using type = _wrap_in_list_if_not<Pred>;
+  };
+
+
+  template<class x>
+  struct mk_wrap_in_list_if_not<is<x, not_<>>>
+  {
+    using type = _wrap_in_list_if<is<x>>;
+  };
+
+  template<>
+  struct mk_wrap_in_list_if_not<same<not_<>>>
+  {
+    using type = _wrap_in_list_if<same<>>;
+  };
+
+  template<template<class...> class F>
+  struct mk_wrap_in_list_if_not<lift<F, not_<>>>
+  {
+    using type = _wrap_in_list_if<lift<F>>;
+  };
 
   template<class Pred>
   struct mk_wrap_in_list_if_not<tee<Pred, not_<>>>
-  : mk_wrap_in_list_if<Pred>
-  {};
+  {
+    using type = _wrap_in_list_if<Pred>;
+  };
 }
 /// \endcond

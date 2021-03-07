@@ -10,7 +10,7 @@
 namespace jln::mp::smp
 {
   template<class Pred, class C = listify>
-  using drop_while = try_contract<mp::drop_while<
+  using drop_while = contract<mp::drop_while<
     concepts::predicate<assume_unary<Pred>>,
     mp::if_<
       mp::if_<

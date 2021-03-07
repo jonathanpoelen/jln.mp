@@ -25,6 +25,15 @@ TEST()
   ut::same<list<>, emp::wrap_in_list_if_not<pred2, int, int>>();
   ut::same<list<int>, emp::wrap_in_list_if_not<pred2, int, char>>();
 
+  ut::same<list<>, emp::wrap_in_list_if<is<int, not_<>>, int>>();
+  ut::same<list<>, emp::wrap_in_list_if<lift<std::is_same, not_<>>, int, int>>();
+  ut::same<list<>, emp::wrap_in_list_if<tee<is<int>, not_<>>, int>>();
+  ut::same<list<>, emp::wrap_in_list_if<tee<lift<std::is_same>, not_<>>, int, int>>();
+  ut::same<list<int>, emp::wrap_in_list_if_not<is<int, not_<>>, int>>();
+  ut::same<list<int>, emp::wrap_in_list_if_not<lift<std::is_same, not_<>>, int, int>>();
+  ut::same<list<int>, emp::wrap_in_list_if_not<tee<is<int>, not_<>>, int>>();
+  ut::same<list<int>, emp::wrap_in_list_if_not<tee<lift<std::is_same>, not_<>>, int, int>>();
+
   test_context<wrap_in_list_if<pred1>, smp::wrap_in_list_if<pred1>>()
     .test<list<int>, int>()
     .test<list<>, char>()

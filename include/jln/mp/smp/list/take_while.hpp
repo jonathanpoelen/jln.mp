@@ -15,7 +15,7 @@
 namespace jln::mp::smp
 {
   template<class Pred, class C = listify>
-  using take_while = try_contract<mp::invoke_twice<
+  using take_while = contract<mp::invoke_twice<
     mp::drop_while<
       concepts::predicate<assume_unary<Pred>>,
       mp::if_<

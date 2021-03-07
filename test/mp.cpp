@@ -48,6 +48,7 @@
 #include "src/algorithm/upper_bound.cpp"
 #include "src/algorithm/zip.cpp"
 #include "src/assume.cpp"
+#include "src/detail/to_predicate_not.cpp"
 #include "src/functional/bind.cpp"
 #include "src/functional/capture.cpp"
 #include "src/functional/cascade.cpp"
