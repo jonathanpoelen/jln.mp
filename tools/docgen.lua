@@ -181,8 +181,9 @@ local charid = R('az','09','AZ') + S':_'
 local id = charid^1
 local cid = C(id)
 local balancedparent = Balanced('(', ')')
+local tagasoperator = '<' * S'= ' + '>='
 local balancedtag = P{
-  '<' * (1 - S'<>()' + V(1) + V(2))^0 * '>',
+  '<' * (1 - S'<>()' + tagasoperator + V(1) + V(2))^0 * '>',
   '(' * (1 - S'()' + V(2))^0 * ')',
 }
 
@@ -233,7 +234,7 @@ local preproc = P{
   )^0)
 
 , c=(P'JLN_MP_DCALL' * (P'F'^0) * (P'_C'^0) * (P'_XS'^0) * '('
-      * ((1-S'()<,' + balancedparent + balancedtag)^1)
+      * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
       * ',' * ws0 * cid
       * ',' * ws0 * C((1-S'()' + balancedparent)^1)
       * ')'
