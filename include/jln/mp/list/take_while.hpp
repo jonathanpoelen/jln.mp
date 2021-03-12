@@ -12,7 +12,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup list
+  /// \ingroup search
 
   /// Extracts the first elements of a \sequence that satisfy a \predicate.
   /// \treturn \sequence
@@ -22,7 +22,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::take_while_impl<
       typename detail::_drop_while<
-        detail::_drop_while_select(sizeof...(xs)), true
+        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
       >::template f<0, Pred, xs...>
     >::template f<C, xs...>;
   };

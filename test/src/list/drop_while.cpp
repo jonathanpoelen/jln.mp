@@ -44,7 +44,7 @@ TEST()
     .test<seq_3_2, JLN_MP_REPEAT_64(_0, JLN_MP_COMMA), _0, _3, _2>()
     ;
 
-  test_context<drop_while<equal_to_c<3>>, smp::drop_while<smp::equal_to_c<3>>, 0>()
+  test_context<drop_while<equal_to_c<3>>, smp::drop_while<smp::equal_to_c<3>>>()
     .test<list<>>()
     .test<seq_1, _1>()
     .test<list<_1, void>, _1, void>()
@@ -54,10 +54,10 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  test_context<drop_while<_3>, smp::drop_while<_3>>()
-    .test<list<>>()
-    .not_invocable<void>()
-    ;
+  // test_context<drop_while<_3>, smp::drop_while<_3>>()
+  //   .test<list<>>()
+  //   .not_invocable<void>()
+  //   ;
 
   ut::not_invocable<smp::drop_while<is<_3>, bad_function>>();
   ut::not_invocable<smp::drop_while<is<_3>, bad_function>, void>();

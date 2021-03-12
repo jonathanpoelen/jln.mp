@@ -54,6 +54,16 @@ namespace jln::mp::detail
     : 1024
     ;
   }
+
+  constexpr unsigned n_8_or_more_16_32_64_128_256(unsigned n)
+  {
+    return n <= 8 ? n
+         : n <= 16 ? 16
+         : n <= 32 ? 32
+         : n <= 64 ? 64
+         : n <= 128 ? 128
+         : 256;
+  }
 }
 
 #define JLN_MP_NIL

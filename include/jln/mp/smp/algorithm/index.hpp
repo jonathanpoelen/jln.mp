@@ -44,10 +44,10 @@ namespace jln::mp::smp
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class F, class C, class NC>
-  struct _sfinae<sfinae, index_if<F, C, NC>>
+  template<template<class> class sfinae, class Pred, class TC, class FC>
+  struct _sfinae<sfinae, index_if<Pred, TC, FC>>
   {
-    using type = smp::index_if<sfinae<F>, sfinae<C>, sfinae<NC>>;
+    using type = smp::index_if<sfinae<Pred>, sfinae<TC>, sfinae<FC>>;
   };
 }
 /// \endcond

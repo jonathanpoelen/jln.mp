@@ -42,7 +42,7 @@ namespace jln::mp::detail
   template<template<class> class sfinae, class Pred, class C>
   struct _sfinae<sfinae, take_while<Pred, C>>
   {
-    using type = smp::take_while<Pred, sfinae<C>>;
+    using type = smp::take_while<sfinae<Pred>, sfinae<C>>;
   };
 }
 /// \endcond

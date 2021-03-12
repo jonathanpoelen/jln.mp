@@ -30,7 +30,7 @@ namespace jln::mp::detail
   template<template<class> class sfinae, class Pred, class C>
   struct _sfinae<sfinae, drop_while<Pred, C>>
   {
-    using type = smp::drop_while<Pred, sfinae<C>>;
+    using type = smp::drop_while<sfinae<Pred>, sfinae<C>>;
   };
 }
 /// \endcond

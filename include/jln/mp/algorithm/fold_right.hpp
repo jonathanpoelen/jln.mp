@@ -39,9 +39,9 @@ namespace jln::mp
 
   namespace emp
   {
-    template<class L, class state, class C = mp::identity>
+    template<class L, class state, class F, class C = mp::identity>
     using fold_right = unpack<L,
-      mp::push_front<state, mp::fold_right<C>>>;
+      mp::push_front<state, mp::fold_right<F, C>>>;
   }
 }
 

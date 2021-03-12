@@ -57,9 +57,9 @@ TEST()
   ut::not_invocable<smp::fold_left<bad_function, bad_function>, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::fold_left<smp::add<>>, _1, _1, _1, _1, _1, void>();
   ut::not_invocable<smp::fold_left<smp::add<>>, void, _1, _1, _1, _1, _1>();
-  ut::not_invocable<smp::fold_left<smp::add<>>, 
+  ut::not_invocable<smp::fold_left<smp::add<>>,
     _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, void>();
-  ut::not_invocable<smp::fold_left<smp::add<>>, 
+  ut::not_invocable<smp::fold_left<smp::add<>>,
     void, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>();
 }
 
