@@ -10,7 +10,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks if the \sequence ends with the given prefix.
-  /// \return \bool
+  /// \treturn \bool
   template<class Seq, class C = identity>
   struct ends_with;
 

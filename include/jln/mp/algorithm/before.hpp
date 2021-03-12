@@ -19,7 +19,7 @@ namespace jln::mp
   /// Find the \sequence before a sub-\sequence.
   /// Calls \c TC with the elements from the beginning to sub-\sequence found.
   /// If no element is found, \c FC is used with the whole \sequence.
-  /// \return \sequence
+  /// \treturn \sequence
 #ifdef JLN_MP_DOXYGENATING
   template<class Seq, class TC = listify, class FC = clear<TC>>
   struct before;

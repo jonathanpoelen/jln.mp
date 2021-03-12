@@ -11,7 +11,7 @@ namespace jln::mp
   /// Search the first sub-\sequence that satisfy a \predicate.
   /// Calls \c TC with all the elements after the one found.
   /// If no element is found, \c FC is used with the whole \sequence.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class Seq, class TC = listify, class FC = clear<TC>>
   struct after;
 

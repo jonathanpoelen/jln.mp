@@ -11,7 +11,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks if the \sequence begins with the given prefix.
-  /// \return \bool
+  /// \treturn \bool
   template<class Seq, class C = identity>
   struct starts_with;
 
