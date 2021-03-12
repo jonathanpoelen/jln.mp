@@ -569,6 +569,16 @@ namespace jln::mp::detail
     : 1024
     ;
   }
+
+  constexpr unsigned n_8_or_more_16_32_64_128_256(unsigned n)
+  {
+    return n <= 8 ? n
+         : n <= 16 ? 16
+         : n <= 32 ? 32
+         : n <= 64 ? 64
+         : n <= 128 ? 128
+         : 256;
+  }
 }
 
 #define JLN_MP_NIL
@@ -2470,9 +2480,9 @@ namespace jln::mp
 
   namespace emp
   {
-    template<class L, class state, class C = mp::identity>
+    template<class L, class state, class F, class C = mp::identity>
     using fold_left = unpack<L,
-      mp::push_front<state, mp::fold_left<C>>>;
+      mp::push_front<state, mp::fold_left<F, C>>>;
   }
 }
 
@@ -4216,6 +4226,767 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    template<int, bool not_found>
+    struct _drop_while;
+
+    template<class>
+    struct drop_while_impl;
+  }
+  /// \endcond
+
+  /// \ingroup search
+
+  /// Remove the first elements of a \sequence that satisfy a \predicate.
+  /// \treturn \sequence
+  template<class Pred, class C = listify>
+  struct drop_while
+  {
+    template<class... xs>
+    using f = typename detail::drop_while_impl<
+      typename detail::_drop_while<
+        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+      >::template f<0, Pred, xs...>
+    >::template f<C, xs...>;
+  };
+
+  namespace emp
+  {
+    template<class L, class Pred, class C = mp::listify>
+    using drop_while = unpack<L, mp::drop_while<Pred, C>>;
+  }
+}
+
+
+#if defined(_MSC_VER) || defined(__clang__)
+#endif
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<unsigned>
+    struct _drop_front;
+
+#if defined(_MSC_VER) || defined(__clang__)
+    template<int_ i, std::size_t n, class = void>
+    struct validate_index
+    {};
+
+    template<int_ i, std::size_t n>
+    struct validate_index<i, n, std::enable_if_t<(int_(n) - i >= 0)>>
+    {
+      static constexpr int_ value = i;
+    };
+#else
+    template<int_ i, std::size_t n>
+    using validate_index = number<(0 * std::size_t{int_(n) - i}) + i>;
+#endif
+  }
+  /// \endcond
+
+  /// \ingroup list
+
+  /// Removes \c N elements from the beginning of a \sequence.
+  /// \pre `0 <= N <= sizeof...(xs)`
+  /// \treturn \sequence
+  template<class N, class C = listify>
+  struct drop_front
+  {
+    template<class... xs>
+    using f = typename detail::_drop_front<
+      detail::n_8_or_less_16_64_256(
+        detail::validate_index<N::value, sizeof...(xs)>::value
+      )
+    >::template f<N::value, C, xs...>;
+  };
+
+  template<int_ n, class C = listify>
+  using drop_front_c = drop_front<number<n>, C>;
+
+  namespace emp
+  {
+    template<class L, class N, class C = mp::listify>
+    using drop_front = unpack<L, mp::drop_front<N, C>>;
+
+    template<class L, int_ n, class C = mp::listify>
+    using drop_front_c = unpack<L, mp::drop_front<number<n>, C>>;
+  }
+
+  /// \cond
+  template<class C>
+  struct drop_front<number<0>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<1>, C>
+  {
+    template<class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<2>, C>
+  {
+    template<class, class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<3>, C>
+  {
+    template<class, class, class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<4>, C>
+  {
+    template<class, class, class, class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_front<number<5>, C>
+  {
+    template<class, class, class, class, class, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+  /// \endcond
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+#define JLN_MP_DROP_IMPL(n, _, mp_rxs, mp_rep) \
+  template<>                                   \
+  struct _drop_front<n>                              \
+  {                                            \
+    template<unsigned size, class C,           \
+      mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)   \
+      class... xs>                             \
+    using f = typename C::template f<xs...>;   \
+  };
+
+  JLN_MP_GEN_XS_0_TO_8(JLN_MP_DROP_IMPL)
+
+#undef JLN_MP_DROP_IMPL
+
+#define JLN_MP_DROP_IMPL(n, mp_xs, mp_rxs, mp_rep) \
+  JLN_MP_DROP_IMPL2(n, mp_xs, mp_rxs, mp_rep,      \
+    n_8_or_less_16_64_256)
+
+#define JLN_MP_DROP_IMPL2(n, _, mp_rxs, mp_rep, next_int) \
+  template<>                                              \
+  struct _drop_front<n>                                         \
+  {                                                       \
+    template<unsigned size, class C,                      \
+      mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)              \
+      class... xs>                                        \
+    using f = typename _drop_front<next_int (size-n)>           \
+      ::template f<(size-n), C, xs...>;                   \
+  };
+
+  JLN_MP_GEN_XS_8_args(JLN_MP_DROP_IMPL2, JLN_MP_NIL)
+  JLN_MP_GEN_XS_16_64_256(JLN_MP_DROP_IMPL)
+
+#undef JLN_MP_DROP_IMPL2
+#undef JLN_MP_DROP_IMPL
+}
+/// \endcond
+/// \cond
+namespace jln::mp::detail
+{
+  template<std::size_t n>
+  struct _drop_while_result
+  {
+    template<class C, std::size_t consumed, class Pred, class... xs>
+    using f = _drop_while_result;
+  };
+
+  struct _drop_while_continue
+  {
+    template<class C, std::size_t consumed, class Pred, class... xs>
+    using f = typename C::template f<consumed, Pred, xs...>;
+  };
+
+  template<>
+  struct drop_while_impl<_drop_while_continue>
+  {
+    template<class C, class...>
+    using f = typename C::template f<>;
+  };
+
+  template<std::size_t n>
+  struct drop_while_impl<_drop_while_result<n>>
+  {
+    template<class C, class... xs>
+    using f = typename drop_front<number<sizeof...(xs)-n-1>, C>::template f<xs...>;
+  };
+
+#define JLN_DROP_WHILE_IMPL(n, m)                                    \
+  template<>                                                         \
+  struct _drop_while<n, true>                                        \
+  {                                                                  \
+    template<std::size_t consumed, class Pred, class x, class... xs> \
+    using f = typename _drop_while<m, Pred::template f<x>::value>    \
+            ::template f<consumed, Pred, xs...>;                     \
+  };                                                                 \
+                                                                     \
+  template<>                                                         \
+  struct _drop_while<n, false>                                       \
+  {                                                                  \
+    template<std::size_t consumed, class Pred, class... xs>          \
+    using f = _drop_while_result<consumed+sizeof...(xs)>;            \
+  }
+
+  JLN_DROP_WHILE_IMPL(7, 6);
+  JLN_DROP_WHILE_IMPL(6, 5);
+  JLN_DROP_WHILE_IMPL(5, 4);
+  JLN_DROP_WHILE_IMPL(4, 3);
+  JLN_DROP_WHILE_IMPL(3, 2);
+  JLN_DROP_WHILE_IMPL(2, 1);
+  JLN_DROP_WHILE_IMPL(1, 0);
+
+#undef JLN_DROP_WHILE_IMPL
+
+  template<>
+  struct _drop_while<0, true>
+  {
+    template<std::size_t consumed, class Pred, class... xs>
+    using f = _drop_while_continue;
+  };
+
+  template<>
+  struct _drop_while<0, false>
+  {
+    template<std::size_t consumed, class Pred, class... xs>
+    using f = _drop_while_result<consumed+sizeof...(xs)>;
+  };
+
+  template<>
+  struct _drop_while<8, true>
+  {
+    template<
+      std::size_t consumed,
+      class Pred,
+      JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA),
+      class... xs>
+    using f = typename _drop_while<7, Pred::template f<_1>::value>
+      ::template f<
+          consumed+sizeof...(xs), Pred,
+          JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>;
+  };
+
+  template<>
+  struct _drop_while<16, true>
+  {
+    template<
+      std::size_t consumed,
+      class Pred,
+      JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA),
+      class... xs>
+    using f = typename _drop_while<7, Pred::template f<_1>::value>
+      ::template f<
+          consumed+sizeof...(xs), Pred,
+          JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>
+      ::template f<
+          _drop_while<n_8_or_more_16_32_64_128_256(sizeof...(xs)), true>,
+          consumed, Pred, xs...>;
+  };
+
+#define JLN_DROP_WHILE_IMPL(n, m, xs)                           \
+  template<>                                                    \
+  struct _drop_while<n, true>                                   \
+  {                                                             \
+    template<                                                   \
+      std::size_t consumed,                                     \
+      class Pred,                                               \
+      xs(class, JLN_MP_NIL, JLN_MP_COMMA),                      \
+      class... xs>                                              \
+    using f = typename _drop_while<m, true>                     \
+      ::template f<                                             \
+          consumed+sizeof...(xs), Pred,                         \
+          xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>             \
+      ::template f<                                             \
+          _drop_while<n_8_or_more_16_32_64_128_256(sizeof...(xs)), true>, \
+          consumed, Pred, xs...>;                               \
+  }
+
+  JLN_DROP_WHILE_IMPL(32, 16, JLN_MP_XS_16);
+  JLN_DROP_WHILE_IMPL(64, 32, JLN_MP_XS_32);
+  JLN_DROP_WHILE_IMPL(128, 64, JLN_MP_XS_64);
+  JLN_DROP_WHILE_IMPL(256, 128, JLN_MP_XS_128);
+
+#undef JLN_DROP_WHILE_IMPL
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup list
+
+  /// Removes all elements from the \sequence.
+  /// \treturn \number
+  template<class C = listify>
+  struct clear
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
+  };
+}
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class>
+    struct find_if_impl;
+  }
+  /// \endcond
+
+  /// \ingroup search
+
+  /// Finds the first element that satisfy a \predicate.
+  /// Calls \c TC with all the elements since the one found at the end.
+  /// If no element is found, \c FC is used with the whole \sequence.
+  /// \treturn \sequence
+  template<class Pred, class TC = listify, class FC = clear<TC>>
+  struct find_if
+  {
+    template<class... xs>
+    using f = typename detail::find_if_impl<
+      typename detail::_drop_while<
+        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+      >::template f<0, detail::to_predicate_not_t<Pred>, xs...>
+    >::template f<TC, FC, xs...>;
+  };
+
+  template<class T, class TC = listify, class FC = clear<TC>>
+  using find = find_if<is<T>, TC, FC>;
+
+  namespace emp
+  {
+    template<class L, class Pred, class TC = mp::listify, class FC = clear<TC>>
+    using find_if = unpack<L, mp::find_if<Pred, TC, FC>>;
+
+    template<class L, class T, class TC = mp::listify, class FC = clear<TC>>
+    using find = unpack<L, mp::find_if<mp::is<T>, TC, FC>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct find_if_impl<_drop_while_continue>
+  {
+    template<class TC, class FC, class... xs>
+    using f = typename FC::template f<xs...>;
+  };
+
+  template<std::size_t n>
+  struct find_if_impl<_drop_while_result<n>>
+  {
+    template<class TC, class FC, class... xs>
+    using f = typename drop_front<number<sizeof...(xs)-n-1>, TC>::template f<xs...>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class>
+    struct index_if_impl;
+  }
+  /// \endcond
+
+  /// \ingroup search
+
+  /// Finds the index of the first element of \sequence
+  /// that satisfies the \predicate \c Pred.
+  /// Calls \c TC with the index found or \c FC with the whole \sequence.
+  /// \treturn \number
+  template<class Pred, class TC = identity, class FC = size<>>
+  struct index_if
+  {
+    template<class... xs>
+    using f = typename detail::index_if_impl<
+      typename detail::_drop_while<
+        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+      >::template f<0, detail::to_predicate_not_t<Pred>, xs...>
+    >::template f<TC, FC, xs...>;
+  };
+
+  /// Finds the index of the first element of \sequence that is a type \c T.
+  /// Calls \c TC with the index found or \c FC with the whole \sequence.
+  /// \treturn \number
+  template<class T, class TC = identity, class FC = size<>>
+  using index_of = index_if<is<T>, TC, FC>;
+
+  namespace emp
+  {
+    template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
+    using index_if = unpack<L, mp::index_if<Pred, TC, FC>>;
+
+    template<class L, class T, class TC = mp::identity, class FC = mp::size<>>
+    using index_of = unpack<L, mp::index_of<T, TC, FC>>;
+  }
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct index_if_impl<_drop_while_continue>
+  {
+    template<class TC, class FC, class... xs>
+    using f = typename FC::template f<xs...>;
+  };
+
+  template<std::size_t n>
+  struct index_if_impl<_drop_while_result<n>>
+  {
+    template<class TC, class FC, class... xs>
+    using f = typename TC::template f<number<sizeof...(xs)-n-1>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<int, bool found>
+    struct _search;
+  }
+  /// \endcond
+
+  /// \ingroup search
+
+  /// Find the \sequence after a sub-\sequence.
+  /// Calls \c TC with all the elements after the sub\sequence found.
+  /// If no element is found, \c FC is used with the whole \sequence.
+  /// \treturn \sequence
+  template<class Pred, class TC = listify, class FC = clear<TC>>
+  struct search
+  {
+    template<class... xs>
+    using f = typename detail::find_if_impl<
+      typename detail::_search<
+        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), false
+      >::template f<sizeof...(xs), Pred, xs...>
+    >::template f<TC, FC, xs...>;
+  };
+
+  /// Search the index of first sub-\sequence that satisfy a \predicate.
+  /// \treturn \sequence
+  template<class Pred, class TC = identity, class FC = size<>>
+  struct search_index
+  {
+    template<class... xs>
+    using f = typename detail::index_if_impl<
+      typename detail::_search<
+        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), false
+      >::template f<sizeof...(xs), Pred, xs...>
+    >::template f<TC, FC, xs...>;
+  };
+
+  namespace emp
+  {
+    template<class L, class Pred, class TC = mp::listify, class FC = mp::clear<TC>>
+    using search = unpack<L, mp::search<Pred, TC, FC>>;
+
+    template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
+    using search_index = unpack<L, mp::search<Pred, TC, FC>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+#define JLN_DROP_WHILE_IMPL(n, m)                                     \
+  template<>                                                          \
+  struct _search<n, false>                                            \
+  {                                                                   \
+    template<std::size_t remaining, class Pred, class x, class... xs> \
+    using f = typename _search<m, Pred::template f<x, xs...>::value>  \
+            ::template f<remaining-1, Pred, xs...>;                   \
+  };                                                                  \
+                                                                      \
+  template<>                                                          \
+  struct _search<n, true>                                             \
+  {                                                                   \
+    template<std::size_t remaining, class Pred, class... xs>          \
+    using f = _drop_while_result<sizeof...(xs)>;                      \
+  }
+
+  JLN_DROP_WHILE_IMPL(7, 6);
+  JLN_DROP_WHILE_IMPL(6, 5);
+  JLN_DROP_WHILE_IMPL(5, 4);
+  JLN_DROP_WHILE_IMPL(4, 3);
+  JLN_DROP_WHILE_IMPL(3, 2);
+  JLN_DROP_WHILE_IMPL(2, 1);
+  JLN_DROP_WHILE_IMPL(1, 0);
+
+#undef JLN_DROP_WHILE_IMPL
+
+  template<>
+  struct _search<0, false>
+  {
+    template<std::size_t remaining, class Pred, class... xs>
+    using f = _drop_while_continue;
+  };
+
+  template<>
+  struct _search<0, true>
+  {
+    template<std::size_t remaining, class Pred, class... xs>
+    using f = _drop_while_result<sizeof...(xs)>;
+  };
+
+  template<>
+  struct _search<8, false>
+  {
+    template<std::size_t remaining, class Pred, class x, class... xs>
+    using f = typename _search<7, Pred::template f<x, xs...>::value>
+      ::template f<remaining-8, Pred, xs...>;
+  };
+
+  template<>
+  struct _search<16, false>
+  {
+    template<
+      std::size_t remaining,
+      class Pred,
+      JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA),
+      class... xs>
+    using f = typename _search<7, Pred::template f<
+        JLN_MP_XS_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...
+      >::value>
+      ::template f<7, Pred,
+                   JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA),
+                   xs...>
+      ::template f<_search<n_8_or_more_16_32_64_128_256(remaining-8), false>,
+                   remaining-8, Pred, xs...>;
+  };
+
+#define JLN_DROP_WHILE_IMPL(n, m, xs)                                         \
+  template<>                                                                  \
+  struct _search<n, false>                                                    \
+  {                                                                           \
+    template<                                                                 \
+      std::size_t remaining,                                                  \
+      class Pred,                                                             \
+      xs(class, JLN_MP_NIL, JLN_MP_COMMA),                                    \
+      class... xs>                                                            \
+    using f = typename _search<m, false>                                      \
+      ::template f<m, Pred, xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...>  \
+      ::template f<_search<n_8_or_more_16_32_64_128_256(remaining-m), false>, \
+                   remaining-m, Pred, xs...>;                                 \
+  }
+
+  JLN_DROP_WHILE_IMPL(32, 16, JLN_MP_XS_16);
+  JLN_DROP_WHILE_IMPL(64, 32, JLN_MP_XS_32);
+  JLN_DROP_WHILE_IMPL(128, 64, JLN_MP_XS_64);
+  JLN_DROP_WHILE_IMPL(256, 128, JLN_MP_XS_128);
+
+#undef JLN_DROP_WHILE_IMPL
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup list
+
+  /// Retrieves the first element of a sequence.
+  /// \treturn \value
+  template<class C = identity>
+  struct front
+  {
+    template<class x, class... xs>
+    using f = typename C::template f<x>;
+  };
+
+  namespace emp
+  {
+    template<class L, class C = mp::identity>
+    using front = unpack<L, front<C>>;
+  }
+}
+
+namespace jln::mp
+{
+  /// \cond
+  template<>
+  struct front<identity>
+  {
+    template<class x, class...>
+    using f = x;
+  };
+  /// \endcond
+}
+namespace jln::mp
+{
+  /// \ingroup list
+
+  /// Extracts \c N elements from the beginning of a \sequence.
+  /// \pre `0 <= N <= sizeof...(xs)`
+  /// \treturn \sequence
+  template<class N, class C = listify>
+  struct take_front
+  {
+    template<class... xs>
+    using f = call<
+      rotate<N, drop_front<number<sizeof...(xs) - N::value>, C>>,
+      xs...>;
+  };
+
+  template<int_ n, class C = listify>
+  using take_front_c = take_front<number<n>, C>;
+
+  namespace emp
+  {
+    template<class L, class N, class C = mp::listify>
+    using take_front = unpack<L, mp::take_front<N, C>>;
+
+    template<class L, int_ n, class C = mp::listify>
+    using take_front_c = unpack<L, mp::take_front<number<n>, C>>;
+  }
+
+  /// \cond
+  template<class C>
+  struct take_front<number<0>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
+  };
+
+  template<class C>
+  struct take_front<number<1>, C>
+  {
+    template<class _1, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1);
+  };
+
+  template<class C>
+  struct take_front<number<2>, C>
+  {
+    template<class _1, class _2, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2);
+  };
+
+  template<class C>
+  struct take_front<number<3>, C>
+  {
+    template<class _1, class _2, class _3, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2, _3);
+  };
+
+  template<class C>
+  struct take_front<number<4>, C>
+  {
+    template<class _1, class _2, class _3, class _4, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2, _3, _4);
+  };
+
+  template<class C>
+  struct take_front<number<5>, C>
+  {
+    template<class _1, class _2, class _3, class _4, class _5, class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2, _3, _4, _5);
+  };
+  /// \endcond
+}
+
+namespace jln::mp
+{
+  /// \ingroup algorithm
+
+  /// Checks if the \sequence begins with the given prefix.
+  /// \return \bool
+  template<class Seq, class C = identity>
+  struct starts_with;
+
+  namespace emp
+  {
+    template<class L, class Seq, class C = mp::identity>
+    using starts_with = unpack<starts_with<Seq, C>, L>;
+  }
+
+  template<class... Ts, class C>
+  struct starts_with<list<Ts...>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(0 <= sizeof...(xs), C,
+      typename conditional_c<sizeof...(Ts) <= sizeof...(xs)>
+      ::template f<take_front_c<sizeof...(Ts), lift<list, is<list<Ts...>>>>,
+                   mp::always<mp::false_>>
+      ::template f<xs...>
+    );
+  };
+
+  /// \cond
+  template<class T, class C>
+  struct starts_with<list<T>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(0 <= sizeof...(xs), C,
+      typename conditional_c<1 <= sizeof...(xs)>
+      ::template f<front<is<T>>, mp::always<mp::false_>>
+      ::template f<xs...>
+    );
+  };
+
+  template<class C>
+  struct starts_with<list<>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(0 <= sizeof...(xs), C, mp::true_);
+  };
+  /// \endcond
+}
+namespace jln::mp
+{
+  /// \ingroup search
+
+  /// Search the first sub-\sequence that satisfy a \predicate.
+  /// Calls \c TC with all the elements after the one found.
+  /// If no element is found, \c FC is used with the whole \sequence.
+  /// \return \sequence
+  template<class Seq, class TC = listify, class FC = clear<TC>>
+  struct after;
+
+  template<class... Ts, class TC, class FC>
+  struct after<list<Ts...>, TC, FC>
+  : search<starts_with<list<Ts...>>, drop_front_c<sizeof...(Ts), TC>, FC>
+  {};
+
+  namespace emp
+  {
+    template<class L, class Seq, class TC = mp::listify, class FC = mp::clear<TC>>
+    using after = unpack<L, mp::after<Seq, TC, FC>>;
+  }
+
+  /// \cond
+  template<class TC, class FC>
+  struct after<list<>, TC, FC>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(0 <= sizeof...(xs), TC, xs...);
+  };
+  /// \endcond
+}
+namespace jln::mp
+{
   /// \ingroup algorithm
 
   /// Checks whether a predicate holds for all elements of a \sequence.
@@ -4244,6 +5015,78 @@ namespace jln::mp
     using any_of = unpack<L, mp::any_of<Pred, C>>;
   }
 } // namespace jln::mp
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class>
+    struct before_impl;
+  }
+  /// \endcond
+
+  /// \ingroup search
+
+  /// Find the \sequence before a sub-\sequence.
+  /// Calls \c TC with the elements from the beginning to sub-\sequence found.
+  /// If no element is found, \c FC is used with the whole \sequence.
+  /// \return \sequence
+#ifdef JLN_MP_DOXYGENATING
+  template<class Seq, class TC = listify, class FC = clear<TC>>
+  struct before;
+
+  template<class... Ts, class TC, class FC>
+  struct before<list<Ts...>, TC, FC>
+  : search<starts_with<list<Ts...>>, drop_back_c<sizeof...(Ts), TC>, FC>
+  {};
+#else
+  template<class Seq, class TC = listify, class FC = TC>
+  struct before
+  {
+    template<class... xs>
+    using f = typename detail::before_impl<
+      typename detail::_search<
+        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), false
+      >::template f<sizeof...(xs), starts_with<Seq>, xs...>
+    >::template f<TC, FC, xs...>;
+  };
+#endif
+
+  namespace emp
+  {
+    template<class L, class Seq, class TC = mp::listify, class FC = TC>
+    using before = unpack<L, mp::before<Seq, TC, FC>>;
+  }
+
+  /// \cond
+  template<class TC, class FC>
+  struct before<list<>, TC, FC>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(0 <= sizeof...(xs), TC, xs...);
+  };
+  /// \endcond
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct before_impl<_drop_while_continue>
+  {
+    template<class TC, class FC, class... xs>
+    using f = typename FC::template f<xs...>;
+  };
+
+  template<std::size_t n>
+  struct before_impl<_drop_while_result<n>>
+  {
+    template<class TC, class FC, class... xs>
+    using f = typename take_front<number<sizeof...(xs)-n-1>, TC>::template f<xs...>;
+  };
+}
+/// \endcond
 namespace jln::mp
 {
   /// \cond
@@ -4836,391 +5679,90 @@ namespace jln::mp
 }
 namespace jln::mp
 {
-  /// \cond
-  namespace detail
-  {
-    template<int, bool found>
-    struct _drop_while;
-
-    template<class>
-    struct drop_while_impl;
-
-    constexpr unsigned _drop_while_select(unsigned n);
-  }
-  /// \endcond
-
   /// \ingroup list
 
-  /// Remove the first elements of a \sequence that satisfy a \predicate.
-  /// \treturn \sequence
-  template<class Pred, class C = listify>
-  struct drop_while
-  {
-    template<class... xs>
-    using f = typename detail::drop_while_impl<
-      typename detail::_drop_while<
-        detail::_drop_while_select(sizeof...(xs)), true
-      >::template f<0, Pred, xs...>
-    >::template f<C, xs...>;
-  };
-
-  namespace emp
-  {
-    template<class L, class Pred, class C = mp::listify>
-    using drop_while = unpack<L, mp::drop_while<Pred, C>>;
-  }
-}
-
-
-#if defined(_MSC_VER) || defined(__clang__)
-#endif
-
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<unsigned>
-    struct _drop_front;
-
-#if defined(_MSC_VER) || defined(__clang__)
-    template<int_ i, std::size_t n, class = void>
-    struct validate_index
-    {};
-
-    template<int_ i, std::size_t n>
-    struct validate_index<i, n, std::enable_if_t<(int_(n) - i >= 0)>>
-    {
-      static constexpr int_ value = i;
-    };
-#else
-    template<int_ i, std::size_t n>
-    using validate_index = number<(0 * std::size_t{int_(n) - i}) + i>;
-#endif
-  }
-  /// \endcond
-
-  /// \ingroup list
-
-  /// Removes \c N elements from the beginning of a \sequence.
+  /// Extracts \c N elements from the end of a \sequence.
   /// \pre `0 <= N <= sizeof...(xs)`
   /// \treturn \sequence
   template<class N, class C = listify>
-  struct drop_front
+  struct take_back
   {
     template<class... xs>
     using f = typename detail::_drop_front<
       detail::n_8_or_less_16_64_256(
-        detail::validate_index<N::value, sizeof...(xs)>::value
+        sizeof...(xs) - detail::validate_index<N::value, sizeof...(xs)>::value
       )
-    >::template f<N::value, C, xs...>;
+    >::template f<sizeof...(xs) - N::value, C, xs...>;
   };
 
   template<int_ n, class C = listify>
-  using drop_front_c = drop_front<number<n>, C>;
+  using take_back_c = take_back<number<n>, C>;
 
   namespace emp
   {
     template<class L, class N, class C = mp::listify>
-    using drop_front = unpack<L, mp::drop_front<N, C>>;
+    using take_back = unpack<L, mp::take_back<N, C>>;
 
     template<class L, int_ n, class C = mp::listify>
-    using drop_front_c = unpack<L, mp::drop_front<number<n>, C>>;
+    using take_back_c = unpack<L, mp::take_back<number<n>, C>>;
   }
 
   /// \cond
   template<class C>
-  struct drop_front<number<0>, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
-  };
-
-  template<class C>
-  struct drop_front<number<1>, C>
-  {
-    template<class, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
-  };
-
-  template<class C>
-  struct drop_front<number<2>, C>
-  {
-    template<class, class, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
-  };
-
-  template<class C>
-  struct drop_front<number<3>, C>
-  {
-    template<class, class, class, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
-  };
-
-  template<class C>
-  struct drop_front<number<4>, C>
-  {
-    template<class, class, class, class, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
-  };
-
-  template<class C>
-  struct drop_front<number<5>, C>
-  {
-    template<class, class, class, class, class, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
-  };
-  /// \endcond
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-#define JLN_MP_DROP_IMPL(n, _, mp_rxs, mp_rep) \
-  template<>                                   \
-  struct _drop_front<n>                              \
-  {                                            \
-    template<unsigned size, class C,           \
-      mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)   \
-      class... xs>                             \
-    using f = typename C::template f<xs...>;   \
-  };
-
-  JLN_MP_GEN_XS_0_TO_8(JLN_MP_DROP_IMPL)
-
-#undef JLN_MP_DROP_IMPL
-
-#define JLN_MP_DROP_IMPL(n, mp_xs, mp_rxs, mp_rep) \
-  JLN_MP_DROP_IMPL2(n, mp_xs, mp_rxs, mp_rep,      \
-    n_8_or_less_16_64_256)
-
-#define JLN_MP_DROP_IMPL2(n, _, mp_rxs, mp_rep, next_int) \
-  template<>                                              \
-  struct _drop_front<n>                                         \
-  {                                                       \
-    template<unsigned size, class C,                      \
-      mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)              \
-      class... xs>                                        \
-    using f = typename _drop_front<next_int (size-n)>           \
-      ::template f<(size-n), C, xs...>;                   \
-  };
-
-  JLN_MP_GEN_XS_8_args(JLN_MP_DROP_IMPL2, JLN_MP_NIL)
-  JLN_MP_GEN_XS_16_64_256(JLN_MP_DROP_IMPL)
-
-#undef JLN_MP_DROP_IMPL2
-#undef JLN_MP_DROP_IMPL
-}
-/// \endcond
-/// \cond
-namespace jln::mp::detail
-{
-  template<std::size_t n>
-  struct _drop_while_result
-  {
-    template<class C, std::size_t truncated, class Pred, class... xs>
-    using f = _drop_while_result;
-  };
-
-  struct _drop_while_continue
-  {
-    template<class C, std::size_t truncated, class Pred, class... xs>
-    using f = typename C::template f<truncated, Pred, xs...>;
-  };
-
-  template<>
-  struct drop_while_impl<_drop_while_continue>
-  {
-    template<class C, class...>
-    using f = typename C::template f<>;
-  };
-
-  template<std::size_t n>
-  struct drop_while_impl<_drop_while_result<n>>
-  {
-    template<class C, class... xs>
-    using f = typename drop_front<number<sizeof...(xs)-n-1>, C>::template f<xs...>;
-  };
-
-  constexpr unsigned _drop_while_select(unsigned n)
-  {
-    return n <= 8 ? n
-         : n <= 16 ? 16
-         : n <= 32 ? 32
-         : n <= 64 ? 64
-         : n <= 128 ? 128
-         : 256;
-  }
-
-#define JLN_DROP_WHILE_IMPL(n, m)                                     \
-  template<>                                                          \
-  struct _drop_while<n, true>                                         \
-  {                                                                   \
-    template<std::size_t truncated, class Pred, class x, class... xs> \
-    using f = typename _drop_while<m, Pred::template f<x>::value>     \
-            ::template f<truncated, Pred, xs...>;                     \
-  };                                                                  \
-                                                                      \
-  template<>                                                          \
-  struct _drop_while<n, false>                                        \
-  {                                                                   \
-    template<std::size_t truncated, class Pred, class... xs>          \
-    using f = _drop_while_result<truncated+sizeof...(xs)>;            \
-  }
-
-  JLN_DROP_WHILE_IMPL(7, 6);
-  JLN_DROP_WHILE_IMPL(6, 5);
-  JLN_DROP_WHILE_IMPL(5, 4);
-  JLN_DROP_WHILE_IMPL(4, 3);
-  JLN_DROP_WHILE_IMPL(3, 2);
-  JLN_DROP_WHILE_IMPL(2, 1);
-  JLN_DROP_WHILE_IMPL(1, 0);
-
-#undef JLN_DROP_WHILE_IMPL
-
-  template<>
-  struct _drop_while<0, true>
-  {
-    template<std::size_t truncated, class Pred, class... xs>
-    using f = _drop_while_continue;
-  };
-
-  template<>
-  struct _drop_while<0, false>
-  {
-    template<std::size_t truncated, class Pred, class... xs>
-    using f = _drop_while_result<truncated+sizeof...(xs)>;
-  };
-
-  template<>
-  struct _drop_while<8, true>
-  {
-    template<
-      std::size_t truncated,
-      class Pred,
-      JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA),
-      class... xs>
-    using f = typename _drop_while<7, Pred::template f<_1>::value>
-      ::template f<
-          truncated+sizeof...(xs), Pred,
-          JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>;
-  };
-
-  template<>
-  struct _drop_while<16, true>
-  {
-    template<
-      std::size_t truncated,
-      class Pred,
-      JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA),
-      class... xs>
-    using f = typename _drop_while<7, Pred::template f<_1>::value>
-      ::template f<
-          truncated+sizeof...(xs), Pred,
-          JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>
-      ::template f<
-          _drop_while<_drop_while_select(sizeof...(xs)), true>,
-          truncated, Pred, xs...>;
-  };
-
-#define JLN_DROP_WHILE_IMPL(n, m, xs)                           \
-  template<>                                                    \
-  struct _drop_while<n, true>                                   \
-  {                                                             \
-    template<                                                   \
-      std::size_t truncated,                                    \
-      class Pred,                                               \
-      xs(class, JLN_MP_NIL, JLN_MP_COMMA),                      \
-      class... xs>                                              \
-    using f = typename _drop_while<m, true>                     \
-      ::template f<                                             \
-          truncated+sizeof...(xs), Pred,                        \
-          xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>             \
-      ::template f<                                             \
-          _drop_while<_drop_while_select(sizeof...(xs)), true>, \
-          truncated, Pred, xs...>;                              \
-  }
-
-  JLN_DROP_WHILE_IMPL(32, 16, JLN_MP_XS_16);
-  JLN_DROP_WHILE_IMPL(64, 32, JLN_MP_XS_32);
-  JLN_DROP_WHILE_IMPL(128, 64, JLN_MP_XS_64);
-  JLN_DROP_WHILE_IMPL(256, 128, JLN_MP_XS_128);
-
-#undef JLN_DROP_WHILE_IMPL
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \ingroup list
-
-  /// Removes all elements from the \sequence.
-  /// \treturn \number
-  template<class C = listify>
-  struct clear
+  struct take_back<number<0>, C>
   {
     template<class... xs>
     using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
   };
+  /// \endcond
 }
 namespace jln::mp
 {
-  /// \cond
-  namespace detail
-  {
-    template<class>
-    struct find_if_impl;
-  }
-  /// \endcond
+  /// \ingroup algorithm
 
-  /// \ingroup search
-
-  /// Finds the first element that satisfy a \predicate.
-  /// Calls \c TC with all the elements since the one found at the end.
-  /// If no element is found, \c FC is used with the whole \sequence.
-  /// \treturn \sequence
-  template<class Pred, class TC = listify, class FC = clear<TC>>
-  struct find_if
-  {
-    template<class... xs>
-    using f = typename detail::find_if_impl<
-      typename detail::_drop_while<
-        detail::_drop_while_select(sizeof...(xs)), true
-      >::template f<0, detail::to_predicate_not_t<Pred>, xs...>
-    >::template f<TC, FC, xs...>;
-  };
-
-  template<class T, class TC = listify, class FC = clear<TC>>
-  using find = find_if<is<T>, TC, FC>;
+  /// Checks if the \sequence ends with the given prefix.
+  /// \return \bool
+  template<class Seq, class C = identity>
+  struct ends_with;
 
   namespace emp
   {
-    template<class L, class Pred, class TC = mp::listify, class FC = clear<TC>>
-    using find_if = unpack<L, mp::find_if<Pred, TC, FC>>;
-
-    template<class L, class T, class TC = mp::listify, class FC = clear<TC>>
-    using find = unpack<L, mp::find_if<mp::is<T>, TC, FC>>;
+    template<class L, class Seq, class C = mp::identity>
+    using ends_with = unpack<ends_with<Seq, C>, L>;
   }
-}
 
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<>
-  struct find_if_impl<_drop_while_continue>
+  template<class... Ts, class C>
+  struct ends_with<list<Ts...>, C>
   {
-    template<class TC, class FC, class... xs>
-    using f = typename FC::template f<xs...>;
+    template<class... xs>
+    using f = JLN_MP_DCALL(0 <= sizeof...(xs), C,
+      typename conditional_c<sizeof...(Ts) <= sizeof...(xs)>
+      ::template f<take_back_c<sizeof...(Ts), lift<list, is<list<Ts...>>>>,
+                   mp::always<mp::false_>>
+      ::template f<xs...>
+    );
   };
 
-  template<std::size_t n>
-  struct find_if_impl<_drop_while_result<n>>
+  /// \cond
+  template<class T, class C>
+  struct ends_with<list<T>, C>
   {
-    template<class TC, class FC, class... xs>
-    using f = typename drop_front<number<sizeof...(xs)-n-1>, TC>::template f<xs...>;
+    template<class... xs>
+    using f = JLN_MP_DCALL(0 <= sizeof...(xs), C,
+      typename conditional_c<1 <= sizeof...(xs)>
+      ::template f<take_back_c<1, is<T>>, mp::always<mp::false_>>
+      ::template f<xs...>
+    );
   };
+
+  template<class C>
+  struct ends_with<list<>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(0 <= sizeof...(xs), C, mp::true_);
+  };
+  /// \endcond
 }
-/// \endcond
 namespace jln::mp
 {
   /// \cond
@@ -5321,9 +5863,9 @@ namespace jln::mp
 
   namespace emp
   {
-    template<class L, class state, class C = mp::identity>
+    template<class L, class state, class F, class C = mp::identity>
     using fold_right = unpack<L,
-      mp::push_front<state, mp::fold_right<C>>>;
+      mp::push_front<state, mp::fold_right<F, C>>>;
   }
 }
 
@@ -5620,79 +6162,6 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp
 {
-  /// \ingroup list
-
-  /// Extracts \c N elements from the beginning of a \sequence.
-  /// \pre `0 <= N <= sizeof...(xs)`
-  /// \treturn \sequence
-  template<class N, class C = listify>
-  struct take_front
-  {
-    template<class... xs>
-    using f = call<
-      rotate<N, drop_front<number<sizeof...(xs) - N::value>, C>>,
-      xs...>;
-  };
-
-  template<int_ n, class C = listify>
-  using take_front_c = take_front<number<n>, C>;
-
-  namespace emp
-  {
-    template<class L, class N, class C = mp::listify>
-    using take_front = unpack<L, mp::take_front<N, C>>;
-
-    template<class L, int_ n, class C = mp::listify>
-    using take_front_c = unpack<L, mp::take_front<number<n>, C>>;
-  }
-
-  /// \cond
-  template<class C>
-  struct take_front<number<0>, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
-  };
-
-  template<class C>
-  struct take_front<number<1>, C>
-  {
-    template<class _1, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1);
-  };
-
-  template<class C>
-  struct take_front<number<2>, C>
-  {
-    template<class _1, class _2, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2);
-  };
-
-  template<class C>
-  struct take_front<number<3>, C>
-  {
-    template<class _1, class _2, class _3, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2, _3);
-  };
-
-  template<class C>
-  struct take_front<number<4>, C>
-  {
-    template<class _1, class _2, class _3, class _4, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2, _3, _4);
-  };
-
-  template<class C>
-  struct take_front<number<5>, C>
-  {
-    template<class _1, class _2, class _3, class _4, class _5, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2, _3, _4, _5);
-  };
-  /// \endcond
-}
-
-namespace jln::mp
-{
   /// \cond
   namespace detail
   {
@@ -5922,67 +6391,6 @@ namespace jln::mp::detail
   {
     template<class C, unsigned long long, class...>
     using f = typename C::template f<>;
-  };
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class>
-    struct index_if_impl;
-  }
-  /// \endcond
-
-  /// \ingroup search
-
-  /// Finds the index of the first element of \sequence
-  /// that satisfies the \predicate \c Pred.
-  /// Calls \c TC with the index found or \c FC with the whole \sequence.
-  /// \treturn \number
-  template<class Pred, class TC = identity, class FC = size<>>
-  struct index_if
-  {
-    template<class... xs>
-    using f = typename detail::index_if_impl<
-      typename detail::_drop_while<
-        detail::_drop_while_select(sizeof...(xs)), true
-      >::template f<0, detail::to_predicate_not_t<Pred>, xs...>
-    >::template f<TC, FC, xs...>;
-  };
-
-  /// Finds the index of the first element of \sequence that is a type \c T.
-  /// Calls \c TC with the index found or \c FC with the whole \sequence.
-  /// \treturn \number
-  template<class T, class TC = identity, class FC = size<>>
-  using index_of = index_if<is<T>, TC, FC>;
-
-  namespace emp
-  {
-    template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    using index_if = unpack<L, mp::index_if<Pred, TC, FC>>;
-
-    template<class L, class T, class TC = mp::identity, class FC = mp::size<>>
-    using index_of = unpack<L, mp::index_of<T, TC, FC>>;
-  }
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<>
-  struct index_if_impl<_drop_while_continue>
-  {
-    template<class TC, class FC, class... xs>
-    using f = typename FC::template f<xs...>;
-  };
-
-  template<std::size_t n>
-  struct index_if_impl<_drop_while_result<n>>
-  {
-    template<class TC, class FC, class... xs>
-    using f = typename TC::template f<number<sizeof...(xs)-n-1>>;
   };
 }
 /// \endcond
@@ -6760,37 +7168,6 @@ namespace jln::mp
 }
 
 
-namespace jln::mp
-{
-  /// \ingroup list
-
-  /// Retrieves the first element of a sequence.
-  /// \treturn \value
-  template<class C = identity>
-  struct front
-  {
-    template<class x, class... xs>
-    using f = typename C::template f<x>;
-  };
-
-  namespace emp
-  {
-    template<class L, class C = mp::identity>
-    using front = unpack<L, front<C>>;
-  }
-}
-
-namespace jln::mp
-{
-  /// \cond
-  template<>
-  struct front<identity>
-  {
-    template<class x, class...>
-    using f = x;
-  };
-  /// \endcond
-}
 namespace jln::mp
 {
   /// \ingroup list
@@ -7985,6 +8362,956 @@ namespace jln::mp::detail
   JLN_MP_GEN_XS_8_16_64_256(JLN_MP_REVERSE_IMPL)
 
 #undef JLN_MP_REVERSE_IMPL
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<unsigned>
+    struct _scan_left;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Fold a \sequence to the left and return a list containing the successive reduction states.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   C::f<
+  ///     xs[0],
+  ///     F::f<xs[0], xs[1]>,
+  ///     F::f<F::f<xs[0], xs[1]>, xs[2]>,
+  ///     ...
+  ///   >
+  ///   \endcode
+  /// \treturn \sequence
+  template<class F, class C = listify>
+  struct scan_left
+  {
+    template<class... xs>
+    using f = typename detail::_scan_left<
+      detail::n_8_or_more_16_32_64_128_256(sizeof...(xs))
+    >::template f<sizeof...(xs), C, F::template f, xs...>;
+  };
+
+  namespace emp
+  {
+    template<class L, class F, class C = mp::listify>
+    using scan_left = unpack<L, mp::scan_left<F, C>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct _scan_left<0>
+  {
+    template<unsigned remaining, class C, template<class...> class F,
+      class... xs>
+    using f = typename join<C>::template f<xs...>;
+  };
+
+  template<>
+  struct _scan_left<1>
+  {
+    template<unsigned remaining, class C, template<class...> class F,
+      class _0, class... xs>
+    using f = typename join<C>::template f<xs..., list<_0>>;
+  };
+
+  template<>
+  struct _scan_left<2>
+  {
+    template<unsigned remaining, class C, template<class...> class F,
+      class _0, class _1, class... xs>
+    using f = typename join<C>::template f<xs..., list<_0, F<_0, _1>>>;
+  };
+
+  // for n in range(3,9):
+  //   args=', '.join(f'class _{i}' for i in range(1,n))
+  //   ps=', '.join(f'_{i}' for i in range(n))
+  //   rs=', '.join(f'class r{i} = F<r{i-1}, _{i}>' for i in range(1, n-1))
+  //   l=', '.join(f'r{i}' for i in range(n-1))
+  //   sep=', ' if n > 2 else ''
+  //   print(f'''
+  //   template<>
+  //   struct _scan_left<{n}>
+  //   {{
+  //     template<template<class...> class F,
+  //       class r0, {args}{sep}{rs}>
+  //     using g = list<{l}, F<r{n-2}, _{n-1}>>;
+  //
+  //     template<unsigned remaining, class C, template<class...> class F,
+  //       class _0, {args}, class... xs>
+  //     using f = typename join<C>::template f<xs..., g<F, {ps}>>;
+  //   }};''')
+
+  template<>
+  struct _scan_left<3>
+  {
+    template<template<class...> class F,
+      class r0, class _1, class _2, class r1 = F<r0, _1>>
+    using g = list<r0, r1, F<r1, _2>>;
+
+    template<unsigned remaining, class C, template<class...> class F,
+      class _0, class _1, class _2, class... xs>
+    using f = typename join<C>::template f<xs..., g<F, _0, _1, _2>>;
+  };
+
+  template<>
+  struct _scan_left<4>
+  {
+    template<template<class...> class F,
+      class r0, class _1, class _2, class _3,
+      class r1 = F<r0, _1>, class r2 = F<r1, _2>>
+    using g = list<r0, r1, r2, F<r2, _3>>;
+
+    template<unsigned remaining, class C, template<class...> class F,
+      class _0, class _1, class _2, class _3, class... xs>
+    using f = typename join<C>::template f<xs..., g<F, _0, _1, _2, _3>>;
+  };
+
+  template<>
+  struct _scan_left<5>
+  {
+    template<template<class...> class F,
+      class r0, class _1, class _2, class _3, class _4,
+      class r1 = F<r0, _1>, class r2 = F<r1, _2>, class r3 = F<r2, _3>>
+    using g = list<r0, r1, r2, r3, F<r3, _4>>;
+
+    template<unsigned remaining, class C, template<class...> class F,
+      class _0, class _1, class _2, class _3, class _4, class... xs>
+    using f = typename join<C>::template f<xs..., g<F, _0, _1, _2, _3, _4>>;
+  };
+
+  template<>
+  struct _scan_left<6>
+  {
+    template<template<class...> class F,
+      class r0, class _1, class _2, class _3, class _4, class _5,
+      class r1 = F<r0, _1>, class r2 = F<r1, _2>, class r3 = F<r2, _3>,
+      class r4 = F<r3, _4>>
+    using g = list<r0, r1, r2, r3, r4, F<r4, _5>>;
+
+    template<unsigned remaining, class C, template<class...> class F,
+      class _0, class _1, class _2, class _3, class _4, class _5,
+      class... xs>
+    using f = typename join<C>
+      ::template f<xs..., g<F, _0, _1, _2, _3, _4, _5>>;
+  };
+
+  template<>
+  struct _scan_left<7>
+  {
+    template<template<class...> class F,
+      class r0, class _1, class _2, class _3, class _4, class _5, class _6,
+      class r1 = F<r0, _1>, class r2 = F<r1, _2>, class r3 = F<r2, _3>,
+      class r4 = F<r3, _4>, class r5 = F<r4, _5>>
+    using g = list<r0, r1, r2, r3, r4, r5, F<r5, _6>>;
+
+    template<unsigned remaining, class C, template<class...> class F,
+      class _0, class _1, class _2, class _3, class _4, class _5, class _6,
+      class... xs>
+    using f = typename join<C>
+      ::template f<xs..., g<F, _0, _1, _2, _3, _4, _5, _6>>;
+  };
+
+  template<>
+  struct _scan_left<8>
+  {
+    template<template<class...> class F,
+      class r0, class _1, class _2, class _3, class _4, class _5, class _6,
+      class _7, class r1 = F<r0, _1>, class r2 = F<r1, _2>,
+      class r3 = F<r2, _3>, class r4 = F<r3, _4>, class r5 = F<r4, _5>,
+      class r6 = F<r5, _6>>
+    using g = list<r0, r1, r2, r3, r4, r5, r6, F<r6, _7>>;
+
+    template<unsigned remaining, class C, template<class...> class F,
+      class _0, class _1, class _2, class _3, class _4, class _5, class _6,
+      class _7, class... xs>
+    using f = typename join<C>::template f<xs..., g<F, _0, _1, _2, _3, _4, _5, _6, _7>>;
+  };
+
+  template<class state, class l>
+  struct scan_continuation
+  {
+    template<
+      unsigned remaining, class Next, class C,
+      template<class...> class F, class... xs>
+    using f = typename Next::template f<remaining, C, F, state, xs..., l>;
+  };
+
+  // for n in [8,16,32,64,128]:
+  //   args=', '.join(f'class _{i}' for i in range(1, n))
+  //   ps=', '.join(f'_{i}' for i in range(n))
+  //   rs=', '.join(f'class r{i} = F<r{i-1}, _{i}>' for i in range(1, n-1))
+  //   l=', '.join(f'r{i}' for i in range(n-1))
+  //   print(f'''
+  //   template<>
+  //   struct _scan_left<{n*2}>
+  //   {{
+  //     template<template<class...> class F,
+  //       class r0, {args},
+  //       {rs},
+  //     using g = scan_continuation<F<r{n-2}, _{n-1}>, list<{l}>>;
+  //
+  //     template<unsigned remaining, class C, template<class...> class F,
+  //       class _0, {args},
+  //       class... xs>
+  //     using f = typename g<F, {ps}>
+  //       ::template f<remaining-{n-1}, _scan_left<n_8_or_more_16_32_64_128_256(remaining-{n-1})>, C, F, xs...>;
+  //   }};''')
+
+  template<>
+  struct _scan_left<16>
+  {
+    template<
+      template<class...> class F, class r0, class _1, class _2, class _3,
+      class _4, class _5, class _6, class _7, class r1 = F<r0, _1>,
+      class r2 = F<r1, _2>, class r3 = F<r2, _3>, class r4 = F<r3, _4>,
+      class r5 = F<r4, _5>, class r6 = F<r5, _6>>
+    using g = scan_continuation<F<r6, _7>, list<r0, r1, r2, r3, r4, r5, r6>>;
+
+    template<
+      unsigned remaining, class C, template<class...> class F, class _0,
+      class _1, class _2, class _3, class _4, class _5, class _6, class _7,
+      class... xs>
+    using f = typename g<F, _0, _1, _2, _3, _4, _5, _6, _7>::template f<
+      remaining - 7, _scan_left<n_8_or_more_16_32_64_128_256(remaining - 7)>,
+      C, F, xs...>;
+  };
+
+  template<>
+  struct _scan_left<32>
+  {
+    template<
+      template<class...> class F, class r0, class _1, class _2, class _3,
+      class _4, class _5, class _6, class _7, class _8, class _9, class _10,
+      class _11, class _12, class _13, class _14, class _15, class r1 = F<r0, _1>,
+      class r2 = F<r1, _2>, class r3 = F<r2, _3>, class r4 = F<r3, _4>,
+      class r5 = F<r4, _5>, class r6 = F<r5, _6>, class r7 = F<r6, _7>,
+      class r8 = F<r7, _8>, class r9 = F<r8, _9>, class r10 = F<r9, _10>,
+      class r11 = F<r10, _11>, class r12 = F<r11, _12>, class r13 = F<r12, _13>,
+      class r14 = F<r13, _14>>
+    using g = scan_continuation<F<r14, _15>, list<
+      r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12,
+      r13, r14>>;
+
+    template<
+      unsigned remaining, class C, template<class...> class F, class _0,
+      class _1, class _2, class _3, class _4, class _5, class _6, class _7,
+      class _8, class _9, class _10, class _11, class _12, class _13,
+      class _14, class _15,
+      class... xs>
+    using f = typename g<
+      F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15
+    >::template f<remaining - 15,
+                  _scan_left<n_8_or_more_16_32_64_128_256(remaining - 15)>,
+                  C, F, xs...>;
+  };
+
+  template<>
+  struct _scan_left<64>
+  {
+    template<
+      template<class...> class F, class r0, class _1, class _2, class _3,
+      class _4, class _5, class _6, class _7, class _8, class _9, class _10,
+      class _11, class _12, class _13, class _14, class _15, class _16,
+      class _17, class _18, class _19, class _20, class _21, class _22,
+      class _23, class _24, class _25, class _26, class _27, class _28,
+      class _29, class _30, class _31, class r1 = F<r0, _1>,
+      class r2 = F<r1, _2>, class r3 = F<r2, _3>, class r4 = F<r3, _4>,
+      class r5 = F<r4, _5>, class r6 = F<r5, _6>, class r7 = F<r6, _7>,
+      class r8 = F<r7, _8>, class r9 = F<r8, _9>, class r10 = F<r9, _10>,
+      class r11 = F<r10, _11>, class r12 = F<r11, _12>, class r13 = F<r12, _13>,
+      class r14 = F<r13, _14>, class r15 = F<r14, _15>, class r16 = F<r15, _16>,
+      class r17 = F<r16, _17>, class r18 = F<r17, _18>, class r19 = F<r18, _19>,
+      class r20 = F<r19, _20>, class r21 = F<r20, _21>, class r22 = F<r21, _22>,
+      class r23 = F<r22, _23>, class r24 = F<r23, _24>, class r25 = F<r24, _25>,
+      class r26 = F<r25, _26>, class r27 = F<r26, _27>, class r28 = F<r27, _28>,
+      class r29 = F<r28, _29>, class r30 = F<r29, _30>>
+    using g = scan_continuation<F<r30, _31>, list<
+      r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12,
+      r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23,
+      r24, r25, r26, r27, r28, r29, r30>>;
+
+    template<
+      unsigned remaining, class C, template<class...> class F, class _0,
+      class _1, class _2, class _3, class _4, class _5, class _6, class _7,
+      class _8, class _9, class _10, class _11, class _12, class _13,
+      class _14, class _15, class _16, class _17, class _18, class _19,
+      class _20, class _21, class _22, class _23, class _24, class _25,
+      class _26, class _27, class _28, class _29, class _30, class _31,
+      class... xs>
+    using f = typename g<
+      F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15,
+      _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30,
+      _31
+    >::template f<remaining - 31,
+                  _scan_left<n_8_or_more_16_32_64_128_256(remaining - 31)>,
+                  C, F, xs...>;
+  };
+
+  template<>
+  struct _scan_left<128>
+  {
+    template<
+      template<class...> class F, class r0, class _1, class _2, class _3,
+      class _4, class _5, class _6, class _7, class _8, class _9, class _10,
+      class _11, class _12, class _13, class _14, class _15, class _16,
+      class _17, class _18, class _19, class _20, class _21, class _22,
+      class _23, class _24, class _25, class _26, class _27, class _28,
+      class _29, class _30, class _31, class _32, class _33, class _34,
+      class _35, class _36, class _37, class _38, class _39, class _40,
+      class _41, class _42, class _43, class _44, class _45, class _46,
+      class _47, class _48, class _49, class _50, class _51, class _52,
+      class _53, class _54, class _55, class _56, class _57, class _58,
+      class _59, class _60, class _61, class _62, class _63,
+      class r1 = F<r0, _1>, class r2 = F<r1, _2>, class r3 = F<r2, _3>,
+      class r4 = F<r3, _4>, class r5 = F<r4, _5>, class r6 = F<r5, _6>,
+      class r7 = F<r6, _7>, class r8 = F<r7, _8>, class r9 = F<r8, _9>,
+      class r10 = F<r9, _10>, class r11 = F<r10, _11>, class r12 = F<r11, _12>,
+      class r13 = F<r12, _13>, class r14 = F<r13, _14>, class r15 = F<r14, _15>,
+      class r16 = F<r15, _16>, class r17 = F<r16, _17>, class r18 = F<r17, _18>,
+      class r19 = F<r18, _19>, class r20 = F<r19, _20>, class r21 = F<r20, _21>,
+      class r22 = F<r21, _22>, class r23 = F<r22, _23>, class r24 = F<r23, _24>,
+      class r25 = F<r24, _25>, class r26 = F<r25, _26>, class r27 = F<r26, _27>,
+      class r28 = F<r27, _28>, class r29 = F<r28, _29>, class r30 = F<r29, _30>,
+      class r31 = F<r30, _31>, class r32 = F<r31, _32>, class r33 = F<r32, _33>,
+      class r34 = F<r33, _34>, class r35 = F<r34, _35>, class r36 = F<r35, _36>,
+      class r37 = F<r36, _37>, class r38 = F<r37, _38>, class r39 = F<r38, _39>,
+      class r40 = F<r39, _40>, class r41 = F<r40, _41>, class r42 = F<r41, _42>,
+      class r43 = F<r42, _43>, class r44 = F<r43, _44>, class r45 = F<r44, _45>,
+      class r46 = F<r45, _46>, class r47 = F<r46, _47>, class r48 = F<r47, _48>,
+      class r49 = F<r48, _49>, class r50 = F<r49, _50>, class r51 = F<r50, _51>,
+      class r52 = F<r51, _52>, class r53 = F<r52, _53>, class r54 = F<r53, _54>,
+      class r55 = F<r54, _55>, class r56 = F<r55, _56>, class r57 = F<r56, _57>,
+      class r58 = F<r57, _58>, class r59 = F<r58, _59>, class r60 = F<r59, _60>,
+      class r61 = F<r60, _61>, class r62 = F<r61, _62>>
+    using g = scan_continuation<F<r62, _63>, list<
+      r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15,
+      r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29,
+      r30, r31, r32, r33, r34, r35, r36, r37, r38, r39, r40, r41, r42, r43,
+      r44, r45, r46, r47, r48, r49, r50, r51, r52, r53, r54, r55, r56, r57,
+      r58, r59, r60, r61, r62>>;
+
+    template<
+      unsigned remaining, class C, template<class...> class F, class _0,
+      class _1, class _2, class _3, class _4, class _5, class _6, class _7,
+      class _8, class _9, class _10, class _11, class _12, class _13,
+      class _14, class _15, class _16, class _17, class _18, class _19,
+      class _20, class _21, class _22, class _23, class _24, class _25,
+      class _26, class _27, class _28, class _29, class _30, class _31,
+      class _32, class _33, class _34, class _35, class _36, class _37,
+      class _38, class _39, class _40, class _41, class _42, class _43,
+      class _44, class _45, class _46, class _47, class _48, class _49,
+      class _50, class _51, class _52, class _53, class _54, class _55,
+      class _56, class _57, class _58, class _59, class _60, class _61,
+      class _62, class _63, class... xs>
+    using f = typename g<
+      F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15,
+      _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30,
+      _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45,
+      _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
+      _61, _62,
+      _63>::template f<remaining - 63,
+                       _scan_left<n_8_or_more_16_32_64_128_256(remaining - 63)>,
+                       C, F, xs...>;
+  };
+
+  template<>
+  struct _scan_left<256>
+  {
+    template<
+      template<class...> class F, class r0, class _1, class _2, class _3,
+      class _4, class _5, class _6, class _7, class _8, class _9, class _10,
+      class _11, class _12, class _13, class _14, class _15, class _16,
+      class _17, class _18, class _19, class _20, class _21, class _22,
+      class _23, class _24, class _25, class _26, class _27, class _28,
+      class _29, class _30, class _31, class _32, class _33, class _34,
+      class _35, class _36, class _37, class _38, class _39, class _40,
+      class _41, class _42, class _43, class _44, class _45, class _46,
+      class _47, class _48, class _49, class _50, class _51, class _52,
+      class _53, class _54, class _55, class _56, class _57, class _58,
+      class _59, class _60, class _61, class _62, class _63, class _64,
+      class _65, class _66, class _67, class _68, class _69, class _70,
+      class _71, class _72, class _73, class _74, class _75, class _76,
+      class _77, class _78, class _79, class _80, class _81, class _82,
+      class _83, class _84, class _85, class _86, class _87, class _88,
+      class _89, class _90, class _91, class _92, class _93, class _94,
+      class _95, class _96, class _97, class _98, class _99, class _100,
+      class _101, class _102, class _103, class _104, class _105, class _106,
+      class _107, class _108, class _109, class _110, class _111, class _112,
+      class _113, class _114, class _115, class _116, class _117, class _118,
+      class _119, class _120, class _121, class _122, class _123, class _124,
+      class _125, class _126, class _127, class r1 = F<r0, _1>,
+      class r2 = F<r1, _2>, class r3 = F<r2, _3>, class r4 = F<r3, _4>,
+      class r5 = F<r4, _5>, class r6 = F<r5, _6>, class r7 = F<r6, _7>,
+      class r8 = F<r7, _8>, class r9 = F<r8, _9>, class r10 = F<r9, _10>,
+      class r11 = F<r10, _11>, class r12 = F<r11, _12>, class r13 = F<r12, _13>,
+      class r14 = F<r13, _14>, class r15 = F<r14, _15>, class r16 = F<r15, _16>,
+      class r17 = F<r16, _17>, class r18 = F<r17, _18>, class r19 = F<r18, _19>,
+      class r20 = F<r19, _20>, class r21 = F<r20, _21>, class r22 = F<r21, _22>,
+      class r23 = F<r22, _23>, class r24 = F<r23, _24>, class r25 = F<r24, _25>,
+      class r26 = F<r25, _26>, class r27 = F<r26, _27>, class r28 = F<r27, _28>,
+      class r29 = F<r28, _29>, class r30 = F<r29, _30>, class r31 = F<r30, _31>,
+      class r32 = F<r31, _32>, class r33 = F<r32, _33>, class r34 = F<r33, _34>,
+      class r35 = F<r34, _35>, class r36 = F<r35, _36>, class r37 = F<r36, _37>,
+      class r38 = F<r37, _38>, class r39 = F<r38, _39>, class r40 = F<r39, _40>,
+      class r41 = F<r40, _41>, class r42 = F<r41, _42>, class r43 = F<r42, _43>,
+      class r44 = F<r43, _44>, class r45 = F<r44, _45>, class r46 = F<r45, _46>,
+      class r47 = F<r46, _47>, class r48 = F<r47, _48>, class r49 = F<r48, _49>,
+      class r50 = F<r49, _50>, class r51 = F<r50, _51>, class r52 = F<r51, _52>,
+      class r53 = F<r52, _53>, class r54 = F<r53, _54>, class r55 = F<r54, _55>,
+      class r56 = F<r55, _56>, class r57 = F<r56, _57>, class r58 = F<r57, _58>,
+      class r59 = F<r58, _59>, class r60 = F<r59, _60>, class r61 = F<r60, _61>,
+      class r62 = F<r61, _62>, class r63 = F<r62, _63>, class r64 = F<r63, _64>,
+      class r65 = F<r64, _65>, class r66 = F<r65, _66>, class r67 = F<r66, _67>,
+      class r68 = F<r67, _68>, class r69 = F<r68, _69>, class r70 = F<r69, _70>,
+      class r71 = F<r70, _71>, class r72 = F<r71, _72>, class r73 = F<r72, _73>,
+      class r74 = F<r73, _74>, class r75 = F<r74, _75>, class r76 = F<r75, _76>,
+      class r77 = F<r76, _77>, class r78 = F<r77, _78>, class r79 = F<r78, _79>,
+      class r80 = F<r79, _80>, class r81 = F<r80, _81>, class r82 = F<r81, _82>,
+      class r83 = F<r82, _83>, class r84 = F<r83, _84>, class r85 = F<r84, _85>,
+      class r86 = F<r85, _86>, class r87 = F<r86, _87>, class r88 = F<r87, _88>,
+      class r89 = F<r88, _89>, class r90 = F<r89, _90>, class r91 = F<r90, _91>,
+      class r92 = F<r91, _92>, class r93 = F<r92, _93>, class r94 = F<r93, _94>,
+      class r95 = F<r94, _95>, class r96 = F<r95, _96>, class r97 = F<r96, _97>,
+      class r98 = F<r97, _98>, class r99 = F<r98, _99>,
+      class r100 = F<r99, _100>, class r101 = F<r100, _101>,
+      class r102 = F<r101, _102>, class r103 = F<r102, _103>,
+      class r104 = F<r103, _104>, class r105 = F<r104, _105>,
+      class r106 = F<r105, _106>, class r107 = F<r106, _107>,
+      class r108 = F<r107, _108>, class r109 = F<r108, _109>,
+      class r110 = F<r109, _110>, class r111 = F<r110, _111>,
+      class r112 = F<r111, _112>, class r113 = F<r112, _113>,
+      class r114 = F<r113, _114>, class r115 = F<r114, _115>,
+      class r116 = F<r115, _116>, class r117 = F<r116, _117>,
+      class r118 = F<r117, _118>, class r119 = F<r118, _119>,
+      class r120 = F<r119, _120>, class r121 = F<r120, _121>,
+      class r122 = F<r121, _122>, class r123 = F<r122, _123>,
+      class r124 = F<r123, _124>, class r125 = F<r124, _125>,
+      class r126 = F<r125, _126>>
+    using g = scan_continuation<F<r126, _127>, list<
+      r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15,
+      r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29,
+      r30, r31, r32, r33, r34, r35, r36, r37, r38, r39, r40, r41, r42, r43,
+      r44, r45, r46, r47, r48, r49, r50, r51, r52, r53, r54, r55, r56, r57,
+      r58, r59, r60, r61, r62, r63, r64, r65, r66, r67, r68, r69, r70, r71,
+      r72, r73, r74, r75, r76, r77, r78, r79, r80, r81, r82, r83, r84, r85,
+      r86, r87, r88, r89, r90, r91, r92, r93, r94, r95, r96, r97, r98, r99,
+      r100, r101, r102, r103, r104, r105, r106, r107, r108, r109, r110,
+      r111, r112, r113, r114, r115, r116, r117, r118, r119, r120, r121,
+      r122, r123, r124, r125, r126>>;
+
+    template<
+      unsigned remaining, class C, template<class...> class F, class _0,
+      class _1, class _2, class _3, class _4, class _5, class _6, class _7,
+      class _8, class _9, class _10, class _11, class _12, class _13,
+      class _14, class _15, class _16, class _17, class _18, class _19,
+      class _20, class _21, class _22, class _23, class _24, class _25,
+      class _26, class _27, class _28, class _29, class _30, class _31,
+      class _32, class _33, class _34, class _35, class _36, class _37,
+      class _38, class _39, class _40, class _41, class _42, class _43,
+      class _44, class _45, class _46, class _47, class _48, class _49,
+      class _50, class _51, class _52, class _53, class _54, class _55,
+      class _56, class _57, class _58, class _59, class _60, class _61,
+      class _62, class _63, class _64, class _65, class _66, class _67,
+      class _68, class _69, class _70, class _71, class _72, class _73,
+      class _74, class _75, class _76, class _77, class _78, class _79,
+      class _80, class _81, class _82, class _83, class _84, class _85,
+      class _86, class _87, class _88, class _89, class _90, class _91,
+      class _92, class _93, class _94, class _95, class _96, class _97,
+      class _98, class _99, class _100, class _101, class _102, class _103,
+      class _104, class _105, class _106, class _107, class _108, class _109,
+      class _110, class _111, class _112, class _113, class _114, class _115,
+      class _116, class _117, class _118, class _119, class _120, class _121,
+      class _122, class _123, class _124, class _125, class _126, class _127,
+      class... xs>
+    using f = typename g<
+      F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15,
+      _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30,
+      _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45,
+      _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
+      _61, _62, _63, _64, _65, _66, _67, _68, _69, _70, _71, _72, _73, _74, _75,
+      _76, _77, _78, _79, _80, _81, _82, _83, _84, _85, _86, _87, _88, _89, _90,
+      _91, _92, _93, _94, _95, _96, _97, _98, _99, _100, _101, _102, _103, _104,
+      _105, _106, _107, _108, _109, _110, _111, _112, _113, _114, _115, _116,
+      _117, _118, _119, _120, _121, _122, _123, _124, _125, _126, _127>::
+      template f<remaining - 127,
+                 _scan_left<n_8_or_more_16_32_64_128_256(remaining - 127)>,
+                 C, F, xs...>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class F, class C>
+    struct scan_right_impl;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Fold a \sequence to the right and return a list containing the successive reduction states.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   C::f<
+  ///     ...
+  ///     F::f<xs[n-3], F::f<xs[n-2], xs[n-1]>>,
+  ///     F::f<xs[n-2], xs[n-1]>,
+  ///     xs[n-1],
+  ///   >
+  ///   \endcode
+  /// \treturn \sequence
+  template<class F, class C = listify>
+  using scan_right = reverse<detail::scan_right_impl<F, C>>;
+
+  namespace emp
+  {
+    template<class L, class F, class C = mp::listify>
+    using scan_right = unpack<L, mp::scan_right<F, C>>;
+  }
+}
+
+
+// scan_continuation
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<unsigned>
+  struct _scan_right;
+
+  template<class F, class C>
+  struct scan_right_impl
+  {
+    template<class... xs>
+    using f = typename _scan_right<
+      detail::n_8_or_more_16_32_64_128_256(sizeof...(xs))
+    >::template f<sizeof...(xs), C, F::template f, xs...>;
+  };
+
+  template<>
+  struct _scan_right<0>
+  {
+    template<unsigned remaining, class C, template<class...> class F,
+      class... xs>
+    using f = typename join<C>::template f<xs...>;
+  };
+
+  template<>
+  struct _scan_right<1>
+  {
+    template<unsigned remaining, class C, template<class...> class F,
+      class _0, class... xs>
+    using f = typename join<C>::template f<list<_0>, xs...>;
+  };
+
+  template<>
+  struct _scan_right<2>
+  {
+    template<unsigned remaining, class C, template<class...> class F,
+      class _0, class _1, class... xs>
+    using f = typename join<C>::template f<list<F<_1, _0>, _0>, xs...>;
+  };
+
+  // for n in range(3,9):
+  //   args=', '.join(f'class _{i}' for i in range(1,n))
+  //   ps=', '.join(f'_{i}' for i in range(n))
+  //   rs=', '.join(f'class r{i} = F<_{i}, r{i-1}>' for i in range(1, n-1))
+  //   l=', '.join(f'r{i}' for i in range(n-2, -1, -1))
+  //   sep=', ' if n > 2 else ''
+  //   print(f'''
+  //   template<>
+  //   struct _scan_right<{n}>
+  //   {{
+  //     template<template<class...> class F,
+  //       class r0, {args}{sep}{rs}>
+  //     using g = list<F<_{n-1}, r{n-2}>, {l}>;
+  //
+  //     template<unsigned remaining, class C, template<class...> class F,
+  //       class _0, {args}, class... xs>
+  //     using f = typename join<C>::template f<g<F, {ps}>, xs...>;
+  //   }};''')
+
+  template<>
+  struct _scan_right<3>
+  {
+    template<template<class...> class F, class r0, class _1, class _2,
+             class r1 = F<_1, r0>>
+    using g = list<F<_2, r1>, r1, r0>;
+
+    template<unsigned remaining, class C, template<class...> class F, class _0,
+             class _1, class _2, class... xs>
+    using f = typename join<C>::template f<xs..., g<F, _0, _1, _2>>;
+  };
+
+  template<>
+  struct _scan_right<4>
+  {
+    template<template<class...> class F, class r0, class _1, class _2, class _3,
+              class r1 = F<_1, r0>, class r2 = F<_2, r1>>
+    using g = list<F<_3, r2>, r2, r1, r0>;
+
+    template<unsigned remaining, class C, template<class...> class F, class _0,
+             class _1, class _2, class _3, class... xs>
+    using f = typename join<C>::template f<g<F, _0, _1, _2, _3>, xs...>;
+  };
+
+  template<>
+  struct _scan_right<5>
+  {
+    template<template<class...> class F, class r0, class _1, class _2, class _3,
+             class _4, class r1 = F<_1, r0>, class r2 = F<_2, r1>,
+             class r3 = F<_3, r2>>
+    using g = list<F<_4, r3>, r3, r2, r1, r0>;
+
+    template<unsigned remaining, class C, template<class...> class F, class _0,
+             class _1, class _2, class _3, class _4, class... xs>
+    using f = typename join<C>::template f<g<F, _0, _1, _2, _3, _4>, xs...>;
+  };
+
+  template<>
+  struct _scan_right<6>
+  {
+    template<template<class...> class F, class r0, class _1, class _2, class _3,
+             class _4, class _5, class r1 = F<_1, r0>, class r2 = F<_2, r1>,
+             class r3 = F<_3, r2>, class r4 = F<_4, r3>>
+    using g = list<F<_5, r4>, r4, r3, r2, r1, r0>;
+
+    template<unsigned remaining, class C, template<class...> class F, class _0,
+              class _1, class _2, class _3, class _4, class _5, class... xs>
+    using f = typename join<C>::template f<g<F, _0, _1, _2, _3, _4, _5>, xs...>;
+  };
+
+  template<>
+  struct _scan_right<7>
+  {
+    template<template<class...> class F, class r0, class _1, class _2, class _3,
+             class _4, class _5, class _6, class r1 = F<_1, r0>,
+             class r2 = F<_2, r1>, class r3 = F<_3, r2>, class r4 = F<_4, r3>,
+             class r5 = F<_5, r4>>
+    using g = list<F<_6, r5>, r5, r4, r3, r2, r1, r0>;
+
+    template<unsigned remaining, class C, template<class...> class F, class _0,
+             class _1, class _2, class _3, class _4, class _5, class _6,
+             class... xs>
+    using f = typename join<C>::template f<g<F, _0, _1, _2, _3, _4, _5, _6>, xs...>;
+  };
+
+  template<>
+  struct _scan_right<8>
+  {
+    template<template<class...> class F, class r0, class _1, class _2, class _3,
+             class _4, class _5, class _6, class _7, class r1 = F<_1, r0>,
+             class r2 = F<_2, r1>, class r3 = F<_3, r2>, class r4 = F<_4, r3>,
+             class r5 = F<_5, r4>, class r6 = F<_6, r5>>
+    using g = list<F<_7, r6>, r6, r5, r4, r3, r2, r1, r0>;
+
+    template<unsigned remaining, class C, template<class...> class F, class _0,
+             class _1, class _2, class _3, class _4, class _5, class _6,
+             class _7, class... xs>
+    using f = typename join<C>::template f<g<F, _0, _1, _2, _3, _4, _5, _6, _7>, xs...>;
+  };
+
+  // for n in [8,16,32,64,128]:
+  //   args=', '.join(f'class _{i}' for i in range(1, n))
+  //   ps=', '.join(f'_{i}' for i in range(n))
+  //   rs=', '.join(f'class r{i} = F<_{i}, r{i-1}>' for i in range(1, n-1))
+  //   l=', '.join(f'r{i}' for i in range(n-2,-1,-1))
+  //   print(f'''
+  //   template<>
+  //   struct _scan_right<{n*2}>
+  //   {{
+  //     template<template<class...> class F,
+  //       class r0, {args},
+  //       {rs}>
+  //     using g = scan_continuation<F<_{n-1}, r{n-2}>, list<{l}>>;
+  //
+  //     template<unsigned remaining, class C, template<class...> class F,
+  //       class _0, {args},
+  //       class... xs>
+  //     using f = typename g<F, {ps}>
+  //       ::template f<remaining-{n-1}, _scan_right<n_8_or_more_16_32_64_128_256(remaining-{n-1})>, C, F, xs..
+  // .>;
+  //   }};''')
+
+  template<> struct _scan_right<16>
+  {
+    template<template<class...> class F, class r0, class _1, class _2, class _3,
+             class _4, class _5, class _6, class _7, class r1 = F<_1, r0>,
+             class r2 = F<_2, r1>, class r3 = F<_3, r2>, class r4 = F<_4, r3>,
+             class r5 = F<_5, r4>, class r6 = F<_6, r5>>
+    using g = scan_continuation<F<_7, r6>, list<r6, r5, r4, r3, r2, r1, r0>>;
+
+    template<unsigned remaining, class C, template<class...> class F, class _0,
+             class _1, class _2, class _3, class _4, class _5, class _6,
+             class _7, class... xs>
+    using f = typename g<F, _0, _1, _2, _3, _4, _5, _6, _7>::template f<
+        remaining - 7, _scan_right<n_8_or_more_16_32_64_128_256(remaining - 7)>,
+        C, F, xs...>;
+  };
+
+  template<> struct _scan_right<32> {
+    template<template<class...> class F, class r0, class _1, class _2, class _3,
+             class _4, class _5, class _6, class _7, class _8, class _9,
+             class _10, class _11, class _12, class _13, class _14, class _15,
+             class r1 = F<_1, r0>, class r2 = F<_2, r1>, class r3 = F<_3, r2>,
+             class r4 = F<_4, r3>, class r5 = F<_5, r4>, class r6 = F<_6, r5>,
+             class r7 = F<_7, r6>, class r8 = F<_8, r7>, class r9 = F<_9, r8>,
+             class r10 = F<_10, r9>, class r11 = F<_11, r10>,
+             class r12 = F<_12, r11>, class r13 = F<_13, r12>,
+             class r14 = F<_14, r13>>
+    using g =
+        scan_continuation<F<_15, r14>, list<r14, r13, r12, r11, r10, r9, r8, r7,
+                                            r6, r5, r4, r3, r2, r1, r0>>;
+
+    template<unsigned remaining, class C, template<class...> class F, class _0,
+             class _1, class _2, class _3, class _4, class _5, class _6,
+             class _7, class _8, class _9, class _10, class _11, class _12,
+             class _13, class _14, class _15, class... xs>
+    using f = typename g<F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12,
+                         _13, _14, _15>::
+        template f<remaining - 15,
+                   _scan_right<n_8_or_more_16_32_64_128_256(remaining - 15)>, C,
+                   F, xs...>;
+  };
+
+  template<> struct _scan_right<64> {
+    template<
+        template<class...> class F, class r0, class _1, class _2, class _3,
+        class _4, class _5, class _6, class _7, class _8, class _9, class _10,
+        class _11, class _12, class _13, class _14, class _15, class _16,
+        class _17, class _18, class _19, class _20, class _21, class _22,
+        class _23, class _24, class _25, class _26, class _27, class _28,
+        class _29, class _30, class _31, class r1 = F<_1, r0>,
+        class r2 = F<_2, r1>, class r3 = F<_3, r2>, class r4 = F<_4, r3>,
+        class r5 = F<_5, r4>, class r6 = F<_6, r5>, class r7 = F<_7, r6>,
+        class r8 = F<_8, r7>, class r9 = F<_9, r8>, class r10 = F<_10, r9>,
+        class r11 = F<_11, r10>, class r12 = F<_12, r11>, class r13 = F<_13, r12>,
+        class r14 = F<_14, r13>, class r15 = F<_15, r14>, class r16 = F<_16, r15>,
+        class r17 = F<_17, r16>, class r18 = F<_18, r17>, class r19 = F<_19, r18>,
+        class r20 = F<_20, r19>, class r21 = F<_21, r20>, class r22 = F<_22, r21>,
+        class r23 = F<_23, r22>, class r24 = F<_24, r23>, class r25 = F<_25, r24>,
+        class r26 = F<_26, r25>, class r27 = F<_27, r26>, class r28 = F<_28, r27>,
+        class r29 = F<_29, r28>, class r30 = F<_30, r29>>
+    using g =
+        scan_continuation<F<_31, r30>,
+                          list<r30, r29, r28, r27, r26, r25, r24, r23, r22, r21,
+                               r20, r19, r18, r17, r16, r15, r14, r13, r12, r11,
+                               r10, r9, r8, r7, r6, r5, r4, r3, r2, r1, r0>>;
+
+    template<unsigned remaining, class C, template<class...> class F, class _0,
+             class _1, class _2, class _3, class _4, class _5, class _6,
+             class _7, class _8, class _9, class _10, class _11, class _12,
+             class _13, class _14, class _15, class _16, class _17, class _18,
+             class _19, class _20, class _21, class _22, class _23, class _24,
+             class _25, class _26, class _27, class _28, class _29, class _30,
+             class _31, class... xs>
+    using f = typename g<F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12,
+                         _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23,
+                         _24, _25, _26, _27, _28, _29, _30, _31>::
+        template f<remaining - 31,
+                   _scan_right<n_8_or_more_16_32_64_128_256(remaining - 31)>, C,
+                   F, xs...>;
+  };
+
+  template<> struct _scan_right<128> {
+    template<
+        template<class...> class F, class r0, class _1, class _2, class _3,
+        class _4, class _5, class _6, class _7, class _8, class _9, class _10,
+        class _11, class _12, class _13, class _14, class _15, class _16,
+        class _17, class _18, class _19, class _20, class _21, class _22,
+        class _23, class _24, class _25, class _26, class _27, class _28,
+        class _29, class _30, class _31, class _32, class _33, class _34,
+        class _35, class _36, class _37, class _38, class _39, class _40,
+        class _41, class _42, class _43, class _44, class _45, class _46,
+        class _47, class _48, class _49, class _50, class _51, class _52,
+        class _53, class _54, class _55, class _56, class _57, class _58,
+        class _59, class _60, class _61, class _62, class _63,
+        class r1 = F<_1, r0>, class r2 = F<_2, r1>, class r3 = F<_3, r2>,
+        class r4 = F<_4, r3>, class r5 = F<_5, r4>, class r6 = F<_6, r5>,
+        class r7 = F<_7, r6>, class r8 = F<_8, r7>, class r9 = F<_9, r8>,
+        class r10 = F<_10, r9>, class r11 = F<_11, r10>, class r12 = F<_12, r11>,
+        class r13 = F<_13, r12>, class r14 = F<_14, r13>, class r15 = F<_15, r14>,
+        class r16 = F<_16, r15>, class r17 = F<_17, r16>, class r18 = F<_18, r17>,
+        class r19 = F<_19, r18>, class r20 = F<_20, r19>, class r21 = F<_21, r20>,
+        class r22 = F<_22, r21>, class r23 = F<_23, r22>, class r24 = F<_24, r23>,
+        class r25 = F<_25, r24>, class r26 = F<_26, r25>, class r27 = F<_27, r26>,
+        class r28 = F<_28, r27>, class r29 = F<_29, r28>, class r30 = F<_30, r29>,
+        class r31 = F<_31, r30>, class r32 = F<_32, r31>, class r33 = F<_33, r32>,
+        class r34 = F<_34, r33>, class r35 = F<_35, r34>, class r36 = F<_36, r35>,
+        class r37 = F<_37, r36>, class r38 = F<_38, r37>, class r39 = F<_39, r38>,
+        class r40 = F<_40, r39>, class r41 = F<_41, r40>, class r42 = F<_42, r41>,
+        class r43 = F<_43, r42>, class r44 = F<_44, r43>, class r45 = F<_45, r44>,
+        class r46 = F<_46, r45>, class r47 = F<_47, r46>, class r48 = F<_48, r47>,
+        class r49 = F<_49, r48>, class r50 = F<_50, r49>, class r51 = F<_51, r50>,
+        class r52 = F<_52, r51>, class r53 = F<_53, r52>, class r54 = F<_54, r53>,
+        class r55 = F<_55, r54>, class r56 = F<_56, r55>, class r57 = F<_57, r56>,
+        class r58 = F<_58, r57>, class r59 = F<_59, r58>, class r60 = F<_60, r59>,
+        class r61 = F<_61, r60>, class r62 = F<_62, r61>>
+    using g = scan_continuation<
+        F<_63, r62>,
+        list<r62, r61, r60, r59, r58, r57, r56, r55, r54, r53, r52, r51, r50, r49,
+             r48, r47, r46, r45, r44, r43, r42, r41, r40, r39, r38, r37, r36, r35,
+             r34, r33, r32, r31, r30, r29, r28, r27, r26, r25, r24, r23, r22, r21,
+             r20, r19, r18, r17, r16, r15, r14, r13, r12, r11, r10, r9, r8, r7,
+             r6, r5, r4, r3, r2, r1, r0>>;
+
+    template<unsigned remaining, class C, template<class...> class F, class _0,
+             class _1, class _2, class _3, class _4, class _5, class _6,
+             class _7, class _8, class _9, class _10, class _11, class _12,
+             class _13, class _14, class _15, class _16, class _17, class _18,
+             class _19, class _20, class _21, class _22, class _23, class _24,
+             class _25, class _26, class _27, class _28, class _29, class _30,
+             class _31, class _32, class _33, class _34, class _35, class _36,
+             class _37, class _38, class _39, class _40, class _41, class _42,
+             class _43, class _44, class _45, class _46, class _47, class _48,
+             class _49, class _50, class _51, class _52, class _53, class _54,
+             class _55, class _56, class _57, class _58, class _59, class _60,
+             class _61, class _62, class _63, class... xs>
+    using f = typename g<F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12,
+                         _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23,
+                         _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34,
+                         _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45,
+                         _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56,
+                         _57, _58, _59, _60, _61, _62, _63>::
+        template f<remaining - 63,
+                   _scan_right<n_8_or_more_16_32_64_128_256(remaining - 63)>, C,
+                   F, xs...>;
+  };
+
+  template<> struct _scan_right<256> {
+    template<
+        template<class...> class F, class r0, class _1, class _2, class _3,
+        class _4, class _5, class _6, class _7, class _8, class _9, class _10,
+        class _11, class _12, class _13, class _14, class _15, class _16,
+        class _17, class _18, class _19, class _20, class _21, class _22,
+        class _23, class _24, class _25, class _26, class _27, class _28,
+        class _29, class _30, class _31, class _32, class _33, class _34,
+        class _35, class _36, class _37, class _38, class _39, class _40,
+        class _41, class _42, class _43, class _44, class _45, class _46,
+        class _47, class _48, class _49, class _50, class _51, class _52,
+        class _53, class _54, class _55, class _56, class _57, class _58,
+        class _59, class _60, class _61, class _62, class _63, class _64,
+        class _65, class _66, class _67, class _68, class _69, class _70,
+        class _71, class _72, class _73, class _74, class _75, class _76,
+        class _77, class _78, class _79, class _80, class _81, class _82,
+        class _83, class _84, class _85, class _86, class _87, class _88,
+        class _89, class _90, class _91, class _92, class _93, class _94,
+        class _95, class _96, class _97, class _98, class _99, class _100,
+        class _101, class _102, class _103, class _104, class _105, class _106,
+        class _107, class _108, class _109, class _110, class _111, class _112,
+        class _113, class _114, class _115, class _116, class _117, class _118,
+        class _119, class _120, class _121, class _122, class _123, class _124,
+        class _125, class _126, class _127, class r1 = F<_1, r0>,
+        class r2 = F<_2, r1>, class r3 = F<_3, r2>, class r4 = F<_4, r3>,
+        class r5 = F<_5, r4>, class r6 = F<_6, r5>, class r7 = F<_7, r6>,
+        class r8 = F<_8, r7>, class r9 = F<_9, r8>, class r10 = F<_10, r9>,
+        class r11 = F<_11, r10>, class r12 = F<_12, r11>, class r13 = F<_13, r12>,
+        class r14 = F<_14, r13>, class r15 = F<_15, r14>, class r16 = F<_16, r15>,
+        class r17 = F<_17, r16>, class r18 = F<_18, r17>, class r19 = F<_19, r18>,
+        class r20 = F<_20, r19>, class r21 = F<_21, r20>, class r22 = F<_22, r21>,
+        class r23 = F<_23, r22>, class r24 = F<_24, r23>, class r25 = F<_25, r24>,
+        class r26 = F<_26, r25>, class r27 = F<_27, r26>, class r28 = F<_28, r27>,
+        class r29 = F<_29, r28>, class r30 = F<_30, r29>, class r31 = F<_31, r30>,
+        class r32 = F<_32, r31>, class r33 = F<_33, r32>, class r34 = F<_34, r33>,
+        class r35 = F<_35, r34>, class r36 = F<_36, r35>, class r37 = F<_37, r36>,
+        class r38 = F<_38, r37>, class r39 = F<_39, r38>, class r40 = F<_40, r39>,
+        class r41 = F<_41, r40>, class r42 = F<_42, r41>, class r43 = F<_43, r42>,
+        class r44 = F<_44, r43>, class r45 = F<_45, r44>, class r46 = F<_46, r45>,
+        class r47 = F<_47, r46>, class r48 = F<_48, r47>, class r49 = F<_49, r48>,
+        class r50 = F<_50, r49>, class r51 = F<_51, r50>, class r52 = F<_52, r51>,
+        class r53 = F<_53, r52>, class r54 = F<_54, r53>, class r55 = F<_55, r54>,
+        class r56 = F<_56, r55>, class r57 = F<_57, r56>, class r58 = F<_58, r57>,
+        class r59 = F<_59, r58>, class r60 = F<_60, r59>, class r61 = F<_61, r60>,
+        class r62 = F<_62, r61>, class r63 = F<_63, r62>, class r64 = F<_64, r63>,
+        class r65 = F<_65, r64>, class r66 = F<_66, r65>, class r67 = F<_67, r66>,
+        class r68 = F<_68, r67>, class r69 = F<_69, r68>, class r70 = F<_70, r69>,
+        class r71 = F<_71, r70>, class r72 = F<_72, r71>, class r73 = F<_73, r72>,
+        class r74 = F<_74, r73>, class r75 = F<_75, r74>, class r76 = F<_76, r75>,
+        class r77 = F<_77, r76>, class r78 = F<_78, r77>, class r79 = F<_79, r78>,
+        class r80 = F<_80, r79>, class r81 = F<_81, r80>, class r82 = F<_82, r81>,
+        class r83 = F<_83, r82>, class r84 = F<_84, r83>, class r85 = F<_85, r84>,
+        class r86 = F<_86, r85>, class r87 = F<_87, r86>, class r88 = F<_88, r87>,
+        class r89 = F<_89, r88>, class r90 = F<_90, r89>, class r91 = F<_91, r90>,
+        class r92 = F<_92, r91>, class r93 = F<_93, r92>, class r94 = F<_94, r93>,
+        class r95 = F<_95, r94>, class r96 = F<_96, r95>, class r97 = F<_97, r96>,
+        class r98 = F<_98, r97>, class r99 = F<_99, r98>,
+        class r100 = F<_100, r99>, class r101 = F<_101, r100>,
+        class r102 = F<_102, r101>, class r103 = F<_103, r102>,
+        class r104 = F<_104, r103>, class r105 = F<_105, r104>,
+        class r106 = F<_106, r105>, class r107 = F<_107, r106>,
+        class r108 = F<_108, r107>, class r109 = F<_109, r108>,
+        class r110 = F<_110, r109>, class r111 = F<_111, r110>,
+        class r112 = F<_112, r111>, class r113 = F<_113, r112>,
+        class r114 = F<_114, r113>, class r115 = F<_115, r114>,
+        class r116 = F<_116, r115>, class r117 = F<_117, r116>,
+        class r118 = F<_118, r117>, class r119 = F<_119, r118>,
+        class r120 = F<_120, r119>, class r121 = F<_121, r120>,
+        class r122 = F<_122, r121>, class r123 = F<_123, r122>,
+        class r124 = F<_124, r123>, class r125 = F<_125, r124>,
+        class r126 = F<_126, r125>>
+    using g = scan_continuation<
+        F<_127, r126>,
+        list<r126, r125, r124, r123, r122, r121, r120, r119, r118, r117, r116,
+             r115, r114, r113, r112, r111, r110, r109, r108, r107, r106, r105,
+             r104, r103, r102, r101, r100, r99, r98, r97, r96, r95, r94, r93, r92,
+             r91, r90, r89, r88, r87, r86, r85, r84, r83, r82, r81, r80, r79, r78,
+             r77, r76, r75, r74, r73, r72, r71, r70, r69, r68, r67, r66, r65, r64,
+             r63, r62, r61, r60, r59, r58, r57, r56, r55, r54, r53, r52, r51, r50,
+             r49, r48, r47, r46, r45, r44, r43, r42, r41, r40, r39, r38, r37, r36,
+             r35, r34, r33, r32, r31, r30, r29, r28, r27, r26, r25, r24, r23, r22,
+             r21, r20, r19, r18, r17, r16, r15, r14, r13, r12, r11, r10, r9, r8,
+             r7, r6, r5, r4, r3, r2, r1, r0>>;
+
+    template<
+        unsigned remaining, class C, template<class...> class F, class _0,
+        class _1, class _2, class _3, class _4, class _5, class _6, class _7,
+        class _8, class _9, class _10, class _11, class _12, class _13, class _14,
+        class _15, class _16, class _17, class _18, class _19, class _20,
+        class _21, class _22, class _23, class _24, class _25, class _26,
+        class _27, class _28, class _29, class _30, class _31, class _32,
+        class _33, class _34, class _35, class _36, class _37, class _38,
+        class _39, class _40, class _41, class _42, class _43, class _44,
+        class _45, class _46, class _47, class _48, class _49, class _50,
+        class _51, class _52, class _53, class _54, class _55, class _56,
+        class _57, class _58, class _59, class _60, class _61, class _62,
+        class _63, class _64, class _65, class _66, class _67, class _68,
+        class _69, class _70, class _71, class _72, class _73, class _74,
+        class _75, class _76, class _77, class _78, class _79, class _80,
+        class _81, class _82, class _83, class _84, class _85, class _86,
+        class _87, class _88, class _89, class _90, class _91, class _92,
+        class _93, class _94, class _95, class _96, class _97, class _98,
+        class _99, class _100, class _101, class _102, class _103, class _104,
+        class _105, class _106, class _107, class _108, class _109, class _110,
+        class _111, class _112, class _113, class _114, class _115, class _116,
+        class _117, class _118, class _119, class _120, class _121, class _122,
+        class _123, class _124, class _125, class _126, class _127, class... xs>
+    using f = typename g<
+        F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15,
+        _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30,
+        _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45,
+        _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
+        _61, _62, _63, _64, _65, _66, _67, _68, _69, _70, _71, _72, _73, _74, _75,
+        _76, _77, _78, _79, _80, _81, _82, _83, _84, _85, _86, _87, _88, _89, _90,
+        _91, _92, _93, _94, _95, _96, _97, _98, _99, _100, _101, _102, _103, _104,
+        _105, _106, _107, _108, _109, _110, _111, _112, _113, _114, _115, _116,
+        _117, _118, _119, _120, _121, _122, _123, _124, _125, _126, _127>::
+        template f<remaining - 127,
+                   _scan_right<n_8_or_more_16_32_64_128_256(remaining - 127)>, C,
+                   F, xs...>;
+  };
 }
 /// \endcond
 namespace jln::mp
@@ -9918,45 +11245,6 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp
 {
-  /// \ingroup list
-
-  /// Extracts \c N elements from the end of a \sequence.
-  /// \pre `0 <= N <= sizeof...(xs)`
-  /// \treturn \sequence
-  template<class N, class C = listify>
-  struct take_back
-  {
-    template<class... xs>
-    using f = typename detail::_drop_front<
-      detail::n_8_or_less_16_64_256(
-        sizeof...(xs) - detail::validate_index<N::value, sizeof...(xs)>::value
-      )
-    >::template f<sizeof...(xs) - N::value, C, xs...>;
-  };
-
-  template<int_ n, class C = listify>
-  using take_back_c = take_back<number<n>, C>;
-
-  namespace emp
-  {
-    template<class L, class N, class C = mp::listify>
-    using take_back = unpack<L, mp::take_back<N, C>>;
-
-    template<class L, int_ n, class C = mp::listify>
-    using take_back_c = unpack<L, mp::take_back<number<n>, C>>;
-  }
-
-  /// \cond
-  template<class C>
-  struct take_back<number<0>, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
-  };
-  /// \endcond
-}
-namespace jln::mp
-{
   /// \cond
   namespace detail
   {
@@ -9965,7 +11253,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup list
+  /// \ingroup search
 
   /// Extracts the first elements of a \sequence that satisfy a \predicate.
   /// \treturn \sequence
@@ -9975,7 +11263,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::take_while_impl<
       typename detail::_drop_while<
-        detail::_drop_while_select(sizeof...(xs)), true
+        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
       >::template f<0, Pred, xs...>
     >::template f<C, xs...>;
   };
