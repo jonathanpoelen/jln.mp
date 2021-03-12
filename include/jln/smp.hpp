@@ -5675,7 +5675,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks if the \sequence begins with the given prefix.
-  /// \return \bool
+  /// \treturn \bool
   template<class Seq, class C = identity>
   struct starts_with;
 
@@ -5724,7 +5724,7 @@ namespace jln::mp
   /// Search the first sub-\sequence that satisfy a \predicate.
   /// Calls \c TC with all the elements after the one found.
   /// If no element is found, \c FC is used with the whole \sequence.
-  /// \return \sequence
+  /// \treturn \sequence
   template<class Seq, class TC = listify, class FC = clear<TC>>
   struct after;
 
@@ -6522,7 +6522,7 @@ namespace jln::mp
   /// Find the \sequence before a sub-\sequence.
   /// Calls \c TC with the elements from the beginning to sub-\sequence found.
   /// If no element is found, \c FC is used with the whole \sequence.
-  /// \return \sequence
+  /// \treturn \sequence
 #ifdef JLN_MP_DOXYGENATING
   template<class Seq, class TC = listify, class FC = clear<TC>>
   struct before;
@@ -7476,7 +7476,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks if the \sequence ends with the given prefix.
-  /// \return \bool
+  /// \treturn \bool
   template<class Seq, class C = identity>
   struct ends_with;
 
