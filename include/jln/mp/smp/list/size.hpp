@@ -1,6 +1,7 @@
 #pragma once
 
 #include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/smp/list/is_size_of.hpp> // is_size_of<> is a size<>
 #include <jln/mp/list/size.hpp>
 
 namespace jln::mp::smp

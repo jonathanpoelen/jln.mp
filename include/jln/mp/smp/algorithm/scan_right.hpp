@@ -2,6 +2,7 @@
 
 #include <jln/mp/smp/concepts.hpp>
 #include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/algorithm/reverse.hpp>
 #include <jln/mp/algorithm/scan_right.hpp>
 #include <jln/mp/functional/monadic.hpp>
 

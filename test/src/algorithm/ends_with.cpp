@@ -14,7 +14,7 @@ TEST()
   using l1 = list<_1>;
   using l2 = list<_1, _2>;
 
-  test_pack2<ends_with, l0>();
+  test_pack3<ends_with, l0>();
   test_pack2<ends_with, l1>();
   test_pack2<ends_with, l2>();
   test_pack3<ends_with>();
