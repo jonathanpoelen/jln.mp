@@ -81,6 +81,9 @@ namespace jln::mp
     >::template f<TC, FC, xs...>;
   };
 
+  template<int_ StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
+  using partial_search_c = partial_search<number<StopWhenAtLeast>, Pred, TC, FC>;
+
   /// Same \c search_before, but it stops when there is StopWhenAtLeast::value element or less.
   /// \treturn \sequence
   template<class StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
@@ -95,6 +98,9 @@ namespace jln::mp
       >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), Pred, xs...>
     >::template f<TC, FC, xs...>;
   };
+
+  template<int_ StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
+  using partial_search_before_c = partial_search_before<number<StopWhenAtLeast>, Pred, TC, FC>;
 
   /// Same \c search_before, but it stops when there is StopWhenAtLeast::value element or less.
   /// \treturn \sequence
@@ -111,6 +117,10 @@ namespace jln::mp
       >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), Pred, xs...>
     >::template f<TC, FC, ExtendedByN, xs...>;
   };
+
+  template<int_ StopWhenAtLeast, class Pred, class ExtendedByN, class TC = listify, class FC = clear<TC>>
+  using partial_search_before_extended_by_n_c
+    = partial_search_before_extended_by_n<number<StopWhenAtLeast>, Pred, ExtendedByN, TC, FC>;
 
   /// Search the index of first sub-\sequence that satisfy a \predicate.
   /// \treturn \sequence
@@ -152,6 +162,21 @@ namespace jln::mp
       class TC = mp::listify, class FC = mp::clear<TC>>
     using partial_search_before_extended_by_n = unpack<L,
       mp::partial_search_before_extended_by_n<Pred, StopWhenAtLeast, TC, FC>>;
+
+
+    template<class L, int_ StopWhenAtLeast, class Pred,
+      class TC = mp::listify, class FC = mp::clear<TC>>
+    using partial_search_c = unpack<L, mp::partial_search<Pred, number<StopWhenAtLeast>, TC, FC>>;
+
+    template<class L, int_ StopWhenAtLeast, class Pred,
+      class TC = mp::listify, class FC = mp::clear<TC>>
+    using partial_search_before_c = unpack<L,
+      mp::partial_search_before<Pred, number<StopWhenAtLeast>, TC, FC>>;
+
+    template<class L, int_ StopWhenAtLeast, class Pred, class ExtendedByN,
+      class TC = mp::listify, class FC = mp::clear<TC>>
+    using partial_search_before_extended_by_n_c = unpack<L,
+      mp::partial_search_before_extended_by_n<Pred, mp::number<StopWhenAtLeast>, TC, FC>>;
 
 
     template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>

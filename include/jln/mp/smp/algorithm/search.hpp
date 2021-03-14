@@ -89,6 +89,35 @@ namespace jln::mp::smp
     = typename detail::_smp_partial_search_extended_by_n<StopWhenAtLeast, ExtendedByN>
     ::template f<Pred, TC, FC>;
 
+  template<int_ StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
+  using partial_search_c = contract<mp::partial_search<
+    number<StopWhenAtLeast>,
+    detail::_smp_search_pred<Pred>,
+    detail::_smp_search_tc<Pred, TC>,
+    subcontract<FC>
+  >>;
+
+  template<int_ StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
+  using partial_search_before_c = contract<mp::invoke_twice<
+    mp::partial_search<
+      number<StopWhenAtLeast>,
+      detail::_smp_search_pred<Pred>,
+      mp::if_<
+        smp::concepts::predicate<assume_unary_or_more<Pred>, mp::always<mp::true_>>,
+        detail::_smp_search_before_take_front<subcontract<TC>>,
+        mp::always<violation>
+      >,
+      mp::always<subcontract<FC>>
+    >
+  >>;
+
+  template<int_ StopWhenAtLeast, class Pred, class ExtendedByN,
+           class TC = listify, class FC = clear<TC>>
+  using partial_search_before_extended_by_n_c =
+    typename detail::_smp_partial_search_extended_by_n<
+      number<StopWhenAtLeast>, ExtendedByN>
+    ::template f<Pred, TC, FC>;
+
   template<class Pred, class TC = identity, class FC = size<>>
   using search_index = contract<mp::invoke_twice<
     mp::search<
