@@ -19,8 +19,24 @@ namespace jln::mp
       xs...>;
   };
 
+  /// Extracts at most \c N elements from the beginning of a \sequence.
+  /// \pre `0 <= N`
+  /// \treturn \sequence
+  template<class N, class C = listify>
+  struct take_front_max
+  {
+    template<class... xs>
+    using f = call<
+      rotate<N, drop_front_max<number<sizeof...(xs)
+        - detail::min(sizeof...(xs), std::size_t{N::value})>, C>>,
+      xs...>;
+  };
+
   template<int_ n, class C = listify>
   using take_front_c = take_front<number<n>, C>;
+
+  template<int_ n, class C = listify>
+  using take_front_max_c = take_front_max<number<n>, C>;
 
   namespace emp
   {
@@ -29,6 +45,12 @@ namespace jln::mp
 
     template<class L, int_ n, class C = mp::listify>
     using take_front_c = unpack<L, mp::take_front<number<n>, C>>;
+
+    template<class L, class N, class C = mp::listify>
+    using take_front_max = unpack<L, mp::take_front_max<N, C>>;
+
+    template<class L, int_ n, class C = mp::listify>
+    using take_front_max_c = unpack<L, mp::take_front_max<number<n>, C>>;
   }
 
   /// \cond
@@ -72,6 +94,13 @@ namespace jln::mp
   {
     template<class _1, class _2, class _3, class _4, class _5, class... xs>
     using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2, _3, _4, _5);
+  };
+
+  template<class C>
+  struct take_front_max<number<0>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
   };
   /// \endcond
 }

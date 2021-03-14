@@ -51,8 +51,25 @@ namespace jln::mp
     >::template f<N::value, C, xs...>;
   };
 
+  /// Removes at most \c N elements from the beginning of a \sequence.
+  /// \pre `0 <= N`
+  /// \treturn \sequence
+  template<class N, class C = listify>
+  struct drop_front_max
+  {
+    template<class... xs>
+    using f = typename detail::_drop_front<
+      detail::n_8_or_less_16_64_256(
+        detail::min(std::size_t{N::value}, sizeof...(xs))
+      )
+    >::template f<detail::min(std::size_t{N::value}, sizeof...(xs)), C, xs...>;
+  };
+
   template<int_ n, class C = listify>
   using drop_front_c = drop_front<number<n>, C>;
+
+  template<int_ n, class C = listify>
+  using drop_front_max_c = drop_front_max<number<n>, C>;
 
   namespace emp
   {
@@ -61,6 +78,12 @@ namespace jln::mp
 
     template<class L, int_ n, class C = mp::listify>
     using drop_front_c = unpack<L, mp::drop_front<number<n>, C>>;
+
+    template<class L, class N, class C = mp::listify>
+    using drop_front_max = unpack<L, mp::drop_front_max<N, C>>;
+
+    template<class L, int_ n, class C = mp::listify>
+    using drop_front_max_c = unpack<L, mp::drop_front_max<number<n>, C>>;
   }
 
   /// \cond
@@ -105,6 +128,13 @@ namespace jln::mp
     template<class, class, class, class, class, class... xs>
     using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
   };
+
+  template<class C>
+  struct drop_front_max<number<0>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
   /// \endcond
 }
 
@@ -113,7 +143,7 @@ namespace jln::mp::detail
 {
 #define JLN_MP_DROP_IMPL(n, _, mp_rxs, mp_rep) \
   template<>                                   \
-  struct _drop_front<n>                              \
+  struct _drop_front<n>                        \
   {                                            \
     template<unsigned size, class C,           \
       mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)   \
@@ -131,12 +161,12 @@ namespace jln::mp::detail
 
 #define JLN_MP_DROP_IMPL2(n, _, mp_rxs, mp_rep, next_int) \
   template<>                                              \
-  struct _drop_front<n>                                         \
+  struct _drop_front<n>                                   \
   {                                                       \
     template<unsigned size, class C,                      \
       mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)              \
       class... xs>                                        \
-    using f = typename _drop_front<next_int (size-n)>           \
+    using f = typename _drop_front<next_int (size-n)>     \
       ::template f<(size-n), C, xs...>;                   \
   };
 

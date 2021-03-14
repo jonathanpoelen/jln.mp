@@ -13,6 +13,8 @@ TEST()
 
   test_pack2<drop_front, _2>();
   test_pack3<drop_front>();
+  test_pack2<drop_front_max, _2>();
+  test_pack3<drop_front_max>();
 
   test_context<drop_front_c<0>, smp::drop_front_c<0>>()
     .test<list<>>()
@@ -72,8 +74,17 @@ TEST()
       _64, _65, _66, _67, _68, _69>()
     ;
 
+  test_context<drop_front_max_c<2>, smp::drop_front_max_c<2>>()
+    .test<list<>>()
+    .test<list<>, _0>()
+    .test<list<>, _0, _1>()
+    .test<seq_2, _0, _1, _2>()
+    ;
+
   ut::not_invocable<smp::drop_front<_1, bad_function>>();
   ut::not_invocable<smp::drop_front<_1, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::drop_front_max<_1, bad_function>>();
+  ut::not_invocable<smp::drop_front_max<_1, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

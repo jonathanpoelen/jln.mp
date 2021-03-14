@@ -17,8 +17,23 @@ namespace jln::mp
     using f = call<rotate<number<-N::value>, drop_front<N, C>>, xs...>;
   };
 
+  /// Removes at most \c N elements from the end of a \sequence.
+  /// \pre `0 <= N`
+  /// \treturn \sequence
+  template<class N, class C = listify>
+  struct drop_back_max
+  {
+    template<class... xs>
+    using f = call<rotate<number<-N::value>,
+      drop_front<number<detail::min(std::size_t{N::value}, sizeof...(xs))>, C>
+    >, xs...>;
+  };
+
   template<int_ n, class C = listify>
   using drop_back_c = drop_back<number<n>, C>;
+
+  template<int_ n, class C = listify>
+  using drop_back_max_c = drop_back_max<number<n>, C>;
 
   namespace emp
   {
@@ -27,11 +42,24 @@ namespace jln::mp
 
     template<class L, int_ n, class C = mp::listify>
     using drop_back_c = unpack<L, mp::drop_back<number<n>, C>>;
+
+    template<class L, class N, class C = mp::listify>
+    using drop_back_max = unpack<L, mp::drop_back_max<N, C>>;
+
+    template<class L, int_ n, class C = mp::listify>
+    using drop_back_max_c = unpack<L, mp::drop_back_max<number<n>, C>>;
   }
 
   /// \cond
   template<class C>
   struct drop_back<number<0>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+  };
+
+  template<class C>
+  struct drop_back_max<number<0>, C>
   {
     template<class... xs>
     using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);

@@ -11,6 +11,7 @@ TEST()
   using namespace ut::ints;
 
   test_pack3<take_front>();
+  test_pack3<take_front_max>();
 
   ut::same<seq_0_1, emp::take_front_c<list<_0, _1, _2, _3>, 2>>();
 
@@ -36,8 +37,17 @@ TEST()
     .not_invocable<JLN_MP_XS_7(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>()
     ;
 
+  test_context<take_front_max_c<2>, smp::take_front_max_c<2>>()
+    .test<list<>>()
+    .test<seq_0, _0>()
+    .test<seq_0_1, _0, _1>()
+    .test<seq_0_1, _0, _1, _2>()
+    ;
+
   ut::not_invocable<smp::take_front<_1, bad_function>>();
   ut::not_invocable<smp::take_front<_1, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::take_front_max<_1, bad_function>>();
+  ut::not_invocable<smp::take_front_max<_1, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()
