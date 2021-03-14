@@ -72,6 +72,7 @@ t_algorithm_none_of = executable('none_of', 'test/src/algorithm/none_of.cpp', de
 t_algorithm_partition = executable('partition', 'test/src/algorithm/partition.cpp', dependencies: test_dep)
 t_algorithm_permutations = executable('permutations', 'test/src/algorithm/permutations.cpp', dependencies: test_dep)
 t_algorithm_powerset = executable('powerset', 'test/src/algorithm/powerset.cpp', dependencies: test_dep)
+t_algorithm_prefix = executable('prefix', 'test/src/algorithm/prefix.cpp', dependencies: test_dep)
 t_algorithm_remove = executable('remove', 'test/src/algorithm/remove.cpp', dependencies: test_dep)
 t_algorithm_repeat = executable('repeat', 'test/src/algorithm/repeat.cpp', dependencies: test_dep)
 t_algorithm_replace = executable('replace', 'test/src/algorithm/replace.cpp', dependencies: test_dep)
@@ -87,11 +88,12 @@ t_algorithm_split_after = executable('split_after', 'test/src/algorithm/split_af
 t_algorithm_split_at = executable('split_at', 'test/src/algorithm/split_at.cpp', dependencies: test_dep)
 t_algorithm_split_before = executable('split_before', 'test/src/algorithm/split_before.cpp', dependencies: test_dep)
 t_algorithm_starts_with = executable('starts_with', 'test/src/algorithm/starts_with.cpp', dependencies: test_dep)
+t_algorithm_suffix = executable('suffix', 'test/src/algorithm/suffix.cpp', dependencies: test_dep)
 t_algorithm_transform = executable('transform', 'test/src/algorithm/transform.cpp', dependencies: test_dep)
 t_algorithm_unique = executable('unique', 'test/src/algorithm/unique.cpp', dependencies: test_dep)
 t_algorithm_upper_bound = executable('upper_bound', 'test/src/algorithm/upper_bound.cpp', dependencies: test_dep)
 t_algorithm_zip = executable('zip', 'test/src/algorithm/zip.cpp', dependencies: test_dep)
-alias_target('mp.algorithm', t_algorithm_accumulate, t_algorithm_adjacent_difference, t_algorithm_adjacent_remove, t_algorithm_after, t_algorithm_all_of, t_algorithm_any_of, t_algorithm_cartesian, t_algorithm_combine, t_algorithm_compare_with, t_algorithm_contains, t_algorithm_copy, t_algorithm_count, t_algorithm_ends_with, t_algorithm_find, t_algorithm_flatten, t_algorithm_fold_left, t_algorithm_fold_right, t_algorithm_group, t_algorithm_group_n, t_algorithm_index, t_algorithm_indices, t_algorithm_intersperse, t_algorithm_iota, t_algorithm_is_sorted, t_algorithm_is_unique, t_algorithm_lexicographical_compare, t_algorithm_lower_bound, t_algorithm_make_int_sequence, t_algorithm_matrix_shortest, t_algorithm_merge, t_algorithm_mismatch, t_algorithm_mismatch_index, t_algorithm_none_of, t_algorithm_partition, t_algorithm_permutations, t_algorithm_powerset, t_algorithm_remove, t_algorithm_repeat, t_algorithm_replace, t_algorithm_reverse, t_algorithm_rotate, t_algorithm_same, t_algorithm_scan_left, t_algorithm_scan_right, t_algorithm_search, t_algorithm_sort, t_algorithm_split, t_algorithm_split_after, t_algorithm_split_at, t_algorithm_split_before, t_algorithm_starts_with, t_algorithm_transform, t_algorithm_unique, t_algorithm_upper_bound, t_algorithm_zip)
+alias_target('mp.algorithm', t_algorithm_accumulate, t_algorithm_adjacent_difference, t_algorithm_adjacent_remove, t_algorithm_after, t_algorithm_all_of, t_algorithm_any_of, t_algorithm_cartesian, t_algorithm_combine, t_algorithm_compare_with, t_algorithm_contains, t_algorithm_copy, t_algorithm_count, t_algorithm_ends_with, t_algorithm_find, t_algorithm_flatten, t_algorithm_fold_left, t_algorithm_fold_right, t_algorithm_group, t_algorithm_group_n, t_algorithm_index, t_algorithm_indices, t_algorithm_intersperse, t_algorithm_iota, t_algorithm_is_sorted, t_algorithm_is_unique, t_algorithm_lexicographical_compare, t_algorithm_lower_bound, t_algorithm_make_int_sequence, t_algorithm_matrix_shortest, t_algorithm_merge, t_algorithm_mismatch, t_algorithm_mismatch_index, t_algorithm_none_of, t_algorithm_partition, t_algorithm_permutations, t_algorithm_powerset, t_algorithm_prefix, t_algorithm_remove, t_algorithm_repeat, t_algorithm_replace, t_algorithm_reverse, t_algorithm_rotate, t_algorithm_same, t_algorithm_scan_left, t_algorithm_scan_right, t_algorithm_search, t_algorithm_sort, t_algorithm_split, t_algorithm_split_after, t_algorithm_split_at, t_algorithm_split_before, t_algorithm_starts_with, t_algorithm_suffix, t_algorithm_transform, t_algorithm_unique, t_algorithm_upper_bound, t_algorithm_zip)
 t_assume = executable('assume', 'test/src/assume.cpp', dependencies: test_dep)
 t_detail_to_predicate_not = executable('to_predicate_not', 'test/src/detail/to_predicate_not.cpp', dependencies: test_dep)
 alias_target('mp.detail', t_detail_to_predicate_not)
@@ -174,7 +176,7 @@ t_value_is_val = executable('is_val', 'test/src/value/is_val.cpp', dependencies:
 t_value_operators = executable('operators_', 'test/src/value/operators.cpp', dependencies: test_dep)
 t_value_values = executable('values', 'test/src/value/values.cpp', dependencies: test_dep)
 alias_target('mp.value', t_value_as_val, t_value_has_value, t_value_is_val, t_value_operators, t_value_values)
-alias_target('mp', t_algorithm_accumulate, t_algorithm_adjacent_difference, t_algorithm_adjacent_remove, t_algorithm_after, t_algorithm_all_of, t_algorithm_any_of, t_algorithm_cartesian, t_algorithm_combine, t_algorithm_compare_with, t_algorithm_contains, t_algorithm_copy, t_algorithm_count, t_algorithm_ends_with, t_algorithm_find, t_algorithm_flatten, t_algorithm_fold_left, t_algorithm_fold_right, t_algorithm_group, t_algorithm_group_n, t_algorithm_index, t_algorithm_indices, t_algorithm_intersperse, t_algorithm_iota, t_algorithm_is_sorted, t_algorithm_is_unique, t_algorithm_lexicographical_compare, t_algorithm_lower_bound, t_algorithm_make_int_sequence, t_algorithm_matrix_shortest, t_algorithm_merge, t_algorithm_mismatch, t_algorithm_mismatch_index, t_algorithm_none_of, t_algorithm_partition, t_algorithm_permutations, t_algorithm_powerset, t_algorithm_remove, t_algorithm_repeat, t_algorithm_replace, t_algorithm_reverse, t_algorithm_rotate, t_algorithm_same, t_algorithm_scan_left, t_algorithm_scan_right, t_algorithm_search, t_algorithm_sort, t_algorithm_split, t_algorithm_split_after, t_algorithm_split_at, t_algorithm_split_before, t_algorithm_starts_with, t_algorithm_transform, t_algorithm_unique, t_algorithm_upper_bound, t_algorithm_zip, t_assume, t_detail_to_predicate_not, t_functional_bind, t_functional_capture, t_functional_cascade, t_functional_compose, t_functional_each, t_functional_eval, t_functional_fix, t_functional_flip, t_functional_identity, t_functional_if, t_functional_invoke_twice, t_functional_is_invocable, t_functional_lift, t_functional_on, t_functional_partial, t_functional_recursively, t_functional_tee, t_functional_try, t_list_append, t_list_as_list, t_list_at, t_list_back, t_list_clear, t_list_drop_back, t_list_drop_front, t_list_drop_while, t_list_erase, t_list_front, t_list_insert, t_list_insert_range, t_list_is_empty, t_list_is_list, t_list_is_size_of, t_list_join, t_list_list, t_list_offset, t_list_pop_back, t_list_pop_front, t_list_prepend, t_list_push_back, t_list_push_front, t_list_range, t_list_size, t_list_slice, t_list_sliding, t_list_swap_index, t_list_take_back, t_list_take_front, t_list_take_while, t_list_wrap_in_list, t_number_as_bool, t_number_as_number, t_number_is_number, t_number_math, t_number_numbers, t_number_operators, t_number_to_bool, t_utility_alignof, t_utility_always, t_utility_conditional, t_utility_has_type, t_utility_has_value_type, t_utility_is, t_utility_is_specialization_of, t_utility_sizeof, t_utility_stl_traits, t_utility_type, t_utility_unpack, t_utility_value_type, t_value_as_val, t_value_has_value, t_value_is_val, t_value_operators, t_value_values)
+alias_target('mp', t_algorithm_accumulate, t_algorithm_adjacent_difference, t_algorithm_adjacent_remove, t_algorithm_after, t_algorithm_all_of, t_algorithm_any_of, t_algorithm_cartesian, t_algorithm_combine, t_algorithm_compare_with, t_algorithm_contains, t_algorithm_copy, t_algorithm_count, t_algorithm_ends_with, t_algorithm_find, t_algorithm_flatten, t_algorithm_fold_left, t_algorithm_fold_right, t_algorithm_group, t_algorithm_group_n, t_algorithm_index, t_algorithm_indices, t_algorithm_intersperse, t_algorithm_iota, t_algorithm_is_sorted, t_algorithm_is_unique, t_algorithm_lexicographical_compare, t_algorithm_lower_bound, t_algorithm_make_int_sequence, t_algorithm_matrix_shortest, t_algorithm_merge, t_algorithm_mismatch, t_algorithm_mismatch_index, t_algorithm_none_of, t_algorithm_partition, t_algorithm_permutations, t_algorithm_powerset, t_algorithm_prefix, t_algorithm_remove, t_algorithm_repeat, t_algorithm_replace, t_algorithm_reverse, t_algorithm_rotate, t_algorithm_same, t_algorithm_scan_left, t_algorithm_scan_right, t_algorithm_search, t_algorithm_sort, t_algorithm_split, t_algorithm_split_after, t_algorithm_split_at, t_algorithm_split_before, t_algorithm_starts_with, t_algorithm_suffix, t_algorithm_transform, t_algorithm_unique, t_algorithm_upper_bound, t_algorithm_zip, t_assume, t_detail_to_predicate_not, t_functional_bind, t_functional_capture, t_functional_cascade, t_functional_compose, t_functional_each, t_functional_eval, t_functional_fix, t_functional_flip, t_functional_identity, t_functional_if, t_functional_invoke_twice, t_functional_is_invocable, t_functional_lift, t_functional_on, t_functional_partial, t_functional_recursively, t_functional_tee, t_functional_try, t_list_append, t_list_as_list, t_list_at, t_list_back, t_list_clear, t_list_drop_back, t_list_drop_front, t_list_drop_while, t_list_erase, t_list_front, t_list_insert, t_list_insert_range, t_list_is_empty, t_list_is_list, t_list_is_size_of, t_list_join, t_list_list, t_list_offset, t_list_pop_back, t_list_pop_front, t_list_prepend, t_list_push_back, t_list_push_front, t_list_range, t_list_size, t_list_slice, t_list_sliding, t_list_swap_index, t_list_take_back, t_list_take_front, t_list_take_while, t_list_wrap_in_list, t_number_as_bool, t_number_as_number, t_number_is_number, t_number_math, t_number_numbers, t_number_operators, t_number_to_bool, t_utility_alignof, t_utility_always, t_utility_conditional, t_utility_has_type, t_utility_has_value_type, t_utility_is, t_utility_is_specialization_of, t_utility_sizeof, t_utility_stl_traits, t_utility_type, t_utility_unpack, t_utility_value_type, t_value_as_val, t_value_has_value, t_value_is_val, t_value_operators, t_value_values)
 executable('check_inc', [
   'test/autogen/algorithm@accumulate.cpp',
   'test/autogen/algorithm@adjacent_difference.cpp',
@@ -212,6 +214,7 @@ executable('check_inc', [
   'test/autogen/algorithm@partition.cpp',
   'test/autogen/algorithm@permutations.cpp',
   'test/autogen/algorithm@powerset.cpp',
+  'test/autogen/algorithm@prefix.cpp',
   'test/autogen/algorithm@remove.cpp',
   'test/autogen/algorithm@repeat.cpp',
   'test/autogen/algorithm@replace.cpp',
@@ -227,6 +230,7 @@ executable('check_inc', [
   'test/autogen/algorithm@split_at.cpp',
   'test/autogen/algorithm@split_before.cpp',
   'test/autogen/algorithm@starts_with.cpp',
+  'test/autogen/algorithm@suffix.cpp',
   'test/autogen/algorithm@transform.cpp',
   'test/autogen/algorithm@unique.cpp',
   'test/autogen/algorithm@upper_bound.cpp',
@@ -350,6 +354,7 @@ executable('check_inc', [
   'test/autogen/smp@algorithm@partition.cpp',
   'test/autogen/smp@algorithm@permutations.cpp',
   'test/autogen/smp@algorithm@powerset.cpp',
+  'test/autogen/smp@algorithm@prefix.cpp',
   'test/autogen/smp@algorithm@remove.cpp',
   'test/autogen/smp@algorithm@repeat.cpp',
   'test/autogen/smp@algorithm@replace.cpp',
@@ -365,6 +370,7 @@ executable('check_inc', [
   'test/autogen/smp@algorithm@split_at.cpp',
   'test/autogen/smp@algorithm@split_before.cpp',
   'test/autogen/smp@algorithm@starts_with.cpp',
+  'test/autogen/smp@algorithm@suffix.cpp',
   'test/autogen/smp@algorithm@transform.cpp',
   'test/autogen/smp@algorithm@unique.cpp',
   'test/autogen/smp@algorithm@upper_bound.cpp',

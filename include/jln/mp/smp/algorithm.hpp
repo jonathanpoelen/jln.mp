@@ -36,6 +36,7 @@
 #include <jln/mp/smp/algorithm/partition.hpp>
 #include <jln/mp/smp/algorithm/permutations.hpp>
 #include <jln/mp/smp/algorithm/powerset.hpp>
+#include <jln/mp/smp/algorithm/prefix.hpp>
 #include <jln/mp/smp/algorithm/remove.hpp>
 #include <jln/mp/smp/algorithm/repeat.hpp>
 #include <jln/mp/smp/algorithm/replace.hpp>
@@ -51,6 +52,7 @@
 #include <jln/mp/smp/algorithm/split_at.hpp>
 #include <jln/mp/smp/algorithm/split_before.hpp>
 #include <jln/mp/smp/algorithm/starts_with.hpp>
+#include <jln/mp/smp/algorithm/suffix.hpp>
 #include <jln/mp/smp/algorithm/transform.hpp>
 #include <jln/mp/smp/algorithm/unique.hpp>
 #include <jln/mp/smp/algorithm/upper_bound.hpp>

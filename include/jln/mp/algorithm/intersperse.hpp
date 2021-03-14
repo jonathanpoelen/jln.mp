@@ -17,6 +17,7 @@ namespace jln::mp
 
   /// Inserts a \value between each element of a \sequence.
   /// \treturn \list
+  /// \see prefix, suffix
   template<class x, class C = listify>
   struct intersperse
   {
@@ -33,12 +34,8 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/algorithm/zip.hpp>
-#include <jln/mp/algorithm/make_int_sequence.hpp>
-#include <jln/mp/algorithm/transform.hpp>
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/pop_front.hpp>
-#include <jln/mp/utility/always.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -54,11 +51,8 @@ namespace jln::mp::detail
   struct _intersperse<1>
   {
     template<class C, class x, class... xs>
-    using f = typename _zip_impl<
-      join<pop_front<C>>,
-      emp::make_int_sequence_c<sizeof...(xs), transform<always<x>>>,
-      list<xs...>
-    >::type;
+    using f = typename detail::_join_select<sizeof...(xs)>
+      ::template f<pop_front<C>, list<x, xs>...>::type;
   };
 }
 /// \endcond
