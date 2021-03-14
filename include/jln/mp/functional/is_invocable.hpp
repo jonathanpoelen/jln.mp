@@ -16,6 +16,6 @@ namespace jln::mp
   namespace emp
   {
     template<class F, class... xs>
-    using is_invocable = mp::call<mp::is_invocable<F>, xs...>;
+    using is_invocable = typename mp::is_invocable<F>::template f<xs...>;
   }
 }

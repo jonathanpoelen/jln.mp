@@ -15,9 +15,9 @@ TEST()
   using l2 = list<_1, _2>;
 
   test_pack3<starts_with, l0>();
-  test_pack2<starts_with, l1>();
-  test_pack2<starts_with, l2>();
   test_pack3<starts_with>();
+  test_pack<starts_with, l1>().test_unary();
+  test_pack<starts_with, l2>().test_unary();
 
   test_context<starts_with<l0>, smp::starts_with<l0>>()
     .test<_1>()

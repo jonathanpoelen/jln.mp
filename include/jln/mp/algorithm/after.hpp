@@ -8,8 +8,8 @@ namespace jln::mp
 {
   /// \ingroup search
 
-  /// Search the first sub-\sequence that satisfy a \predicate.
-  /// Calls \c TC with all the elements after the one found.
+  /// Find the \sequence after a sub-\sequence.
+  /// Calls \c TC with all the elements after the sub-\sequence found.
   /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence
   template<class Seq, class TC = listify, class FC = clear<TC>>

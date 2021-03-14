@@ -40,27 +40,7 @@ SOFTWARE.
 
 // Diagnostic
 //@{
-#ifdef _MSC_VER
-
-#  define JLN_DIAGNOSTIC_PUSH __pragma(warning(push))
-#  define JLN_DIAGNOSTIC_POP __pragma(warning(pop))
-
-#  define JLN_DIAGNOSTIC_MSVC_IGNORE(X) __pragma(warning(disable:X))
-#  define JLN_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
-#  define JLN_DIAGNOSTIC_GCC_IGNORE(X)
-#  define JLN_DIAGNOSTIC_CLANG_IGNORE(X)
-
-#  define JLN_DIAGNOSTIC_MSVC_WARNING(X) __pragma(warning(4:X))
-#  define JLN_DIAGNOSTIC_GCC_ONLY_WARNING(X)
-#  define JLN_DIAGNOSTIC_GCC_WARNING(X)
-#  define JLN_DIAGNOSTIC_CLANG_WARNING(X)
-
-#  define JLN_DIAGNOSTIC_MSVC_ERROR(X) __pragma(error(X))
-#  define JLN_DIAGNOSTIC_GCC_ONLY_ERROR(X)
-#  define JLN_DIAGNOSTIC_GCC_ERROR(X)
-#  define JLN_DIAGNOSTIC_CLANG_ERROR(X)
-
-#elif defined(__GNUC__) || defined(__clang__)
+#if defined(__GNUC__) || defined(__clang__)
 
 #  define JLN_DIAGNOSTIC_PUSH JLN_PRAGMA(GCC diagnostic push)
 #  define JLN_DIAGNOSTIC_POP JLN_PRAGMA(GCC diagnostic pop)
@@ -86,6 +66,26 @@ SOFTWARE.
 #    define JLN_DIAGNOSTIC_GCC_ONLY_ERROR JLN_DIAGNOSTIC_GCC_ERROR
 #    define JLN_DIAGNOSTIC_CLANG_ERROR(X)
 #  endif
+
+#elif defined(_MSC_VER)
+
+#  define JLN_DIAGNOSTIC_PUSH __pragma(warning(push))
+#  define JLN_DIAGNOSTIC_POP __pragma(warning(pop))
+
+#  define JLN_DIAGNOSTIC_MSVC_IGNORE(X) __pragma(warning(disable:X))
+#  define JLN_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
+#  define JLN_DIAGNOSTIC_GCC_IGNORE(X)
+#  define JLN_DIAGNOSTIC_CLANG_IGNORE(X)
+
+#  define JLN_DIAGNOSTIC_MSVC_WARNING(X) __pragma(warning(4:X))
+#  define JLN_DIAGNOSTIC_GCC_ONLY_WARNING(X)
+#  define JLN_DIAGNOSTIC_GCC_WARNING(X)
+#  define JLN_DIAGNOSTIC_CLANG_WARNING(X)
+
+#  define JLN_DIAGNOSTIC_MSVC_ERROR(X) __pragma(error(X))
+#  define JLN_DIAGNOSTIC_GCC_ONLY_ERROR(X)
+#  define JLN_DIAGNOSTIC_GCC_ERROR(X)
+#  define JLN_DIAGNOSTIC_CLANG_ERROR(X)
 
 #else
 

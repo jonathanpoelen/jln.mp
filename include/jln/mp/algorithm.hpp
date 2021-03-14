@@ -6,7 +6,6 @@
 #include <jln/mp/algorithm/after.hpp>
 #include <jln/mp/algorithm/all_of.hpp>
 #include <jln/mp/algorithm/any_of.hpp>
-#include <jln/mp/algorithm/before.hpp>
 #include <jln/mp/algorithm/cartesian.hpp>
 #include <jln/mp/algorithm/combine.hpp>
 #include <jln/mp/algorithm/compare_with.hpp>

@@ -15,4 +15,11 @@ namespace jln::mp
     template<class... xs>
     using f = typename C::template f<x>;
   };
+
+  template<class x>
+  struct always<x, identity>
+  {
+    template<class... xs>
+    using f = x;
+  };
 }
