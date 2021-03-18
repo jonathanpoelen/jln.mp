@@ -7,6 +7,7 @@ namespace jln::mp
   /// \ingroup number
 
   using int_ = std::intmax_t;
+  using uint_ = std::intmax_t;
 
   template<int_ v>
   struct number { static const int_ value = v; };

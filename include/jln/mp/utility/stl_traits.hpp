@@ -82,7 +82,7 @@ namespace jln::mp::traits
 #endif
   JLN_MP_MAKE_TRAIT(is_signed);
   JLN_MP_MAKE_TRAIT(is_unsigned);
-#if __cplusplus >= 202002L
+#if defined(__cpp_lib_bounded_array_traits) && __cpp_lib_bounded_array_traits
   JLN_MP_MAKE_TRAIT(is_bounded_array);
   JLN_MP_MAKE_TRAIT(is_unbounded_array);
 #endif
@@ -151,9 +151,13 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT(is_same);
   JLN_MP_MAKE_TRAIT(is_base_of);
   JLN_MP_MAKE_TRAIT(is_convertible);
-#if __cplusplus >= 202002L
+#if defined(__cpp_lib_is_nothrow_convertible) && __cpp_lib_is_nothrow_convertible
   JLN_MP_MAKE_TRAIT(is_nothrow_convertible);
+#endif
+#if defined(__cpp_lib_is_layout_compatible) && __cpp_lib_is_layout_compatible
   JLN_MP_MAKE_TRAIT(is_layout_compatible);
+#endif
+#if defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible
   JLN_MP_MAKE_TRAIT(is_pointer_interconvertible_base_of);
 #endif
 #if __cplusplus >= 201703L
@@ -190,8 +194,14 @@ namespace jln::mp::traits
 
   // other transformations:
   JLN_MP_MAKE_TRAIT(decay);
-#if __cplusplus >= 202002L
+#if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref
+  JLN_MP_MAKE_TRAIT(unwrap_ref_decay);
+  JLN_MP_MAKE_TRAIT(unwrap_reference);
+#endif
+#if defined(__cpp_lib_remove_cvref) && __cpp_lib_remove_cvref
   JLN_MP_MAKE_TRAIT(remove_cvref);
+#endif
+#if __cplusplus >= 202002L
   JLN_MP_MAKE_TRAIT(common_reference);
   JLN_MP_MAKE_TRAIT(basic_common_reference);
 #else

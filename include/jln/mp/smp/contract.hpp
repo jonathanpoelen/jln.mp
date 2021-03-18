@@ -8,6 +8,7 @@
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/utility/always.hpp>
+#include <jln/mp/utility/conditional.hpp>
 
 
 namespace jln::mp
@@ -24,6 +25,12 @@ namespace jln::mp
     template<class... xs>
     using f = call<C, xs...>;
   };
+
+  template<class test, class TC, class FC = violation>
+  using contract_if = typename conditional_c<test::value>::template f<TC, FC>;
+
+  template<bool test, class TC, class FC = violation>
+  using contract_if_c = typename conditional_c<test>::template f<TC, FC>;
 
   template<class Pred, class TC = identity, class FC = violation>
   using test_contract = contract<if_<Pred, TC, FC>>;

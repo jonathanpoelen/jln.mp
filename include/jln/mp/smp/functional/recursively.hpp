@@ -9,12 +9,12 @@ namespace jln::mp::smp
   template<class F, class C = identity>
   using recursively = contract<mp::recursively<
     try_subcontract<F, mp::identity, mp::always<na, mp::recursion_result>>,
-    monadic<subcontract<C>>>>;
+    monadic_xs<subcontract<C>>>>;
 
   template<class F, class C = identity>
   using recursively_as_much_as_possible = contract<mp::recursively_as_much_as_possible<
     try_subcontract<F, mp::identity, mp::always<na, mp::recursion_result>>,
-    monadic<subcontract<C>>>>;
+    monadic_xs<subcontract<C>>>>;
 
   using stop_recursion = contract<mp::stop_recursion>;
   using next_recursion = contract<mp::next_recursion>;

@@ -2,6 +2,7 @@
 
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/list/listify.hpp>
 
 
 namespace jln::mp
@@ -54,7 +55,8 @@ namespace jln::mp
 
   /// Recursively invokes \c F until \c stop_recursion or \c recursion_result.
   /// \treturn \value
-  /// \see recursively_as_much_as_possible, stop_recursion, recursion_result, next_recursion
+  /// \see recursively_xs, recursively_as_much_as_possible
+  /// \see stop_recursion, recursion_result, next_recursion
   template<class F, class C = identity>
   struct recursively
   {
@@ -68,9 +70,17 @@ namespace jln::mp
     >::template f<F, C>;
   };
 
+  /// Same than \c recursively, but with listify as continuation.
+  /// \treturn \sequence
+  /// \see recursively
+  template<class F, class C = listify>
+  using recursively_xs = recursively<F, C>;
+
   /// Recursively invokes \c F until the result is \c stop_recursion, \c recursion_result or no longer changes.
   /// \treturn \value
-  /// \see recursively, stop_recursion, recursion_result, next_recursion
+  /// \see recursively_as_much_as_possible_xs
+  /// \see recursively
+  /// \see stop_recursion, recursion_result, next_recursion
   template<class F, class C = identity>
   struct recursively_as_much_as_possible
   {
@@ -84,6 +94,12 @@ namespace jln::mp
     >::template f<F, C>;
   };
 
+  /// Same than \c recursively_as_much_as_possible, but with listify as continuation.
+  /// \treturn \value
+  /// \see recursively_as_much_as_possible
+  template<class F, class C = listify>
+  using recursively_as_much_as_possible_xs = recursively_as_much_as_possible<F, C>;
+
   namespace emp
   {
     template<class L, class F, class C = mp::identity>
@@ -91,6 +107,12 @@ namespace jln::mp
 
     template<class L, class F, class C = mp::identity>
     using recursively_as_much_as_possible = unpack<L, mp::recursively_as_much_as_possible<F, C>>;
+
+    template<class L, class F, class C = mp::listify>
+    using recursively_xs = unpack<L, mp::recursively<F, C>>;
+
+    template<class L, class F, class C = mp::listify>
+    using recursively_as_much_as_possible_xs = unpack<L, mp::recursively_as_much_as_possible<F, C>>;
   }
 }
 

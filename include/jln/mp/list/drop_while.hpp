@@ -143,22 +143,22 @@ namespace jln::mp::detail
           consumed, Pred, xs...>;
   };
 
-#define JLN_DROP_WHILE_IMPL(n, m, xs)                           \
-  template<>                                                    \
-  struct _drop_while<n, true>                                   \
-  {                                                             \
-    template<                                                   \
-      std::size_t consumed,                                     \
-      class Pred,                                               \
-      xs(class, JLN_MP_NIL, JLN_MP_COMMA),                      \
-      class... xs>                                              \
-    using f = typename _drop_while<m, true>                     \
-      ::template f<                                             \
-          consumed+sizeof...(xs), Pred,                         \
-          xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>             \
-      ::template f<                                             \
+#define JLN_DROP_WHILE_IMPL(n, m, xs)                                     \
+  template<>                                                              \
+  struct _drop_while<n, true>                                             \
+  {                                                                       \
+    template<                                                             \
+      std::size_t consumed,                                               \
+      class Pred,                                                         \
+      xs(class, JLN_MP_NIL, JLN_MP_COMMA),                                \
+      class... xs>                                                        \
+    using f = typename _drop_while<m, true>                               \
+      ::template f<                                                       \
+          consumed+sizeof...(xs), Pred,                                   \
+          xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>                       \
+      ::template f<                                                       \
           _drop_while<n_8_or_more_16_32_64_128_256(sizeof...(xs)), true>, \
-          consumed, Pred, xs...>;                               \
+          consumed, Pred, xs...>;                                         \
   }
 
   JLN_DROP_WHILE_IMPL(32, 16, JLN_MP_XS_16);
