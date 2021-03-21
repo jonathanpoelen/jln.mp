@@ -23,6 +23,7 @@
 #include <jln/mp/smp/algorithm/indices.hpp>
 #include <jln/mp/smp/algorithm/intersperse.hpp>
 #include <jln/mp/smp/algorithm/iota.hpp>
+#include <jln/mp/smp/algorithm/is_disjoint.hpp>
 #include <jln/mp/smp/algorithm/is_sorted.hpp>
 #include <jln/mp/smp/algorithm/is_unique.hpp>
 #include <jln/mp/smp/algorithm/lexicographical_compare.hpp>

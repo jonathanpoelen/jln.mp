@@ -1,10 +1,14 @@
 #pragma once
 
+#include <jln/mp/list/push_back.hpp>
+#include <jln/mp/list/push_front.hpp>
 #include <jln/mp/algorithm/same.hpp>
 #include <jln/mp/utility/is.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/number/operators.hpp>
+
+#include <type_traits>
 
 namespace jln::mp::detail
 {
@@ -36,6 +40,18 @@ namespace jln::mp::detail
   struct to_predicate_not<same<not_<>>>
   {
     using type = same<>;
+  };
+
+  template<>
+  struct to_predicate_not<lift<std::is_same>>
+  {
+    using type = lift<std::is_same, not_<>>;
+  };
+
+  template<>
+  struct to_predicate_not<lift<std::is_same, not_<>>>
+  {
+    using type = lift<std::is_same>;
   };
 
   template<template<class...> class F>
@@ -78,6 +94,18 @@ namespace jln::mp::detail
   struct to_predicate_not<not_<not_<not_<C>>>>
   : to_predicate_not<not_<C>>
   {};
+
+  template<class x, class C>
+  struct to_predicate_not<push_front<x, C>>
+  {
+    using type = push_front<x, to_predicate_not_t<C>>;
+  };
+
+  template<class x, class C>
+  struct to_predicate_not<push_back<x, C>>
+  {
+    using type = push_back<x, to_predicate_not_t<C>>;
+  };
 
   template<class Pred>
   struct to_predicate_not_tee;

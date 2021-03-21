@@ -7,6 +7,7 @@
 
 namespace jln::mp::smp::concepts
 {
+  // TODO optimize Pred = is<>, same<>, lift<std::is_same>, equal, less, not_
   template<class Pred, class TC = mp::identity, class FC = mp::always<false_>>
   using predicate = try_<mp::tee<Pred, mp::to_bool<>>, TC, FC>;
 }

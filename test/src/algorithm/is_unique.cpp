@@ -33,8 +33,8 @@ TEST()
   using first = unpack<at0<>>;
   using smp_first = smp::unpack<smp::at0<>>;
   test_context<
-    is_unique_if<each<first, first, lift<std::is_same>>>,
-    smp::is_unique_if<smp::each<smp_first, smp_first, smp::lift<std::is_same>>>
+    is_unique_with<each<first, first, lift<std::is_same>>>,
+    smp::is_unique_with<smp::each<smp_first, smp_first, smp::lift<std::is_same>>>
   >()
     .test<_1>()
     .test<_1, _0>()
@@ -44,7 +44,7 @@ TEST()
     .not_invocable<_0, _0>()
     ;
 
-  test_context<is_unique_if<equal<>>, smp::is_unique_if<smp::equal<>>>()
+  test_context<is_unique_with<equal<>>, smp::is_unique_with<smp::equal<>>>()
     .test<_1>()
     .test<_1, _1>()
     .test<_1, _1, _0>()
@@ -52,10 +52,11 @@ TEST()
     ;
 
   ut::not_invocable<smp::is_unique<bad_function>>();
-  ut::not_invocable<smp::is_unique_if<always<void>, bad_function>>();
-  ut::not_invocable<smp::is_unique_if<always<true_>, bad_function>>();
-  ut::not_invocable<smp::is_unique_if<bad_function, bad_function>>();
-  ut::not_invocable<smp::is_unique_if<bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::is_unique_with<always<void>>, _1, _1>();
+  ut::not_invocable<smp::is_unique_with<always<void>, bad_function>>();
+  ut::not_invocable<smp::is_unique_with<always<true_>, bad_function>>();
+  ut::not_invocable<smp::is_unique_with<bad_function, bad_function>>();
+  ut::not_invocable<smp::is_unique_with<bad_function, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

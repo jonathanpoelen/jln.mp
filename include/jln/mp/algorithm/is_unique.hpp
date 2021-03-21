@@ -20,7 +20,7 @@ namespace jln::mp
   using is_unique = typename detail::mk_is_unique<lift<std::is_same>, C>::type;
 
   template<class Cmp = lift<std::is_same>, class C = identity>
-  using is_unique_if = typename detail::mk_is_unique<Cmp, C>::type;
+  using is_unique_with = typename detail::mk_is_unique<Cmp, C>::type;
 
   namespace emp
   {
@@ -28,7 +28,7 @@ namespace jln::mp
     using is_unique = unpack<L, is_unique<C>>;
 
     template<class L, class Cmp = lift<std::is_same>, class C = mp::identity>
-    using is_unique_if = unpack<L, is_unique_if<Cmp, C>>;
+    using is_unique_with = unpack<L, is_unique_with<Cmp, C>>;
   }
 }
 

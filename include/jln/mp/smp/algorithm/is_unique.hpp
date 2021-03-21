@@ -12,7 +12,7 @@ namespace jln::mp::smp
   using is_unique = contract<mp::is_unique<assume_number<C>>>;
 
   template<class Cmp = lift<std::is_same>, class C = identity>
-  using is_unique_if = detail::sfinae<mp::is_unique_if<
+  using is_unique_with = detail::sfinae<mp::is_unique_with<
     assume_binary_barrier<Cmp>, assume_number_barrier<C>>>;
 }
 

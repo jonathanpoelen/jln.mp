@@ -21,6 +21,7 @@
 #include "src/algorithm/indices.cpp"
 #include "src/algorithm/intersperse.cpp"
 #include "src/algorithm/iota.cpp"
+#include "src/algorithm/is_disjoint.cpp"
 #include "src/algorithm/is_sorted.cpp"
 #include "src/algorithm/is_unique.cpp"
 #include "src/algorithm/lexicographical_compare.cpp"
