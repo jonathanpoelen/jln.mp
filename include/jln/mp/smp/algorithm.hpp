@@ -25,6 +25,7 @@
 #include <jln/mp/smp/algorithm/iota.hpp>
 #include <jln/mp/smp/algorithm/is_disjoint.hpp>
 #include <jln/mp/smp/algorithm/is_sorted.hpp>
+#include <jln/mp/smp/algorithm/is_subset.hpp>
 #include <jln/mp/smp/algorithm/is_unique.hpp>
 #include <jln/mp/smp/algorithm/lexicographical_compare.hpp>
 #include <jln/mp/smp/algorithm/lower_bound.hpp>

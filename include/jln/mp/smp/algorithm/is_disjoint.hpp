@@ -47,12 +47,12 @@ namespace jln::mp::detail
     Pred, contract_barrier<mp::size<mp::not_<>>>
   >;
 
-  template<class Equal, class... xs>
+  template<class NotEqual, class... xs>
   struct smp_is_disjoint_of
   {
     template<class x>
     using f = typename smp_is_disjoint_impl<contract_barrier<
-      push_back<x, to_predicate_not_t<Equal>>
+      push_back<x, NotEqual>
     >>::template f<xs...>;
   };
 
@@ -62,7 +62,7 @@ namespace jln::mp::detail
   template<>
   struct smp_is_disjoint_n<0>
   {
-    template<class Equal, class... xs>
+    template<class NotEqual, class... xs>
     using f = true_;
   };
 
@@ -71,23 +71,25 @@ namespace jln::mp::detail
   : try_<seqs_to_list<mp::always<true_>, mp::always<true_>>>
   {};
 
-  template<class Equal, class seq0>
-  using smp_to_is_disjoint_of = typename mp::if_<is_na, violation, lift<smp_is_disjoint_impl>>
-    ::template f<typename smp::unpack<lift<smp_is_disjoint_of>>::template f<seq0, Equal>>;
+  template<class NotEqual, class seq0>
+  using smp_to_is_disjoint_impl = smp::unpack<smp_is_disjoint_impl<
+    typename smp::unpack<lift<smp_is_disjoint_of>>
+    ::template f<seq0, NotEqual>
+  >>;
 
   template<>
   struct smp_is_disjoint_n<2>
   {
-    template<class Equal, class seq0, class seq1>
-    using f = typename smp::unpack<smp_to_is_disjoint_of<Equal, seq0>>
+    template<class NotEqual, class seq0, class seq1>
+    using f = typename smp_to_is_disjoint_impl<NotEqual, seq0>
       ::template f<seq1>;
   };
 
   template<>
   struct smp_is_disjoint_n<3>
   {
-    template<class Equal, class seq0, class... seqs>
-    using f = typename smp_is_disjoint_impl<smp::unpack<smp_to_is_disjoint_of<Equal, seq0>>>
+    template<class NotEqual, class seq0, class... seqs>
+    using f = typename smp_is_disjoint_impl<smp_to_is_disjoint_impl<NotEqual, seq0>>
       ::template f<seqs...>;
   };
 
@@ -95,11 +97,10 @@ namespace jln::mp::detail
   struct smp_is_disjoint_with
   {
     template<class... seqs>
-    using f = typename if_<is_na, violation, C>
-      ::template f<
-        typename smp_is_disjoint_n<min(3, sizeof...(seqs))>
-        ::template f<Equal, seqs...>
-      >;
+    using f = typename C::template f<
+      typename smp_is_disjoint_n<min(3, sizeof...(seqs))>
+      ::template f<to_predicate_not_t<Equal>, seqs...>
+    >;
   };
 
   template<class C>

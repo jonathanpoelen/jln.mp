@@ -23,6 +23,7 @@
 #include "src/algorithm/iota.cpp"
 #include "src/algorithm/is_disjoint.cpp"
 #include "src/algorithm/is_sorted.cpp"
+#include "src/algorithm/is_subset.cpp"
 #include "src/algorithm/is_unique.cpp"
 #include "src/algorithm/lexicographical_compare.cpp"
 #include "src/algorithm/lower_bound.cpp"
