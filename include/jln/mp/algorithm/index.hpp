@@ -3,7 +3,7 @@
 #include <jln/mp/list/drop_while.hpp>
 #include <jln/mp/list/size.hpp>
 #include <jln/mp/utility/is.hpp>
-#include <jln/mp/detail/to_predicate_not.hpp>
+#include <jln/mp/functional/not_fn.hpp>
 
 namespace jln::mp
 {
@@ -28,7 +28,7 @@ namespace jln::mp
     using f = typename detail::index_if_impl<
       typename detail::_drop_while<
         detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
-      >::template f<0, detail::to_predicate_not_t<Pred>, xs...>
+      >::template f<0, detail::to_not_fn_t<Pred>, xs...>
     >::template f<TC, FC, xs...>;
   };
 

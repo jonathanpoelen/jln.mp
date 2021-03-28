@@ -42,6 +42,17 @@ TEST()
     .not_invocable<_0, void>()
     ;
 
+  test_context<find_if_not<identity>, smp::find_if_not<smp::identity>, 0>()
+    .test<list<>>()
+    .test<seq_0, _0>()
+    .test<list<>, _1>()
+    .test<seq_0_1, _0, _1>()
+    .test<list<_0, _0, _1>, _0, _0, _1>()
+    .test<list<_0, _0, _1>, _1, _0, _0, _1>()
+    .not_invocable<void>()
+    .not_invocable<_1, void>()
+    ;
+
   test_context<
     find<_3, listify, always<void>>,
     smp::find<_3, smp::listify, smp::always<void>>,

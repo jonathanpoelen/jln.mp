@@ -11,7 +11,6 @@ namespace jln::mp
   /// \treturn \bool
   template<class x, class C = identity>
   using contains = any_of<is<x>, C>;
-  // using contains = find<x, always<true_, C>, always<false_, C>>;
 
   namespace emp
   {

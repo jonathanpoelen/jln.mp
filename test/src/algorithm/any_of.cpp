@@ -18,14 +18,14 @@ TEST()
   test_pack2<any_of, identity>();
   test_pack2<any_of>();
 
-  test_context<any_of<identity>, smp::any_of<smp::identity>>()
+  test_context<any_of<identity>, smp::any_of<smp::identity>, 0>()
     .test<false_>()
     .test<false_, _0, _0>()
     .test<true_, _0, _0, _1>()
     .test<true_, _3, _1>()
     ;
 
-  test_context<any_of<less_than_c<3>>, smp::any_of<smp::less_than_c<3>>>()
+  test_context<any_of<less_than_c<3>>, smp::any_of<smp::less_than_c<3>>, 0>()
     .test<true_, _1, _0>()
     .test<true_, _1, _0, _3>()
     .test<false_, _3, _3>()

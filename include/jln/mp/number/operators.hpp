@@ -163,6 +163,13 @@ namespace jln::mp
     using f = typename C::template f<number<(!x::value)>>;
   };
 
+  template<class C>
+  struct not_<not_<C>>
+  {
+    template<class x>
+    using f = typename C::template f<number<(!int_{!x::value})>>;
+  };
+
   template<class C = identity>
   struct bit_not
   {

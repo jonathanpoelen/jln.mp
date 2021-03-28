@@ -4,6 +4,7 @@
 #include <jln/mp/smp/list/clear.hpp>
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/smp/functional/not_fn.hpp>
 #include <jln/mp/algorithm/find.hpp>
 #include <jln/mp/list/take_back.hpp>
 #include <jln/mp/list/drop_while.hpp>
@@ -35,6 +36,9 @@ namespace jln::mp::smp
       >
     >
   >>;
+
+  template<class Pred, class TC = listify, class FC = clear<TC>>
+  using find_if_not = find_if<not_fn<Pred>, TC, FC>;
 
   template<class T, class TC = listify, class FC = clear<TC>>
   using find = contract<mp::find<T, subcontract<TC>, subcontract<FC>>>;

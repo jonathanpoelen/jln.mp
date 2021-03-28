@@ -9,7 +9,7 @@ namespace jln::mp
   /// Checks whether a predicate does not hold for any element of a \sequence.
   /// \treturn \bool
   template<class Pred, class C = identity>
-  using none_of = any_of<Pred, not_<C>>;
+  using none_of = drop_while<not_fn<Pred>, is_empty<C>>;
 
   namespace emp
   {

@@ -3,7 +3,7 @@
 #include <jln/mp/list/drop_while.hpp>
 #include <jln/mp/list/clear.hpp>
 #include <jln/mp/utility/is.hpp>
-#include <jln/mp/detail/to_predicate_not.hpp>
+#include <jln/mp/functional/not_fn.hpp>
 
 namespace jln::mp
 {
@@ -28,9 +28,12 @@ namespace jln::mp
     using f = typename detail::find_if_impl<
       typename detail::_drop_while<
         detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
-      >::template f<0, detail::to_predicate_not_t<Pred>, xs...>
+      >::template f<0, detail::to_not_fn_t<Pred>, xs...>
     >::template f<TC, FC, xs...>;
   };
+
+  template<class Pred, class TC = listify, class FC = clear<TC>>
+  using find_if_not = find_if<not_fn<Pred>, TC, FC>;
 
   template<class T, class TC = listify, class FC = clear<TC>>
   using find = find_if<is<T>, TC, FC>;
@@ -39,6 +42,9 @@ namespace jln::mp
   {
     template<class L, class Pred, class TC = mp::listify, class FC = clear<TC>>
     using find_if = unpack<L, mp::find_if<Pred, TC, FC>>;
+
+    template<class L, class Pred, class TC = mp::listify, class FC = clear<TC>>
+    using find_if_not = unpack<L, mp::find_if_not<Pred, TC, FC>>;
 
     template<class L, class T, class TC = mp::listify, class FC = clear<TC>>
     using find = unpack<L, mp::find_if<mp::is<T>, TC, FC>>;

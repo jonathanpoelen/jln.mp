@@ -3,7 +3,7 @@
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/detail/enumerate.hpp>
-#include <jln/mp/detail/to_predicate_not.hpp>
+#include <jln/mp/functional/not_fn.hpp>
 
 #include <type_traits>
 
@@ -29,7 +29,7 @@ namespace jln::mp
     template<class... seqs>
     using f = typename C::template f<number<
       detail::_is_disjoint<detail::min(3, sizeof...(seqs))>
-      ::template f<detail::to_predicate_not_t<Equal>, seqs...>
+      ::template f<detail::to_not_fn_t<Equal>, seqs...>
       ::value
     >>;
   };
@@ -127,7 +127,7 @@ namespace jln::mp::emp
 
   template<class L1, class L2, class Equal = lift<std::is_same>, class C = mp::identity>
   using is_disjoint_with = typename C::template f<number<
-    detail::_is_disjoint<2>::f<detail::to_predicate_not_t<Equal>, L1, L2>::value
+    detail::_is_disjoint<2>::f<detail::to_not_fn_t<Equal>, L1, L2>::value
   >>;
 }
 #endif

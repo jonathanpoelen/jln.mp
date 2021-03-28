@@ -17,14 +17,14 @@ TEST()
   test_pack2<all_of, identity>();
   test_pack2<all_of>();
 
-  test_context<all_of<identity>, smp::all_of<smp::identity>>()
+  test_context<all_of<identity>, smp::all_of<smp::identity>, 0>()
     .test<true_>()
     .test<false_, _0, _0>()
     .test<false_, _0, _0, _1>()
     .test<true_, _3, _1>()
     ;
 
-  test_context<all_of<less_than_c<3>>, smp::all_of<smp::less_than_c<3>>>()
+  test_context<all_of<less_than_c<3>>, smp::all_of<smp::less_than_c<3>>, 0>()
     .test<true_, _1, _0>()
     .test<false_, _1, _0, _3>()
     .not_invocable<list<>>()

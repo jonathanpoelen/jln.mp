@@ -1,7 +1,8 @@
 #pragma once
 
-#include <jln/mp/algorithm/transform.hpp>
-#include <jln/mp/number/operators.hpp>
+#include <jln/mp/list/drop_while.hpp>
+#include <jln/mp/list/is_empty.hpp>
+#include <jln/mp/functional/not_fn.hpp>
 
 namespace jln::mp
 {
@@ -10,7 +11,7 @@ namespace jln::mp
   /// Checks whether a predicate holds for at least some element of a \sequence.
   /// \treturn \bool
   template<class Pred, class C = identity>
-  using any_of = transform<Pred, or_<C>>;
+  using any_of = drop_while<not_fn<Pred>, is_empty<not_<C>>>;
 
   namespace emp
   {

@@ -24,7 +24,7 @@ namespace jln::mp
     template<class... seqs>
     using f = typename C::template f<number<
       detail::_is_subset<detail::min(3, sizeof...(seqs))>
-      ::template f<detail::to_predicate_not_t<Equal>, seqs...>
+      ::template f<detail::to_not_fn_t<Equal>, seqs...>
       ::value
     >>;
   };
@@ -116,7 +116,7 @@ namespace jln::mp::emp
 
   template<class L1, class L2, class Equal = lift<std::is_same>, class C = mp::identity>
   using is_subset_with = typename C::template f<number<
-    detail::_is_subset<2>::f<detail::to_predicate_not_t<Equal>, L1, L2>::value
+    detail::_is_subset<2>::f<detail::to_not_fn_t<Equal>, L1, L2>::value
   >>;
 }
 #endif

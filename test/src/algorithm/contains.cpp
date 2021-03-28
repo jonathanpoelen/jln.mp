@@ -15,7 +15,7 @@ TEST()
 
   ut::same<true_, emp::contains<seq_0_1_2, _1>>();
 
-  test_context<contains<_1>, smp::contains<_1>>()
+  test_context<contains<_1>, smp::contains<_1>, 0>()
     .test<false_>()
     .test<false_, _0>()
     .test<true_, _1>()

@@ -1,7 +1,9 @@
 #pragma once
 
-#include <jln/mp/algorithm/transform.hpp>
-#include <jln/mp/number/operators.hpp>
+#include <jln/mp/list/drop_while.hpp>
+#include <jln/mp/list/is_empty.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/functional/not_fn.hpp>
 
 namespace jln::mp
 {
@@ -10,7 +12,7 @@ namespace jln::mp
   /// Checks whether a predicate holds for all elements of a \sequence.
   /// \treturn \bool
   template<class Pred, class C = identity>
-  using all_of = transform<Pred, and_<C>>;
+  using all_of = drop_while<not_fn<not_fn<Pred>>, is_empty<C>>;
 
   namespace emp
   {

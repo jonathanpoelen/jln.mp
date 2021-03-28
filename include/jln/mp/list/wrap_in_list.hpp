@@ -1,7 +1,7 @@
 #pragma once
 
 #include <jln/mp/list/list.hpp>
-#include <jln/mp/detail/to_predicate_not.hpp>
+#include <jln/mp/functional/not_fn.hpp>
 
 namespace jln::mp
 {
@@ -23,7 +23,7 @@ namespace jln::mp
   /// \treturn \list
   template<class Pred>
   using wrap_in_list_if = typename detail::mk_wrap_in_list_if_not<
-    detail::to_predicate_not_t<Pred>
+    detail::to_not_fn_t<Pred>
   >::type;
 
   /// Returns a \list with the first element if the predicate is not checked, otherwise returns a empty list.
@@ -31,7 +31,7 @@ namespace jln::mp
   /// \treturn \list
   template<class Pred>
   using wrap_in_list_if_not = typename detail::mk_wrap_in_list_if<
-    detail::to_predicate_not_t<Pred>
+    detail::to_not_fn_t<Pred>
   >::type;
 
   template<bool b>

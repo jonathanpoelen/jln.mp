@@ -99,7 +99,7 @@ namespace jln::mp::detail
     template<class... seqs>
     using f = typename C::template f<
       typename smp_is_disjoint_n<min(3, sizeof...(seqs))>
-      ::template f<to_predicate_not_t<Equal>, seqs...>
+      ::template f<to_not_fn_t<Equal>, seqs...>
     >;
   };
 
