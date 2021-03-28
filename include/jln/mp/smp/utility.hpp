@@ -6,6 +6,7 @@
 #include <jln/mp/smp/utility/has_type.hpp>
 #include <jln/mp/smp/utility/has_value_type.hpp>
 #include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/smp/utility/is_not.hpp>
 #include <jln/mp/smp/utility/is_specialization_of.hpp>
 #include <jln/mp/smp/utility/iterate.hpp>
 #include <jln/mp/smp/utility/sizeof.hpp>

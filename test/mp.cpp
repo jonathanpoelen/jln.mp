@@ -124,6 +124,7 @@
 #include "src/utility/has_type.cpp"
 #include "src/utility/has_value_type.cpp"
 #include "src/utility/is.cpp"
+#include "src/utility/is_not.cpp"
 #include "src/utility/is_specialization_of.cpp"
 #include "src/utility/iterate.cpp"
 #include "src/utility/sizeof.cpp"
