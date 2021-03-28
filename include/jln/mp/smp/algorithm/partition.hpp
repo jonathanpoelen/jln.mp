@@ -8,7 +8,7 @@
 namespace jln::mp::smp
 {
   template<class Pred, class F = listify, class C = listify>
-  using partition_with = tee<remove_if<Pred, F>, copy_if<Pred, F>,
+  using partition_with = tee<copy_if<Pred, F>, remove_if<Pred, F>,
     assume_binary_list_barrier<C>>;
 
   template<class Pred, class C = listify>

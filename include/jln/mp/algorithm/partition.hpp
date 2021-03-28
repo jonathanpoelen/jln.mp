@@ -12,14 +12,19 @@ namespace jln::mp
   // Pred::f<xs>::value... -> mk_list<b>::f<xs> | mk_list<!b>::f<xs>
 
   /// Splits a \list in two according to a predicate.
+  /// The first value contains all elements for which the predicate returns true,
+  /// the second value contains all elements for which predicate returns false
   /// \treturn \sequence of two \values
   template<class Pred, class F = listify, class C = listify>
-  using partition_with = tee<remove_if<Pred, F>, copy_if<Pred, F>, C>;
+  using partition_with = tee<copy_if<Pred, F>, remove_if<Pred, F>, C>;
 
   /// Splits a \list in two according to a predicate.
+  /// The first value contains all elements for which the predicate returns true,
+  /// the second value contains all elements for which predicate returns false
   /// \treturn \sequence of two \lists
+  /// \see partition_with
   template<class Pred, class C = listify>
-  using partition = tee<remove_if<Pred>, copy_if<Pred>, C>;
+  using partition = tee<copy_if<Pred>, remove_if<Pred>, C>;
 
   namespace emp
   {
