@@ -3,6 +3,7 @@
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/list/push_back.hpp>
+#include <jln/mp/list/push_front.hpp>
 #include <jln/mp/list/size.hpp>
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/utility/always.hpp>
@@ -235,10 +236,71 @@ namespace jln::mp
 
 
   template<class N, class C = identity>
-  using equal_to = push_back<N, equal<C>>;
+  using add_to = push_front<N, add<C>>;
 
   template<class N, class C = identity>
-  using not_equal_to = push_back<N, not_equal<C>>;
+  using add_by = push_back<N, add<C>>;
+
+  template<class N, class C = identity>
+  using sub_to = push_front<N, sub<C>>;
+
+  template<class N, class C = identity>
+  using sub_by = push_back<N, sub<C>>;
+
+  template<class N, class C = identity>
+  using lshift_to = push_front<N, lshift<C>>;
+
+  template<class N, class C = identity>
+  using lshift_by = push_back<N, lshift<C>>;
+
+  template<class N, class C = identity>
+  using rshift_to = push_front<N, rshift<C>>;
+
+  template<class N, class C = identity>
+  using rshift_by = push_back<N, rshift<C>>;
+
+  template<class N, class C = identity>
+  using mul_to = push_front<N, mul<C>>;
+
+  template<class N, class C = identity>
+  using mul_by = push_back<N, mul<C>>;
+
+  template<class N, class C = identity>
+  using div_to = push_front<N, div<C>>;
+
+  template<class N, class C = identity>
+  using div_by = push_back<N, div<C>>;
+
+  template<class N, class C = identity>
+  using mod_to = push_front<N, mod<C>>;
+
+  template<class N, class C = identity>
+  using mod_by = push_back<N, mod<C>>;
+
+  template<class N, class C = identity>
+  using xor_to = push_front<N, xor_<C>>;
+
+  template<class N, class C = identity>
+  using xor_by = push_back<N, xor_<C>>;
+
+  template<class N, class C = identity>
+  using bit_and_to = push_front<N, bit_and<C>>;
+
+  template<class N, class C = identity>
+  using bit_and_by = push_back<N, bit_and<C>>;
+
+  template<class N, class C = identity>
+  using bit_or_to = push_front<N, bit_or<C>>;
+
+  template<class N, class C = identity>
+  using bit_or_by = push_back<N, bit_or<C>>;
+
+
+  template<class N, class C = identity>
+  using equal_to = push_front<N, equal<C>>;
+
+  template<class N, class C = identity>
+  using not_equal_to = push_front<N, not_equal<C>>;
 
   template<class N, class C = identity>
   using less_than = push_back<N, less<C>>;
@@ -251,6 +313,67 @@ namespace jln::mp
 
   template<class N, class C = identity>
   using greater_equal_than = push_back<N, greater_equal<C>>;
+
+
+  template<int_ n, class C = identity>
+  using add_to_c = add_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using add_by_c = add_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using sub_to_c = sub_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using sub_by_c = sub_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using lshift_to_c = lshift_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using lshift_by_c = lshift_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using rshift_to_c = rshift_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using rshift_by_c = rshift_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using mul_to_c = mul_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using mul_by_c = mul_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using div_to_c = div_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using div_by_c = div_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using mod_to_c = mod_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using mod_by_c = mod_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using xor_to_c = xor_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using xor_by_c = xor_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using bit_and_to_c = bit_and_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using bit_and_by_c = bit_and_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using bit_or_to_c = bit_or_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using bit_or_by_c = bit_or_by<number<n>, C>;
 
 
   template<int_ n, class C = identity>
