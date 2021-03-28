@@ -68,7 +68,7 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT(is_trivial);
   JLN_MP_MAKE_TRAIT(is_trivially_copyable);
   JLN_MP_MAKE_TRAIT(is_standard_layout);
-#if __cplusplus < 202002L
+#if __cplusplus <= 201703L
   JLN_MP_MAKE_TRAIT(is_pod);
 #endif
   JLN_MP_MAKE_TRAIT(is_empty);
