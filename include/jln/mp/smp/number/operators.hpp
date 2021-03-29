@@ -6,6 +6,7 @@
 #include <jln/mp/smp/functional/if.hpp>
 #include <jln/mp/smp/list/size.hpp>
 #include <jln/mp/smp/list/push_back.hpp>
+#include <jln/mp/smp/list/push_front.hpp>
 #include <jln/mp/smp/list/pop_front.hpp>
 
 /// \cond
@@ -232,12 +233,12 @@ namespace jln::mp::smp
 
   template<class N, class C = identity>
   using equal_to = contract<
-    mp::push_back<N,
+    mp::push_front<N,
       mp::try_<mp::equal<assume_number<C>>>>>;
 
   template<class N, class C = identity>
   using not_equal_to = contract<
-    mp::push_back<N,
+    mp::push_front<N,
       mp::try_<mp::not_equal<assume_number<C>>>>>;
 
   template<class N, class C = identity>

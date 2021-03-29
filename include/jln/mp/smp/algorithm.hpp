@@ -17,6 +17,7 @@
 #include <jln/mp/smp/algorithm/flatten.hpp>
 #include <jln/mp/smp/algorithm/fold_left.hpp>
 #include <jln/mp/smp/algorithm/fold_right.hpp>
+#include <jln/mp/smp/algorithm/fold_tree.hpp>
 #include <jln/mp/smp/algorithm/group.hpp>
 #include <jln/mp/smp/algorithm/group_n.hpp>
 #include <jln/mp/smp/algorithm/index.hpp>
