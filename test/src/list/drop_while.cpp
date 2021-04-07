@@ -2,8 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/list/drop_while.hpp"
-#include "jln/mp/smp/utility/is.hpp"
-#include "jln/mp/smp/number/operators.hpp"
+#include "jln/mp/smp/utility/is_not.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -15,7 +14,7 @@ TEST()
   test_pack2<drop_while, is<int>>();
   test_pack3<drop_while>();
 
-  test_context<drop_while<is<_3, not_<>>>, smp::drop_while<smp::is<_3, smp::not_<>>>>()
+  test_context<drop_while<is_not<_3>>, smp::drop_while<smp::is_not<_3>>>()
     .test<list<>>()
     .test<list<>, _0>()
     .test<list<>, _0, _1>()

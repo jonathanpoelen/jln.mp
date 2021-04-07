@@ -1,6 +1,7 @@
 #pragma once
 
 #include <jln/mp/smp/assume.hpp>
+#include <jln/mp/smp/utility/is.hpp>
 #include <jln/mp/smp/number/operators.hpp>
 #include <jln/mp/utility/is_not.hpp>
 

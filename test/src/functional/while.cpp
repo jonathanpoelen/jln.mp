@@ -5,8 +5,7 @@
 #include "jln/mp/smp/functional/lift.hpp"
 #include "jln/mp/smp/functional/if.hpp"
 #include "jln/mp/smp/list/push_back.hpp"
-#include "jln/mp/smp/number/operators.hpp"
-#include "jln/mp/smp/utility/is.hpp"
+#include "jln/mp/smp/utility/is_not.hpp"
 #include "jln/mp/smp/utility/stl_traits.hpp"
 
 TEST_SUITE_BEGIN()
@@ -17,8 +16,8 @@ TEST()
   using namespace ut::ints;
 
   test_context<
-    while_<is<int****, not_<>>, traits::add_pointer<>>,
-    smp::while_<smp::is<int****, smp::not_<>>, smp::traits::add_pointer<>>
+    while_<is_not<int****>, traits::add_pointer<>>,
+    smp::while_<smp::is_not<int****>, smp::traits::add_pointer<>>
   >()
     .test<int****, int>()
     .not_invocable<>()

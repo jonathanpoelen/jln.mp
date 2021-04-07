@@ -2,7 +2,7 @@
 
 #include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/algorithm/same.hpp>
-#include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/smp/utility/is_not.hpp>
 #include <jln/mp/smp/functional/tee.hpp>
 #include <jln/mp/smp/functional/lift.hpp>
 #include <jln/mp/smp/number/operators.hpp>

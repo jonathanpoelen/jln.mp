@@ -2,8 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/list/take_while.hpp"
-#include "jln/mp/smp/utility/is.hpp"
-#include "jln/mp/smp/number/operators.hpp"
+#include "jln/mp/smp/utility/is_not.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -15,7 +14,7 @@ TEST()
   test_pack2<take_while, is<int>>();
   test_pack3<take_while>();
 
-  test_context<take_while<is<_3, not_<>>>, smp::take_while<smp::is<_3, smp::not_<>>>>()
+  test_context<take_while<is_not<_3>>, smp::take_while<smp::is_not<_3>>>()
     .test<list<>>()
     .test<list<>, _3>()
     .test<list<>, _3, _2>()
