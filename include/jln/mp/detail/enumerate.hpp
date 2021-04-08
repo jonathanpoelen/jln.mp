@@ -33,15 +33,28 @@ namespace jln::mp::detail
     ;
   }
 
-  constexpr unsigned n_4_or_less_8_16_64_256(unsigned n)
+  constexpr int n_4_or_less_8_16_64_256(int n)
   {
     return
-      n >= 256 ? 256
-    : n >= 64 ? 64
-    : n >= 16 ? 16
-    : n >= 8 ? 8
-    : n >= 4 ? 4
-    : n
+      n <= 4 ? n
+    : n < 8 ? 4
+    : n < 16 ? 8
+    : n < 64 ? 16
+    : n < 256 ? 64
+    : 256
+    ;
+  }
+
+  constexpr int sub_1_n_4_or_less_8_16_64_256(int n)
+  {
+    --n;
+    return
+      n <= 4 ? n
+    : n < 8 ? 4
+    : n < 16 ? 8
+    : n < 64 ? 16
+    : n < 256 ? 64
+    : 256
     ;
   }
 

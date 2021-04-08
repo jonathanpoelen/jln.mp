@@ -18,7 +18,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Folds right over a list using a binary predicate.
-  /// fold right consideres the first element in the input pack the state,
+  /// fold right consideres the first element in the input pack as the state,
   /// use \c push_front<> to add state if needed.
   /// \semantics
   ///   Equivalent to
@@ -30,11 +30,11 @@ namespace jln::mp
   template<class F, class C = identity>
   struct fold_right
   {
-    template<class state, class... xs>
+    template<class... xs>
     using f = typename C::template f<
       typename detail::_fold_right<
-        detail::n_4_or_less_8_16_64_256(sizeof...(xs))
-      >::template f<F::template f, state, xs...>
+        detail::sub_1_n_4_or_less_8_16_64_256(sizeof...(xs))
+      >::template f<F::template f, xs...>
     >;
   };
 
@@ -88,5 +88,9 @@ namespace jln::mp::detail
     template<template<class...> class, class state>
     using f = state;
   };
+
+  template<>
+  struct _fold_right<-1>
+  {};
 }
 /// \endcond

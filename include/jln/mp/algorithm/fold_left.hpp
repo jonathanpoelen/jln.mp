@@ -18,23 +18,23 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Folds left over a list using a binary predicate.
-  /// fold left consideres the first element in the input pack the state,
+  /// fold left consideres the first element in the input pack as the state,
   /// use \c push_front<> to add state if needed.
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///   F::f<... F::f<state, xs[0]>, x[1]>, ..., x[n-1]>, ...>
+  ///   F::f<... F::f<xs[0], xs[1]>, xs[2]>, ..., xs[n-1]>, ...>
   ///   \endcode
   /// \treturn \value
   /// \see fold_right, fold_tree, fold_balanced_tree
   template<class F, class C = identity>
   struct fold_left
   {
-    template<class state, class... xs>
+    template<class... xs>
     using f = typename C::template f<
       typename detail::_fold_left<
-        detail::n_4_or_less_8_16_64_256(sizeof...(xs))
-      >::template f<F::template f, state, xs...>
+        detail::sub_1_n_4_or_less_8_16_64_256(sizeof...(xs))
+      >::template f<F::template f, xs...>
     >;
   };
 
@@ -89,5 +89,9 @@ namespace jln::mp::detail
     template<template<class...> class, class state>
     using f = state;
   };
+
+  template<>
+  struct _fold_left<-1>
+  {};
 }
 /// \endcond
