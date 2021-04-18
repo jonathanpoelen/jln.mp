@@ -40,6 +40,7 @@ namespace jln::mp
   /// Removes \c N elements from the beginning of a \sequence.
   /// \pre `0 <= N <= sizeof...(xs)`
   /// \treturn \sequence
+  /// \see drop_front_max, drop_back, take_front, take_back, drop_while
   template<class N, class C = listify>
   struct drop_front
   {
@@ -54,6 +55,7 @@ namespace jln::mp
   /// Removes at most \c N elements from the beginning of a \sequence.
   /// \pre `0 <= N`
   /// \treturn \sequence
+  /// \see drop_front, drop_back, drop_while
   template<class N, class C = listify>
   struct drop_front_max
   {

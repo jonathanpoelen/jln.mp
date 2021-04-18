@@ -21,6 +21,7 @@ namespace jln::mp
   /// Calls \c TC with all the elements since the one found at the end.
   /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence
+  /// \see find_if_not, find, find_last_if, find_last
   template<class Pred, class TC = listify, class FC = clear<TC>>
   struct find_if
   {
@@ -32,9 +33,11 @@ namespace jln::mp
     >::template f<TC, FC, xs...>;
   };
 
+  /// \see find_if, find, find_last_if, find_last
   template<class Pred, class TC = listify, class FC = clear<TC>>
   using find_if_not = find_if<not_fn<Pred>, TC, FC>;
 
+  /// \see find_if, find_if_not, find_last_if, find_last
   template<class T, class TC = listify, class FC = clear<TC>>
   using find = find_if<is<T>, TC, FC>;
 

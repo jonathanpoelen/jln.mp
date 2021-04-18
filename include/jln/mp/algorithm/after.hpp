@@ -12,6 +12,7 @@ namespace jln::mp
   /// Calls \c TC with all the elements after the sub-\sequence found.
   /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence
+  /// \see search, search_before
   template<class Seq, class TC = listify, class FC = clear<TC>>
   struct after;
 

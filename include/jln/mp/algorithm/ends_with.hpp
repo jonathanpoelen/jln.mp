@@ -11,6 +11,7 @@ namespace jln::mp
 
   /// Checks if the \sequence ends with the given prefix.
   /// \treturn \bool
+  /// \see starts_with
   template<class Seq, class C = identity>
   struct ends_with;
 

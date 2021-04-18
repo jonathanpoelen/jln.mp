@@ -13,6 +13,7 @@
 #include "src/algorithm/drop_while.cpp"
 #include "src/algorithm/ends_with.cpp"
 #include "src/algorithm/find.cpp"
+#include "src/algorithm/find_last.cpp"
 #include "src/algorithm/flatten.cpp"
 #include "src/algorithm/fold_left.cpp"
 #include "src/algorithm/fold_right.cpp"

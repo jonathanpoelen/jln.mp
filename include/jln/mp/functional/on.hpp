@@ -75,8 +75,8 @@ namespace jln::mp::detail
     template<class... xs>
     using f = typename _join_select<2>::f<
       C,
-      JLN_MP_DCALL_XS(xs, take_front_c<sizeof...(Fs), _each<listify, Fs...>>, xs...),
-      JLN_MP_DCALL_XS(xs, drop_front_c<sizeof...(Fs)>, xs...)
+      typename take_front_c<sizeof...(Fs), _each<listify, Fs...>>::template f<xs...>,
+      typename drop_front_c<sizeof...(Fs)>::template f<xs...>
     >::type;
   };
 

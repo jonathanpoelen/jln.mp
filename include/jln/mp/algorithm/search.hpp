@@ -25,6 +25,9 @@ namespace jln::mp
   /// Calls \c TC with all the elements from sub-\sequence found at the end.
   /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence
+  /// \see search_before, partial_search, after, search_index
+  /// \see search_before_extended_by_n
+  /// \see partial_search_before, partial_search_before_extended_by_n
   template<class Pred, class TC = listify, class FC = clear<TC>>
   struct search
   {
@@ -40,6 +43,9 @@ namespace jln::mp
   /// Calls \c TC with the elements from the beginning to sub-\sequence found.
   /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence
+  /// \see search, partial_search, after, search_index
+  /// \see search_before_extended_by_n
+  /// \see partial_search_before, partial_search_before_extended_by_n
   template<class Pred, class TC = listify, class FC = clear<TC>>
   struct search_before
   {
@@ -55,6 +61,8 @@ namespace jln::mp
   /// Calls \c TC with the elements from the beginning to sub-\sequence found + \c ExtendedByN.
   /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence
+  /// \see search, search_before, partial_search, after, search_index
+  /// \see partial_search_before, partial_search_before_extended_by_n
   template<class Pred, class ExtendedByN, class TC = listify, class FC = clear<TC>>
   struct search_before_extended_by_n
   {
@@ -68,6 +76,9 @@ namespace jln::mp
 
   /// Same \c search, but it stops when there is StopWhenAtLeast::value element or less.
   /// \treturn \sequence
+  /// \see search, search_before, after, search_index
+  /// \see search_before_extended_by_n
+  /// \see partial_search_before, partial_search_before_extended_by_n
   template<class StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
   struct partial_search
   {
@@ -86,6 +97,8 @@ namespace jln::mp
 
   /// Same \c search_before, but it stops when there is StopWhenAtLeast::value element or less.
   /// \treturn \sequence
+  /// \see search, search_before, partial_search, after, search_index
+  /// \see search_before_extended_by_n, partial_search_before_extended_by_n
   template<class StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
   struct partial_search_before
   {
@@ -104,6 +117,8 @@ namespace jln::mp
 
   /// Same \c search_before, but it stops when there is StopWhenAtLeast::value element or less.
   /// \treturn \sequence
+  /// \see search, search_before, partial_search, after, search_index
+  /// \see search_before_extended_by_n, partial_search_before
   template<class StopWhenAtLeast, class Pred, class ExtendedByN,
            class TC = listify, class FC = clear<TC>>
   struct partial_search_before_extended_by_n
@@ -124,6 +139,7 @@ namespace jln::mp
 
   /// Search the index of first sub-\sequence that satisfy a \predicate.
   /// \treturn \sequence
+  /// \see search, search_before, after
   template<class Pred, class TC = identity, class FC = size<>>
   struct search_index
   {

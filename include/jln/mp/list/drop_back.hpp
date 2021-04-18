@@ -10,6 +10,7 @@ namespace jln::mp
   /// Removes \c N elements from the end of a \sequence.
   /// \pre `0 <= N <= sizeof...(xs)`
   /// \treturn \sequence
+  /// \see drop_back_max, drop_front, take_front, take_back, drop_while
   template<class N, class C = listify>
   struct drop_back
   {
@@ -20,6 +21,7 @@ namespace jln::mp
   /// Removes at most \c N elements from the end of a \sequence.
   /// \pre `0 <= N`
   /// \treturn \sequence
+  /// \see drop_back, drop_front, drop_while
   template<class N, class C = listify>
   struct drop_back_max
   {

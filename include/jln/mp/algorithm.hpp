@@ -15,6 +15,7 @@
 #include <jln/mp/algorithm/drop_while.hpp>
 #include <jln/mp/algorithm/ends_with.hpp>
 #include <jln/mp/algorithm/find.hpp>
+#include <jln/mp/algorithm/find_last.hpp>
 #include <jln/mp/algorithm/flatten.hpp>
 #include <jln/mp/algorithm/fold_left.hpp>
 #include <jln/mp/algorithm/fold_right.hpp>

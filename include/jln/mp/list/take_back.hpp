@@ -9,6 +9,7 @@ namespace jln::mp
   /// Extracts \c N elements from the end of a \sequence.
   /// \pre `0 <= N <= sizeof...(xs)`
   /// \treturn \sequence
+  /// \see take_back_max, take_front, drop_front, drop_back, take_while
   template<class N, class C = listify>
   struct take_back
   {
@@ -23,6 +24,7 @@ namespace jln::mp
   /// Extracts at most \c N elements from the end of a \sequence.
   /// \pre `0 <= N`
   /// \treturn \sequence
+  /// \see take_front, take_back, take_while
   template<class N, class C = listify>
   struct take_back_max
   {

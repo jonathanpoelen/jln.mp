@@ -128,8 +128,8 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename F::template f<
-      JLN_MP_DCALL_XS(xs, take_front_c<n, fold_tree_impl<F, n/2>>, xs...),
-      JLN_MP_DCALL_XS(xs, drop_front_c<n, fold_tree_impl<F, bit_ceil(sizeof...(xs)-n)/2>>, xs...)
+      typename take_front_c<n, fold_tree_impl<F, n/2>>::template f<xs...>,
+      typename drop_front_c<n, fold_tree_impl<F, bit_ceil(sizeof...(xs)-n)/2>>::template f<xs...>
     >;
   };
 
@@ -180,8 +180,8 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename F::template f<
-      JLN_MP_DCALL_XS(xs, take_front_c<(n+1)/2, fold_balanced_tree_impl<F, (n+1)/2>>, xs...),
-      JLN_MP_DCALL_XS(xs, drop_front_c<(n+1)/2, fold_balanced_tree_impl<F, n-(n+1)/2>>, xs...)
+      typename take_front_c<(n+1)/2, fold_balanced_tree_impl<F, (n+1)/2>>::template f<xs...>,
+      typename drop_front_c<(n+1)/2, fold_balanced_tree_impl<F, n-(n+1)/2>>::template f<xs...>
     >;
   };
 

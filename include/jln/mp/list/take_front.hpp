@@ -10,6 +10,7 @@ namespace jln::mp
   /// Extracts \c N elements from the beginning of a \sequence.
   /// \pre `0 <= N <= sizeof...(xs)`
   /// \treturn \sequence
+  /// \see take_front_max, take_back, drop_front, drop_back, take_while
   template<class N, class C = listify>
   struct take_front
   {
@@ -21,6 +22,7 @@ namespace jln::mp
   /// Extracts at most \c N elements from the beginning of a \sequence.
   /// \pre `0 <= N`
   /// \treturn \sequence
+  /// \see take_front, take_back, take_while
   template<class N, class C = listify>
   struct take_front_max
   {
