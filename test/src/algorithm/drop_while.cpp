@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/list/drop_while.hpp"
+#include "jln/mp/smp/algorithm/drop_while.hpp"
 #include "jln/mp/smp/utility/is_not.hpp"
 
 TEST_SUITE_BEGIN()

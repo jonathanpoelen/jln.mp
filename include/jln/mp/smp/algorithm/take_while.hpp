@@ -3,12 +3,12 @@
 #include <jln/mp/smp/concepts.hpp>
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/list/drop_back.hpp>
-#include <jln/mp/list/drop_while.hpp>
+#include <jln/mp/algorithm/drop_while.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/list/push_back.hpp>
 #include <jln/mp/list/size.hpp>
-#include <jln/mp/list/take_while.hpp>
+#include <jln/mp/algorithm/take_while.hpp>
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/functional/invoke_twice.hpp>
 

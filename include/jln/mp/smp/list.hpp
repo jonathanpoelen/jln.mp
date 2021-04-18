@@ -7,7 +7,6 @@
 #include <jln/mp/smp/list/clear.hpp>
 #include <jln/mp/smp/list/drop_back.hpp>
 #include <jln/mp/smp/list/drop_front.hpp>
-#include <jln/mp/smp/list/drop_while.hpp>
 #include <jln/mp/smp/list/erase.hpp>
 #include <jln/mp/smp/list/front.hpp>
 #include <jln/mp/smp/list/insert.hpp>
@@ -30,5 +29,4 @@
 #include <jln/mp/smp/list/swap_index.hpp>
 #include <jln/mp/smp/list/take_back.hpp>
 #include <jln/mp/smp/list/take_front.hpp>
-#include <jln/mp/smp/list/take_while.hpp>
 #include <jln/mp/smp/list/wrap_in_list.hpp>

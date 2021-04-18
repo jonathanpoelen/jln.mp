@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/list/drop_while.hpp>
+#include <jln/mp/algorithm/drop_while.hpp>
 #include <jln/mp/list/is_empty.hpp>
 #include <jln/mp/functional/not_fn.hpp>
 

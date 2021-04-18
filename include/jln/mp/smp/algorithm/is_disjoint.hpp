@@ -26,7 +26,7 @@ namespace jln::mp::smp
 }
 
 
-#include <jln/mp/smp/list/drop_while.hpp>
+#include <jln/mp/smp/algorithm/drop_while.hpp>
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/smp/functional/lift.hpp>
 #include <jln/mp/smp/utility/unpack.hpp>

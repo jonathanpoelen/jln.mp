@@ -54,7 +54,7 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/list/drop_while.hpp>
+#include <jln/mp/algorithm/drop_while.hpp>
 #include <jln/mp/list/push_back.hpp>
 #include <jln/mp/utility/always.hpp>
 

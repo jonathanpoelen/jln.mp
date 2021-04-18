@@ -4,7 +4,7 @@
 #include <jln/mp/smp/list/size.hpp>
 #include <jln/mp/smp/functional/identity.hpp>
 #include <jln/mp/smp/utility/is.hpp>
-#include <jln/mp/list/drop_while.hpp>
+#include <jln/mp/algorithm/drop_while.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/push_back.hpp>
 #include <jln/mp/algorithm/index.hpp>

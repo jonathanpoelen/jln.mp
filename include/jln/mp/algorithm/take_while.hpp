@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/list/drop_while.hpp>
+#include <jln/mp/algorithm/drop_while.hpp>
 
 namespace jln::mp
 {

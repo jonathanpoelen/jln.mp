@@ -7,7 +7,7 @@
 #include <jln/mp/smp/functional/not_fn.hpp>
 #include <jln/mp/algorithm/find.hpp>
 #include <jln/mp/list/take_back.hpp>
-#include <jln/mp/list/drop_while.hpp>
+#include <jln/mp/algorithm/drop_while.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/push_back.hpp>
 #include <jln/mp/list/size.hpp>

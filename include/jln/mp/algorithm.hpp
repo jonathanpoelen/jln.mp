@@ -12,6 +12,7 @@
 #include <jln/mp/algorithm/contains.hpp>
 #include <jln/mp/algorithm/copy.hpp>
 #include <jln/mp/algorithm/count.hpp>
+#include <jln/mp/algorithm/drop_while.hpp>
 #include <jln/mp/algorithm/ends_with.hpp>
 #include <jln/mp/algorithm/find.hpp>
 #include <jln/mp/algorithm/flatten.hpp>
@@ -57,6 +58,7 @@
 #include <jln/mp/algorithm/split_by.hpp>
 #include <jln/mp/algorithm/starts_with.hpp>
 #include <jln/mp/algorithm/suffix.hpp>
+#include <jln/mp/algorithm/take_while.hpp>
 #include <jln/mp/algorithm/transform.hpp>
 #include <jln/mp/algorithm/unique.hpp>
 #include <jln/mp/algorithm/upper_bound.hpp>
