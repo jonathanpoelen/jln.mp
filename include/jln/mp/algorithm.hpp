@@ -46,6 +46,7 @@
 #include <jln/mp/algorithm/repeat.hpp>
 #include <jln/mp/algorithm/replace.hpp>
 #include <jln/mp/algorithm/reverse.hpp>
+#include <jln/mp/algorithm/reverse_fold.hpp>
 #include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/algorithm/same.hpp>
 #include <jln/mp/algorithm/scan_left.hpp>
