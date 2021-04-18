@@ -65,34 +65,34 @@ namespace jln::mp::detail
     template<class C, std::size_t count                  \
       mp_xs(JLN_MP_COMMA class, JLN_MP_NIL, JLN_MP_NIL), \
       class... xs>                                       \
-    using f = call<C                                     \
-        mp_rxs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)>;   \
+    using f = typename C::template f<                    \
+      mp_rxs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>;     \
   };
 
   JLN_MP_GEN_XS_0_TO_8(JLN_MP_REVERSE_IMPL)
 
 #undef JLN_MP_REVERSE_IMPL
 
-#define JLN_MP_REVERSE_IMPL(n, mp_xs, mp_rxs, mp_rep)  \
-  template<>                                           \
-  struct _reverse<n>                                   \
-  {                                                    \
-    template<class C, std::size_t count,               \
-      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),          \
-      class... xs>                                     \
-    using f = typename _reverse<                       \
-      detail::n_8_or_less_16_64_256(count-n)           \
-    >::template f<C, count-n, xs..., list<             \
-      mp_rxs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>>;  \
-  };                                                   \
-  template<>                                           \
-  struct _reverse<n+20>                                \
-  {                                                    \
-    template<class C, std::size_t count,               \
-      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),          \
-      class... xs>                                     \
-    using f = call<C                                   \
-        mp_rxs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)>; \
+#define JLN_MP_REVERSE_IMPL(n, mp_xs, mp_rxs, mp_rep) \
+  template<>                                          \
+  struct _reverse<n>                                  \
+  {                                                   \
+    template<class C, std::size_t count,              \
+      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),         \
+      class... xs>                                    \
+    using f = typename _reverse<                      \
+      detail::n_8_or_less_16_64_256(count-n)          \
+    >::template f<C, count-n, xs..., list<            \
+      mp_rxs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>>; \
+  };                                                  \
+  template<>                                          \
+  struct _reverse<n+20>                               \
+  {                                                   \
+    template<class C, std::size_t count,              \
+      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),         \
+      class... xs>                                    \
+    using f = typename C::template f<                 \
+      mp_rxs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>;  \
   };
 
   JLN_MP_GEN_XS_8_16_64_256(JLN_MP_REVERSE_IMPL)

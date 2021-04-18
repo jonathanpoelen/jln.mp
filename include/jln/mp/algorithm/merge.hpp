@@ -26,7 +26,7 @@ namespace jln::mp
   struct merge
   {
     template<class seq1, class seq2>
-    using f = call<unpack<C>,
+    using f = typename unpack<C>::template f<
       typename detail::_dispatch_merge<
         std::is_same<seq1, list<>>::value,
         std::is_same<seq2, list<>>::value
@@ -125,7 +125,7 @@ namespace jln::mp::detail
       list<xh, xt...>,
       list<yh0, yh1, yh2, yh3, yh4, yt...>,
       list<zs...>, cmp,
-      number<bool(call<cmp, yh4, xh>::value)>>
+      number<bool(cmp::template f<yh4, xh>::value)>>
     : _merge_impl<list<xh, xt...>, list<yt...>, list<zs..., yh0, yh1, yh2, yh3, yh4>, cmp>
     {};
 
@@ -137,7 +137,7 @@ namespace jln::mp::detail
       list<xh, xt...>,
       list<yh0, yh1, yh2, yh3, yh4, yt...>,
       list<zs...>, cmp,
-      number<!bool(call<cmp, yh4, xh>::value)>>
+      number<!bool(cmp::template f<yh4, xh>::value)>>
     : _merge_impl<list<xh, xt...>, list<yh1, yh2, yh3, yh4, yt...>, list<zs..., yh0>, cmp>
     {};
   };
@@ -170,7 +170,7 @@ namespace jln::mp::detail
       list<xh0, xh1, xh2, xh3, xh4, xt...>,
       list<yh, yt...>,
       list<zs...>, cmp,
-      number<!bool(call<cmp, yh, xh4>::value)>>
+      number<!bool(cmp::template f<yh, xh4>::value)>>
     : _merge_impl<list<xt...>, list<yh, yt...>, list<zs..., xh0, xh1, xh2, xh3, xh4>, cmp>
     {};
 
@@ -182,7 +182,7 @@ namespace jln::mp::detail
       list<xh0, xh1, xh2, xh3, xh4, xt...>,
       list<yh, yt...>,
       list<zs...>, cmp,
-      number<bool(call<cmp, yh, xh4>::value)>>
+      number<bool(cmp::template f<yh, xh4>::value)>>
     : _merge_impl<list<xh1, xh2, xh3, xh4, xt...>, list<yh, yt...>, list<zs..., xh0>, cmp>
     {};
   };
@@ -190,7 +190,7 @@ namespace jln::mp::detail
   template<class xh, class... xt, class yh, class... yt, class... zs, class cmp>
   struct _merge_impl<list<xh, xt...>, list<yh, yt...>, list<zs...>, cmp>
   : _fast_merge_impl<_fast_merge_impl_select(
-    bool(call<cmp, yh, xh>::value), sizeof...(xt), sizeof...(yt)
+    bool(cmp::template f<yh, xh>::value), sizeof...(xt), sizeof...(yt)
   )>::template f<
     list<xh, xt...>, list<yh, yt...>, list<zs...>, cmp>
   {};
@@ -221,13 +221,14 @@ namespace jln::mp::detail
     using xm = number<(sizeof...(xs) + 1) / 2>;
     using ym = number<(sizeof...(ys) + 1) / 2>;
 
-    using xl = call<take_front<xm>, xs...>;
-    using yl = call<take_front<ym>, ys...>;
+    using xr = typename drop_front<xm>::template f<xs...>;
+    using yr = typename drop_front<ym>::template f<ys...>;
 
-    using xr = call<drop_front<xm>, xs...>;
-    using yr = call<drop_front<ym>, ys...>;
-
-    using l = _merge<xl, yl, z>;
+    using l = _merge<
+      typename take_front<xm>::template f<xs...>,
+      typename take_front<ym>::template f<ys...>,
+      z
+    >;
 
     template<class cmp>
     using f = typename l::template f<cmp>::template part<xr, yr>;

@@ -101,7 +101,7 @@ namespace jln::mp::detail
     template<class C, class Cmp, class x, class... xs>
     using f = typename _group_impl<
       C, Cmp, x,
-      call<take_front_c<sizeof...(xs)>, x, xs...>,
+      typename take_front_c<sizeof...(xs)>::template f<x, xs...>,
       xs...
     >::type;
   };

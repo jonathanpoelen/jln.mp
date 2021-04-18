@@ -14,9 +14,8 @@ namespace jln::mp
   struct take_front
   {
     template<class... xs>
-    using f = call<
-      rotate<N, drop_front<number<sizeof...(xs) - N::value>, C>>,
-      xs...>;
+    using f = typename rotate<N, drop_front<number<sizeof...(xs) - N::value>, C>>
+      ::template f<xs...>;
   };
 
   /// Extracts at most \c N elements from the beginning of a \sequence.
@@ -26,10 +25,9 @@ namespace jln::mp
   struct take_front_max
   {
     template<class... xs>
-    using f = call<
-      rotate<N, drop_front_max<number<sizeof...(xs)
-        - detail::min(sizeof...(xs), std::size_t{N::value})>, C>>,
-      xs...>;
+    using f = typename rotate<N, drop_front_max<number<sizeof...(xs)
+                                 - detail::min(sizeof...(xs), std::size_t{N::value})>, C>>
+      ::template f<xs...>;
   };
 
   template<int_ n, class C = listify>
@@ -59,41 +57,6 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
-  };
-
-  template<class C>
-  struct take_front<number<1>, C>
-  {
-    template<class _1, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1);
-  };
-
-  template<class C>
-  struct take_front<number<2>, C>
-  {
-    template<class _1, class _2, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2);
-  };
-
-  template<class C>
-  struct take_front<number<3>, C>
-  {
-    template<class _1, class _2, class _3, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2, _3);
-  };
-
-  template<class C>
-  struct take_front<number<4>, C>
-  {
-    template<class _1, class _2, class _3, class _4, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2, _3, _4);
-  };
-
-  template<class C>
-  struct take_front<number<5>, C>
-  {
-    template<class _1, class _2, class _3, class _4, class _5, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, _1, _2, _3, _4, _5);
   };
 
   template<class C>

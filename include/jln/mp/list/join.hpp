@@ -32,7 +32,7 @@ namespace jln::mp
   namespace emp
   {
     template<class... seqs>
-    using join = mp::call<mp::join<>, seqs...>;
+    using join = typename mp::join<>::template f<seqs...>;
   }
 }
 

@@ -33,7 +33,7 @@ namespace jln::mp
   namespace emp
   {
     template<class seq1, class seq2, class Cmp = mp::equal<>, class C = mp::listify, class NC = C>
-    using mismatch = call<mismatch<Cmp, C, NC>, seq1, seq2>;
+    using mismatch = typename mismatch<Cmp, C, NC>::template f<seq1, seq2>;
   }
 }
 

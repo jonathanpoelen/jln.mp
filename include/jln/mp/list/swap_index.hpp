@@ -54,11 +54,11 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename join<C>::template f<
-      call<take_front_c<i>, xs...>,
-      list<call<at_c<j>, xs...>>,
-      call<drop_front_c<i+1, take_front_c<j-i-1>>, xs...>,
-      list<call<at_c<i>, xs...>>,
-      call<drop_front_c<j+1>, xs...>
+      typename take_front_c<i>::template f<xs...>,
+      list<typename at_c<j>::template f<xs...>>,
+      typename drop_front_c<i+1, take_front_c<j-i-1>>::template f<xs...>,
+      list<typename at_c<i>::template f<xs...>>,
+      typename drop_front_c<j+1>::template f<xs...>
     >;
   };
 

@@ -48,13 +48,14 @@ namespace jln::mp
   namespace emp
   {
     template<class seq1, class seq2, class Cmp = mp::less<>, class C = mp::identity>
-    using lexicographical_compare = call<lexicographical_compare<Cmp, C>, seq1, seq2>;
+    using lexicographical_compare = typename lexicographical_compare<Cmp, C>
+      ::template f<seq1, seq2>;
 
     template<
       class seq1, class seq2,
       class CmpLess = mp::less<>, class CmpEq = mp::equal<>, class C = mp::identity>
-    using lexicographical_compare2 = call<
-      lexicographical_compare2<CmpLess, CmpEq, C>, seq1, seq2>;
+    using lexicographical_compare2 = typename lexicographical_compare2<CmpLess, CmpEq, C>
+      ::template f<seq1, seq2>;
   }
 
   /// \cond

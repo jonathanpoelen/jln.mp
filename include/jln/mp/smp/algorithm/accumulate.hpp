@@ -52,9 +52,9 @@ namespace jln::mp::detail
   struct _smp_accumulate
   {
     template<class state, class... seqs>
-    using f = call<zip<push_front<state, fold_left<
+    using f = typename zip<push_front<state, fold_left<
       monadic0<flip<unpack<F>>>, monadic<C>
-    >>>, seqs...>;
+    >>>::template f<seqs...>;
   };
 }
 /// \endcond

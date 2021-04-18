@@ -20,6 +20,6 @@ namespace jln::mp
   namespace emp
   {
     template<class seq1, class seq2, class Cmp = mp::equal<>, class C = mp::identity>
-    using mismatch_index = call<mismatch_index<Cmp, C>, seq1, seq2>;
+    using mismatch_index = typename mismatch_index<Cmp, C>::template f<seq1, seq2>;
   }
 }

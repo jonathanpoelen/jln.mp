@@ -23,9 +23,10 @@ namespace jln::mp
   struct sort
   {
     template<class... xs>
-    using f = call<unpack<C>,
+    using f = typename unpack<C>::template f<
       typename detail::_sort<detail::min(3, sizeof...(xs)), Cmp>
-      ::template f<xs...>>;
+      ::template f<xs...>
+    >;
   };
 
   template<class Cmp = less<>, class C = listify>
@@ -65,8 +66,10 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename memoize_call<_merge<
-      call<take_front_c<sizeof...(xs) / 2, _sort<min(3, sizeof...(xs) / 2), Cmp>>, xs...>,
-      call<drop_front_c<sizeof...(xs) / 2, _sort<min(3, (sizeof...(xs) + 1) / 2), Cmp>>, xs...>
+      typename take_front_c<sizeof...(xs) / 2, _sort<min(3, sizeof...(xs) / 2), Cmp>>
+        ::template f<xs...>,
+      typename drop_front_c<sizeof...(xs) / 2, _sort<min(3, (sizeof...(xs) + 1) / 2), Cmp>>
+        ::template f<xs...>
     >, Cmp>::type;
   };
 

@@ -94,40 +94,6 @@ namespace jln::mp
     using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
   };
 
-  template<class C>
-  struct drop_front<number<1>, C>
-  {
-    template<class, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
-  };
-
-  template<class C>
-  struct drop_front<number<2>, C>
-  {
-    template<class, class, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
-  };
-
-  template<class C>
-  struct drop_front<number<3>, C>
-  {
-    template<class, class, class, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
-  };
-
-  template<class C>
-  struct drop_front<number<4>, C>
-  {
-    template<class, class, class, class, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
-  };
-
-  template<class C>
-  struct drop_front<number<5>, C>
-  {
-    template<class, class, class, class, class, class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
-  };
 
   template<class C>
   struct drop_front_max<number<0>, C>

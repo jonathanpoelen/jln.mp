@@ -30,7 +30,8 @@ namespace jln::mp
   struct accumulate
   {
     template<class state, class... seqs>
-    using f = call<zip<push_front<state, fold_left<flip<unpack<F>>, C>>>, seqs...>;
+    using f = typename zip<push_front<state, fold_left<flip<unpack<F>>, C>>>
+      ::template f<seqs...>;
   };
 
   namespace emp

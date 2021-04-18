@@ -5,8 +5,6 @@
 #include <jln/mp/list/take_front.hpp>
 #include <jln/mp/functional/call.hpp>
 
-#include <algorithm>
-
 namespace jln::mp
 {
   /// \ingroup list
@@ -19,14 +17,13 @@ namespace jln::mp
   struct erase
   {
     template<class... xs>
-    using f = call<
-      join<C>,
-      call<take_front<start>, xs...>,
-      call<drop_front_c<std::min<std::size_t>(
+    using f = typename join<C>::template f<
+      typename take_front<start>::template f<xs...>,
+      typename drop_front_c<detail::min(
         sizeof...(xs),
-        detail::validate_index<start::value, sizeof...(xs)>::value
-        + std::size_t{size::value}
-      )>, xs...>
+        unsigned{detail::validate_index<start::value, sizeof...(xs)>::value
+        + unsigned{size::value}}
+      )>::template f<xs...>
     >;
   };
 
