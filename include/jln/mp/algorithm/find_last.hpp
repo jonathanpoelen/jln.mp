@@ -6,6 +6,8 @@
 
 namespace jln::mp
 {
+  /// \ingroup search
+
   /// Finds the last element that satisfy a \predicate.
   /// Calls \c TC with all the elements since the last found at the end.
   /// If no element is found, \c FC is used with the whole \sequence.

@@ -553,17 +553,29 @@ htmlifier_init = function()
 end
 end
 
+local stderr = io.stderr
+function log(...)
+  io.stderr:write(...)
+  io.stderr:write('\n')
+end
+
 files = {}
 files_by_group = {}
 groups = {}
 
 function readfile(filename)
+  log('read ', filename)
   _global_filename = filename
   local f = io.open(filename)
   local contents = f:read('*a')
   f:close()
 
   local fileinfos = parseFile(contents)
+
+  if not fileinfos.ingroup then
+    error('missing \\ingroup in ' .. _global_filename)
+  end
+
   if not fileinfos.firstname then
     if filename:find('/config.hpp', 0, true) then
       return
