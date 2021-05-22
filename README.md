@@ -33,7 +33,7 @@ using result = jln::mp::call<foo, int, void, double, char>;
 Now suppose that `result` must be a `std::tuple`. Rather than linking with another function, it is possible to combine them in `foo` via a continuation (`C` parameter).
 
 ```cpp
-using foo = jln:mp::remove<void, /*C=*/jln::mp::cfe<std::tuple>>;
+using foo = jln:mp::remove<void, /*C=*/jln::mp::lift<std::tuple>>;
 
 using result = jln::mp::call<foo, int, void, double, char>;
 // result == std::tuple<int, double, char>
