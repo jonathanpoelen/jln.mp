@@ -755,8 +755,9 @@ push'</div>\n'
 
 
 function push_nav_by_group(t, gn, type, h1, prefix, idxname, getsubtable, getlink)
-  push('<section id="' .. h1:lower():gsub(' ', '_') .. '">')
-  push('<h1 id="' .. h1:lower():gsub(' ', '_') .. '">' .. h1 .. '</h1>')
+  local id = h1:lower():gsub(' ', '_')
+  push('<section id="' .. id .. '">')
+  push('<h1 id="' .. id .. '">' .. h1 .. '<a href="#' .. id .. '" class="titleref">¶</a></h1>')
   push('<nav><p>')
   for _,g in ipairs(t) do
     push('<a class="link_group" href="#g' .. gn .. '__'
