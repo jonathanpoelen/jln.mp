@@ -9,9 +9,11 @@
 #include <jln/mp/algorithm/cartesian.hpp>
 #include <jln/mp/algorithm/combine.hpp>
 #include <jln/mp/algorithm/compare_with.hpp>
+#include <jln/mp/algorithm/conjunction.hpp>
 #include <jln/mp/algorithm/contains.hpp>
 #include <jln/mp/algorithm/copy.hpp>
 #include <jln/mp/algorithm/count.hpp>
+#include <jln/mp/algorithm/disjunction.hpp>
 #include <jln/mp/algorithm/drop_while.hpp>
 #include <jln/mp/algorithm/ends_with.hpp>
 #include <jln/mp/algorithm/find.hpp>
