@@ -492,6 +492,19 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, or_);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, and_);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, add0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, sub0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, lshift0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, rshift0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, mul0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, mul1);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, div0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, div1);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, mod0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, mod1);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, xor0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, bit_and0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, bit_or0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, not_);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, inc);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, dec);

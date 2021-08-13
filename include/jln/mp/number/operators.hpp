@@ -667,3 +667,24 @@ namespace jln::mp::emp
 }
 
 JLN_DIAGNOSTIC_POP
+
+/// \cond
+#include <jln/mp/number/as_bool.hpp>
+
+namespace jln::mp
+{
+  template<>
+  struct as_bool<not_<>>
+  {
+    template<class x>
+    using f = number<!bool{x::value}>;
+  };
+
+  template<class C>
+  struct as_bool<not_<C>>
+  {
+    template<class x>
+    using f = call<C, number<!bool{x::value}>>;
+  };
+}
+/// \endcond

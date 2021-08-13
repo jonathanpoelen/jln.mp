@@ -22,4 +22,14 @@ namespace jln::mp
     template<class x>
     using to_bool = number<bool(x::value)>;
   }
+
+
+  /// \cond
+  template<>
+  struct to_bool<identity>
+  {
+    template<class x>
+    using f = number<bool(x::value)>;
+  };
+  /// \endcond
 }
