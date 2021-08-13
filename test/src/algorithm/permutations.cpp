@@ -14,8 +14,8 @@ TEST()
   test_pack2<permutations>();
 
   ut::same<list<
-    list<_0, _1, _2>, list<_0, _2, _1>, 
-    list<_1, _0, _2>, list<_1, _2, _0>, 
+    list<_0, _1, _2>, list<_0, _2, _1>,
+    list<_1, _0, _2>, list<_1, _2, _0>,
     list<_2, _0, _1>, list<_2, _1, _0>
   >, emp::permutations<seq_0_1_2>>();
 
