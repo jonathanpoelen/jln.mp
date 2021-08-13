@@ -2039,6 +2039,54 @@ namespace jln::mp::emp
 }
 
 JLN_DIAGNOSTIC_POP
+
+/// \cond
+namespace jln::mp
+{
+  /// \ingroup number
+
+  /// Narrowing convertion from \value to \bool.
+  /// \treturn \bool
+  template<class C = identity>
+  struct as_bool
+  {
+    template<class x>
+    using f = call<C, number<bool{x::value}>>;
+  };
+
+  namespace emp
+  {
+    template<class x>
+    using as_bool = number<bool{x::value}>;
+  }
+
+
+  /// \cond
+  template<>
+  struct as_bool<identity>
+  {
+    template<class x>
+    using f = number<bool{x::value}>;
+  };
+  /// \endcond
+}
+namespace jln::mp
+{
+  template<>
+  struct as_bool<not_<>>
+  {
+    template<class x>
+    using f = number<!bool{x::value}>;
+  };
+
+  template<class C>
+  struct as_bool<not_<C>>
+  {
+    template<class x>
+    using f = call<C, number<!bool{x::value}>>;
+  };
+}
+/// \endcond
 namespace jln::mp
 {
   /// \ingroup list
@@ -4964,7 +5012,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template <class C, class... Fs>
+    template<class C, class... Fs>
     struct _tee;
   }
   /// \endcond
@@ -4975,14 +5023,14 @@ namespace jln::mp
   /// \treturn \value
   /// \see each, partial
 #ifdef JLN_MP_DOXYGENATING
-  template <class... Fs, class C>
+  template<class... Fs, class C>
   struct tee
   {
     template<class... xs>
     using f = C::f<Fs::f<xs...>...>;
   };
 #else
-  template <class... Fs>
+  template<class... Fs>
   struct tee
   : rotate<number<-1>, lift<detail::_tee>>
   ::template f<Fs...>
@@ -4990,21 +5038,21 @@ namespace jln::mp
 #endif
 
   /// \cond
-  template <class F, class C>
+  template<class F, class C>
   struct tee<F, C>
   {
     template<class... xs>
     using f = unary_compose_call<C, F, xs...>;
   };
 
-  template <class F0, class F1, class C>
+  template<class F0, class F1, class C>
   struct tee<F0, F1, C>
   {
     template<class... xs>
     using f = binary_compose_call<C, F0, F1, xs...>;
   };
 
-  template <class F0, class F1, class F2, class C>
+  template<class F0, class F1, class F2, class C>
   struct tee<F0, F1, F2, C>
   {
     template<class... xs>
@@ -5016,10 +5064,10 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template <class C, class... Fs>
+  template<class C, class... Fs>
   struct _tee
   {
-    template <class... xs>
+    template<class... xs>
     using f = typename C::template f<call<Fs, xs...>...>;
   };
 } // namespace jln::mp
@@ -5071,6 +5119,16 @@ namespace jln::mp
     template<class x>
     using to_bool = number<bool(x::value)>;
   }
+
+
+  /// \cond
+  template<>
+  struct to_bool<identity>
+  {
+    template<class x>
+    using f = number<bool(x::value)>;
+  };
+  /// \endcond
 }
 /// \cond
 namespace jln::mp::detail
@@ -7233,6 +7291,19 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, or_);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, and_);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, add0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, sub0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, lshift0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, rshift0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, mul0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, mul1);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, div0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, div1);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, mod0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, mod1);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, xor0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, bit_and0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, bit_or0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, not_);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, inc);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, dec);
@@ -7949,6 +8020,77 @@ namespace jln::mp::smp
   template<class F, class Cmp = less<>>
   using compare_with = each<F, F, Cmp>;
 }
+namespace jln::mp::smp
+{
+  template<class C = identity>
+  using as_bool = try_contract<mp::as_bool<assume_number<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, as_bool<C>>
+  {
+    using type = smp::as_bool<sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup algorithm
+
+  /// Perform a logical AND on the sequence of value.
+  /// Conjunction is short-circuiting: if there is a template type argument Xi
+  /// with `Xi::value == false`, then instantiating
+  /// `disjunction<X1, ..., XN>::value` does not require the instantiation of
+  /// `Xj::value` for j > i
+  /// \treturn \bool
+#ifdef JLN_MP_DOXYGENATING
+  template<class C = identity>
+  struct disjunction
+  {
+    template<class... X>
+    using f;
+  };
+#else
+  template<class C = identity>
+  using conjunction = drop_while<identity, is_empty<C>>;
+#endif
+
+  namespace emp
+  {
+    template<class L, class C = mp::identity>
+    using conjunction = unpack<L, mp::conjunction<C>>;
+  }
+}
+namespace jln::mp::smp
+{
+  template<class C = identity>
+  using conjunction = contract<mp::drop_while<
+    try_<mp::as_bool<>, mp::identity, mp::always<false_>>,
+    mp::if_<
+      mp::if_<
+        mp::size<>,
+        mp::front<try_<mp::as_bool<>, mp::always<true_>, mp::always<false_>>>,
+        mp::always<true_>
+      >,
+      mp::is_empty<subcontract<C>>,
+      violation
+    >
+  >>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, conjunction<C>>
+  {
+    using type = smp::conjunction<sfinae<C>>;
+  };
+}
+/// \endcond
 namespace jln::mp
 {
   /// \ingroup utility
@@ -8221,6 +8363,65 @@ namespace jln::mp::smp
   template<class x, class C = identity>
   using count = contract<mp::count<x, assume_number<C>>>;
 }
+namespace jln::mp
+{
+  /// \ingroup algorithm
+
+  /// Perform a logical OR on the sequence of value.
+  /// Disjunction is short-circuiting: if there is a template type argument Xi
+  /// with `Xi::value != false`, then instantiating
+  /// `disjunction<X1, ..., XN>::value` does not require the instantiation of
+  /// `Xj::value` for j > i
+  /// \treturn \bool
+#ifdef JLN_MP_DOXYGENATING
+  template<class C = identity>
+  struct disjunction
+  {
+    template<class... X>
+    using f;
+  };
+#else
+  template<class C = identity>
+  using disjunction = if_<size<>, drop_while<as_bool<not_<>>, size<to_bool<C>>>, always<false_, C>>;
+#endif
+
+  namespace emp
+  {
+    template<class L, class C = mp::identity>
+    using disjunction = unpack<L, mp::disjunction<C>>;
+  }
+}
+namespace jln::mp::smp
+{
+  template<class C = identity>
+  using disjunction = contract<mp::if_<
+    mp::size<>,
+    mp::drop_while<
+      try_<mp::as_bool<mp::not_<>>, mp::identity, mp::always<false_>>,
+      mp::if_<
+        mp::if_<
+          mp::size<>,
+          mp::front<try_<mp::as_bool<>, mp::always<true_>, mp::always<false_>>>,
+          mp::always<true_>
+        >,
+        mp::size<mp::to_bool<subcontract<C>>>,
+        violation
+      >
+    >,
+    always<false_, subcontract<C>>
+  >>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, disjunction<C>>
+  {
+    using type = smp::disjunction<sfinae<C>>;
+  };
+}
+/// \endcond
 namespace jln::mp::smp
 {
   template<class Seq, class C = identity>
@@ -16821,41 +17022,6 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, take_back_max<N, C>>
   {
     using type = smp::take_back_max<N, sfinae<C>>;
-  };
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \ingroup number
-
-  /// Narrowing convertion from \value to \bool.
-  /// \treturn \bool
-  template<class C = identity>
-  struct as_bool
-  {
-    template<class x>
-    using f = call<C, number<bool{x::value}>>;
-  };
-
-  namespace emp
-  {
-    template<class x>
-    using as_bool = number<bool{x::value}>;
-  }
-}
-namespace jln::mp::smp
-{
-  template<class C = identity>
-  using as_bool = try_contract<mp::as_bool<assume_unary<C>>>;
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, as_bool<C>>
-  {
-    using type = smp::as_bool<sfinae<C>>;
   };
 }
 /// \endcond
