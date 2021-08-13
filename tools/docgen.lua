@@ -404,10 +404,11 @@ htmlifier_init = function()
     + R'az' * charid^1 / function(s)
         return current_table[s] or global_table[s] or s:gsub('::', '<span class="p">::</span>')
       end
-    + S'//' * Until'\n' / mk_tag_specialchar'c1'
+    + P'//' * Until'\n' / mk_tag_specialchar'c1'
+    + P'/*' * Until'*/' * 2 / mk_tag_specialchar'c1'
     + S'#' * Until'\n' / mk_tag_specialchar'cp'
     + S'{}()[]:;,.'^1 / mk_tag'p'
-    + S'<>+-/%*=&|'^1 / mk_tag_specialchar'o'
+    + S'<>+-/%*=&|' / mk_tag_specialchar'o'
     + R'09'^1 / mk_tag'mi'
     + tokid^1
     + 1
@@ -625,6 +626,7 @@ i_struct = kwindexes.struct
 i_using = kwindexes.using
 i_desc = kwindexes.desc
 i_see = kwindexes.see
+i_treturn = kwindexes.treturn
 i_tparam = kwindexes.tparam
 i_pre = kwindexes.pre
 i_post = kwindexes.post
@@ -647,10 +649,11 @@ local tgroups = {}
 for name,g in pairs(groups) do
   tgroups[#tgroups+1] = g
 
-  local short_desc, long_desc, see, tparams, extra_doc
+  local short_desc, long_desc, treturn, see, tparams, extra_doc
   local reset_values = function()
     short_desc = nil
     long_desc = nil
+    treturn = nil
     see = {}
     tparams = {}
     extra_doc = {
@@ -674,6 +677,8 @@ for name,g in pairs(groups) do
         see[#see+1] = d[2]
       elseif d[1] == i_tparam then
         tparams[#tparams+1] = {d[2], htmlify:match(d[3])}
+      elseif d[1] == i_treturn then
+        treturn = htmlify:match(d[2])
       elseif extra_doc[d[1]] then
         table.insert(extra_doc[d[1]], htmlify:match(d[2]))
       elseif d.i == i_desc then
@@ -688,6 +693,7 @@ for name,g in pairs(groups) do
         d.human_tparams_html = tohtml(d.namespace, d.human_tparams) or ''
         d.long_desc_html = long_desc and #long_desc > 0 and long_desc
         d.short_desc_html = short_desc and #short_desc > 0 and short_desc
+        d.treturn = treturn
         d.tparams = tparams
         d.impl_html = tohtml(d.namespace, d.impl)
         d.inline_impl_html = d.impl and (inlinecode_begin .. d.impl_html .. inlinecode_end)
@@ -967,6 +973,7 @@ for _,g in ipairs(tgroups) do
              .. inlinecode_begin .. d.fullname .. d.mem_html .. inlinecode_end .. '</h3>\n')
         refcache[d.refid] = true
 
+        if d.treturn then push('<p>Return: ' .. d.treturn .. '</p>') end
         if d.short_desc_html then push('<p>' .. d.short_desc_html .. '</p>') end
         if d.long_desc_html then push('<p>' .. d.long_desc_html .. '</p>') end
 
