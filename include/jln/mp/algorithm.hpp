@@ -7,6 +7,7 @@
 #include <jln/mp/algorithm/all_of.hpp>
 #include <jln/mp/algorithm/any_of.hpp>
 #include <jln/mp/algorithm/cartesian.hpp>
+#include <jln/mp/algorithm/collapse.hpp>
 #include <jln/mp/algorithm/combine.hpp>
 #include <jln/mp/algorithm/compare_with.hpp>
 #include <jln/mp/algorithm/conjunction.hpp>
