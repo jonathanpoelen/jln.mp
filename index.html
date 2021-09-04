@@ -263,6 +263,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#functional/try.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">try</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/while.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">while</span><span class="ext">.hpp</span></a></li>
 </ul></li><li id="g1__group" class="index_group"><a class="index_cat" href="#g1__group">Group: group</a><ul class="subindex_list file_sublist">
+<li><a href="#algorithm/collapse.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">collapse</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/group.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">group</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/group_n.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">group_n</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/partition.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">partition</span><span class="ext">.hpp</span></a></li>
@@ -359,6 +360,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#algorithm/all_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">all_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/any_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">any_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/cartesian.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">cartesian</span><span class="ext">.hpp</span></a></li>
+<li><a href="#algorithm/collapse.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">collapse</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/combine.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">combine</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/compare_with.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">compare_with</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/conjunction.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">conjunction</span><span class="ext">.hpp</span></a></li>
@@ -634,6 +636,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#mp::while_" class="index_link">while_</a></li>
 <li><a href="#mp::while_xs" class="index_link">while_xs</a></li>
 </ul></li><li id="g3__group" class="index_group"><a class="index_cat" href="#g3__group">Group: group</a><ul class="subindex_list func_sublist">
+<li><a href="#mp::collapse" class="index_link">collapse</a></li>
 <li><a href="#mp::group" class="index_link">group</a></li>
 <li><a href="#mp::group_by" class="index_link">group_by</a></li>
 <li><a href="#mp::group_n" class="index_link">group_n</a></li>
@@ -1013,6 +1016,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#mp::clamp" class="index_link">clamp</a></li>
 <li><a href="#mp::clamp_c" class="index_link">clamp_c</a></li>
 <li><a href="#mp::clear" class="index_link">clear</a></li>
+<li><a href="#mp::collapse" class="index_link">collapse</a></li>
 <li><a href="#mp::combine" class="index_link">combine</a></li>
 <li><a href="#mp::compare_with" class="index_link">compare_with</a></li>
 <li><a href="#mp::compose" class="index_link">compose</a></li>
@@ -1554,6 +1558,8 @@ then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the 
 <article id="g_group">
 <h2>Group: group</h2>
 <table>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::collapse">collapse</a><span class="o">&lt;</span>Keys<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>Groups adjacent elements by adjacent keys.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::collapse">collapse</a><span class="o">&lt;</span><a href="#mp::list">list</a><span class="o">&lt;</span>keys<span class="p">...</span><span class="o">></span><span class="p">,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::group_by">group_by</a><span class="o">&lt;</span>Cmp<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Groups adjacent elements that respect a predicate.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::group">group</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::group_by">group_by</a><span class="o">&lt;</span><a href="#mp::same">same</a><span class="o">&lt;</span><span class="o">></span><span class="p">,</span> C<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::group_n">group_n</a><span class="o">&lt;</span>n<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Splits a sequence by arbitrary size group.</td></tr>
@@ -2852,6 +2858,29 @@ then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the 
 <article id="g6__group">
 <h2 class="group__title">Group: group</h2>
 <div class="group__content">
+<h2 class="file" id="algorithm/collapse.hpp"><a href="#algorithm/collapse.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/collapse.hpp></h2><div class="group__file">
+<h3 id="mp::collapse"><a href="#mp::collapse" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">collapse<span class="o">&lt;</span>Keys<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></h3>
+<p>Return: <a href="#d_sequence">sequence</a>
+</p><p>Groups adjacent elements by adjacent keys.</p><p>
+</p><div class="InfoBox"><h4 class="InfoBox-title">Pre-condition</h4>
+<ul><li><code class="inlinecode highlight" data-lang="cpp"><a href="#emp::is_list">emp<span class="p">::</span>is_list</a><span class="o">&lt;</span>Keys<span class="o">></span></code> == <code class="inlinecode highlight" data-lang="cpp"><span class="nb">true</span></code>
+</li><li><code class="inlinecode highlight" data-lang="cpp"><a href="#emp::size">emp<span class="p">::</span>size</a><span class="o">&lt;</span>Keys<span class="o">></span></code> == <code class="inlinecode highlight" data-lang="cpp"><span class="k">sizeof</span><span class="p">...(</span>xs<span class="p">)</span></code>
+  <code class="blockcode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span><a href="#mp::collapse">collapse</a><span class="o">&lt;</span><a href="#emp::numbers">emp<span class="p">::</span>numbers</a><span class="o">&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="o">></span><span class="o">></span><span class="p">,</span>
+  <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span>
+<span class="o">></span> <span class="o">=</span> <a href="#mp::list">list</a><span class="o">&lt;</span>
+  <a href="#mp::list">list</a><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="o">></span><span class="p">,</span>
+  <a href="#mp::list">list</a><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="o">></span><span class="p">,</span>
+  <a href="#mp::list">list</a><span class="o">&lt;</span><span class="kt">int</span><span class="o">></span><span class="p">,</span>
+  <a href="#mp::list">list</a><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="o">></span>
+<span class="o">></span></code>
+</li></ul></div><div class="InfoBox"><h4 class="InfoBox-title">Semantics</h4>
+<p></p></div><div class="InfoBox"><h4 class="InfoBox-title">Note</h4>
+<p><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::collapse">collapse</a><span class="o">&lt;</span><a href="#mp::list">list</a><span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code> == <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::group">group</a><span class="o">&lt;</span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code>
+</p></div><h3><a href="#mp::collapse" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">collapse<span class="o">&lt;</span><a href="#mp::list">list</a><span class="o">&lt;</span>keys<span class="p">...</span><span class="o">></span><span class="p">,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
+<div class="group__emp">
+<h3 class="emp" id="emp::collapse"><a href="#emp::collapse" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>collapse<span class="o">&lt;</span>L<span class="p">,</span> Keys<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">mp<span class="p">::</span>listify</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::collapse">mp<span class="p">::</span>collapse</a><span class="o">&lt;</span>Keys<span class="p">,</span> C<span class="o">></span><span class="o">></span></code></h3>
+</div>
+</div>
 <h2 class="file" id="algorithm/group.hpp"><a href="#algorithm/group.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/group.hpp></h2><div class="group__file">
 <h3 id="mp::group_by"><a href="#mp::group_by" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">group_by<span class="o">&lt;</span>Cmp<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
 <p>Return: <a href="#d_sequence">sequence</a>
@@ -2917,7 +2946,7 @@ the second value contains all elements for which predicate returns false
 </p><p>Splits a <a href="#d_sequence">sequence</a> into multiple <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code>s at every point that satisfy a predicate.</p><p>
 The split value is inserted at the end of the previous list.
 </p><div class="InfoBox"><h4 class="InfoBox-title">Semantics</h4>
-<p>  <code class="blockcode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span><a href="#mp::split_after_if">split_after_if</a><span class="o">&lt;</span><a href="#mp::is">is</a><span class="o">&lt;</span><span class="kt">void</span><span class="o">></span><span class="p">,</span> _0<span class="p">,</span> _1<span class="p">,</span> _2<span class="p">,</span> _0<span class="p">,</span> _3<span class="o">></span> <span class="o">=</span><span class="o">=</span> <a href="#mp::list">list</a><span class="o">&lt;</span>
+<p>  <code class="blockcode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span><a href="#mp::split_after_if">split_after_if</a><span class="o">&lt;</span><a href="#mp::is">is</a><span class="o">&lt;</span>_0<span class="o">></span><span class="p">,</span> _0<span class="p">,</span> _1<span class="p">,</span> _2<span class="p">,</span> _0<span class="p">,</span> _3<span class="o">></span> <span class="o">=</span><span class="o">=</span> <a href="#mp::list">list</a><span class="o">&lt;</span>
   <a href="#mp::list">list</a><span class="o">&lt;</span>_0<span class="o">></span><span class="p">,</span>
   <a href="#mp::list">list</a><span class="o">&lt;</span>_1<span class="p">,</span> _2<span class="p">,</span> _0<span class="o">></span><span class="p">,</span>
   <a href="#mp::list">list</a><span class="o">&lt;</span>_3<span class="o">></span>
@@ -2960,7 +2989,7 @@ The split value is inserted at the end of the previous list.
 </p><p>Splits a <a href="#d_sequence">sequence</a> into multiple <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code>s at every point that satisfy a predicate.</p><p>
 The split value is inserted at the beginning of the following list.
 </p><div class="InfoBox"><h4 class="InfoBox-title">Semantics</h4>
-<p>  <code class="blockcode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span><a href="#mp::split_before_if">split_before_if</a><span class="o">&lt;</span><a href="#mp::is">is</a><span class="o">&lt;</span><span class="kt">void</span><span class="o">></span><span class="p">,</span> _0<span class="p">,</span> _1<span class="p">,</span> _2<span class="p">,</span> _0<span class="p">,</span> _3<span class="o">></span> <span class="o">=</span><span class="o">=</span> <a href="#mp::list">list</a><span class="o">&lt;</span>
+<p>  <code class="blockcode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span><a href="#mp::split_before_if">split_before_if</a><span class="o">&lt;</span><a href="#mp::is">is</a><span class="o">&lt;</span>_0<span class="o">></span><span class="p">,</span> _0<span class="p">,</span> _1<span class="p">,</span> _2<span class="p">,</span> _0<span class="p">,</span> _3<span class="o">></span> <span class="o">=</span><span class="o">=</span> <a href="#mp::list">list</a><span class="o">&lt;</span>
   <a href="#mp::list">list</a><span class="o">&lt;</span><span class="o">></span><span class="p">,</span>
   <a href="#mp::list">list</a><span class="o">&lt;</span>_0<span class="p">,</span> _1<span class="p">,</span> _2<span class="o">></span><span class="p">,</span>
   <a href="#mp::list">list</a><span class="o">&lt;</span>_0<span class="p">,</span> _3<span class="o">></span>
@@ -2991,7 +3020,7 @@ The split value is inserted at the beginning of the following list.
 <p>Return: <a href="#d_sequence">sequence</a> of <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code>
 </p><p>Splits a <a href="#d_sequence">sequence</a> into multiple <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code>s at every point that satisfy a predicate.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Semantics</h4>
-<p>  <code class="blockcode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span><a href="#mp::split_if">split_if</a><span class="o">&lt;</span><a href="#mp::is">is</a><span class="o">&lt;</span><span class="kt">void</span><span class="o">></span><span class="p">,</span> _0<span class="p">,</span> _1<span class="p">,</span> _2<span class="p">,</span> _0<span class="p">,</span> _3<span class="o">></span> <span class="o">=</span><span class="o">=</span> <a href="#mp::list">list</a><span class="o">&lt;</span>
+<p>  <code class="blockcode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span><a href="#mp::split_if">split_if</a><span class="o">&lt;</span><a href="#mp::is">is</a><span class="o">&lt;</span>_0<span class="o">></span><span class="p">,</span> _0<span class="p">,</span> _1<span class="p">,</span> _2<span class="p">,</span> _0<span class="p">,</span> _3<span class="o">></span> <span class="o">=</span><span class="o">=</span> <a href="#mp::list">list</a><span class="o">&lt;</span>
   <a href="#mp::list">list</a><span class="o">&lt;</span><span class="o">></span><span class="p">,</span>
   <a href="#mp::list">list</a><span class="o">&lt;</span>_1<span class="p">,</span> _2<span class="o">></span><span class="p">,</span>
   <a href="#mp::list">list</a><span class="o">&lt;</span>_3<span class="o">></span>
@@ -3107,7 +3136,7 @@ The split value is inserted at the beginning of the following list.
 </div>
 <h2 class="file" id="list/clear.hpp"><a href="#list/clear.hpp" class="ref">¶</a>&lt;jln/mp/list/clear.hpp></h2><div class="group__file">
 <h3 id="mp::clear"><a href="#mp::clear" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">clear<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <a href="#d_value">value</a>
 </p><p>Removes all elements from the <a href="#d_sequence">sequence</a>.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp">JLN_MP_DCALL<span class="p">(</span><span class="k">sizeof</span><span class="p">...(</span>xs<span class="p">)</span> <span class="o">></span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> C<span class="p">)</span></code></div><div class="group__emp">
