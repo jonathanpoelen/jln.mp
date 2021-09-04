@@ -5484,13 +5484,22 @@ namespace jln::mp
   /// \ingroup list
 
   /// Removes all elements from the \sequence.
-  /// \treturn \number
+  /// \treturn \value
   template<class C = listify>
   struct clear
   {
     template<class... xs>
     using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
   };
+
+  /// \cond
+  template<>
+  struct clear<listify>
+  {
+    template<class... xs>
+    using f = list<>;
+  };
+  /// \endcond
 }
 namespace jln::mp::smp
 {
@@ -7566,6 +7575,538 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    template<bool>
+    struct _group;
+  }
+  /// \endcond
+
+  /// \ingroup group
+
+  /// Groups adjacent elements that respect a predicate.
+  /// \semantics
+  ///   \code
+  ///   call<group<same<>>,
+  ///     void, void, int, void
+  ///   > = list<
+  ///     list<void, void>,
+  ///     list<int>,
+  ///     list<void>
+  ///   >
+  ///   \endcode
+  /// \treturn \sequence
+  template<class Cmp, class C = listify>
+  struct group_by
+  {
+    template<class... xs>
+    using f = typename detail::_group<sizeof...(xs) != 0>
+      ::template f<C, Cmp, xs...>;
+  };
+
+  template<class C = listify>
+  using group = group_by<same<>, C>;
+
+  namespace emp
+  {
+    template<class L, class Cmp, class C = mp::listify>
+    using group_by = unpack<L, mp::group_by<Cmp, C>>;
+
+    template<class L, class C = mp::listify>
+    using group = unpack<L, mp::group<C>>;
+  }
+}
+
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<int>
+    struct _fold_right;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Folds right over a list using a binary predicate.
+  /// fold_right consideres the first element in the input pack as the state,
+  /// use \c push_front<> to add state if needed.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   F::f<x[0], ..., F::f<x[n-2], F::f<xs[n-1], state>>>
+  ///   \endcode
+  /// \treturn \value
+  /// \see fold_left, fold_tree, reverse_fold, fold_balanced_tree
+  template<class F, class C = identity>
+  struct fold_right
+  {
+    template<class... xs>
+    using f = typename C::template f<
+      typename detail::_fold_right<
+        detail::sub_1_n_4_or_less_8_16_64_256(sizeof...(xs))
+      >::template f<F::template f, xs...>
+    >;
+  };
+
+  namespace emp
+  {
+    template<class L, class state, class F, class C = mp::identity>
+    using fold_right = unpack<L,
+      mp::push_front<state, mp::fold_right<F, C>>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+#define JLN_MP_FOLD_RIGHT_SELECT(n, mp_xs, mp_rxs, mp_dup) \
+  template<>                                               \
+  struct _fold_right<n>                                    \
+  {                                                        \
+    template<template<class...> class F, class state,      \
+      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),              \
+      class... xs>                                         \
+    using f = mp_xs(F<, JLN_MP_COMMA, JLN_MP_NIL)          \
+      typename _fold_right<                                \
+        detail::n_4_or_less_8_16_64_256(sizeof...(xs))     \
+      >::template f<F, state, xs...>                       \
+    mp_dup(>, JLN_MP_NIL);                                 \
+  };
+
+  JLN_MP_GEN_XS_4_8_16_64_256(JLN_MP_FOLD_RIGHT_SELECT)
+
+#undef JLN_MP_FOLD_RIGHT_SELECT
+
+#define JLN_MP_FOLD_RIGHT_SELECT(n, mp_xs, mp_rxs, mp_dup) \
+  template<>                                               \
+  struct _fold_right<n>                                    \
+  {                                                        \
+    template<template<class...> class F, class state,      \
+      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA)>              \
+    using f = mp_xs(F<, JLN_MP_COMMA, JLN_MP_NIL)          \
+      state mp_dup(>, JLN_MP_NIL);                         \
+  };
+
+  JLN_MP_GEN_XS_1_TO_4(JLN_MP_FOLD_RIGHT_SELECT)
+
+#undef JLN_MP_FOLD_RIGHT_SELECT
+
+  template<>
+  struct _fold_right<0>
+  {
+    template<template<class...> class, class state>
+    using f = state;
+  };
+
+  template<>
+  struct _fold_right<-1>
+  {};
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template <bool>
+    struct _split;
+
+    inline constexpr int_ split_keep = 0;
+    inline constexpr int_ split_after = 1;
+    inline constexpr int_ split_before = 2;
+    inline constexpr int_ split_skip = 3;
+    // inline constexpr int_ split_na = 4;
+  }
+  /// \endcond
+
+  /// \ingroup group
+
+  /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
+  /// \semantics
+  ///   \code
+  ///   call<split_if<is<_0>, _0, _1, _2, _0, _3> == list<
+  ///     list<>,
+  ///     list<_1, _2>,
+  ///     list<_3>
+  ///   >
+  ///   \endcode
+  /// \treturn \sequence of \list
+  /// \see split_before_if, split_after_if
+  template<class Pred = identity, class C = listify>
+  struct split_if
+  {
+    template <class... xs>
+    using f = typename detail::_split<sizeof...(xs) != 0>
+      ::template f<detail::split_skip, C, Pred, xs...>;
+  };
+
+  template<class x, class C = listify>
+  using split = split_if<is<x>, C>;
+
+  namespace emp
+  {
+    template<class L, class Pred = mp::identity, class C = mp::listify>
+    using split_if = unpack<L, mp::split_if<Pred, C>>;
+
+    template<class L, class x, class C = mp::listify>
+    using split = unpack<L, mp::split<x, C>>;
+  }
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template <class x, class state>
+  struct split_state;
+
+  template<class x, class... Ls, class... xs>
+  struct split_state<list<number<split_keep>, x>, list<list<xs...>, Ls...>>
+  {
+    using type = list<list<x, xs...>, Ls...>;
+  };
+
+  template<class x, class... Ls, class... xs>
+  struct split_state<list<number<split_after>, x>, list<list<xs...>, Ls...>>
+  {
+    using type = list<list<x>, list<xs...>, Ls...>;
+  };
+
+  template<class x, class... Ls, class... xs>
+  struct split_state<list<number<split_before>, x>, list<list<xs...>, Ls...>>
+  {
+    using type = list<list<>, list<x, xs...>, Ls...>;
+  };
+
+  template<class x, class... Ls, class... xs>
+  struct split_state<list<number<split_skip>, x>, list<list<xs...>, Ls...>>
+  {
+    using type = list<list<>, list<xs...>, Ls...>;
+  };
+
+  template<>
+  struct _split<true>
+  {
+    template<int_ policy, class C, class Pred, class... xs>
+    using f = typename fold_right<lift_t<split_state>, optimize_useless_unpack_t<unpack<C>>>
+      ::template f<list<list<>>,
+                   list<number<bool{Pred::template f<xs>::value}
+                     ? policy : split_keep>, xs>...
+      >;
+  };
+
+  template<>
+  struct _split<false>
+  {
+    template<int_, class C, class>
+    using f = typename C::template f<>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template <class, class...>
+    struct _partial;
+  }
+  /// \endcond
+
+  /// \ingroup functional
+
+  /// Invokes multiple functions each taking the parameter corresponding to its position
+  /// then calls \c C with the results and the rest of the parameters.
+  /// \pre `sizeof...(xs) >= sizeof...(Fs)`
+  /// \semantics
+  ///   \code
+  ///   partial<F,G,C>::f<a,b,c,d> == C::f<F::f<a>, G::f<b>, c, d>
+  ///   \endcode
+  /// \treturn \value
+  /// \see each, tee, on
+#ifdef JLN_MP_DOXYGENATING
+  template <class... Fs, class C>
+  struct partial
+  {
+    template<class... xs>
+    using f = /* unspecified */;
+  };
+#else
+  template <class... Fs>
+  struct partial
+  : rotate<number<-1>, lift<detail::_partial>>
+  ::template f<Fs...>
+  {};
+#endif
+
+  /// \cond
+  template <class C>
+  struct partial<C>
+  {
+    template <class... xs>
+    using f = call<C, xs...>;
+  };
+
+  template <class F, class C>
+  struct partial<F, C>
+  {
+    template <class x, class... xs>
+    using f = call<C, call<F, x>, xs...>;
+  };
+
+  template <class F0, class F1, class C>
+  struct partial<F0, F1, C>
+  {
+    template <class x0, class x1, class... xs>
+    using f = call<C, call<F0, x0>, call<F1, x1>, xs...>;
+  };
+
+  template <class F0, class F1, class F2, class C>
+  struct partial<F0, F1, F2, C>
+  {
+    template <class x0, class x1, class x2, class... xs>
+    using f = call<C, call<F0, x0>, call<F1, x1>, call<F2, x2>, xs...>;
+  };
+  /// \endcond
+}
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template <class C, class... Fs>
+    struct _each;
+  }
+  /// \endcond
+
+  /// \ingroup functional
+
+  /// Invokes multiple functions each taking the parameter corresponding to its position.
+  /// \treturn \value
+  /// \see tee, partial
+#ifdef JLN_MP_DOXYGENATING
+  template <class... Fs, class C>
+  struct each
+  {
+    template<class... xs>
+    using f = C::f<Fs::f<xs>...>;
+  };
+#else
+  template <class... Fs>
+  struct each
+  : rotate<number<-1>, lift<detail::_each>>
+  ::template f<Fs...>
+  {};
+#endif
+
+  /// \cond
+  template <class C>
+  struct each<C> : detail::_each<C>
+  {};
+
+  template <class F, class C>
+  struct each<F, C> : detail::_each<C, F>
+  {};
+
+  template <class F0, class F1, class C>
+  struct each<F0, F1, C> : detail::_each<C, F0, F1>
+  {};
+
+  template <class F0, class F1, class F2, class C>
+  struct each<F0, F1, F2, C> : detail::_each<C, F0, F1, F2>
+  {};
+  /// \endcond
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template <class C, class... Fs>
+  struct _each
+  {
+    template <class... xs>
+    using f = call<C, call<Fs, xs>...>;
+  };
+} // namespace jln::mp
+/// \endcond
+/// \cond
+namespace jln::mp::detail
+{
+  template <class C, class... Fs>
+  struct _partial
+  {
+    template<class... xs>
+    using f = typename _join_select<2>::f<
+      C,
+      typename take_front_c<sizeof...(Fs), _each<listify, Fs...>>::template f<xs...>,
+      typename drop_front_c<sizeof...(Fs)>::template f<xs...>
+    >::type;
+  };
+} // namespace jln::mp
+/// \endcond
+/// \cond
+namespace jln::mp::detail
+{
+  template<class x, class C>
+  using _group_insert_x = partial<unpack<push_front<x>>, C>;
+
+  template<class...>
+  struct _group_impl;
+
+  template<class C, class Cmp, class x, class... xs, class... ys>
+  struct _group_impl<C, Cmp, x, list<ys...>, xs...>
+  {
+    using type = typename fold_right<lift_t<split_state>, unpack<_group_insert_x<x, C>>>
+      ::template f<list<list<>>,
+                   list<number<Cmp::template f<ys, xs>::value
+                     ? split_keep : split_before>, xs>...
+      >;
+  };
+
+  template<class... ys>
+  struct _smp_group_impl
+  {
+    template<class C, class Cmp, class x, class... xs>
+    using f = typename fold_right<lift_t<split_state>, unpack<_group_insert_x<x, C>>>
+      ::template f<list<list<>>,
+                   list<number<Cmp::template f<ys, xs>::value
+                     ? split_keep : split_before>, xs>...
+      >;
+  };
+
+  template<class C, class Cmp, class TC, class FC, class x, class... xs, class... ys>
+  struct _group_impl<C, try_<Cmp, TC, FC>, x, list<ys...>, xs...>
+  {
+    using type = typename try_<_smp_group_impl<ys...>>
+      ::template f<C, try_<Cmp, TC, FC>, x, xs...>;
+  };
+
+  template<>
+  struct _group<true>
+  {
+    template<class C, class Cmp, class x, class... xs>
+    using f = typename _group_impl<
+      C, Cmp, x,
+      typename take_front_c<sizeof...(xs)>::template f<x, xs...>,
+      xs...
+    >::type;
+  };
+
+  template<>
+  struct _group<false>
+  {
+    template<class C, class>
+    using f = typename C::template f<>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup group
+
+  /// Groups adjacent elements by adjacent keys.
+  /// \semantics
+  /// \pre `emp::is_list<Keys>` == `true`
+  /// \pre `emp::size<Keys>` == `sizeof...(xs)`
+  ///   \code
+  ///   call<collapse<emp::numbers<1, 1, 0, 0, 0, 1, 2, 2>>,
+  ///     int, int, int, int, int, int, int, int
+  ///   > = list<
+  ///     list<int, int>,
+  ///     list<int, int, int>,
+  ///     list<int>,
+  ///     list<int, int>
+  ///   >
+  ///   \endcode
+  /// \note \c collapse<list<xs...>>::f<xs...> == \c group<>::f<xs...>
+  /// \treturn \sequence
+  template<class Keys, class C = listify>
+  struct collapse
+  {};
+
+#ifdef JLN_MP_DOXYGENATING
+  template<class... keys, class C>
+  struct collapse<list<keys...>, C>
+  {
+    template<class... xs>
+    using f;
+  };
+#endif
+
+  namespace emp
+  {
+    template<class L, class Keys, class C = mp::listify>
+    using collapse = unpack<L, mp::collapse<Keys, C>>;
+  }
+
+
+  /// \cond
+  namespace detail
+  {
+    template<class...>
+    struct make_collapse;
+  }
+
+  template<class C>
+  struct collapse<list<>, C>
+  {
+    template<class... xs>
+    using f = typename detail::_group<sizeof...(xs) != 0>
+      ::template f<C, list<>>;
+  };
+
+  template<class key, class... keys, class C>
+  struct collapse<list<key, keys...>, C>
+  : detail::make_collapse<
+      typename take_front_c<sizeof...(keys)>::template f<key, keys...>,
+      keys...
+    >::template f<C>
+  {};
+  /// \endcond
+}
+
+
+namespace jln::mp::detail
+{
+  template<class C, class... ns>
+  struct _collapse
+  {
+    template<class x, class... xs>
+    using f = typename fold_right<lift_t<split_state>, unpack<_group_insert_x<x, C>>>
+      ::template f<list<list<>>, list<ns, xs>...>;
+  };
+
+  template<class... xs, class... ys>
+  struct make_collapse<list<ys...>, xs...>
+  {
+    template<class C>
+    using f = _collapse<
+      C, number<std::is_same<ys, xs>::value ? split_keep : split_before>...
+    >;
+  };
+}
+namespace jln::mp::smp
+{
+  template<class Keys, class C = listify>
+  using collapse = try_contract<collapse<Keys, assume_lists<C>>>;
+}
+
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class Keys, class C>
+  struct _sfinae<sfinae, collapse<Keys, C>>
+  {
+    using type = smp::collapse<Keys, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
   /// \ingroup number
 
   template<class C = listify>
@@ -7865,66 +8406,6 @@ namespace jln::mp::detail
     using type = smp::combine<sfinae<C>>;
   };
 }
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template <class C, class... Fs>
-    struct _each;
-  }
-  /// \endcond
-
-  /// \ingroup functional
-
-  /// Invokes multiple functions each taking the parameter corresponding to its position.
-  /// \treturn \value
-  /// \see tee, partial
-#ifdef JLN_MP_DOXYGENATING
-  template <class... Fs, class C>
-  struct each
-  {
-    template<class... xs>
-    using f = C::f<Fs::f<xs>...>;
-  };
-#else
-  template <class... Fs>
-  struct each
-  : rotate<number<-1>, lift<detail::_each>>
-  ::template f<Fs...>
-  {};
-#endif
-
-  /// \cond
-  template <class C>
-  struct each<C> : detail::_each<C>
-  {};
-
-  template <class F, class C>
-  struct each<F, C> : detail::_each<C, F>
-  {};
-
-  template <class F0, class F1, class C>
-  struct each<F0, F1, C> : detail::_each<C, F0, F1>
-  {};
-
-  template <class F0, class F1, class F2, class C>
-  struct each<F0, F1, F2, C> : detail::_each<C, F0, F1, F2>
-  {};
-  /// \endcond
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template <class C, class... Fs>
-  struct _each
-  {
-    template <class... xs>
-    using f = call<C, call<Fs, xs>...>;
-  };
-} // namespace jln::mp
 /// \endcond
 /// \cond
 namespace jln::mp::detail
@@ -8945,95 +9426,6 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<int>
-    struct _fold_right;
-  }
-  /// \endcond
-
-  /// \ingroup algorithm
-
-  /// Folds right over a list using a binary predicate.
-  /// fold_right consideres the first element in the input pack as the state,
-  /// use \c push_front<> to add state if needed.
-  /// \semantics
-  ///   Equivalent to
-  ///   \code
-  ///   F::f<x[0], ..., F::f<x[n-2], F::f<xs[n-1], state>>>
-  ///   \endcode
-  /// \treturn \value
-  /// \see fold_left, fold_tree, reverse_fold, fold_balanced_tree
-  template<class F, class C = identity>
-  struct fold_right
-  {
-    template<class... xs>
-    using f = typename C::template f<
-      typename detail::_fold_right<
-        detail::sub_1_n_4_or_less_8_16_64_256(sizeof...(xs))
-      >::template f<F::template f, xs...>
-    >;
-  };
-
-  namespace emp
-  {
-    template<class L, class state, class F, class C = mp::identity>
-    using fold_right = unpack<L,
-      mp::push_front<state, mp::fold_right<F, C>>>;
-  }
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-#define JLN_MP_FOLD_RIGHT_SELECT(n, mp_xs, mp_rxs, mp_dup) \
-  template<>                                               \
-  struct _fold_right<n>                                    \
-  {                                                        \
-    template<template<class...> class F, class state,      \
-      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),              \
-      class... xs>                                         \
-    using f = mp_xs(F<, JLN_MP_COMMA, JLN_MP_NIL)          \
-      typename _fold_right<                                \
-        detail::n_4_or_less_8_16_64_256(sizeof...(xs))     \
-      >::template f<F, state, xs...>                       \
-    mp_dup(>, JLN_MP_NIL);                                 \
-  };
-
-  JLN_MP_GEN_XS_4_8_16_64_256(JLN_MP_FOLD_RIGHT_SELECT)
-
-#undef JLN_MP_FOLD_RIGHT_SELECT
-
-#define JLN_MP_FOLD_RIGHT_SELECT(n, mp_xs, mp_rxs, mp_dup) \
-  template<>                                               \
-  struct _fold_right<n>                                    \
-  {                                                        \
-    template<template<class...> class F, class state,      \
-      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA)>              \
-    using f = mp_xs(F<, JLN_MP_COMMA, JLN_MP_NIL)          \
-      state mp_dup(>, JLN_MP_NIL);                         \
-  };
-
-  JLN_MP_GEN_XS_1_TO_4(JLN_MP_FOLD_RIGHT_SELECT)
-
-#undef JLN_MP_FOLD_RIGHT_SELECT
-
-  template<>
-  struct _fold_right<0>
-  {
-    template<template<class...> class, class state>
-    using f = state;
-  };
-
-  template<>
-  struct _fold_right<-1>
-  {};
-}
-/// \endcond
 namespace jln::mp::smp
 {
   template<class F, class C = identity>
@@ -9268,289 +9660,6 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, fold_balanced_tree<F, C>>
   {
     using type = smp::fold_balanced_tree<sfinae<F>, sfinae<C>>;
-  };
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<bool>
-    struct _group;
-  }
-  /// \endcond
-
-  /// \ingroup group
-
-  /// Groups adjacent elements that respect a predicate.
-  /// \semantics
-  ///   \code
-  ///   call<group<same<>>,
-  ///     void, void, int, void
-  ///   > = list<
-  ///     list<void, void>,
-  ///     list<int>,
-  ///     list<void>
-  ///   >
-  ///   \endcode
-  /// \treturn \sequence
-  template<class Cmp, class C = listify>
-  struct group_by
-  {
-    template<class... xs>
-    using f = typename detail::_group<sizeof...(xs) != 0>
-      ::template f<C, Cmp, xs...>;
-  };
-
-  template<class C = listify>
-  using group = group_by<same<>, C>;
-
-  namespace emp
-  {
-    template<class L, class Cmp, class C = mp::listify>
-    using group_by = unpack<L, mp::group_by<Cmp, C>>;
-
-    template<class L, class C = mp::listify>
-    using group = unpack<L, mp::group<C>>;
-  }
-}
-
-
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template <bool>
-    struct _split;
-
-    inline constexpr int_ split_keep = 0;
-    inline constexpr int_ split_after = 1;
-    inline constexpr int_ split_before = 2;
-    inline constexpr int_ split_skip = 3;
-    // inline constexpr int_ split_na = 4;
-  }
-  /// \endcond
-
-  /// \ingroup group
-
-  /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
-  /// \semantics
-  ///   \code
-  ///   call<split_if<is<void>, _0, _1, _2, _0, _3> == list<
-  ///     list<>,
-  ///     list<_1, _2>,
-  ///     list<_3>
-  ///   >
-  ///   \endcode
-  /// \treturn \sequence of \list
-  /// \see split_before_if, split_after_if
-  template<class Pred = identity, class C = listify>
-  struct split_if
-  {
-    template <class... xs>
-    using f = typename detail::_split<sizeof...(xs) != 0>
-      ::template f<detail::split_skip, C, Pred, xs...>;
-  };
-
-  template<class x, class C = listify>
-  using split = split_if<is<x>, C>;
-
-  namespace emp
-  {
-    template<class L, class Pred = mp::identity, class C = mp::listify>
-    using split_if = unpack<L, mp::split_if<Pred, C>>;
-
-    template<class L, class x, class C = mp::listify>
-    using split = unpack<L, mp::split<x, C>>;
-  }
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template <class x, class state>
-  struct split_state;
-
-  template<class x, class... Ls, class... xs>
-  struct split_state<list<number<split_keep>, x>, list<list<xs...>, Ls...>>
-  {
-    using type = list<list<x, xs...>, Ls...>;
-  };
-
-  template<class x, class... Ls, class... xs>
-  struct split_state<list<number<split_after>, x>, list<list<xs...>, Ls...>>
-  {
-    using type = list<list<x>, list<xs...>, Ls...>;
-  };
-
-  template<class x, class... Ls, class... xs>
-  struct split_state<list<number<split_before>, x>, list<list<xs...>, Ls...>>
-  {
-    using type = list<list<>, list<x, xs...>, Ls...>;
-  };
-
-  template<class x, class... Ls, class... xs>
-  struct split_state<list<number<split_skip>, x>, list<list<xs...>, Ls...>>
-  {
-    using type = list<list<>, list<xs...>, Ls...>;
-  };
-
-  template<>
-  struct _split<true>
-  {
-    template<int_ policy, class C, class Pred, class... xs>
-    using f = typename fold_right<lift_t<split_state>, optimize_useless_unpack_t<unpack<C>>>
-      ::template f<list<list<>>,
-                   list<number<bool{Pred::template f<xs>::value}
-                     ? policy : split_keep>, xs>...
-      >;
-  };
-
-  template<>
-  struct _split<false>
-  {
-    template<int_, class C, class>
-    using f = typename C::template f<>;
-  };
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template <class, class...>
-    struct _partial;
-  }
-  /// \endcond
-
-  /// \ingroup functional
-
-  /// Invokes multiple functions each taking the parameter corresponding to its position
-  /// then calls \c C with the results and the rest of the parameters.
-  /// \pre `sizeof...(xs) >= sizeof...(Fs)`
-  /// \semantics
-  ///   \code
-  ///   partial<F,G,C>::f<a,b,c,d> == C::f<F::f<a>, G::f<b>, c, d>
-  ///   \endcode
-  /// \treturn \value
-  /// \see each, tee, on
-#ifdef JLN_MP_DOXYGENATING
-  template <class... Fs, class C>
-  struct partial
-  {
-    template<class... xs>
-    using f = /* unspecified */;
-  };
-#else
-  template <class... Fs>
-  struct partial
-  : rotate<number<-1>, lift<detail::_partial>>
-  ::template f<Fs...>
-  {};
-#endif
-
-  /// \cond
-  template <class C>
-  struct partial<C>
-  {
-    template <class... xs>
-    using f = call<C, xs...>;
-  };
-
-  template <class F, class C>
-  struct partial<F, C>
-  {
-    template <class x, class... xs>
-    using f = call<C, call<F, x>, xs...>;
-  };
-
-  template <class F0, class F1, class C>
-  struct partial<F0, F1, C>
-  {
-    template <class x0, class x1, class... xs>
-    using f = call<C, call<F0, x0>, call<F1, x1>, xs...>;
-  };
-
-  template <class F0, class F1, class F2, class C>
-  struct partial<F0, F1, F2, C>
-  {
-    template <class x0, class x1, class x2, class... xs>
-    using f = call<C, call<F0, x0>, call<F1, x1>, call<F2, x2>, xs...>;
-  };
-  /// \endcond
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template <class C, class... Fs>
-  struct _partial
-  {
-    template<class... xs>
-    using f = typename _join_select<2>::f<
-      C,
-      typename take_front_c<sizeof...(Fs), _each<listify, Fs...>>::template f<xs...>,
-      typename drop_front_c<sizeof...(Fs)>::template f<xs...>
-    >::type;
-  };
-} // namespace jln::mp
-/// \endcond
-/// \cond
-namespace jln::mp::detail
-{
-  template<class x, class C>
-  using _group_insert_x = partial<unpack<push_front<x>>, C>;
-
-  template<class...>
-  struct _group_impl;
-
-  template<class C, class Cmp, class x, class... xs, class... ys>
-  struct _group_impl<C, Cmp, x, list<ys...>, xs...>
-  {
-    using type = typename fold_right<lift_t<split_state>, unpack<_group_insert_x<x, C>>>
-      ::template f<list<list<>>,
-                   list<number<Cmp::template f<ys, xs>::value
-                     ? split_keep : split_before>, xs>...
-      >;
-  };
-
-  template<class... ys>
-  struct _smp_group_impl
-  {
-    template<class C, class Cmp, class x, class... xs>
-    using f = typename fold_right<lift_t<split_state>, unpack<_group_insert_x<x, C>>>
-      ::template f<list<list<>>,
-                   list<number<Cmp::template f<ys, xs>::value
-                     ? split_keep : split_before>, xs>...
-      >;
-  };
-
-  template<class C, class Cmp, class TC, class FC, class x, class... xs, class... ys>
-  struct _group_impl<C, try_<Cmp, TC, FC>, x, list<ys...>, xs...>
-  {
-    using type = typename try_<_smp_group_impl<ys...>>
-      ::template f<C, try_<Cmp, TC, FC>, x, xs...>;
-  };
-
-  template<>
-  struct _group<true>
-  {
-    template<class C, class Cmp, class x, class... xs>
-    using f = typename _group_impl<
-      C, Cmp, x,
-      typename take_front_c<sizeof...(xs)>::template f<x, xs...>,
-      xs...
-    >::type;
-  };
-
-  template<>
-  struct _group<false>
-  {
-    template<class C, class>
-    using f = typename C::template f<>;
   };
 }
 /// \endcond
@@ -14589,7 +14698,7 @@ namespace jln::mp
   /// The split value is inserted at the end of the previous list.
   /// \semantics
   ///   \code
-  ///   call<split_after_if<is<void>, _0, _1, _2, _0, _3> == list<
+  ///   call<split_after_if<is<_0>, _0, _1, _2, _0, _3> == list<
   ///     list<_0>,
   ///     list<_1, _2, _0>,
   ///     list<_3>
@@ -14723,7 +14832,7 @@ namespace jln::mp
   /// The split value is inserted at the beginning of the following list.
   /// \semantics
   ///   \code
-  ///   call<split_before_if<is<void>, _0, _1, _2, _0, _3> == list<
+  ///   call<split_before_if<is<_0>, _0, _1, _2, _0, _3> == list<
   ///     list<>,
   ///     list<_0, _1, _2>,
   ///     list<_0, _3>
