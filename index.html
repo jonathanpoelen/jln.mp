@@ -205,6 +205,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#algorithm/contains.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">contains</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/copy.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">copy</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/count.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">count</span><span class="ext">.hpp</span></a></li>
+<li><a href="#algorithm/counter.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">counter</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/disjunction.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">disjunction</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/ends_with.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">ends_with</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/flatten.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">flatten</span><span class="ext">.hpp</span></a></li>
@@ -367,6 +368,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#algorithm/contains.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">contains</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/copy.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">copy</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/count.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">count</span><span class="ext">.hpp</span></a></li>
+<li><a href="#algorithm/counter.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">counter</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/disjunction.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">disjunction</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/drop_while.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">drop_while</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/ends_with.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">ends_with</span><span class="ext">.hpp</span></a></li>
@@ -524,6 +526,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#mp::copy_if" class="index_link">copy_if</a></li>
 <li><a href="#mp::count" class="index_link">count</a></li>
 <li><a href="#mp::count_if" class="index_link">count_if</a></li>
+<li><a href="#mp::counter" class="index_link">counter</a></li>
 <li><a href="#mp::disjunction" class="index_link">disjunction</a></li>
 <li><a href="#mp::ends_with" class="index_link">ends_with</a></li>
 <li><a href="#mp::flatten" class="index_link">flatten</a></li>
@@ -1028,6 +1031,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#mp::copy_if" class="index_link">copy_if</a></li>
 <li><a href="#mp::count" class="index_link">count</a></li>
 <li><a href="#mp::count_if" class="index_link">count_if</a></li>
+<li><a href="#mp::counter" class="index_link">counter</a></li>
 </ul></li><li id="g4__D" class="index_group"><a class="index_cat" href="#g4__D">D</a><ul class="subindex_list func_sublist">
 <li><a href="#mp::dec" class="index_link">dec</a></li>
 <li><a href="#mp::disjunction" class="index_link">disjunction</a></li>
@@ -1421,6 +1425,8 @@ from the beginning to the end.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::copy">copy</a><span class="o">&lt;</span>x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>Copies all occurence of a <a href="#d_value">value</a>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::count_if">count_if</a><span class="o">&lt;</span>Pred<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Counts all elements that satisfy a predicate.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::count">count</a><span class="o">&lt;</span>x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Counts all elements identical to a <a href="#d_value">value</a>.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::counter">counter</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Counts all distinct elements and returns a list of pairs containing
+the repeat count and the type.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::disjunction">disjunction</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>X<span class="p">...</span><span class="o">></span></code></td><td>Perform a logical AND on the sequence of value.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::disjunction">disjunction</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>X<span class="p">...</span><span class="o">></span></code></td><td>Perform a logical OR on the sequence of value.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::ends_with">ends_with</a><span class="o">&lt;</span>Seq<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Checks if the <a href="#d_sequence">sequence</a> ends with the given prefix.</td></tr>
@@ -2056,6 +2062,18 @@ from the beginning to the end.</p><p>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::transform">transform</a><span class="o">&lt;</span><a href="#mp::is">is</a><span class="o">&lt;</span>x<span class="o">></span><span class="p">,</span> <a href="#mp::add0">add0</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span></code></div><div class="group__emp">
 <h3 class="emp" id="emp::count_if"><a href="#emp::count_if" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>count_if<span class="o">&lt;</span>L<span class="p">,</span> Pred<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">mp<span class="p">::</span>identity</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::count_if">mp<span class="p">::</span>count_if</a><span class="o">&lt;</span>Pred<span class="p">,</span> C<span class="o">></span><span class="o">></span></code></h3>
 <h3 class="emp" id="emp::count"><a href="#emp::count" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>count<span class="o">&lt;</span>L<span class="p">,</span> x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">mp<span class="p">::</span>identity</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::count">mp<span class="p">::</span>count</a><span class="o">&lt;</span>x<span class="p">,</span> C<span class="o">></span><span class="o">></span></code></h3>
+</div>
+</div>
+<h2 class="file" id="algorithm/counter.hpp"><a href="#algorithm/counter.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/counter.hpp></h2><div class="group__file">
+<h3 id="mp::counter"><a href="#mp::counter" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">counter<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
+<p>Return: <a href="#d_sequence">sequence</a> of <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code> of <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code> / type
+</p><p>Counts all distinct elements and returns a list of pairs containing
+the repeat count and the type.</p><p>
+Elements are sorted in order of first appearance.
+</p><div class="InfoBox"><h4 class="InfoBox-title">Semantics</h4>
+<p>  <code class="blockcode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span><a href="#mp::counter">counter</a><span class="o">&lt;</span><span class="o">></span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">char</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">double</span><span class="o">></span> <span class="o">=</span><span class="o">=</span> <a href="#mp::list">list</a><span class="o">&lt;</span><a href="#mp::list">list</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">3</span><span class="o">></span><span class="p">,</span> <span class="kt">int</span><span class="o">></span><span class="p">,</span> <a href="#mp::list">list</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">1</span><span class="o">></span><span class="p">,</span> <span class="kt">char</span><span class="o">></span><span class="p">,</span> <a href="#mp::list">list</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">2</span><span class="o">></span><span class="p">,</span> <span class="kt">double</span><span class="o">></span><span class="o">></span></code>
+</p></div><div class="group__emp">
+<h3 class="emp" id="emp::counter"><a href="#emp::counter" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>counter<span class="o">&lt;</span>L<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">mp<span class="p">::</span>listify</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::counter">mp<span class="p">::</span>counter</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span></code></h3>
 </div>
 </div>
 <h2 class="file" id="algorithm/conjunction.hpp"><a href="#algorithm/conjunction.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/conjunction.hpp></h2><div class="group__file">
