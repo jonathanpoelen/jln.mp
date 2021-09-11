@@ -12,6 +12,7 @@
 #include "src/algorithm/contains.cpp"
 #include "src/algorithm/copy.cpp"
 #include "src/algorithm/count.cpp"
+#include "src/algorithm/counter.cpp"
 #include "src/algorithm/disjunction.cpp"
 #include "src/algorithm/drop_while.cpp"
 #include "src/algorithm/ends_with.cpp"
