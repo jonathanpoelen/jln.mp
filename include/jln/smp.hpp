@@ -8846,6 +8846,123 @@ namespace jln::mp::smp
 }
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    struct counter_inc;
+    struct counter_push;
+    struct counter_impl;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Counts all distinct elements and returns a list of pairs containing
+  /// the repeat count and the type.
+  /// Elements are sorted in order of first appearance.
+  /// \semantics
+  ///   \code
+  ///   call<counter<>, int, int, char, double, int, double> == list<list<number<3>, int>, list<number<1>, char>, list<number<2>, double>>
+  ///   \endcode
+  /// \treturn \sequence of \list of \number / type
+  template<class C = listify>
+  struct counter : push_front<list<list<>, list<>>, fold_left<detail::counter_impl, unpack<zip<C>>>>
+  {
+  #ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f;
+  #endif
+  };
+
+  namespace emp
+  {
+    template<class L, class C = mp::listify>
+    using counter = unpack<L, mp::counter<C>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  struct counter_inc_first
+  {
+    template<class n, class... ns>
+    using f = list<number<n::value + 1>, ns...>;
+  };
+
+  template<std::size_t N>
+  struct counter_inc_impl
+  {
+    template<class x, class... xs>
+    using elements = list<xs...>;
+
+    template<class... ints>
+    using indexes = typename _join_select<2>::f<
+      listify,
+      typename take_front<number<sizeof...(ints) - N>>::template f<ints...>,
+      typename drop_front<number<sizeof...(ints) - N>, counter_inc_first>::template f<ints...>
+    >::type;
+  };
+
+  struct counter_inc
+  {
+    template<class N>
+    using f = counter_inc_impl<N::value>;
+  };
+
+  struct counter_push
+  {
+    template<class x, class... xs>
+    using elements = list<xs..., x>;
+
+    template<class... ints>
+    using indexes = list<ints..., number<1>>;
+  };
+
+  template<class>
+  struct counter_next;
+
+  template<class... xs, class... ints>
+  struct counter_next<list<list<ints...>, list<xs...>>>
+  {
+    template<class M, class x>
+    using next = list<
+      typename M::template indexes<ints...>,
+      typename M::template elements<x, xs...>
+    >;
+
+    template<class x>
+    using f = next<
+      typename find_if<is<x>, size<detail::counter_inc>, always<detail::counter_push>>
+      ::template f<xs...>,
+      x
+    >;
+  };
+
+  struct counter_impl
+  {
+    template<class L, class x>
+    using f = typename counter_next<L>::template f<x>;
+  };
+}
+/// \endcond
+namespace jln::mp::smp
+{
+  template<class C = listify>
+  using counter = contract<mp::counter<assume_lists<C>>>;
+}
+
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, counter<C>>
+  {
+    using type = smp::counter<sfinae<C>>;
+  };
+}
+namespace jln::mp
+{
   /// \ingroup algorithm
 
   /// Perform a logical OR on the sequence of value.
