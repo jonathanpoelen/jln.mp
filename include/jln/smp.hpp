@@ -2211,7 +2211,7 @@ namespace jln::mp::detail
     ;
   }
 
-  constexpr unsigned n_8_or_more_16_32_64_128_256(unsigned n)
+  constexpr unsigned n_8_or_less_16_32_64_128_256(unsigned n)
   {
     return n <= 8 ? n
          : n <= 16 ? 16
@@ -5541,7 +5541,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::drop_while_impl<
       typename detail::_drop_while<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
       >::template f<0, Pred, xs...>
     >::template f<C, xs...>;
   };
@@ -5651,7 +5651,7 @@ namespace jln::mp::detail
           consumed+sizeof...(xs), Pred,
           JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>
       ::template f<
-          _drop_while<n_8_or_more_16_32_64_128_256(sizeof...(xs)), true>,
+          _drop_while<n_8_or_less_16_32_64_128_256(sizeof...(xs)), true>,
           consumed, Pred, xs...>;
   };
 
@@ -5669,7 +5669,7 @@ namespace jln::mp::detail
           consumed+sizeof...(xs), Pred,                                   \
           xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>                       \
       ::template f<                                                       \
-          _drop_while<n_8_or_more_16_32_64_128_256(sizeof...(xs)), true>, \
+          _drop_while<n_8_or_less_16_32_64_128_256(sizeof...(xs)), true>, \
           consumed, Pred, xs...>;                                         \
   }
 
@@ -5704,7 +5704,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::find_if_impl<
       typename detail::_drop_while<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
       >::template f<0, detail::to_not_fn_t<Pred>, xs...>
     >::template f<TC, FC, xs...>;
   };
@@ -5771,7 +5771,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::index_if_impl<
       typename detail::_drop_while<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
       >::template f<0, detail::to_not_fn_t<Pred>, xs...>
     >::template f<TC, FC, xs...>;
   };
@@ -5841,7 +5841,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::find_if_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), false
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
       >::template f<sizeof...(xs), Pred, xs...>
     >::template f<TC, FC, xs...>;
   };
@@ -5859,7 +5859,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::search_before_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), false
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
       >::template f<sizeof...(xs), Pred, xs...>
     >::template f<TC, FC, xs...>;
   };
@@ -5876,7 +5876,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::search_before_extended_by_n_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), false
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
       >::template f<sizeof...(xs), Pred, xs...>
     >::template f<TC, FC, ExtendedByN, xs...>;
   };
@@ -5892,7 +5892,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::find_if_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(
+        detail::n_8_or_less_16_32_64_128_256(
           sizeof...(xs) > StopWhenAtLeast::value ? sizeof...(xs) - StopWhenAtLeast::value : 0
         ), false
       >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), Pred, xs...>
@@ -5912,7 +5912,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::search_before_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(
+        detail::n_8_or_less_16_32_64_128_256(
           sizeof...(xs) > StopWhenAtLeast::value ? sizeof...(xs) - StopWhenAtLeast::value : 0
         ), false
       >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), Pred, xs...>
@@ -5933,7 +5933,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::search_before_extended_by_n_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(
+        detail::n_8_or_less_16_32_64_128_256(
           sizeof...(xs) > StopWhenAtLeast::value ? sizeof...(xs) - StopWhenAtLeast::value : 0
         ), false
       >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), Pred, xs...>
@@ -5953,7 +5953,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::index_if_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), false
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
       >::template f<sizeof...(xs), Pred, xs...>
     >::template f<TC, FC, xs...>;
   };
@@ -6272,7 +6272,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::index_if_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(
+        detail::n_8_or_less_16_32_64_128_256(
           sizeof...(xs) > sizeof...(Ts)+1 ? sizeof...(xs) - sizeof...(Ts) - 1 : 0
         ), false
       >::template f<sizeof...(xs) - sizeof...(Ts) - 1u, starts_with<list<T, U, Ts...>, C>, xs...>
@@ -6307,7 +6307,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::index_if_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(
+        detail::n_8_or_less_16_32_64_128_256(
           sizeof...(xs) > sizeof...(Ts)+1 ? sizeof...(xs) - sizeof...(Ts) - 1 : 0
         ), false
       >::template f<sizeof...(xs) - sizeof...(Ts) - 1u, ends_with<list<T, U, Ts...>, C>, xs...>
@@ -6422,7 +6422,7 @@ namespace jln::mp::detail
       ::template f<7, Pred,
                    JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA),
                    xs...>
-      ::template f<_search<n_8_or_more_16_32_64_128_256(remaining-8), false>,
+      ::template f<_search<n_8_or_less_16_32_64_128_256(remaining-8), false>,
                    remaining-8, Pred, xs...>;
   };
 
@@ -6437,7 +6437,7 @@ namespace jln::mp::detail
       class... xs>                                                            \
     using f = typename _search<m, false>                                      \
       ::template f<m, Pred, xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...>  \
-      ::template f<_search<n_8_or_more_16_32_64_128_256(remaining-m), false>, \
+      ::template f<_search<n_8_or_less_16_32_64_128_256(remaining-m), false>, \
                    remaining-m, Pred, xs...>;                                 \
   }
 
@@ -10424,7 +10424,7 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = std::is_same<_drop_while_continue, typename _drop_while<
-      n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+      n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
     >::template f<0, Pred, xs...>>;
   };
 
@@ -10433,7 +10433,7 @@ namespace jln::mp::detail
   {
     template<class x>
     using f = std::is_same<_drop_while_continue, typename _drop_while<
-      n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+      n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
     >::template f<0, push_back<x, NotEqual>, xs...>>;
   };
 
@@ -10466,7 +10466,7 @@ namespace jln::mp::detail
   {
     template<class NotEqual, class seq0, class... seqs>
     using f = std::is_same<_drop_while_continue, typename _drop_while<
-      n_8_or_more_16_32_64_128_256(sizeof...(seqs)), true
+      n_8_or_less_16_32_64_128_256(sizeof...(seqs)), true
     >::template f<
       0,
       unpack<to_is_disjoint_impl<NotEqual, seq0>>,
@@ -10827,7 +10827,7 @@ namespace jln::mp::detail
   {
     template<class x>
     using f = number<!std::is_same<_drop_while_continue, typename _drop_while<
-      n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+      n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
     >::template f<0, push_back<x, NotEqual>, xs...>>::value>;
   };
 
@@ -10867,7 +10867,7 @@ namespace jln::mp::detail
   {
     template<class NotEqual, class seq0, class... seqs>
     using f = number<std::is_same<_drop_while_continue, typename _drop_while<
-      n_8_or_more_16_32_64_128_256(sizeof...(seqs)), true
+      n_8_or_less_16_32_64_128_256(sizeof...(seqs)), true
     >::template f<
       0,
       unpack<to_is_subset_impl<NotEqual, seq0>>,
@@ -11045,7 +11045,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::take_while_impl<
       typename detail::_drop_while<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
       >::template f<0, Pred, xs...>
     >::template f<C, xs...>;
   };
@@ -13410,7 +13410,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_scan_left<
-      detail::n_8_or_more_16_32_64_128_256(sizeof...(xs))
+      detail::n_8_or_less_16_32_64_128_256(sizeof...(xs))
     >::template f<sizeof...(xs), C, F::template f, xs...>;
   };
 
@@ -13581,7 +13581,7 @@ namespace jln::mp::detail
   //       class _0, {args},
   //       class... xs>
   //     using f = typename g<F, {ps}>
-  //       ::template f<remaining-{n-1}, _scan_left<n_8_or_more_16_32_64_128_256(remaining-{n-1})>, C, F, xs...>;
+  //       ::template f<remaining-{n-1}, _scan_left<n_8_or_less_16_32_64_128_256(remaining-{n-1})>, C, F, xs...>;
   //   }};''')
 
   template<>
@@ -13599,7 +13599,7 @@ namespace jln::mp::detail
       class _1, class _2, class _3, class _4, class _5, class _6, class _7,
       class... xs>
     using f = typename g<F, _0, _1, _2, _3, _4, _5, _6, _7>::template f<
-      remaining - 7, _scan_left<n_8_or_more_16_32_64_128_256(remaining - 7)>,
+      remaining - 7, _scan_left<n_8_or_less_16_32_64_128_256(remaining - 7)>,
       C, F, xs...>;
   };
 
@@ -13628,7 +13628,7 @@ namespace jln::mp::detail
     using f = typename g<
       F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15
     >::template f<remaining - 15,
-                  _scan_left<n_8_or_more_16_32_64_128_256(remaining - 15)>,
+                  _scan_left<n_8_or_less_16_32_64_128_256(remaining - 15)>,
                   C, F, xs...>;
   };
 
@@ -13670,7 +13670,7 @@ namespace jln::mp::detail
       _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30,
       _31
     >::template f<remaining - 31,
-                  _scan_left<n_8_or_more_16_32_64_128_256(remaining - 31)>,
+                  _scan_left<n_8_or_less_16_32_64_128_256(remaining - 31)>,
                   C, F, xs...>;
   };
 
@@ -13737,7 +13737,7 @@ namespace jln::mp::detail
       _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
       _61, _62,
       _63>::template f<remaining - 63,
-                       _scan_left<n_8_or_more_16_32_64_128_256(remaining - 63)>,
+                       _scan_left<n_8_or_less_16_32_64_128_256(remaining - 63)>,
                        C, F, xs...>;
   };
 
@@ -13861,7 +13861,7 @@ namespace jln::mp::detail
       _105, _106, _107, _108, _109, _110, _111, _112, _113, _114, _115, _116,
       _117, _118, _119, _120, _121, _122, _123, _124, _125, _126, _127>::
       template f<remaining - 127,
-                 _scan_left<n_8_or_more_16_32_64_128_256(remaining - 127)>,
+                 _scan_left<n_8_or_less_16_32_64_128_256(remaining - 127)>,
                  C, F, xs...>;
   };
 }
@@ -13933,7 +13933,7 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename _scan_right<
-      detail::n_8_or_more_16_32_64_128_256(sizeof...(xs))
+      detail::n_8_or_less_16_32_64_128_256(sizeof...(xs))
     >::template f<sizeof...(xs), C, F::template f, xs...>;
   };
 
@@ -14078,7 +14078,7 @@ namespace jln::mp::detail
   //       class _0, {args},
   //       class... xs>
   //     using f = typename g<F, {ps}>
-  //       ::template f<remaining-{n-1}, _scan_right<n_8_or_more_16_32_64_128_256(remaining-{n-1})>, C, F, xs..
+  //       ::template f<remaining-{n-1}, _scan_right<n_8_or_less_16_32_64_128_256(remaining-{n-1})>, C, F, xs..
   // .>;
   //   }};''')
 
@@ -14094,7 +14094,7 @@ namespace jln::mp::detail
              class _1, class _2, class _3, class _4, class _5, class _6,
              class _7, class... xs>
     using f = typename g<F, _0, _1, _2, _3, _4, _5, _6, _7>::template f<
-        remaining - 7, _scan_right<n_8_or_more_16_32_64_128_256(remaining - 7)>,
+        remaining - 7, _scan_right<n_8_or_less_16_32_64_128_256(remaining - 7)>,
         C, F, xs...>;
   };
 
@@ -14119,7 +14119,7 @@ namespace jln::mp::detail
     using f = typename g<F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12,
                          _13, _14, _15>::
         template f<remaining - 15,
-                   _scan_right<n_8_or_more_16_32_64_128_256(remaining - 15)>, C,
+                   _scan_right<n_8_or_less_16_32_64_128_256(remaining - 15)>, C,
                    F, xs...>;
   };
 
@@ -14158,7 +14158,7 @@ namespace jln::mp::detail
                          _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23,
                          _24, _25, _26, _27, _28, _29, _30, _31>::
         template f<remaining - 31,
-                   _scan_right<n_8_or_more_16_32_64_128_256(remaining - 31)>, C,
+                   _scan_right<n_8_or_less_16_32_64_128_256(remaining - 31)>, C,
                    F, xs...>;
   };
 
@@ -14223,7 +14223,7 @@ namespace jln::mp::detail
                          _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56,
                          _57, _58, _59, _60, _61, _62, _63>::
         template f<remaining - 63,
-                   _scan_right<n_8_or_more_16_32_64_128_256(remaining - 63)>, C,
+                   _scan_right<n_8_or_less_16_32_64_128_256(remaining - 63)>, C,
                    F, xs...>;
   };
 
@@ -14345,7 +14345,7 @@ namespace jln::mp::detail
         _105, _106, _107, _108, _109, _110, _111, _112, _113, _114, _115, _116,
         _117, _118, _119, _120, _121, _122, _123, _124, _125, _126, _127>::
         template f<remaining - 127,
-                   _scan_right<n_8_or_more_16_32_64_128_256(remaining - 127)>, C,
+                   _scan_right<n_8_or_less_16_32_64_128_256(remaining - 127)>, C,
                    F, xs...>;
   };
 }
@@ -17760,7 +17760,7 @@ namespace jln::mp
   struct iterate
   {
     template<class x>
-    using f = typename detail::_iterate<detail::n_8_or_more_16_32_64_128_256(n::value)>
+    using f = typename detail::_iterate<detail::n_8_or_less_16_32_64_128_256(n::value)>
       ::template f<n::value, C, F, x>;
   };
 
@@ -17811,7 +17811,7 @@ namespace jln::mp::detail
   struct _iterate<n>                                               \
   {                                                                \
     template<uint_ i, class C, class F, class x>                   \
-    using f = typename _iterate<n_8_or_more_16_32_64_128_256(i-n)> \
+    using f = typename _iterate<n_8_or_less_16_32_64_128_256(i-n)> \
       ::template f<i-n, C, F,                                      \
         mp_rep(typename F::template f<, JLN_MP_NIL)                \
         x                                                          \
