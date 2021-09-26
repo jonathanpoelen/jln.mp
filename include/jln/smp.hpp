@@ -11024,6 +11024,54 @@ namespace jln::mp
 }
 
 
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class>
+    struct take_while_impl;
+  }
+  /// \endcond
+
+  /// \ingroup search
+
+  /// Extracts the first elements of a \sequence that satisfy a \predicate.
+  /// \treturn \sequence
+  /// \see take_front, take_back, drop_while
+  template<class Pred, class C = listify>
+  struct take_while
+  {
+    template<class... xs>
+    using f = typename detail::take_while_impl<
+      typename detail::_drop_while<
+        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+      >::template f<0, Pred, xs...>
+    >::template f<C, xs...>;
+  };
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct take_while_impl<_drop_while_continue>
+  {
+    template<class C, class... xs>
+    using f = typename C::template f<xs...>;
+  };
+
+  template<std::size_t n>
+  struct take_while_impl<_drop_while_result<n>>
+  {
+    template<class C, class... xs>
+    using f = typename take_front<number<sizeof...(xs)-n-1>, C>::template f<xs...>;
+  };
+}
+/// \encond
+// std::integer_sequence
+
 /// \cond
 namespace jln::mp::detail
 {
@@ -11067,6 +11115,7 @@ namespace jln::mp::detail
   struct _set_push_back<list<xs...>, x,
     std::enable_if_t<
 #ifdef _MSC_VER
+      // workaround for MSVC which has a broken EBO
       _is_set<xs..., x>::type::value
 #else
       sizeof(inherit<std::make_index_sequence<sizeof...(xs)+1>, xs..., x>) == 1
@@ -11078,20 +11127,10 @@ namespace jln::mp::detail
 
   struct _set_cmp_push_back_impl
   {
-#ifdef __clang__
     template<class Cmp, class x, class... xs>
     using f = typename conditional_c<
-      (!Cmp::template f<xs, x>::value && ...)
+      take_while<push_back<x, Cmp>, size<>>::template f<xs...>::value == 0
     >::template f<list<xs..., x>, list<xs...>>;
-#else
-    template<class> using to_false = false_;
-
-    template<class Cmp, class x, class... xs>
-    using f = typename conditional_c<std::is_same<
-      list<number<Cmp::template f<xs, x>::value ? 1 : 0>...>,
-      list<to_false<xs>...>
-    >::value>::template f<list<xs..., x>, list<xs...>>;
-#endif
   };
 
   template<class Cmp>
@@ -11214,6 +11253,7 @@ namespace jln::mp::detail
   {
     template<class... xs>
 #ifdef _MSC_VER
+    // workaround for MSVC which has a broken EBO
     using f = JLN_MP_DCALL_XS(xs, C, typename _is_set<xs...>::type);
 #else
     using f = JLN_MP_DCALL_XS(xs, C,
@@ -15212,52 +15252,6 @@ namespace jln::mp
   };
   /// \endcond
 }
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class>
-    struct take_while_impl;
-  }
-  /// \endcond
-
-  /// \ingroup search
-
-  /// Extracts the first elements of a \sequence that satisfy a \predicate.
-  /// \treturn \sequence
-  /// \see take_front, take_back, drop_while
-  template<class Pred, class C = listify>
-  struct take_while
-  {
-    template<class... xs>
-    using f = typename detail::take_while_impl<
-      typename detail::_drop_while<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
-      >::template f<0, Pred, xs...>
-    >::template f<C, xs...>;
-  };
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<>
-  struct take_while_impl<_drop_while_continue>
-  {
-    template<class C, class... xs>
-    using f = typename C::template f<xs...>;
-  };
-
-  template<std::size_t n>
-  struct take_while_impl<_drop_while_result<n>>
-  {
-    template<class C, class... xs>
-    using f = typename take_front<number<sizeof...(xs)-n-1>, C>::template f<xs...>;
-  };
-}
-/// \encond
 namespace jln::mp::smp
 {
   template<class Pred, class C = listify>
