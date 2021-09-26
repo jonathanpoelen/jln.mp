@@ -68,7 +68,7 @@ namespace jln::mp::detail
     ;
   }
 
-  constexpr unsigned n_8_or_more_16_32_64_128_256(unsigned n)
+  constexpr unsigned n_8_or_less_16_32_64_128_256(unsigned n)
   {
     return n <= 8 ? n
          : n <= 16 ? 16

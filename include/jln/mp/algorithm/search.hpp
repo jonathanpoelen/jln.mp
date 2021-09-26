@@ -34,7 +34,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::find_if_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), false
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
       >::template f<sizeof...(xs), Pred, xs...>
     >::template f<TC, FC, xs...>;
   };
@@ -52,7 +52,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::search_before_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), false
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
       >::template f<sizeof...(xs), Pred, xs...>
     >::template f<TC, FC, xs...>;
   };
@@ -69,7 +69,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::search_before_extended_by_n_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), false
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
       >::template f<sizeof...(xs), Pred, xs...>
     >::template f<TC, FC, ExtendedByN, xs...>;
   };
@@ -85,7 +85,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::find_if_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(
+        detail::n_8_or_less_16_32_64_128_256(
           sizeof...(xs) > StopWhenAtLeast::value ? sizeof...(xs) - StopWhenAtLeast::value : 0
         ), false
       >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), Pred, xs...>
@@ -105,7 +105,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::search_before_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(
+        detail::n_8_or_less_16_32_64_128_256(
           sizeof...(xs) > StopWhenAtLeast::value ? sizeof...(xs) - StopWhenAtLeast::value : 0
         ), false
       >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), Pred, xs...>
@@ -126,7 +126,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::search_before_extended_by_n_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(
+        detail::n_8_or_less_16_32_64_128_256(
           sizeof...(xs) > StopWhenAtLeast::value ? sizeof...(xs) - StopWhenAtLeast::value : 0
         ), false
       >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), Pred, xs...>
@@ -146,7 +146,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::index_if_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), false
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
       >::template f<sizeof...(xs), Pred, xs...>
     >::template f<TC, FC, xs...>;
   };
@@ -234,7 +234,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::index_if_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(
+        detail::n_8_or_less_16_32_64_128_256(
           sizeof...(xs) > sizeof...(Ts)+1 ? sizeof...(xs) - sizeof...(Ts) - 1 : 0
         ), false
       >::template f<sizeof...(xs) - sizeof...(Ts) - 1u, starts_with<list<T, U, Ts...>, C>, xs...>
@@ -269,7 +269,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::index_if_impl<
       typename detail::_search<
-        detail::n_8_or_more_16_32_64_128_256(
+        detail::n_8_or_less_16_32_64_128_256(
           sizeof...(xs) > sizeof...(Ts)+1 ? sizeof...(xs) - sizeof...(Ts) - 1 : 0
         ), false
       >::template f<sizeof...(xs) - sizeof...(Ts) - 1u, ends_with<list<T, U, Ts...>, C>, xs...>
@@ -386,7 +386,7 @@ namespace jln::mp::detail
       ::template f<7, Pred,
                    JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA),
                    xs...>
-      ::template f<_search<n_8_or_more_16_32_64_128_256(remaining-8), false>,
+      ::template f<_search<n_8_or_less_16_32_64_128_256(remaining-8), false>,
                    remaining-8, Pred, xs...>;
   };
 
@@ -401,7 +401,7 @@ namespace jln::mp::detail
       class... xs>                                                            \
     using f = typename _search<m, false>                                      \
       ::template f<m, Pred, xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...>  \
-      ::template f<_search<n_8_or_more_16_32_64_128_256(remaining-m), false>, \
+      ::template f<_search<n_8_or_less_16_32_64_128_256(remaining-m), false>, \
                    remaining-m, Pred, xs...>;                                 \
   }
 

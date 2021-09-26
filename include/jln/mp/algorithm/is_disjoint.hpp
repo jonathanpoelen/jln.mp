@@ -66,7 +66,7 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = std::is_same<_drop_while_continue, typename _drop_while<
-      n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+      n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
     >::template f<0, Pred, xs...>>;
   };
 
@@ -75,7 +75,7 @@ namespace jln::mp::detail
   {
     template<class x>
     using f = std::is_same<_drop_while_continue, typename _drop_while<
-      n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+      n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
     >::template f<0, push_back<x, NotEqual>, xs...>>;
   };
 
@@ -108,7 +108,7 @@ namespace jln::mp::detail
   {
     template<class NotEqual, class seq0, class... seqs>
     using f = std::is_same<_drop_while_continue, typename _drop_while<
-      n_8_or_more_16_32_64_128_256(sizeof...(seqs)), true
+      n_8_or_less_16_32_64_128_256(sizeof...(seqs)), true
     >::template f<
       0,
       unpack<to_is_disjoint_impl<NotEqual, seq0>>,

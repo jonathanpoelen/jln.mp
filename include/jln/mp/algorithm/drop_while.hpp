@@ -28,7 +28,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::drop_while_impl<
       typename detail::_drop_while<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
       >::template f<0, Pred, xs...>
     >::template f<C, xs...>;
   };
@@ -140,7 +140,7 @@ namespace jln::mp::detail
           consumed+sizeof...(xs), Pred,
           JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>
       ::template f<
-          _drop_while<n_8_or_more_16_32_64_128_256(sizeof...(xs)), true>,
+          _drop_while<n_8_or_less_16_32_64_128_256(sizeof...(xs)), true>,
           consumed, Pred, xs...>;
   };
 
@@ -158,7 +158,7 @@ namespace jln::mp::detail
           consumed+sizeof...(xs), Pred,                                   \
           xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>                       \
       ::template f<                                                       \
-          _drop_while<n_8_or_more_16_32_64_128_256(sizeof...(xs)), true>, \
+          _drop_while<n_8_or_less_16_32_64_128_256(sizeof...(xs)), true>, \
           consumed, Pred, xs...>;                                         \
   }
 

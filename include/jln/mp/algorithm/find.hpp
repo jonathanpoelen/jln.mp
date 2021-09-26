@@ -28,7 +28,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::find_if_impl<
       typename detail::_drop_while<
-        detail::n_8_or_more_16_32_64_128_256(sizeof...(xs)), true
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
       >::template f<0, detail::to_not_fn_t<Pred>, xs...>
     >::template f<TC, FC, xs...>;
   };
