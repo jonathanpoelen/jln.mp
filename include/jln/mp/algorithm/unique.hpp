@@ -38,9 +38,12 @@ namespace jln::mp
 
 #include <jln/mp/algorithm/same.hpp>
 #include <jln/mp/algorithm/fold_left.hpp>
+#include <jln/mp/algorithm/take_while.hpp>
 #include <jln/mp/utility/conditional.hpp>
+#include <jln/mp/list/push_back.hpp>
+#include <jln/mp/list/size.hpp>
 
-#include <utility>
+#include <utility> // std::integer_sequence
 
 /// \cond
 namespace jln::mp::detail
@@ -85,6 +88,7 @@ namespace jln::mp::detail
   struct _set_push_back<list<xs...>, x,
     std::enable_if_t<
 #ifdef _MSC_VER
+      // workaround for MSVC which has a broken EBO
       _is_set<xs..., x>::type::value
 #else
       sizeof(inherit<std::make_index_sequence<sizeof...(xs)+1>, xs..., x>) == 1
@@ -96,20 +100,10 @@ namespace jln::mp::detail
 
   struct _set_cmp_push_back_impl
   {
-#ifdef __clang__
     template<class Cmp, class x, class... xs>
     using f = typename conditional_c<
-      (!Cmp::template f<xs, x>::value && ...)
+      take_while<push_back<x, Cmp>, size<>>::template f<xs...>::value == 0
     >::template f<list<xs..., x>, list<xs...>>;
-#else
-    template<class> using to_false = false_;
-
-    template<class Cmp, class x, class... xs>
-    using f = typename conditional_c<std::is_same<
-      list<number<Cmp::template f<xs, x>::value ? 1 : 0>...>,
-      list<to_false<xs>...>
-    >::value>::template f<list<xs..., x>, list<xs...>>;
-#endif
   };
 
   template<class Cmp>

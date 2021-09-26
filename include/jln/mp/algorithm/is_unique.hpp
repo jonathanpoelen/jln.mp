@@ -44,6 +44,7 @@ namespace jln::mp::detail
   {
     template<class... xs>
 #ifdef _MSC_VER
+    // workaround for MSVC which has a broken EBO
     using f = JLN_MP_DCALL_XS(xs, C, typename _is_set<xs...>::type);
 #else
     using f = JLN_MP_DCALL_XS(xs, C,
