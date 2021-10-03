@@ -14,9 +14,10 @@ namespace jln::mp
   /// `disjunction<X1, ..., XN>::value` does not require the instantiation of
   /// `Xj::value` for j > i
   /// \treturn \bool
+  /// \see disjunction, drop_while, take_while
 #ifdef JLN_MP_DOXYGENATING
   template<class C = identity>
-  struct disjunction
+  struct conjunction
   {
     template<class... X>
     using f;
