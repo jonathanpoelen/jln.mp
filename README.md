@@ -20,22 +20,22 @@ Functions of jln.mp are used in 2 stages:
 For example, suppose we want to remove `void` from a sequence. The function to use is `jln::mp::remove`:
 
 ```cpp
-using foo = jln:mp::remove<void>;
+using remove_void = jln:mp::remove<void>;
 ```
 
 We can then apply it to our data:
 
 ```cpp
-using result = jln::mp::call<foo, int, void, double, char>;
+using result = jln::mp::call<remove_void, int, void, double, char>;
 // result == jln::mp::list<int, double, char>
 ```
 
-Now suppose that `result` must be a `std::tuple`. Rather than linking with another function, it is possible to combine them in `foo` via a continuation (`C` parameter).
+Now suppose that `result` must be a `std::tuple`. Rather than linking with another function, it is possible to combine them in `remove_void` via a continuation (`C` parameter).
 
 ```cpp
-using foo = jln:mp::remove<void, /*C=*/jln::mp::lift<std::tuple>>;
+using remove_void = jln:mp::remove<void, /*C=*/jln::mp::lift<std::tuple>>;
 
-using result = jln::mp::call<foo, int, void, double, char>;
+using result = jln::mp::call<remove_void, int, void, double, char>;
 // result == std::tuple<int, double, char>
 ```
 
@@ -45,7 +45,7 @@ The default continuations are `jln::mp::listify` which transforms a sequence int
 Jln.mp also has 2 additional namespaces:
 
 - `smp` a SFINAE compatible version of `mp`.
-- `emp` which directly returns a result without going through `jln::mp::call`. According to the function, type sequences are replaced by lists and continuations are not available.
+- `emp` which directly returns a result without going through `jln::mp::call`. According to the function, type sequences are replaced by lists and continuations are not always available.
 
 
 ## Create a function
