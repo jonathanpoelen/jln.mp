@@ -12,7 +12,6 @@ TEST()
   using namespace ut::ints;
 
   test_pack2<collapse, list<>>();
-  test_pack2<group_by, void>();
 
   using keys = emp::numbers<0, 0, 2, 2, 2, 0, 1, 0, 2, 2>;
   using result = list<list<_0, _1>, list<_2, _3, _4>, list<_5>, list<_6>, list<_7>, list<_8, _9>>;
