@@ -42,6 +42,7 @@
 #include <jln/mp/smp/algorithm/mismatch.hpp>
 #include <jln/mp/smp/algorithm/mismatch_index.hpp>
 #include <jln/mp/smp/algorithm/none_of.hpp>
+#include <jln/mp/smp/algorithm/pairwise.hpp>
 #include <jln/mp/smp/algorithm/partition.hpp>
 #include <jln/mp/smp/algorithm/permutations.hpp>
 #include <jln/mp/smp/algorithm/powerset.hpp>

@@ -40,6 +40,7 @@
 #include "src/algorithm/mismatch.cpp"
 #include "src/algorithm/mismatch_index.cpp"
 #include "src/algorithm/none_of.cpp"
+#include "src/algorithm/pairwise.cpp"
 #include "src/algorithm/partition.cpp"
 #include "src/algorithm/permutations.cpp"
 #include "src/algorithm/powerset.cpp"
