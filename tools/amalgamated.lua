@@ -87,7 +87,7 @@ table.sort(includes)
 
 embed = {
   first_comment or '',
-  '// amalgamated version of https://github.com/jonathanpoelen/jln.mp\n\n'
+  '// amalgamated version of https://github.com/jonathanpoelen/jln.mp\n\n',
   '#pragma once\n\n',
   '#ifndef JLN_MP_HPP\n',
   '#define JLN_MP_HPP\n\n',
