@@ -38,7 +38,7 @@ namespace jln::mp::detail
   template<class... Selectors>
   struct smp_compress_select<
     list<Selectors...>,
-    std::void_t<number<(0 + ... + bool{Selectors::value})>>
+    std::void_t<decltype(bool{Selectors::value})...>
   >
   {
     template<class C>
