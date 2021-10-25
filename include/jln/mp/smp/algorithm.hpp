@@ -10,6 +10,7 @@
 #include <jln/mp/smp/algorithm/collapse.hpp>
 #include <jln/mp/smp/algorithm/combine.hpp>
 #include <jln/mp/smp/algorithm/compare_with.hpp>
+#include <jln/mp/smp/algorithm/compress.hpp>
 #include <jln/mp/smp/algorithm/conjunction.hpp>
 #include <jln/mp/smp/algorithm/contains.hpp>
 #include <jln/mp/smp/algorithm/copy.hpp>

@@ -8,6 +8,7 @@
 #include "src/algorithm/collapse.cpp"
 #include "src/algorithm/combine.cpp"
 #include "src/algorithm/compare_with.cpp"
+#include "src/algorithm/compress.cpp"
 #include "src/algorithm/conjunction.cpp"
 #include "src/algorithm/contains.cpp"
 #include "src/algorithm/copy.cpp"
