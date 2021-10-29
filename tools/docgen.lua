@@ -456,7 +456,14 @@ htmlifier_init = function()
   + P'\\predicate' / '<a href="#d_predicate">sequence</a>'
   + P'\\value' / '<a href="#d_value">value</a>'
   + P'\\val' / inline_func('val')
-  + P'\\bool' / inline_func('number')
+  + P'\\bool' / (function()
+    local a = global_table['true_']
+    local b = global_table['false_']
+    return a and b
+       and (inlinecode_begin .. a .. inlinecode_end .. ' / '
+         .. inlinecode_begin .. b .. inlinecode_end)
+       or ''
+  end)()
   + P'\\typelist' / '<a href="#d_typelist">typelist</a>'
   + P'\\function' / '<a href="#d_function">function</a>'
   + P'\\metafunction' / '<a href="#d_metafunction">meta-function</a>'
