@@ -1678,12 +1678,12 @@ then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the 
 <article id="g_number">
 <h2>Group: number</h2>
 <table>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::as_bool">as_bool</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Narrowing convertion from <a href="#d_value">value</a> to <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::as_bool">as_bool</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Narrowing convertion from <a href="#d_value">value</a> to <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::as_number">as_number</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Narrowing convertion from <a href="#d_value">value</a> to <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::indices">indices</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>Replaces each element of a <a href="#d_sequence">sequence</a> by its corresponding index.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::int_">int_</a></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">std<span class="p">::</span>intmax_t</code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::uint_">uint_</a></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">std<span class="p">::</span>intmax_t</code></td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span><a href="#mp::int_">int_</a> v<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">value</code></td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span><a href="#mp::int_">int_</a> v<span class="o">></span><span class="p">::</span>value</code></td><td>= <code class="inlinecode highlight" data-lang="cpp">v</code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">1</span><span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">0</span><span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::iota_v">iota_v</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::numbers">numbers</a><span class="o">&lt;</span><span class="o">></span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>start<span class="p">,</span> <a href="#mp::count">count</a><span class="p">,</span> stride <span class="o">=</span> <a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">1</span><span class="o">></span><span class="o">></span></code></td><td>Generates a sequence of <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::int_">int_</a></code>.</td></tr>
@@ -1792,7 +1792,7 @@ then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the 
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::less_equal_than_c">less_equal_than_c</a><span class="o">&lt;</span><a href="#mp::int_">int_</a> n<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::less_equal_than">less_equal_than</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>n<span class="o">></span><span class="p">,</span> C<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::greater_than_c">greater_than_c</a><span class="o">&lt;</span><a href="#mp::int_">int_</a> n<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::greater_than">greater_than</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>n<span class="o">></span><span class="p">,</span> C<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::greater_equal_than_c">greater_equal_than_c</a><span class="o">&lt;</span><a href="#mp::int_">int_</a> n<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::greater_equal_than">greater_equal_than</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>n<span class="o">></span><span class="p">,</span> C<span class="o">></span></code></td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::to_bool">to_bool</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Converts a <a href="#d_value">value</a> to a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::to_bool">to_bool</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Converts a <a href="#d_value">value</a> to a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>.</td></tr>
 </table>
 </article>
 <article id="g_search">
@@ -1879,7 +1879,7 @@ that satisfies the <a href="#d_predicate">sequence</a> <code class="inlinecode h
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::as_val">as_val</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Converts <code class="inlinecode highlight" data-lang="cpp">x</code> to <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::val">val</a></code>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::has_value">has_value</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Checks whether <code class="inlinecode highlight" data-lang="cpp">x</code> has a value member.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_val">is_val</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Checks whether <code class="inlinecode highlight" data-lang="cpp">x</code> is a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::val">val</a></code>.</td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::val">val</a><span class="o">&lt;</span><span class="k">auto</span> v<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">value</code></td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::val">val</a><span class="o">&lt;</span><span class="k">auto</span> v<span class="o">></span><span class="p">::</span>value</code></td><td>= <code class="inlinecode highlight" data-lang="cpp">v</code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::typed_val">typed_val</a><span class="o">&lt;</span>T<span class="p">,</span> T v<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::val">val</a><span class="o">&lt;</span>v<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::val_or">val_or</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::val">val</a><span class="o">&lt;</span><span class="p">(</span><span class="nb">false</span> <span class="o">|</span><span class="o">|</span> <span class="p">...</span> <span class="o">|</span><span class="o">|</span> xs<span class="p">::</span>value<span class="p">)</span><span class="o">></span><span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::val_and">val_and</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::val">val</a><span class="o">&lt;</span><span class="p">(</span><span class="nb">true</span> <span class="o">&amp;</span><span class="o">&amp;</span> <span class="p">...</span> <span class="o">&amp;</span><span class="o">&amp;</span> xs<span class="p">::</span>value<span class="p">)</span><span class="o">></span><span class="o">></span></code></td></tr>
@@ -1986,7 +1986,7 @@ from the beginning to the end.</p><p>
 </div>
 <h2 class="file" id="algorithm/all_of.hpp"><a href="#algorithm/all_of.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/all_of.hpp></h2><div class="group__file">
 <h3 id="mp::all_of"><a href="#mp::all_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">all_of<span class="o">&lt;</span>Pred<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks whether a predicate holds for all elements of a <a href="#d_sequence">sequence</a>.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::drop_while">drop_while</a><span class="o">&lt;</span><a href="#mp::not_fn">not_fn</a><span class="o">&lt;</span><a href="#mp::not_fn">not_fn</a><span class="o">&lt;</span>Pred<span class="o">></span><span class="o">></span><span class="p">,</span> <a href="#mp::is_empty">is_empty</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span></code></div><div class="group__emp">
@@ -1995,7 +1995,7 @@ from the beginning to the end.</p><p>
 </div>
 <h2 class="file" id="algorithm/any_of.hpp"><a href="#algorithm/any_of.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/any_of.hpp></h2><div class="group__file">
 <h3 id="mp::any_of"><a href="#mp::any_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">any_of<span class="o">&lt;</span>Pred<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks whether a predicate holds for at least some element of a <a href="#d_sequence">sequence</a>.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::drop_while">drop_while</a><span class="o">&lt;</span><a href="#mp::not_fn">not_fn</a><span class="o">&lt;</span>Pred<span class="o">></span><span class="p">,</span> <a href="#mp::is_empty">is_empty</a><span class="o">&lt;</span><a href="#mp::not_">not_</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span><span class="o">></span></code></div><div class="group__emp">
@@ -2035,7 +2035,7 @@ from the beginning to the end.</p><p>
 </div>
 <h2 class="file" id="algorithm/compare_with.hpp"><a href="#algorithm/compare_with.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/compare_with.hpp></h2><div class="group__file">
 <h3 id="mp::compare_with"><a href="#mp::compare_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">compare_with<span class="o">&lt;</span>F<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;</span><span class="o">></span><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>comparison on the result of a function.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::each">each</a><span class="o">&lt;</span>F<span class="p">,</span> F<span class="p">,</span> Cmp<span class="o">></span></code></div><div class="group__emp">
@@ -2066,7 +2066,7 @@ from the beginning to the end.</p><p>
 </div>
 <h2 class="file" id="algorithm/conjunction.hpp"><a href="#algorithm/conjunction.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/conjunction.hpp></h2><div class="group__file">
 <h3 id="mp::conjunction"><a href="#mp::conjunction" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">conjunction<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>X<span class="p">...</span><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Perform a logical AND on the sequence of value.</p><p>
 Conjunction is short-circuiting: if there is a template type argument Xi
 with <code class="inlinecode highlight" data-lang="cpp">Xi<span class="p">::</span>value <span class="o">=</span><span class="o">=</span> <span class="nb">false</span></code>, then instantiating
@@ -2079,7 +2079,7 @@ with <code class="inlinecode highlight" data-lang="cpp">Xi<span class="p">::</sp
 </div>
 <h2 class="file" id="algorithm/contains.hpp"><a href="#algorithm/contains.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/contains.hpp></h2><div class="group__file">
 <h3 id="mp::contains"><a href="#mp::contains" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">contains<span class="o">&lt;</span>x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks whether a <a href="#d_value">value</a> is contained in a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code>.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::any_of">any_of</a><span class="o">&lt;</span><a href="#mp::is">is</a><span class="o">&lt;</span>x<span class="o">></span><span class="p">,</span> C<span class="o">></span></code></div><div class="group__emp">
@@ -2126,7 +2126,7 @@ Elements are sorted in order of first appearance.
 </div>
 <h2 class="file" id="algorithm/disjunction.hpp"><a href="#algorithm/disjunction.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/disjunction.hpp></h2><div class="group__file">
 <h3 id="mp::disjunction"><a href="#mp::disjunction" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">disjunction<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>X<span class="p">...</span><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Perform a logical OR on the sequence of value.</p><p>
 Disjunction is short-circuiting: if there is a template type argument Xi
 with <code class="inlinecode highlight" data-lang="cpp">Xi<span class="p">::</span>value !<span class="o">=</span> <span class="nb">false</span></code>, then instantiating
@@ -2139,7 +2139,7 @@ with <code class="inlinecode highlight" data-lang="cpp">Xi<span class="p">::</sp
 </div>
 <h2 class="file" id="algorithm/ends_with.hpp"><a href="#algorithm/ends_with.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/ends_with.hpp></h2><div class="group__file">
 <h3 id="mp::ends_with"><a href="#mp::ends_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">ends_with<span class="o">&lt;</span>Seq<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks if the <a href="#d_sequence">sequence</a> ends with the given prefix.</p><p>
 </p><aside>See: <a href="#mp::starts_with">starts_with</a>
 </aside><h3><a href="#mp::ends_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">ends_with<span class="o">&lt;</span><a href="#mp::list">list</a><span class="o">&lt;</span>Ts<span class="p">...</span><span class="o">></span><span class="p">,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
@@ -2278,7 +2278,7 @@ Returns <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">
 </div>
 <h2 class="file" id="algorithm/lexicographical_compare.hpp"><a href="#algorithm/lexicographical_compare.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/lexicographical_compare.hpp></h2><div class="group__file">
 <h3 id="mp::lexicographical_compare"><a href="#mp::lexicographical_compare" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">lexicographical_compare<span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;</span><span class="o">></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks if <code class="inlinecode highlight" data-lang="cpp">seq1</code>  is lexicographically less than <code class="inlinecode highlight" data-lang="cpp">seq2</code>.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::mismatch">mismatch</a><span class="o">&lt;</span><span class="c1">/* implementation defined */</span><span class="p">,</span> <a href="#mp::lift">lift</a><span class="o">&lt;</span><span class="c1">/* implementation defined */</span><span class="o">></span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>Cmp<span class="p">,</span> seq1<span class="p">,</span> seq2<span class="o">></span><span class="o">></span></code></div><h3 id="mp::lexicographical_compare2"><a href="#mp::lexicographical_compare2" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">lexicographical_compare2<span class="o">&lt;</span>CmpLess <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;</span><span class="o">></span><span class="p">,</span> CmpEq <span class="o">=</span> <a href="#mp::equal">equal</a><span class="o">&lt;</span><span class="o">></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seq1<span class="p">,</span> seq2<span class="o">></span></code></h3>
@@ -2357,7 +2357,7 @@ the sequences equals the start of the other.
 </div>
 <h2 class="file" id="algorithm/none_of.hpp"><a href="#algorithm/none_of.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/none_of.hpp></h2><div class="group__file">
 <h3 id="mp::none_of"><a href="#mp::none_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">none_of<span class="o">&lt;</span>Pred<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks whether a predicate does not hold for any element of a <a href="#d_sequence">sequence</a>.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::drop_while">drop_while</a><span class="o">&lt;</span><a href="#mp::not_fn">not_fn</a><span class="o">&lt;</span>Pred<span class="o">></span><span class="p">,</span> <a href="#mp::is_empty">is_empty</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span></code></div><div class="group__emp">
@@ -2487,7 +2487,7 @@ C<span class="p">::</span>f<span class="o">&lt;</span><span class="p">...</span>
 </div>
 <h2 class="file" id="algorithm/same.hpp"><a href="#algorithm/same.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/same.hpp></h2><div class="group__file">
 <h3 id="mp::same"><a href="#mp::same" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">same<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks whether all <a href="#d_value">value</a>s are identical.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><span class="c1">/* implementation defined */</span><span class="o">></span></code></div><h3><a href="#mp::same" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">same<span class="o">&lt;</span><a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
@@ -2544,7 +2544,7 @@ C<span class="p">::</span>f<span class="o">&lt;</span><span class="p">...</span>
 </div>
 <h2 class="file" id="algorithm/starts_with.hpp"><a href="#algorithm/starts_with.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/starts_with.hpp></h2><div class="group__file">
 <h3 id="mp::starts_with"><a href="#mp::starts_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">starts_with<span class="o">&lt;</span>Seq<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks if the <a href="#d_sequence">sequence</a> begins with the given prefix.</p><p>
 </p><aside>See: <a href="#mp::ends_with">ends_with</a>
 </aside><h3><a href="#mp::starts_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">starts_with<span class="o">&lt;</span><a href="#mp::list">list</a><span class="o">&lt;</span>Ts<span class="p">...</span><span class="o">></span><span class="p">,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
@@ -2705,7 +2705,7 @@ C<span class="p">::</span>f<span class="o">&lt;</span><span class="p">...</span>
 </div>
 <h2 class="file" id="functional/is_invocable.hpp"><a href="#functional/is_invocable.hpp" class="ref">¶</a>&lt;jln/mp/functional/is_invocable.hpp></h2><div class="group__file">
 <h3 id="mp::is_invocable"><a href="#mp::is_invocable" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">is_invocable<span class="o">&lt;</span>F<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks whether <code class="inlinecode highlight" data-lang="cpp">F<span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code> is invocable.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::try_">try_</a><span class="o">&lt;</span>F<span class="p">,</span> <a href="#mp::always">always</a><span class="o">&lt;</span><a href="#mp::true_">true_</a><span class="p">,</span> C<span class="o">></span><span class="p">,</span> <a href="#mp::always">always</a><span class="o">&lt;</span><a href="#mp::false_">false_</a><span class="p">,</span> C<span class="o">></span><span class="o">></span></code></div><div class="InfoBox"><h4 class="InfoBox-title">Pre-condition</h4>
@@ -2812,7 +2812,7 @@ other than <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::na">
 </div>
 <h2 class="file" id="functional/not_fn.hpp"><a href="#functional/not_fn.hpp" class="ref">¶</a>&lt;jln/mp/functional/not_fn.hpp></h2><div class="group__file">
 <h3 id="mp::not_fn"><a href="#mp::not_fn" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">not_fn<span class="o">&lt;</span>F<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Returns the negation of <code class="inlinecode highlight" data-lang="cpp">F</code>.</p><p>
 </p><div class="group__emp">
 <h3 class="emp" id="emp::not_of"><a href="#emp::not_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>not_of<span class="o">&lt;</span>F<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">mp<span class="p">::</span>number</a><span class="o">&lt;</span>!<span class="c1">/* implementation defined */</span><span class="o">></span></code></h3>
@@ -3578,8 +3578,8 @@ Given a sequence and a count n, place a window over the first n elements of the 
 <div class="group__content">
 <h2 class="file" id="number/as_bool.hpp"><a href="#number/as_bool.hpp" class="ref">¶</a>&lt;jln/mp/number/as_bool.hpp></h2><div class="group__file">
 <h3 id="mp::as_bool"><a href="#mp::as_bool" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">as_bool<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
-</p><p>Narrowing convertion from <a href="#d_value">value</a> to <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>.</p><p>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
+</p><p>Narrowing convertion from <a href="#d_value">value</a> to <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span>C<span class="p">,</span> <a href="#mp::number">number</a><span class="o">&lt;</span>bool<span class="p">{</span>x<span class="p">::</span>value<span class="p">}</span><span class="o">></span><span class="o">></span></code></div><div class="group__emp">
 <h3 class="emp" id="emp::as_bool"><a href="#emp::as_bool" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>as_bool<span class="o">&lt;</span>x<span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span>bool<span class="p">{</span>x<span class="p">::</span>value<span class="p">}</span><span class="o">></span></code></h3>
@@ -3608,9 +3608,9 @@ Given a sequence and a count n, place a window over the first n elements of the 
 <div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp">std<span class="p">::</span>intmax_t</code></div><h3 id="mp::uint_"><a href="#mp::uint_" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">uint_</code></h3>
 <div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
-<code class="blockcode highlight" data-lang="cpp">std<span class="p">::</span>intmax_t</code></div><h3 id="mp::number"><a href="#mp::number" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">number<span class="o">&lt;</span><a href="#mp::int_">int_</a> v<span class="o">></span></code></h3>
+<code class="blockcode highlight" data-lang="cpp">std<span class="p">::</span>intmax_t</code></div><h3 id="mp::number"><a href="#mp::number" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">number<span class="o">&lt;</span><a href="#mp::int_">int_</a> v<span class="o">></span><span class="p">::</span>value</code></h3>
 <div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
-<code class="blockcode highlight" data-lang="cpp">value</code></div><h3 id="mp::true_"><a href="#mp::true_" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">true_</code></h3>
+<code class="blockcode highlight" data-lang="cpp">v</code></div><h3 id="mp::true_"><a href="#mp::true_" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">true_</code></h3>
 <div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">1</span><span class="o">></span></code></div><h3 id="mp::false_"><a href="#mp::false_" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">false_</code></h3>
 <div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
@@ -3635,7 +3635,7 @@ Given a sequence and a count n, place a window over the first n elements of the 
 </div>
 <h2 class="file" id="number/is_number.hpp"><a href="#number/is_number.hpp" class="ref">¶</a>&lt;jln/mp/number/is_number.hpp></h2><div class="group__file">
 <h3 id="mp::is_number"><a href="#mp::is_number" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">is_number<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks whether a <a href="#d_value">value</a> is a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span>C<span class="p">,</span> <span class="c1">/* implementation defined */</span><span class="o">></span></code></div><div class="group__emp">
@@ -3970,8 +3970,8 @@ Given a sequence and a count n, place a window over the first n elements of the 
 </div>
 <h2 class="file" id="number/to_bool.hpp"><a href="#number/to_bool.hpp" class="ref">¶</a>&lt;jln/mp/number/to_bool.hpp></h2><div class="group__file">
 <h3 id="mp::to_bool"><a href="#mp::to_bool" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">to_bool<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
-</p><p>Converts a <a href="#d_value">value</a> to a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>.</p><p>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
+</p><p>Converts a <a href="#d_value">value</a> to a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span>C<span class="p">,</span> <a href="#mp::number">number</a><span class="o">&lt;</span>bool<span class="p">(</span>x<span class="p">::</span>value<span class="p">)</span><span class="o">></span><span class="o">></span></code></div><div class="group__emp">
 <h3 class="emp" id="emp::to_bool"><a href="#emp::to_bool" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>to_bool<span class="o">&lt;</span>x<span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span>bool<span class="p">(</span>x<span class="p">::</span>value<span class="p">)</span><span class="o">></span></code></h3>
@@ -4219,7 +4219,7 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 </div>
 <h2 class="file" id="utility/has_type.hpp"><a href="#utility/has_type.hpp" class="ref">¶</a>&lt;jln/mp/utility/has_type.hpp></h2><div class="group__file">
 <h3 id="mp::has_type"><a href="#mp::has_type" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">has_type<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks whether a <a href="#d_value">value</a> to a type member.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><span class="c1">/* implementation defined */</span><span class="o">></span></code></div><div class="group__emp">
@@ -4229,7 +4229,7 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 </div>
 <h2 class="file" id="utility/has_value_type.hpp"><a href="#utility/has_value_type.hpp" class="ref">¶</a>&lt;jln/mp/utility/has_value_type.hpp></h2><div class="group__file">
 <h3 id="mp::has_value_type"><a href="#mp::has_value_type" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">has_value_type<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks whether a <a href="#d_value">value</a> to a type member.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><span class="c1">/* implementation defined */</span><span class="o">></span></code></div><div class="group__emp">
@@ -4239,7 +4239,7 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 </div>
 <h2 class="file" id="utility/is_specialization_of.hpp"><a href="#utility/is_specialization_of.hpp" class="ref">¶</a>&lt;jln/mp/utility/is_specialization_of.hpp></h2><div class="group__file">
 <h3 id="mp::is_specialization_of"><a href="#mp::is_specialization_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">is_specialization_of<span class="o">&lt;</span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> Tpl<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks whether <code class="inlinecode highlight" data-lang="cpp">x</code> is <code class="inlinecode highlight" data-lang="cpp">Tpl<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><span class="c1">/* implementation defined */</span><span class="o">></span></code></div><div class="group__emp">
@@ -4309,14 +4309,14 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 </div>
 <h2 class="file" id="utility/is.hpp"><a href="#utility/is.hpp" class="ref">¶</a>&lt;jln/mp/utility/is.hpp></h2><div class="group__file">
 <h3 id="mp::is"><a href="#mp::is" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">is<span class="o">&lt;</span>T<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>std<span class="p">::</span>is_same<span class="o">&lt;</span>T<span class="p">,</span> x<span class="o">></span><span class="p">::</span>value<span class="o">></span><span class="o">></span></code></div><div class="group__emp">
 </div>
 </div>
 <h2 class="file" id="utility/is_not.hpp"><a href="#utility/is_not.hpp" class="ref">¶</a>&lt;jln/mp/utility/is_not.hpp></h2><div class="group__file">
 <h3 id="mp::is_not"><a href="#mp::is_not" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">is_not<span class="o">&lt;</span>T<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::is">is</a><span class="o">&lt;</span>T<span class="p">,</span> <a href="#mp::not_">not_</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span></code></div><div class="group__emp">
 </div>
@@ -4357,7 +4357,7 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 <div class="group__content">
 <h2 class="file" id="value/as_val.hpp"><a href="#value/as_val.hpp" class="ref">¶</a>&lt;jln/mp/value/as_val.hpp></h2><div class="group__file">
 <h3 id="mp::as_val"><a href="#mp::as_val" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">as_val<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Converts <code class="inlinecode highlight" data-lang="cpp">x</code> to <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::val">val</a></code>.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::val">val</a><span class="o">&lt;</span>x<span class="p">::</span>value<span class="o">></span><span class="o">></span></code></div><div class="InfoBox"><h4 class="InfoBox-title">Pre-condition</h4>
@@ -4368,7 +4368,7 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 </div>
 <h2 class="file" id="value/has_value.hpp"><a href="#value/has_value.hpp" class="ref">¶</a>&lt;jln/mp/value/has_value.hpp></h2><div class="group__file">
 <h3 id="mp::has_value"><a href="#mp::has_value" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">has_value<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks whether <code class="inlinecode highlight" data-lang="cpp">x</code> has a value member.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><span class="c1">/* implementation defined */</span><span class="o">></span></code></div><div class="group__emp">
@@ -4378,7 +4378,7 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 </div>
 <h2 class="file" id="value/is_val.hpp"><a href="#value/is_val.hpp" class="ref">¶</a>&lt;jln/mp/value/is_val.hpp></h2><div class="group__file">
 <h3 id="mp::is_val"><a href="#mp::is_val" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">is_val<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><p>Checks whether <code class="inlinecode highlight" data-lang="cpp">x</code> is a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::val">val</a></code>.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::call">call</a><span class="o">&lt;</span>C<span class="p">,</span> <span class="c1">/* implementation defined */</span><span class="o">></span></code></div><div class="group__emp">
@@ -4386,9 +4386,9 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 </div>
 </div>
 <h2 class="file" id="value/val.hpp"><a href="#value/val.hpp" class="ref">¶</a>&lt;jln/mp/value/val.hpp></h2><div class="group__file">
-<h3 id="mp::val"><a href="#mp::val" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">val<span class="o">&lt;</span><span class="k">auto</span> v<span class="o">></span></code></h3>
+<h3 id="mp::val"><a href="#mp::val" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">val<span class="o">&lt;</span><span class="k">auto</span> v<span class="o">></span><span class="p">::</span>value</code></h3>
 <div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
-<code class="blockcode highlight" data-lang="cpp">value</code></div><h3 id="mp::typed_val"><a href="#mp::typed_val" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">typed_val<span class="o">&lt;</span>T<span class="p">,</span> T v<span class="o">></span></code></h3>
+<code class="blockcode highlight" data-lang="cpp">v</code></div><h3 id="mp::typed_val"><a href="#mp::typed_val" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">typed_val<span class="o">&lt;</span>T<span class="p">,</span> T v<span class="o">></span></code></h3>
 <div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp"><a href="#mp::val">val</a><span class="o">&lt;</span>v<span class="o">></span></code></div><div class="group__emp">
 </div>
