@@ -310,7 +310,7 @@ local pattern = P{
                   * ws * cid * ws0 * ('=' * ws0 * C(Until';'))^-1
                 + ( '};'
                   + 'static const' * P'expr'^-1 * ws0 * id
-                    * ('(' * Until')' * 1)^-1 * ws0 * Cc(nil) * Cc(nil)
+                    * ('(' * Until')' * 1)^-1 * ws0 * Cc(nil)
                     * C(Until(P' =' + '=')) * P' '^-1 * '=' * ws0 * C(Until';')
                   )
                 )
