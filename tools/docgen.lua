@@ -905,8 +905,8 @@ push('</p></nav>\n')
 
 for _,g in ipairs(tgroups) do
   table.sort(g, comp_by_firstname)
-  push('<article id="g_' .. g.name .. '">\n')
-  push('<h2>Group: ' .. g.name .. '</h2>\n')
+  push('<article>\n')
+  push('<h2 id="g_' .. g.name .. '"><a href="#g_' .. g.name .. '" class="ref">¶</a>Group: ' .. g.name .. '</h2>\n')
   push('<table>\n')
   for _,f in ipairs(g) do
     for _,d in ipairs(f.types) do
@@ -955,8 +955,8 @@ end
 push('</p></nav>\n')
 
 for _,g in ipairs(tgroups) do
-  push('<article id="g6__' .. g.name .. '">\n')
-  push('<h2 class="group__title">Group: ' .. g.name .. '</h2>\n')
+  push('<article>\n')
+  push('<h2 id="g6__' .. g.name .. '" class="group__title"><a href="#g6__' .. g.name .. '" class="ref">¶</a>Group: ' .. g.name .. '</h2>\n')
   push('<div class="group__content">\n')
   for _,f in ipairs(g) do
     push('<h2 class="file" id="' .. f.filerefid .. '"><a href="#' .. f.filerefid .. '" class="ref">¶</a>&lt;' .. f.filename .. '></h2>')
