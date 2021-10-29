@@ -1416,8 +1416,8 @@ R foo<span class="p">();</span></code></section>
 </ul></li></ul></nav></section>
 <section id="short_descriptions">
 <h1>Short descriptions</h1><nav><p><a class="link_group" href="#g_algorithm">algorithm</a><a class="link_group" href="#g_functional">functional</a><a class="link_group" href="#g_group">group</a><a class="link_group" href="#g_list">list</a><a class="link_group" href="#g_number">number</a><a class="link_group" href="#g_search">search</a><a class="link_group" href="#g_trait">trait</a><a class="link_group" href="#g_utility">utility</a><a class="link_group" href="#g_value">value</a></p></nav>
-<article id="g_algorithm">
-<h2>Group: algorithm</h2>
+<article>
+<h2 id="g_algorithm"><a href="#g_algorithm" class="ref">¶</a>Group: algorithm</h2>
 <table>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::accumulate">accumulate</a><span class="o">&lt;</span>F<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>state<span class="p">,</span> seqs<span class="p">...</span><span class="o">></span></code></td><td>Computes the recursive invocation of <code class="inlinecode highlight" data-lang="cpp">F</code> with the result of the previous
 invocation and each element of one or more <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code>s traversed in parallel
@@ -1494,8 +1494,8 @@ the repeat count and the type.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::unique_if">unique_if</a><span class="o">&lt;</span>Cmp <span class="o">=</span> <a href="#mp::lift">lift</a><span class="o">&lt;</span>std<span class="p">::</span>is_same<span class="o">></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td></td></tr>
 </table>
 </article>
-<article id="g_functional">
-<h2>Group: functional</h2>
+<article>
+<h2 id="g_functional"><a href="#g_functional" class="ref">¶</a>Group: functional</h2>
 <table>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::bind">bind</a><span class="o">&lt;</span>F<span class="p">,</span> xs<span class="p">...</span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>ys<span class="p">...</span><span class="o">></span></code></td><td>Partially apply a function to some arguments.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::reverse_bind">reverse_bind</a><span class="o">&lt;</span>F<span class="p">,</span> xs<span class="p">...</span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>ys<span class="p">...</span><span class="o">></span></code></td><td>Partially apply a function to some arguments.</td></tr>
@@ -1573,8 +1573,8 @@ then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the 
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::while_xs">while_xs</a><span class="o">&lt;</span>Pred<span class="p">,</span> F<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>Apply a function while some <a href="#d_predicate">sequence</a> is satisfied.</td></tr>
 </table>
 </article>
-<article id="g_group">
-<h2>Group: group</h2>
+<article>
+<h2 id="g_group"><a href="#g_group" class="ref">¶</a>Group: group</h2>
 <table>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::collapse">collapse</a><span class="o">&lt;</span>Keys<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>Groups adjacent elements by adjacent keys.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::collapse">collapse</a><span class="o">&lt;</span><a href="#mp::list">list</a><span class="o">&lt;</span>keys<span class="p">...</span><span class="o">></span><span class="p">,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td></td></tr>
@@ -1601,8 +1601,8 @@ then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the 
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::zip_with">zip_with</a><span class="o">&lt;</span>F <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::zip">zip</a><span class="o">&lt;</span><a href="#mp::transform">transform</a><span class="o">&lt;</span><a href="#mp::unpack">unpack</a><span class="o">&lt;</span>F<span class="o">></span><span class="p">,</span> C<span class="o">></span><span class="o">></span></code></td></tr>
 </table>
 </article>
-<article id="g_list">
-<h2>Group: list</h2>
+<article>
+<h2 id="g_list"><a href="#g_list" class="ref">¶</a>Group: list</h2>
 <table>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::append">append</a><span class="o">&lt;</span>L<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>Inserts elements at the end of <code class="inlinecode highlight" data-lang="cpp">L</code> list.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::as_list">as_list</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seq<span class="o">></span></code></td><td>Extracts type paramaters of a template class or union, then constructs a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code>.</td></tr>
@@ -1675,8 +1675,8 @@ then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the 
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::wrap_in_list">wrap_in_list</a><span class="o">&lt;</span>b<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::wrap_in_list_c">wrap_in_list_c</a><span class="o">&lt;</span>b<span class="p">::</span>value<span class="o">></span></code></td></tr>
 </table>
 </article>
-<article id="g_number">
-<h2>Group: number</h2>
+<article>
+<h2 id="g_number"><a href="#g_number" class="ref">¶</a>Group: number</h2>
 <table>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::as_bool">as_bool</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Narrowing convertion from <a href="#d_value">value</a> to <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::as_number">as_number</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Narrowing convertion from <a href="#d_value">value</a> to <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>.</td></tr>
@@ -1795,8 +1795,8 @@ then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the 
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::to_bool">to_bool</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Converts a <a href="#d_value">value</a> to a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>.</td></tr>
 </table>
 </article>
-<article id="g_search">
-<h2>Group: search</h2>
+<article>
+<h2 id="g_search"><a href="#g_search" class="ref">¶</a>Group: search</h2>
 <table>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::after">after</a><span class="o">&lt;</span>Seq<span class="p">,</span> TC <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> FC <span class="o">=</span> <a href="#mp::clear">clear</a><span class="o">&lt;</span>TC<span class="o">></span><span class="o">></span></code></td><td>Find the <a href="#d_sequence">sequence</a> after a sub-<a href="#d_sequence">sequence</a>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::after">after</a><span class="o">&lt;</span><a href="#mp::list">list</a><span class="o">&lt;</span>Ts<span class="p">...</span><span class="o">></span><span class="p">,</span> TC<span class="p">,</span> FC<span class="o">></span></code></td><td></td></tr>
@@ -1833,8 +1833,8 @@ that satisfies the <a href="#d_predicate">sequence</a> <code class="inlinecode h
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::upper_bound_than_c">upper_bound_than_c</a><span class="o">&lt;</span><a href="#mp::int_">int_</a> x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> NC <span class="o">=</span> C<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::upper_bound">upper_bound</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>x<span class="o">></span><span class="p">,</span> <a href="#mp::less">less</a><span class="o">&lt;</span><span class="o">></span><span class="p">,</span> C<span class="p">,</span> NC<span class="o">></span></code></td></tr>
 </table>
 </article>
-<article id="g_trait">
-<h2>Group: trait</h2>
+<article>
+<h2 id="g_trait"><a href="#g_trait" class="ref">¶</a>Group: trait</h2>
 <table>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::alignof_">alignof_</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Wrapper for alignof keyword
 </td></tr>
@@ -1856,8 +1856,8 @@ that satisfies the <a href="#d_predicate">sequence</a> <code class="inlinecode h
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::value_type">value_type</a><span class="o">&lt;</span><a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">x<span class="p">::</span>value_type</code></td></tr>
 </table>
 </article>
-<article id="g_utility">
-<h2>Group: utility</h2>
+<article>
+<h2 id="g_utility"><a href="#g_utility" class="ref">¶</a>Group: utility</h2>
 <table>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::always">always</a><span class="o">&lt;</span>x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Always evaluate at an arbitrary value.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::always">always</a><span class="o">&lt;</span>x<span class="p">,</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">x</code></td></tr>
@@ -1873,8 +1873,8 @@ that satisfies the <a href="#d_predicate">sequence</a> <code class="inlinecode h
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::unpack_append">unpack_append</a><span class="o">&lt;</span>C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seq<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code></td><td>Turns a <a href="#d_typelist">typelist</a> into a <a href="#d_sequence">sequence</a> of those types.</td></tr>
 </table>
 </article>
-<article id="g_value">
-<h2>Group: value</h2>
+<article>
+<h2 id="g_value"><a href="#g_value" class="ref">¶</a>Group: value</h2>
 <table>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::as_val">as_val</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Converts <code class="inlinecode highlight" data-lang="cpp">x</code> to <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::val">val</a></code>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::has_value">has_value</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Checks whether <code class="inlinecode highlight" data-lang="cpp">x</code> has a value member.</td></tr>
@@ -1937,8 +1937,8 @@ that satisfies the <a href="#d_predicate">sequence</a> <code class="inlinecode h
 </section>
 <section id="detailed_descriptions">
 <h1>Detailed descriptions</h1><nav><p><a class="link_group" href="#g6__algorithm">algorithm</a><a class="link_group" href="#g6__functional">functional</a><a class="link_group" href="#g6__group">group</a><a class="link_group" href="#g6__list">list</a><a class="link_group" href="#g6__number">number</a><a class="link_group" href="#g6__search">search</a><a class="link_group" href="#g6__trait">trait</a><a class="link_group" href="#g6__utility">utility</a><a class="link_group" href="#g6__value">value</a></p></nav>
-<article id="g6__algorithm">
-<h2 class="group__title">Group: algorithm</h2>
+<article>
+<h2 id="g6__algorithm" class="group__title"><a href="#g6__algorithm" class="ref">¶</a>Group: algorithm</h2>
 <div class="group__content">
 <h2 class="file" id="algorithm/accumulate.hpp"><a href="#algorithm/accumulate.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/accumulate.hpp></h2><div class="group__file">
 <h3 id="mp::accumulate"><a href="#mp::accumulate" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">accumulate<span class="o">&lt;</span>F<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>state<span class="p">,</span> seqs<span class="p">...</span><span class="o">></span></code></h3>
@@ -2583,8 +2583,8 @@ C<span class="p">::</span>f<span class="o">&lt;</span><span class="p">...</span>
 </div>
 </div>
 </article>
-<article id="g6__functional">
-<h2 class="group__title">Group: functional</h2>
+<article>
+<h2 id="g6__functional" class="group__title"><a href="#g6__functional" class="ref">¶</a>Group: functional</h2>
 <div class="group__content">
 <h2 class="file" id="functional/bind.hpp"><a href="#functional/bind.hpp" class="ref">¶</a>&lt;jln/mp/functional/bind.hpp></h2><div class="group__file">
 <h3 id="mp::bind"><a href="#mp::bind" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">bind<span class="o">&lt;</span>F<span class="p">,</span> xs<span class="p">...</span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>ys<span class="p">...</span><span class="o">></span></code></h3>
@@ -2910,8 +2910,8 @@ then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the 
 </div>
 </div>
 </article>
-<article id="g6__group">
-<h2 class="group__title">Group: group</h2>
+<article>
+<h2 id="g6__group" class="group__title"><a href="#g6__group" class="ref">¶</a>Group: group</h2>
 <div class="group__content">
 <h2 class="file" id="algorithm/collapse.hpp"><a href="#algorithm/collapse.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/collapse.hpp></h2><div class="group__file">
 <h3 id="mp::collapse"><a href="#mp::collapse" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">collapse<span class="o">&lt;</span>Keys<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></h3>
@@ -3134,8 +3134,8 @@ The split value is inserted at the beginning of the following list.
 </div>
 </div>
 </article>
-<article id="g6__list">
-<h2 class="group__title">Group: list</h2>
+<article>
+<h2 id="g6__list" class="group__title"><a href="#g6__list" class="ref">¶</a>Group: list</h2>
 <div class="group__content">
 <h2 class="file" id="list/append.hpp"><a href="#list/append.hpp" class="ref">¶</a>&lt;jln/mp/list/append.hpp></h2><div class="group__file">
 <h3 id="mp::append"><a href="#mp::append" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">append<span class="o">&lt;</span>L<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></h3>
@@ -3573,8 +3573,8 @@ Given a sequence and a count n, place a window over the first n elements of the 
 </div>
 </div>
 </article>
-<article id="g6__number">
-<h2 class="group__title">Group: number</h2>
+<article>
+<h2 id="g6__number" class="group__title"><a href="#g6__number" class="ref">¶</a>Group: number</h2>
 <div class="group__content">
 <h2 class="file" id="number/as_bool.hpp"><a href="#number/as_bool.hpp" class="ref">¶</a>&lt;jln/mp/number/as_bool.hpp></h2><div class="group__file">
 <h3 id="mp::as_bool"><a href="#mp::as_bool" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">as_bool<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
@@ -3979,8 +3979,8 @@ Given a sequence and a count n, place a window over the first n elements of the 
 </div>
 </div>
 </article>
-<article id="g6__search">
-<h2 class="group__title">Group: search</h2>
+<article>
+<h2 id="g6__search" class="group__title"><a href="#g6__search" class="ref">¶</a>Group: search</h2>
 <div class="group__content">
 <h2 class="file" id="algorithm/after.hpp"><a href="#algorithm/after.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/after.hpp></h2><div class="group__file">
 <h3 id="mp::after"><a href="#mp::after" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">after<span class="o">&lt;</span>Seq<span class="p">,</span> TC <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> FC <span class="o">=</span> <a href="#mp::clear">clear</a><span class="o">&lt;</span>TC<span class="o">></span><span class="o">></span></code></h3>
@@ -4189,8 +4189,8 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 </div>
 </div>
 </article>
-<article id="g6__trait">
-<h2 class="group__title">Group: trait</h2>
+<article>
+<h2 id="g6__trait" class="group__title"><a href="#g6__trait" class="ref">¶</a>Group: trait</h2>
 <div class="group__content">
 <h2 class="file" id="utility/alignof.hpp"><a href="#utility/alignof.hpp" class="ref">¶</a>&lt;jln/mp/utility/alignof.hpp></h2><div class="group__file">
 <h3 id="mp::alignof_"><a href="#mp::alignof_" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">alignof_<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
@@ -4279,8 +4279,8 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 </div>
 </div>
 </article>
-<article id="g6__utility">
-<h2 class="group__title">Group: utility</h2>
+<article>
+<h2 id="g6__utility" class="group__title"><a href="#g6__utility" class="ref">¶</a>Group: utility</h2>
 <div class="group__content">
 <h2 class="file" id="utility/always.hpp"><a href="#utility/always.hpp" class="ref">¶</a>&lt;jln/mp/utility/always.hpp></h2><div class="group__file">
 <h3 id="mp::always"><a href="#mp::always" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">always<span class="o">&lt;</span>x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
@@ -4352,8 +4352,8 @@ If no element is found, <code class="inlinecode highlight" data-lang="cpp">NFC</
 </div>
 </div>
 </article>
-<article id="g6__value">
-<h2 class="group__title">Group: value</h2>
+<article>
+<h2 id="g6__value" class="group__title"><a href="#g6__value" class="ref">¶</a>Group: value</h2>
 <div class="group__content">
 <h2 class="file" id="value/as_val.hpp"><a href="#value/as_val.hpp" class="ref">¶</a>&lt;jln/mp/value/as_val.hpp></h2><div class="group__file">
 <h3 id="mp::as_val"><a href="#mp::as_val" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">as_val<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h3>
