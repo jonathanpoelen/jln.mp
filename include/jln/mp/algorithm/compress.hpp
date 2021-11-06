@@ -1,10 +1,8 @@
 #pragma once
 
-#include <jln/mp/list/clear.hpp>
 #include <jln/mp/list/join.hpp>
+#include <jln/mp/list/wrap_in_list.hpp>
 #include <jln/mp/number/number.hpp>
-#include <jln/mp/functional/each.hpp>
-#include <jln/mp/utility/conditional.hpp>
 
 namespace jln::mp
 {
@@ -16,25 +14,28 @@ namespace jln::mp
   /// \pre `sizeof...(xs) == emp::size<Selectors>`
   /// \semantics
   ///   \code
-  ///   call<compress<numbers<1,0,1,0,1,1>,
-  ///     a,b,c,d,e,f
-  ///   > = list<
-  ///     a,  c,  e,f
-  ///   >
-  ///   \endconde
+  ///   call<compress<
+  ///     numbers<1,0,1,0,1,1>,
+  ///             a,b,c,d,e,f
+  ///   >> = list<a,  c,  e,f>
+  ///   \endcode
   /// \treturn \sequence
   template<class Selectors, class C = listify>
   struct compress
   {};
 
-#ifdef JLN_MP_DOXYGENATING
-  template<class... selectors, class C = listify>
+  template<class... selectors, class C>
   struct compress<list<selectors...>, C>
   {
     template<class... xs>
-    using f;
+    using f = typename join<C>::template f<
+      typename wrap_in_list_c<selectors::value>
+        ::template f<xs>...
+    >;
   };
-#endif
+
+  template<bool... selectors>
+  using compress_with_c = compress<mp::compress<list<number<selectors>...>>>;
 
   namespace emp
   {
@@ -44,11 +45,4 @@ namespace jln::mp
     template<class L, bool... selectors>
     using compress_with_c = unpack<L, mp::compress<list<number<selectors>...>>>;
   }
-
-  /// \cond
-  template<class... selectors, class C>
-  struct compress<list<selectors...>, C>
-  : each<typename conditional_c<selectors::value>::template f<listify, clear<>>..., join<C>>
-  {};
-  /// \endcond
 }
