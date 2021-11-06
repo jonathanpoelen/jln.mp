@@ -49,6 +49,7 @@
 #include <jln/mp/algorithm/powerset.hpp>
 #include <jln/mp/algorithm/prefix.hpp>
 #include <jln/mp/algorithm/remove.hpp>
+#include <jln/mp/algorithm/remove_unique.hpp>
 #include <jln/mp/algorithm/repeat.hpp>
 #include <jln/mp/algorithm/replace.hpp>
 #include <jln/mp/algorithm/reverse.hpp>

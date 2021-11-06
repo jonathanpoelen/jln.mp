@@ -47,6 +47,7 @@
 #include "src/algorithm/powerset.cpp"
 #include "src/algorithm/prefix.cpp"
 #include "src/algorithm/remove.cpp"
+#include "src/algorithm/remove_unique.cpp"
 #include "src/algorithm/repeat.cpp"
 #include "src/algorithm/replace.cpp"
 #include "src/algorithm/reverse.cpp"
