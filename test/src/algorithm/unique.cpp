@@ -4,7 +4,6 @@
 #include "jln/mp/smp/algorithm/unique.hpp"
 #include "jln/mp/smp/functional/each.hpp"
 #include "jln/mp/smp/list/at.hpp"
-#include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -17,7 +16,19 @@ TEST()
 
   ut::same<seq_0_1_2, emp::unique<emp::numbers<0, 1, 0, 2, 2>>>();
 
-  test_context<unique<>, smp::unique<>, 0>()
+  test_context<unique<>, smp::unique<>>()
+    .test<list<>>()
+    .test<seq_0, _0>()
+    .test<seq_0, _0, _0>()
+    .test<seq_0_1, _0, _1>()
+    .test<seq_0_1_2, _0, _1, _2>()
+    .test<seq_0, _0, _0, _0, _0, _0>()
+    .test<seq_0_1_2_3, _0, _0, _1, _0, _2, _2, _2, _0, _0, _3>()
+    .test<list<int, int&, int&&, int const, int const&, int const&&>,
+      int, int&, int&&, int const, int const&, int const&&, int&>()
+    ;
+
+  test_context<unique_if<>, smp::unique_if<>>()
     .test<list<>>()
     .test<seq_0, _0>()
     .test<seq_0, _0, _0>()
@@ -37,8 +48,8 @@ TEST()
   >()
     .test<list<>>()
     .test<seq_0, _0>()
-    .test<list<list<_0, _0>>, list<_0, _0>, list<_0, _1>>()
-    .test<list<list<_0, _0>, list<_1, _0>>, list<_0, _0>, list<_0, _1>, list<_1, _0>>()
+    .test<list<seq_0_0>, seq_0_0, seq_0_1>()
+    .test<list<seq_0_0, seq_1_0>, seq_0_0, seq_0_1, seq_1_0>()
     .not_invocable<_0, _0>()
     ;
 

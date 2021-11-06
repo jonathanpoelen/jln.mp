@@ -22,6 +22,8 @@ namespace jln::mp
   template<class C = listify>
   using unique = typename detail::mk_unique<lift<std::is_same>, C>::type;
 
+  /// Returns a list of the same form as L with the duplicate elements removed.
+  /// \treturn \sequence
   template<class Cmp = lift<std::is_same>, class C = listify>
   using unique_if = typename detail::mk_unique<Cmp, C>::type;
 
@@ -38,7 +40,7 @@ namespace jln::mp
 
 #include <jln/mp/algorithm/same.hpp>
 #include <jln/mp/algorithm/fold_left.hpp>
-#include <jln/mp/algorithm/take_while.hpp>
+#include <jln/mp/algorithm/index.hpp>
 #include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/list/push_back.hpp>
 #include <jln/mp/list/size.hpp>
@@ -49,9 +51,9 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<class x>
-  struct _inherit_impl {};
+  struct inherit_item {};
   template<std::size_t i, class x>
-  struct inherit_impl : _inherit_impl<x> {};
+  struct inherit_impl : inherit_item<x> {};
 
   template<class, class...>
   struct inherit;
@@ -67,7 +69,7 @@ namespace jln::mp::detail
   {
       template <class Pack>
       static auto is_set(Pack pack) -> decltype((
-          static_cast<_inherit_impl<xs>*>(pack),...
+          static_cast<inherit_item<xs>*>(pack),...
       ), number<1>());
 
       static number<0> is_set(...);
@@ -102,7 +104,7 @@ namespace jln::mp::detail
   {
     template<class Cmp, class x, class... xs>
     using f = typename conditional_c<
-      take_while<push_back<x, Cmp>, size<>>::template f<xs...>::value == 0
+      index_if<push_back<x, Cmp>, identity, always<number<-1>>>::template f<xs...>::value == -1
     >::template f<list<xs..., x>, list<xs...>>;
   };
 

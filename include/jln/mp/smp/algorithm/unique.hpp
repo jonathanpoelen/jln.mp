@@ -13,7 +13,7 @@ namespace jln::mp::smp
   template<class C = listify>
   using unique = detail::sfinae<mp::unique<subcontract_barrier<C>>>;
 
-  template<class Cmp = lift<std::is_same>, class C = listify>
+  template<class Cmp = contract<mp::lift<std::is_same>>, class C = listify>
   using unique_if = detail::sfinae<mp::unique_if<
     assume_binary_barrier<Cmp>, subcontract_barrier<C>>>;
 }
@@ -24,35 +24,48 @@ namespace jln::mp::smp
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae>
-  struct _sfinae<sfinae, lift_t<_set_push_back>>
+  template<class C>
+  struct smp_unique_continuation
   {
-    using type = contract<lift_t<_set_push_back>>;
+    using type = C;
   };
 
-  template<template<class> class sfinae, class Cmp>
-  struct _sfinae<sfinae, _set_cmp_push_back<Cmp>>
+  template<>
+  struct smp_unique_continuation<try_<unpack<lift<list>>>>
   {
-    using type = contract<try_<_set_cmp_push_back<sfinae<Cmp>>>>;
+    using type = mp::identity;
   };
 
-  template<class C>
-  struct mk_unique<subcontract_barrier<smp::lift<std::is_same>>, C>
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, push_front<list<>, fold_left<lift_t<_set_push_back>, C>>>
   {
-    using type = push_front<list<>, fold_left<
-      contract_barrier<lift_t<_set_push_back>>,
-      optimize_useless_unpack_t<unpack<C>>
-    >>;
+    using type = contract<push_front<list<>, fold_left<
+      lift_t<_set_push_back>, typename smp_unique_continuation<
+        assume_unary<sfinae<C>>
+      >::type
+    >>>;
   };
 
-  template<class C>
-  struct mk_unique<subcontract_barrier<smp::lift_t<std::is_same>>, C>
-  : mk_unique<subcontract_barrier<smp::lift<std::is_same>>, C>
-  {};
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, push_front<list<>, fold_left<
+    _set_cmp_push_back<contract_barrier<mp::lift<std::is_same>>>, C
+  >>>
+  {
+    using type = contract<push_front<list<>, fold_left<
+      lift_t<_set_push_back>, typename smp_unique_continuation<
+        assume_unary<optimize_useless_unpack_t<sfinae<C>>>
+      >::type
+    >>>;
+  };
 
-  template<class C>
-  struct mk_unique<subcontract_barrier<smp::same<>>, C>
-  : mk_unique<subcontract_barrier<smp::lift<std::is_same>>, C>
-  {};
+  template<template<class> class sfinae, class Cmp, class C>
+  struct _sfinae<sfinae, push_front<list<>, fold_left<
+    _set_cmp_push_back<Cmp>, C
+  >>>
+  {
+    using type = contract<push_front<list<>, smp::fold_left<
+      contract<try_<_set_cmp_push_back<sfinae<Cmp>>>>, sfinae<C>
+    >>>;
+  };
 }
 /// \endcond
