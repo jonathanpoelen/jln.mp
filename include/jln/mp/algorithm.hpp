@@ -14,6 +14,7 @@
 #include <jln/mp/algorithm/conjunction.hpp>
 #include <jln/mp/algorithm/contains.hpp>
 #include <jln/mp/algorithm/copy.hpp>
+#include <jln/mp/algorithm/copy_unique.hpp>
 #include <jln/mp/algorithm/count.hpp>
 #include <jln/mp/algorithm/counter.hpp>
 #include <jln/mp/algorithm/disjunction.hpp>

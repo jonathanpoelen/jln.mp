@@ -12,6 +12,7 @@
 #include "src/algorithm/conjunction.cpp"
 #include "src/algorithm/contains.cpp"
 #include "src/algorithm/copy.cpp"
+#include "src/algorithm/copy_unique.cpp"
 #include "src/algorithm/count.cpp"
 #include "src/algorithm/counter.cpp"
 #include "src/algorithm/disjunction.cpp"
