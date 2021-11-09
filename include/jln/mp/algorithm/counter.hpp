@@ -1,12 +1,7 @@
 #pragma once
 
 #include <jln/mp/algorithm/fold_left.hpp>
-#include <jln/mp/algorithm/find.hpp>
 #include <jln/mp/algorithm/zip.hpp>
-#include <jln/mp/functional/lift.hpp>
-#include <jln/mp/utility/always.hpp>
-#include <jln/mp/list/size.hpp>
-
 
 namespace jln::mp
 {
@@ -54,6 +49,8 @@ namespace jln::mp
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/list/take_front.hpp>
+#include <jln/mp/algorithm/index.hpp>
+#include <jln/mp/utility/always.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -64,24 +61,21 @@ namespace jln::mp::detail
     using f = list<number<n::value + 1>, ns...>;
   };
 
-  template<std::size_t N>
-  struct counter_inc_impl
-  {
-    template<class x, class... xs>
-    using elements = list<xs...>;
-
-    template<class... ints>
-    using indexes = typename _join_select<2>::f<
-      listify,
-      typename take_front<number<sizeof...(ints) - N>>::template f<ints...>,
-      typename drop_front<number<sizeof...(ints) - N>, counter_inc_first>::template f<ints...>
-    >::type;
-  };
-
   struct counter_inc
   {
-    template<class N>
-    using f = counter_inc_impl<N::value>;
+    template<class I>
+    struct f
+    {
+      template<class x, class... xs>
+      using elements = list<xs...>;
+
+      template<class... ints>
+      using indexes = typename _join_select<2>::f<
+        listify,
+        typename take_front<I>::template f<ints...>,
+        typename drop_front<I, counter_inc_first>::template f<ints...>
+      >::type;
+    };
   };
 
   struct counter_push
@@ -107,7 +101,7 @@ namespace jln::mp::detail
 
     template<class x>
     using f = next<
-      typename find_if<is<x>, size<detail::counter_inc>, always<detail::counter_push>>
+      typename index_if<is<x>, detail::counter_inc, always<detail::counter_push>>
       ::template f<xs...>,
       x
     >;
