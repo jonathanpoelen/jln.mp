@@ -26,9 +26,14 @@ namespace jln::mp
   /// Elements are sorted in order of first appearance.
   /// \semantics
   ///   \code
-  ///   call<counter<>, int, int, char, double, int, double> == list<list<number<3>, int>, list<number<1>, char>, list<number<2>, double>>
+  ///   call<counter<>, int, int, char, double, int, double>
+  ///   == list<
+  ///     list<number<3>, int>,
+  ///     list<number<1>, char>,
+  ///     list<number<2>, double>
+  ///   >
   ///   \endcode
-  /// \treturn \sequence of \list of \number / type
+  /// \treturn \sequence of \list of \number and type
   template<class C = listify>
   struct counter : push_front<list<list<>, list<>>, fold_left<detail::counter_impl, unpack<zip<C>>>>
   {

@@ -119,12 +119,13 @@ namespace jln::mp::detail
     template<
       std::size_t consumed,
       class Pred,
-      JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA),
+      class _1, class _2, class _3, class _4,
+      class _5, class _6, class _7, class _8,
       class... xs>
     using f = typename _drop_while<7, Pred::template f<_1>::value>
       ::template f<
           consumed+sizeof...(xs), Pred,
-          JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>;
+          _2, _3, _4, _5, _6, _7, _8>;
   };
 
   template<>
@@ -133,12 +134,13 @@ namespace jln::mp::detail
     template<
       std::size_t consumed,
       class Pred,
-      JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA),
+      class _1, class _2, class _3, class _4,
+      class _5, class _6, class _7, class _8,
       class... xs>
     using f = typename _drop_while<7, Pred::template f<_1>::value>
       ::template f<
           consumed+sizeof...(xs), Pred,
-          JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>
+          _2, _3, _4, _5, _6, _7, _8>
       ::template f<
           _drop_while<n_8_or_less_16_32_64_128_256(sizeof...(xs)), true>,
           consumed, Pred, xs...>;

@@ -84,6 +84,8 @@ namespace jln::mp
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
 
+#include <jln/mp/utility/is_not.hpp>
+
 /// \cond
 namespace jln::mp::detail
 {

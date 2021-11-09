@@ -324,7 +324,7 @@ namespace jln::mp::detail
   };
 
 
-#define JLN_DROP_WHILE_IMPL(n, m)                                     \
+#define JLN_MP_SEARCH_IMPL(n, m)                                      \
   template<>                                                          \
   struct _search<n, false>                                            \
   {                                                                   \
@@ -340,15 +340,15 @@ namespace jln::mp::detail
     using f = _drop_while_result<sizeof...(xs)>;                      \
   }
 
-  JLN_DROP_WHILE_IMPL(7, 6);
-  JLN_DROP_WHILE_IMPL(6, 5);
-  JLN_DROP_WHILE_IMPL(5, 4);
-  JLN_DROP_WHILE_IMPL(4, 3);
-  JLN_DROP_WHILE_IMPL(3, 2);
-  JLN_DROP_WHILE_IMPL(2, 1);
-  JLN_DROP_WHILE_IMPL(1, 0);
+  JLN_MP_SEARCH_IMPL(7, 6);
+  JLN_MP_SEARCH_IMPL(6, 5);
+  JLN_MP_SEARCH_IMPL(5, 4);
+  JLN_MP_SEARCH_IMPL(4, 3);
+  JLN_MP_SEARCH_IMPL(3, 2);
+  JLN_MP_SEARCH_IMPL(2, 1);
+  JLN_MP_SEARCH_IMPL(1, 0);
 
-#undef JLN_DROP_WHILE_IMPL
+#undef JLN_MP_SEARCH_IMPL
 
   template<>
   struct _search<0, false>
@@ -390,7 +390,7 @@ namespace jln::mp::detail
                    remaining-8, Pred, xs...>;
   };
 
-#define JLN_DROP_WHILE_IMPL(n, m, xs)                                         \
+#define JLN_MP_SEARCH_IMPL(n, m, xs)                                          \
   template<>                                                                  \
   struct _search<n, false>                                                    \
   {                                                                           \
@@ -405,11 +405,11 @@ namespace jln::mp::detail
                    remaining-m, Pred, xs...>;                                 \
   }
 
-  JLN_DROP_WHILE_IMPL(32, 16, JLN_MP_XS_16);
-  JLN_DROP_WHILE_IMPL(64, 32, JLN_MP_XS_32);
-  JLN_DROP_WHILE_IMPL(128, 64, JLN_MP_XS_64);
-  JLN_DROP_WHILE_IMPL(256, 128, JLN_MP_XS_128);
+  JLN_MP_SEARCH_IMPL(32, 16, JLN_MP_XS_16);
+  JLN_MP_SEARCH_IMPL(64, 32, JLN_MP_XS_32);
+  JLN_MP_SEARCH_IMPL(128, 64, JLN_MP_XS_64);
+  JLN_MP_SEARCH_IMPL(256, 128, JLN_MP_XS_128);
 
-#undef JLN_DROP_WHILE_IMPL
+#undef JLN_MP_SEARCH_IMPL
 }
 /// \endcond

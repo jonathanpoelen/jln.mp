@@ -19,11 +19,13 @@
 #include <jln/mp/smp/algorithm/counter.hpp>
 #include <jln/mp/smp/algorithm/disjunction.hpp>
 #include <jln/mp/smp/algorithm/drop_while.hpp>
+#include <jln/mp/smp/algorithm/drop_while_xs.hpp>
 #include <jln/mp/smp/algorithm/ends_with.hpp>
 #include <jln/mp/smp/algorithm/find.hpp>
 #include <jln/mp/smp/algorithm/find_last.hpp>
 #include <jln/mp/smp/algorithm/flatten.hpp>
 #include <jln/mp/smp/algorithm/fold_left.hpp>
+#include <jln/mp/smp/algorithm/fold_left_xs.hpp>
 #include <jln/mp/smp/algorithm/fold_right.hpp>
 #include <jln/mp/smp/algorithm/fold_tree.hpp>
 #include <jln/mp/smp/algorithm/group.hpp>
@@ -69,6 +71,7 @@
 #include <jln/mp/smp/algorithm/starts_with.hpp>
 #include <jln/mp/smp/algorithm/suffix.hpp>
 #include <jln/mp/smp/algorithm/take_while.hpp>
+#include <jln/mp/smp/algorithm/take_while_xs.hpp>
 #include <jln/mp/smp/algorithm/transform.hpp>
 #include <jln/mp/smp/algorithm/unique.hpp>
 #include <jln/mp/smp/algorithm/upper_bound.hpp>
