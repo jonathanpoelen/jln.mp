@@ -9,6 +9,9 @@ namespace jln::mp::smp
 {
   template<class C = listify>
   using counter = contract<mp::counter<assume_lists<C>>>;
+
+  template<class F = listify, class C = listify>
+  using counter_wrapped_with = try_contract<mp::counter_wrapped_with<F, subcontract<C>>>;
 }
 
 namespace jln::mp::detail
@@ -17,5 +20,11 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, counter<C>>
   {
     using type = smp::counter<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class F, class C>
+  struct _sfinae<sfinae, counter_wrapped_with<F, C>>
+  {
+    using type = smp::counter_wrapped_with<sfinae<F>, sfinae<C>>;
   };
 }

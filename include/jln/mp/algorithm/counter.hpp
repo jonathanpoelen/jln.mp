@@ -18,31 +18,50 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Counts all distinct elements and returns a list of pairs containing
-  /// the repeat count and the type.
+  /// the type and the repeat count.
   /// Elements are sorted in order of first appearance.
   /// \semantics
   ///   \code
-  ///   call<counter<>, int, int, char, double, int, double>
+  ///   call<counter<F>, int, int, char, double, int, double>
   ///   == list<
-  ///     list<number<3>, int>,
-  ///     list<number<1>, char>,
-  ///     list<number<2>, double>
+  ///     F::f<int, number<3>>,
+  ///     F::f<char, number<1>>,
+  ///     F::f<double, number<2>>
   ///   >
   ///   \endcode
-  /// \treturn \sequence of \list of \number and type
-  template<class C = listify>
-  struct counter
+  /// \treturn \sequence of \list of type and \number
+  template<class F, class C = listify>
+  struct counter_wrapped_with
   {
     template<class... xs>
     using f = typename mp::unique<detail::counter_impl>
       ::template f<xs...>
-      ::template g<C, xs...>;
+      ::template g<C, F, xs...>;
   };
+
+  /// Counts all distinct elements and returns a list of pairs containing
+  /// the type and the repeat count.
+  /// Elements are sorted in order of first appearance.
+  /// \semantics
+  ///   \code
+  ///   call<counter<F>, int, int, char, double, int, double>
+  ///   == list<
+  ///     list<int, number<3>>,
+  ///     list<char, number<1>>,
+  ///     list<double, number<2>>
+  ///   >
+  ///   \endcode
+  /// \treturn \sequence of \list of type and \number
+  template<class C = listify>
+  using counter = counter_wrapped_with<listify, C>;
 
   namespace emp
   {
     template<class L, class C = mp::listify>
     using counter = unpack<L, mp::counter<C>>;
+
+    template<class L, class F = mp::listify, class C = mp::listify>
+    using counter_wrapped_with = unpack<L, mp::counter_wrapped_with<F, C>>;
   }
 }
 
@@ -55,8 +74,10 @@ namespace jln::mp::detail
   template<class... xs>
   struct counter_impl::f
   {
-    template<class C, class... ys>
-    using g = typename C::template f<mp::list<mp::number<count_unique_v<xs, ys...>>, xs>...>;
+    template<class C, class F, class... ys>
+    using g = typename C::template f<
+      typename F::template f<xs, mp::number<count_unique_v<xs, ys...>>>...
+    >;
   };
 }
 /// \endcond
