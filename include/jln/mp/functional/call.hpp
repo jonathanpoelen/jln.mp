@@ -231,5 +231,9 @@ namespace jln::mp::detail
 #endif
       using f = F<xs...>;
   };
+
+  // useful to work around msvc bugs
+  template<class F, class... xs>
+  using raw_call = typename F::template f<xs...>;
 }
 /// \endcond

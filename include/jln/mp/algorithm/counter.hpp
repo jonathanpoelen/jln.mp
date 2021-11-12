@@ -7,11 +7,8 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    struct counter_impl
-    {
-      template<class... xs>
-      struct f;
-    };
+    template<class... xs>
+    struct counter_impl;
   }
   /// \endcond
 
@@ -34,9 +31,9 @@ namespace jln::mp
   struct counter_wrapped_with
   {
     template<class... xs>
-    using f = typename mp::unique<detail::counter_impl>
-      ::template f<xs...>
-      ::template g<C, F, xs...>;
+    using f = typename unique<lift<detail::counter_impl>>
+      ::f<xs...>
+      ::template f<C, F, xs...>;
   };
 
   /// Counts all distinct elements and returns a list of pairs containing
@@ -72,10 +69,10 @@ namespace jln::mp::detail
   inline constexpr auto count_unique_v = (0 + ... + std::is_same<xs, x>::value);
 
   template<class... xs>
-  struct counter_impl::f
+  struct counter_impl
   {
     template<class C, class F, class... ys>
-    using g = typename C::template f<
+    using f = typename C::template f<
       typename F::template f<xs, mp::number<count_unique_v<xs, ys...>>>...
     >;
   };

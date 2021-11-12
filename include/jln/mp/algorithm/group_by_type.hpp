@@ -8,7 +8,7 @@ namespace jln::mp
   namespace detail
   {
     template<class C>
-    struct group_by_type_impl;
+    struct counter_to_repeat;
   }
   /// \endcond
 
@@ -27,7 +27,7 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence of \list of type and \number
   template<class F, class C = listify>
-  using group_by_type_with = counter_wrapped_with<detail::group_by_type_impl<F>, C>;
+  using group_by_type_with = counter_wrapped_with<detail::counter_to_repeat<F>, C>;
 
   template<class C = listify>
   using group_by_type = group_by_type_with<listify, C>;
@@ -49,7 +49,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<class C>
-  struct group_by_type_impl
+  struct counter_to_repeat
   {
     template<class x, class n>
     using f = typename mp::repeat<n, C>::template f<x>;

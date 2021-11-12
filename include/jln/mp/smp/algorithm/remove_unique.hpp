@@ -69,13 +69,15 @@ namespace jln::mp::detail
   {
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
-      typename rotate_c<ints, pop_front<smp::index_if<
-        contract<push_back<xs, Cmp>>,
-        contract<always<wrap_in_list_c<true>>>,
-        contract<always<wrap_in_list_c<false>>>
-      >>>
-      ::template f<xs...>
-      ::template f<xs>...
+      raw_call<
+        typename rotate_c<ints, pop_front<smp::index_if<
+          contract<push_back<xs, Cmp>>,
+          contract<always<wrap_in_list_c<true>>>,
+          contract<always<wrap_in_list_c<false>>>
+        >>>
+        ::template f<xs...>,
+        xs
+      >...
     >;
   };
 
@@ -121,13 +123,15 @@ namespace jln::mp::detail
   {
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
-      typename rotate_c<ints, pop_front<smp::index_if<
-        contract<push_back<xs, Cmp>>,
-        contract<always<wrap_in_list_c<false>>>,
-        contract<always<wrap_in_list_c<true>>>
-      >>>
-      ::template f<xs...>
-      ::template f<xs>...
+      raw_call<
+        typename rotate_c<ints, pop_front<smp::index_if<
+          contract<push_back<xs, Cmp>>,
+          contract<always<wrap_in_list_c<false>>>,
+          contract<always<wrap_in_list_c<true>>>
+        >>>
+        ::template f<xs...>,
+        xs
+      >...
     >;
   };
 
