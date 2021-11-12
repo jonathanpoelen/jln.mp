@@ -1,6 +1,7 @@
 #!/usr/bin/env lua
 
 local parseFile
+local preprocOnlyPattern
 local htmlify
 local linkifier
 local md2html
@@ -329,6 +330,8 @@ local pattern = P{
     -- + '/*' * Until'*/' * 2
 }
 
+preprocOnlyPattern = (ws + '#' * unl)^0 * -P(1)
+
 parseFile = function(contents)
   reset_parser()
   pattern:match(preproc:match(contents))
@@ -581,6 +584,9 @@ function readfile(filename)
   local fileinfos = parseFile(contents)
 
   if not fileinfos.ingroup then
+    if preprocOnlyPattern:match(contents) then
+      return
+    end
     error('missing \\ingroup in ' .. _global_filename)
   end
 
@@ -588,8 +594,7 @@ function readfile(filename)
     if filename:find('/config.hpp', 0, true) then
       return
     end
-    print('parser failure for ' .. filename)
-    os.exit(1)
+    error('parser failure for ' .. filename)
   end
 
   fileinfos.filename = filename:sub(9)
