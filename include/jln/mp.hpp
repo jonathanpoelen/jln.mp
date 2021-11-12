@@ -1,26 +1,3 @@
-/* The MIT License (MIT)
-
-Copyright (c) 2019 jonathan poelen
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
 // amalgamated version of https://github.com/jonathanpoelen/jln.mp
 
 #pragma once
@@ -147,8 +124,128 @@ namespace jln::mp
   using true_ = number<1>;
   using false_ = number<0>;
 }
-/// \cond
+// Compiler type
+//@{
+#if defined(_MSC_VER) && defined(__clang__)
+#  define JLN_MP_CLANG_LIKE 1
+#  define JLN_MP_MSVC_LIKE 1
+#  define JLN_MP_CLANG_CL 1
+#  define JLN_MP_CLANG 0
+#  define JLN_MP_MSVC 0
+#  define JLN_MP_GCC 0
+#elif defined(__clang__)
+#  define JLN_MP_CLANG_LIKE 1
+#  define JLN_MP_MSVC_LIKE 0
+#  define JLN_MP_CLANG_CL 0
+#  define JLN_MP_CLANG 1
+#  define JLN_MP_MSVC 0
+#  define JLN_MP_GCC 0
+#elif defined(_MSC_VER)
+#  define JLN_MP_CLANG_LIKE 0
+#  define JLN_MP_MSVC_LIKE 1
+#  define JLN_MP_CLANG_CL 0
+#  define JLN_MP_CLANG 0
+#  define JLN_MP_MSVC 1
+#  define JLN_MP_GCC 0
+#elif defined(__GNUC__)
+#  define JLN_MP_CLANG_LIKE 0
+#  define JLN_MP_MSVC_LIKE 0
+#  define JLN_MP_CLANG_CL 0
+#  define JLN_MP_CLANG 0
+#  define JLN_MP_MSVC 0
+#  define JLN_MP_GCC 1
+#else
+#  define JLN_MP_CLANG_LIKE 0
+#  define JLN_MP_MSVC_LIKE 0
+#  define JLN_MP_CLANG_CL 0
+#  define JLN_MP_CLANG 0
+#  define JLN_MP_MSVC 0
+#  define JLN_MP_GCC 0
+#endif
+//@}
+
+#define JLN_MP_PRAGMA(x) JLN_MP_PRAGMA_I(x)
+
 #ifdef _MSC_VER
+#  define JLN_MP_PRAGMA_I(x) __pragma(x)
+#else
+#  define JLN_MP_PRAGMA_I(x) _Pragma(#x)
+#endif
+
+
+// Diagnostic
+//@{
+#if JLN_MP_CLANG_LIKE || JLN_MP_GCC
+
+#  define JLN_MP_DIAGNOSTIC_PUSH() JLN_MP_PRAGMA_I(GCC diagnostic push)
+#  define JLN_MP_DIAGNOSTIC_POP() JLN_MP_PRAGMA_I(GCC diagnostic pop)
+
+#  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_IGNORE(X) JLN_MP_PRAGMA_I(GCC diagnostic ignored X)
+#  define JLN_MP_DIAGNOSTIC_MSVC_WARNING(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_WARNING(X) JLN_MP_PRAGMA_I(GCC diagnostic warning X)
+#  define JLN_MP_DIAGNOSTIC_MSVC_ERROR(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_ERROR(X) JLN_MP_PRAGMA_I(GCC diagnostic error X)
+#  ifdef __clang__
+#    define JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
+#    define JLN_MP_DIAGNOSTIC_CLANG_IGNORE JLN_MP_DIAGNOSTIC_GCC_IGNORE
+#    define JLN_MP_DIAGNOSTIC_GCC_ONLY_WARNING(X)
+#    define JLN_MP_DIAGNOSTIC_CLANG_WARNING JLN_MP_DIAGNOSTIC_GCC_WARNING
+#    define JLN_MP_DIAGNOSTIC_GCC_ONLY_ERROR(X)
+#    define JLN_MP_DIAGNOSTIC_CLANG_ERROR JLN_MP_DIAGNOSTIC_GCC_ERROR
+#  else
+#    define JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE JLN_MP_DIAGNOSTIC_GCC_IGNORE
+#    define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X)
+#    define JLN_MP_DIAGNOSTIC_GCC_ONLY_WARNING JLN_MP_DIAGNOSTIC_GCC_WARNING
+#    define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X)
+#    define JLN_MP_DIAGNOSTIC_GCC_ONLY_ERROR JLN_MP_DIAGNOSTIC_GCC_ERROR
+#    define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X)
+#  endif
+
+#elif JLN_MP_MSVC
+
+#  define JLN_MP_DIAGNOSTIC_PUSH() __pragma(warning(push))
+#  define JLN_MP_DIAGNOSTIC_POP() __pragma(warning(pop))
+
+#  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X) JLN_MP_PRAGMA_I(warning(disable:X))
+#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_IGNORE(X)
+#  define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X)
+
+#  define JLN_MP_DIAGNOSTIC_MSVC_WARNING(X) JLN_MP_PRAGMA_I(warning(4:X))
+#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_WARNING(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_WARNING(X)
+#  define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X)
+
+#  define JLN_MP_DIAGNOSTIC_MSVC_ERROR(X) JLN_MP_PRAGMA_I(error(X))
+#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_ERROR(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_ERROR(X)
+#  define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X)
+
+#else
+
+#  define JLN_MP_DIAGNOSTIC_PUSH
+#  define JLN_MP_DIAGNOSTIC_POP
+
+#  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_IGNORE(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
+#  define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X)
+
+#  define JLN_MP_DIAGNOSTIC_MSVC_WARNING(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_WARNING(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_WARNING(X)
+#  define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X)
+
+#  define JLN_MP_DIAGNOSTIC_MSVC_ERROR(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_ERROR(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_ERROR(X)
+#  define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X)
+
+#endif
+//@}
+/// \cond
+#if JLN_MP_MSVC
 # ifdef JLN_MP_ENABLE_DEBUG
 #  ifndef JLN_MP_ENABLE_DEBUG_FORCE
 #   undef JLN_MP_ENABLE_DEBUG
@@ -2732,93 +2829,6 @@ namespace jln::mp
   }
 }
 
-/**
-* \author    Jonathan Poelen <jonathan.poelen+jln@gmail.com>
-* \version   0.1
-* \brief     C++17 utility macros
-*/
-
-#define JLN_PRAGMA(x) JLN_PRAGMA_I(x)
-
-#ifdef _MSC_VER
-#  define JLN_PRAGMA_I(x) __pragma(x)
-#else
-#  define JLN_PRAGMA_I(x) _Pragma(#x)
-#endif
-
-
-// Diagnostic
-//@{
-#if defined(__GNUC__) || defined(__clang__)
-
-#  define JLN_DIAGNOSTIC_PUSH JLN_PRAGMA(GCC diagnostic push)
-#  define JLN_DIAGNOSTIC_POP JLN_PRAGMA(GCC diagnostic pop)
-
-#  define JLN_DIAGNOSTIC_MSVC_IGNORE(X)
-#  define JLN_DIAGNOSTIC_GCC_IGNORE(X) JLN_PRAGMA(GCC diagnostic ignored X)
-#  define JLN_DIAGNOSTIC_MSVC_WARNING(X)
-#  define JLN_DIAGNOSTIC_GCC_WARNING(X) JLN_PRAGMA(GCC diagnostic warning X)
-#  define JLN_DIAGNOSTIC_MSVC_ERROR(X)
-#  define JLN_DIAGNOSTIC_GCC_ERROR(X) JLN_PRAGMA(GCC diagnostic error X)
-#  ifdef __clang__
-#    define JLN_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
-#    define JLN_DIAGNOSTIC_CLANG_IGNORE JLN_DIAGNOSTIC_GCC_IGNORE
-#    define JLN_DIAGNOSTIC_GCC_ONLY_WARNING(X)
-#    define JLN_DIAGNOSTIC_CLANG_WARNING JLN_DIAGNOSTIC_GCC_WARNING
-#    define JLN_DIAGNOSTIC_GCC_ONLY_ERROR(X)
-#    define JLN_DIAGNOSTIC_CLANG_ERROR JLN_DIAGNOSTIC_GCC_ERROR
-#  else
-#    define JLN_DIAGNOSTIC_GCC_ONLY_IGNORE JLN_DIAGNOSTIC_GCC_IGNORE
-#    define JLN_DIAGNOSTIC_CLANG_IGNORE(X)
-#    define JLN_DIAGNOSTIC_GCC_ONLY_WARNING JLN_DIAGNOSTIC_GCC_WARNING
-#    define JLN_DIAGNOSTIC_CLANG_WARNING(X)
-#    define JLN_DIAGNOSTIC_GCC_ONLY_ERROR JLN_DIAGNOSTIC_GCC_ERROR
-#    define JLN_DIAGNOSTIC_CLANG_ERROR(X)
-#  endif
-
-#elif defined(_MSC_VER)
-
-#  define JLN_DIAGNOSTIC_PUSH __pragma(warning(push))
-#  define JLN_DIAGNOSTIC_POP __pragma(warning(pop))
-
-#  define JLN_DIAGNOSTIC_MSVC_IGNORE(X) __pragma(warning(disable:X))
-#  define JLN_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
-#  define JLN_DIAGNOSTIC_GCC_IGNORE(X)
-#  define JLN_DIAGNOSTIC_CLANG_IGNORE(X)
-
-#  define JLN_DIAGNOSTIC_MSVC_WARNING(X) __pragma(warning(4:X))
-#  define JLN_DIAGNOSTIC_GCC_ONLY_WARNING(X)
-#  define JLN_DIAGNOSTIC_GCC_WARNING(X)
-#  define JLN_DIAGNOSTIC_CLANG_WARNING(X)
-
-#  define JLN_DIAGNOSTIC_MSVC_ERROR(X) __pragma(error(X))
-#  define JLN_DIAGNOSTIC_GCC_ONLY_ERROR(X)
-#  define JLN_DIAGNOSTIC_GCC_ERROR(X)
-#  define JLN_DIAGNOSTIC_CLANG_ERROR(X)
-
-#else
-
-#  define JLN_DIAGNOSTIC_PUSH
-#  define JLN_DIAGNOSTIC_POP
-
-#  define JLN_DIAGNOSTIC_MSVC_IGNORE(X)
-#  define JLN_DIAGNOSTIC_GCC_IGNORE(X)
-#  define JLN_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
-#  define JLN_DIAGNOSTIC_CLANG_IGNORE(X)
-
-#  define JLN_DIAGNOSTIC_MSVC_WARNING(X)
-#  define JLN_DIAGNOSTIC_GCC_WARNING(X)
-#  define JLN_DIAGNOSTIC_GCC_ONLY_WARNING(X)
-#  define JLN_DIAGNOSTIC_CLANG_WARNING(X)
-
-#  define JLN_DIAGNOSTIC_MSVC_ERROR(X)
-#  define JLN_DIAGNOSTIC_GCC_ERROR(X)
-#  define JLN_DIAGNOSTIC_GCC_ONLY_ERROR(X)
-#  define JLN_DIAGNOSTIC_CLANG_ERROR(X)
-
-#endif
-
-//@}
 /// \cond
 namespace jln::mp::detail
 {
@@ -2826,8 +2836,8 @@ namespace jln::mp::detail
   struct _join_select : _join_select<n_16_64_256_1024(n)>
   {};
 
-  JLN_DIAGNOSTIC_PUSH
-  JLN_DIAGNOSTIC_MSVC_IGNORE(4348)
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_MSVC_IGNORE(4348)
 
 #define JLN_MP_JOIN_SELECT(n, mp_xs, mp_rxs, _)   \
   template<JLN_MP_DEBUG(class error)>             \
@@ -2867,7 +2877,7 @@ namespace jln::mp::detail
     {};
   };
 
-  JLN_DIAGNOSTIC_POP
+  JLN_MP_DIAGNOSTIC_POP()
 
 } // namespace jln::mp::detail
 /// \endcond
@@ -3199,11 +3209,10 @@ namespace jln::mp
   }
 }
 
-
 /// \cond
 namespace jln::mp::detail
 {
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
   template<class C, class x, int_... xs>
   using _adjacent_difference_msvc = JLN_MP_DCALL_XS(xs, C, x, number<xs>...);
 #endif
@@ -3211,7 +3220,7 @@ namespace jln::mp::detail
   template<class y, class... ys>
   struct _adjacent_difference<list<y, ys...>>
   {
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
     template<class C, class x, class... xs>
     using f = _adjacent_difference_msvc<C, x, (xs::value - ys::value)...>;
 #else
@@ -3485,8 +3494,8 @@ namespace jln::mp
     using size = unpack<L, mp::size<C>>;
   }
 }
-JLN_DIAGNOSTIC_PUSH
-JLN_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wlogical-op")
+JLN_MP_DIAGNOSTIC_PUSH()
+JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wlogical-op")
 
 namespace jln::mp
 {
@@ -4138,7 +4147,7 @@ namespace jln::mp::emp
   using greater_equal = call<mp::greater_equal<C>, x, y>;
 }
 
-JLN_DIAGNOSTIC_POP
+JLN_MP_DIAGNOSTIC_POP()
 
 /// \cond
 namespace jln::mp
@@ -4623,7 +4632,7 @@ namespace jln::mp
 }
 
 
-#if defined(_MSC_VER) || defined(__clang__)
+#if JLN_MP_MSVC || JLN_MP_CLANG
 #endif
 
 namespace jln::mp
@@ -4634,7 +4643,7 @@ namespace jln::mp
     template<unsigned>
     struct _drop_front;
 
-#if defined(_MSC_VER) || defined(__clang__)
+#if JLN_MP_MSVC || JLN_MP_CLANG
     template<int_ i, std::size_t n, class = void>
     struct validate_index
     {};
@@ -6567,14 +6576,14 @@ namespace jln::mp
 #    define JLN_MP_USE_INTEGER_PACK 1
 #    define JLN_MP_USE_MAKE_INTEGER_SEQ 0
 #  endif
+#elif defined(_MSC_VER)
+#  define JLN_MP_USE_INTEGER_PACK 0
+#  define JLN_MP_USE_MAKE_INTEGER_SEQ 1
 #elif defined(__GNUC__)
 #  if __GNUC__ >= 8
 #    define JLN_MP_USE_INTEGER_PACK 1
 #    define JLN_MP_USE_MAKE_INTEGER_SEQ 0
 #  endif
-#elif defined(_MSC_VER)
-#  define JLN_MP_USE_INTEGER_PACK 0
-#  define JLN_MP_USE_MAKE_INTEGER_SEQ 1
 #endif
 
 #ifndef JLN_MP_USE_INTEGER_PACK
@@ -7089,7 +7098,7 @@ namespace jln::mp::detail
     : inherit_impl<ints, xs>...
   {};
 
-#ifdef _MSC_VER
+#if JLN_MP_MSVC_LIKE
   template<class... xs>
   struct _is_set
   {
@@ -7115,7 +7124,7 @@ namespace jln::mp::detail
   template<class... xs, class x>
   struct _set_push_back<list<xs...>, x,
     std::enable_if_t<
-#ifdef _MSC_VER
+#if JLN_MP_MSVC_LIKE
       // workaround for MSVC which has a broken EBO
       _is_set<xs..., x>::type::value
 #else
@@ -9310,7 +9319,7 @@ namespace jln::mp::detail
   struct _is_unique
   {
     template<class... xs>
-#ifdef _MSC_VER
+#if JLN_MP_MSVC_LIKE
     // workaround for MSVC which has a broken EBO
     using f = JLN_MP_DCALL_XS(xs, C, typename _is_set<xs...>::type);
 #else
@@ -10496,7 +10505,7 @@ namespace jln::mp
     ::template f<
       start::value, size::value,
       // verify that stride is strictly greater than 0
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
       emp::conditional_c<(stride::value > 0), stride, void>::value,
 #else
       unsigned{int_(stride::value)-1}+1u,
@@ -10537,7 +10546,7 @@ namespace jln::mp::detail
     template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
     using f = drop_front_c<start, take_front_c<
       detail::validate_index<size - 1,
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
         (start < int_(len) ? int_(len) - start : 0)
 #else
         unsigned{len - start}
@@ -10549,7 +10558,7 @@ namespace jln::mp::detail
   template<int_ size, int_ stride, class C>
   struct _slice_impl
   {
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
     template<int_ i, class x>
     using g = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
 #endif
@@ -10557,7 +10566,7 @@ namespace jln::mp::detail
     template<int_... ints>
     struct impl
     {
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
       template<class... xs>
       using f = call<join<C>, g<ints, xs>...>;
 #else
@@ -12841,7 +12850,7 @@ namespace jln::mp
   /// \ingroup value
 
 #if __cplusplus >= 201703L
-# if !JLN_MP_ENABLE_DEBUG || defined(__clang__)
+# if !JLN_MP_ENABLE_DEBUG || JLN_MP_CLANG_LIKE
   template<auto v>
   struct val
   {
@@ -14629,7 +14638,7 @@ namespace jln::mp
   /// \ingroup value
 
   /// \cond
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
   namespace detail
   {
     template<class x>
@@ -14648,7 +14657,7 @@ namespace jln::mp
   struct as_val
   {
 #if __cplusplus >= 201703L
-# ifndef _MSC_VER
+# if !JLN_MP_MSVC
     template<class x>
     using f = JLN_MP_DCALL(sizeof(C), C, val<x::value>);
 # else
@@ -14658,7 +14667,7 @@ namespace jln::mp
     >>::type;
 # endif
 #else
-# ifndef _MSC_VER
+# if !JLN_MP_MSVC
     template<class x>
     using f = JLN_MP_DCALL(sizeof(C), C, typed_value<decltype(x::value), x::value>);
 # else
@@ -14675,7 +14684,7 @@ namespace jln::mp
   struct as_val<identity>
   {
 #if __cplusplus >= 201703L
-# ifndef _MSC_VER
+# if !JLN_MP_MSVC
     template<class x>
     using f = val<x::value>;
 # else
@@ -14683,7 +14692,7 @@ namespace jln::mp
     using f = typename detail::_one<val<xs::value>...>::type;
 # endif
 #else
-# ifndef _MSC_VER
+# if !JLN_MP_MSVC
     template<class x>
     using f = typed_value<decltype(x::value), x::value>;
 # else
@@ -14798,8 +14807,8 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-JLN_DIAGNOSTIC_PUSH
-JLN_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wlogical-op")
+JLN_MP_DIAGNOSTIC_PUSH()
+JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wlogical-op")
 
 namespace jln::mp
 {
@@ -15347,7 +15356,7 @@ namespace jln::mp::emp
   using val_greater_equal = call<mp::val_greater_equal<C>, x, y>;
 }
 
-JLN_DIAGNOSTIC_POP
+JLN_MP_DIAGNOSTIC_POP()
 #if __cplusplus >= 201703L
 namespace jln::mp
 {
