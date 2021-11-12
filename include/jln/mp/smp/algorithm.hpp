@@ -29,6 +29,7 @@
 #include <jln/mp/smp/algorithm/fold_right.hpp>
 #include <jln/mp/smp/algorithm/fold_tree.hpp>
 #include <jln/mp/smp/algorithm/group.hpp>
+#include <jln/mp/smp/algorithm/group_by_type.hpp>
 #include <jln/mp/smp/algorithm/group_n.hpp>
 #include <jln/mp/smp/algorithm/index.hpp>
 #include <jln/mp/smp/algorithm/indices.hpp>

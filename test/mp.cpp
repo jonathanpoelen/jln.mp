@@ -27,6 +27,7 @@
 #include "src/algorithm/fold_right.cpp"
 #include "src/algorithm/fold_tree.cpp"
 #include "src/algorithm/group.cpp"
+#include "src/algorithm/group_by_type.cpp"
 #include "src/algorithm/group_n.cpp"
 #include "src/algorithm/index.cpp"
 #include "src/algorithm/indices.cpp"
