@@ -4,9 +4,10 @@
 #include <jln/mp/config/config.hpp>
 #include <jln/mp/list/list.hpp>
 #include <jln/mp/number/number.hpp>
+#include <jln/mp/detail/compiler.hpp>
 
 /// \cond
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
 # ifdef JLN_MP_ENABLE_DEBUG
 #  ifndef JLN_MP_ENABLE_DEBUG_FORCE
 #   undef JLN_MP_ENABLE_DEBUG

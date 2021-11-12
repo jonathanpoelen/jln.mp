@@ -20,7 +20,7 @@ namespace jln::mp::detail
     >
   >;
 
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
   template<template<class...> class Tpl, class C, int i = 0>
   using smp_opv_without_zero = contract<
     if_<

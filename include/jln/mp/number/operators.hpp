@@ -9,12 +9,12 @@
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/unpack.hpp>
 
-#include <jln/cxx/diagnostic.hpp>
+#include <jln/mp/detail/compiler.hpp>
 
 #include <limits>
 
-JLN_DIAGNOSTIC_PUSH
-JLN_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wlogical-op")
+JLN_MP_DIAGNOSTIC_PUSH()
+JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wlogical-op")
 
 namespace jln::mp
 {
@@ -666,7 +666,7 @@ namespace jln::mp::emp
   using greater_equal = call<mp::greater_equal<C>, x, y>;
 }
 
-JLN_DIAGNOSTIC_POP
+JLN_MP_DIAGNOSTIC_POP()
 
 /// \cond
 #include <jln/mp/number/as_bool.hpp>

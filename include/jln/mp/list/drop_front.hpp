@@ -6,7 +6,7 @@
 #include <jln/mp/utility/unpack.hpp>
 
 #include <cstddef>
-#if defined(_MSC_VER) || defined(__clang__)
+#if JLN_MP_MSVC || JLN_MP_CLANG
 # include <type_traits>
 #endif
 
@@ -18,7 +18,7 @@ namespace jln::mp
     template<unsigned>
     struct _drop_front;
 
-#if defined(_MSC_VER) || defined(__clang__)
+#if JLN_MP_MSVC || JLN_MP_CLANG
     template<int_ i, std::size_t n, class = void>
     struct validate_index
     {};

@@ -14,14 +14,14 @@
 #    define JLN_MP_USE_INTEGER_PACK 1
 #    define JLN_MP_USE_MAKE_INTEGER_SEQ 0
 #  endif
+#elif defined(_MSC_VER)
+#  define JLN_MP_USE_INTEGER_PACK 0
+#  define JLN_MP_USE_MAKE_INTEGER_SEQ 1
 #elif defined(__GNUC__)
 #  if __GNUC__ >= 8
 #    define JLN_MP_USE_INTEGER_PACK 1
 #    define JLN_MP_USE_MAKE_INTEGER_SEQ 0
 #  endif
-#elif defined(_MSC_VER)
-#  define JLN_MP_USE_INTEGER_PACK 0
-#  define JLN_MP_USE_MAKE_INTEGER_SEQ 1
 #endif
 
 #ifndef JLN_MP_USE_INTEGER_PACK

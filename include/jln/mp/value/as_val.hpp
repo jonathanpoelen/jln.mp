@@ -3,13 +3,14 @@
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/value/val.hpp>
+#include <jln/mp/detail/compiler.hpp>
 
 namespace jln::mp
 {
   /// \ingroup value
 
   /// \cond
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
   namespace detail
   {
     template<class x>
@@ -28,7 +29,7 @@ namespace jln::mp
   struct as_val
   {
 #if __cplusplus >= 201703L
-# ifndef _MSC_VER
+# if !JLN_MP_MSVC
     template<class x>
     using f = JLN_MP_DCALL(sizeof(C), C, val<x::value>);
 # else
@@ -38,7 +39,7 @@ namespace jln::mp
     >>::type;
 # endif
 #else
-# ifndef _MSC_VER
+# if !JLN_MP_MSVC
     template<class x>
     using f = JLN_MP_DCALL(sizeof(C), C, typed_value<decltype(x::value), x::value>);
 # else
@@ -55,7 +56,7 @@ namespace jln::mp
   struct as_val<identity>
   {
 #if __cplusplus >= 201703L
-# ifndef _MSC_VER
+# if !JLN_MP_MSVC
     template<class x>
     using f = val<x::value>;
 # else
@@ -63,7 +64,7 @@ namespace jln::mp
     using f = typename detail::_one<val<xs::value>...>::type;
 # endif
 #else
-# ifndef _MSC_VER
+# if !JLN_MP_MSVC
     template<class x>
     using f = typed_value<decltype(x::value), x::value>;
 # else

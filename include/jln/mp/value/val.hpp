@@ -9,7 +9,7 @@ namespace jln::mp
   /// \ingroup value
 
 #if __cplusplus >= 201703L
-# if !JLN_MP_ENABLE_DEBUG || defined(__clang__)
+# if !JLN_MP_ENABLE_DEBUG || JLN_MP_CLANG_LIKE
   template<auto v>
   struct val
   {

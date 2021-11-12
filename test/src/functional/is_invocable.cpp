@@ -4,8 +4,8 @@
 
 TEST_SUITE_BEGIN()
 
-JLN_DIAGNOSTIC_PUSH
-JLN_DIAGNOSTIC_CLANG_IGNORE("-Wunused-const-variable")
+JLN_MP_DIAGNOSTIC_PUSH()
+JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunused-const-variable")
 struct A;
 struct B { template<class> using f = int; };
 struct C { template<int> using f = int; };
@@ -18,7 +18,7 @@ struct I { template<int...> static constexpr int f = 1; };
 
 struct t { using type = int; };
 struct v { static constexpr int value = 1; };
-JLN_DIAGNOSTIC_POP
+JLN_MP_DIAGNOSTIC_POP()
 
 template<class... xs, class a, class b, class c, class d, class e, class f, class g, class h, class i>
 void invoke(a, b, c, d, e, f, g, h, i)

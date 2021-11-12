@@ -37,7 +37,7 @@ namespace jln::mp
 }
 
 #include <jln/mp/detail/enumerate.hpp>
-#include <jln/cxx/diagnostic.hpp>
+#include <jln/mp/detail/compiler.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -46,8 +46,8 @@ namespace jln::mp::detail
   struct _join_select : _join_select<n_16_64_256_1024(n)>
   {};
 
-  JLN_DIAGNOSTIC_PUSH
-  JLN_DIAGNOSTIC_MSVC_IGNORE(4348)
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_MSVC_IGNORE(4348)
 
 #define JLN_MP_JOIN_SELECT(n, mp_xs, mp_rxs, _)   \
   template<JLN_MP_DEBUG(class error)>             \
@@ -87,7 +87,7 @@ namespace jln::mp::detail
     {};
   };
 
-  JLN_DIAGNOSTIC_POP
+  JLN_MP_DIAGNOSTIC_POP()
 
 } // namespace jln::mp::detail
 /// \endcond

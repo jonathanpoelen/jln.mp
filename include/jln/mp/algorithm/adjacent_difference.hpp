@@ -37,11 +37,12 @@ namespace jln::mp
   }
 }
 
+#include <jln/mp/detail/compiler.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
   template<class C, class x, int_... xs>
   using _adjacent_difference_msvc = JLN_MP_DCALL_XS(xs, C, x, number<xs>...);
 #endif
@@ -49,7 +50,7 @@ namespace jln::mp::detail
   template<class y, class... ys>
   struct _adjacent_difference<list<y, ys...>>
   {
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
     template<class C, class x, class... xs>
     using f = _adjacent_difference_msvc<C, x, (xs::value - ys::value)...>;
 #else

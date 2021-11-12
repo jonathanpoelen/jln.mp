@@ -34,7 +34,7 @@ namespace jln::mp
     ::template f<
       start::value, size::value,
       // verify that stride is strictly greater than 0
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
       emp::conditional_c<(stride::value > 0), stride, void>::value,
 #else
       unsigned{int_(stride::value)-1}+1u,
@@ -83,7 +83,7 @@ namespace jln::mp::detail
     template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
     using f = drop_front_c<start, take_front_c<
       detail::validate_index<size - 1,
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
         (start < int_(len) ? int_(len) - start : 0)
 #else
         unsigned{len - start}
@@ -95,7 +95,7 @@ namespace jln::mp::detail
   template<int_ size, int_ stride, class C>
   struct _slice_impl
   {
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
     template<int_ i, class x>
     using g = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
 #endif
@@ -103,7 +103,7 @@ namespace jln::mp::detail
     template<int_... ints>
     struct impl
     {
-#ifdef _MSC_VER
+#if JLN_MP_MSVC
       template<class... xs>
       using f = call<join<C>, g<ints, xs>...>;
 #else

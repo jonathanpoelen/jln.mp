@@ -43,7 +43,7 @@ namespace jln::mp::detail
   struct _is_unique
   {
     template<class... xs>
-#ifdef _MSC_VER
+#if JLN_MP_MSVC_LIKE
     // workaround for MSVC which has a broken EBO
     using f = JLN_MP_DCALL_XS(xs, C, typename _is_set<xs...>::type);
 #else

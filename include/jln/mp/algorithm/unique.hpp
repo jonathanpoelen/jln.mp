@@ -63,7 +63,7 @@ namespace jln::mp::detail
     : inherit_impl<ints, xs>...
   {};
 
-#ifdef _MSC_VER
+#if JLN_MP_MSVC_LIKE
   template<class... xs>
   struct _is_set
   {
@@ -89,7 +89,7 @@ namespace jln::mp::detail
   template<class... xs, class x>
   struct _set_push_back<list<xs...>, x,
     std::enable_if_t<
-#ifdef _MSC_VER
+#if JLN_MP_MSVC_LIKE
       // workaround for MSVC which has a broken EBO
       _is_set<xs..., x>::type::value
 #else
