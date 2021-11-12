@@ -373,6 +373,10 @@ namespace jln::mp::detail
 #endif
       using f = F<xs...>;
   };
+
+  // useful to work around msvc bugs
+  template<class F, class... xs>
+  using raw_call = typename F::template f<xs...>;
 }
 /// \endcond
 namespace jln::mp
@@ -551,6 +555,17 @@ namespace jln::mp::detail
     ;
   }
 
+  constexpr int n_4_or_less_8_16_64(int n)
+  {
+    return
+      n <= 4 ? n
+    : n < 8 ? 4
+    : n < 16 ? 8
+    : n < 64 ? 16
+    : 64
+    ;
+  }
+
   constexpr int n_4_or_less_8_16_64_256(int n)
   {
     return
@@ -560,6 +575,18 @@ namespace jln::mp::detail
     : n < 64 ? 16
     : n < 256 ? 64
     : 256
+    ;
+  }
+
+  constexpr int sub_1_n_4_or_less_8_16_64(int n)
+  {
+    --n;
+    return
+      n <= 4 ? n
+    : n < 8 ? 4
+    : n < 16 ? 8
+    : n < 64 ? 16
+    : 64
     ;
   }
 
@@ -4810,12 +4837,13 @@ namespace jln::mp::detail
     template<
       std::size_t consumed,
       class Pred,
-      JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA),
+      class _1, class _2, class _3, class _4,
+      class _5, class _6, class _7, class _8,
       class... xs>
     using f = typename _drop_while<7, Pred::template f<_1>::value>
       ::template f<
           consumed+sizeof...(xs), Pred,
-          JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>;
+          _2, _3, _4, _5, _6, _7, _8>;
   };
 
   template<>
@@ -4824,12 +4852,13 @@ namespace jln::mp::detail
     template<
       std::size_t consumed,
       class Pred,
-      JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA),
+      class _1, class _2, class _3, class _4,
+      class _5, class _6, class _7, class _8,
       class... xs>
     using f = typename _drop_while<7, Pred::template f<_1>::value>
       ::template f<
           consumed+sizeof...(xs), Pred,
-          JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>
+          _2, _3, _4, _5, _6, _7, _8>
       ::template f<
           _drop_while<n_8_or_less_16_32_64_128_256(sizeof...(xs)), true>,
           consumed, Pred, xs...>;
@@ -5593,7 +5622,7 @@ namespace jln::mp::detail
   };
 
 
-#define JLN_DROP_WHILE_IMPL(n, m)                                     \
+#define JLN_MP_SEARCH_IMPL(n, m)                                      \
   template<>                                                          \
   struct _search<n, false>                                            \
   {                                                                   \
@@ -5609,15 +5638,15 @@ namespace jln::mp::detail
     using f = _drop_while_result<sizeof...(xs)>;                      \
   }
 
-  JLN_DROP_WHILE_IMPL(7, 6);
-  JLN_DROP_WHILE_IMPL(6, 5);
-  JLN_DROP_WHILE_IMPL(5, 4);
-  JLN_DROP_WHILE_IMPL(4, 3);
-  JLN_DROP_WHILE_IMPL(3, 2);
-  JLN_DROP_WHILE_IMPL(2, 1);
-  JLN_DROP_WHILE_IMPL(1, 0);
+  JLN_MP_SEARCH_IMPL(7, 6);
+  JLN_MP_SEARCH_IMPL(6, 5);
+  JLN_MP_SEARCH_IMPL(5, 4);
+  JLN_MP_SEARCH_IMPL(4, 3);
+  JLN_MP_SEARCH_IMPL(3, 2);
+  JLN_MP_SEARCH_IMPL(2, 1);
+  JLN_MP_SEARCH_IMPL(1, 0);
 
-#undef JLN_DROP_WHILE_IMPL
+#undef JLN_MP_SEARCH_IMPL
 
   template<>
   struct _search<0, false>
@@ -5659,7 +5688,7 @@ namespace jln::mp::detail
                    remaining-8, Pred, xs...>;
   };
 
-#define JLN_DROP_WHILE_IMPL(n, m, xs)                                         \
+#define JLN_MP_SEARCH_IMPL(n, m, xs)                                          \
   template<>                                                                  \
   struct _search<n, false>                                                    \
   {                                                                           \
@@ -5674,12 +5703,12 @@ namespace jln::mp::detail
                    remaining-m, Pred, xs...>;                                 \
   }
 
-  JLN_DROP_WHILE_IMPL(32, 16, JLN_MP_XS_16);
-  JLN_DROP_WHILE_IMPL(64, 32, JLN_MP_XS_32);
-  JLN_DROP_WHILE_IMPL(128, 64, JLN_MP_XS_64);
-  JLN_DROP_WHILE_IMPL(256, 128, JLN_MP_XS_128);
+  JLN_MP_SEARCH_IMPL(32, 16, JLN_MP_XS_16);
+  JLN_MP_SEARCH_IMPL(64, 32, JLN_MP_XS_32);
+  JLN_MP_SEARCH_IMPL(128, 64, JLN_MP_XS_64);
+  JLN_MP_SEARCH_IMPL(256, 128, JLN_MP_XS_128);
 
-#undef JLN_DROP_WHILE_IMPL
+#undef JLN_MP_SEARCH_IMPL
 }
 /// \endcond
 namespace jln::mp
@@ -6815,25 +6844,27 @@ namespace jln::mp
   /// \pre `sizeof...(xs) == emp::size<Selectors>`
   /// \semantics
   ///   \code
-  ///   call<compress<numbers<1,0,1,0,1,1>,
-  ///     a,b,c,d,e,f
-  ///   > = list<
-  ///     a,  c,  e,f
-  ///   >
-  ///   \endconde
+  ///   call<compress<
+  ///     numbers<1,0,1,0,1,1>,
+  ///             a,b,c,d,e,f
+  ///   >> = list<a,  c,  e,f>
+  ///   \endcode
   /// \treturn \sequence
   template<class Selectors, class C = listify>
   struct compress
   {};
 
-#ifdef JLN_MP_DOXYGENATING
-  template<class... selectors, class C = listify>
+  template<class... selectors, class C>
   struct compress<list<selectors...>, C>
   {
     template<class... xs>
-    using f;
+    using f = typename join<C>::template f<
+      detail::raw_call<wrap_in_list_c<selectors::value>, xs>...
+    >;
   };
-#endif
+
+  template<bool... selectors>
+  using compress_with_c = compress<mp::compress<list<number<selectors>...>>>;
 
   namespace emp
   {
@@ -6843,13 +6874,6 @@ namespace jln::mp
     template<class L, bool... selectors>
     using compress_with_c = unpack<L, mp::compress<list<number<selectors>...>>>;
   }
-
-  /// \cond
-  template<class... selectors, class C>
-  struct compress<list<selectors...>, C>
-  : each<typename conditional_c<selectors::value>::template f<listify, clear<>>..., join<C>>
-  {};
-  /// \endcond
 }
 namespace jln::mp
 {
@@ -6943,6 +6967,481 @@ namespace jln::mp
 }
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    template<bool>
+    struct _remove_unique;
+
+    template<bool>
+    struct _copy_unique;
+
+    template<class Cmp, class C>
+    struct mk_remove_unique;
+
+    template<class Cmp, class C>
+    struct mk_copy_unique;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Remove unique elements from a \sequence.
+  /// \treturn \sequence
+  /// \see remove_unique_if, copy_unique, copy_unique_if
+  template<class C = listify>
+  struct remove_unique
+  {
+    template<class... xs>
+    using f = typename detail::_remove_unique<sizeof...(xs) < 2>::template f<C, xs...>;
+  };
+
+  /// Remove unique elements from a \sequence.
+  /// \treturn \sequence
+  /// \see remove_unique, copy_unique, copy_unique_if
+  template<class Cmp = lift<std::is_same>, class C = listify>
+  using remove_unique_if = typename detail::mk_remove_unique<Cmp, C>::type;
+
+  namespace emp
+  {
+    template<class L, class C = mp::listify>
+    using remove_unique = unpack<L, remove_unique<C>>;
+
+    template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
+    using remove_unique_if = unpack<L, remove_unique_if<Cmp, C>>;
+  }
+
+  /// Copy unique elements from a \sequence.
+  /// \treturn \sequence
+  /// \see copy_unique_if, remove_unique, remove_unique_if
+  template<class C = listify>
+  struct copy_unique
+  {
+    template<class... xs>
+    using f = typename detail::_copy_unique<sizeof...(xs) < 2>::template f<C, xs...>;
+  };
+
+  /// Copy unique elements from a \sequence.
+  /// \treturn \sequence
+  /// \see copy_unique, remove_unique, remove_unique_if
+  template<class Cmp = lift<std::is_same>, class C = listify>
+  using copy_unique_if = typename detail::mk_copy_unique<Cmp, C>::type;
+
+  namespace emp
+  {
+    template<class L, class C = mp::listify>
+    using copy_unique = unpack<L, copy_unique<C>>;
+
+    template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
+    using copy_unique_if = unpack<L, copy_unique_if<Cmp, C>>;
+  }
+}
+
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class Cmp, class C>
+    struct mk_unique;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Returns a list of the same form as L with the duplicate elements removed.
+  /// \treturn \sequence
+  template<class C = listify>
+  using unique = typename detail::mk_unique<lift<std::is_same>, C>::type;
+
+  /// Returns a list of the same form as L with the duplicate elements removed.
+  /// \treturn \sequence
+  template<class Cmp = lift<std::is_same>, class C = listify>
+  using unique_if = typename detail::mk_unique<Cmp, C>::type;
+
+  namespace emp
+  {
+    template<class L, class C = mp::listify>
+    using unique = unpack<L, unique<C>>;
+
+    template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
+    using unique_if = unpack<L, unique_if<Cmp, C>>;
+  }
+}
+
+
+// std::integer_sequence
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class x>
+  struct inherit_item {};
+  template<std::size_t i, class x>
+  struct inherit_impl : inherit_item<x> {};
+
+  template<class, class...>
+  struct inherit;
+
+  template<std::size_t... ints, class... xs>
+  struct inherit<std::integer_sequence<std::size_t, ints...>, xs...>
+    : inherit_impl<ints, xs>...
+  {};
+
+#ifdef _MSC_VER
+  template<class... xs>
+  struct _is_set
+  {
+      template <class Pack>
+      static auto is_set(Pack pack) -> decltype((
+          static_cast<inherit_item<xs>*>(pack),...
+      ), number<1>());
+
+      static number<0> is_set(...);
+
+      using type = decltype(is_set(static_cast<
+        inherit<std::make_index_sequence<sizeof...(xs)>, xs...>*
+      >(nullptr)));
+  };
+#endif
+
+  template<class L, class x, class = void>
+  struct _set_push_back
+  {
+    using type = L;
+  };
+
+  template<class... xs, class x>
+  struct _set_push_back<list<xs...>, x,
+    std::enable_if_t<
+#ifdef _MSC_VER
+      // workaround for MSVC which has a broken EBO
+      _is_set<xs..., x>::type::value
+#else
+      sizeof(inherit<std::make_index_sequence<sizeof...(xs)+1>, xs..., x>) == 1
+#endif
+  >>
+  {
+    using type = list<xs..., x>;
+  };
+
+  struct _set_cmp_push_back_impl
+  {
+    template<class Cmp, class x, class... xs>
+    using f = typename conditional_c<
+      index_if<push_back<x, Cmp>, identity, always<number<-1>>>::template f<xs...>::value == -1
+    >::template f<list<xs..., x>, list<xs...>>;
+  };
+
+  template<class Cmp>
+  struct _set_cmp_push_back
+  {
+    template<class L, class x>
+    using f = typename unpack<_set_cmp_push_back_impl>::template f<L, Cmp, x>;
+  };
+
+  template<class Cmp, class C>
+  struct mk_unique
+  {
+    using type = push_front<list<>, fold_left<
+      _set_cmp_push_back<Cmp>,
+      unpack<C>
+    >>;
+  };
+
+  template<class C>
+  struct mk_unique<lift<std::is_same>, C>
+  {
+    using type = push_front<list<>, fold_left<
+      lift_t<_set_push_back>,
+      optimize_useless_unpack_t<unpack<C>>
+    >>;
+  };
+
+  template<class C>
+  struct mk_unique<lift_t<std::is_same>, C>
+  : mk_unique<lift<std::is_same>, C>
+  {};
+
+  template<class C>
+  struct mk_unique<same<>, C>
+  : mk_unique<lift<std::is_same>, C>
+  {};
+}
+/// \endcond
+// inherit / inherit_item
+namespace jln::mp
+{
+  /// \ingroup list
+
+  /// Remove the first element of sequence
+  /// \pre `sizeof...(xs) > 0`
+  /// \treturn \sequence
+  template<class C = listify>
+  using pop_front = drop_front<number<1>, C>;
+
+  namespace emp
+  {
+    template<class L, class C = mp::listify>
+    using pop_front = drop_front<L, mp::number<1>, C>;
+  }
+}
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  /// \treturn \bool
+  template <class T, class C = identity>
+  using is_not = is<T, not_<C>>;
+} // namespace jln::mp
+/// \cond
+namespace jln::mp::detail
+{
+  template<class From, class To>
+  constexpr auto is_convertible_to(From, To)
+    -> decltype(To(From()), true)
+  {
+    return true;
+  }
+
+  constexpr bool is_convertible_to(...)
+  {
+    return false;
+  }
+
+
+  template<class C, class Inherit, class... xs>
+  using remove_unique_impl = typename join<C>::template f<
+    typename wrap_in_list_c<!is_convertible_to(
+      static_cast<Inherit*>(nullptr),
+      static_cast<detail::inherit_item<xs>*>(nullptr)
+    )>
+    ::template f<xs>
+  ...>;
+
+  template<>
+  struct _remove_unique<false>
+  {
+    template<class C, class... xs>
+    using f = remove_unique_impl<
+      C, detail::inherit<std::make_index_sequence<sizeof...(xs)>, xs...>, xs...
+    >;
+  };
+
+  template<>
+  struct _remove_unique<true>
+  {
+    template<class C, class... xs>
+    using f = typename C::template f<>;
+  };
+
+
+  template<class C, class Inherit, class... xs>
+  using copy_unique_impl = typename join<C>::template f<
+    typename wrap_in_list_c<is_convertible_to(
+      static_cast<Inherit*>(nullptr),
+      static_cast<detail::inherit_item<xs>*>(nullptr)
+    )>
+    ::template f<xs>
+  ...>;
+
+  template<>
+  struct _copy_unique<false>
+  {
+    template<class C, class... xs>
+    using f = copy_unique_impl<
+      C, detail::inherit<std::make_index_sequence<sizeof...(xs)>, xs...>, xs...
+    >;
+  };
+
+  template<>
+  struct _copy_unique<true>
+  {
+    template<class C, class... xs>
+    using f = typename C::template f<xs...>;
+  };
+
+
+  template<class Indexes>
+  struct remove_unique_if_impl;
+
+  template<std::size_t... ints>
+  struct remove_unique_if_impl<std::integer_sequence<std::size_t, ints...>>
+  {
+    template<class C, class Cmp, class... xs>
+    using f = typename join<C>::template f<
+      raw_call<
+        typename rotate_c<ints, pop_front<index_if<
+          push_back<xs, Cmp>,
+          always<wrap_in_list_c<true>>,
+          always<wrap_in_list_c<false>>
+        >>>
+        ::template f<xs...>,
+        xs
+      >...
+    >;
+  };
+
+  template<>
+  struct remove_unique_if_impl<std::integer_sequence<std::size_t>>
+  {
+    template<class C, class Cmp, class... xs>
+    using f = typename C::template f<>;
+  };
+
+  template<std::size_t i>
+  struct remove_unique_if_impl<std::integer_sequence<std::size_t, i>>
+  : remove_unique_if_impl<std::integer_sequence<std::size_t>>
+  {};
+
+  template<class Cmp, class C>
+  struct _remove_unique_if
+  {
+    template<class... xs>
+    using f = typename detail::remove_unique_if_impl<std::make_index_sequence<sizeof...(xs)>>
+      ::template f<C, Cmp, xs...>;
+  };
+
+  template<class Cmp, class C>
+  struct mk_remove_unique
+  {
+    using type = _remove_unique_if<Cmp, C>;
+  };
+
+
+  template<class Indexes>
+  struct copy_unique_if_impl;
+
+  template<std::size_t... ints>
+  struct copy_unique_if_impl<std::integer_sequence<std::size_t, ints...>>
+  {
+    template<class C, class Cmp, class... xs>
+    using f = typename join<C>::template f<
+      raw_call<
+        typename rotate_c<ints, pop_front<index_if<
+          push_back<xs, Cmp>,
+          always<wrap_in_list_c<false>>,
+          always<wrap_in_list_c<true>>
+        >>>
+        ::template f<xs...>,
+        xs
+      >...
+    >;
+  };
+
+  template<>
+  struct copy_unique_if_impl<std::integer_sequence<std::size_t>>
+  : remove_unique_if_impl<std::integer_sequence<std::size_t>>
+  {};
+
+  template<std::size_t i>
+  struct copy_unique_if_impl<std::integer_sequence<std::size_t, i>>
+  {
+    template<class C, class Cmp, class... xs>
+    using f = typename C::template f<xs...>;
+  };
+
+  template<class Cmp, class C>
+  struct _copy_unique_if
+  {
+    template<class... xs>
+    using f = typename detail::copy_unique_if_impl<std::make_index_sequence<sizeof...(xs)>>
+      ::template f<C, Cmp, xs...>;
+  };
+
+  template<class Cmp, class C>
+  struct mk_copy_unique
+  {
+    using type = _copy_unique_if<Cmp, C>;
+  };
+
+
+  template<class C>
+  struct mk_remove_unique<lift<std::is_same>, C>
+  {
+    using type = mp::remove_unique<C>;
+  };
+
+  template<class C>
+  struct mk_remove_unique<lift_t<std::is_same>, C>
+  {
+    using type = mp::remove_unique<C>;
+  };
+
+  template<class C>
+  struct mk_remove_unique<same<>, C>
+  {
+    using type = mp::remove_unique<C>;
+  };
+
+  template<class C>
+  struct mk_remove_unique<lift<std::is_same, not_<>>, C>
+  {
+    using type = mp::copy_unique<C>;
+  };
+
+  template<class C>
+  struct mk_remove_unique<lift_t<std::is_same, not_<>>, C>
+  {
+    using type = mp::copy_unique<C>;
+  };
+
+  template<class C>
+  struct mk_remove_unique<same<not_<>>, C>
+  {
+    using type = mp::copy_unique<C>;
+  };
+
+  template<class F, class C>
+  struct mk_remove_unique<tee<F, not_<>>, C>
+  : mk_copy_unique<F, C>
+  {};
+
+  template<class C>
+  struct mk_copy_unique<lift<std::is_same>, C>
+  {
+    using type = mp::copy_unique<C>;
+  };
+
+  template<class C>
+  struct mk_copy_unique<lift_t<std::is_same>, C>
+  {
+    using type = mp::copy_unique<C>;
+  };
+
+  template<class C>
+  struct mk_copy_unique<same<>, C>
+  {
+    using type = mp::copy_unique<C>;
+  };
+
+  template<class C>
+  struct mk_copy_unique<lift<std::is_same, not_<>>, C>
+  {
+    using type = mp::remove_unique<C>;
+  };
+
+  template<class C>
+  struct mk_copy_unique<lift_t<std::is_same, not_<>>, C>
+  {
+    using type = mp::remove_unique<C>;
+  };
+
+  template<class C>
+  struct mk_copy_unique<same<not_<>>, C>
+  {
+    using type = mp::remove_unique<C>;
+  };
+
+  template<class F, class C>
+  struct mk_copy_unique<tee<F, not_<>>, C>
+  : mk_remove_unique<F, C>
+  {};
+}
+/// \endcond
+namespace jln::mp
+{
   /// \ingroup algorithm
 
   /// Counts all elements that satisfy a predicate.
@@ -6967,8 +7466,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    struct counter_inc;
-    struct counter_push;
+    template<class... xs>
     struct counter_impl;
   }
   /// \endcond
@@ -6976,92 +7474,66 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Counts all distinct elements and returns a list of pairs containing
-  /// the repeat count and the type.
+  /// the type and the repeat count.
   /// Elements are sorted in order of first appearance.
   /// \semantics
   ///   \code
-  ///   call<counter<>, int, int, char, double, int, double> == list<list<number<3>, int>, list<number<1>, char>, list<number<2>, double>>
+  ///   call<counter<F>, int, int, char, double, int, double>
+  ///   == list<
+  ///     F::f<int, number<3>>,
+  ///     F::f<char, number<1>>,
+  ///     F::f<double, number<2>>
+  ///   >
   ///   \endcode
-  /// \treturn \sequence of \list of \number / type
-  template<class C = listify>
-  struct counter : push_front<list<list<>, list<>>, fold_left<detail::counter_impl, unpack<zip<C>>>>
+  /// \treturn \sequence of \list of type and \number
+  template<class F, class C = listify>
+  struct counter_wrapped_with
   {
-  #ifdef JLN_MP_DOXYGENATING
     template<class... xs>
-    using f;
-  #endif
+    using f = typename unique<lift<detail::counter_impl>>
+      ::f<xs...>
+      ::template f<C, F, xs...>;
   };
+
+  /// Counts all distinct elements and returns a list of pairs containing
+  /// the type and the repeat count.
+  /// Elements are sorted in order of first appearance.
+  /// \semantics
+  ///   \code
+  ///   call<counter<F>, int, int, char, double, int, double>
+  ///   == list<
+  ///     list<int, number<3>>,
+  ///     list<char, number<1>>,
+  ///     list<double, number<2>>
+  ///   >
+  ///   \endcode
+  /// \treturn \sequence of \list of type and \number
+  template<class C = listify>
+  using counter = counter_wrapped_with<listify, C>;
 
   namespace emp
   {
     template<class L, class C = mp::listify>
     using counter = unpack<L, mp::counter<C>>;
+
+    template<class L, class F = mp::listify, class C = mp::listify>
+    using counter_wrapped_with = unpack<L, mp::counter_wrapped_with<F, C>>;
   }
 }
-
 
 /// \cond
 namespace jln::mp::detail
 {
-  struct counter_inc_first
-  {
-    template<class n, class... ns>
-    using f = list<number<n::value + 1>, ns...>;
-  };
+  template<class x, class... xs>
+  inline constexpr auto count_unique_v = (0 + ... + std::is_same<xs, x>::value);
 
-  template<std::size_t N>
-  struct counter_inc_impl
-  {
-    template<class x, class... xs>
-    using elements = list<xs...>;
-
-    template<class... ints>
-    using indexes = typename _join_select<2>::f<
-      listify,
-      typename take_front<number<sizeof...(ints) - N>>::template f<ints...>,
-      typename drop_front<number<sizeof...(ints) - N>, counter_inc_first>::template f<ints...>
-    >::type;
-  };
-
-  struct counter_inc
-  {
-    template<class N>
-    using f = counter_inc_impl<N::value>;
-  };
-
-  struct counter_push
-  {
-    template<class x, class... xs>
-    using elements = list<xs..., x>;
-
-    template<class... ints>
-    using indexes = list<ints..., number<1>>;
-  };
-
-  template<class>
-  struct counter_next;
-
-  template<class... xs, class... ints>
-  struct counter_next<list<list<ints...>, list<xs...>>>
-  {
-    template<class M, class x>
-    using next = list<
-      typename M::template indexes<ints...>,
-      typename M::template elements<x, xs...>
-    >;
-
-    template<class x>
-    using f = next<
-      typename find_if<is<x>, size<detail::counter_inc>, always<detail::counter_push>>
-      ::template f<xs...>,
-      x
-    >;
-  };
-
+  template<class... xs>
   struct counter_impl
   {
-    template<class L, class x>
-    using f = typename counter_next<L>::template f<x>;
+    template<class C, class F, class... ys>
+    using f = typename C::template f<
+      typename F::template f<xs, mp::number<count_unique_v<xs, ys...>>>...
+    >;
   };
 }
 /// \endcond
@@ -7096,20 +7568,174 @@ namespace jln::mp
 }
 namespace jln::mp
 {
-  /// \ingroup list
+  /// \cond
+  namespace detail
+  {
+    template<int, bool not_found>
+    struct _drop_while_xs;
 
-  /// Remove the first element of sequence
-  /// \pre `sizeof...(xs) > 0`
+    constexpr int_ partial_drop_while_xs_size(int_ i, int_ size)
+    {
+      return (i >= size) ? size
+        : (i >= 0) ? i
+        : (i >= -size) ? size + i + 1
+        : 0
+        ;
+    }
+
+    template<int_ Size, class Pred, class... xs>
+    using drop_while_xs_call = typename detail::_drop_while_xs<
+      detail::n_8_or_less_16_32_64_128_256(Size),
+      true
+    >::template f<Size, Pred, xs...>;
+  }
+  /// \endcond
+
+  /// \ingroup search
+
+  /// Remove the first elements of a \sequence that satisfy a \predicate.
+  /// The \predicate takes all the elements of the current position until
+  /// the end of the list.
   /// \treturn \sequence
-  template<class C = listify>
-  using pop_front = drop_front<number<1>, C>;
+  /// \see drop_front, drop_back, drop_while, partial_drop_while_xs, take_while, take_while_xs
+  template<class Pred, class C = listify>
+  struct drop_while_xs
+  {
+    template<class... xs>
+    using f = typename detail::drop_while_impl<
+      typename detail::_drop_while_xs<
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)),
+        true
+      >::template f<sizeof...(xs), Pred, xs...>
+    >::template f<C, xs...>;
+  };
+
+  /// Same as \c drop_while_xs, but stop searching at position \c OffsetEnd.
+  /// \tparam OffsetEnd  a negative value start to end of sequence.
+  /// \treturn \sequence
+  /// \see drop_front, drop_back, drop_while, drop_while_xs, take_while, take_while_xs
+  template<class OffsetEnd, class Pred, class C = listify>
+  struct partial_drop_while_xs
+  {
+    template<class... xs>
+    using f = typename detail::drop_while_impl<
+      typename detail::drop_while_xs_call<
+        detail::partial_drop_while_xs_size(OffsetEnd::value, sizeof...(xs)),
+        Pred, xs...
+      >
+    >::template f<C, xs...>;
+  };
+
+  template<int_ OffsetEnd, class Pred, class C = listify>
+  using partial_drop_while_xs_c = partial_drop_while_xs<number<OffsetEnd>, Pred, C>;
 
   namespace emp
   {
-    template<class L, class C = mp::listify>
-    using pop_front = drop_front<L, mp::number<1>, C>;
+    template<class L, class Pred, class C = mp::listify>
+    using drop_while_xs = unpack<L, mp::drop_while_xs<Pred, C>>;
+
+    template<class L, class OffsetEnd, class state, class Pred, class C = mp::identity>
+    using partial_drop_while_xs = unpack<L,
+      mp::partial_drop_while_xs<OffsetEnd, Pred, C>>;
+
+    template<class L, int_ OffsetEnd, class Pred, class C = mp::listify>
+    using partial_drop_while_xs_c = unpack<L,
+      mp::partial_drop_while_xs<number<OffsetEnd>, Pred, C>>;
   }
 }
+
+
+/// \cond
+namespace jln::mp::detail
+{
+#define JLN_DROP_WHILE_IMPL(n, m)                                           \
+  template<>                                                                \
+  struct _drop_while_xs<n, true>                                            \
+  {                                                                         \
+    template<std::size_t remaining, class Pred, class x, class... xs>       \
+    using f = typename _drop_while_xs<m, Pred::template f<x, xs...>::value> \
+            ::template f<remaining-1, Pred, xs...>;                         \
+  };                                                                        \
+                                                                            \
+  template<>                                                                \
+  struct _drop_while_xs<n, false>                                           \
+  {                                                                         \
+    template<std::size_t remaining, class Pred, class... xs>                \
+    using f = _drop_while_result<sizeof...(xs)>;                            \
+  }
+
+  JLN_DROP_WHILE_IMPL(7, 6);
+  JLN_DROP_WHILE_IMPL(6, 5);
+  JLN_DROP_WHILE_IMPL(5, 4);
+  JLN_DROP_WHILE_IMPL(4, 3);
+  JLN_DROP_WHILE_IMPL(3, 2);
+  JLN_DROP_WHILE_IMPL(2, 1);
+  JLN_DROP_WHILE_IMPL(1, 0);
+
+#undef JLN_DROP_WHILE_IMPL
+
+  template<>
+  struct _drop_while_xs<0, true>
+  {
+    template<std::size_t remaining, class Pred, class... xs>
+    using f = _drop_while_continue;
+  };
+
+  template<>
+  struct _drop_while_xs<0, false>
+  {
+    template<std::size_t remaining, class Pred, class... xs>
+    using f = _drop_while_result<sizeof...(xs)>;
+  };
+
+  template<>
+  struct _drop_while_xs<8, true>
+  {
+    template<std::size_t remaining, class Pred, class x, class... xs>
+    using f = typename _drop_while_xs<7, Pred::template f<x, xs...>::value>
+      ::template f<remaining-8, Pred, xs...>;
+  };
+
+  template<>
+  struct _drop_while_xs<16, true>
+  {
+    template<
+      std::size_t remaining,
+      class Pred,
+      class _1, class _2, class _3, class _4,
+      class _5, class _6, class _7, class _8,
+      class... xs>
+    using f = typename _drop_while_xs<7, Pred::template f<
+        _1, _2, _3, _4, _5, _6, _7, _8, xs...
+      >::value>
+      ::template f<7, Pred, _2, _3, _4, _5, _6, _7, _8, xs...>
+      ::template f<_drop_while_xs<n_8_or_less_16_32_64_128_256(remaining-8), true>,
+                   remaining-8, Pred, xs...>;
+  };
+
+#define JLN_DROP_WHILE_IMPL(n, m, xs)                                               \
+  template<>                                                                        \
+  struct _drop_while_xs<n, true>                                                    \
+  {                                                                                 \
+    template<                                                                       \
+      std::size_t remaining,                                                        \
+      class Pred,                                                                   \
+      xs(class, JLN_MP_NIL, JLN_MP_COMMA),                                          \
+      class... xs>                                                                  \
+    using f = typename _drop_while_xs<m, true>                                      \
+      ::template f<m, Pred, xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...>        \
+      ::template f<_drop_while_xs<n_8_or_less_16_32_64_128_256(remaining-m), true>, \
+                   remaining-m, Pred, xs...>;                                       \
+  }
+
+  JLN_DROP_WHILE_IMPL(32, 16, JLN_MP_XS_16);
+  JLN_DROP_WHILE_IMPL(64, 32, JLN_MP_XS_32);
+  JLN_DROP_WHILE_IMPL(128, 64, JLN_MP_XS_64);
+  JLN_DROP_WHILE_IMPL(256, 128, JLN_MP_XS_128);
+
+#undef JLN_DROP_WHILE_IMPL
+}
+/// \endcond
 namespace jln::mp
 {
   /// \cond
@@ -7480,6 +8106,396 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
+    template<int>
+    struct _fold_left_xs;
+
+    constexpr int_ _partial_fold_left_xs_size(int_ i, int_ size)
+    {
+      // size contains state + xs...
+      return (size == 0) ? 0
+        : (i >= size) ? 1
+        : (i >= 0) ? i + 1
+        : (i >= -size) ? size + i + 1
+        : 0
+        ;
+    }
+
+    template<class F, int_ n, class... xs>
+    using partial_fold_left_xs_select = typename detail::_fold_left_xs<
+      detail::sub_1_n_4_or_less_8_16_64(n)
+    >::template f<F::template f, n-1, xs...>;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Folds left over a list using a mulary predicate.
+  /// fold_left_xs consideres the first element in the input pack as the state,
+  /// use \c push_front<> to add state if needed.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   F::f<... F::f<xs[0], xs[1], ..., xs[n-1]>, xs[2], ..., xs[n-1]>, ..., xs[n-1]>, ...>
+  ///   \endcode
+  /// \treturn \value
+  /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
+  template<class OffsetEnd, class F, class C = identity>
+  struct partial_fold_left_xs
+  {
+    template<class... xs>
+    using f = typename C::template f<
+      detail::partial_fold_left_xs_select<
+        F, detail::_partial_fold_left_xs_size(OffsetEnd::value, sizeof...(xs)), xs...
+      >
+    >;
+  };
+
+  template<int_ OffsetEnd, class F, class C = identity>
+  using partial_fold_left_xs_c = partial_fold_left_xs<number<OffsetEnd>, F, C>;
+
+#ifdef JLN_MP_DOXYGENATING
+  template<class F, class C = identity>
+  using fold_left_xs = partial_fold_left_xs<number<-1>, F, C>;
+#else
+  template<class F, class C = identity>
+  struct fold_left_xs
+  {
+    template<class... xs>
+    using f = typename C::template f<
+      detail::partial_fold_left_xs_select<F, sizeof...(xs), xs...>
+    >;
+  };
+#endif
+
+  namespace emp
+  {
+    template<class L, class OffsetEnd, class state, class F, class C = mp::identity>
+    using partial_fold_left_xs = unpack<L,
+      mp::push_front<state, mp::partial_fold_left_xs<OffsetEnd, F, C>>>;
+
+    template<class L, int_ OffsetEnd, class state, class F, class C = mp::identity>
+    using partial_fold_left_xs_c = unpack<L,
+      mp::push_front<state, mp::partial_fold_left_xs<number<OffsetEnd>, F, C>>>;
+
+    template<class L, class state, class F, class C = mp::identity>
+    using fold_left_xs = unpack<L,
+      mp::push_front<state, mp::fold_left_xs<F, C>>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct _fold_left_xs<-1>
+  {};
+
+  template<>
+  struct _fold_left_xs<0>
+  {
+    template<template<class...> class, int m, class state>
+    using f = state;
+  };
+
+  template<>
+  struct _fold_left_xs<1>
+  {
+    template<template<class...> class F, int m, class state, class... xs>
+    using f = F<state, xs...>;
+  };
+
+  template<>
+  struct _fold_left_xs<2>
+  {
+    template<template<class...> class F, int m, class state,
+      class _1, class... xs>
+    using f = F<F<state, _1, xs...>, xs...>;
+  };
+
+  template<>
+  struct _fold_left_xs<3>
+  {
+    template<template<class...> class F, int m, class state,
+      class _1, class _2, class... xs>
+    using f = F<F<F<state, _1, _2, xs...>, _2, xs...>, xs...>;
+  };
+
+  // newline='\n'
+  // for n in (4, 8, 16, 64):
+  //   args = ', '.join(f'class _{i}' for i in range(1,n))
+  //   ps = [f'_{i}, ' for i in range(1, n)]
+  //   print(f'''
+  //   template<>
+  //   struct _fold_left_xs<{n}>
+  //   {{
+  //     template<template<class...> class F, int m, class state,
+  //       {args}, class... xs>
+  //     using f = typename _fold_left_xs<
+  //       detail::n_4_or_less_8_16_64(m-{n-1})
+  //     >::template f<F, m-{n-1}, {'F<' * (n-1)}state{''.join(f',{newline}      {"".join(ps[i:])}xs...>' for i in range(n))};
+  //   }};
+  // ''', end='')
+
+  template<>
+  struct _fold_left_xs<4>
+  {
+    template<template<class...> class F, int m, class state,
+      class _1, class _2, class _3, class... xs>
+    using f = typename _fold_left_xs<
+      detail::n_4_or_less_8_16_64(m-3)
+    >::template f<F, m-3, F<F<F<state,
+      _1, _2, _3, xs...>,
+      _2, _3, xs...>,
+      _3, xs...>,
+      xs...>;
+  };
+
+  template<>
+  struct _fold_left_xs<8>
+  {
+    template<template<class...> class F, int m, class state,
+      class _1, class _2, class _3, class _4, class _5, class _6, class _7, class... xs>
+    using f = typename _fold_left_xs<
+      detail::n_4_or_less_8_16_64(m-7)
+    >::template f<F, m-7, F<F<F<F<F<F<F<state,
+      _1, _2, _3, _4, _5, _6, _7, xs...>,
+      _2, _3, _4, _5, _6, _7, xs...>,
+      _3, _4, _5, _6, _7, xs...>,
+      _4, _5, _6, _7, xs...>,
+      _5, _6, _7, xs...>,
+      _6, _7, xs...>,
+      _7, xs...>,
+      xs...>;
+  };
+
+  template<>
+  struct _fold_left_xs<16>
+  {
+    template<template<class...> class F, int m, class state,
+      class _1, class _2, class _3, class _4, class _5, class _6, class _7,
+      class _8, class _9, class _10, class _11, class _12, class _13, class _14,
+      class _15, class... xs>
+    using f = typename _fold_left_xs<
+      detail::n_4_or_less_8_16_64(m-15)
+    >::template f<F, m-15, F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<state,
+      _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _10, _11, _12, _13, _14, _15, xs...>,
+      _11, _12, _13, _14, _15, xs...>,
+      _12, _13, _14, _15, xs...>,
+      _13, _14, _15, xs...>,
+      _14, _15, xs...>,
+      _15, xs...>,
+      xs...>;
+  };
+
+  template<>
+  struct _fold_left_xs<64>
+  {
+    template<template<class...> class F, int m, class state,
+      class _1, class _2, class _3, class _4, class _5, class _6, class _7,
+      class _8, class _9, class _10, class _11, class _12, class _13,
+      class _14, class _15, class _16, class _17, class _18, class _19,
+      class _20, class _21, class _22, class _23, class _24, class _25,
+      class _26, class _27, class _28, class _29, class _30, class _31,
+      class _32, class _33, class _34, class _35, class _36, class _37,
+      class _38, class _39, class _40, class _41, class _42, class _43,
+      class _44, class _45, class _46, class _47, class _48, class _49,
+      class _50, class _51, class _52, class _53, class _54, class _55,
+      class _56, class _57, class _58, class _59, class _60, class _61,
+      class _62, class _63,
+      class... xs>
+    using f = typename _fold_left_xs<
+      detail::n_4_or_less_8_16_64(m-63)
+    >::template f<F, m-63, F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<
+                           F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<
+                           F<F<F<F<F<F<F<F<F<F<F<
+      state,
+      _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16,
+      _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31,
+      _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46,
+      _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61,
+      _62, _63, xs...>,
+      _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17,
+      _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32,
+      _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47,
+      _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62,
+      _63, xs...>,
+      _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18,
+      _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33,
+      _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48,
+      _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63,
+      xs...>,
+      _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19,
+      _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34,
+      _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49,
+      _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20,
+      _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35,
+      _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50,
+      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20,
+      _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35,
+      _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50,
+      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21,
+      _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36,
+      _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51,
+      _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22,
+      _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37,
+      _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52,
+      _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23,
+      _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38,
+      _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53,
+      _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24,
+      _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39,
+      _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54,
+      _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25,
+      _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40,
+      _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55,
+      _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26,
+      _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41,
+      _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56,
+      _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27,
+      _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42,
+      _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57,
+      _58, _59, _60, _61, _62, _63, xs...>,
+      _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28,
+      _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43,
+      _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58,
+      _59, _60, _61, _62, _63, xs...>,
+      _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29,
+      _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44,
+      _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59,
+      _60, _61, _62, _63, xs...>,
+      _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30,
+      _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45,
+      _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
+      _61, _62, _63, xs...>,
+      _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31,
+      _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46,
+      _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61,
+      _62, _63, xs...>,
+      _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32,
+      _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47,
+      _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62,
+      _63, xs...>,
+      _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33,
+      _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48,
+      _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63,
+      xs...>,
+      _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34,
+      _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49,
+      _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35,
+      _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50,
+      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36,
+      _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51,
+      _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37,
+      _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52,
+      _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38,
+      _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53,
+      _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39,
+      _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54,
+      _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40,
+      _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55,
+      _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41,
+      _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56,
+      _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42,
+      _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57,
+      _58, _59, _60, _61, _62, _63, xs...>,
+      _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43,
+      _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58,
+      _59, _60, _61, _62, _63, xs...>,
+      _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44,
+      _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59,
+      _60, _61, _62, _63, xs...>,
+      _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45,
+      _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
+      _61, _62, _63, xs...>,
+      _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46,
+      _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61,
+      _62, _63, xs...>,
+      _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47,
+      _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62,
+      _63, xs...>,
+      _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48,
+      _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63,
+      xs...>,
+      _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49,
+      _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50,
+      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51,
+      _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52,
+      _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53,
+      _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54,
+      _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55,
+      _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56,
+      _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57,
+      _58, _59, _60, _61, _62, _63, xs...>,
+      _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58,
+      _59, _60, _61, _62, _63, xs...>,
+      _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59,
+      _60, _61, _62, _63, xs...>,
+      _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
+      _61, _62, _63, xs...>,
+      _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61,
+      _62, _63, xs...>,
+      _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62,
+      _63, xs...>,
+      _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63,
+      xs...>,
+      _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _58, _59, _60, _61, _62, _63, xs...>,
+      _59, _60, _61, _62, _63, xs...>,
+      _60, _61, _62, _63, xs...>,
+      _61, _62, _63, xs...>,
+      _62, _63, xs...>,
+      _63, xs...>,
+      xs...>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
     template<uint_>
     struct _fold_tree;
 
@@ -7660,6 +8676,58 @@ namespace jln::mp::detail
     using f = typename C::template f<
       typename fold_balanced_tree_impl<F, sizeof...(xs)>::template f<xs...>
     >;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class C>
+    struct counter_to_repeat;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Group identical type together.
+  /// Elements are sorted in order of first appearance.
+  /// \semantics
+  ///   \code
+  ///   call<group_by_type_with<listify>, int, int, char, double, int, double>
+  ///   == list<
+  ///     list<int, int, int>,
+  ///     list<char>,
+  ///     list<double, double>
+  ///   >
+  ///   \endcode
+  /// \treturn \sequence of \list of type and \number
+  template<class F, class C = listify>
+  using group_by_type_with = counter_wrapped_with<detail::counter_to_repeat<F>, C>;
+
+  template<class C = listify>
+  using group_by_type = group_by_type_with<listify, C>;
+
+  namespace emp
+  {
+    template<class L, class C = mp::listify>
+    using group_by_type = unpack<L, mp::group_by_type<C>>;
+
+    template<class L, class F = mp::listify, class C = mp::listify>
+    using group_by_type_with = unpack<L, mp::group_by_type_with<F, C>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class C>
+  struct counter_to_repeat
+  {
+    template<class x, class n>
+    using f = typename mp::repeat<n, C>::template f<x>;
   };
 }
 /// \endcond
@@ -8203,182 +9271,6 @@ namespace jln::mp::emp
   >>;
 }
 #endif
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class Cmp, class C>
-    struct mk_unique;
-  }
-  /// \endcond
-
-  /// \ingroup algorithm
-
-  /// Returns a list of the same form as L with the duplicate elements removed.
-  /// \treturn \sequence
-  template<class C = listify>
-  using unique = typename detail::mk_unique<lift<std::is_same>, C>::type;
-
-  template<class Cmp = lift<std::is_same>, class C = listify>
-  using unique_if = typename detail::mk_unique<Cmp, C>::type;
-
-  namespace emp
-  {
-    template<class L, class C = mp::listify>
-    using unique = unpack<L, unique<C>>;
-
-    template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
-    using unique_if = unpack<L, unique_if<Cmp, C>>;
-  }
-}
-
-
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class>
-    struct take_while_impl;
-  }
-  /// \endcond
-
-  /// \ingroup search
-
-  /// Extracts the first elements of a \sequence that satisfy a \predicate.
-  /// \treturn \sequence
-  /// \see take_front, take_back, drop_while
-  template<class Pred, class C = listify>
-  struct take_while
-  {
-    template<class... xs>
-    using f = typename detail::take_while_impl<
-      typename detail::_drop_while<
-        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
-      >::template f<0, Pred, xs...>
-    >::template f<C, xs...>;
-  };
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<>
-  struct take_while_impl<_drop_while_continue>
-  {
-    template<class C, class... xs>
-    using f = typename C::template f<xs...>;
-  };
-
-  template<std::size_t n>
-  struct take_while_impl<_drop_while_result<n>>
-  {
-    template<class C, class... xs>
-    using f = typename take_front<number<sizeof...(xs)-n-1>, C>::template f<xs...>;
-  };
-}
-/// \encond
-// std::integer_sequence
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<class x>
-  struct _inherit_impl {};
-  template<std::size_t i, class x>
-  struct inherit_impl : _inherit_impl<x> {};
-
-  template<class, class...>
-  struct inherit;
-
-  template<std::size_t... ints, class... xs>
-  struct inherit<std::integer_sequence<std::size_t, ints...>, xs...>
-    : inherit_impl<ints, xs>...
-  {};
-
-#ifdef _MSC_VER
-  template<class... xs>
-  struct _is_set
-  {
-      template <class Pack>
-      static auto is_set(Pack pack) -> decltype((
-          static_cast<_inherit_impl<xs>*>(pack),...
-      ), number<1>());
-
-      static number<0> is_set(...);
-
-      using type = decltype(is_set(static_cast<
-        inherit<std::make_index_sequence<sizeof...(xs)>, xs...>*
-      >(nullptr)));
-  };
-#endif
-
-  template<class L, class x, class = void>
-  struct _set_push_back
-  {
-    using type = L;
-  };
-
-  template<class... xs, class x>
-  struct _set_push_back<list<xs...>, x,
-    std::enable_if_t<
-#ifdef _MSC_VER
-      // workaround for MSVC which has a broken EBO
-      _is_set<xs..., x>::type::value
-#else
-      sizeof(inherit<std::make_index_sequence<sizeof...(xs)+1>, xs..., x>) == 1
-#endif
-  >>
-  {
-    using type = list<xs..., x>;
-  };
-
-  struct _set_cmp_push_back_impl
-  {
-    template<class Cmp, class x, class... xs>
-    using f = typename conditional_c<
-      take_while<push_back<x, Cmp>, size<>>::template f<xs...>::value == 0
-    >::template f<list<xs..., x>, list<xs...>>;
-  };
-
-  template<class Cmp>
-  struct _set_cmp_push_back
-  {
-    template<class L, class x>
-    using f = typename unpack<_set_cmp_push_back_impl>::template f<L, Cmp, x>;
-  };
-
-  template<class Cmp, class C>
-  struct mk_unique
-  {
-    using type = push_front<list<>, fold_left<
-      _set_cmp_push_back<Cmp>,
-      unpack<C>
-    >>;
-  };
-
-  template<class C>
-  struct mk_unique<lift<std::is_same>, C>
-  {
-    using type = push_front<list<>, fold_left<
-      lift_t<_set_push_back>,
-      optimize_useless_unpack_t<unpack<C>>
-    >>;
-  };
-
-  template<class C>
-  struct mk_unique<lift_t<std::is_same>, C>
-  : mk_unique<lift<std::is_same>, C>
-  {};
-
-  template<class C>
-  struct mk_unique<same<>, C>
-  : mk_unique<lift<std::is_same>, C>
-  {};
-}
 /// \endcond
 namespace jln::mp
 {
@@ -11784,6 +12676,104 @@ namespace jln::mp
 }
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    template<class>
+    struct take_while_impl;
+  }
+  /// \endcond
+
+  /// \ingroup search
+
+  /// Extracts the first elements of a \sequence that satisfy a \predicate.
+  /// \treturn \sequence
+  /// \see take_front, take_back, drop_while
+  template<class Pred, class C = listify>
+  struct take_while
+  {
+    template<class... xs>
+    using f = typename detail::take_while_impl<
+      typename detail::_drop_while<
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
+      >::template f<0, Pred, xs...>
+    >::template f<C, xs...>;
+  };
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct take_while_impl<_drop_while_continue>
+  {
+    template<class C, class... xs>
+    using f = typename C::template f<xs...>;
+  };
+
+  template<std::size_t n>
+  struct take_while_impl<_drop_while_result<n>>
+  {
+    template<class C, class... xs>
+    using f = typename take_front<number<sizeof...(xs)-n-1>, C>::template f<xs...>;
+  };
+}
+/// \encond
+namespace jln::mp
+{
+  /// \ingroup search
+
+  /// Extracts the first elements of a \sequence that satisfy a \predicate.
+  /// \treturn \sequence
+  /// \see take_front, take_back, take_while, partial_take_while_xs, drop_while, drop_while_xs
+  template<class Pred, class C = listify>
+  struct take_while_xs
+  {
+    template<class... xs>
+    using f = typename detail::take_while_impl<
+      typename detail::_drop_while_xs<
+        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)),
+        true
+      >::template f<sizeof...(xs), Pred, xs...>
+    >::template f<C, xs...>;
+  };
+
+  /// Same as \c take_while_xs, but stop searching at position \c OffsetEnd.
+  /// \tparam OffsetEnd  a negative value start to end of sequence.
+  /// \treturn \sequence
+  /// \see drop_front, drop_back, drop_while, drop_while_xs, take_while, take_while_xs
+  template<class OffsetEnd, class Pred, class C = listify>
+  struct partial_take_while_xs
+  {
+    template<class... xs>
+    using f = typename detail::take_while_impl<
+      typename detail::drop_while_xs_call<
+        detail::partial_drop_while_xs_size(OffsetEnd::value, sizeof...(xs)),
+        Pred, xs...
+      >
+    >::template f<C, xs...>;
+  };
+
+  template<int_ OffsetEnd, class Pred, class C = listify>
+  using partial_take_while_xs_c = partial_take_while_xs<number<OffsetEnd>, Pred, C>;
+
+  namespace emp
+  {
+    template<class L, class Pred, class C = mp::listify>
+    using take_while_xs = unpack<L, mp::take_while_xs<Pred, C>>;
+
+    template<class L, class OffsetEnd, class state, class Pred, class C = mp::identity>
+    using partial_take_while_xs = unpack<L,
+      mp::partial_take_while_xs<OffsetEnd, Pred, C>>;
+
+    template<class L, int_ OffsetEnd, class Pred, class C = mp::listify>
+    using partial_take_while_xs_c = unpack<L,
+      mp::partial_take_while_xs<number<OffsetEnd>, Pred, C>>;
+  }
+}
+namespace jln::mp
+{
   /// \ingroup search
 
   /// Finds first element that is greater that \c x.
@@ -13184,14 +14174,6 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-namespace jln::mp
-{
-  /// \ingroup utility
-
-  /// \treturn \bool
-  template <class T, class C = identity>
-  using is_not = is<T, not_<C>>;
-} // namespace jln::mp
 namespace jln::mp
 {
   /// \cond
