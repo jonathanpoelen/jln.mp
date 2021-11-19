@@ -23,7 +23,7 @@ namespace jln::mp
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///   F::f<x[0], ..., F::f<x[n-2], F::f<xs[n-1], state>>>
+  ///   F::f<xs[1], ..., F::f<xs[n-2], F::f<xs[n-1], xs[0]>>>
   ///   \endcode
   /// \treturn \value
   /// \see fold_left, fold_tree, reverse_fold, fold_balanced_tree
