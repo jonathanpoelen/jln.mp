@@ -32,7 +32,7 @@ namespace jln::mp
   struct on
   {
     template<class... xs>
-    using f = /* unspecified */;
+    using f;
   };
 #else
   template <class... Fs>

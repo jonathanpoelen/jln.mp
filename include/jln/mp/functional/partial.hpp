@@ -31,7 +31,7 @@ namespace jln::mp
   struct partial
   {
     template<class... xs>
-    using f = /* unspecified */;
+    using f;
   };
 #else
   template <class... Fs>
