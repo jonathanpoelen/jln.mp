@@ -40,6 +40,7 @@ TEST()
 
   test_context<zip<>, smp::zip<>>()
     .test<list<>, list<>, list<>>()
+    .test<list<list<_0>, list<_1>>, list<_0, _1>>()
     .test<list<list<_0, _1>>, list<_0>, list<_1>>()
     .test<list<list<_0, _2>, list<_1, _3>>,
       list<_0, _1>, list<_2, _3>>()
@@ -62,6 +63,7 @@ TEST()
   >()
     .test<list<>, list<>, list<>>()
     .test<list<>, list<>, list<_1>>()
+    .test<list<another_list<_0>, another_list<_1>>, list<_0, _1>>()
     .test<list<another_list<_0, _1>>, list<_0>, list<_1>>()
     .test<list<another_list<_0, _2>, another_list<_1, _3>>,
       list<_0, _1>, list<_2, _3>>()
