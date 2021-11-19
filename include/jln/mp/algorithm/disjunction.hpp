@@ -1,12 +1,8 @@
 #pragma once
 
-#include <jln/mp/algorithm/drop_while.hpp>
-#include <jln/mp/functional/if.hpp>
+#include <jln/mp/algorithm/index.hpp>
 #include <jln/mp/utility/always.hpp>
-#include <jln/mp/number/as_bool.hpp>
 #include <jln/mp/number/to_bool.hpp>
-#include <jln/mp/number/operators.hpp>
-#include <jln/mp/list/size.hpp>
 
 
 namespace jln::mp
@@ -14,22 +10,22 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Perform a logical OR on the sequence of value.
-  /// Disjunction is short-circuiting: if there is a template type argument Xi
-  /// with `Xi::value != false`, then instantiating
-  /// `disjunction<X1, ..., XN>::value` does not require the instantiation of
-  /// `Xj::value` for j > i
+  /// Disjunction is short-circuiting: if there is a template type
+  /// argument `xs[i]` with `bool(xs[i]::value) != false`, then instantiating
+  /// `disjunction<C>::f<xs[0], ..., xs[n-1]>` does not require the
+  /// instantiation of `xs[j]::value` for j > i
   /// \treturn \bool
   /// \see conjunction, drop_while, take_while
 #ifdef JLN_MP_DOXYGENATING
   template<class C = identity>
   struct disjunction
   {
-    template<class... X>
+    template<class... xs>
     using f;
   };
 #else
   template<class C = identity>
-  using disjunction = if_<size<>, drop_while<as_bool<not_<>>, size<to_bool<C>>>, always<false_, C>>;
+  using disjunction = index_if<to_bool<>, always<true_, C>, always<false_, C>>;
 #endif
 
   namespace emp

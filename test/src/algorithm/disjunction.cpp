@@ -23,7 +23,7 @@ TEST()
     .test<_1, _0, _1, _1, _1, _1>()
     .test<_1, _1, _1, _1, _1, _0>()
     .test<_0, _0, _0, _0>()
-    .not_invocable<_2>()
+    .test<_1, _2>()
     .not_invocable<list<>>()
     .not_invocable<_0, list<>>()
     ;

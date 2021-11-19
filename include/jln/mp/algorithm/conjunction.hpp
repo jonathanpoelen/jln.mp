@@ -1,7 +1,8 @@
 #pragma once
 
-#include <jln/mp/algorithm/drop_while.hpp>
-#include <jln/mp/list/is_empty.hpp>
+#include <jln/mp/algorithm/index.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/number/to_bool.hpp>
 
 
 namespace jln::mp
@@ -9,22 +10,22 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Perform a logical AND on the sequence of value.
-  /// Conjunction is short-circuiting: if there is a template type argument Xi
-  /// with `Xi::value == false`, then instantiating
-  /// `disjunction<X1, ..., XN>::value` does not require the instantiation of
-  /// `Xj::value` for j > i
+  /// Conjunction is short-circuiting: if there is a template type
+  /// argument `xs[i]` with `bool(Xi::value) == false`, then instantiating
+  /// `conjunction<C>::f<xs[0], ..., xs[n-1]>` does not require the
+  /// instantiation of `xs[j]::value` for j > i
   /// \treturn \bool
   /// \see disjunction, drop_while, take_while
 #ifdef JLN_MP_DOXYGENATING
   template<class C = identity>
   struct conjunction
   {
-    template<class... X>
+    template<class... xs>
     using f;
   };
 #else
   template<class C = identity>
-  using conjunction = drop_while<identity, is_empty<C>>;
+  using conjunction = index_if<not_<>, always<false_, C>, always<true_, C>>;
 #endif
 
   namespace emp
