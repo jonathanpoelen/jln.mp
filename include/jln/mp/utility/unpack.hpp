@@ -28,7 +28,7 @@ namespace jln::mp
   /// Turns a \typelist into a \sequence of those types.
   /// \semantics
   ///   \code
-  ///   reverse_unpack<F>::f<typelist<xs...>, ys...> == F::f<xs..., ys...>
+  ///   unpack_append<F>::f<typelist<xs...>, ys...> == F::f<xs..., ys...>
   ///   \endcode
   /// \treturn \sequence
   template<class C>
