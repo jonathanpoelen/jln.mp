@@ -27,8 +27,16 @@ TEST()
     .not_invocable<_0, _1>()
     ;
 
+  test_context<iterate<_10, inc<>>, smp::iterate<_10, smp::inc<>>>()
+    .test<_10, _0>()
+    .not_invocable<>()
+    .not_invocable<_0, _1>()
+    ;
+
+  ut::not_invocable<smp::iterate<_10, smp::inc<>, bad_function>, _1>();
   ut::not_invocable<smp::iterate<_1, smp::inc<>, bad_function>, _1>();
   ut::not_invocable<smp::iterate<_1, smp::inc<>>, void>();
+  ut::not_invocable<smp::iterate<_10, bad_function>, _1>();
   ut::not_invocable<smp::iterate<_1, bad_function>, _1>();
   ut::not_invocable<smp::iterate<int, smp::inc<>>, _1>();
   ut::not_invocable<smp::iterate<int, smp::inc<>>, void>();

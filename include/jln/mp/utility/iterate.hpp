@@ -24,7 +24,7 @@ namespace jln::mp
   struct iterate
   {
     template<class x>
-    using f = typename detail::_iterate<detail::n_8_or_less_16_32_64_128_256(n::value)>
+    using f = typename detail::_iterate<detail::sub_n_8_or_less_16_32_64_128_256(n::value)>
       ::template f<n::value, C, F, x>;
   };
 
@@ -70,20 +70,20 @@ namespace jln::mp::detail
 
 #undef JLN_MP_ITERATE
 
-#define JLN_MP_ITERATE(n, mp_xs, mp_rsx, mp_rep)                   \
-  template<>                                                       \
-  struct _iterate<n>                                               \
-  {                                                                \
-    template<uint_ i, class C, class F, class x>                   \
-    using f = typename _iterate<n_8_or_less_16_32_64_128_256(i-n)> \
-      ::template f<i-n, C, F,                                      \
-        mp_rep(typename F::template f<, JLN_MP_NIL)                \
-        x                                                          \
-        mp_rep(>, JLN_MP_NIL)                                      \
-      >;                                                           \
+#define JLN_MP_ITERATE(n, mp_xs, mp_rsx, mp_rep)                       \
+  template<>                                                           \
+  struct _iterate<n>                                                   \
+  {                                                                    \
+    template<uint_ i, class C, class F, class x>                       \
+    using f = typename _iterate<sub_n_8_or_less_16_32_64_128_256(i-n)> \
+      ::template f<i-n, C, F,                                          \
+        mp_rep(typename F::template f<, JLN_MP_NIL)                    \
+        x                                                              \
+        mp_rep(>, JLN_MP_NIL)                                          \
+      >;                                                               \
   };
 
-  JLN_MP_GEN_XS_16_32_64_128_256(JLN_MP_ITERATE)
+  JLN_MP_GEN_XS_8_16_32_64_128(JLN_MP_ITERATE)
 
 #undef JLN_MP_ITERATE
 }

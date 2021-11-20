@@ -81,6 +81,16 @@ namespace jln::mp::detail
     ;
   }
 
+  constexpr unsigned sub_n_8_or_less_16_32_64_128_256(unsigned n)
+  {
+    return n <= 8 ? n
+         : n <= 16 ? 8
+         : n <= 32 ? 16
+         : n <= 64 ? 32
+         : n <= 128 ? 64
+         : 128;
+  }
+
   constexpr unsigned n_16_64_256_1024(unsigned n)
   {
     return
@@ -118,6 +128,13 @@ namespace jln::mp::detail
 
 #define JLN_MP_GEN_XS_8_args(func, ...) \
   func(8,   JLN_MP_XS_8,   JLN_MP_RXS_8,   JLN_MP_REPEAT_8, __VA_ARGS__)
+
+#define JLN_MP_GEN_XS_8_16_32_64_128(func)                    \
+  func(8,   JLN_MP_XS_8,   JLN_MP_RXS_8,   JLN_MP_REPEAT_8)   \
+  func(16,  JLN_MP_XS_16,  JLN_MP_RXS_16,  JLN_MP_REPEAT_16)  \
+  func(32,  JLN_MP_XS_32,  JLN_MP_RXS_32,  JLN_MP_REPEAT_32)  \
+  func(64,  JLN_MP_XS_64,  JLN_MP_RXS_64,  JLN_MP_REPEAT_64)  \
+  func(128, JLN_MP_XS_128, JLN_MP_RXS_128, JLN_MP_REPEAT_128)
 
 #define JLN_MP_GEN_XS_16_64_256(func)                        \
   func(16,  JLN_MP_XS_16,  JLN_MP_RXS_16,  JLN_MP_REPEAT_16) \
@@ -163,6 +180,10 @@ namespace jln::mp::detail
   func(5, JLN_MP_XS_5, JLN_MP_RXS_5, JLN_MP_REPEAT_5) \
   func(6, JLN_MP_XS_6, JLN_MP_RXS_6, JLN_MP_REPEAT_6) \
   func(7, JLN_MP_XS_7, JLN_MP_RXS_7, JLN_MP_REPEAT_7)
+
+#define JLN_MP_GEN_XS_1_TO_8_INCLUDED(func)                    \
+  JLN_MP_GEN_XS_1_TO_8(func)                          \
+  func(8, JLN_MP_XS_8, JLN_MP_RXS_8, JLN_MP_REPEAT_8)
 
 #define JLN_MP_GEN_XS_1_TO_8(func)                    \
   func(1, JLN_MP_XS_1, JLN_MP_RXS_1, JLN_MP_REPEAT_1) \
