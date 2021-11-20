@@ -55,11 +55,15 @@ namespace jln::mp
 #define JLN_MP_DCALLF_XS(xs, ...) JLN_MP_DCALLF(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
 #define JLN_MP_DCALLF_C_XS(xs, ...) JLN_MP_DCALLF_C(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
 
+#define JLN_MP_IDENT(...) __VA_ARGS__
+
+
 #if JLN_MP_ENABLE_DEBUG || defined(JLN_MP_DOXYGENATING)
 
 #ifdef JLN_MP_DOXYGENATING
   template<class C, class... xs>
   using call = C::f<xs...>;
+  #define JLN_MP_CALL_TRACE(C, ...) JLN_MP_IDENT C::f<xs...>
   #define JLN_MP_DCALL(cond, ...) call<__VA_ARGS__>
   #define JLN_MP_DCALLF(cond, F, ...) F<__VA_ARGS__>
   #define JLN_MP_DCALL_C(cond, F, ...) F<__VA_ARGS__>
@@ -67,6 +71,7 @@ namespace jln::mp
 #else
   template<class C, class... xs>
   using call = typename detail::_memoizer<C, xs...>::type;
+  #define JLN_MP_CALL_TRACE(C, ...) typename detail::call_trace<JLN_MP_IDENT C, __VA_ARGS__>::type
   #define JLN_MP_DCALL(cond, ...) typename detail::_memoizer<__VA_ARGS__>::type
   #define JLN_MP_DCALLF(cond, ...) typename detail::dcallf<(cond)>::template f<__VA_ARGS__>
   #define JLN_MP_DCALL_C(cond, ...) typename detail::dcall_c<(cond)>::template f<__VA_ARGS__>
@@ -115,6 +120,8 @@ namespace jln::mp
     using _ternary_compose_call = f<C, f<F0, xs...>, f<F1, xs...>, f<F2, xs...>>;
   }
   /// \endcond
+
+# define JLN_MP_CALL_TRACE(C, ...) typename JLN_MP_IDENT C::template f<__VA_ARGS__>
 
 # define JLN_MP_DCALL(cond, ...) typename detail::dcall<(cond)>::template f<__VA_ARGS__>
 # define JLN_MP_DCALLF(cond, ...) typename detail::dcallf<(cond)>::template f<__VA_ARGS__>
@@ -181,6 +188,12 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
+  template<class C, class... xs>
+  struct call_trace
+  {
+    using type = typename C::template f<xs...>;
+  };
+
   template<class x, class...>
   using _first = x;
 

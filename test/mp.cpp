@@ -72,6 +72,7 @@
 #include "src/algorithm/take_while.cpp"
 #include "src/algorithm/take_while_xs.cpp"
 #include "src/algorithm/transform.cpp"
+#include "src/algorithm/unfold.cpp"
 #include "src/algorithm/unique.cpp"
 #include "src/algorithm/upper_bound.cpp"
 #include "src/algorithm/zip.cpp"

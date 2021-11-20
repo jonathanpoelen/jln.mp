@@ -150,7 +150,6 @@ namespace jln::mp::detail
 #define JLN_MP_PARAM_DECL_2(name, init) name = init
 #define JLN_MP_PARAM_DECL_1(name) name
 
-#define JLN_MP_IDENT(x) x
 #define JLN_MP_PARAM_COUNT_I(a, b, c, ...) c
 #define JLN_MP_PARAM_COUNT_P(...) (__VA_ARGS__, _2, _1, _0)
 #define JLN_MP_PARAM_COUNT(arg) JLN_MP_IDENT(JLN_MP_PARAM_COUNT_I JLN_MP_PARAM_COUNT_P arg)
