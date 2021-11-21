@@ -83,7 +83,7 @@ namespace jln::mp::detail
   struct _group_n<false>
   {
     template<class C, unsigned long long, class...>
-    using f = typename C::template f<>;
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 }
 /// \endcond

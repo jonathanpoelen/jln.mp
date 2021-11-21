@@ -17,11 +17,11 @@ namespace jln::mp::smp
   template<class Pred, class C = listify>
   using take_while_xs = contract<mp::invoke_twice<
     mp::drop_while_xs<
-      concepts::predicate<assume_unary<Pred>>,
+      concepts::predicate<assume_unary_or_more<Pred>>,
       mp::if_<
         mp::if_<
           mp::size<>,
-          mp::front<concepts::predicate<Pred, mp::always<mp::true_>>>,
+          mp::front<concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>>,
           mp::always<mp::true_>
         >,
         mp::size<
@@ -39,11 +39,11 @@ namespace jln::mp::smp
   using partial_take_while_xs_c = contract<mp::invoke_twice<
     mp::partial_drop_while_xs<
       mp::number<OffsetEnd>,
-      concepts::predicate<assume_unary<Pred>>,
+      concepts::predicate<assume_unary_or_more<Pred>>,
       mp::if_<
         mp::if_<
           mp::size<>,
-          mp::front<concepts::predicate<Pred, mp::always<mp::true_>>>,
+          mp::front<concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>>,
           mp::always<mp::true_>
         >,
         mp::size<

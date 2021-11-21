@@ -35,7 +35,7 @@ namespace jln::mp
     using f = typename detail::find_if_impl<
       typename detail::_search<
         detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
-      >::template f<sizeof...(xs), Pred, xs...>
+      >::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
 
@@ -53,7 +53,7 @@ namespace jln::mp
     using f = typename detail::search_before_impl<
       typename detail::_search<
         detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
-      >::template f<sizeof...(xs), Pred, xs...>
+      >::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
 
@@ -70,7 +70,7 @@ namespace jln::mp
     using f = typename detail::search_before_extended_by_n_impl<
       typename detail::_search<
         detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
-      >::template f<sizeof...(xs), Pred, xs...>
+      >::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, ExtendedByN, xs...>;
   };
 
@@ -88,7 +88,7 @@ namespace jln::mp
         detail::n_8_or_less_16_32_64_128_256(
           sizeof...(xs) > StopWhenAtLeast::value ? sizeof...(xs) - StopWhenAtLeast::value : 0
         ), false
-      >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), Pred, xs...>
+      >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
 
@@ -108,7 +108,7 @@ namespace jln::mp
         detail::n_8_or_less_16_32_64_128_256(
           sizeof...(xs) > StopWhenAtLeast::value ? sizeof...(xs) - StopWhenAtLeast::value : 0
         ), false
-      >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), Pred, xs...>
+      >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
 
@@ -129,7 +129,7 @@ namespace jln::mp
         detail::n_8_or_less_16_32_64_128_256(
           sizeof...(xs) > StopWhenAtLeast::value ? sizeof...(xs) - StopWhenAtLeast::value : 0
         ), false
-      >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), Pred, xs...>
+      >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, ExtendedByN, xs...>;
   };
 
@@ -147,7 +147,7 @@ namespace jln::mp
     using f = typename detail::index_if_impl<
       typename detail::_search<
         detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
-      >::template f<sizeof...(xs), Pred, xs...>
+      >::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
 

@@ -25,12 +25,12 @@ namespace jln::mp
   struct ends_with<list<Ts...>, C>
   {
     template<class... xs>
-    using f = typename C::template f<
+    using f = JLN_MP_CALL_TRACE((C),
       typename conditional_c<sizeof...(Ts) <= sizeof...(xs)>
       ::template f<take_back_c<sizeof...(Ts), lift<list, is<list<Ts...>>>>,
                    always<false_>>
       ::template f<xs...>
-    >;
+    );
   };
 
   /// \cond
@@ -38,18 +38,18 @@ namespace jln::mp
   struct ends_with<list<T>, C>
   {
     template<class... xs>
-    using f = typename C::template f<
+    using f = JLN_MP_CALL_TRACE((C),
       typename conditional_c<1 <= sizeof...(xs)>
       ::template f<take_back_c<1, is<T>>, always<false_>>
       ::template f<xs...>
-    >;
+    );
   };
 
   template<class C>
   struct ends_with<list<>, C>
   {
     template<class... xs>
-    using f = typename C::template f<true_>;
+    using f = JLN_MP_CALL_TRACE((C), true_);
   };
   /// \endcond
 }

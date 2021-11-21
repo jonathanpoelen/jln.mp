@@ -111,7 +111,6 @@ namespace jln::mp::detail
     using f = sliding_<size, stride, optimize_useless_transform_unpack_t<C>>;
   };
 
-  // TODO generic class for error
   template<class C>
   struct sliding_nostride
   {};
@@ -161,21 +160,21 @@ namespace jln::mp::detail
   struct _sliding<0>
   {
     template<class C, int_, int_, class...>
-    using f = typename C::template f<>;
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
   template<>
   struct _sliding<1>
   {
     template<class C, int_, int_, class... xs>
-    using f = typename C::template f<list<xs...>>;
+    using f = JLN_MP_CALL_TRACE((C), list<xs...>);
   };
 
   template<>
   struct _sliding<2>
   {
     template<class C, int_, int_, class... xs>
-    using f = typename C::template f<list<xs>...>;
+    using f = JLN_MP_CALL_TRACE((C), list<xs>...);
   };
 
   template<>
@@ -284,7 +283,7 @@ namespace jln::mp::detail
   struct _sliding<9>
   {
     template<class C, int_ size, int_, class... xs>
-    using f = typename C::template f<typename take_front_c<size>::template f<xs...>>;
+    using f = JLN_MP_CALL_TRACE((C), typename take_front_c<size>::template f<xs...>);
   };
 }
 /// \endcond

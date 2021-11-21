@@ -124,7 +124,7 @@ namespace jln::mp::detail
   struct _remove_unique<true>
   {
     template<class C, class... xs>
-    using f = typename C::template f<>;
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
 
@@ -150,7 +150,7 @@ namespace jln::mp::detail
   struct _copy_unique<true>
   {
     template<class C, class... xs>
-    using f = typename C::template f<xs...>;
+    using f = JLN_MP_CALL_TRACE((C), xs...);
   };
 
 

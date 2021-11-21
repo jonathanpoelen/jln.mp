@@ -20,7 +20,8 @@ namespace jln::mp::smp
 {
   template<class x, class Cmp, class C = listify, class NC = C>
   using lower_bound = contract<detail::_smp_lower_bound_impl<
-    x, subcontract<Cmp>, subcontract<C>, subcontract<NC>>>;
+    x, concepts::predicate_or<assume_binary<Cmp>, violation>,
+    subcontract<C>, subcontract<NC>>>;
 
   template<int_ x, class Cmp = less<>, class C = listify, class NC = C>
   using lower_bound_c = lower_bound<number<x>, Cmp, C, NC>;
@@ -41,7 +42,7 @@ namespace jln::mp::detail
     using type = smp::lower_bound<x, sfinae<Cmp>, sfinae<C>, sfinae<NC>>;
   };
 
-  template<class x, class Cmp, class C = listify, class NC = C>
+  template<class x, class Cmp, class C, class NC>
   struct _smp_lower_bound_impl
   {
     template<class... xs>

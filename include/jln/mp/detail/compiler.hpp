@@ -48,6 +48,19 @@
 #  define JLN_MP_PRAGMA_I(x) _Pragma(#x)
 #endif
 
+// Features
+//@{
+#ifndef JLN_MP_FEATURE_CONCEPTS
+#  ifdef __cpp_concepts
+#    if __cpp_concepts >= 201907L
+#      define JLN_MP_FEATURE_CONCEPTS 1
+#    endif
+#  endif
+#  ifndef JLN_MP_FEATURE_CONCEPTS
+#      define JLN_MP_FEATURE_CONCEPTS 0
+#  endif
+#endif
+//@}
 
 // Diagnostic
 //@{

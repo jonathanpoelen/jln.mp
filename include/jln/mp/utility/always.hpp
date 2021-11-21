@@ -1,6 +1,7 @@
 #pragma once
 
 #include <jln/mp/functional/identity.hpp>
+#include <jln/mp/detail/call_trace.hpp>
 
 namespace jln::mp
 {
@@ -13,7 +14,7 @@ namespace jln::mp
   struct always
   {
     template<class... xs>
-    using f = typename C::template f<x>;
+    using f = JLN_MP_CALL_TRACE((C), x);
   };
 
   template<class x>

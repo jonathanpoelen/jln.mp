@@ -22,11 +22,11 @@ namespace jln::mp
   struct is_subset_with
   {
     template<class... seqs>
-    using f = typename C::template f<number<
+    using f = JLN_MP_CALL_TRACE((C), number<
       detail::_is_subset<detail::min(3, sizeof...(seqs))>
-      ::template f<detail::to_not_fn_t<Equal>, seqs...>
+      ::template f<JLN_MP_TRACE_F(detail::to_not_fn_t<Equal>), seqs...>
       ::value
-    >>;
+    >);
   };
 
   /// Checks whether \value in `seqs[0]` are subset from the \value in `seqs[1:]`.

@@ -3,7 +3,6 @@
 #include <jln/mp/list/listify.hpp>
 #include <jln/mp/detail/enumerate.hpp>
 #include <jln/mp/utility/unpack.hpp>
-#include <jln/mp/functional/call.hpp>
 
 namespace jln::mp
 {
@@ -65,8 +64,8 @@ namespace jln::mp::detail
     template<class C, std::size_t count                  \
       mp_xs(JLN_MP_COMMA class, JLN_MP_NIL, JLN_MP_NIL), \
       class... xs>                                       \
-    using f = typename C::template f<                    \
-      mp_rxs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>;     \
+    using f = JLN_MP_CALL_TRACE((C),                     \
+      mp_rxs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA));     \
   };
 
   JLN_MP_GEN_XS_0_TO_8(JLN_MP_REVERSE_IMPL)

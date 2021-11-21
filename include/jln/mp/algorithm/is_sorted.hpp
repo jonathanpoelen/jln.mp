@@ -25,7 +25,7 @@ namespace jln::mp
     template<class... xs>
     using f = JLN_MP_DCALL_XS(xs, C,
       typename detail::_is_sorted<detail::min(sizeof...(xs), 3)>
-      ::template f<Cmp, xs...>
+      ::template f<JLN_MP_TRACE_F(Cmp), xs...>
     );
   };
 
@@ -35,7 +35,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_is_sorted<detail::min(sizeof...(xs), 3)>
-      ::template f<Cmp, xs...>;
+      ::template f<JLN_MP_TRACE_F(Cmp), xs...>;
   };
   /// \endcond
 

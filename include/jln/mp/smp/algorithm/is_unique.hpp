@@ -6,14 +6,21 @@
 #include <jln/mp/smp/algorithm/same.hpp>
 #include <jln/mp/algorithm/is_unique.hpp>
 
+/// \cond
+namespace jln::mp::detail
+{
+  template<class Cmp>
+  struct mk_smp_is_unique;
+}
+
 namespace jln::mp::smp
 {
   template<class C = identity>
   using is_unique = contract<mp::is_unique<assume_number<C>>>;
 
   template<class Cmp = lift<std::is_same>, class C = identity>
-  using is_unique_with = detail::sfinae<mp::is_unique_with<
-    assume_binary_barrier<Cmp>, assume_number_barrier<C>>>;
+  using is_unique_with = typename detail::mk_smp_is_unique<Cmp>
+    ::template f<C>;
 }
 
 
@@ -26,20 +33,42 @@ namespace jln::mp::detail
     using type = smp::is_unique<sfinae<C>>;
   };
 
-  template<class C>
-  struct mk_is_unique<subcontract_barrier<smp::lift<std::is_same>>, C>
+  template<class Cmp>
+  struct mk_smp_is_unique
   {
-    using type = smp::is_unique<C>;
+    template<class C>
+    using f = contract<tee<
+      subcontract<smp::unique_if<Cmp>>,
+      listify,
+      monadic0<lift_t<std::is_same, to_bool<assume_number<C>>>>>>;
   };
 
-  template<class C>
-  struct mk_is_unique<subcontract_barrier<smp::lift_t<std::is_same>>, C>
-  : mk_is_unique<subcontract_barrier<smp::lift<std::is_same>>, C>
+  template<template<class> class sfinae, class Cmp, class C>
+  struct _sfinae<sfinae, tee<
+    push_front<list<>, fold_left<
+      unpack<_set_cmp_push_back<JLN_MP_TRACE_F(Cmp)>>>>,
+    listify,
+    lift_t<std::is_same, to_bool<C>>
+  >>
+  {
+    using type = typename mk_smp_is_unique<sfinae<Cmp>>::template f<sfinae<C>>;
+  };
+
+  template<>
+  struct mk_smp_is_unique<smp::lift<std::is_same>>
+  {
+    template<class C>
+    using f = smp::is_unique<C>;
+  };
+
+  template<>
+  struct mk_smp_is_unique<smp::lift_t<std::is_same>>
+  : mk_smp_is_unique<smp::lift<std::is_same>>
   {};
 
-  template<class C>
-  struct mk_is_unique<subcontract_barrier<smp::same<>>, C>
-  : mk_is_unique<subcontract_barrier<smp::lift<std::is_same>>, C>
+  template<>
+  struct mk_smp_is_unique<smp::same<>>
+  : mk_smp_is_unique<smp::lift<std::is_same>>
   {};
 }
 /// \endcond

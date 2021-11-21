@@ -100,27 +100,21 @@ namespace jln::mp::detail
     using type = list<xs..., x>;
   };
 
-  struct _set_cmp_push_back_impl
-  {
-    template<class Cmp, class x, class... xs>
-    using f = typename conditional_c<
-      index_if<push_back<x, Cmp>, identity, always<number<-1>>>::template f<xs...>::value == -1
-    >::template f<list<xs..., x>, list<xs...>>;
-  };
-
   template<class Cmp>
   struct _set_cmp_push_back
   {
-    template<class L, class x>
-    using f = typename unpack<_set_cmp_push_back_impl>::template f<L, Cmp, x>;
+    template<class x, class... xs>
+    using f = typename conditional_c<
+      index_if<push_back<x, Cmp>, identity, always<number<-1>>>::template f<xs...>::value == -1
+    >::template f<list<xs..., x>, list<xs...>>;
   };
 
   template<class Cmp, class C>
   struct mk_unique
   {
     using type = push_front<list<>, fold_left<
-      _set_cmp_push_back<Cmp>,
-      unpack<C>
+      unpack<_set_cmp_push_back<JLN_MP_TRACE_F(Cmp)>>,
+      optimize_useless_unpack_t<unpack<C>>
     >>;
   };
 

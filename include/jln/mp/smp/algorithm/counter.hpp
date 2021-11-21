@@ -3,6 +3,7 @@
 #include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/algorithm/counter.hpp>
+#include <jln/mp/functional/monadic.hpp>
 
 
 namespace jln::mp::smp
@@ -11,7 +12,8 @@ namespace jln::mp::smp
   using counter = contract<mp::counter<assume_lists<C>>>;
 
   template<class F = listify, class C = listify>
-  using counter_wrapped_with = try_contract<mp::counter_wrapped_with<F, subcontract<C>>>;
+  using counter_wrapped_with = contract<mp::counter_wrapped_with<
+    subcontract<F>, mp::monadic_xs<subcontract<C>>>>;
 }
 
 namespace jln::mp::detail

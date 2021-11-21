@@ -1,9 +1,6 @@
 #pragma once
 
 #include <jln/mp/list/listify.hpp>
-#include <jln/mp/functional/call.hpp>
-#include <jln/mp/error.hpp>
-#include <jln/mp/config/debug.hpp>
 
 #include <cstddef>
 
@@ -12,7 +9,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<std::size_t n JLN_MP_DEBUG_A(class = err::all_parameters_must_be_of_type_mp_list)>
+    template<std::size_t n>
     struct _join_select;
   }
   /// \endcond
@@ -42,7 +39,7 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<std::size_t n JLN_MP_DEBUG_A(class error)>
+  template<std::size_t n>
   struct _join_select : _join_select<n_16_64_256_1024(n)>
   {};
 
@@ -50,8 +47,8 @@ namespace jln::mp::detail
   JLN_MP_DIAGNOSTIC_MSVC_IGNORE(4348)
 
 #define JLN_MP_JOIN_SELECT(n, mp_xs, mp_rxs, _)   \
-  template<JLN_MP_DEBUG(class error)>             \
-  struct _join_select<n JLN_MP_DEBUG_A(error)>    \
+  template<>                                      \
+  struct _join_select<n>                          \
   {                                               \
     template<class F,                             \
       mp_xs(class, = list<>, JLN_MP_COMMA)>       \
@@ -61,8 +58,8 @@ namespace jln::mp::detail
       mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>  \
     struct f<F, mp_xs(list<, ...>, JLN_MP_COMMA)> \
     {                                             \
-      using type = typename F::template f<        \
-        mp_xs(JLN_MP_NIL, ..., JLN_MP_COMMA)>;    \
+      using type = JLN_MP_CALL_TRACE((F),         \
+        mp_xs(JLN_MP_NIL, ..., JLN_MP_COMMA));    \
     };                                            \
   };
 
@@ -70,8 +67,8 @@ namespace jln::mp::detail
 
 #undef JLN_MP_JOIN_SELECT
 
-  template<JLN_MP_DEBUG(class error)>
-  struct _join_select<1024 JLN_MP_DEBUG_A(error)>
+  template<>
+  struct _join_select<1024>
   {
     template<class F,
       JLN_MP_XS_1024(class, = list<>, JLN_MP_COMMA),

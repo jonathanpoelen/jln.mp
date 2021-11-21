@@ -77,13 +77,13 @@ namespace jln::mp::detail
     template<class seq1, class seq2>
     using f = typename monadic<C>::template f<
       typename mismatch<
-        smp::concepts::predicate<CmpEq, mp::identity, mp::always<false_>>,
+        smp::concepts::predicate<CmpEq>,
         lift<_lexicographical_compare>
       >
       ::template f<seq1, seq2>
       ::template f<
         if_<
-          smp::concepts::predicate<CmpEq, always<true_>, always<false_>>,
+          smp::concepts::predicate<CmpEq, mp::always<true_>>,
           CmpLess,
           violation
         >,
@@ -97,13 +97,13 @@ namespace jln::mp::detail
   {
     template<class seq1, class seq2>
     using f = typename mismatch<
-      smp::concepts::predicate<CmpEq, mp::identity, mp::always<false_>>,
+      smp::concepts::predicate<CmpEq>,
       lift<_lexicographical_compare>
     >
     ::template f<seq1, seq2>
     ::template f<
       if_<
-        smp::concepts::predicate<CmpEq, always<true_>, always<false_>>,
+        smp::concepts::predicate<CmpEq, mp::always<true_>>,
         CmpLess,
         violation
       >,

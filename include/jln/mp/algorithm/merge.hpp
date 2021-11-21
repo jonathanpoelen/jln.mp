@@ -32,7 +32,7 @@ namespace jln::mp
         std::is_same<seq2, list<>>::value
       >
       ::template f<seq1, seq2>
-      ::template f<Cmp>::type
+      ::template f<JLN_MP_TRACE_F(Cmp)>::type
     >;
   };
 
@@ -60,7 +60,7 @@ namespace jln::mp
       std::is_same<seq1, list<>>::value,
       std::is_same<seq2, list<>>::value
     >::template f<seq1, seq2>
-    ::template f<Cmp>::type;
+    ::template f<JLN_MP_TRACE_F(Cmp)>::type;
   };
   /// \endcond
 }

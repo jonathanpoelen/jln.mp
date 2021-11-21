@@ -225,7 +225,8 @@ sanitize_struct_impl = function(s)
 end
 
 local f_ident = function(s) return s end
-local preproc = P{
+local preproc -- used into JLN_MP_CALL transformation
+preproc = P{
   "S";
   S=Cs(
   ( V'p'
@@ -234,13 +235,26 @@ local preproc = P{
   + 1
   )^0)
 
-, c=(P'JLN_MP_DCALL' * (P'F'^0) * (P'_C'^0) * (P'_XS'^0) * '('
+, c=('JLN_MP_DCALL' * C(P'_V'^0) * (P'F'^0) * (P'_C'^0) * (P'_XS'^0) * '('
       * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
       * ',' * ws0 * cid
       * ',' * ws0 * C((1-S'()' + balancedparent)^1)
       * ')'
-      / function(f, args) return f .. '::f<' .. args .. '>' end
-  )
+      / function(v, f, args) return f .. '::f<' .. preproc:match(args) .. '>'
+                                 .. (v ~= '' and '::value' or '') end
+    )
+  + ('JLN_MP_CALL_TRACE' * P'_T'^0 * '(' * ws0 * '(' * C((1-S'()' + balancedparent)^1)
+     * ')' * ws0 * ',' * ws0 * C((1-S'()' + balancedparent)^1)
+     * ')'
+     / function(f, args) return f .. '::f<' .. preproc:match(args) .. '>' end
+    )
+  + ('JLN_MP_CALL_TRACE_0_ARGS(' * ws0 * C((1-S'()' + balancedparent)^1) * ')'
+     / function(f) return f .. '::f<>' end
+    )
+  + ('JLN_MP_CALL_TRACE_F(' * C((1-S'()' + balancedparent)^1) * ')'
+     / function(f) return f end
+    )
+
 , p='#' * sp0 / '' *
     ( 'ifdef JLN_MP_DOXYGENATING'
       * Cs((1 - ('#' * sp0 * (P'else' + P'endif')) + V'c')^0)

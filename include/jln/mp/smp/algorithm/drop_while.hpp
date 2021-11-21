@@ -15,7 +15,7 @@ namespace jln::mp::smp
     mp::if_<
       mp::if_<
         mp::size<>,
-        mp::front<concepts::predicate<assume_unary<Pred>, mp::always<mp::true_>>>,
+        mp::front<concepts::predicate<assume_unary<Pred>, mp::always<true_>>>,
         mp::always<mp::true_>
       >,
       subcontract<C>,

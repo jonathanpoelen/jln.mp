@@ -24,8 +24,7 @@ namespace jln::mp
   namespace emp
   {
     template<class F, class... xs>
-    using not_of = mp::number<!detail::dcall<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>
-      ::template f<F, xs...>::value>;
+    using not_of = mp::number<!JLN_MP_DCALL_V_XS(xs, F, xs...)>;
 
     template<class L, class F, class C = mp::identity>
     using not_fn = unpack<L, mp::not_fn<F, C>>;

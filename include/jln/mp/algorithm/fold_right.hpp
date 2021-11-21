@@ -31,11 +31,11 @@ namespace jln::mp
   struct fold_right
   {
     template<class... xs>
-    using f = typename C::template f<
+    using f = JLN_MP_CALL_TRACE((C),
       typename detail::_fold_right<
         detail::sub_1_n_4_or_less_8_16_64_256(sizeof...(xs))
-      >::template f<F::template f, xs...>
-    >;
+      >::template f<JLN_MP_TRACE_F(F)::template f, xs...>
+    );
   };
 
   namespace emp

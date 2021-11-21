@@ -57,16 +57,16 @@ namespace jln::mp
   namespace emp
   {
     template<class Pred, class... xs>
-    using wrap_in_list_if = typename mp::wrap_in_list_if<Pred>::template f<xs...>;
+    using wrap_in_list_if = JLN_MP_CALL_TRACE((mp::wrap_in_list_if<Pred>), xs...);
 
     template<class Pred, class... xs>
-    using wrap_in_list_if_not = typename mp::wrap_in_list_if_not<Pred>::template f<xs...>;
+    using wrap_in_list_if_not = JLN_MP_CALL_TRACE((mp::wrap_in_list_if_not<Pred>), xs...);
 
     template<class b, class... xs>
-    using wrap_in_list = typename mp::wrap_in_list_c<b::value>::template f<xs...>;
+    using wrap_in_list = JLN_MP_CALL_TRACE((mp::wrap_in_list_c<b::value>), xs...);
 
     template<bool b, class... xs>
-    using wrap_in_list_c = typename mp::wrap_in_list_c<b>::template f<xs...>;
+    using wrap_in_list_c = JLN_MP_CALL_TRACE((mp::wrap_in_list_c<b>), xs...);
   }
 }
 
@@ -84,14 +84,14 @@ namespace jln::mp::detail
   struct _wrap_in_list_if
   {
     template<class x, class... xs>
-    using f = typename wrap_in_list_c<call<Pred, x, xs...>::value>::template f<x>;
+    using f = JLN_MP_CALL_TRACE((wrap_in_list_c<call<Pred, x, xs...>::value>), x);
   };
 
   template<class Pred>
   struct _wrap_in_list_if_not
   {
     template<class x, class... xs>
-    using f = typename wrap_in_list_c<!call<Pred, x, xs...>::value>::template f<x>;
+    using f = JLN_MP_CALL_TRACE((wrap_in_list_c<!call<Pred, x, xs...>::value>), x);
   };
 
   template<class Pred>

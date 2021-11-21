@@ -57,27 +57,26 @@ namespace jln::mp::detail
   template<class...>
   struct _zip_impl;
 
-#define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep)         \
-  template<class C, mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>  \
-  struct _zip_impl<C, mp_xs(list<, ...>, JLN_MP_COMMA)>         \
-  {                                                             \
-    using type = typename C::template f<list<                   \
-      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)               \
-    >...>;                                                      \
-  };                                                            \
-                                                                \
-  template<class F, class C,                                    \
-    mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>                  \
-  struct _zip_impl<                                             \
-    transform<unpack<F>, C>, mp_xs(list<, ...>, JLN_MP_COMMA)>  \
-  {                                                             \
-    using type = typename C::template f<typename F::template f< \
-      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)               \
-    >...>;                                                      \
+#define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep)        \
+  template<class C, mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)> \
+  struct _zip_impl<C, mp_xs(list<, ...>, JLN_MP_COMMA)>        \
+  {                                                            \
+    using type = JLN_MP_CALL_TRACE((C), list<                  \
+      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)              \
+    >...);                                                     \
+  };                                                           \
+                                                               \
+  template<class F, class C,                                   \
+    mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>                 \
+  struct _zip_impl<                                            \
+    transform<unpack<F>, C>, mp_xs(list<, ...>, JLN_MP_COMMA)> \
+  {                                                            \
+    using type = JLN_MP_CALL_TRACE((C), JLN_MP_CALL_TRACE((F), \
+      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)              \
+    )...);                                                     \
   };
 
-  JLN_MP_GEN_XS_1_TO_8(JLN_MP_TRANSPOSE_IMPL)
-  JLN_MP_TRANSPOSE_IMPL(8, JLN_MP_XS_8, _, _)
+  JLN_MP_GEN_XS_1_TO_8_INCLUDED(JLN_MP_TRANSPOSE_IMPL)
 
 #undef JLN_MP_TRANSPOSE_IMPL
 

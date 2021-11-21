@@ -23,7 +23,7 @@ namespace jln::mp
   {
     template <class... xs>
     using f = typename detail::_split<sizeof...(xs) != 0>
-      ::template f<detail::split_before, C, Pred, xs...>;
+      ::template f<detail::split_before, C, JLN_MP_TRACE_F(Pred), xs...>;
   };
 
   template<class x, class C = listify>

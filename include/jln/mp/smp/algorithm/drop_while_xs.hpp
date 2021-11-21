@@ -11,11 +11,11 @@ namespace jln::mp::smp
 {
   template<class Pred, class C = listify>
   using drop_while_xs = contract<mp::drop_while_xs<
-    concepts::predicate<subcontract<Pred>>,
+    concepts::predicate<assume_unary_or_more<Pred>>,
     mp::if_<
       mp::if_<
         mp::size<>,
-        mp::front<concepts::predicate<subcontract<Pred>, mp::always<mp::true_>>>,
+        mp::front<concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>>,
         mp::always<mp::true_>
       >,
       subcontract<C>,
@@ -26,11 +26,11 @@ namespace jln::mp::smp
   template<int_ OffsetEnd, class Pred, class C = listify>
   using partial_drop_while_xs_c = contract<mp::partial_drop_while_xs<
     number<OffsetEnd>,
-    concepts::predicate<subcontract<Pred>>,
+    concepts::predicate<assume_unary_or_more<Pred>>,
     mp::if_<
       mp::if_<
         mp::size<>,
-        mp::front<concepts::predicate<subcontract<Pred>, mp::always<mp::true_>>>,
+        mp::front<concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>>,
         mp::always<mp::true_>
       >,
       subcontract<C>,

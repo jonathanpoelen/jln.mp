@@ -25,7 +25,7 @@ namespace jln::mp
   {
     template<class x>
     using f = typename detail::_iterate<detail::sub_n_8_or_less_16_32_64_128_256(n::value)>
-      ::template f<n::value, C, F, x>;
+      ::template f<n::value, C, JLN_MP_TRACE_F(F), x>;
   };
 
   /// Apply a function \c n times to its argument.
@@ -51,7 +51,7 @@ namespace jln::mp::detail
   struct _iterate<0>
   {
     template<uint_ i, class C, class F, class x>
-    using f = typename C::template f<x>;
+    using f = JLN_MP_CALL_TRACE((C), x);
   };
 
 #define JLN_MP_ITERATE(n, mp_xs, mp_rsx, mp_rep)  \
@@ -59,11 +59,11 @@ namespace jln::mp::detail
   struct _iterate<n>                              \
   {                                               \
     template<uint_ i, class C, class F, class x>  \
-    using f = typename C::template f<             \
+    using f = JLN_MP_CALL_TRACE((C),              \
       mp_rep(typename F::template f<, JLN_MP_NIL) \
       x                                           \
       mp_rep(>, JLN_MP_NIL)                       \
-    >;                                            \
+    );                                            \
   };
 
   JLN_MP_GEN_XS_1_TO_8(JLN_MP_ITERATE)

@@ -19,7 +19,9 @@ namespace jln::mp::smp
 }
 
 #include <jln/mp/smp/algorithm/same.hpp>
+#include <jln/mp/smp/algorithm/index.hpp>
 #include <jln/mp/smp/utility/unpack.hpp>
+#include <jln/mp/smp/functional/memoize.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -48,7 +50,7 @@ namespace jln::mp::detail
 
   template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, push_front<list<>, fold_left<
-    _set_cmp_push_back<contract_barrier<mp::lift<std::is_same>>>, C
+    unpack<_set_cmp_push_back<JLN_MP_TRACE_F(contract_barrier<mp::lift<std::is_same>>)>>, C
   >>>
   {
     using type = contract<push_front<list<>, fold_left<
@@ -58,13 +60,29 @@ namespace jln::mp::detail
     >>>;
   };
 
+  template<class Cmp>
+  struct _smp_set_cmp_push_back
+  {
+    template<class x, class... xs>
+    using f = typename conditional_c<
+      smp::index_if<
+        contract<push_back<x, Cmp>>,
+        contract<identity>,
+        contract<always<number<-1>>>
+      >::template f<xs...>::value == -1
+    >::template f<list<xs..., x>, list<xs...>>;
+  };
+
   template<template<class> class sfinae, class Cmp, class C>
   struct _sfinae<sfinae, push_front<list<>, fold_left<
-    _set_cmp_push_back<Cmp>, C
+    unpack<_set_cmp_push_back<JLN_MP_TRACE_F(Cmp)>>, C
   >>>
   {
     using type = contract<push_front<list<>, smp::fold_left<
-      contract<try_<_set_cmp_push_back<sfinae<Cmp>>>>, sfinae<C>
+      contract<unpack<try_<_smp_set_cmp_push_back<JLN_MP_TRACE_F(sfinae<Cmp>)>>>>,
+      typename smp_unique_continuation<
+        assume_unary<sfinae<C>>
+      >::type
     >>>;
   };
 }

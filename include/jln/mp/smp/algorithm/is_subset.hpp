@@ -6,8 +6,8 @@
 /// \cond
 namespace jln::mp::detail
 {
-  template<class Equal, class C>
-  struct smp_is_subset_with;
+  template<class Equal>
+  struct mk_smp_is_subset_with;
 }
 /// \endcond
 
@@ -17,15 +17,29 @@ namespace jln::mp::smp
   using is_subset = try_contract<detail::seqs_to_list<mp::is_subset<assume_number<C>>>>;
 
   template<class Equal = lift<std::is_same>, class C = identity>
-  using is_subset_with = contract<
-    detail::smp_is_subset_with<assume_binary<Equal>, assume_number<C>>
-  >;
+  using is_subset_with = typename detail::mk_smp_is_subset_with<Equal>
+    ::template f<assume_number<C>>;
 }
 
+
+#include <jln/mp/smp/utility/unpack.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
+  template<template<class> class sfinae, class Equal, class C>
+  struct _sfinae<sfinae, is_subset_with<Equal, C>>
+  {
+    using type = smp::is_subset_with<sfinae<Equal>, sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, is_subset_with<lift<std::is_same>, C>>
+  {
+    using type = smp::is_subset<sfinae<C>>;
+  };
+
+
   template<class NotEqual, class... xs>
   struct smp_is_subset_of
   {
@@ -82,26 +96,23 @@ namespace jln::mp::detail
     template<class... seqs>
     using f = typename C::template f<
       typename smp_is_subset_n<min(3, sizeof...(seqs))>
-      ::template f<to_not_fn_t<Equal>, seqs...>
+      ::template f<Equal, seqs...>
     >;
   };
 
-  template<class C>
-  struct smp_is_subset_with<lift<std::is_same>, C>
-  : subcontract<smp::is_subset<C>>
-  {};
-
-
-  template<template<class> class sfinae, class Equal, class C>
-  struct _sfinae<sfinae, is_subset_with<Equal, C>>
+  template<class Equal>
+  struct mk_smp_is_subset_with
   {
-    using type = smp::is_subset_with<sfinae<Equal>, sfinae<C>>;
+    template<class C>
+    using f = contract<smp_is_subset_with<
+      smp::concepts::predicate<assume_binary<Equal>, mp::not_<>, violation>, C>>;
   };
 
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, is_subset_with<lift<std::is_same>, C>>
+  template<>
+  struct mk_smp_is_subset_with<lift<std::is_same>>
   {
-    using type = smp::is_subset<sfinae<C>>;
+    template<class C>
+    using f = subcontract<smp::is_subset<C>>;
   };
 }
 /// \endcond

@@ -9,11 +9,9 @@ namespace jln::mp::smp
 {
   template<class x, class Cmp, class C = listify, class NC = C>
   using upper_bound = contract<detail::_smp_lower_bound_impl<
-    x, mp::flip<
-      subcontract<tee<try_assume_binary<Cmp>, not_<>>>>,
-      subcontract<C>, subcontract<NC>
-    >
-  >;
+    x, mp::flip<concepts::predicate<assume_binary<Cmp>, mp::not_<>, violation>>,
+    subcontract<C>, subcontract<NC>
+  >>;
 
   template<int_ x, class Cmp = less<>, class C = listify, class NC = C>
   using upper_bound_c = upper_bound<number<x>, Cmp, C, NC>;

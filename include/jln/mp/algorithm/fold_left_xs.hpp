@@ -47,11 +47,13 @@ namespace jln::mp
   struct partial_fold_left_xs
   {
     template<class... xs>
-    using f = typename C::template f<
+    using f = JLN_MP_CALL_TRACE((C),
       detail::partial_fold_left_xs_select<
-        F, detail::_partial_fold_left_xs_size(OffsetEnd::value, sizeof...(xs)), xs...
+        JLN_MP_TRACE_F(F),
+        detail::_partial_fold_left_xs_size(OffsetEnd::value, sizeof...(xs)),
+        xs...
       >
-    >;
+    );
   };
 
   template<int_ OffsetEnd, class F, class C = identity>

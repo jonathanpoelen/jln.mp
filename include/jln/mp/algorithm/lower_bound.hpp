@@ -32,7 +32,7 @@ namespace jln::mp
       detail::_lower_bound_select(sizeof...(xs))
     >::template f<
       sizeof...(xs),
-      push_back<x, typename detail::optimize_cmp<Cmp>::type>,
+      push_back<x, JLN_MP_TRACE_F(typename detail::optimize_cmp<Cmp>::type)>,
       C, NC, xs...>;
   };
 
@@ -100,18 +100,28 @@ namespace jln::mp::detail
   template<int>
   struct _smp_lower_bound;
 
-  template<class Bool, class = void>
-  struct _smp_conditional
+  template<class Bool>
+  struct _smp_conditional;
+
+  template<>
+  struct _smp_conditional<na>
   {
     template<class C, class NC>
     using f = violation;
   };
 
-  template<class Bool>
-  struct _smp_conditional<Bool, decltype(void(bool(Bool::value)))>
+  template<>
+  struct _smp_conditional<true_>
   {
     template<class C, class NC>
-    using f = typename conditional_c<bool(Bool::value)>::template f<C, NC>;
+    using f = C;
+  };
+
+  template<>
+  struct _smp_conditional<false_>
+  {
+    template<class C, class NC>
+    using f = NC;
   };
 
   struct _lower_bound_violation2
@@ -120,18 +130,28 @@ namespace jln::mp::detail
     using f = na;
   };
 
-  template<class Bool, class = void>
-  struct _smp_conditional2
+  template<class Bool>
+  struct _smp_conditional2;
+
+  template<>
+  struct _smp_conditional2<na>
   {
     template<class C, class NC>
     using f = _lower_bound_violation2;
   };
 
-  template<class Bool>
-  struct _smp_conditional2<Bool, decltype(void(bool(Bool::value)))>
+  template<>
+  struct _smp_conditional2<true_>
   {
     template<class C, class NC>
-    using f = typename conditional_c<bool(Bool::value)>::template f<C, NC>;
+    using f = C;
+  };
+
+  template<>
+  struct _smp_conditional2<false_>
+  {
+    template<class C, class NC>
+    using f = NC;
   };
 
   constexpr int _lower_bound_select(unsigned n)
@@ -149,34 +169,34 @@ namespace jln::mp::detail
     ;
   }
 
-#define JLN_MP_LOWER_BOUND_IMPL(prefix, Cond)              \
-  template<>                                               \
-  struct prefix##lower_bound<0>                            \
-  {                                                        \
-    template<unsigned n, class Pred, class C, class NC,    \
-      class... xs>                                         \
-    using f = typename NC::template f<>;                   \
-  };                                                       \
-                                                           \
-  /* original size == 1 */                                 \
-  template<>                                               \
-  struct prefix##lower_bound<-1>                           \
-  {                                                        \
-    template<unsigned n, class Pred, class C, class NC,    \
-      class x>                                             \
-    using f = typename Cond(x)                             \
-      ::template f<_cartesian<NC, 0> /* for NC::f<> */, C> \
-      ::template f<x>;                                     \
-  };                                                       \
-                                                           \
-  template<>                                               \
-  struct prefix##lower_bound<1>                            \
-  {                                                        \
-    template<unsigned n, class Pred, class C, class NC,    \
-      class x, class... xs>                                \
-    using f = typename Cond(x)                             \
-      ::template f<pop_front<C>, C>                        \
-      ::template f<x, xs...>;                              \
+#define JLN_MP_LOWER_BOUND_IMPL(prefix, Cond)                \
+  template<>                                                 \
+  struct prefix##lower_bound<0>                              \
+  {                                                          \
+    template<unsigned n, class Pred, class C, class NC,      \
+      class... xs>                                           \
+    using f = JLN_MP_CALL_TRACE_0_ARG(NC);                   \
+  };                                                         \
+                                                             \
+  /* original size == 1 */                                   \
+  template<>                                                 \
+  struct prefix##lower_bound<-1>                             \
+  {                                                          \
+    template<unsigned n, class Pred, class C, class NC,      \
+      class x>                                               \
+    using f = JLN_MP_CALL_TRACE_T((Cond(x)                   \
+      ::template f<_cartesian<NC, 0> /* for NC::f<> */, C>), \
+      x);                                                    \
+  };                                                         \
+                                                             \
+  template<>                                                 \
+  struct prefix##lower_bound<1>                              \
+  {                                                          \
+    template<unsigned n, class Pred, class C, class NC,      \
+      class x, class... xs>                                  \
+    using f = JLN_MP_CALL_TRACE_T((Cond(x)                   \
+      ::template f<pop_front<C>, C>),                        \
+      x, xs...);                                             \
   };
 
 #define JLN_MP_LOWER_BOUND_PRED_CALL(x) \
@@ -195,7 +215,7 @@ namespace jln::mp::detail
 
 #define JLN_MP_LOWER_BOUND_IMPL2(prefix, Cond, n, mp_xs) \
   template<>                                             \
-  struct prefix##lower_bound_drop_front<n>                     \
+  struct prefix##lower_bound_drop_front<n>               \
   {                                                      \
     template<int count, class Pred, class C, class NC,   \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),            \
@@ -212,7 +232,7 @@ namespace jln::mp::detail
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),            \
       class... xs>                                       \
     using f = typename Cond(_##n)::template f<           \
-      prefix##lower_bound_drop_front<n>,                       \
+      prefix##lower_bound_drop_front<n>,                 \
       prefix##lower_bound<n/2>                           \
     >::template f<count, Pred, C, NC,                    \
       mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA),       \

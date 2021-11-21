@@ -53,11 +53,6 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  // test_context<drop_while<_3>, smp::drop_while<_3>>()
-  //   .test<list<>>()
-  //   .not_invocable<void>()
-  //   ;
-
   ut::not_invocable<smp::drop_while<is<_3>, bad_function>>();
   ut::not_invocable<smp::drop_while<is<_3>, bad_function>, void>();
   ut::not_invocable<smp::drop_while<is<_3>, void>>();

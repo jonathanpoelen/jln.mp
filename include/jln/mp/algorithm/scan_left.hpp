@@ -33,7 +33,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::_scan_left<
       detail::n_8_or_less_16_32_64_128_256(sizeof...(xs))
-    >::template f<sizeof...(xs), C, F::template f, xs...>;
+    >::template f<sizeof...(xs), C, JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
   namespace emp

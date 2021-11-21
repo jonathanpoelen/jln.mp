@@ -24,25 +24,25 @@ namespace jln::mp
   struct lexicographical_compare
   {
     template<class seq1, class seq2>
-    using f = typename C::template f<
+    using f = JLN_MP_CALL_TRACE((C),
       typename mismatch<
-        detail::_lexicographical_compare_equal<Cmp>,
+        detail::_lexicographical_compare_equal<JLN_MP_TRACE_F(Cmp)>,
         lift<detail::_lexicographical_compare>
       >
       ::template f<seq1, seq2>
-      ::template f<Cmp, seq1, seq2>
-    >;
+      ::template f<JLN_MP_TRACE_F(Cmp), seq1, seq2>
+    );
   };
 
   template<class CmpLess = less<>, class CmpEq = equal<>, class C = identity>
   struct lexicographical_compare2
   {
     template<class seq1, class seq2>
-    using f = typename C::template f<
-      typename mismatch<CmpEq, lift<detail::_lexicographical_compare>>
+    using f = JLN_MP_CALL_TRACE((C),
+      typename mismatch<JLN_MP_TRACE_F(CmpEq), lift<detail::_lexicographical_compare>>
       ::template f<seq1, seq2>
-      ::template f<CmpLess, seq1, seq2>
-    >;
+      ::template f<JLN_MP_TRACE_F(CmpLess), seq1, seq2>
+    );
   };
 
   namespace emp

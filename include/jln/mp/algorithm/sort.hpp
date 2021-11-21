@@ -24,7 +24,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename unpack<C>::template f<
-      typename detail::_sort<detail::min(3, sizeof...(xs)), Cmp>
+      typename detail::_sort<detail::min(3, sizeof...(xs)), JLN_MP_TRACE_F(Cmp)>
       ::template f<xs...>
     >;
   };

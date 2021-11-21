@@ -14,6 +14,7 @@
 #include <jln/mp/functional/invoke_twice.hpp>
 #include <jln/mp/functional/is_invocable.hpp>
 #include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/memoize.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/functional/not_fn.hpp>
 #include <jln/mp/functional/on.hpp>

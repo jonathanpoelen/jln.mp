@@ -77,8 +77,8 @@ namespace jln::mp::detail
     template<unsigned size, class C,                      \
       mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
       class... xs>                                        \
-    using f = typename C::template f<                     \
-      xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)>; \
+    using f = JLN_MP_CALL_TRACE((C),                      \
+      xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)); \
   };
 
   JLN_MP_GEN_XS_0_TO_8(JLN_MP_ROTATE_IMPL)

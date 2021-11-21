@@ -65,7 +65,7 @@ TEST()
     .test<seq_3_2, _0, _3, _2>()
     ;
 
-  test_context<smp::find_if<equal_to<_3>>, void>()
+  test_context<smp::find_if<smp::equal_to<_3>>, void>()
     .test<seq_3_2, _0, _3, _2>()
     .test<list<_3, _2, bad_number>, _0, _3, _2, bad_number>()
     .not_invocable<bad_number>()

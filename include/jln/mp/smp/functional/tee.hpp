@@ -13,10 +13,11 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template <class... Fs>
-  using tee = contract<typename mp::rotate<
-      mp::number<-1>,
-      detail::_smp_tee
-    >::template f<subcontract<Fs>...>>;
+  using tee = typename mp::conditional_c<sizeof...(Fs) == 0>
+    ::template f<
+      na,
+      rotate<number<-1>, detail::_smp_tee>>
+    ::template f<subcontract<Fs>...>;
 }
 
 
@@ -34,7 +35,7 @@ namespace jln::mp::detail
   struct _smp_tee
   {
     template<class C, class... Fs>
-    using f = _tee<monadic_xs<C>, Fs...>;
+    using f = contract<_tee<monadic_xs<C>, Fs...>>;
   };
 }
 /// \endcond

@@ -56,7 +56,7 @@ namespace jln::mp::detail
   struct unfold_impl
   {
     template<class state, class... xs>
-    using f = typename unfold_next<typename F::template f<state>>::template f<xs...>;
+    using f = typename unfold_next<JLN_MP_CALL_TRACE((F), state)>::template f<xs...>;
   };
 }
 /// \endcond

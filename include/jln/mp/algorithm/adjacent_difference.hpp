@@ -63,7 +63,7 @@ namespace jln::mp::detail
   struct _adjacent_difference<list<>>
   {
     template<class C, class...>
-    using f = typename C::template f<>;
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 }
 /// \endcond

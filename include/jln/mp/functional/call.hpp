@@ -2,22 +2,9 @@
 
 #include <jln/mp/config/debug.hpp>
 #include <jln/mp/config/config.hpp>
-#include <jln/mp/list/list.hpp>
-#include <jln/mp/number/number.hpp>
 #include <jln/mp/detail/compiler.hpp>
-
-/// \cond
-#if JLN_MP_MSVC
-# ifdef JLN_MP_ENABLE_DEBUG
-#  ifndef JLN_MP_ENABLE_DEBUG_FORCE
-#   undef JLN_MP_ENABLE_DEBUG
-#   define JLN_MP_ENABLE_DEBUG 1
-#  endif
-# else
-#  define JLN_MP_ENABLE_DEBUG 1
-# endif
-#endif
-/// \endcond
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/functional/memoize.hpp>
 
 namespace jln::mp
 {
@@ -28,51 +15,32 @@ namespace jln::mp
     template<bool> struct dcallf;
     template<bool> struct dcall_c;
     template<bool> struct dcallf_c;
-
-    template<class C, class L, class = void>
-    struct _memoizer_impl
-    {};
-
-    template<class C, class... xs>
-    using _memoizer = _memoizer_impl<C, list<xs...>>;
-
-    template<template<class...> class F, class L, class = void>
-    struct _memoizerf_impl
-    {};
-
-    template<template<class...> class F, class... xs>
-    using _memoizerf = _memoizerf_impl<F, list<xs...>>;
   }
   /// \endcond
 
   /// \ingroup functional
 
-  /// Memoization version of \link call.
-  template<class C, class... xs>
-  using memoize_call = typename detail::_memoizer<C, xs...>::type;
-
 #define JLN_MP_DCALL_XS(xs, ...) JLN_MP_DCALL(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
+#define JLN_MP_DCALL_V_XS(xs, ...) JLN_MP_DCALL_V(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
 #define JLN_MP_DCALLF_XS(xs, ...) JLN_MP_DCALLF(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
 #define JLN_MP_DCALLF_C_XS(xs, ...) JLN_MP_DCALLF_C(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
 
-#define JLN_MP_IDENT(...) __VA_ARGS__
 
-
-#if JLN_MP_ENABLE_DEBUG || defined(JLN_MP_DOXYGENATING)
+#if JLN_MP_MSVC || JLN_MP_ENABLE_DEBUG || defined(JLN_MP_DOXYGENATING)
 
 #ifdef JLN_MP_DOXYGENATING
   template<class C, class... xs>
   using call = C::f<xs...>;
-  #define JLN_MP_CALL_TRACE(C, ...) JLN_MP_IDENT C::f<xs...>
   #define JLN_MP_DCALL(cond, ...) call<__VA_ARGS__>
+  #define JLN_MP_DCALL_V(cond, ...) call<__VA_ARGS__>::value
   #define JLN_MP_DCALLF(cond, F, ...) F<__VA_ARGS__>
   #define JLN_MP_DCALL_C(cond, F, ...) F<__VA_ARGS__>
   #define JLN_MP_DCALLF_C(cond, F, ...) F<__VA_ARGS__>
 #else
   template<class C, class... xs>
-  using call = typename detail::_memoizer<C, xs...>::type;
-  #define JLN_MP_CALL_TRACE(C, ...) typename detail::call_trace<JLN_MP_IDENT C, __VA_ARGS__>::type
+  using call = memoize_call<C, xs...>;
   #define JLN_MP_DCALL(cond, ...) typename detail::_memoizer<__VA_ARGS__>::type
+  #define JLN_MP_DCALL_V(cond, ...) detail::_memoizer<__VA_ARGS__>::type::value
   #define JLN_MP_DCALLF(cond, ...) typename detail::dcallf<(cond)>::template f<__VA_ARGS__>
   #define JLN_MP_DCALL_C(cond, ...) typename detail::dcall_c<(cond)>::template f<__VA_ARGS__>
   #define JLN_MP_DCALLF_C(cond, ...) typename detail::dcallf_c<(cond)>::template f<__VA_ARGS__>
@@ -121,9 +89,8 @@ namespace jln::mp
   }
   /// \endcond
 
-# define JLN_MP_CALL_TRACE(C, ...) typename JLN_MP_IDENT C::template f<__VA_ARGS__>
-
 # define JLN_MP_DCALL(cond, ...) typename detail::dcall<(cond)>::template f<__VA_ARGS__>
+# define JLN_MP_DCALL_V(cond, ...) detail::dcall<(cond)>::template f<__VA_ARGS__>::value
 # define JLN_MP_DCALLF(cond, ...) typename detail::dcallf<(cond)>::template f<__VA_ARGS__>
 # define JLN_MP_DCALL_C(cond, ...) typename detail::dcall_c<(cond)>::template f<__VA_ARGS__>
 # define JLN_MP_DCALLF_C(cond, ...) typename detail::dcallf_c<(cond)>::template f<__VA_ARGS__>
@@ -188,28 +155,6 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<class C, class... xs>
-  struct call_trace
-  {
-    using type = typename C::template f<xs...>;
-  };
-
-  template<class x, class...>
-  using _first = x;
-
-  template<class C, class... xs>
-  struct _memoizer_impl<C, list<xs...>,
-    _first<void, typename C::template f<xs...>>>
-  {
-    using type = typename C::template f<xs...>;
-  };
-
-  template<template<class...> class F, class... xs>
-  struct _memoizerf_impl<F, list<xs...>, _first<void, F<xs...>>>
-  {
-    using type = F<xs...>;
-  };
-
   template<>
   struct dcall<true>
   {

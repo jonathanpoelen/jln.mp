@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <jln/mp/smp/list/listify.hpp>
@@ -32,13 +33,21 @@ namespace jln::mp::detail
     using f = bad_contract;
   };
 
+  template<unsigned start, unsigned size, unsigned stride>
+  struct smp_slice_check
+  {
+    template<class... xs>
+    using f = mp::number<start <= sizeof...(xs)
+                      && (size - 1) * stride + start + 1 <= sizeof...(xs)>;
+  };
+
   template<>
   struct smp_slice_select<true>
   {
     template<unsigned start, unsigned size, unsigned stride, class C>
-    using f = try_contract<
-      mp::slice<number<start>, number<size>, number<stride>,
-      subcontract<C>>>;
+    using f = test_contract<
+      smp_slice_check<start, size, stride>,
+      mp::slice<number<start>, number<size>, number<stride>, subcontract<C>>>;
   };
 
   template<template<class> class sfinae, class start, class size, class stride, class C>

@@ -41,7 +41,7 @@ namespace jln::mp
   {
     template <class... xs>
     using f = typename detail::_split<sizeof...(xs) != 0>
-      ::template f<detail::split_skip, C, Pred, xs...>;
+      ::template f<detail::split_skip, C, JLN_MP_TRACE_F(Pred), xs...>;
   };
 
   template<class x, class C = listify>
@@ -93,7 +93,7 @@ namespace jln::mp::detail
     template<int_ policy, class C, class Pred, class... xs>
     using f = typename fold_right<lift_t<split_state>, optimize_useless_unpack_t<unpack<C>>>
       ::template f<list<list<>>,
-                   list<number<bool{Pred::template f<xs>::value}
+                   list<number<Pred::template f<xs>::value
                      ? policy : split_keep>, xs>...
       >;
   };
@@ -102,7 +102,7 @@ namespace jln::mp::detail
   struct _split<false>
   {
     template<int_, class C, class>
-    using f = typename C::template f<>;
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 }
 /// \endcond

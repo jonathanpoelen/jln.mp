@@ -110,7 +110,7 @@ namespace jln::mp::detail
   struct _group<false>
   {
     template<class C, class>
-    using f = typename C::template f<>;
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 }
 /// \endcond

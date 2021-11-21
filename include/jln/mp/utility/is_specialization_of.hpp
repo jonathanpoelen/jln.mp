@@ -2,6 +2,7 @@
 
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/functional/identity.hpp>
+#include <jln/mp/detail/call_trace.hpp>
 
 namespace jln::mp
 {
@@ -21,8 +22,8 @@ namespace jln::mp
   struct is_specialization_of
   {
     template<class x>
-    using f = typename C::template f<
-      typename detail::_is_specialization_of<Tpl, x>::type>;
+    using f = JLN_MP_CALL_TRACE((C),
+      typename detail::_is_specialization_of<Tpl, x>::type);
   };
 
   namespace emp

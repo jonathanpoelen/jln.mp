@@ -46,7 +46,7 @@ namespace jln::mp::detail
     {
       template<class Cmp, class seq1, class seq2>
       using impl = typename conditional<
-        typename smp::concepts::predicate<Cmp, always<true_>, always<false_>>
+        typename smp::concepts::predicate<Cmp, mp::always<true_>>
         ::template f<emp::at<seq1, i>, emp::at<seq2, i>>
       >::template f<C, violation>
       ::template f<i, number<0>>;
@@ -58,7 +58,7 @@ namespace jln::mp::detail
   {
     template<class seq1, class seq2>
     using f = typename mismatch<
-      smp::concepts::predicate<Cmp, mp::identity, mp::always<false_>>,
+      smp::concepts::predicate<Cmp>,
       _smp_mismatch_check<C>,
       _smp_mismatch_check<NC>
     >

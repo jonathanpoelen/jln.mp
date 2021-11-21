@@ -24,21 +24,21 @@ namespace jln::mp
   struct or_
   {
     template<class... xs>
-    using f = typename C::template f<number<(false || ... || xs::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(false || ... || xs::value)>);
   };
 
   template<class C = identity>
   struct and_
   {
     template<class... xs>
-    using f = typename C::template f<number<(true && ... && xs::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(true && ... && xs::value)>);
   };
 
   template<class C = identity>
   struct add
   {
     template<class... xs>
-    using f = typename C::template f<number<(... + xs::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(... + xs::value)>);
   };
 
   template<class C = identity>
@@ -48,7 +48,7 @@ namespace jln::mp
   struct sub
   {
     template<class... xs>
-    using f = typename C::template f<number<(... - xs::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(... - xs::value)>);
   };
 
   template<class C = identity>
@@ -58,7 +58,7 @@ namespace jln::mp
   struct lshift
   {
     template<class... xs>
-    using f = typename C::template f<number<(... << xs::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(... << xs::value)>);
   };
 
   template<class C = identity>
@@ -68,7 +68,7 @@ namespace jln::mp
   struct rshift
   {
     template<class... xs>
-    using f = typename C::template f<number<(... >> xs::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(... >> xs::value)>);
   };
 
   template<class C = identity>
@@ -78,7 +78,7 @@ namespace jln::mp
   struct mul
   {
     template<class... xs>
-    using f = typename C::template f<number<(... * xs::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(... * xs::value)>);
   };
 
   template<class C = identity>
@@ -91,7 +91,7 @@ namespace jln::mp
   struct div
   {
     template<class... xs>
-    using f = typename C::template f<number<(... / xs::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(... / xs::value)>);
   };
 
   template<class C = identity>
@@ -104,7 +104,7 @@ namespace jln::mp
   struct mod
   {
     template<class... xs>
-    using f = typename C::template f<number<(... % xs::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(... % xs::value)>);
   };
 
   template<class C = identity>
@@ -117,7 +117,7 @@ namespace jln::mp
   struct xor_
   {
     template<class... xs>
-    using f = typename C::template f<number<(... ^ xs::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(... ^ xs::value)>);
   };
 
   template<class C = identity>
@@ -127,7 +127,7 @@ namespace jln::mp
   struct bit_and
   {
     template<class... xs>
-    using f = typename C::template f<number<(... & xs::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(... & xs::value)>);
   };
 
   template<class C = identity>
@@ -137,7 +137,7 @@ namespace jln::mp
   struct bit_or
   {
     template<class... xs>
-    using f = typename C::template f<number<(... | xs::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(... | xs::value)>);
   };
 
   template<class C = identity>
@@ -147,91 +147,91 @@ namespace jln::mp
   struct neg
   {
     template<class x>
-    using f = typename C::template f<number<(-x::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(-x::value)>);
   };
 
   template<class C = identity>
   struct unary_plus
   {
     template<class x>
-    using f = typename C::template f<number<(+x::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(+x::value)>);
   };
 
   template<class C = identity>
   struct not_
   {
     template<class x>
-    using f = typename C::template f<number<(!x::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(!x::value)>);
   };
 
   template<class C>
   struct not_<not_<C>>
   {
     template<class x>
-    using f = typename C::template f<number<(!int_{!x::value})>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(!int_{!x::value})>);
   };
 
   template<class C = identity>
   struct bit_not
   {
     template<class x>
-    using f = typename C::template f<number<(~x::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(~x::value)>);
   };
 
   template<class C = identity>
   struct inc
   {
     template<class x>
-    using f = typename C::template f<number<(x::value+1)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(x::value+1)>);
   };
 
   template<class C = identity>
   struct dec
   {
     template<class x>
-    using f = typename C::template f<number<(x::value-1)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(x::value-1)>);
   };
 
   template<class C = identity>
   struct equal
   {
     template<class x, class y>
-    using f = typename C::template f<number<(x::value == y::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(x::value == y::value)>);
   };
 
   template<class C = identity>
   struct not_equal
   {
     template<class x, class y>
-    using f = typename C::template f<number<(x::value != y::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(x::value != y::value)>);
   };
 
   template<class C = identity>
   struct less
   {
     template<class x, class y>
-    using f = typename C::template f<number<(x::value < y::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(x::value < y::value)>);
   };
 
   template<class C = identity>
   struct less_equal
   {
     template<class x, class y>
-    using f = typename C::template f<number<(x::value <= y::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(x::value <= y::value)>);
   };
 
   template<class C = identity>
   struct greater
   {
     template<class x, class y>
-    using f = typename C::template f<number<(x::value > y::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(x::value > y::value)>);
   };
 
   template<class C = identity>
   struct greater_equal
   {
     template<class x, class y>
-    using f = typename C::template f<number<(x::value >= y::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<(x::value >= y::value)>);
   };
 
 

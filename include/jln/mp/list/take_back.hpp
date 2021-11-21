@@ -15,9 +15,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_drop_front<
-      detail::n_8_or_less_16_64_256(
-        sizeof...(xs) - detail::validate_index<N::value, sizeof...(xs)>::value
-      )
+      detail::n_8_or_less_16_64_256(sizeof...(xs) - N::value)
     >::template f<sizeof...(xs) - N::value, C, xs...>;
   };
 

@@ -122,7 +122,7 @@ namespace jln::mp::detail
   template<int_ end, int_ n, class C>
   struct _range_impl<0, end, n, C, true, false>
   {
-    using type = C;
+    using type = JLN_MP_TRACE_F(C);
   };
 
   template<int_ beg, int_ end, int_ n, class C>

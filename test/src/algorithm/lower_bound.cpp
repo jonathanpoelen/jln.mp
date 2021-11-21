@@ -110,7 +110,7 @@ TEST()
     .not_invocable<void>()
     ;
 
-  test_context<lower_bound_than_c<2, identity, always<void>>, void, 0>()
+  test_context<lower_bound_than_c<2, smp::identity, smp::always<void>>, void, 0>()
     .test<void>()
     .test<void, _0>()
     .test<_2, _0, _1, _2>()

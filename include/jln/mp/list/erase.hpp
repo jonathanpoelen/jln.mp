@@ -3,7 +3,6 @@
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/list/take_front.hpp>
-#include <jln/mp/functional/call.hpp>
 
 namespace jln::mp
 {
@@ -21,8 +20,7 @@ namespace jln::mp
       typename take_front<start>::template f<xs...>,
       typename drop_front_c<detail::min(
         sizeof...(xs),
-        unsigned{detail::validate_index<start::value, sizeof...(xs)>::value
-        + unsigned{size::value}}
+        start::value + size::value
       )>::template f<xs...>
     >;
   };

@@ -21,8 +21,9 @@ TEST()
   test_context<slice_c<2, 3>, smp::slice_c<2, 3>>()
     .test<list<_2, _3, _4>, _0, _1, _2, _3, _4, _5>()
     .test<list<_2, _3, _4>, _0, _1, _2, _3, _4>()
-    .not_invocable<_0, _2, _3>()
-    .not_invocable<_0, _2>()
+    .not_invocable<_0, _1, _2, _3>()
+    .not_invocable<_0, _1, _2>()
+    .not_invocable<_0, _1>()
     .not_invocable<_0>()
     .not_invocable<>()
     ;
@@ -31,8 +32,9 @@ TEST()
     .test<list<_2, _4, _6>, _0, _1, _2, _3, _4, _5, _6, _7>()
     .test<list<_2, _4, _6>, _0, _1, _2, _3, _4, _5, _6>()
     .not_invocable<_0, _1, _2, _3, _4, _5>()
-    .not_invocable<_0, _2, _3>()
-    .not_invocable<_0, _2>()
+    .not_invocable<_0, _1, _2, _3>()
+    .not_invocable<_0, _1, _2>()
+    .not_invocable<_0, _1>()
     .not_invocable<_0>()
     .not_invocable<>()
     ;
@@ -41,6 +43,12 @@ TEST()
     .test<list<_0, _5>, _0, _1, _2, _3, _4, _5>()
     .test<list<_0, _5>, _0, _1, _2, _3, _4, _5, _6>()
     .not_invocable<_0, _1, _2, _3, _4>()
+    ;
+
+  test_context<slice_c<2, 0>, smp::slice_c<2, 0>>()
+    .test<list<>, _0, _1, _2>()
+    .test<list<>, _0, _1>()
+    .not_invocable<_0>()
     ;
 
   ut::not_invocable<smp::slice_c<2, 3, 0>, _0, _1, _2, _3, _4, _5>();

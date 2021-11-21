@@ -90,6 +90,7 @@
 #include "src/functional/invoke_twice.cpp"
 #include "src/functional/is_invocable.cpp"
 #include "src/functional/lift.cpp"
+#include "src/functional/memoize.cpp"
 #include "src/functional/not_fn.cpp"
 #include "src/functional/on.cpp"
 #include "src/functional/partial.cpp"

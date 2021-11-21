@@ -7,5 +7,5 @@
 namespace jln::mp::smp
 {
   template <class F, class C = identity>
-  using not_fn = tee<F, not_<C>>;
+  using not_fn = contract<concepts::predicate<F, not_<C>, violation>>;
 }

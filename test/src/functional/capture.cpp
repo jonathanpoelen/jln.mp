@@ -21,8 +21,7 @@ TEST()
     .test<list<char>, pop_front<>>()
     .test<list<>, pop_front<pop_front<>>>()
     .test<list<int, char, void>, listify, void>()
-    .not_invocable<void>()
-    .not_invocable<pop_front<pop_front<pop_front<>>>>()
+    .not_invocable<smp::identity>()
     .not_invocable<pop_front<pop_front<smp::pop_front<>>>>()
     ;
 
@@ -42,8 +41,7 @@ TEST()
     .test<list<char>, pop_front<>>()
     .test<list<>, pop_front<pop_front<>>>()
     .test<list<void, int, char>, listify, void>()
-    .not_invocable<void>()
-    .not_invocable<pop_front<pop_front<pop_front<>>>>()
+    .not_invocable<smp::identity>()
     .not_invocable<pop_front<pop_front<smp::pop_front<>>>>()
     ;
 

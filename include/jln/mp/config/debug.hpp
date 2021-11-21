@@ -1,15 +1,13 @@
 #pragma once
 
+#include <jln/mp/detail/compiler.hpp>
+
 #ifndef JLN_MP_ENABLE_DEBUG
 #  define JLN_MP_ENABLE_DEBUG 0
 #endif
 
-#if JLN_MP_ENABLE_DEBUG
-#  define JLN_MP_DEBUG_A(...) , __VA_ARGS__
-#  define JLN_MP_DEBUG_B(...) __VA_ARGS__,
-#  define JLN_MP_DEBUG(...) __VA_ARGS__
-#else
-#  define JLN_MP_DEBUG_A(...)
-#  define JLN_MP_DEBUG_B(...)
-#  define JLN_MP_DEBUG(...)
+// useless with gcc since it displays all the transformations
+#if JLN_MP_GCC && !defined(JLN_MP_ENABLE_GCC_DEBUG)
+#  undef JLN_MP_ENABLE_DEBUG
+#  define JLN_MP_ENABLE_DEBUG 0
 #endif

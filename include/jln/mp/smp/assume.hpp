@@ -1,20 +1,29 @@
 #pragma once
 
 #include <jln/mp/smp/contract.hpp>
+#include <jln/mp/functional/memoize.hpp>
 
 namespace jln::mp
 {
   namespace detail
   {
-    template<class F> struct _assume_number { using type = F; };
-    template<class F> struct _assume_positive_number { using type = F; };
-    template<class F> struct _assume_numbers { using type = F; };
-    template<class F> struct _assume_unary { using type = F; };
-    template<class F> struct _assume_unary_or_more { using type = F; };
-    template<class F> struct _assume_binary { using type = F; };
-    template<class F> struct _assume_binary_list { using type = F; };
-    template<class F> struct _assume_binary_or_more { using type = F; };
-    template<class F> struct _assume_lists { using type = F; };
+#define JLN_MP_MK_ASSUME(name)                         \
+    template<class F> struct name { using type = F; }; \
+    template<class F> struct name<memoize<F>>          \
+    {                                                  \
+      using type = memoize<typename name<F>::type>;    \
+    }
+
+    JLN_MP_MK_ASSUME(_assume_number);
+    JLN_MP_MK_ASSUME(_assume_positive_number);
+    JLN_MP_MK_ASSUME(_assume_numbers);
+    JLN_MP_MK_ASSUME(_assume_unary);
+    JLN_MP_MK_ASSUME(_assume_unary_or_more);
+    JLN_MP_MK_ASSUME(_assume_binary);
+    JLN_MP_MK_ASSUME(_assume_binary_list);
+    JLN_MP_MK_ASSUME(_assume_binary_or_more);
+    JLN_MP_MK_ASSUME(_assume_lists);
+#undef JLN_MP_MK_ASSUME
   }
 
   template<class C>
@@ -76,6 +85,10 @@ namespace jln::mp::detail
 {
   template<class F>
   struct expected_argument : number<0>
+  {};
+
+  template<class F>
+  struct expected_argument<memoize<F>> : expected_argument<F>
   {};
 
 #define JLN_MP_UNPACK(...) __VA_ARGS__

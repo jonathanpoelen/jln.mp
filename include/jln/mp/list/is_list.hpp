@@ -2,6 +2,7 @@
 
 #include <jln/mp/list/list.hpp>
 #include <jln/mp/functional/identity.hpp>
+#include <jln/mp/detail/call_trace.hpp>
 
 namespace jln::mp
 {
@@ -21,13 +22,13 @@ namespace jln::mp
   struct is_list
   {
     template<class x>
-    using f = typename C::template f<typename detail::_is_list<x>::type>;
+    using f = JLN_MP_CALL_TRACE((C), typename detail::_is_list<x>::type);
   };
 
   namespace emp
   {
     template<class x, class C = mp::identity>
-    using is_list = typename C::template f<typename detail::_is_list<x>::type>;
+    using is_list = JLN_MP_CALL_TRACE((C), typename detail::_is_list<x>::type);
   }
 } // namespace jln::mp
 

@@ -17,21 +17,6 @@ namespace jln::mp
   {
     template<unsigned>
     struct _drop_front;
-
-#if JLN_MP_MSVC || JLN_MP_CLANG
-    template<int_ i, std::size_t n, class = void>
-    struct validate_index
-    {};
-
-    template<int_ i, std::size_t n>
-    struct validate_index<i, n, std::enable_if_t<(int_(n) - i >= 0)>>
-    {
-      static constexpr int_ value = i;
-    };
-#else
-    template<int_ i, std::size_t n>
-    using validate_index = number<(0 * std::size_t{int_(n) - i}) + i>;
-#endif
   }
   /// \endcond
 
@@ -47,7 +32,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::_drop_front<
       detail::n_8_or_less_16_64_256(
-        detail::validate_index<N::value, sizeof...(xs)>::value
+        (sizeof...(xs) & 0) + N::value
       )
     >::template f<N::value, C, xs...>;
   };
@@ -116,7 +101,7 @@ namespace jln::mp::detail
     template<unsigned size, class C,           \
       mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)   \
       class... xs>                             \
-    using f = typename C::template f<xs...>;   \
+    using f = JLN_MP_CALL_TRACE((C), xs...);   \
   };
 
   JLN_MP_GEN_XS_0_TO_8(JLN_MP_DROP_IMPL)

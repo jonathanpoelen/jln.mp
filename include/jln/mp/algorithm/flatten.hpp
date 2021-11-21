@@ -1,7 +1,6 @@
 #pragma once
 
 #include <jln/mp/list/join.hpp>
-#include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/utility/unpack.hpp>
 

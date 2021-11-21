@@ -66,7 +66,7 @@ TEST()
     .test<seq_3_1, _0, _3, _2, _3, _1>()
     ;
 
-  test_context<smp::find_last_if<equal_to<_3>>, void>()
+  test_context<smp::find_last_if<smp::equal_to<_3>>, void>()
     .test<seq_3_2, _0, _3, _2>()
     .not_invocable<bad_number>()
     .not_invocable<_0, bad_number>()

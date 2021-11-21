@@ -2,6 +2,7 @@
 
 #include <jln/mp/value/val.hpp>
 #include <jln/mp/number/number.hpp>
+#include <jln/mp/detail/call_trace.hpp>
 
 namespace jln::mp
 {
@@ -11,7 +12,7 @@ namespace jln::mp
   struct capture
   {
     template<class C, class... ys>
-    using f = typename C::template f<xs..., ys...>;
+    using f = JLN_MP_CALL_TRACE((C), xs..., ys...);
   };
 
   template<class... xs>
@@ -43,7 +44,7 @@ namespace jln::mp
   struct reverse_capture
   {
     template<class C, class... ys>
-    using f = typename C::template f<ys..., xs...>;
+    using f = JLN_MP_CALL_TRACE((C), ys..., xs...);
   };
 
   template<class... xs>

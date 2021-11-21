@@ -2,6 +2,7 @@
 
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/functional/identity.hpp>
+#include <jln/mp/detail/call_trace.hpp>
 
 #include <type_traits>
 
@@ -14,6 +15,6 @@ namespace jln::mp
   struct is
   {
     template<class x>
-    using f = typename C::template f<number<std::is_same<T, x>::value>>;
+    using f = JLN_MP_CALL_TRACE((C), number<std::is_same<T, x>::value>);
   };
 } // namespace jln::mp

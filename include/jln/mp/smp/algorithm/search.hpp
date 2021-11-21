@@ -27,7 +27,7 @@ namespace jln::mp::detail
 
   template<class Pred>
   using _smp_search_pred = smp::concepts::predicate<
-    assume_unary_or_more<Pred>, mp::identity, mp::always<mp::true_>>;
+    assume_unary_or_more<Pred>, mp::identity, mp::always<true_>>;
 
   template<class TC>
   struct _smp_search_before_take_front;
@@ -63,7 +63,7 @@ namespace jln::mp::smp
     mp::search<
       detail::_smp_search_pred<Pred>,
       mp::if_<
-        concepts::predicate<assume_unary_or_more<Pred>, mp::always<mp::true_>>,
+        concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
         detail::_smp_search_before_take_front<subcontract<TC>>,
         mp::always<violation>
       >,
@@ -103,7 +103,7 @@ namespace jln::mp::smp
       number<StopWhenAtLeast>,
       detail::_smp_search_pred<Pred>,
       mp::if_<
-        smp::concepts::predicate<assume_unary_or_more<Pred>, mp::always<mp::true_>>,
+        smp::concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
         detail::_smp_search_before_take_front<subcontract<TC>>,
         mp::always<violation>
       >,
@@ -123,7 +123,7 @@ namespace jln::mp::smp
     mp::search<
       detail::_smp_search_pred<Pred>,
       mp::if_<
-        concepts::predicate<assume_unary_or_more<Pred>, mp::always<mp::true_>>,
+        concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
         detail::_smp_search_to_index<subcontract<TC>>,
         mp::always<violation>
       >,
@@ -203,7 +203,7 @@ namespace jln::mp::detail
         number<StopWhenAtLeast::value>,
         detail::_smp_search_pred<Pred>,
         mp::if_<
-          smp::concepts::predicate<assume_unary_or_more<Pred>, mp::always<mp::true_>>,
+          smp::concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
           detail::_smp_search_before_take_front<subcontract<TC>>,
           mp::always<violation>
         >,
@@ -228,7 +228,7 @@ namespace jln::mp::detail
       mp::search<
         detail::_smp_search_pred<Pred>,
         mp::if_<
-          smp::concepts::predicate<assume_unary_or_more<Pred>, mp::always<mp::true_>>,
+          smp::concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
           detail::_smp_search_before_extended_by_n_take_front<
             subcontract<TC>, number<ExtendedByN::value>
           >,
@@ -257,7 +257,7 @@ namespace jln::mp::detail
         number<StopWhenAtLeast::value>,
         detail::_smp_search_pred<Pred>,
         mp::if_<
-          smp::concepts::predicate<assume_unary_or_more<Pred>, mp::always<mp::true_>>,
+          smp::concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
           detail::_smp_search_before_extended_by_n_take_front<
             subcontract<TC>, number<ExtendedByN::value>
           >,

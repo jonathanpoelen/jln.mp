@@ -66,7 +66,7 @@ namespace jln::mp::detail
   struct _tee
   {
     template<class... xs>
-    using f = typename C::template f<call<Fs, xs...>...>;
+    using f = JLN_MP_CALL_TRACE((C), call<Fs, xs...>...);
   };
 } // namespace jln::mp
 /// \endcond

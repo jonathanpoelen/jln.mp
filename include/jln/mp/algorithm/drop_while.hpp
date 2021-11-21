@@ -3,6 +3,7 @@
 #include <jln/mp/list/listify.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/detail/call_trace.hpp>
 
 namespace jln::mp
 {
@@ -29,7 +30,7 @@ namespace jln::mp
     using f = typename detail::drop_while_impl<
       typename detail::_drop_while<
         detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
-      >::template f<0, Pred, xs...>
+      >::template f<0, JLN_MP_TRACE_F(Pred), xs...>
     >::template f<C, xs...>;
   };
 

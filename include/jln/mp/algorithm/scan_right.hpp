@@ -51,7 +51,7 @@ namespace jln::mp::detail
     template<class... xs>
     using f = typename _scan_right<
       detail::n_8_or_less_16_32_64_128_256(sizeof...(xs))
-    >::template f<sizeof...(xs), C, F::template f, xs...>;
+    >::template f<sizeof...(xs), C, JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
   template<>

@@ -20,9 +20,10 @@ namespace jln::mp
   /// \ingroup list
 
   /// Returns a subset of elements in a \c xs picked at regular intervals in range.
-  /// \pre `0 <= start < sizeof...(xs)`
-  /// \pre `stride > 0`
-  /// \pre `0 <= size * (stride - 1) + 1 < sizeof...(xs) - start`
+  /// \pre `0 <= start <= sizeof...(xs)`
+  /// \pre `0 < stride`
+  /// \pre `0 <= size`
+  /// \pre `0 <= (size - 1) * stride + start + 1 <= sizeof...(xs)`
   /// \treturn \sequence
   template<class start, class size, class stride = number<1>, class C = listify>
   struct slice
@@ -31,15 +32,7 @@ namespace jln::mp
     using f = typename detail::_slice<
       detail::slide_select(int_(sizeof...(xs)) - start::value, size::value, stride::value)
     >
-    ::template f<
-      start::value, size::value,
-      // verify that stride is strictly greater than 0
-#if JLN_MP_MSVC
-      emp::conditional_c<(stride::value > 0), stride, void>::value,
-#else
-      unsigned{int_(stride::value)-1}+1u,
-#endif
-      C, sizeof...(xs)>
+    ::template f<start::value, size::value, stride::value, C, sizeof...(xs)>
     ::template f<xs...>;
   };
 
@@ -61,9 +54,9 @@ namespace jln::mp
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
 #include <jln/mp/list/join.hpp>
-#include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/front.hpp>
+#include <jln/mp/list/clear.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -81,15 +74,7 @@ namespace jln::mp::detail
   struct _slice<2>
   {
     template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
-    using f = drop_front_c<start, take_front_c<
-      detail::validate_index<size - 1,
-#if JLN_MP_MSVC
-        (start < int_(len) ? int_(len) - start : 0)
-#else
-        unsigned{len - start}
-#endif
-      >::value + 1,
-      C>>;
+    using f = drop_front_c<start, take_front_c<size, C>>;
   };
 
   template<int_ size, int_ stride, class C>
@@ -123,11 +108,9 @@ namespace jln::mp::detail
     using f = drop_front_c<
       start,
       typename emp::make_int_sequence_v_c<
-        detail::validate_index<int_(len) - start, len>::value,
-        lift_c<_slice_impl<
-          detail::validate_index<size * stride - stride + 1, len - start>::value,
-          stride, C
-        >::template impl>
+        len - start,
+        lift_c<_slice_impl<size * stride - stride + 1, stride, C>
+               ::template impl>
       >
     >;
   };
@@ -136,9 +119,7 @@ namespace jln::mp::detail
   struct _slice<0>
   {
     template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
-    using f = typename conditional_c<
-      bool(detail::validate_index<start, len>::value)
-    >::template f<C, C>;
+    using f = clear<C>;
   };
 
   template<>

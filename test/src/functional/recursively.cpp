@@ -70,10 +70,11 @@ void test_rec()
     .template not_invocable<_0, _1>()
   ;
 
-  ut::not_invocable<Smp<until_n_c<3>, bad_function>>();
-  ut::not_invocable<Smp<until_n_c<15>, bad_function>>();
+  ut::not_invocable<Smp<sfinae<until_n_c<3>>, bad_function>>();
+  ut::not_invocable<Smp<sfinae<until_n_c<15>>, bad_function>>();
   ut::not_invocable<Smp<bad_function, bad_function>>();
-  ut::not_invocable<Smp<until_n_c<10, always<list<_0, _0>, unpack<recursion_result>>>>>();
+  ut::not_invocable<Smp<sfinae<until_n_c<10,
+    smp::always<list<_0, _0>, smp::unpack<smp::recursion_result>>>>>>();
 }
 
 TEST()
