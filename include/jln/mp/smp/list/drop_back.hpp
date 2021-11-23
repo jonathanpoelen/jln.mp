@@ -2,7 +2,6 @@
 
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/list/drop_back.hpp>
-#include <jln/mp/list/front.hpp>
 
 /// \cond
 namespace jln::mp::detail

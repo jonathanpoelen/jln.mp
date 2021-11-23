@@ -6,7 +6,7 @@
 #define TEST_SUITE_BEGIN_I(name, n) TEST_SUITE_BEGIN_II(name, n)
 // under namespace to prevent ambiguities with libc
 #define TEST_SUITE_BEGIN_II(name, n) \
-  namespace jln::mp { namespace { namespace test_suite { struct test_ ## name ## _ ## n {
+  namespace jln::mp { namespace { namespace test_suite { struct test_ ## name ## n {
 #define TEST_SUITE_END() }; } } }
 
 #define TEST() TEST_I(__COUNTER__)

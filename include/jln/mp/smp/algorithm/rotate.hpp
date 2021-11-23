@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template <int_ n, class C = listify>
-  using rotate_c = rotate<number<n>, subcontract<C>>;
+  using rotate_c = contract<rotate<number<n>, subcontract<C>>>;
 }
 
 JLN_MP_MAKE_REGULAR_SMP2_P(rotate, (N), (C, smp::listify), smp::rotate_c<N::value, C>)

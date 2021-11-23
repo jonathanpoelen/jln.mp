@@ -6,9 +6,6 @@
 #include <jln/mp/utility/unpack.hpp>
 
 #include <cstddef>
-#if JLN_MP_MSVC || JLN_MP_CLANG
-# include <type_traits>
-#endif
 
 namespace jln::mp
 {

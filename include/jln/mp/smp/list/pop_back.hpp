@@ -7,5 +7,5 @@
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using pop_back = mp::detail::sfinae<mp::pop_back<subcontract<C>>>;
+  using pop_back = rotate_c<-1, pop_front<C>>;
 }
