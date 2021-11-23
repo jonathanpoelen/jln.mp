@@ -2,6 +2,7 @@
 
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/call.hpp>
+#include <jln/mp/functional/memoize.hpp>
 #include <jln/mp/value/val.hpp>
 #include <jln/mp/detail/compiler.hpp>
 
@@ -34,7 +35,7 @@ namespace jln::mp
     using f = JLN_MP_DCALL(sizeof(C), C, val<x::value>);
 # else
     template<class... xs>
-    using f = typename detail::_memoizer_impl<C, list<
+    using f = typename detail::memoizer_impl<C, list<
       typename detail::_one<val<xs::value>...>::type
     >>::type;
 # endif
