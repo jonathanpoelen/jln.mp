@@ -1,12 +1,11 @@
 #pragma once
 
 #include <jln/mp/functional/memoize.hpp>
-#include <jln/mp/detail/compiler.hpp>
 #include <jln/mp/config/debug.hpp>
 
 #define JLN_MP_IDENT(...) __VA_ARGS__
 
-#if ! JLN_MP_ENABLE_DEBUG || JLN_MP_MSVC
+#if ! JLN_MP_ENABLE_DEBUG
   #define JLN_MP_TRACE_F(...) __VA_ARGS__
 
   #define JLN_MP_CALL_TRACE(C, ...) typename JLN_MP_IDENT C ::template f<__VA_ARGS__>
