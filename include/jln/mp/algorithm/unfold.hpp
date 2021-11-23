@@ -16,11 +16,33 @@ namespace jln::mp
   }
   /// \endcond
 
-  template<class value, class next>
+  /// \ingroup algorithm
+
+  template<class value, class next = value>
   using Some = mp::list<value, next>;
 
   using None = mp::stop_recursion;
 
+  /// Unfold \c F until returning \c None.
+  /// When \c F returns `Some<value,next>`, \c value is added to the
+  /// results list and \c next is used for the next iteration.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   call<
+  ///     unfold<
+  ///       if_<
+  ///         less_than_c<5>,
+  ///         inc<lift<Some>>,
+  ///         None
+  ///       >
+  ///     >,
+  ///     number<0>
+  ///   >
+  ///   == list<number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   \endcode
+  /// \treturn \list
+  /// \see fold_left, fold_right, recursively
   template<class F, class C = listify>
   using unfold = mp::recursively<detail::unfold_impl<F>, mp::pop_front<C>>;
 
