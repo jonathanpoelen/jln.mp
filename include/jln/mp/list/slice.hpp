@@ -77,27 +77,26 @@ namespace jln::mp::detail
     using f = drop_front_c<start, take_front_c<size, C>>;
   };
 
+#if JLN_MP_MSVC
+  template<int_ size, int_ stride, int_ i, class x>
+  using slice_impl_msvc = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
+#endif
+
   template<int_ size, int_ stride, class C>
   struct _slice_impl
   {
-#if JLN_MP_MSVC
-    template<int_ i, class x>
-    using g = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
-#endif
-
     template<int_... ints>
     struct impl
     {
-#if JLN_MP_MSVC
-      template<class... xs>
-      using f = call<join<C>, g<ints, xs>...>;
-#else
       template<class... xs>
       using f = typename join<C>::template f<
+#if JLN_MP_MSVC
+        slice_impl_msvc<size, stride, ints, xs>...
+#else
         typename wrap_in_list_c<(ints <= size && ints % stride == 0)>
-        ::template f<xs>
-      ...>;
+        ::template f<xs>...
 #endif
+      >;
     };
   };
 
