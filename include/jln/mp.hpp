@@ -222,8 +222,8 @@ namespace jln::mp
 #  define JLN_MP_ENABLE_DEBUG 0
 #endif
 
-// useless with gcc since it displays all the transformations
-#if JLN_MP_GCC && !defined(JLN_MP_ENABLE_GCC_DEBUG)
+// useless with gcc and msvc since it displays all the transformations
+#if (JLN_MP_GCC || JLN_MP_MSVC) && !defined(JLN_MP_FORCE_DEBUG)
 #  undef JLN_MP_ENABLE_DEBUG
 #  define JLN_MP_ENABLE_DEBUG 0
 #endif
@@ -10595,27 +10595,26 @@ namespace jln::mp::detail
     using f = drop_front_c<start, take_front_c<size, C>>;
   };
 
+#if JLN_MP_MSVC
+  template<int_ size, int_ stride, int_ i, class x>
+  using slice_impl_msvc = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
+#endif
+
   template<int_ size, int_ stride, class C>
   struct _slice_impl
   {
-#if JLN_MP_MSVC
-    template<int_ i, class x>
-    using g = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
-#endif
-
     template<int_... ints>
     struct impl
     {
-#if JLN_MP_MSVC
-      template<class... xs>
-      using f = call<join<C>, g<ints, xs>...>;
-#else
       template<class... xs>
       using f = typename join<C>::template f<
+#if JLN_MP_MSVC
+        slice_impl_msvc<size, stride, ints, xs>...
+#else
         typename wrap_in_list_c<(ints <= size && ints % stride == 0)>
-        ::template f<xs>
-      ...>;
+        ::template f<xs>...
 #endif
+      >;
     };
   };
 
@@ -14745,19 +14744,6 @@ namespace jln::mp
 {
   /// \ingroup value
 
-  /// \cond
-#if JLN_MP_MSVC
-  namespace detail
-  {
-    template<class x>
-    struct _one
-    {
-      using type = x;
-    };
-  }
-#endif
-  /// \endcond
-
   /// Converts \c x to \val.
   /// \pre \c emp::has_value<x> == \c true
   /// \treturn \bool
@@ -14765,25 +14751,11 @@ namespace jln::mp
   struct as_val
   {
 #if __cplusplus >= 201703L
-# if !JLN_MP_MSVC
     template<class x>
-    using f = JLN_MP_DCALL(sizeof(C), C, val<x::value>);
-# else
-    template<class... xs>
-    using f = typename detail::memoizer_impl<C, list<
-      typename detail::_one<val<xs::value>...>::type
-    >>::type;
-# endif
+    using f = JLN_MP_DCALL(sizeof(x), C, val<x::value>);
 #else
-# if !JLN_MP_MSVC
     template<class x>
-    using f = JLN_MP_DCALL(sizeof(C), C, typed_value<decltype(x::value), x::value>);
-# else
-    template<class... xs>
-    using f = typename detail::_memoizer_impl<C, list<
-      typename detail::_one<typed_value<decltype(x::value), x::value>...>::type
-    >>::type;
-# endif
+    using f = JLN_MP_DCALL(sizeof(x), C, typed_value<decltype(x::value), x::value>);
 #endif
   };
 
@@ -14792,21 +14764,11 @@ namespace jln::mp
   struct as_val<identity>
   {
 #if __cplusplus >= 201703L
-# if !JLN_MP_MSVC
     template<class x>
     using f = val<x::value>;
-# else
-    template<class... xs>
-    using f = typename detail::_one<val<xs::value>...>::type;
-# endif
 #else
-# if !JLN_MP_MSVC
     template<class x>
     using f = typed_value<decltype(x::value), x::value>;
-# else
-    template<class... xs>
-    using f = typename detail::_one<typed_value<decltype(xs::value), xs::value>...>::type;
-# endif
 #endif
   };
   /// \endcond
