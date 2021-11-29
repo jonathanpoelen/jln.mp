@@ -10,7 +10,8 @@ namespace jln::mp
   namespace smp::traits                             \
   {                                                 \
     template <class C = identity>                   \
-    using Name = try_contract<mp::traits::Name<C>>; \
+    using Name = try_contract<                      \
+      mp::traits::Name<subcontract<C>>>;            \
   }                                                 \
                                                     \
   namespace detail                                  \
@@ -115,25 +116,7 @@ namespace jln::mp
   JLN_MP_SMP_MAKE_TRAIT(alignment_of)
   JLN_MP_SMP_MAKE_TRAIT(rank)
 
-  template<class C = identity>
-  struct extent
-  {
-    template<class x, class... i>
-    using f = call<C, typename std::extent<x, i::value...>::type>;
-  };
-
-  namespace emp
-  {
-    template<class x, class i = number<0>>
-    using extent = typename std::extent<x, i::value>::type;
-  }
-
-  template<>
-  struct extent<identity>
-  {
-    template<class x, class i = number<0>>
-    using f = typename std::extent<x, i::value>::type;
-  };
+  JLN_MP_SMP_MAKE_TRAIT(extent)
 
   // type relations:
   JLN_MP_SMP_MAKE_TRAIT(is_same)
