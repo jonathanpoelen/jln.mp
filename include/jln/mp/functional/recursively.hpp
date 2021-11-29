@@ -62,7 +62,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_recursively<
-      typename detail::_recursively_next<call<F, xs...>>
+      typename detail::_recursively_next<JLN_MP_DCALL_XS(xs, F, xs...)>
       ::template g<xs...>
       ::template f<F>
       ::template f<F>
@@ -86,7 +86,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_recursively_as_much_as_possible<
-      typename detail::_recursively_as_much_as_possible_next<call<F, xs...>>
+      typename detail::_recursively_as_much_as_possible_next<JLN_MP_DCALL_XS(xs, F, xs...)>
         ::template g<xs...>
         ::template f<F>
         ::template f<F>

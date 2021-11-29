@@ -61,7 +61,7 @@ namespace jln::mp::detail
   struct _each
   {
     template <class... xs>
-    using f = call<C, call<Fs, xs>...>;
+    using f = JLN_MP_DCALL_XS(xs, C, call<Fs, xs>...);
   };
 } // namespace jln::mp
 /// \endcond

@@ -14,14 +14,14 @@ namespace jln::mp
   struct values
   {
     template<class... xs>
-    using f = call<C, val<xs::value>...>;
+    using f = JLN_MP_DCALL_XS(xs, C, val<xs::value>...);
   };
 
   template<class C = listify>
   struct typed_values
   {
     template<class T, class... xs>
-    using f = call<C, val<T(xs::value)>...>;
+    using f = JLN_MP_DCALL_XS(xs, C, val<T(xs::value)>...);
   };
 
   namespace emp
@@ -40,14 +40,14 @@ namespace jln::mp
   struct values
   {
     template<class... xs>
-    using f = call<C, typed_val<decltype(xs::value), xs::value>...>;
+    using f = JLN_MP_DCALL_XS(xs, C, typed_val<decltype(xs::value), xs::value>...);
   };
 
   template<class C>
   struct typed_values
   {
     template<class T, class... xs>
-    using f = call<C, typed_val<T, xs::value>...>;
+    using f = JLN_MP_DCALL_XS(xs, C, typed_val<T, xs::value>...);
   };
 
   namespace emp

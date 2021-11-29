@@ -456,107 +456,107 @@ namespace jln::mp::emp
   using val_add = val<(... + xs::value)>;
 
   template<class... xs>
-  using val_add0 = call<mp::val_add0<>, xs...>;
+  using val_add0 = typename mp::val_add0<>::template f<xs...>;
 
   template<class... xs>
   using val_sub = val<(... - xs::value)>;
 
   template<class... xs>
-  using val_sub0 = call<mp::val_sub0<>, xs...>;
+  using val_sub0 = typename mp::val_sub0<>::template f<xs...>;
 
   template<class... xs>
   using val_lshift = val<(... << xs::value)>;
 
   template<class... xs>
-  using val_lshift0 = call<mp::val_lshift0<>, xs...>;
+  using val_lshift0 = typename mp::val_lshift0<>::template f<xs...>;
 
   template<class... xs>
   using val_rshift = val<(... >> xs::value)>;
 
   template<class... xs>
-  using val_rshift0 = call<mp::val_rshift0<>, xs...>;
+  using val_rshift0 = typename mp::val_rshift0<>::template f<xs...>;
 
   template<class... xs>
   using val_mul = val<(... * xs::value)>;
 
   template<class... xs>
-  using val_mul0 = call<mp::val_mul0<>, xs...>;
+  using val_mul0 = typename mp::val_mul0<>::template f<xs...>;
 
   template<class... xs>
-  using val_mul1 = call<mp::val_mul1<>, xs...>;
+  using val_mul1 = typename mp::val_mul1<>::template f<xs...>;
 
   template<class... xs>
   using val_div = val<(... / xs::value)>;
 
   template<class... xs>
-  using val_div0 = call<mp::val_div0<>, xs...>;
+  using val_div0 = typename mp::val_div0<>::template f<xs...>;
 
   template<class... xs>
-  using val_div1 = call<mp::val_div1<>, xs...>;
+  using val_div1 = typename mp::val_div1<>::template f<xs...>;
 
   template<class... xs>
   using val_mod = val<(... % xs::value)>;
 
   template<class... xs>
-  using val_mod0 = call<mp::val_mod0<>, xs...>;
+  using val_mod0 = typename mp::val_mod0<>::template f<xs...>;
 
   template<class... xs>
-  using val_mod1 = call<mp::val_mod1<>, xs...>;
+  using val_mod1 = typename mp::val_mod1<>::template f<xs...>;
 
   template<class... xs>
   using val_xor = val<(... ^ xs::value)>;
 
   template<class... xs>
-  using val_xor0 = call<mp::val_xor0<>, xs...>;
+  using val_xor0 = typename mp::val_xor0<>::template f<xs...>;
 
   template<class... xs>
   using val_bit_and = val<(... & xs::value)>;
 
   template<class... xs>
-  using val_bit_and0 = call<mp::val_bit_and0<>, xs...>;
+  using val_bit_and0 = typename mp::val_bit_and0<>::template f<xs...>;
 
   template<class... xs>
   using val_bit_or = val<(... | xs::value)>;
 
   template<class... xs>
-  using val_bit_or0 = call<mp::val_bit_or0<>, xs...>;
+  using val_bit_or0 = typename mp::val_bit_or0<>::template f<xs...>;
 
 
   template<class x, class C = mp::identity>
-  using val_neg = call<mp::val_neg<C>, x>;
+  using val_neg = typename mp::val_neg<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using val_unary_plus = call<mp::val_unary_plus<C>, x>;
+  using val_unary_plus = typename mp::val_unary_plus<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using val_not = call<mp::val_not<C>, x>;
+  using val_not = typename mp::val_not<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using val_bit_not = call<mp::val_bit_not<C>, x>;
+  using val_bit_not = typename mp::val_bit_not<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using val_inc = call<mp::val_inc<C>, x>;
+  using val_inc = typename mp::val_inc<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using val_dec = call<mp::val_dec<C>, x>;
+  using val_dec = typename mp::val_dec<C>::template f<x>;
 
   template<class x, class y, class C = mp::identity>
-  using val_equal = call<mp::val_equal<C>, x, y>;
+  using val_equal = typename mp::val_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using val_not_equal = call<mp::val_not_equal<C>, x, y>;
+  using val_not_equal = typename mp::val_not_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using val_less = call<mp::val_less<C>, x, y>;
+  using val_less = typename mp::val_less<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using val_less_equal = call<mp::val_less_equal<C>, x, y>;
+  using val_less_equal = typename mp::val_less_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using val_greater = call<mp::val_greater<C>, x, y>;
+  using val_greater = typename mp::val_greater<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using val_greater_equal = call<mp::val_greater_equal<C>, x, y>;
+  using val_greater_equal = typename mp::val_greater_equal<C>::template f<x, y>;
 }
 
 JLN_MP_DIAGNOSTIC_POP()

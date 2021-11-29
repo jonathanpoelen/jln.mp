@@ -12,7 +12,7 @@ namespace jln::mp
   struct bind
   {
     template<class... ys>
-    using f = call<F, xs..., ys...>;
+    using f = JLN_MP_DCALL_XS(ys, F, xs..., ys...);
   };
 
   /// Partially apply a function to some arguments.
@@ -21,7 +21,7 @@ namespace jln::mp
   struct reverse_bind
   {
     template<class... ys>
-    using f = call<F, ys..., xs...>;
+    using f = JLN_MP_DCALL_XS(ys, F, ys..., xs...);
   };
 
   template<class F, class C>

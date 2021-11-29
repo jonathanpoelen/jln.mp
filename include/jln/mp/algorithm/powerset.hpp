@@ -46,7 +46,6 @@ namespace jln::mp
 #include <jln/mp/algorithm/cartesian.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/join.hpp>
-#include <jln/mp/functional/call.hpp>
 #include <jln/mp/utility/always.hpp>
 
 /// \cond

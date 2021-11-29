@@ -563,107 +563,107 @@ namespace jln::mp::emp
   using add = number<(... + xs::value)>;
 
   template<class... xs>
-  using add0 = call<mp::add0<>, xs...>;
+  using add0 = typename mp::add0<>::template f<xs...>;
 
   template<class... xs>
   using sub = number<(... - xs::value)>;
 
   template<class... xs>
-  using sub0 = call<mp::sub0<>, xs...>;
+  using sub0 = typename mp::sub0<>::template f<xs...>;
 
   template<class... xs>
   using lshift = number<(... << xs::value)>;
 
   template<class... xs>
-  using lshift0 = call<mp::lshift0<>, xs...>;
+  using lshift0 = typename mp::lshift0<>::template f<xs...>;
 
   template<class... xs>
   using rshift = number<(... >> xs::value)>;
 
   template<class... xs>
-  using rshift0 = call<mp::rshift0<>, xs...>;
+  using rshift0 = typename mp::rshift0<>::template f<xs...>;
 
   template<class... xs>
   using mul = number<(... * xs::value)>;
 
   template<class... xs>
-  using mul0 = call<mp::mul0<>, xs...>;
+  using mul0 = typename mp::mul0<>::template f<xs...>;
 
   template<class... xs>
-  using mul1 = call<mp::mul1<>, xs...>;
+  using mul1 = typename mp::mul1<>::template f<xs...>;
 
   template<class... xs>
   using div = number<(... / xs::value)>;
 
   template<class... xs>
-  using div0 = call<mp::div0<>, xs...>;
+  using div0 = typename mp::div0<>::template f<xs...>;
 
   template<class... xs>
-  using div1 = call<mp::div1<>, xs...>;
+  using div1 = typename mp::div1<>::template f<xs...>;
 
   template<class... xs>
   using mod = number<(... % xs::value)>;
 
   template<class... xs>
-  using mod0 = call<mp::mod0<>, xs...>;
+  using mod0 = typename mp::mod0<>::template f<xs...>;
 
   template<class... xs>
-  using mod1 = call<mp::mod1<>, xs...>;
+  using mod1 = typename mp::mod1<>::template f<xs...>;
 
   template<class... xs>
   using xor_ = number<(... ^ xs::value)>;
 
   template<class... xs>
-  using xor0 = call<mp::xor0<>, xs...>;
+  using xor0 = typename mp::xor0<>::template f<xs...>;
 
   template<class... xs>
   using bit_and = number<(... & xs::value)>;
 
   template<class... xs>
-  using bit_and0 = call<mp::bit_and0<>, xs...>;
+  using bit_and0 = typename mp::bit_and0<>::template f<xs...>;
 
   template<class... xs>
   using bit_or = number<(... | xs::value)>;
 
   template<class... xs>
-  using bit_or0 = call<mp::bit_or0<>, xs...>;
+  using bit_or0 = typename mp::bit_or0<>::template f<xs...>;
 
 
   template<class x, class C = mp::identity>
-  using neg = call<mp::neg<C>, x>;
+  using neg = typename mp::neg<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using unary_plus = call<mp::unary_plus<C>, x>;
+  using unary_plus = typename mp::unary_plus<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using not_ = call<mp::not_<C>, x>;
+  using not_ = typename mp::not_<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using bit_not = call<mp::bit_not<C>, x>;
+  using bit_not = typename mp::bit_not<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using inc = call<mp::inc<C>, x>;
+  using inc = typename mp::inc<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using dec = call<mp::dec<C>, x>;
+  using dec = typename mp::dec<C>::template f<x>;
 
   template<class x, class y, class C = mp::identity>
-  using equal = call<mp::equal<C>, x, y>;
+  using equal = typename mp::equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using not_equal = call<mp::not_equal<C>, x, y>;
+  using not_equal = typename mp::not_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using less = call<mp::less<C>, x, y>;
+  using less = typename mp::less<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using less_equal = call<mp::less_equal<C>, x, y>;
+  using less_equal = typename mp::less_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using greater = call<mp::greater<C>, x, y>;
+  using greater = typename mp::greater<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using greater_equal = call<mp::greater_equal<C>, x, y>;
+  using greater_equal = typename mp::greater_equal<C>::template f<x, y>;
 }
 
 JLN_MP_DIAGNOSTIC_POP()

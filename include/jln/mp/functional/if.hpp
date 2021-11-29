@@ -23,6 +23,6 @@ namespace jln::mp
   namespace emp
   {
     template<class Pred, class TC, class FC, class... xs>
-    using if_ = JLN_MP_CALL_TRACE((conditional<call<Pred, xs...>, TC, FC>), xs...);
+    using if_ = JLN_MP_CALL_TRACE((conditional<JLN_MP_DCALL_XS(xs, Pred, xs...), TC, FC>), xs...);
   }
 }

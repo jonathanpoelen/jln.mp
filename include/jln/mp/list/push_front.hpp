@@ -14,7 +14,7 @@ namespace jln::mp
   struct push_front
   {
     template<class... xs>
-    using f = call<C, x, xs...>;
+    using f = JLN_MP_DCALL_XS(xs, C, x, xs...);
   };
 
   namespace emp

@@ -5,9 +5,12 @@
 #include <jln/mp/detail/compiler.hpp>
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/functional/memoize.hpp>
+#include <jln/mp/utility/conditional.hpp>
 
 namespace jln::mp
 {
+  class to_many_argument_error {};
+
   /// \cond
   namespace detail
   {
@@ -96,8 +99,9 @@ namespace jln::mp
 # define JLN_MP_DCALLF_C(cond, ...) typename detail::dcallf_c<(cond)>::template f<__VA_ARGS__>
 
   template<class C, class... xs>
-  using call = typename detail::dcall<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>
-    ::template f<C, xs...>;
+  using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
+    ::template f<C, to_many_argument_error>
+    ::template f<xs...>;
 
 #if __cplusplus >= 201703L
   template<class C, auto... xs>
