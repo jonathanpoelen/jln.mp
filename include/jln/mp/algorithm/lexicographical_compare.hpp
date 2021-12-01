@@ -92,7 +92,7 @@ namespace jln::mp::detail
   struct _lexicographical_compare_equal
   {
     template<class x, class y>
-    using f = number<!call<Cmp, x, y>::value && !call<Cmp, y, x>::value>;
+    using f = number<!Cmp::template f<x, y>::value && !Cmp::template f<y, x>::value>;
   };
 
   template<class i, class n>

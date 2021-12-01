@@ -40,21 +40,30 @@ namespace jln::mp
   struct tee<F, C>
   {
     template<class... xs>
-    using f = unary_compose_call<C, F, xs...>;
+    using f = typename JLN_MP_TRACE_F(C)::template f<
+      JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(F), xs...)
+    >;
   };
 
   template<class F0, class F1, class C>
   struct tee<F0, F1, C>
   {
     template<class... xs>
-    using f = binary_compose_call<C, F0, F1, xs...>;
+    using f = typename JLN_MP_TRACE_F(C)::template f<
+      JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(F0), xs...),
+      JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(F1), xs...)
+    >;
   };
 
   template<class F0, class F1, class F2, class C>
   struct tee<F0, F1, F2, C>
   {
     template<class... xs>
-    using f = ternary_compose_call<C, F0, F1, F2, xs...>;
+    using f = typename JLN_MP_TRACE_F(C)::template f<
+      JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(F0), xs...),
+      JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(F1), xs...),
+      JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(F2), xs...)
+    >;
   };
   /// \endcond
 }
@@ -66,7 +75,7 @@ namespace jln::mp::detail
   struct _tee
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), JLN_MP_DCALL_XS(xs, Fs, xs...)...);
+    using f = JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(C), JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(Fs), xs...)...);
   };
 } // namespace jln::mp
 /// \endcond

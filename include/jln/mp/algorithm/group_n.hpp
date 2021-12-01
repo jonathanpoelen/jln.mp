@@ -21,7 +21,7 @@ namespace jln::mp
   /// \post If `n <= 0`, then the result sequence is empty
   /// \semantics
   ///   \code
-  ///   call<group_n<number<2>>,
+  ///   group_n<number<2>>::f<
   ///     void, void, int, void, void
   ///   > = list<
   ///     list<void, void>,

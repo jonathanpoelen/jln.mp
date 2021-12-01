@@ -19,7 +19,7 @@ namespace jln::mp
   /// Elements are sorted in order of first appearance.
   /// \semantics
   ///   \code
-  ///   call<counter<F>, int, int, char, double, int, double>
+  ///   counter<F>::f<int, int, char, double, int, double>
   ///   == list<
   ///     F::f<int, number<3>>,
   ///     F::f<char, number<1>>,
@@ -41,7 +41,7 @@ namespace jln::mp
   /// Elements are sorted in order of first appearance.
   /// \semantics
   ///   \code
-  ///   call<counter<F>, int, int, char, double, int, double>
+  ///   counter<F>::f<int, int, char, double, int, double>
   ///   == list<
   ///     list<int, number<3>>,
   ///     list<char, number<1>>,

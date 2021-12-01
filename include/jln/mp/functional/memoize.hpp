@@ -39,7 +39,7 @@ namespace jln::mp
   struct memoize
   {
     template<class... xs>
-    using f = memoize_call<C, xs...>;
+    using f = typename detail::memoizer_impl<C, list<xs...>>::type;
   };
 }
 

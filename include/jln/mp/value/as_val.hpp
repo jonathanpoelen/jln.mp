@@ -18,10 +18,10 @@ namespace jln::mp
   {
 #if __cplusplus >= 201703L
     template<class x>
-    using f = JLN_MP_DCALL(sizeof(x), C, val<x::value>);
+    using f = JLN_MP_CALL_TRACE((C), val<x::value>);
 #else
     template<class x>
-    using f = JLN_MP_DCALL(sizeof(x), C, typed_value<decltype(x::value), x::value>);
+    using f = JLN_MP_CALL_TRACE((C), typed_value<decltype(x::value), x::value>);
 #endif
   };
 

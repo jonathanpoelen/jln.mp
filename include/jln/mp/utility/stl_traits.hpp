@@ -3,6 +3,7 @@
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/number/number.hpp>
+#include <jln/mp/detail/call_trace.hpp>
 
 #include <type_traits>
 
@@ -15,7 +16,7 @@ namespace jln::mp::traits
   struct Name                                     \
   {                                               \
     template<class... xs>                         \
-    using f = JLN_MP_DCALL_XS(xs, C,              \
+    using f = JLN_MP_CALL_TRACE((C),              \
       typename std::Name<xs...>::type);           \
   };                                              \
                                                   \
@@ -129,7 +130,7 @@ namespace jln::mp::traits
   struct extent
   {
     template<class x, class... i>
-    using f = call<C, typename std::extent<x, i::value...>::type>;
+    using f = JLN_MP_CALL_TRACE((C), typename std::extent<x, i::value...>::type);
   };
 
   namespace emp
@@ -217,7 +218,9 @@ namespace jln::mp::traits
   struct aligned_storage
   {
     template<class Len, class... Alignment>
-    using f = call<C, typename std::aligned_storage<Len::value, Alignment::value...>::type>;
+    using f = JLN_MP_CALL_TRACE((C),
+      typename std::aligned_storage<Len::value, Alignment::value...>::type
+    );
   };
 
   namespace emp
@@ -240,7 +243,9 @@ namespace jln::mp::traits
   struct aligned_union
   {
     template<class len, class... xs>
-    using f = call<C, typename std::aligned_union<len::value, xs...>::type>;
+    using f = JLN_MP_CALL_TRACE((C),
+      typename std::aligned_union<len::value, xs...>::type
+    );
   };
 
   namespace emp

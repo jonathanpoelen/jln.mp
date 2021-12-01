@@ -11,9 +11,10 @@ namespace jln::mp
   /// \pre `emp::is_list<Keys>` == `true`
   /// \pre `emp::size<Keys>` == `sizeof...(xs)`
   ///   \code
-  ///   call<collapse<emp::numbers<1, 1, 0, 0, 0, 1, 2, 2>>,
-  ///     int, int, int, int, int, int, int, int
-  ///   > = list<
+  ///   collapse<emp::numbers<1, 1, 0, 0, 0, 1, 2, 2>>
+  ///   ::f<int, int, int, int, int, int, int, int>
+  ///   ==
+  ///   list<
   ///     list<int, int>,
   ///     list<int, int, int>,
   ///     list<int>,

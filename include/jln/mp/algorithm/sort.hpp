@@ -91,7 +91,7 @@ namespace jln::mp::detail
   struct _sort<2, Cmp>
   {
     template<class x, class y>
-    using f = typename mk_list2<bool(call<Cmp, y, x>::value)>
+    using f = typename mk_list2<bool(Cmp::template f<y, x>::value)>
       ::template f<x, y>;
   };
 

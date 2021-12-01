@@ -18,7 +18,7 @@ namespace jln::mp
   /// Elements are sorted in order of first appearance.
   /// \semantics
   ///   \code
-  ///   call<group_by_type_with<listify>, int, int, char, double, int, double>
+  ///   group_by_type_with<listify>::f<int, int, char, double, int, double>
   ///   == list<
   ///     list<int, int, int>,
   ///     list<char>,

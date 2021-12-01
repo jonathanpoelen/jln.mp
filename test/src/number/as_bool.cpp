@@ -1,6 +1,7 @@
 #include "test.hpp"
 
 #include "jln/mp/smp/number/as_bool.hpp"
+#include "jln/mp/smp/number/operators.hpp"
 
 #include <type_traits>
 
@@ -30,8 +31,18 @@ TEST()
     .not_invocable<>()
     ;
 
+  test_context<as_bool<not_<>>, smp::as_bool<smp::not_<>>>()
+    .test<number<1>, a>()
+    .test<number<0>, b>()
+    .not_invocable<number<1>, number<3>>() // narrowing conversion
+    .not_invocable<void>()
+    .not_invocable<c>() // narrowing conversion
+    .not_invocable<>()
+    ;
+
   ut::not_invocable<smp::as_bool<bad_function>>();
   ut::not_invocable<smp::as_bool<bad_function>, true_>();
+  ut::not_invocable<smp::as_bool<smp::not_<bad_function>>, true_>();
 }
 
 TEST_SUITE_END()

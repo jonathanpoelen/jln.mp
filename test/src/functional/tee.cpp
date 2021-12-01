@@ -21,9 +21,9 @@ TEST()
   using yes = always<true_>;
   using no = always<false_>;
 
-  test_pack2<tee, yes, yes>();
-  test_pack2<tee, yes, no>();
-  test_pack2<tee, yes>();
+  test_pack3<tee, yes, yes>();
+  test_pack3<tee, yes, no>();
+  test_pack3<tee, yes>();
 
   ut::same<int, tee<identity, identity, identity, identity, foo>::template f<void>>();
 

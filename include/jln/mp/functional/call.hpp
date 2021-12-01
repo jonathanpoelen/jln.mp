@@ -3,6 +3,7 @@
 #include <jln/mp/config/debug.hpp>
 #include <jln/mp/config/config.hpp>
 #include <jln/mp/detail/compiler.hpp>
+#include <jln/mp/detail/call_trace.hpp>
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/functional/memoize.hpp>
 #include <jln/mp/utility/conditional.hpp>
@@ -23,7 +24,13 @@ namespace jln::mp
 
   /// \ingroup functional
 
+#define JLN_MP_DCALL_TRACE_XS(xs, C, ...) \
+  JLN_MP_DCALL(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, JLN_MP_TRACE_F(C), __VA_ARGS__)
+
+#define JLN_MP_DCALL_TRACE(cond, C, ...) JLN_MP_DCALL(cond, JLN_MP_TRACE_F(C), __VA_ARGS__)
+
 #define JLN_MP_DCALL_XS(xs, ...) JLN_MP_DCALL(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
+#define JLN_MP_DCALL_XS_R(xs, ...) JLN_MP_DCALL_R(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
 #define JLN_MP_DCALL_V_XS(xs, ...) JLN_MP_DCALL_V(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
 #define JLN_MP_DCALLF_XS(xs, ...) JLN_MP_DCALLF(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
 #define JLN_MP_DCALLF_C_XS(xs, ...) JLN_MP_DCALLF_C(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
@@ -62,15 +69,6 @@ namespace jln::mp
   template<class FC, class F, class... xs>
   using indirect_call = call<call<FC, xs...>, F, xs...>;
 
-  template<class C, class F, class... xs>
-  using unary_compose_call = call<C, call<F, xs...>>;
-
-  template<class C, class F0, class F1, class... xs>
-  using binary_compose_call = call<C, call<F0, xs...>, call<F1, xs...>>;
-
-  template<class C, class F0, class F1, class F2, class... xs>
-  using ternary_compose_call = call<C, call<F0, xs...>, call<F1, xs...>, call<F2, xs...>>;
-
 #else
   /// \cond
   namespace detail
@@ -80,20 +78,12 @@ namespace jln::mp
 
     template<template<class...> class f, class C, class F, class... xs>
     using _dispatch = f<C, f<F, xs>...>;
-
-    template<template<class...> class f, class C, class F, class... xs>
-    using _unary_compose_call = f<C, f<F, xs...>>;
-
-    template<template<class...> class f, class C, class F0, class F1, class... xs>
-    using _binary_compose_call = f<C, f<F0, xs...>, f<F1, xs...>>;
-
-    template<template<class...> class f, class C, class F0, class F1, class F2, class... xs>
-    using _ternary_compose_call = f<C, f<F0, xs...>, f<F1, xs...>, f<F2, xs...>>;
   }
   /// \endcond
 
-# define JLN_MP_DCALL(cond, ...) typename detail::dcall<(cond)>::template f<__VA_ARGS__>
-# define JLN_MP_DCALL_V(cond, ...) detail::dcall<(cond)>::template f<__VA_ARGS__>::value
+# define JLN_MP_DCALL(cond, C, ...) typename mp::conditional_c<(cond)>::template f<C,void>::template f<__VA_ARGS__>
+# define JLN_MP_DCALL_R(cond, C, ...) mp::conditional_c<(cond)>::template f<C,void>::template f<__VA_ARGS__>
+# define JLN_MP_DCALL_V(cond, C, ...) mp::conditional_c<(cond)>::template f<C,void>::template f<__VA_ARGS__>::value
 # define JLN_MP_DCALLF(cond, ...) typename detail::dcallf<(cond)>::template f<__VA_ARGS__>
 # define JLN_MP_DCALL_C(cond, ...) typename detail::dcall_c<(cond)>::template f<__VA_ARGS__>
 # define JLN_MP_DCALLF_C(cond, ...) typename detail::dcallf_c<(cond)>::template f<__VA_ARGS__>
@@ -120,21 +110,6 @@ namespace jln::mp
   using dispatch = detail::_dispatch<
     detail::dcall<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>::template f,
     C, F, xs...>;
-
-  template<class C, class F, class... xs>
-  using unary_compose_call = detail::_unary_compose_call<
-    detail::dcall<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>::template f,
-    C, F, xs...>;
-
-  template<class C, class F0, class F1, class... xs>
-  using binary_compose_call = detail::_binary_compose_call<
-    detail::dcall<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>::template f,
-    C, F0, F1, xs...>;
-
-  template<class C, class F0, class F1, class F2, class... xs>
-  using ternary_compose_call = detail::_ternary_compose_call<
-    detail::dcall<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>::template f,
-    C, F0, F1, F2, xs...>;
 #endif
 
   template<class C, class... xs>
@@ -145,15 +120,6 @@ namespace jln::mp
 
   template<class C, class F, class... xs>
   using dispatch_t = typename dispatch<C, F, xs...>::type;
-
-  template<class C, class F, class... xs>
-  using unary_compose_call_t = typename unary_compose_call<C, F, xs...>::type;
-
-  template<class C, class F0, class F1, class... xs>
-  using binary_compose_call_t = typename binary_compose_call<C, F0, F1, xs...>::type;
-
-  template<class C, class F0, class F1, class F2, class... xs>
-  using ternary_compose_call_t = typename ternary_compose_call<C, F0, F1, F2, xs...>::type;
 }
 
 /// \cond

@@ -2,7 +2,7 @@
 
 #include <jln/mp/value/val.hpp>
 #include <jln/mp/functional/identity.hpp>
-#include <jln/mp/functional/call.hpp>
+#include <jln/mp/detail/call_trace.hpp>
 
 namespace jln::mp
 {
@@ -22,7 +22,7 @@ namespace jln::mp
   struct is_val
   {
     template<class x>
-    using f = call<C, typename detail::_is_val<x>::type>;
+    using f = JLN_MP_CALL_TRACE((C), typename detail::_is_val<x>::type);
   };
 
   namespace emp

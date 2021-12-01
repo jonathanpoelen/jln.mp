@@ -18,7 +18,7 @@ namespace jln::mp
   /// Computes the powerset of a \sequence.
   /// \semantics
   ///   \code
-  ///   call<powerset<>, a, b, c> == list<
+  ///   powerset<>::f<a, b, c> == list<
   ///     list<>,
   ///     list<a>, list<b>, list<a, b>, list<c>,
   ///     list<a, c>, list<b, c>,

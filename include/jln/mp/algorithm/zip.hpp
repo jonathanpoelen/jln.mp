@@ -21,7 +21,7 @@ namespace jln::mp
   /// \pre all lists must be the same size
   /// \semantics
   ///   \code
-  ///   call<zip<listify>,
+  ///   zip<listify>::f<
   ///     list<_1, _2, _3>,
   ///     list<_a, _b, _c>
   ///   > = list<

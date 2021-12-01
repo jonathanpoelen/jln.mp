@@ -1,6 +1,7 @@
 #pragma once
 
 #include <jln/mp/functional/identity.hpp>
+#include <jln/mp/detail/call_trace.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/number/number.hpp>
 
@@ -14,7 +15,7 @@ namespace jln::mp
   struct as_number
   {
     template<class x>
-    using f = call<C, number<int_{x::value}>>;
+    using f = typename JLN_MP_TRACE_F(C)::template f<number<int_{x::value}>>;
   };
 
   namespace emp

@@ -684,7 +684,7 @@ namespace jln::mp
   struct as_bool<not_<C>>
   {
     template<class x>
-    using f = call<C, number<!bool{x::value}>>;
+    using f = typename JLN_MP_TRACE_F(C)::template f<number<!bool{x::value}>>;
   };
 }
 /// \endcond

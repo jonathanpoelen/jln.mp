@@ -30,7 +30,7 @@ namespace jln::mp
   /// \post `emp::size<result> == emp::min<emp::size<xs>> && ...`
   /// \semantics
   ///   \code
-  ///   call<matrix_shortest<listify>,
+  ///   matrix_shortest<listify>::f<
   ///     list<_1, _2>,
   ///     list<_1, _2, _3>,
   ///     list<_1, _2>,

@@ -14,9 +14,8 @@ namespace jln::mp
   /// \post If `sizeof...(xs) >= 2`, then the number of 2-tuples is `sizeof...(xs) - 1`
   /// \semantics
   ///   \code
-  ///   call<pairwise<>>,
-  ///     a, b, c, d
-  ///   > = list<
+  ///   pairwise<>::f<a, b, c, d>
+  ///   == list<
   ///     list<a, b>,
   ///     list<b, c>,
   ///     list<c, d>

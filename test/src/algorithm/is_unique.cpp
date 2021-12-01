@@ -13,7 +13,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<is_unique>();
+  test_pack3<is_unique>();
 
   ut::same<_1, emp::is_unique<emp::numbers<0, 1, 2>>>();
   ut::same<_0, emp::is_unique<emp::numbers<0, 1, 0, 2, 2>>>();

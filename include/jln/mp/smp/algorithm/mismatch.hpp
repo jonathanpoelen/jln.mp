@@ -38,7 +38,7 @@ namespace jln::mp::detail
     struct f
     {
       template<class Cmp, class seq1, class seq2>
-      using impl = call<C, i, direction>;
+      using impl = typename C::template f<i, direction>;
     };
 
     template<class i>

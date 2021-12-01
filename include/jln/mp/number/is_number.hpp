@@ -3,6 +3,7 @@
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/call.hpp>
+#include <jln/mp/detail/call_trace.hpp>
 
 namespace jln::mp
 {
@@ -22,7 +23,7 @@ namespace jln::mp
   struct is_number
   {
     template<class x>
-    using f = call<C, typename detail::_is_number<x>::type>;
+    using f = JLN_MP_CALL_TRACE((C), typename detail::_is_number<x>::type);
   };
 
   namespace emp

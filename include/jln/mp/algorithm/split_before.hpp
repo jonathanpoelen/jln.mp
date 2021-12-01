@@ -10,7 +10,9 @@ namespace jln::mp
   /// The split value is inserted at the beginning of the following list.
   /// \semantics
   ///   \code
-  ///   call<split_before_if<is<_0>, _0, _1, _2, _0, _3> == list<
+  ///   split_before_if<is<_0>>::f<_0, _1, _2, _0, _3>
+  ///   ==
+  ///   list<
   ///     list<>,
   ///     list<_0, _1, _2>,
   ///     list<_0, _3>

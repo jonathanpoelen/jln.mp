@@ -14,7 +14,10 @@ namespace jln::mp
 
   namespace emp
   {
-    template<class F, class x, class y>
-    using compare_with = less<call<F, x>, call<F, y>>;
+    template<class F, class x, class y, class Cmp = mp::less<>>
+    using compare_with = typename Cmp::template f<
+      typename F::template f<x>,
+      typename F::template f<y>
+    >;
   }
 }

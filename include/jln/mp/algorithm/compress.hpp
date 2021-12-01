@@ -14,10 +14,9 @@ namespace jln::mp
   /// \pre `sizeof...(xs) == emp::size<Selectors>`
   /// \semantics
   ///   \code
-  ///   call<compress<
-  ///     numbers<1,0,1,0,1,1>,
-  ///             a,b,c,d,e,f
-  ///   >> = list<a,  c,  e,f>
+  ///   compress<numbers<1,0,1,0,1,1>>
+  ///                ::f<a,b,c,d,e,f>
+  ///            == list<a,  c,  e,f>
   ///   \endcode
   /// \treturn \sequence
   template<class Selectors, class C = listify>
@@ -34,7 +33,7 @@ namespace jln::mp
   };
 
   template<bool... selectors>
-  using compress_with_c = compress<mp::compress<list<number<selectors>...>>>;
+  using compress_with_c = compress<list<number<selectors>...>>;
 
   namespace emp
   {

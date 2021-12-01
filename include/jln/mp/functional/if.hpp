@@ -15,14 +15,14 @@ namespace jln::mp
   struct if_
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE_T(
-      (mp::conditional_c<bool(call<Pred, xs...>::value)>::template f<TC, FC>),
-      xs...);
+    using f = typename mp::conditional_c<bool(call<JLN_MP_TRACE_F(Pred), xs...>::value)>
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+      ::template f<xs...>;
   };
 
   namespace emp
   {
     template<class Pred, class TC, class FC, class... xs>
-    using if_ = JLN_MP_CALL_TRACE((conditional<JLN_MP_DCALL_XS(xs, Pred, xs...), TC, FC>), xs...);
+    using if_ = typename mp::if_<Pred, TC, FC>::template f<xs...>;
   }
 }

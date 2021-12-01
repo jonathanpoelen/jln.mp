@@ -21,7 +21,7 @@ namespace jln::mp
   /// \post `sizeof...(result) == (emp::size<seqs> * ...)` if `sizeof...(xs) != 0` else `0`
   /// \semantics
   ///   \code
-  ///   call<cartesian<listify>,
+  ///   cartesian<listify>::f<
   ///     list<_0, _1, _2>,
   ///     list<_3, _4>,
   ///     list<_5>

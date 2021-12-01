@@ -43,6 +43,16 @@ TEST()
     .test<seq_0_1_2_3, seq_0_1_2, _3>()
     ;
 
+  test_context<unpack<identity>, smp::unpack<smp::identity>>()
+    .test<_0, seq_0>()
+    .not_invocable<seq_0_1>()
+    ;
+
+  test_context<unpack_append<identity>, smp::unpack_append<smp::identity>>()
+    .test<_0, seq_0>()
+    .not_invocable<seq_0_1>()
+    ;
+
   ut::not_invocable<smp::unpack<bad_function>>();
   ut::not_invocable<smp::unpack<bad_function>, list<>>();
   ut::not_invocable<smp::unpack_append<bad_function>>();

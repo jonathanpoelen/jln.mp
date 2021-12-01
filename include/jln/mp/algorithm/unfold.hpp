@@ -29,14 +29,13 @@ namespace jln::mp
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///   call<
-  ///     unfold<
-  ///       if_<
-  ///         less_than_c<5>,
-  ///         inc<lift<Some>>,
-  ///         None
-  ///       >
-  ///     >,
+  ///   unfold<
+  ///     if_<
+  ///       less_than_c<5>,
+  ///       inc<lift<Some>>,
+  ///       None
+  ///     >
+  ///   >::f<
   ///     number<0>
   ///   >
   ///   == list<number<1>, number<2>, number<3>, number<4>, number<5>>

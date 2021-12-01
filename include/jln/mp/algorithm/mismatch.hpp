@@ -53,7 +53,7 @@ namespace jln::mp::detail
     struct type
     {
       template<class x, class y>
-      using f = number<call<Cmp, x, y>::value>;
+      using f = number<Cmp::template f<x, y>::value>;
     };
   };
 
@@ -64,8 +64,8 @@ namespace jln::mp::detail
     {
       template<class x0, class x1, class y0, class y1>
       using f = number<
-        !call<Cmp, x0, y0>::value ? 0
-      : !call<Cmp, x1, y1>::value ? 1
+        !Cmp::template f<x0, y0>::value ? 0
+      : !Cmp::template f<x1, y1>::value ? 1
       : 2
       >;
     };
@@ -78,9 +78,9 @@ namespace jln::mp::detail
     {
       template<class x0, class x1, class x2, class y0, class y1, class y2>
       using f = number<
-        !call<Cmp, x0, y0>::value ? 0
-      : !call<Cmp, x1, y1>::value ? 1
-      : !call<Cmp, x2, y2>::value ? 2
+        !Cmp::template f<x0, y0>::value ? 0
+      : !Cmp::template f<x1, y1>::value ? 1
+      : !Cmp::template f<x2, y2>::value ? 2
       : 3
       >;
     };
@@ -93,10 +93,10 @@ namespace jln::mp::detail
     {
       template<class x0, class x1, class x2, class x3, class y0, class y1, class y2, class y3>
       using f = number<
-        !call<Cmp, x0, y0>::value ? 0
-      : !call<Cmp, x1, y1>::value ? 1
-      : !call<Cmp, x2, y2>::value ? 2
-      : !call<Cmp, x3, y3>::value ? 3
+        !Cmp::template f<x0, y0>::value ? 0
+      : !Cmp::template f<x1, y1>::value ? 1
+      : !Cmp::template f<x2, y2>::value ? 2
+      : !Cmp::template f<x3, y3>::value ? 3
       : 4
       >;
     };
@@ -148,16 +148,15 @@ namespace jln::mp::detail
     struct dispatch<number<size>, v>
     {
       template<class... xs>
-      using f = number<size + call<
+      using f = number<size +
         drop_front_c<size,
           rotate_c<n-size,
             drop_front_c<size,
               typename _mismatch_tree<Cmp, n-size>::type
             >
           >
-        >,
-        xs...
-      >::value>;
+        >::template f<xs...>
+      ::value>;
     };
 
     template<class... xs>

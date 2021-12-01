@@ -12,7 +12,7 @@ namespace jln::mp
   struct type_
   {
     template<class x>
-    using f = typename C::template f<typename x::type>;
+    using f = JLN_MP_CALL_TRACE((C), typename x::type);
   };
 
   template<>

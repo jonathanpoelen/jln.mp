@@ -1,6 +1,7 @@
 #pragma once
 
 #include <jln/mp/functional/identity.hpp>
+#include <jln/mp/detail/call_trace.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/number/number.hpp>
 
@@ -14,7 +15,7 @@ namespace jln::mp
   struct to_bool
   {
     template<class x>
-    using f = call<C, number<bool(x::value)>>;
+    using f = JLN_MP_CALL_TRACE((C), number<bool(x::value)>);
   };
 
   namespace emp

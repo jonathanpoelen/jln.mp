@@ -28,7 +28,8 @@ namespace jln::mp
   /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
   /// \semantics
   ///   \code
-  ///   call<split_if<is<_0>, _0, _1, _2, _0, _3> == list<
+  ///   split_if<is<_0>>::f<_0, _1, _2, _0, _3>
+  ///   == list<
   ///     list<>,
   ///     list<_1, _2>,
   ///     list<_3>
