@@ -14,7 +14,7 @@ namespace jln::mp
   struct transform
   {
     template<class... xs>
-    using f = dispatch<C, F, xs...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_CALL_TRACE((F), xs)...);
   };
 
   namespace emp

@@ -65,12 +65,12 @@ namespace jln::mp::detail
   struct _sort<3, Cmp>
   {
     template<class... xs>
-    using f = typename memoize_call<_merge<
+    using f = typename _merge<
       typename take_front_c<sizeof...(xs) / 2, _sort<min(3, sizeof...(xs) / 2), Cmp>>
         ::template f<xs...>,
       typename drop_front_c<sizeof...(xs) / 2, _sort<min(3, (sizeof...(xs) + 1) / 2), Cmp>>
         ::template f<xs...>
-    >, Cmp>::type;
+    >::template f<Cmp>::type;
   };
 
   template<bool>

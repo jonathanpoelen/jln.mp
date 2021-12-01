@@ -34,7 +34,7 @@ namespace jln::mp
   struct lift
   {
     template<class... xs>
-    using f = typename C::template f<JLN_MP_DCALLF_XS(xs, F, xs...)>;
+    using f = JLN_MP_CALL_TRACE((C), JLN_MP_DCALLF_XS(xs, F, xs...));
   };
 
   /// \cond

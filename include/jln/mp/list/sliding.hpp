@@ -208,10 +208,9 @@ namespace jln::mp::detail
     };
 
     template<class C, int_ size, int_, class... xs>
-    using f = typename memoize_call<
-      make_int_sequence_v<impl<C, size-1, drop_front_c<size-1>>>,
-      number<size>
-    >::template f<xs...>;
+    using f = typename make_int_sequence_v<impl<C, size-1, drop_front_c<size-1>>>
+      ::template f<number<size>>
+      ::template f<xs...>;
   };
 
   template<>
@@ -234,10 +233,9 @@ namespace jln::mp::detail
     };
 
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename memoize_call<
-      make_int_sequence_v<impl<C, (sizeof...(xs) - size) / stride + 1, stride>>,
-      number<size>
-    >::template f<xs...>;
+    using f = typename make_int_sequence_v<impl<C, (sizeof...(xs) - size) / stride + 1, stride>>
+      ::template f<number<size>>
+      ::template f<xs...>;
   };
 
   constexpr int_ slinding8_pivot(int_ nx, int_ size, int_ stride)
@@ -268,15 +266,14 @@ namespace jln::mp::detail
     };
 
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename memoize_call<
-      make_int_sequence_v<impl<
-        C,
-        (sizeof...(xs) - size) / stride + 2,
-        stride,
-        slinding8_pivot(sizeof...(xs), size, stride)
-      >>,
-      number<size>
-    >::template f<xs...>;
+    using f = typename make_int_sequence_v<impl<
+      C,
+      (sizeof...(xs) - size) / stride + 2,
+      stride,
+      slinding8_pivot(sizeof...(xs), size, stride)
+    >>
+    ::template f<number<size>>
+    ::template f<xs...>;
   };
 
   template<>
