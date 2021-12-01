@@ -254,6 +254,7 @@ preproc = P{
   + ('JLN_MP_CALL_TRACE_F(' * C((1-S'()' + balancedparent)^1) * ')'
      / function(f) return f end
     )
+  + (P'JLN_MP_TPL_AUTO_OR_INT' / 'auto /*or int_*/')
 
 , p='#' * sp0 / '' *
     ( 'ifdef JLN_MP_DOXYGENATING'

@@ -46,27 +46,15 @@ namespace jln::mp
   };
   /// \endcond
 
-#if __cplusplus >= 201703L
-  template<template<auto...> class F>
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
   struct lift_c
   {
-    template<auto... xs>
+    template<JLN_MP_TPL_AUTO_OR_INT... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs...);
   };
 
-  template<template<auto...> class F>
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
   struct lift_v
-#else
-  template<template<int_...> class F>
-  struct lift_c
-  {
-    template<int_... xs>
-    using f = JLN_MP_DCALLF_C_XS(xs, F, xs...);
-  };
-
-  template<template<int_...> class F>
-  struct lift_v
-#endif
   {
     template<class... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...);

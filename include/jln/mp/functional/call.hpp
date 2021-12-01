@@ -59,11 +59,7 @@ namespace jln::mp
   #define JLN_MP_DCALLF_C(cond, ...) typename detail::dcallf_c<(cond)>::template f<__VA_ARGS__>
 #endif
 
-#if __cplusplus >= 201703L
-  template<class C, auto... xs>
-#else
-  template<class C, int_... xs>
-#endif
+  template<class C, JLN_MP_TPL_AUTO_OR_INT... xs>
   using call_c = typename C::template f<xs...>;
 
 #else
@@ -79,11 +75,7 @@ namespace jln::mp
     ::template f<C, to_many_argument_error>
     ::template f<xs...>;
 
-#if __cplusplus >= 201703L
-  template<class C, auto... xs>
-#else
-  template<class C, int_... xs>
-#endif
+  template<class C, JLN_MP_TPL_AUTO_OR_INT... xs>
   using call_c = typename detail::dcall_c<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>
     ::template f<C, xs...>;
 #endif
@@ -105,11 +97,7 @@ namespace jln::mp::detail
   template<>
   struct dcall_c<true>
   {
-#if __cplusplus >= 201703L
-      template<class C, auto...xs>
-#else
-      template<class C, int_...xs>
-#endif
+      template<class C, JLN_MP_TPL_AUTO_OR_INT...xs>
       using f = typename C::template f<xs...>;
   };
 
@@ -123,11 +111,7 @@ namespace jln::mp::detail
   template<>
   struct dcallf_c<true>
   {
-#if __cplusplus >= 201703L
-      template<template<auto...> class F, auto...xs>
-#else
-      template<template<int_...> class F, int_...xs>
-#endif
+      template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, JLN_MP_TPL_AUTO_OR_INT...xs>
       using f = F<xs...>;
   };
 
