@@ -24,6 +24,9 @@ namespace jln::mp
 
   /// \ingroup functional
 
+// #define JLN_MP_MSVC_FIX_CALL(C, ...) raw_call<C, __VA_ARGS__>
+#define JLN_MP_MSVC_FIX_CALL(C, ...) typename JLN_MP_IDENT C ::template f<__VA_ARGS__>
+
 #define JLN_MP_DCALL_TRACE_XS(xs, C, ...) \
   JLN_MP_DCALL(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, JLN_MP_TRACE_F(C), __VA_ARGS__)
 

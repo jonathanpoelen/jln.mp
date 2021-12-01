@@ -28,7 +28,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename join<C>::template f<
-      detail::raw_call<wrap_in_list_c<selectors::value>, xs>...
+      typename wrap_in_list_c<selectors::value>::template f<xs>...
     >;
   };
 

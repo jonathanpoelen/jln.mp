@@ -96,7 +96,7 @@ namespace jln::mp::detail
   struct _zip_dispatch<0>
   {
     template<class C>
-    using f = typename C::template f<>;
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
   template<>

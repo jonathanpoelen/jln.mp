@@ -62,7 +62,7 @@ namespace jln::mp::detail
   struct find_if_impl<_drop_while_continue>
   {
     template<class TC, class FC, class... xs>
-    using f = typename FC::template f<xs...>;
+    using f = JLN_MP_CALL_TRACE((FC), xs...);
   };
 
   template<std::size_t n>

@@ -16,7 +16,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<C, list<x, xs>...>::type;
+      ::template f<JLN_MP_TRACE_F(C), list<x, xs>...>::type;
   };
 
   namespace emp

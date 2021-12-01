@@ -30,7 +30,7 @@ namespace jln::mp
   {
     template<class... seqs>
     using f = typename detail::_join_select<sizeof...(seqs)>
-      ::template f<C, typename detail::_flatten<S, seqs>::type...>
+      ::template f<JLN_MP_TRACE_F(C), typename detail::_flatten<S, seqs>::type...>
       ::type;
   };
 

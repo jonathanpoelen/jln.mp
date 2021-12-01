@@ -106,7 +106,7 @@ namespace jln::mp::detail
   struct _make_int_sequence_impl
   {
     template<class C>
-    using f = typename C::template f<ns...>;
+    using f = typename JLN_MP_TRACE_F(C)::template f<ns...>;
   };
 
   template<std::size_t n>
@@ -119,7 +119,7 @@ namespace jln::mp::detail
   struct _make_int_sequence<std::integer_sequence<std::size_t, ns...>>
   {
     template<class C>
-    using f = typename C::template f<int_(ns)...>;
+    using f = typename JLN_MP_TRACE_F(C)::template f<int_(ns)...>;
   };
 #endif
 }

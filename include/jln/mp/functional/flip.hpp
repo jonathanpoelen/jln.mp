@@ -14,7 +14,7 @@ namespace jln::mp
   struct flip
   {
     template<class x0, class x1, class... xs>
-    using f = JLN_MP_DCALL_XS(xs, C, x1, x0, xs...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, x1, x0, xs...);
   };
 
   namespace emp

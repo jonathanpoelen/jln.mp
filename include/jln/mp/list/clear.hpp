@@ -12,7 +12,7 @@ namespace jln::mp
   struct clear
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, JLN_MP_TRACE_F(C));
   };
 
   /// \cond

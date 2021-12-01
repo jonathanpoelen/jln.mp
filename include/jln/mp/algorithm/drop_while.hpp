@@ -57,14 +57,14 @@ namespace jln::mp::detail
   struct _drop_while_continue
   {
     template<class C, std::size_t consumed, class Pred, class... xs>
-    using f = typename C::template f<consumed, Pred, xs...>;
+    using f = JLN_MP_CALL_TRACE((C), consumed, Pred, xs...);
   };
 
   template<>
   struct drop_while_impl<_drop_while_continue>
   {
     template<class C, class...>
-    using f = typename C::template f<>;
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
   template<std::size_t n>

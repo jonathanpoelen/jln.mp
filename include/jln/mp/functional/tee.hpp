@@ -41,7 +41,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename JLN_MP_TRACE_F(C)::template f<
-      JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(F), xs...)
+      JLN_MP_DCALL_TRACE_XS(xs, F, xs...)
     >;
   };
 
@@ -50,8 +50,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename JLN_MP_TRACE_F(C)::template f<
-      JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(F0), xs...),
-      JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(F1), xs...)
+      JLN_MP_DCALL_TRACE_XS(xs, F0, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F1, xs...)
     >;
   };
 
@@ -60,9 +60,9 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename JLN_MP_TRACE_F(C)::template f<
-      JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(F0), xs...),
-      JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(F1), xs...),
-      JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(F2), xs...)
+      JLN_MP_DCALL_TRACE_XS(xs, F0, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F1, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F2, xs...)
     >;
   };
   /// \endcond
@@ -75,7 +75,7 @@ namespace jln::mp::detail
   struct _tee
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(C), JLN_MP_DCALL_XS(xs, JLN_MP_TRACE_F(Fs), xs...)...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_DCALL_TRACE_XS(xs, Fs, xs...)...);
   };
 } // namespace jln::mp
 /// \endcond

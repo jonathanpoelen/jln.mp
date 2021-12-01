@@ -67,9 +67,9 @@ namespace jln::mp
   struct fold_left_xs
   {
     template<class... xs>
-    using f = typename C::template f<
-      detail::partial_fold_left_xs_select<F, sizeof...(xs), xs...>
-    >;
+    using f = JLN_MP_CALL_TRACE((C),
+      detail::partial_fold_left_xs_select<JLN_MP_TRACE_F(F), sizeof...(xs), xs...>
+    );
   };
 #endif
 

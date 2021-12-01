@@ -24,7 +24,7 @@ namespace jln::mp
     using f = typename detail::take_while_impl<
       typename detail::_drop_while<
         detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
-      >::template f<0, Pred, xs...>
+      >::template f<0, JLN_MP_TRACE_F(Pred), xs...>
     >::template f<C, xs...>;
   };
 }
@@ -39,7 +39,7 @@ namespace jln::mp::detail
   struct take_while_impl<_drop_while_continue>
   {
     template<class C, class... xs>
-    using f = typename C::template f<xs...>;
+    using f = JLN_MP_CALL_TRACE((C), xs...);
   };
 
   template<std::size_t n>

@@ -57,14 +57,14 @@ namespace jln::mp
   struct drop_back<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, JLN_MP_TRACE_F(C), xs...);
   };
 
   template<class C>
   struct drop_back_max<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, JLN_MP_TRACE_F(C), xs...);
   };
   /// \endcond
 }

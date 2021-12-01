@@ -670,6 +670,7 @@ JLN_MP_DIAGNOSTIC_POP()
 
 /// \cond
 #include <jln/mp/number/as_bool.hpp>
+#include <jln/mp/number/to_bool.hpp>
 
 namespace jln::mp
 {
@@ -684,7 +685,21 @@ namespace jln::mp
   struct as_bool<not_<C>>
   {
     template<class x>
-    using f = typename JLN_MP_TRACE_F(C)::template f<number<!bool{x::value}>>;
+    using f = JLN_MP_CALL_TRACE((C), number<!bool{x::value}>);
+  };
+
+  template<>
+  struct to_bool<not_<>>
+  {
+    template<class x>
+    using f = number<!bool(x::value)>;
+  };
+
+  template<class C>
+  struct to_bool<not_<C>>
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE((C), number<!bool(x::value)>);
   };
 }
 /// \endcond

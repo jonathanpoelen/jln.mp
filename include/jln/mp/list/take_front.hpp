@@ -58,14 +58,14 @@ namespace jln::mp
   struct take_front<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, JLN_MP_TRACE_F(C));
   };
 
   template<class C>
   struct take_front_max<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, JLN_MP_TRACE_F(C));
   };
   /// \endcond
 }

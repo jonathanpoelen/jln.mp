@@ -13,7 +13,7 @@ namespace jln::mp
   struct numbers
   {
     template<int_... ns>
-    using f = JLN_MP_DCALL_XS(ns, JLN_MP_TRACE_F(C), number<ns>...);
+    using f = JLN_MP_DCALL_TRACE_XS(ns, C, number<ns>...);
   };
 
   /// \cond

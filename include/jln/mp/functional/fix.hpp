@@ -13,7 +13,7 @@ namespace jln::mp
   struct fix
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_XS(xs, C, fix<C>, xs...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, fix<C>, xs...);
   };
 
   namespace emp

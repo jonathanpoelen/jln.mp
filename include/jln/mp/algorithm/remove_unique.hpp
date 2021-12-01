@@ -162,15 +162,14 @@ namespace jln::mp::detail
   {
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
-      raw_call<
-        typename rotate_c<ints, pop_front<index_if<
+      JLN_MP_MSVC_FIX_CALL((
+        rotate_c<ints, pop_front<index_if<
           push_back<xs, Cmp>,
           always<wrap_in_list_c<true>>,
           always<wrap_in_list_c<false>>
         >>>
-        ::template f<xs...>,
-        xs
-      >...
+        ::template f<xs...>
+      ), xs)...
     >;
   };
 
@@ -178,7 +177,7 @@ namespace jln::mp::detail
   struct remove_unique_if_impl<std::integer_sequence<std::size_t>>
   {
     template<class C, class Cmp, class... xs>
-    using f = typename C::template f<>;
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
   template<std::size_t i>
@@ -209,15 +208,14 @@ namespace jln::mp::detail
   {
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
-      raw_call<
-        typename rotate_c<ints, pop_front<index_if<
+      JLN_MP_MSVC_FIX_CALL((
+        rotate_c<ints, pop_front<index_if<
           push_back<xs, Cmp>,
           always<wrap_in_list_c<false>>,
           always<wrap_in_list_c<true>>
         >>>
-        ::template f<xs...>,
-        xs
-      >...
+        ::template f<xs...>
+      ), xs)...
     >;
   };
 
@@ -230,7 +228,7 @@ namespace jln::mp::detail
   struct copy_unique_if_impl<std::integer_sequence<std::size_t, i>>
   {
     template<class C, class Cmp, class... xs>
-    using f = typename C::template f<xs...>;
+    using f = JLN_MP_CALL_TRACE((C), xs...);
   };
 
   template<class Cmp, class C>

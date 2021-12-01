@@ -65,7 +65,7 @@ namespace jln::mp::detail
   struct _on_select<0, C, Fs...>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_XS(xs, C, typename Fs::template f<xs>...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_CALL_TRACE((Fs), xs)...);
   };
 
   // partial

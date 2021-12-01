@@ -23,7 +23,8 @@ namespace jln::mp
   struct join
   {
     template<class... seqs>
-    using f = typename detail::_join_select<sizeof...(seqs)>::template f<C, seqs...>::type;
+    using f = typename detail::_join_select<sizeof...(seqs)>
+      ::template f<JLN_MP_TRACE_F(C), seqs...>::type;
   };
 
   namespace emp

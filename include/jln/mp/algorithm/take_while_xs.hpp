@@ -18,7 +18,7 @@ namespace jln::mp
       typename detail::_drop_while_xs<
         detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)),
         true
-      >::template f<sizeof...(xs), Pred, xs...>
+      >::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<C, xs...>;
   };
 
@@ -33,7 +33,7 @@ namespace jln::mp
     using f = typename detail::take_while_impl<
       typename detail::drop_while_xs_call<
         detail::partial_drop_while_xs_size(OffsetEnd::value, sizeof...(xs)),
-        Pred, xs...
+        JLN_MP_TRACE_F(Pred), xs...
       >
     >::template f<C, xs...>;
   };

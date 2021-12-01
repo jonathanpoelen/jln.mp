@@ -24,7 +24,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::_adjacent_remove<
       rotate_c<-1>::template f<xs...>
-    >::template f<C, BinaryPred, xs...>;
+    >::template f<C, JLN_MP_TRACE_F(BinaryPred), xs...>;
   };
 
   /// Removes each element in a \sequence which is the same type as the privious element.

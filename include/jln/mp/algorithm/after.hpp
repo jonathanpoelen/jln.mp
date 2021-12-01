@@ -32,7 +32,7 @@ namespace jln::mp
   struct after<list<>, TC, FC>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(0 <= sizeof...(xs), TC, xs...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, TC, xs...);
   };
   /// \endcond
 }

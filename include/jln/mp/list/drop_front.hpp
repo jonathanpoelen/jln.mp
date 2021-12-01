@@ -75,7 +75,7 @@ namespace jln::mp
   struct drop_front<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, JLN_MP_TRACE_F(C), xs...);
   };
 
 
@@ -83,7 +83,7 @@ namespace jln::mp
   struct drop_front_max<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, JLN_MP_TRACE_F(C), xs...);
   };
   /// \endcond
 }

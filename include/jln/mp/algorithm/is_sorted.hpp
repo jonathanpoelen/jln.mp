@@ -23,9 +23,9 @@ namespace jln::mp
   struct is_sorted
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_XS(xs, C,
+    using f = JLN_MP_CALL_TRACE((C),
       typename detail::_is_sorted<detail::min(sizeof...(xs), 3)>
-      ::template f<JLN_MP_TRACE_F(Cmp), xs...>
+      ::template f<Cmp, xs...>
     );
   };
 
@@ -35,7 +35,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_is_sorted<detail::min(sizeof...(xs), 3)>
-      ::template f<JLN_MP_TRACE_F(Cmp), xs...>;
+      ::template f<Cmp, xs...>;
   };
   /// \endcond
 
@@ -74,7 +74,7 @@ namespace jln::mp::detail
   struct _is_sorted<2>
   {
     template<class Cmp, class x, class y>
-    using f = number<!Cmp::template f<y, x>::value>;
+    using f = number<!JLN_MP_TRACE_F(Cmp)::template f<y, x>::value>;
   };
 
   template<>
