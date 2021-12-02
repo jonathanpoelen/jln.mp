@@ -24,11 +24,17 @@ namespace jln::mp
 
   /// \ingroup functional
 
-// #define JLN_MP_MSVC_FIX_CALL(C, ...) raw_call<C, __VA_ARGS__>
-#define JLN_MP_MSVC_FIX_CALL(C, ...) typename JLN_MP_IDENT C ::template f<__VA_ARGS__>
+#if JLN_MP_MSVC
+# define JLN_MP_MSVC_FIX_CALL(C, ...) ::jln::mp::raw_call<C, __VA_ARGS__>
+#else
+# define JLN_MP_MSVC_FIX_CALL(C, ...) typename JLN_MP_IDENT C ::template f<__VA_ARGS__>
+#endif
 
 #define JLN_MP_DCALL_TRACE_XS(xs, C, ...) \
   JLN_MP_DCALL(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, JLN_MP_TRACE_F(C), __VA_ARGS__)
+
+#define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) \
+  JLN_MP_DCALL_V(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, JLN_MP_TRACE_F(C), __VA_ARGS__)
 
 #define JLN_MP_DCALL_TRACE(cond, C, ...) JLN_MP_DCALL(cond, JLN_MP_TRACE_F(C), __VA_ARGS__)
 
@@ -47,7 +53,6 @@ namespace jln::mp
   #define JLN_MP_DCALL(cond, ...) call<__VA_ARGS__>
   #define JLN_MP_DCALL_V(cond, ...) call<__VA_ARGS__>::value
   #define JLN_MP_DCALLF(cond, F, ...) F<__VA_ARGS__>
-  #define JLN_MP_DCALL_C(cond, F, ...) F<__VA_ARGS__>
   #define JLN_MP_DCALLF_C(cond, F, ...) F<__VA_ARGS__>
 #else
   template<class C, class... xs>
@@ -55,7 +60,6 @@ namespace jln::mp
   #define JLN_MP_DCALL(cond, ...) typename detail::_memoizer<__VA_ARGS__>::type
   #define JLN_MP_DCALL_V(cond, ...) detail::_memoizer<__VA_ARGS__>::type::value
   #define JLN_MP_DCALLF(cond, ...) typename detail::dcallf<(cond)>::template f<__VA_ARGS__>
-  #define JLN_MP_DCALL_C(cond, ...) typename detail::dcall_c<(cond)>::template f<__VA_ARGS__>
   #define JLN_MP_DCALLF_C(cond, ...) typename detail::dcallf_c<(cond)>::template f<__VA_ARGS__>
 #endif
 
@@ -67,7 +71,6 @@ namespace jln::mp
 # define JLN_MP_DCALL_R(cond, C, ...) mp::conditional_c<(cond)>::template f<C,void>::template f<__VA_ARGS__>
 # define JLN_MP_DCALL_V(cond, C, ...) mp::conditional_c<(cond)>::template f<C,void>::template f<__VA_ARGS__>::value
 # define JLN_MP_DCALLF(cond, ...) typename detail::dcallf<(cond)>::template f<__VA_ARGS__>
-# define JLN_MP_DCALL_C(cond, ...) typename detail::dcall_c<(cond)>::template f<__VA_ARGS__>
 # define JLN_MP_DCALLF_C(cond, ...) typename detail::dcallf_c<(cond)>::template f<__VA_ARGS__>
 
   template<class C, class... xs>

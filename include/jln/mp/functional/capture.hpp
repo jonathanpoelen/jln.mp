@@ -2,7 +2,7 @@
 
 #include <jln/mp/value/val.hpp>
 #include <jln/mp/number/number.hpp>
-#include <jln/mp/detail/call_trace.hpp>
+#include <jln/mp/functional/call.hpp>
 
 namespace jln::mp
 {

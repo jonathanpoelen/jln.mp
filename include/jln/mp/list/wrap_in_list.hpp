@@ -57,16 +57,16 @@ namespace jln::mp
   namespace emp
   {
     template<class Pred, class... xs>
-    using wrap_in_list_if = JLN_MP_CALL_TRACE((mp::wrap_in_list_if<Pred>), xs...);
+    using wrap_in_list_if = typename mp::wrap_in_list_if<Pred>::template f<xs...>;
 
     template<class Pred, class... xs>
-    using wrap_in_list_if_not = JLN_MP_CALL_TRACE((mp::wrap_in_list_if_not<Pred>), xs...);
+    using wrap_in_list_if_not = typename mp::wrap_in_list_if_not<Pred>::template f<xs...>;
 
     template<class b, class... xs>
-    using wrap_in_list = JLN_MP_CALL_TRACE((mp::wrap_in_list_c<b::value>), xs...);
+    using wrap_in_list = typename mp::wrap_in_list_c<b::value>::template f<xs...>;
 
     template<bool b, class... xs>
-    using wrap_in_list_c = JLN_MP_CALL_TRACE((mp::wrap_in_list_c<b>), xs...);
+    using wrap_in_list_c = typename mp::wrap_in_list_c<b>::template f<xs...>;
   }
 }
 
@@ -85,7 +85,7 @@ namespace jln::mp::detail
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE((wrap_in_list_c<
-      JLN_MP_DCALL_V_XS(xs, JLN_MP_TRACE_F(Pred), x, xs...)
+      JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)
     >), x);
   };
 
@@ -94,7 +94,7 @@ namespace jln::mp::detail
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE((wrap_in_list_c<
-      !JLN_MP_DCALL_V_XS(xs, JLN_MP_TRACE_F(Pred), x, xs...)
+      !JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)
     >), x);
   };
 

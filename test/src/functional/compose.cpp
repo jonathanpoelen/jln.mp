@@ -10,9 +10,9 @@ template<class x> using f = jln::mp::number<x::value*10>;
 template<class x, class...> using g = jln::mp::number<x::value+1>;
 template<class... xs> using h = jln::mp::number<sizeof...(xs)>;
 
+// compose_f
 TEST()
 {
-  using namespace jln::mp;
   using namespace ut::ints;
 
   ut::same<call<compose_f<h>, int>, h<int>>();
@@ -36,6 +36,14 @@ TEST()
     .test<f<_1>, _1>()
     .not_invocable<int>()
   ;
+}
+
+// compose
+TEST()
+{
+  using namespace ut::ints;
+
+  ut::same<compose<inc<>, dec<>, mul<>>, tee<inc<>, tee<dec<>, mul<>>>>();
 
   test_context<
     compose<inc<>, inc<>, inc<>>,

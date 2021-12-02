@@ -21,7 +21,7 @@ namespace jln::mp
   /// Composition of two \metafunctions or more.
   /// \treturn \function
   template<template<class...> class F, template<class...> class... Fs>
-  using compose_f = typename detail::_compose_f<sizeof...(Fs)>
+  using compose_f = typename detail::_compose_f<detail::min(8, sizeof...(Fs))>
     ::template f<F, Fs...>;
 
   /// Composition of two \functions or more.
@@ -109,6 +109,24 @@ namespace jln::mp::detail
   struct _compose<lift_t<F>, x>
   {
     using type = lift_t<F, x>;
+  };
+
+  template<template<class...> class F>
+  struct _compose<lift<F>, identity>
+  {
+    using type = lift<F>;
+  };
+
+  template<template<class...> class F>
+  struct _compose<lift_t<F>, identity>
+  {
+    using type = lift_t<F>;
+  };
+
+  template<class F>
+  struct _compose<F, identity>
+  {
+    using type = F;
   };
 }
 /// \endcond
