@@ -80,9 +80,7 @@ namespace jln::mp::detail
   struct if_valid_index
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_TRACE(
-      unsigned{int(sizeof...(xs)) - int{i}} < JLN_MP_MAX_CALL_ELEMENT, C, xs...
-    );
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
 
   template<unsigned i, unsigned j>

@@ -10,93 +10,96 @@
 
 namespace jln::mp
 {
-  class to_many_argument_error {};
-
   /// \cond
   namespace detail
   {
-    template<bool> struct dcall;
     template<bool> struct dcallf;
     template<bool> struct dcall_c;
     template<bool> struct dcallf_c;
+
+    class too_many_arguments_error {};
   }
   /// \endcond
 
   /// \ingroup functional
 
-#if JLN_MP_MSVC
-# define JLN_MP_MSVC_FIX_CALL(C, ...) ::jln::mp::raw_call<C, __VA_ARGS__>
-#else
-# define JLN_MP_MSVC_FIX_CALL(C, ...) typename JLN_MP_IDENT C ::template f<__VA_ARGS__>
-#endif
-
-#define JLN_MP_DCALL_TRACE_XS(xs, C, ...) \
-  JLN_MP_DCALL(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, JLN_MP_TRACE_F(C), __VA_ARGS__)
-
-#define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) \
-  JLN_MP_DCALL_V(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, JLN_MP_TRACE_F(C), __VA_ARGS__)
-
-#define JLN_MP_DCALL_TRACE(cond, C, ...) JLN_MP_DCALL(cond, JLN_MP_TRACE_F(C), __VA_ARGS__)
-
-#define JLN_MP_DCALL_XS(xs, ...) JLN_MP_DCALL(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
-#define JLN_MP_DCALL_XS_R(xs, ...) JLN_MP_DCALL_R(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
-#define JLN_MP_DCALL_V_XS(xs, ...) JLN_MP_DCALL_V(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
-#define JLN_MP_DCALLF_XS(xs, ...) JLN_MP_DCALLF(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
-#define JLN_MP_DCALLF_C_XS(xs, ...) JLN_MP_DCALLF_C(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
-
-
-#if JLN_MP_MSVC || JLN_MP_ENABLE_DEBUG || defined(JLN_MP_DOXYGENATING)
-
 #ifdef JLN_MP_DOXYGENATING
-  template<class C, class... xs>
-  using call = C::f<xs...>;
-  #define JLN_MP_DCALL(cond, ...) call<__VA_ARGS__>
-  #define JLN_MP_DCALL_V(cond, ...) call<__VA_ARGS__>::value
-  #define JLN_MP_DCALLF(cond, F, ...) F<__VA_ARGS__>
-  #define JLN_MP_DCALLF_C(cond, F, ...) F<__VA_ARGS__>
+
+template<class C, class... xs>
+using call = C::f<xs...>;
+
+#define JLN_MP_DCALL_TRACE_XS(xs, ...) call<__VA_ARGS__>
+#define JLN_MP_DCALL_V_TRACE_XS(xs, ...) call<__VA_ARGS__>::value
+#define JLN_MP_DCALLF_XS(xs, F, ...) F<__VA_ARGS__>
+#define JLN_MP_DCALLF_C_XS(xs, F, ...) F<__VA_ARGS__>
+
+#elif JLN_MP_MSVC
+
+template<class C, class... xs>
+using call = memoize_call<C, xs...>;
+
+#  define JLN_MP_DCALL_TRACE_XS(xs, C, ...) \
+    typename ::jln::detail::_memoizer<C, __VA_ARGS__>::type
+
+#  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) \
+    ::jln::detail::_memoizer<C, __VA_ARGS__>::type::value
+
+#  define JLN_MP_DCALL_R_TRACE_XS(xs, C, ...) \
+    typename ::jln::detail::_memoizer<C, __VA_ARGS__>::type
+
 #else
-  template<class C, class... xs>
-  using call = memoize_call<C, xs...>;
-  #define JLN_MP_DCALL(cond, ...) typename detail::_memoizer<__VA_ARGS__>::type
-  #define JLN_MP_DCALL_V(cond, ...) detail::_memoizer<__VA_ARGS__>::type::value
-  #define JLN_MP_DCALLF(cond, ...) typename detail::dcallf<(cond)>::template f<__VA_ARGS__>
-  #define JLN_MP_DCALLF_C(cond, ...) typename detail::dcallf_c<(cond)>::template f<__VA_ARGS__>
+
+template<class C, class... xs>
+using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
+  ::template f<C, detail::too_many_arguments_error>
+  ::template f<xs...>;
+
+#  define JLN_MP_DCALL_TRACE_XS(xs, C, ...)                                        \
+    typename ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>     \
+      ::template f<JLN_MP_TRACE_F(C), ::jln::mp::detail::too_many_arguments_error> \
+      ::template f<__VA_ARGS__>
+
+#  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...)                                      \
+    ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>              \
+      ::template f<JLN_MP_TRACE_F(C), ::jln::mp::detail::too_many_arguments_error> \
+      ::template f<__VA_ARGS__>                                                    \
+      ::value
+
+#  define JLN_MP_DCALL_R_TRACE_XS(xs, C, ...)                                      \
+    ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>              \
+      ::template f<JLN_MP_TRACE_F(C), ::jln::mp::detail::too_many_arguments_error> \
+      ::template f<__VA_ARGS__>
+
 #endif
 
-  template<class C, JLN_MP_TPL_AUTO_OR_INT... xs>
-  using call_c = typename C::template f<xs...>;
 
+#if JLN_MP_MSVC
+# define JLN_MP_MSVC_FIX_CALL(C, ...) ::jln::mp::detail::raw_call<C, __VA_ARGS__>
 #else
-# define JLN_MP_DCALL(cond, C, ...) typename mp::conditional_c<(cond)>::template f<C,void>::template f<__VA_ARGS__>
-# define JLN_MP_DCALL_R(cond, C, ...) mp::conditional_c<(cond)>::template f<C,void>::template f<__VA_ARGS__>
-# define JLN_MP_DCALL_V(cond, C, ...) mp::conditional_c<(cond)>::template f<C,void>::template f<__VA_ARGS__>::value
-# define JLN_MP_DCALLF(cond, ...) typename detail::dcallf<(cond)>::template f<__VA_ARGS__>
-# define JLN_MP_DCALLF_C(cond, ...) typename detail::dcallf_c<(cond)>::template f<__VA_ARGS__>
-
-  template<class C, class... xs>
-  using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
-    ::template f<C, to_many_argument_error>
-    ::template f<xs...>;
-
-  template<class C, JLN_MP_TPL_AUTO_OR_INT... xs>
-  using call_c = typename detail::dcall_c<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>
-    ::template f<C, xs...>;
+# define JLN_MP_MSVC_FIX_CALL(C, ...) typename JLN_MP_IDENT C::template f<__VA_ARGS__>
 #endif
 
-  template<class C, class... xs>
-  using call_t = typename call<C, xs...>::type;
+
+template<class C, JLN_MP_TPL_AUTO_OR_INT... xs>
+using call_c = typename detail::dcall_c<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>
+  ::template f<C, xs...>;
+
+template<class C, class... xs>
+using call_t = typename call<C, xs...>::type;
+
+#define JLN_MP_DCALLF_XS(xs, C, ...)                               \
+  typename detail::dcallf<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+    ::template f<C, __VA_ARGS__>
+
+#define JLN_MP_DCALLF_C_XS(xs, C, ...)                               \
+  typename detail::dcallf_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+    ::template f<C, __VA_ARGS__>
+
 }
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<>
-  struct dcall<true>
-  {
-      template<class C, class... xs>
-      using f = typename C::template f<xs...>;
-  };
-
   template<>
   struct dcall_c<true>
   {

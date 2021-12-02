@@ -23,7 +23,7 @@ namespace jln::mp
   struct contract
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_XS(xs, C, xs...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
 
   template<class test, class TC, class FC = violation>
@@ -66,7 +66,7 @@ namespace jln::mp
   struct try_<contract<C>, TC, FC>
   {
     template<class... xs>
-    using f = typename detail::_try_dispatch<JLN_MP_DCALL_XS(xs, C, xs...)>
+    using f = typename detail::_try_dispatch<JLN_MP_DCALL_TRACE_XS(xs, C, xs...)>
       ::template f<TC, FC, xs...>;
   };
 
@@ -74,14 +74,14 @@ namespace jln::mp
   struct try_<contract<C>, always<true_>, always<false_>>
   {
     template<class... xs>
-    using f = number<!std::is_same<na, JLN_MP_DCALL_XS(xs, C, xs...)>::value>;
+    using f = number<!std::is_same<na, JLN_MP_DCALL_TRACE_XS(xs, C, xs...)>::value>;
   };
 
   template<class C>
   struct try_<contract<C>, identity, violation>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_XS(xs, C, xs...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
   /// \endcond
 }

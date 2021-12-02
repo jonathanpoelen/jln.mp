@@ -276,7 +276,7 @@ namespace jln::mp::detail
     struct to_index
     {
       template<class... xs>
-      using f = JLN_MP_DCALL(0 < sizeof...(xs), TC, number<sizeof...(xs) - n>);
+      using f = JLN_MP_DCALL_TRACE_XS(xs, TC, number<sizeof...(xs) - n>);
     };
 
     template<class... xs>
