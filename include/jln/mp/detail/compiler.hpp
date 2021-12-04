@@ -7,7 +7,7 @@
 #  define JLN_MP_MSVC_LIKE 1
 #  define JLN_MP_CLANG_CL 1
 #  define JLN_MP_CLANG 0
-#  define JLN_MP_MSVC 0
+#  define JLN_MP_MSVC 1
 #  define JLN_MP_GCC 0
 #elif defined(__clang__)
 #  define JLN_MP_CLANG_LIKE 1
@@ -64,10 +64,10 @@
 
 // Diagnostic
 //@{
-#if JLN_MP_CLANG_LIKE || JLN_MP_GCC
+#if JLN_MP_CLANG || JLN_MP_GCC
 
-#  define JLN_MP_DIAGNOSTIC_PUSH() JLN_MP_PRAGMA_I(GCC diagnostic push)
-#  define JLN_MP_DIAGNOSTIC_POP() JLN_MP_PRAGMA_I(GCC diagnostic pop)
+#  define JLN_MP_DIAGNOSTIC_PUSH() _Pragma("GCC diagnostic push")
+#  define JLN_MP_DIAGNOSTIC_POP() _Pragma("GCC diagnostic pop")
 
 #  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X)
 #  define JLN_MP_DIAGNOSTIC_GCC_IGNORE(X) JLN_MP_PRAGMA_I(GCC diagnostic ignored X)
@@ -99,22 +99,29 @@
 #  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X) JLN_MP_PRAGMA_I(warning(disable:X))
 #  define JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
 #  define JLN_MP_DIAGNOSTIC_GCC_IGNORE(X)
-#  define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X)
 
 #  define JLN_MP_DIAGNOSTIC_MSVC_WARNING(X) JLN_MP_PRAGMA_I(warning(4:X))
 #  define JLN_MP_DIAGNOSTIC_GCC_ONLY_WARNING(X)
 #  define JLN_MP_DIAGNOSTIC_GCC_WARNING(X)
-#  define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X)
 
 #  define JLN_MP_DIAGNOSTIC_MSVC_ERROR(X) JLN_MP_PRAGMA_I(error(X))
 #  define JLN_MP_DIAGNOSTIC_GCC_ONLY_ERROR(X)
 #  define JLN_MP_DIAGNOSTIC_GCC_ERROR(X)
-#  define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X)
+
+#  if JLN_MP_CLANG_LIKE
+#    define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X) JLN_MP_PRAGMA_I(GCC diagnostic ignored X)
+#    define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X) JLN_MP_PRAGMA_I(GCC diagnostic warning X)
+#    define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X) JLN_MP_PRAGMA_I(GCC diagnostic error X)
+#  else
+#    define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X)
+#    define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X)
+#    define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X)
+#  endif
 
 #else
 
-#  define JLN_MP_DIAGNOSTIC_PUSH
-#  define JLN_MP_DIAGNOSTIC_POP
+#  define JLN_MP_DIAGNOSTIC_PUSH()
+#  define JLN_MP_DIAGNOSTIC_POP()
 
 #  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X)
 #  define JLN_MP_DIAGNOSTIC_GCC_IGNORE(X)

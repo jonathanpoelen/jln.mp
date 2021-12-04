@@ -76,16 +76,16 @@ using call = C::f<xs...>;
 # if JLN_MP_MSVC
 
 template<class C, class... xs>
-using call = typename detail::_memoizer<C, list<xs...>>::type;
+using call = typename detail::memoizer_impl<C, list<xs...>>::type;
 
 #  define JLN_MP_DCALL_TRACE_XS(xs, C, ...) \
-    typename ::jln::detail::_memoizer<C, ::jln::list<__VA_ARGS__>>::type
+    typename ::jln::mp::detail::memoizer_impl<C, ::jln::mp::list<__VA_ARGS__>>::type
 
 #  define JLN_MP_DCALL_TRACE_XS_0(xs, C) \
-    typename ::jln::detail::_memoizer<C, ::jln::list<>>::type
+    typename ::jln::mp::detail::memoizer_impl<C, ::jln::mp::list<>>::type
 
 #  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) \
-    ::jln::detail::_memoizer<C, ::jln::list<__VA_ARGS__>>::type::value
+    ::jln::mp::detail::memoizer_impl<C, ::jln::mp::list<__VA_ARGS__>>::type::value
 
 # else
 
@@ -115,7 +115,8 @@ using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
 
 
 #if JLN_MP_MSVC
-# define JLN_MP_MSVC_FIX_CALL(C, ...) ::jln::mp::detail::raw_call<C, __VA_ARGS__>
+# define JLN_MP_MSVC_FIX_CALL(C, ...) \
+  ::jln::mp::detail::raw_call<typename JLN_MP_IDENT C, __VA_ARGS__>
 #else
 # define JLN_MP_MSVC_FIX_CALL(C, ...) typename JLN_MP_IDENT C::template f<__VA_ARGS__>
 #endif
