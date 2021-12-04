@@ -64,7 +64,7 @@ TEST()
     .not_invocable<int, int, int>()
     ;
 
-  ut::not_invocable<smp::wrap_in_list_if<smp::always<na>>>();
+  ut::not_invocable<smp::wrap_in_list_if<smp::always<na>>, int>();
   ut::not_invocable<smp::wrap_in_list_if<bad_function>>();
   ut::not_invocable<smp::wrap_in_list_if<bad_function>, int, int>();
   ut::not_invocable<smp::wrap_in_list_if<always<void>>, int, int>();
