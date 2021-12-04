@@ -2,7 +2,6 @@
 
 #include <jln/mp/list/list.hpp>
 #include <jln/mp/functional/identity.hpp>
-#include <jln/mp/detail/call_trace.hpp>
 
 namespace jln::mp
 {

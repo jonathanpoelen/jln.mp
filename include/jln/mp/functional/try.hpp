@@ -78,7 +78,6 @@ namespace jln::mp
   /// \endcond
 }
 
-#include <jln/mp/detail/call_trace.hpp>
 
 /// \cond
 namespace jln::mp::detail

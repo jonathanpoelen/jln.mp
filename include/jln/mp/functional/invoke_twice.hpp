@@ -1,7 +1,6 @@
 #pragma once
 
 #include <jln/mp/functional/call.hpp>
-#include <jln/mp/detail/call_trace.hpp>
 
 namespace jln::mp
 {

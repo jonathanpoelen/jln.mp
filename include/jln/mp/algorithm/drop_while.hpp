@@ -3,7 +3,6 @@
 #include <jln/mp/list/listify.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/detail/enumerate.hpp>
-#include <jln/mp/detail/call_trace.hpp>
 
 namespace jln::mp
 {

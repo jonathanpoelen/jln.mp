@@ -2,7 +2,6 @@
 
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/functional/identity.hpp>
-#include <jln/mp/detail/call_trace.hpp>
 
 #include <type_traits>
 
