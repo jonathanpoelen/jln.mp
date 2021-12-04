@@ -95,6 +95,16 @@ namespace jln::mp
 
   using true_ = number<1>;
   using false_ = number<0>;
+
+#if defined( __cpp_nontype_template_parameter_auto)
+# if  __cpp_nontype_template_parameter_auto >= 201606L
+#  define JLN_MP_TPL_AUTO_OR_INT auto
+# endif
+#endif
+
+#ifndef JLN_MP_TPL_AUTO_OR_INT
+# define JLN_MP_TPL_AUTO_OR_INT ::jln::mp::int_
+#endif
 }
 // Compiler type
 //@{
@@ -238,6 +248,19 @@ namespace jln::mp
 #  undef JLN_MP_ENABLE_DEBUG
 #  define JLN_MP_ENABLE_DEBUG 0
 #endif
+#ifndef JLN_MP_MAX_CALL_ELEMENT
+# define JLN_MP_MAX_CALL_ELEMENT 10000
+#endif
+
+/// \defgroup list List
+/// \defgroup algorithm Algorithm
+/// \defgroup number Number
+/// \defgroup value Value
+/// \defgroup functional Functional
+/// \defgroup utility Utility
+/// \defgroup trait Trait
+/// \defgroup search Search
+/// \defgroup group Group
 namespace jln::mp
 {
   /// \cond
@@ -274,7 +297,7 @@ namespace jln::mp
   struct memoize
   {
     template<class... xs>
-    using f = memoize_call<C, xs...>;
+    using f = typename detail::memoizer_impl<C, list<xs...>>::type;
   };
 }
 
@@ -299,29 +322,193 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  template<bool>
+  struct conditional_c;
+
+  template<>
+  struct conditional_c<true>
+  {
+    template<class x, class y>
+    using f = x;
+  };
+
+  template<>
+  struct conditional_c<false>
+  {
+    template<class x, class y>
+    using f = y;
+  };
+
+  template<class v>
+  using conditional = conditional_c<bool(v::value)>;
+
+  namespace emp
+  {
+    template<class v, class x, class y>
+    using conditional = typename mp::conditional_c<bool(v::value)>
+      ::template f<x, y>;
+
+    template<bool cond, class x, class y>
+    using conditional_c = typename mp::conditional_c<cond>
+      ::template f<x, y>;
+  }
+} // namespace jln::mp
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<bool> struct dcallf;
+    template<bool> struct dcall_c;
+    template<bool> struct dcallf_c;
+
+    class too_many_arguments_error {};
+  }
+  /// \endcond
+
+  /// \ingroup functional
+
+
 #define JLN_MP_IDENT(...) __VA_ARGS__
 
 #if ! JLN_MP_ENABLE_DEBUG
   #define JLN_MP_TRACE_F(...) __VA_ARGS__
+  #define JLN_MP_TRACE_TYPENAME
 
-  #define JLN_MP_CALL_TRACE(C, ...) typename JLN_MP_IDENT C ::template f<__VA_ARGS__>
-  #define JLN_MP_CALL_TRACE_T(C, ...) typename JLN_MP_IDENT C ::template f<__VA_ARGS__>
+  #define JLN_MP_CALL_TRACE(C, ...) typename C ::template f<__VA_ARGS__>
+  #define JLN_MP_CALL_TRACE_T(C, ...) typename C ::template f<__VA_ARGS__>
   #define JLN_MP_CALL_TRACE_0_ARG(...) typename __VA_ARGS__::template f<>
 #else
   // does not compile with msvc...
   #define JLN_MP_TRACE_F(...) memoize<__VA_ARGS__>
+  #define JLN_MP_TRACE_TYPENAME typename
 
-  #define JLN_MP_CALL_TRACE(C, ...)                \
-    typename ::jln::mp::detail::memoizer_impl<     \
-      JLN_MP_IDENT C, ::jln::mp::list<__VA_ARGS__> \
+  #define JLN_MP_CALL_TRACE(C, ...)            \
+    typename ::jln::mp::detail::memoizer_impl< \
+      C, ::jln::mp::list<__VA_ARGS__>          \
     >::type
-  #define JLN_MP_CALL_TRACE_T(C, ...)                       \
-    typename ::jln::mp::detail::memoizer_impl<              \
-      typename JLN_MP_IDENT C, ::jln::mp::list<__VA_ARGS__> \
+  #define JLN_MP_CALL_TRACE_T(C, ...)          \
+    typename ::jln::mp::detail::memoizer_impl< \
+      typename C, ::jln::mp::list<__VA_ARGS__> \
     >::type
-  #define JLN_MP_CALL_TRACE_0_ARG(...) \
-    typename ::jln::mp::detail::memoizer_impl<__VA_ARGS__, ::jln::mp::list<>>::type
+  #define JLN_MP_CALL_TRACE_0_ARG(...)         \
+    typename ::jln::mp::detail::memoizer_impl< \
+      __VA_ARGS__, ::jln::mp::list<>           \
+    >::type
 #endif
+
+
+#ifdef JLN_MP_DOXYGENATING
+
+template<class C, class... xs>
+using call = C::f<xs...>;
+
+#define JLN_MP_DCALL_TRACE_XS(xs, C, ...) call<C, __VA_ARGS__>
+#define JLN_MP_DCALL_TRACE_XS_0(xs, C) call<__VA_ARGS__>
+#define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) call<C, __VA_ARGS__>::value
+#define JLN_MP_DCALLF_XS(xs, F, ...) F<__VA_ARGS__>
+#define JLN_MP_DCALLF_C_XS(xs, F, ...) F<__VA_ARGS__>
+
+#else
+
+#define JLN_MP_DCALLF_XS(xs, C, ...)                               \
+  typename detail::dcallf<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+    ::template f<C, __VA_ARGS__>
+
+#define JLN_MP_DCALLF_C_XS(xs, C, ...)                               \
+  typename detail::dcallf_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+    ::template f<C, __VA_ARGS__>
+
+# if JLN_MP_MSVC
+
+template<class C, class... xs>
+using call = typename detail::_memoizer<C, list<xs...>>::type;
+
+#  define JLN_MP_DCALL_TRACE_XS(xs, C, ...) \
+    typename ::jln::detail::_memoizer<C, ::jln::list<__VA_ARGS__>>::type
+
+#  define JLN_MP_DCALL_TRACE_XS_0(xs, C) \
+    typename ::jln::detail::_memoizer<C, ::jln::list<>>::type
+
+#  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) \
+    ::jln::detail::_memoizer<C, ::jln::list<__VA_ARGS__>>::type::value
+
+# else
+
+template<class C, class... xs>
+using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
+  ::template f<C, detail::too_many_arguments_error>
+  ::template f<xs...>;
+
+#  define JLN_MP_DCALL_TRACE_XS(xs, C, ...)                                        \
+    typename ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>     \
+      ::template f<JLN_MP_TRACE_F(C), ::jln::mp::detail::too_many_arguments_error> \
+      ::template f<__VA_ARGS__>
+
+#  define JLN_MP_DCALL_TRACE_XS_0(xs, C)                                           \
+    typename ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>     \
+      ::template f<JLN_MP_TRACE_F(C), ::jln::mp::detail::too_many_arguments_error> \
+      ::template f<>
+
+#  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...)                                      \
+    ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>              \
+      ::template f<JLN_MP_TRACE_F(C), ::jln::mp::detail::too_many_arguments_error> \
+      ::template f<__VA_ARGS__>                                                    \
+      ::value
+
+# endif
+#endif
+
+
+#if JLN_MP_MSVC
+# define JLN_MP_MSVC_FIX_CALL(C, ...) ::jln::mp::detail::raw_call<C, __VA_ARGS__>
+#else
+# define JLN_MP_MSVC_FIX_CALL(C, ...) typename JLN_MP_IDENT C::template f<__VA_ARGS__>
+#endif
+
+
+template<class C, JLN_MP_TPL_AUTO_OR_INT... xs>
+using call_c = typename detail::dcall_c<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>
+  ::template f<C, xs...>;
+
+template<class C, class... xs>
+using call_t = typename call<C, xs...>::type;
+
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct dcall_c<true>
+  {
+      template<class C, JLN_MP_TPL_AUTO_OR_INT...xs>
+      using f = typename C::template f<xs...>;
+  };
+
+  template<>
+  struct dcallf<true>
+  {
+    template<template<class...> class F, class... xs>
+    using f = F<xs...>;
+  };
+
+  template<>
+  struct dcallf_c<true>
+  {
+      template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, JLN_MP_TPL_AUTO_OR_INT...xs>
+      using f = F<xs...>;
+  };
+
+  // useful to work around msvc bugs
+  template<class F, class... xs>
+  using raw_call = typename F::template f<xs...>;
+}
+/// \endcond
 namespace jln::mp
 {
   /// \ingroup utility
@@ -333,7 +520,7 @@ namespace jln::mp
   struct always
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), x);
+    using f = JLN_MP_CALL_TRACE(C, x);
   };
 
   template<class x>
@@ -352,7 +539,7 @@ namespace jln::mp
   struct is
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<std::is_same<T, x>::value>);
+    using f = JLN_MP_CALL_TRACE(C, number<std::is_same<T, x>::value>);
   };
 } // namespace jln::mp
 namespace jln::mp
@@ -426,6 +613,7 @@ namespace jln::mp
   /// \endcond
 }
 
+
 /// \cond
 namespace jln::mp::detail
 {
@@ -438,225 +626,22 @@ namespace jln::mp::detail
   template<class F, class... xs>
   struct _try_impl<F, list<xs...>, std::void_t<typename F::template f<xs...>>>
   {
-    using type = JLN_MP_CALL_TRACE((F), xs...);
+    using type = JLN_MP_CALL_TRACE(F, xs...);
   };
 
   template<class x>
   struct _try_dispatch
   {
     template<class TC, class FC, class...>
-    using f = JLN_MP_CALL_TRACE((TC), x);
+    using f = JLN_MP_CALL_TRACE(TC, x);
   };
 
   template<>
   struct _try_dispatch<na>
   {
     template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE((FC), xs...);
+    using f = JLN_MP_CALL_TRACE(FC, xs...);
   };
-}
-/// \endcond
-#ifndef JLN_MP_MAX_CALL_ELEMENT
-# define JLN_MP_MAX_CALL_ELEMENT 10000
-#endif
-
-/// \defgroup list List
-/// \defgroup algorithm Algorithm
-/// \defgroup number Number
-/// \defgroup value Value
-/// \defgroup functional Functional
-/// \defgroup utility Utility
-/// \defgroup trait Trait
-/// \defgroup search Search
-/// \defgroup group Group
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<bool> struct dcall;
-    template<bool> struct dcallf;
-    template<bool> struct dcall_c;
-    template<bool> struct dcallf_c;
-  }
-  /// \endcond
-
-  /// \ingroup functional
-
-#define JLN_MP_DCALL_XS(xs, ...) JLN_MP_DCALL(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
-#define JLN_MP_DCALL_V_XS(xs, ...) JLN_MP_DCALL_V(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
-#define JLN_MP_DCALLF_XS(xs, ...) JLN_MP_DCALLF(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
-#define JLN_MP_DCALLF_C_XS(xs, ...) JLN_MP_DCALLF_C(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT, __VA_ARGS__)
-
-
-#if JLN_MP_MSVC || JLN_MP_ENABLE_DEBUG || defined(JLN_MP_DOXYGENATING)
-
-#ifdef JLN_MP_DOXYGENATING
-  template<class C, class... xs>
-  using call = C::f<xs...>;
-  #define JLN_MP_DCALL(cond, ...) call<__VA_ARGS__>
-  #define JLN_MP_DCALL_V(cond, ...) call<__VA_ARGS__>::value
-  #define JLN_MP_DCALLF(cond, F, ...) F<__VA_ARGS__>
-  #define JLN_MP_DCALL_C(cond, F, ...) F<__VA_ARGS__>
-  #define JLN_MP_DCALLF_C(cond, F, ...) F<__VA_ARGS__>
-#else
-  template<class C, class... xs>
-  using call = memoize_call<C, xs...>;
-  #define JLN_MP_DCALL(cond, ...) typename detail::_memoizer<__VA_ARGS__>::type
-  #define JLN_MP_DCALL_V(cond, ...) detail::_memoizer<__VA_ARGS__>::type::value
-  #define JLN_MP_DCALLF(cond, ...) typename detail::dcallf<(cond)>::template f<__VA_ARGS__>
-  #define JLN_MP_DCALL_C(cond, ...) typename detail::dcall_c<(cond)>::template f<__VA_ARGS__>
-  #define JLN_MP_DCALLF_C(cond, ...) typename detail::dcallf_c<(cond)>::template f<__VA_ARGS__>
-#endif
-
-#if __cplusplus >= 201703L
-  template<class C, auto... xs>
-#else
-  template<class C, int_... xs>
-#endif
-  using call_c = typename C::template f<xs...>;
-
-  template<class C, class F, class... xs>
-  using dispatch = call<C, call<F, xs>...>;
-
-  template<class FC, class F, class... xs>
-  using indirect_call = call<call<FC, xs...>, F, xs...>;
-
-  template<class C, class F, class... xs>
-  using unary_compose_call = call<C, call<F, xs...>>;
-
-  template<class C, class F0, class F1, class... xs>
-  using binary_compose_call = call<C, call<F0, xs...>, call<F1, xs...>>;
-
-  template<class C, class F0, class F1, class F2, class... xs>
-  using ternary_compose_call = call<C, call<F0, xs...>, call<F1, xs...>, call<F2, xs...>>;
-
-#else
-  /// \cond
-  namespace detail
-  {
-    template<template<class...> class f, class FC, class F, class... xs>
-    using _indirect_call = f<f<FC, xs...>, F, xs...>;
-
-    template<template<class...> class f, class C, class F, class... xs>
-    using _dispatch = f<C, f<F, xs>...>;
-
-    template<template<class...> class f, class C, class F, class... xs>
-    using _unary_compose_call = f<C, f<F, xs...>>;
-
-    template<template<class...> class f, class C, class F0, class F1, class... xs>
-    using _binary_compose_call = f<C, f<F0, xs...>, f<F1, xs...>>;
-
-    template<template<class...> class f, class C, class F0, class F1, class F2, class... xs>
-    using _ternary_compose_call = f<C, f<F0, xs...>, f<F1, xs...>, f<F2, xs...>>;
-  }
-  /// \endcond
-
-# define JLN_MP_DCALL(cond, ...) typename detail::dcall<(cond)>::template f<__VA_ARGS__>
-# define JLN_MP_DCALL_V(cond, ...) detail::dcall<(cond)>::template f<__VA_ARGS__>::value
-# define JLN_MP_DCALLF(cond, ...) typename detail::dcallf<(cond)>::template f<__VA_ARGS__>
-# define JLN_MP_DCALL_C(cond, ...) typename detail::dcall_c<(cond)>::template f<__VA_ARGS__>
-# define JLN_MP_DCALLF_C(cond, ...) typename detail::dcallf_c<(cond)>::template f<__VA_ARGS__>
-
-  template<class C, class... xs>
-  using call = typename detail::dcall<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>
-    ::template f<C, xs...>;
-
-#if __cplusplus >= 201703L
-  template<class C, auto... xs>
-#else
-  template<class C, int_... xs>
-#endif
-  using call_c = typename detail::dcall_c<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>
-    ::template f<C, xs...>;
-
-  template<class FC, class F, class... xs>
-  using indirect_call = detail::_indirect_call<
-    detail::dcall<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>::template f,
-    FC, F, xs...>;
-
-  template<class C, class F, class... xs>
-  using dispatch = detail::_dispatch<
-    detail::dcall<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>::template f,
-    C, F, xs...>;
-
-  template<class C, class F, class... xs>
-  using unary_compose_call = detail::_unary_compose_call<
-    detail::dcall<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>::template f,
-    C, F, xs...>;
-
-  template<class C, class F0, class F1, class... xs>
-  using binary_compose_call = detail::_binary_compose_call<
-    detail::dcall<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>::template f,
-    C, F0, F1, xs...>;
-
-  template<class C, class F0, class F1, class F2, class... xs>
-  using ternary_compose_call = detail::_ternary_compose_call<
-    detail::dcall<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>::template f,
-    C, F0, F1, F2, xs...>;
-#endif
-
-  template<class C, class... xs>
-  using call_t = typename call<C, xs...>::type;
-
-  template<class FC, class F, class... xs>
-  using indirect_call_t = typename indirect_call<FC, F, xs...>::type;
-
-  template<class C, class F, class... xs>
-  using dispatch_t = typename dispatch<C, F, xs...>::type;
-
-  template<class C, class F, class... xs>
-  using unary_compose_call_t = typename unary_compose_call<C, F, xs...>::type;
-
-  template<class C, class F0, class F1, class... xs>
-  using binary_compose_call_t = typename binary_compose_call<C, F0, F1, xs...>::type;
-
-  template<class C, class F0, class F1, class F2, class... xs>
-  using ternary_compose_call_t = typename ternary_compose_call<C, F0, F1, F2, xs...>::type;
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<>
-  struct dcall<true>
-  {
-      template<class C, class... xs>
-      using f = typename C::template f<xs...>;
-  };
-
-  template<>
-  struct dcall_c<true>
-  {
-#if __cplusplus >= 201703L
-      template<class C, auto...xs>
-#else
-      template<class C, int_...xs>
-#endif
-      using f = typename C::template f<xs...>;
-  };
-
-  template<>
-  struct dcallf<true>
-  {
-    template<template<class...> class F, class... xs>
-    using f = F<xs...>;
-  };
-
-  template<>
-  struct dcallf_c<true>
-  {
-#if __cplusplus >= 201703L
-      template<template<auto...> class F, auto...xs>
-#else
-      template<template<int_...> class F, int_...xs>
-#endif
-      using f = F<xs...>;
-  };
-
-  // useful to work around msvc bugs
-  template<class F, class... xs>
-  using raw_call = typename F::template f<xs...>;
 }
 /// \endcond
 namespace jln::mp
@@ -670,7 +655,7 @@ namespace jln::mp
   struct lift_t
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), JLN_MP_DCALLF_XS(xs, F, xs...)::type);
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_XS(xs, F, xs...)::type);
   };
 
   /// \cond
@@ -689,7 +674,7 @@ namespace jln::mp
   struct lift
   {
     template<class... xs>
-    using f = typename C::template f<JLN_MP_DCALLF_XS(xs, F, xs...)>;
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_XS(xs, F, xs...));
   };
 
   /// \cond
@@ -701,66 +686,37 @@ namespace jln::mp
   };
   /// \endcond
 
-#if __cplusplus >= 201703L
-  template<template<auto...> class F>
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
   struct lift_c
   {
-    template<auto... xs>
-    using f = JLN_MP_DCALLF_C_XS(xs, F, xs...);
+    template<JLN_MP_TPL_AUTO_OR_INT... xs>
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs...));
   };
 
-  template<template<auto...> class F>
-  struct lift_v
-#else
-  template<template<int_...> class F>
-  struct lift_c
+  /// \cond
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  struct lift_c<F, identity>
   {
-    template<int_... xs>
+    template<JLN_MP_TPL_AUTO_OR_INT... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs...);
   };
+  /// \endcond
 
-  template<template<int_...> class F>
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
   struct lift_v
-#endif
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs::value...));
+  };
+
+  /// \cond
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  struct lift_v<F, identity>
   {
     template<class... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...);
   };
-} // namespace jln::mp
-namespace jln::mp
-{
-  /// \ingroup utility
-
-  template<bool>
-  struct conditional_c;
-
-  template<>
-  struct conditional_c<true>
-  {
-    template<class x, class y>
-    using f = x;
-  };
-
-  template<>
-  struct conditional_c<false>
-  {
-    template<class x, class y>
-    using f = y;
-  };
-
-  template<class v>
-  using conditional = conditional_c<bool(v::value)>;
-
-  namespace emp
-  {
-    template<class v, class x, class y>
-    using conditional = typename mp::conditional_c<bool(v::value)>
-      ::template f<x, y>;
-
-    template<bool cond, class x, class y>
-    using conditional_c = typename mp::conditional_c<cond>
-      ::template f<x, y>;
-  }
+  /// \endcond
 } // namespace jln::mp
 namespace jln::mp
 {
@@ -772,15 +728,15 @@ namespace jln::mp
   struct if_
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE_T(
-      (mp::conditional_c<bool(call<Pred, xs...>::value)>::template f<TC, FC>),
-      xs...);
+    using f = typename mp::conditional_c<bool(call<JLN_MP_TRACE_F(Pred), xs...>::value)>
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+      ::template f<xs...>;
   };
 
   namespace emp
   {
     template<class Pred, class TC, class FC, class... xs>
-    using if_ = JLN_MP_CALL_TRACE((conditional<call<Pred, xs...>, TC, FC>), xs...);
+    using if_ = typename mp::if_<Pred, TC, FC>::template f<xs...>;
   }
 }
 namespace jln::mp
@@ -795,7 +751,7 @@ namespace jln::mp
   struct contract
   {
     template<class... xs>
-    using f = call<C, xs...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
 
   template<class test, class TC, class FC = violation>
@@ -838,7 +794,7 @@ namespace jln::mp
   struct try_<contract<C>, TC, FC>
   {
     template<class... xs>
-    using f = typename detail::_try_dispatch<call<C, xs...>>
+    using f = typename detail::_try_dispatch<JLN_MP_DCALL_TRACE_XS(xs, C, xs...)>
       ::template f<TC, FC, xs...>;
   };
 
@@ -846,14 +802,14 @@ namespace jln::mp
   struct try_<contract<C>, always<true_>, always<false_>>
   {
     template<class... xs>
-    using f = number<!std::is_same<na, call<C, xs...>>::value>;
+    using f = number<!std::is_same<na, JLN_MP_DCALL_TRACE_XS(xs, C, xs...)>::value>;
   };
 
   template<class C>
   struct try_<contract<C>, identity, violation>
   {
     template<class... xs>
-    using f = call<C, xs...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
   /// \endcond
 }
@@ -1316,14 +1272,14 @@ namespace jln::mp::detail
   struct _unpack<Seq<ys...>>
   {
     template<class C, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), xs..., ys...);
+    using f = JLN_MP_CALL_TRACE(C, xs..., ys...);
   };
 
   template<template<class...> class Seq, class... xs>
   struct _unpack_append<Seq<xs...>>
   {
     template<class C, class... ys>
-    using f = JLN_MP_CALL_TRACE((C), xs..., ys...);
+    using f = JLN_MP_CALL_TRACE(C, xs..., ys...);
   };
 
   template<class C>
@@ -1354,12 +1310,33 @@ namespace jln::mp
 
   /// Executes \c F on every element of a \sequence.
   /// \treturn \sequence
+#if defined(JLN_MP_DOXYGENATING) || JLN_MP_MSVC
   template<class F, class C = listify>
   struct transform
   {
     template<class... xs>
-    using f = dispatch<C, F, xs...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_DCALL_TRACE_XS(xs, F, xs)...);
   };
+#else
+  /// \cond
+  namespace detail
+  {
+    template<class C, class F, class...xs>
+    using transform_impl = JLN_MP_DCALL_TRACE_XS(xs, C, typename F::template f<xs>...);
+  }
+  /// \endcond
+
+  template<class F, class C = listify>
+  struct transform
+  {
+    template<class... xs>
+    using f = detail::transform_impl<C,
+      typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
+      ::template f<JLN_MP_TRACE_F(F), detail::too_many_arguments_error>,
+      xs...
+    >;
+  };
+#endif
 
   namespace emp
   {
@@ -1414,7 +1391,7 @@ namespace jln::mp
   struct push_back
   {
     template<class... xs>
-    using f = call<C, xs..., x>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs..., x);
   };
 
   namespace emp
@@ -1433,7 +1410,7 @@ namespace jln::mp
   struct push_front
   {
     template<class... xs>
-    using f = call<C, x, xs...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, x, xs...);
   };
 
   namespace emp
@@ -1453,7 +1430,7 @@ namespace jln::mp
   struct size
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<sizeof...(xs)>);
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof...(xs)>);
   };
 
   namespace emp
@@ -1473,21 +1450,21 @@ namespace jln::mp
   struct or_
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(false || ... || xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(false || ... || xs::value)>);
   };
 
   template<class C = identity>
   struct and_
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(true && ... && xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(true && ... && xs::value)>);
   };
 
   template<class C = identity>
   struct add
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(... + xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(... + xs::value)>);
   };
 
   template<class C = identity>
@@ -1497,7 +1474,7 @@ namespace jln::mp
   struct sub
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(... - xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(... - xs::value)>);
   };
 
   template<class C = identity>
@@ -1507,7 +1484,7 @@ namespace jln::mp
   struct lshift
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(... << xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(... << xs::value)>);
   };
 
   template<class C = identity>
@@ -1517,7 +1494,7 @@ namespace jln::mp
   struct rshift
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(... >> xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(... >> xs::value)>);
   };
 
   template<class C = identity>
@@ -1527,7 +1504,7 @@ namespace jln::mp
   struct mul
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(... * xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(... * xs::value)>);
   };
 
   template<class C = identity>
@@ -1540,7 +1517,7 @@ namespace jln::mp
   struct div
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(... / xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(... / xs::value)>);
   };
 
   template<class C = identity>
@@ -1553,7 +1530,7 @@ namespace jln::mp
   struct mod
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(... % xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(... % xs::value)>);
   };
 
   template<class C = identity>
@@ -1566,7 +1543,7 @@ namespace jln::mp
   struct xor_
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(... ^ xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(... ^ xs::value)>);
   };
 
   template<class C = identity>
@@ -1576,7 +1553,7 @@ namespace jln::mp
   struct bit_and
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(... & xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(... & xs::value)>);
   };
 
   template<class C = identity>
@@ -1586,7 +1563,7 @@ namespace jln::mp
   struct bit_or
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(... | xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(... | xs::value)>);
   };
 
   template<class C = identity>
@@ -1596,91 +1573,91 @@ namespace jln::mp
   struct neg
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<(-x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(-x::value)>);
   };
 
   template<class C = identity>
   struct unary_plus
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<(+x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(+x::value)>);
   };
 
   template<class C = identity>
   struct not_
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<(!x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(!x::value)>);
   };
 
   template<class C>
   struct not_<not_<C>>
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<(!int_{!x::value})>);
+    using f = JLN_MP_CALL_TRACE(C, number<(!int_{!x::value})>);
   };
 
   template<class C = identity>
   struct bit_not
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<(~x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(~x::value)>);
   };
 
   template<class C = identity>
   struct inc
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<(x::value+1)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(x::value+1)>);
   };
 
   template<class C = identity>
   struct dec
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<(x::value-1)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(x::value-1)>);
   };
 
   template<class C = identity>
   struct equal
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), number<(x::value == y::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(x::value == y::value)>);
   };
 
   template<class C = identity>
   struct not_equal
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), number<(x::value != y::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(x::value != y::value)>);
   };
 
   template<class C = identity>
   struct less
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), number<(x::value < y::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(x::value < y::value)>);
   };
 
   template<class C = identity>
   struct less_equal
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), number<(x::value <= y::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(x::value <= y::value)>);
   };
 
   template<class C = identity>
   struct greater
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), number<(x::value > y::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(x::value > y::value)>);
   };
 
   template<class C = identity>
   struct greater_equal
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), number<(x::value >= y::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(x::value >= y::value)>);
   };
 
 
@@ -2012,107 +1989,107 @@ namespace jln::mp::emp
   using add = number<(... + xs::value)>;
 
   template<class... xs>
-  using add0 = call<mp::add0<>, xs...>;
+  using add0 = typename mp::add0<>::template f<xs...>;
 
   template<class... xs>
   using sub = number<(... - xs::value)>;
 
   template<class... xs>
-  using sub0 = call<mp::sub0<>, xs...>;
+  using sub0 = typename mp::sub0<>::template f<xs...>;
 
   template<class... xs>
   using lshift = number<(... << xs::value)>;
 
   template<class... xs>
-  using lshift0 = call<mp::lshift0<>, xs...>;
+  using lshift0 = typename mp::lshift0<>::template f<xs...>;
 
   template<class... xs>
   using rshift = number<(... >> xs::value)>;
 
   template<class... xs>
-  using rshift0 = call<mp::rshift0<>, xs...>;
+  using rshift0 = typename mp::rshift0<>::template f<xs...>;
 
   template<class... xs>
   using mul = number<(... * xs::value)>;
 
   template<class... xs>
-  using mul0 = call<mp::mul0<>, xs...>;
+  using mul0 = typename mp::mul0<>::template f<xs...>;
 
   template<class... xs>
-  using mul1 = call<mp::mul1<>, xs...>;
+  using mul1 = typename mp::mul1<>::template f<xs...>;
 
   template<class... xs>
   using div = number<(... / xs::value)>;
 
   template<class... xs>
-  using div0 = call<mp::div0<>, xs...>;
+  using div0 = typename mp::div0<>::template f<xs...>;
 
   template<class... xs>
-  using div1 = call<mp::div1<>, xs...>;
+  using div1 = typename mp::div1<>::template f<xs...>;
 
   template<class... xs>
   using mod = number<(... % xs::value)>;
 
   template<class... xs>
-  using mod0 = call<mp::mod0<>, xs...>;
+  using mod0 = typename mp::mod0<>::template f<xs...>;
 
   template<class... xs>
-  using mod1 = call<mp::mod1<>, xs...>;
+  using mod1 = typename mp::mod1<>::template f<xs...>;
 
   template<class... xs>
   using xor_ = number<(... ^ xs::value)>;
 
   template<class... xs>
-  using xor0 = call<mp::xor0<>, xs...>;
+  using xor0 = typename mp::xor0<>::template f<xs...>;
 
   template<class... xs>
   using bit_and = number<(... & xs::value)>;
 
   template<class... xs>
-  using bit_and0 = call<mp::bit_and0<>, xs...>;
+  using bit_and0 = typename mp::bit_and0<>::template f<xs...>;
 
   template<class... xs>
   using bit_or = number<(... | xs::value)>;
 
   template<class... xs>
-  using bit_or0 = call<mp::bit_or0<>, xs...>;
+  using bit_or0 = typename mp::bit_or0<>::template f<xs...>;
 
 
   template<class x, class C = mp::identity>
-  using neg = call<mp::neg<C>, x>;
+  using neg = typename mp::neg<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using unary_plus = call<mp::unary_plus<C>, x>;
+  using unary_plus = typename mp::unary_plus<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using not_ = call<mp::not_<C>, x>;
+  using not_ = typename mp::not_<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using bit_not = call<mp::bit_not<C>, x>;
+  using bit_not = typename mp::bit_not<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using inc = call<mp::inc<C>, x>;
+  using inc = typename mp::inc<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using dec = call<mp::dec<C>, x>;
+  using dec = typename mp::dec<C>::template f<x>;
 
   template<class x, class y, class C = mp::identity>
-  using equal = call<mp::equal<C>, x, y>;
+  using equal = typename mp::equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using not_equal = call<mp::not_equal<C>, x, y>;
+  using not_equal = typename mp::not_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using less = call<mp::less<C>, x, y>;
+  using less = typename mp::less<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using less_equal = call<mp::less_equal<C>, x, y>;
+  using less_equal = typename mp::less_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using greater = call<mp::greater<C>, x, y>;
+  using greater = typename mp::greater<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using greater_equal = call<mp::greater_equal<C>, x, y>;
+  using greater_equal = typename mp::greater_equal<C>::template f<x, y>;
 }
 
 JLN_MP_DIAGNOSTIC_POP()
@@ -2128,7 +2105,7 @@ namespace jln::mp
   struct as_bool
   {
     template<class x>
-    using f = call<C, number<bool{x::value}>>;
+    using f = JLN_MP_CALL_TRACE(C, number<bool{x::value}>);
   };
 
   namespace emp
@@ -2149,6 +2126,35 @@ namespace jln::mp
 }
 namespace jln::mp
 {
+  /// \ingroup number
+
+  /// Converts a \value to a \bool.
+  /// \treturn \bool
+  template<class C = identity>
+  struct to_bool
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<bool(x::value)>);
+  };
+
+  namespace emp
+  {
+    template<class x>
+    using to_bool = number<bool(x::value)>;
+  }
+
+
+  /// \cond
+  template<>
+  struct to_bool<identity>
+  {
+    template<class x>
+    using f = number<bool(x::value)>;
+  };
+  /// \endcond
+}
+namespace jln::mp
+{
   template<>
   struct as_bool<not_<>>
   {
@@ -2160,7 +2166,21 @@ namespace jln::mp
   struct as_bool<not_<C>>
   {
     template<class x>
-    using f = call<C, number<!bool{x::value}>>;
+    using f = JLN_MP_CALL_TRACE(C, number<!bool{x::value}>);
+  };
+
+  template<>
+  struct to_bool<not_<>>
+  {
+    template<class x>
+    using f = number<!bool(x::value)>;
+  };
+
+  template<class C>
+  struct to_bool<not_<C>>
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<!bool(x::value)>);
   };
 }
 /// \endcond
@@ -2174,7 +2194,7 @@ namespace jln::mp
   struct front
   {
     template<class x, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), x);
+    using f = JLN_MP_CALL_TRACE(C, x);
   };
 
   namespace emp
@@ -4283,7 +4303,7 @@ namespace jln::mp
   struct drop_front<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
 
 
@@ -4291,7 +4311,7 @@ namespace jln::mp
   struct drop_front_max<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
   /// \endcond
 }
@@ -4306,7 +4326,7 @@ namespace jln::mp::detail
     template<unsigned size, class C,           \
       mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)   \
       class... xs>                             \
-    using f = JLN_MP_CALL_TRACE((C), xs...);   \
+    using f = JLN_MP_CALL_TRACE(C, xs...);   \
   };
 
   JLN_MP_GEN_XS_0_TO_8(JLN_MP_DROP_IMPL)
@@ -4369,7 +4389,7 @@ namespace jln::mp
   struct same
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename detail::_same<detail::min(sizeof...(xs), 3)>::template f<xs...>);
   };
 
@@ -4449,7 +4469,7 @@ namespace jln::mp
   struct fold_left
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename detail::_fold_left<
         detail::sub_1_n_4_or_less_8_16_64_256(sizeof...(xs))
       >::template f<JLN_MP_TRACE_F(F)::template f, xs...>
@@ -4530,7 +4550,7 @@ namespace jln::mp
   /// \pre all lists must be the same size
   /// \semantics
   ///   \code
-  ///   call<zip<listify>,
+  ///   zip<listify>::f<
   ///     list<_1, _2, _3>,
   ///     list<_a, _b, _c>
   ///   > = list<
@@ -4575,7 +4595,8 @@ namespace jln::mp
   struct join
   {
     template<class... seqs>
-    using f = typename detail::_join_select<sizeof...(seqs)>::template f<C, seqs...>::type;
+    using f = typename detail::_join_select<sizeof...(seqs)>
+      ::template f<JLN_MP_TRACE_F(C), seqs...>::type;
   };
 
   namespace emp
@@ -4607,7 +4628,7 @@ namespace jln::mp::detail
       mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>  \
     struct f<F, mp_xs(list<, ...>, JLN_MP_COMMA)> \
     {                                             \
-      using type = JLN_MP_CALL_TRACE((F),         \
+      using type = JLN_MP_CALL_TRACE(F,         \
         mp_xs(JLN_MP_NIL, ..., JLN_MP_COMMA));    \
     };                                            \
   };
@@ -4647,7 +4668,7 @@ namespace jln::mp::detail
   template<class C, mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)> \
   struct _zip_impl<C, mp_xs(list<, ...>, JLN_MP_COMMA)>        \
   {                                                            \
-    using type = JLN_MP_CALL_TRACE((C), list<                  \
+    using type = JLN_MP_CALL_TRACE(C, list<                  \
       mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)              \
     >...);                                                     \
   };                                                           \
@@ -4657,7 +4678,7 @@ namespace jln::mp::detail
   struct _zip_impl<                                            \
     transform<unpack<F>, C>, mp_xs(list<, ...>, JLN_MP_COMMA)> \
   {                                                            \
-    using type = JLN_MP_CALL_TRACE((C), JLN_MP_CALL_TRACE((F), \
+    using type = JLN_MP_CALL_TRACE(C, JLN_MP_CALL_TRACE(F, \
       mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)              \
     )...);                                                     \
   };
@@ -4682,7 +4703,7 @@ namespace jln::mp::detail
   struct _zip_dispatch<0>
   {
     template<class C>
-    using f = typename C::template f<>;
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
   template<>
@@ -4749,7 +4770,7 @@ namespace jln::mp
   struct flip
   {
     template<class x0, class x1, class... xs>
-    using f = call<C, x1, x0, xs...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, x1, x0, xs...);
   };
 
   namespace emp
@@ -4925,7 +4946,7 @@ namespace jln::mp::detail
     template<unsigned size, class C,                      \
       mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
       class... xs>                                        \
-    using f = JLN_MP_CALL_TRACE((C),                      \
+    using f = JLN_MP_CALL_TRACE(C,                      \
       xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)); \
   };
 
@@ -4996,7 +5017,7 @@ namespace jln::mp::detail
 {
 #if JLN_MP_MSVC
   template<class C, class x, int_... xs>
-  using _adjacent_difference_msvc = JLN_MP_DCALL_XS(xs, C, x, number<xs>...);
+  using _adjacent_difference_msvc = JLN_MP_CALL_TRACE(C, x, number<xs>...);
 #endif
 
   template<class y, class... ys>
@@ -5007,7 +5028,7 @@ namespace jln::mp::detail
     using f = _adjacent_difference_msvc<C, x, (xs::value - ys::value)...>;
 #else
     template<class C, class x, class... xs>
-    using f = JLN_MP_DCALL_XS(xs, C, x, number<xs::value - ys::value>...);
+    using f = JLN_MP_CALL_TRACE(C, x, number<xs::value - ys::value>...);
 #endif
   };
 
@@ -5071,7 +5092,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::_adjacent_remove<
       rotate_c<-1>::template f<xs...>
-    >::template f<C, BinaryPred, xs...>;
+    >::template f<C, JLN_MP_TRACE_F(BinaryPred), xs...>;
   };
 
   /// Removes each element in a \sequence which is the same type as the privious element.
@@ -5125,21 +5146,30 @@ namespace jln::mp
   struct tee<F, C>
   {
     template<class... xs>
-    using f = unary_compose_call<C, F, xs...>;
+    using f = typename JLN_MP_TRACE_F(C)::template f<
+      JLN_MP_DCALL_TRACE_XS(xs, F, xs...)
+    >;
   };
 
   template<class F0, class F1, class C>
   struct tee<F0, F1, C>
   {
     template<class... xs>
-    using f = binary_compose_call<C, F0, F1, xs...>;
+    using f = typename JLN_MP_TRACE_F(C)::template f<
+      JLN_MP_DCALL_TRACE_XS(xs, F0, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F1, xs...)
+    >;
   };
 
   template<class F0, class F1, class F2, class C>
   struct tee<F0, F1, F2, C>
   {
     template<class... xs>
-    using f = ternary_compose_call<C, F0, F1, F2, xs...>;
+    using f = typename JLN_MP_TRACE_F(C)::template f<
+      JLN_MP_DCALL_TRACE_XS(xs, F0, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F1, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F2, xs...)
+    >;
   };
   /// \endcond
 }
@@ -5151,7 +5181,7 @@ namespace jln::mp::detail
   struct _tee
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), call<Fs, xs...>...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_DCALL_TRACE_XS(xs, Fs, xs...)...);
   };
 } // namespace jln::mp
 /// \endcond
@@ -5175,7 +5205,7 @@ namespace jln::mp
   namespace emp
   {
     template<class F, class... xs>
-    using not_of = mp::number<!JLN_MP_DCALL_V_XS(xs, F, xs...)>;
+    using not_of = mp::number<!JLN_MP_DCALL_V_TRACE_XS(xs, F, xs...)>;
 
     template<class L, class F, class C = mp::identity>
     using not_fn = unpack<L, mp::not_fn<F, C>>;
@@ -5183,35 +5213,6 @@ namespace jln::mp
 }
 
 
-namespace jln::mp
-{
-  /// \ingroup number
-
-  /// Converts a \value to a \bool.
-  /// \treturn \bool
-  template<class C = identity>
-  struct to_bool
-  {
-    template<class x>
-    using f = call<C, number<bool(x::value)>>;
-  };
-
-  namespace emp
-  {
-    template<class x>
-    using to_bool = number<bool(x::value)>;
-  }
-
-
-  /// \cond
-  template<>
-  struct to_bool<identity>
-  {
-    template<class x>
-    using f = number<bool(x::value)>;
-  };
-  /// \endcond
-}
 /// \cond
 namespace jln::mp::detail
 {
@@ -5428,16 +5429,16 @@ namespace jln::mp
   namespace emp
   {
     template<class Pred, class... xs>
-    using wrap_in_list_if = JLN_MP_CALL_TRACE((mp::wrap_in_list_if<Pred>), xs...);
+    using wrap_in_list_if = typename mp::wrap_in_list_if<Pred>::template f<xs...>;
 
     template<class Pred, class... xs>
-    using wrap_in_list_if_not = JLN_MP_CALL_TRACE((mp::wrap_in_list_if_not<Pred>), xs...);
+    using wrap_in_list_if_not = typename mp::wrap_in_list_if_not<Pred>::template f<xs...>;
 
     template<class b, class... xs>
-    using wrap_in_list = JLN_MP_CALL_TRACE((mp::wrap_in_list_c<b::value>), xs...);
+    using wrap_in_list = typename mp::wrap_in_list_c<b::value>::template f<xs...>;
 
     template<bool b, class... xs>
-    using wrap_in_list_c = JLN_MP_CALL_TRACE((mp::wrap_in_list_c<b>), xs...);
+    using wrap_in_list_c = typename mp::wrap_in_list_c<b>::template f<xs...>;
   }
 }
 
@@ -5448,14 +5449,18 @@ namespace jln::mp::detail
   struct _wrap_in_list_if
   {
     template<class x, class... xs>
-    using f = JLN_MP_CALL_TRACE((wrap_in_list_c<call<Pred, x, xs...>::value>), x);
+    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
+      JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)
+    >, x);
   };
 
   template<class Pred>
   struct _wrap_in_list_if_not
   {
     template<class x, class... xs>
-    using f = JLN_MP_CALL_TRACE((wrap_in_list_c<!call<Pred, x, xs...>::value>), x);
+    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
+      !JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)
+    >, x);
   };
 
   template<class Pred>
@@ -5571,7 +5576,7 @@ namespace jln::mp
   struct clear
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
+    using f = typename C::template f<>;
   };
 
   /// \cond
@@ -5656,7 +5661,7 @@ namespace jln::mp::detail
   struct drop_while_impl<_drop_while_continue>
   {
     template<class C, class...>
-    using f = typename C::template f<>;
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
   template<std::size_t n>
@@ -5822,7 +5827,7 @@ namespace jln::mp::detail
   struct find_if_impl<_drop_while_continue>
   {
     template<class TC, class FC, class... xs>
-    using f = typename FC::template f<xs...>;
+    using f = JLN_MP_CALL_TRACE(FC, xs...);
   };
 
   template<std::size_t n>
@@ -5856,7 +5861,7 @@ namespace jln::mp
     using f = typename detail::index_if_impl<
       typename detail::_drop_while<
         detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
-      >::template f<0, detail::to_not_fn_t<Pred>, xs...>
+      >::template f<0, JLN_MP_TRACE_F(detail::to_not_fn_t<Pred>), xs...>
     >::template f<TC, FC, xs...>;
   };
 
@@ -5883,14 +5888,14 @@ namespace jln::mp::detail
   struct index_if_impl<_drop_while_continue>
   {
     template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE((FC), xs...);
+    using f = JLN_MP_CALL_TRACE(FC, xs...);
   };
 
   template<std::size_t n>
   struct index_if_impl<_drop_while_result<n>>
   {
     template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE((TC), number<sizeof...(xs)-n-1>);
+    using f = JLN_MP_CALL_TRACE(TC, number<sizeof...(xs)-n-1>);
   };
 }
 /// \endcond
@@ -6146,14 +6151,14 @@ namespace jln::mp
   struct take_front<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
+    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
   };
 
   template<class C>
   struct take_front_max<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
+    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
   };
   /// \endcond
 }
@@ -6178,7 +6183,7 @@ namespace jln::mp
   struct starts_with<list<Ts...>, C>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename conditional_c<sizeof...(Ts) <= sizeof...(xs)>
       ::template f<take_front_c<sizeof...(Ts), lift<list, is<list<Ts...>>>>,
                    always<false_>>
@@ -6191,7 +6196,7 @@ namespace jln::mp
   struct starts_with<list<T>, C>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename conditional_c<1 <= sizeof...(xs)>
       ::template f<front<is<T>>, always<false_>>
       ::template f<xs...>
@@ -6202,7 +6207,7 @@ namespace jln::mp
   struct starts_with<list<>, C>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), true_);
+    using f = JLN_MP_CALL_TRACE(C, true_);
   };
   /// \endcond
 }
@@ -6264,14 +6269,14 @@ namespace jln::mp
   struct take_back<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
+    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
   };
 
   template<class C>
   struct take_back_max<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C);
+    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
   };
   /// \endcond
 }
@@ -6295,7 +6300,7 @@ namespace jln::mp
   struct ends_with<list<Ts...>, C>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename conditional_c<sizeof...(Ts) <= sizeof...(xs)>
       ::template f<take_back_c<sizeof...(Ts), lift<list, is<list<Ts...>>>>,
                    always<false_>>
@@ -6308,7 +6313,7 @@ namespace jln::mp
   struct ends_with<list<T>, C>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename conditional_c<1 <= sizeof...(xs)>
       ::template f<take_back_c<1, is<T>>, always<false_>>
       ::template f<xs...>
@@ -6319,7 +6324,7 @@ namespace jln::mp
   struct ends_with<list<>, C>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), true_);
+    using f = JLN_MP_CALL_TRACE(C, true_);
   };
   /// \endcond
 }
@@ -6405,7 +6410,7 @@ namespace jln::mp::detail
   struct search_before_impl<_drop_while_continue>
   {
     template<class TC, class FC, class... xs>
-    using f = typename FC::template f<xs...>;
+    using f = JLN_MP_CALL_TRACE(FC, xs...);
   };
 
   template<std::size_t n>
@@ -6420,7 +6425,7 @@ namespace jln::mp::detail
   struct search_before_extended_by_n_impl<_drop_while_continue>
   {
     template<class TC, class FC, class ExtendedByN, class... xs>
-    using f = typename FC::template f<xs...>;
+    using f = JLN_MP_CALL_TRACE(FC, xs...);
   };
 
   constexpr int_ extended_by_n(int_ seq_len, int_ n, int_ extended)
@@ -6559,7 +6564,7 @@ namespace jln::mp
   struct after<list<>, TC, FC>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(0 <= sizeof...(xs), TC, xs...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, TC, xs...);
   };
   /// \endcond
 }
@@ -6581,13 +6586,13 @@ namespace jln::mp
   struct is_list
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), typename detail::_is_list<x>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_is_list<x>::type);
   };
 
   namespace emp
   {
     template<class x, class C = mp::identity>
-    using is_list = JLN_MP_CALL_TRACE((C), typename detail::_is_list<x>::type);
+    using is_list = JLN_MP_CALL_TRACE(C, typename detail::_is_list<x>::type);
   }
 } // namespace jln::mp
 
@@ -6707,7 +6712,8 @@ namespace jln::mp
   struct invoke_twice
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((call<F, xs...>), xs...);
+    using f = JLN_MP_TRACE_TYPENAME JLN_MP_TRACE_F(JLN_MP_DCALL_TRACE_XS(xs, F, xs...))
+      ::template f<xs...>;
   };
 }
 namespace jln::mp
@@ -6720,7 +6726,7 @@ namespace jln::mp
   struct as_number
   {
     template<class x>
-    using f = call<C, number<int_{x::value}>>;
+    using f = JLN_MP_CALL_TRACE(C, number<int_{x::value}>);
   };
 
   namespace emp
@@ -7578,7 +7584,7 @@ namespace jln::mp
   /// \post `sizeof...(result) == (emp::size<seqs> * ...)` if `sizeof...(xs) != 0` else `0`
   /// \semantics
   ///   \code
-  ///   call<cartesian<listify>,
+  ///   cartesian<listify>::f<
   ///     list<_0, _1, _2>,
   ///     list<_3, _4>,
   ///     list<_5>
@@ -7650,7 +7656,7 @@ namespace jln::mp::detail
   struct _cartesian<C, 1>
   {
     template<class seq>
-    using f = JLN_MP_CALL_TRACE((C), typename _product1<seq>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename _product1<seq>::type);
   };
 
   template<>
@@ -7720,9 +7726,8 @@ namespace jln::mp
   /// Groups adjacent elements that respect a predicate.
   /// \semantics
   ///   \code
-  ///   call<group<same<>>,
-  ///     void, void, int, void
-  ///   > = list<
+  ///   group<same<>>::f<void, void, int, void>
+  ///   == list<
   ///     list<void, void>,
   ///     list<int>,
   ///     list<void>
@@ -7777,7 +7782,7 @@ namespace jln::mp
   struct fold_right
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename detail::_fold_right<
         detail::sub_1_n_4_or_less_8_16_64_256(sizeof...(xs))
       >::template f<JLN_MP_TRACE_F(F)::template f, xs...>
@@ -7861,7 +7866,8 @@ namespace jln::mp
   /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
   /// \semantics
   ///   \code
-  ///   call<split_if<is<_0>, _0, _1, _2, _0, _3> == list<
+  ///   split_if<is<_0>>::f<_0, _1, _2, _0, _3>
+  ///   == list<
   ///     list<>,
   ///     list<_1, _2>,
   ///     list<_3>
@@ -7980,28 +7986,32 @@ namespace jln::mp
   struct partial<C>
   {
     template <class... xs>
-    using f = call<C, xs...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
 
   template <class F, class C>
   struct partial<F, C>
   {
     template <class x, class... xs>
-    using f = call<C, call<F, x>, xs...>;
-  };
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_CALL_TRACE(F, x), xs...); };
 
   template <class F0, class F1, class C>
   struct partial<F0, F1, C>
   {
     template <class x0, class x1, class... xs>
-    using f = call<C, call<F0, x0>, call<F1, x1>, xs...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_CALL_TRACE(F0, x0),
+                                           JLN_MP_CALL_TRACE(F1, x1),
+                                           xs...);
   };
 
   template <class F0, class F1, class F2, class C>
   struct partial<F0, F1, F2, C>
   {
     template <class x0, class x1, class x2, class... xs>
-    using f = call<C, call<F0, x0>, call<F1, x1>, call<F2, x2>, xs...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_CALL_TRACE(F0, x0),
+                                           JLN_MP_CALL_TRACE(F1, x1),
+                                           JLN_MP_CALL_TRACE(F2, x2),
+                                           xs...);
   };
   /// \endcond
 }
@@ -8062,7 +8072,7 @@ namespace jln::mp::detail
   struct _each
   {
     template <class... xs>
-    using f = call<C, call<Fs, xs>...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_DCALL_TRACE_XS(xs, Fs, xs)...);
   };
 } // namespace jln::mp
 /// \endcond
@@ -8074,7 +8084,7 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename _join_select<2>::f<
-      C,
+      JLN_MP_TRACE_F(C),
       typename take_front_c<sizeof...(Fs), _each<listify, Fs...>>::template f<xs...>,
       typename drop_front_c<sizeof...(Fs)>::template f<xs...>
     >::type;
@@ -8146,9 +8156,10 @@ namespace jln::mp
   /// \pre `emp::is_list<Keys>` == `true`
   /// \pre `emp::size<Keys>` == `sizeof...(xs)`
   ///   \code
-  ///   call<collapse<emp::numbers<1, 1, 0, 0, 0, 1, 2, 2>>,
-  ///     int, int, int, int, int, int, int, int
-  ///   > = list<
+  ///   collapse<emp::numbers<1, 1, 0, 0, 0, 1, 2, 2>>
+  ///   ::f<int, int, int, int, int, int, int, int>
+  ///   ==
+  ///   list<
   ///     list<int, int>,
   ///     list<int, int, int>,
   ///     list<int>,
@@ -8245,7 +8256,7 @@ namespace jln::mp
   struct numbers
   {
     template<int_... ns>
-    using f = call<C, number<ns>...>;
+    using f = JLN_MP_DCALL_TRACE_XS(ns, C, number<ns>...);
   };
 
   /// \cond
@@ -8361,7 +8372,7 @@ namespace jln::mp::detail
   struct _make_int_sequence_impl
   {
     template<class C>
-    using f = typename C::template f<ns...>;
+    using f = typename JLN_MP_TRACE_F(C)::template f<ns...>;
   };
 
   template<std::size_t n>
@@ -8374,7 +8385,7 @@ namespace jln::mp::detail
   struct _make_int_sequence<std::integer_sequence<std::size_t, ns...>>
   {
     template<class C>
-    using f = typename C::template f<int_(ns)...>;
+    using f = typename JLN_MP_TRACE_F(C)::template f<int_(ns)...>;
   };
 #endif
 }
@@ -8625,8 +8636,11 @@ namespace jln::mp
 
   namespace emp
   {
-    template<class F, class x, class y>
-    using compare_with = less<call<F, x>, call<F, y>>;
+    template<class F, class x, class y, class Cmp = mp::less<>>
+    using compare_with = typename Cmp::template f<
+      typename F::template f<x>,
+      typename F::template f<y>
+    >;
   }
 }
 namespace jln::mp::smp
@@ -8644,10 +8658,9 @@ namespace jln::mp
   /// \pre `sizeof...(xs) == emp::size<Selectors>`
   /// \semantics
   ///   \code
-  ///   call<compress<
-  ///     numbers<1,0,1,0,1,1>,
-  ///             a,b,c,d,e,f
-  ///   >> = list<a,  c,  e,f>
+  ///   compress<numbers<1,0,1,0,1,1>>
+  ///                ::f<a,b,c,d,e,f>
+  ///            == list<a,  c,  e,f>
   ///   \endcode
   /// \treturn \sequence
   template<class Selectors, class C = listify>
@@ -8659,12 +8672,12 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename join<C>::template f<
-      detail::raw_call<wrap_in_list_c<selectors::value>, xs>...
+      typename wrap_in_list_c<selectors::value>::template f<xs>...
     >;
   };
 
   template<bool... selectors>
-  using compress_with_c = compress<mp::compress<list<number<selectors>...>>>;
+  using compress_with_c = compress<list<number<selectors>...>>;
 
   namespace emp
   {
@@ -9278,7 +9291,7 @@ namespace jln::mp::detail
   struct _copy_unique<true>
   {
     template<class C, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), xs...);
+    using f = JLN_MP_CALL_TRACE(C, xs...);
   };
 
 
@@ -9290,15 +9303,14 @@ namespace jln::mp::detail
   {
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
-      raw_call<
-        typename rotate_c<ints, pop_front<index_if<
+      JLN_MP_MSVC_FIX_CALL((
+        rotate_c<ints, pop_front<index_if<
           push_back<xs, Cmp>,
           always<wrap_in_list_c<true>>,
           always<wrap_in_list_c<false>>
         >>>
-        ::template f<xs...>,
-        xs
-      >...
+        ::template f<xs...>
+      ), xs)...
     >;
   };
 
@@ -9306,7 +9318,7 @@ namespace jln::mp::detail
   struct remove_unique_if_impl<std::integer_sequence<std::size_t>>
   {
     template<class C, class Cmp, class... xs>
-    using f = typename C::template f<>;
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
   template<std::size_t i>
@@ -9337,15 +9349,14 @@ namespace jln::mp::detail
   {
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
-      raw_call<
-        typename rotate_c<ints, pop_front<index_if<
+      JLN_MP_MSVC_FIX_CALL((
+        rotate_c<ints, pop_front<index_if<
           push_back<xs, Cmp>,
           always<wrap_in_list_c<false>>,
           always<wrap_in_list_c<true>>
         >>>
-        ::template f<xs...>,
-        xs
-      >...
+        ::template f<xs...>
+      ), xs)...
     >;
   };
 
@@ -9358,7 +9369,7 @@ namespace jln::mp::detail
   struct copy_unique_if_impl<std::integer_sequence<std::size_t, i>>
   {
     template<class C, class Cmp, class... xs>
-    using f = typename C::template f<xs...>;
+    using f = JLN_MP_CALL_TRACE(C, xs...);
   };
 
   template<class Cmp, class C>
@@ -9623,7 +9634,7 @@ namespace jln::mp
   /// Composition of two \metafunctions or more.
   /// \treturn \function
   template<template<class...> class F, template<class...> class... Fs>
-  using compose_f = typename detail::_compose_f<sizeof...(Fs)>
+  using compose_f = typename detail::_compose_f<detail::min(8, sizeof...(Fs))>
     ::template f<F, Fs...>;
 
   /// Composition of two \functions or more.
@@ -9648,7 +9659,7 @@ namespace jln::mp
   struct bind
   {
     template<class... ys>
-    using f = call<F, xs..., ys...>;
+    using f = JLN_MP_DCALL_TRACE_XS(ys, F, xs..., ys...);
   };
 
   /// Partially apply a function to some arguments.
@@ -9657,7 +9668,7 @@ namespace jln::mp
   struct reverse_bind
   {
     template<class... ys>
-    using f = call<F, ys..., xs...>;
+    using f = JLN_MP_DCALL_TRACE_XS(ys, F, ys..., xs...);
   };
 
   template<class F, class C>
@@ -9736,6 +9747,24 @@ namespace jln::mp::detail
   {
     using type = lift_t<F, x>;
   };
+
+  template<template<class...> class F>
+  struct _compose<lift<F>, identity>
+  {
+    using type = lift<F>;
+  };
+
+  template<template<class...> class F>
+  struct _compose<lift_t<F>, identity>
+  {
+    using type = lift_t<F>;
+  };
+
+  template<class F>
+  struct _compose<F, identity>
+  {
+    using type = F;
+  };
 }
 /// \endcond
 namespace jln::mp::smp
@@ -9811,15 +9840,14 @@ namespace jln::mp::detail
   {
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
-      raw_call<
-        typename rotate_c<ints, pop_front<smp::index_if<
+      JLN_MP_MSVC_FIX_CALL((
+        rotate_c<ints, pop_front<smp::index_if<
           contract<push_back<xs, Cmp>>,
           contract<always<wrap_in_list_c<true>>>,
           contract<always<wrap_in_list_c<false>>>
         >>>
-        ::template f<xs...>,
-        xs
-      >...
+        ::template f<xs...>
+      ), xs)...
     >;
   };
 
@@ -9865,15 +9893,14 @@ namespace jln::mp::detail
   {
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
-      raw_call<
-        typename rotate_c<ints, pop_front<smp::index_if<
+      JLN_MP_MSVC_FIX_CALL((
+        rotate_c<ints, pop_front<smp::index_if<
           contract<push_back<xs, Cmp>>,
           contract<always<wrap_in_list_c<false>>>,
           contract<always<wrap_in_list_c<true>>>
         >>>
-        ::template f<xs...>,
-        xs
-      >...
+        ::template f<xs...>
+      ), xs)...
     >;
   };
 
@@ -9957,7 +9984,7 @@ namespace jln::mp
   /// Elements are sorted in order of first appearance.
   /// \semantics
   ///   \code
-  ///   call<counter<F>, int, int, char, double, int, double>
+  ///   counter<F>::f<int, int, char, double, int, double>
   ///   == list<
   ///     F::f<int, number<3>>,
   ///     F::f<char, number<1>>,
@@ -9979,7 +10006,7 @@ namespace jln::mp
   /// Elements are sorted in order of first appearance.
   /// \semantics
   ///   \code
-  ///   call<counter<F>, int, int, char, double, int, double>
+  ///   counter<F>::f<int, int, char, double, int, double>
   ///   == list<
   ///     list<int, number<3>>,
   ///     list<char, number<1>>,
@@ -10010,8 +10037,8 @@ namespace jln::mp::detail
   struct counter_impl
   {
     template<class C, class F, class... ys>
-    using f = JLN_MP_CALL_TRACE((C),
-      JLN_MP_CALL_TRACE((F), xs, mp::number<count_unique_v<xs, ys...>>)...
+    using f = JLN_MP_CALL_TRACE(C,
+      JLN_MP_CALL_TRACE(F, xs, mp::number<count_unique_v<xs, ys...>>)...
     );
   };
 }
@@ -10140,7 +10167,7 @@ namespace jln::mp
       typename detail::_drop_while_xs<
         detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)),
         true
-      >::template f<sizeof...(xs), Pred, xs...>
+      >::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<C, xs...>;
   };
 
@@ -10155,7 +10182,7 @@ namespace jln::mp
     using f = typename detail::drop_while_impl<
       typename detail::drop_while_xs_call<
         detail::partial_drop_while_xs_size(OffsetEnd::value, sizeof...(xs)),
-        Pred, xs...
+        JLN_MP_TRACE_F(Pred), xs...
       >
     >::template f<C, xs...>;
   };
@@ -10395,7 +10422,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_recursively<
-      typename detail::_recursively_next<call<F, xs...>>
+      typename detail::_recursively_next<JLN_MP_DCALL_TRACE_XS(xs, F, xs...)>
       ::template g<xs...>
       ::template f<F>
       ::template f<F>
@@ -10419,7 +10446,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_recursively_as_much_as_possible<
-      typename detail::_recursively_as_much_as_possible_next<call<F, xs...>>
+      typename detail::_recursively_as_much_as_possible_next<JLN_MP_DCALL_TRACE_XS(xs, F, xs...)>
         ::template g<xs...>
         ::template f<F>
         ::template f<F>
@@ -10487,7 +10514,7 @@ namespace jln::mp::detail
   struct _recursively_next<_next_recursion<xs...>>
   {
     template<class F>
-    using f = typename _recursively_next<JLN_MP_CALL_TRACE((F), xs...)>
+    using f = typename _recursively_next<JLN_MP_CALL_TRACE(F, xs...)>
               ::template g<xs...>;
 
     template<class...>
@@ -10499,7 +10526,7 @@ namespace jln::mp::detail
   {
     template<class F, class C>
     using f = typename _recursively<
-      typename _recursively_next<JLN_MP_CALL_TRACE((F), xs...)>
+      typename _recursively_next<JLN_MP_CALL_TRACE(F, xs...)>
       ::template g<xs...>
       ::template f<F>
       ::template f<F>
@@ -10570,7 +10597,7 @@ namespace jln::mp::detail
   struct _recursively_as_much_as_possible_next<_next_recursion<xs...>>
   {
     template<class F>
-    using f = typename _recursively_as_much_as_possible_next<JLN_MP_CALL_TRACE((F), xs...)>
+    using f = typename _recursively_as_much_as_possible_next<JLN_MP_CALL_TRACE(F, xs...)>
               ::template g<xs...>;
 
     template<class...>
@@ -10582,7 +10609,7 @@ namespace jln::mp::detail
   {
     template<class F, class C>
     using f = typename _recursively_as_much_as_possible<
-      typename _recursively_as_much_as_possible_next<JLN_MP_CALL_TRACE((F), xs...)>
+      typename _recursively_as_much_as_possible_next<JLN_MP_CALL_TRACE(F, xs...)>
       ::template g<xs...>
       ::template f<F>
       ::template f<F>
@@ -10598,7 +10625,7 @@ namespace jln::mp::detail
   struct _recursively_as_much_as_possible<_recursively_as_much_as_possible_next<_recursion_result<xs...>>>
   {
     template<class F, class C>
-    using f = JLN_MP_CALL_TRACE((C), xs...);
+    using f = JLN_MP_CALL_TRACE(C, xs...);
   };
 }
 /// \endcond
@@ -10728,7 +10755,7 @@ namespace jln::mp
   {
     template<class... seqs>
     using f = typename detail::_join_select<sizeof...(seqs)>
-      ::template f<C, typename detail::_flatten<S, seqs>::type...>
+      ::template f<JLN_MP_TRACE_F(C), typename detail::_flatten<S, seqs>::type...>
       ::type;
   };
 
@@ -10846,7 +10873,7 @@ namespace jln::mp
   struct partial_fold_left_xs
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       detail::partial_fold_left_xs_select<
         JLN_MP_TRACE_F(F),
         detail::_partial_fold_left_xs_size(OffsetEnd::value, sizeof...(xs)),
@@ -10866,9 +10893,9 @@ namespace jln::mp
   struct fold_left_xs
   {
     template<class... xs>
-    using f = typename C::template f<
-      detail::partial_fold_left_xs_select<F, sizeof...(xs), xs...>
-    >;
+    using f = JLN_MP_CALL_TRACE(C,
+      detail::partial_fold_left_xs_select<JLN_MP_TRACE_F(F), sizeof...(xs), xs...>
+    );
   };
 #endif
 
@@ -11343,14 +11370,14 @@ namespace jln::mp::detail
   struct _fold_tree<1>
   {
     template<class C, class F, class x>
-    using f = JLN_MP_CALL_TRACE((C), x);
+    using f = JLN_MP_CALL_TRACE(C, x);
   };
 
   template<>
   struct _fold_tree<2>
   {
     template<class C, class F, class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), JLN_MP_CALL_TRACE((F), x, y));
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_CALL_TRACE(F, x, y));
   };
 
   template<class F, uint_>
@@ -11367,14 +11394,14 @@ namespace jln::mp::detail
   struct fold_tree_impl<F, 1>
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((F), x, y);
+    using f = JLN_MP_CALL_TRACE(F, x, y);
   };
 
   template<class F, uint_ n>
   struct fold_tree_impl
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((F),
+    using f = JLN_MP_CALL_TRACE(F,
       typename take_front_c<n, fold_tree_impl<F, n/2>>::template f<xs...>,
       typename drop_front_c<n, fold_tree_impl<F, bit_ceil(sizeof...(xs)-n)/2>>::template f<xs...>
     );
@@ -11384,7 +11411,7 @@ namespace jln::mp::detail
   struct _fold_tree<3>
   {
     template<class C, class F, class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename fold_tree_impl<F, bit_ceil(sizeof...(xs))/2>::template f<xs...>
     );
   };
@@ -11419,14 +11446,14 @@ namespace jln::mp::detail
   struct fold_balanced_tree_impl<F, 2>
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((F), x, y);
+    using f = JLN_MP_CALL_TRACE(F, x, y);
   };
 
   template<class F, uint_ n>
   struct fold_balanced_tree_impl
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((F),
+    using f = JLN_MP_CALL_TRACE(F,
       typename take_front_c<(n+1)/2, fold_balanced_tree_impl<F, (n+1)/2>>::template f<xs...>,
       typename drop_front_c<(n+1)/2, fold_balanced_tree_impl<F, n-(n+1)/2>>::template f<xs...>
     );
@@ -11436,7 +11463,7 @@ namespace jln::mp::detail
   struct _fold_balanced_tree<3>
   {
     template<class C, class F, class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename fold_balanced_tree_impl<F, sizeof...(xs)>::template f<xs...>
     );
   };
@@ -11507,7 +11534,7 @@ namespace jln::mp
   /// Elements are sorted in order of first appearance.
   /// \semantics
   ///   \code
-  ///   call<group_by_type_with<listify>, int, int, char, double, int, double>
+  ///   group_by_type_with<listify>::f<int, int, char, double, int, double>
   ///   == list<
   ///     list<int, int, int>,
   ///     list<char>,
@@ -11588,7 +11615,7 @@ namespace jln::mp
   /// \post If `n <= 0`, then the result sequence is empty
   /// \semantics
   ///   \code
-  ///   call<group_n<number<2>>,
+  ///   group_n<number<2>>::f<
   ///     void, void, int, void, void
   ///   > = list<
   ///     list<void, void>,
@@ -11912,7 +11939,7 @@ namespace jln::mp
   struct is_disjoint_with
   {
     template<class... seqs>
-    using f = JLN_MP_CALL_TRACE((C), number<
+    using f = JLN_MP_CALL_TRACE(C, number<
       detail::_is_disjoint<detail::min(3, sizeof...(seqs))>
       ::template f<JLN_MP_TRACE_F(detail::to_not_fn_t<Equal>), seqs...>
       ::value
@@ -12216,9 +12243,9 @@ namespace jln::mp
   struct is_sorted
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_XS(xs, C,
+    using f = JLN_MP_CALL_TRACE(C,
       typename detail::_is_sorted<detail::min(sizeof...(xs), 3)>
-      ::template f<JLN_MP_TRACE_F(Cmp), xs...>
+      ::template f<Cmp, xs...>
     );
   };
 
@@ -12228,7 +12255,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_is_sorted<detail::min(sizeof...(xs), 3)>
-      ::template f<JLN_MP_TRACE_F(Cmp), xs...>;
+      ::template f<Cmp, xs...>;
   };
   /// \endcond
 
@@ -12261,7 +12288,7 @@ namespace jln::mp::detail
   struct _is_sorted<2>
   {
     template<class Cmp, class x, class y>
-    using f = number<!Cmp::template f<y, x>::value>;
+    using f = number<!JLN_MP_TRACE_F(Cmp)::template f<y, x>::value>;
   };
 
   template<>
@@ -12324,7 +12351,7 @@ namespace jln::mp
   struct is_subset_with
   {
     template<class... seqs>
-    using f = JLN_MP_CALL_TRACE((C), number<
+    using f = JLN_MP_CALL_TRACE(C, number<
       detail::_is_subset<detail::min(3, sizeof...(seqs))>
       ::template f<JLN_MP_TRACE_F(detail::to_not_fn_t<Equal>), seqs...>
       ::value
@@ -12664,9 +12691,9 @@ namespace jln::mp::detail
     template<class... xs>
 #if JLN_MP_MSVC_LIKE
     // workaround for MSVC which has a broken EBO
-    using f = JLN_MP_DCALL_XS(xs, C, typename _is_set<xs...>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename _is_set<xs...>::type);
 #else
-    using f = JLN_MP_DCALL_XS(xs, C,
+    using f = JLN_MP_CALL_TRACE(C,
       mp::number<sizeof(inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>);
 #endif
   };
@@ -12861,7 +12888,7 @@ namespace jln::mp::detail
     struct type
     {
       template<class x, class y>
-      using f = number<call<Cmp, x, y>::value>;
+      using f = number<Cmp::template f<x, y>::value>;
     };
   };
 
@@ -12872,8 +12899,8 @@ namespace jln::mp::detail
     {
       template<class x0, class x1, class y0, class y1>
       using f = number<
-        !call<Cmp, x0, y0>::value ? 0
-      : !call<Cmp, x1, y1>::value ? 1
+        !Cmp::template f<x0, y0>::value ? 0
+      : !Cmp::template f<x1, y1>::value ? 1
       : 2
       >;
     };
@@ -12886,9 +12913,9 @@ namespace jln::mp::detail
     {
       template<class x0, class x1, class x2, class y0, class y1, class y2>
       using f = number<
-        !call<Cmp, x0, y0>::value ? 0
-      : !call<Cmp, x1, y1>::value ? 1
-      : !call<Cmp, x2, y2>::value ? 2
+        !Cmp::template f<x0, y0>::value ? 0
+      : !Cmp::template f<x1, y1>::value ? 1
+      : !Cmp::template f<x2, y2>::value ? 2
       : 3
       >;
     };
@@ -12901,10 +12928,10 @@ namespace jln::mp::detail
     {
       template<class x0, class x1, class x2, class x3, class y0, class y1, class y2, class y3>
       using f = number<
-        !call<Cmp, x0, y0>::value ? 0
-      : !call<Cmp, x1, y1>::value ? 1
-      : !call<Cmp, x2, y2>::value ? 2
-      : !call<Cmp, x3, y3>::value ? 3
+        !Cmp::template f<x0, y0>::value ? 0
+      : !Cmp::template f<x1, y1>::value ? 1
+      : !Cmp::template f<x2, y2>::value ? 2
+      : !Cmp::template f<x3, y3>::value ? 3
       : 4
       >;
     };
@@ -12956,16 +12983,15 @@ namespace jln::mp::detail
     struct dispatch<number<size>, v>
     {
       template<class... xs>
-      using f = number<size + call<
+      using f = number<size +
         drop_front_c<size,
           rotate_c<n-size,
             drop_front_c<size,
               typename _mismatch_tree<Cmp, n-size>::type
             >
           >
-        >,
-        xs...
-      >::value>;
+        >::template f<xs...>
+      ::value>;
     };
 
     template<class... xs>
@@ -12997,14 +13023,14 @@ namespace jln::mp::detail
     struct apply_index
     {
       template<class C, class NC, class, class>
-      using f = JLN_MP_CALL_TRACE((C), i, number<0>);
+      using f = JLN_MP_CALL_TRACE(C, i, number<0>);
     };
 
     template<class n>
     struct apply_index<n, n>
     {
       template<class C, class NC, class i, class r>
-      using f = JLN_MP_CALL_TRACE((NC), i, r);
+      using f = JLN_MP_CALL_TRACE(NC, i, r);
     };
 
     template<bool, bool>
@@ -13057,7 +13083,7 @@ namespace jln::mp::detail
   struct _mismatch<Txs<>, Tys<ys...>>
   {
     template<class Cmp, class C, class NC>
-    using f = JLN_MP_CALL_TRACE((NC), number<0>, number<-1>);
+    using f = JLN_MP_CALL_TRACE(NC, number<0>, number<-1>);
   };
 
   template<
@@ -13066,14 +13092,14 @@ namespace jln::mp::detail
   struct _mismatch<Txs<xs...>, Tys<>>
   {
     template<class Cmp, class C, class NC>
-    using f = JLN_MP_CALL_TRACE((NC), number<0>, number<1>);
+    using f = JLN_MP_CALL_TRACE(NC, number<0>, number<1>);
   };
 
   template<template<class...> class Txs, template<class...> class Tys>
   struct _mismatch<Txs<>, Tys<>>
   {
     template<class Cmp, class C, class NC>
-    using f = JLN_MP_CALL_TRACE((NC), number<-1>, number<0>);
+    using f = JLN_MP_CALL_TRACE(NC, number<-1>, number<0>);
   };
 }
 /// \endcond
@@ -13109,7 +13135,7 @@ namespace jln::mp::detail
     struct f
     {
       template<class Cmp, class seq1, class seq2>
-      using impl = call<C, i, direction>;
+      using impl = typename C::template f<i, direction>;
     };
 
     template<class i>
@@ -13159,7 +13185,7 @@ namespace jln::mp
   struct lexicographical_compare
   {
     template<class seq1, class seq2>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename mismatch<
         detail::_lexicographical_compare_equal<JLN_MP_TRACE_F(Cmp)>,
         lift<detail::_lexicographical_compare>
@@ -13173,7 +13199,7 @@ namespace jln::mp
   struct lexicographical_compare2
   {
     template<class seq1, class seq2>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename mismatch<JLN_MP_TRACE_F(CmpEq), lift<detail::_lexicographical_compare>>
       ::template f<seq1, seq2>
       ::template f<JLN_MP_TRACE_F(CmpLess), seq1, seq2>
@@ -13225,7 +13251,7 @@ namespace jln::mp::detail
   struct _lexicographical_compare_equal
   {
     template<class x, class y>
-    using f = number<!call<Cmp, x, y>::value && !call<Cmp, y, x>::value>;
+    using f = number<!Cmp::template f<x, y>::value && !Cmp::template f<y, x>::value>;
   };
 
   template<class i, class n>
@@ -13538,7 +13564,7 @@ namespace jln::mp::detail
   {                                                          \
     template<unsigned n, class Pred, class C, class NC,      \
       class x>                                               \
-    using f = JLN_MP_CALL_TRACE_T((Cond(x)                   \
+    using f = JLN_MP_CALL_TRACE_T(JLN_MP_IDENT(Cond(x)       \
       ::template f<_cartesian<NC, 0> /* for NC::f<> */, C>), \
       x);                                                    \
   };                                                         \
@@ -13548,7 +13574,7 @@ namespace jln::mp::detail
   {                                                          \
     template<unsigned n, class Pred, class C, class NC,      \
       class x, class... xs>                                  \
-    using f = JLN_MP_CALL_TRACE_T((Cond(x)                   \
+    using f = JLN_MP_CALL_TRACE_T(JLN_MP_IDENT(Cond(x)       \
       ::template f<pop_front<C>, C>),                        \
       x, xs...);                                             \
   };
@@ -13660,12 +13686,12 @@ namespace jln::mp
   {
     struct _drop_back
     {
-      template<class F, int_ min, class n>
+      template<class F, class G, int_ min, class n>
       using impl = typename conditional_c<min != n::value>
-        ::template f<unpack<take_front_c<min, F>>, identity>;
+        ::template f<unpack<take_front_c<min, F>>, G>;
 
-      template<class F, class C, class... ns>
-      using f = _each<C, impl<F, std::min({int_(~0u), ns::value...}), ns>...>;
+      template<class F, class G, class C, class... ns>
+      using f = _each<C, impl<F, G, std::min({int_(~0u), ns::value...}), ns>...>;
     };
   }
   /// \endcond
@@ -13677,7 +13703,7 @@ namespace jln::mp
   /// \post `emp::size<result> == emp::min<emp::size<xs>> && ...`
   /// \semantics
   ///   \code
-  ///   call<matrix_shortest<listify>,
+  ///   matrix_shortest_with<listify>::f<
   ///     list<_1, _2>,
   ///     list<_1, _2, _3>,
   ///     list<_1, _2>,
@@ -13695,8 +13721,10 @@ namespace jln::mp
   struct matrix_shortest_with
   {
     template<class... seqs>
-    using f = typename detail::_drop_back::f<F, C, unpack<size<>>::f<seqs>...>
-      ::template f<seqs...>;
+    using f = typename detail::_drop_back::f<
+      F, typename detail::optimize_useless_unpack<unpack<F>>::type,
+      C, unpack<size<>>::f<seqs>...
+    >::template f<seqs...>;
   };
 
   template<class C = listify>
@@ -13715,7 +13743,7 @@ namespace jln::mp::smp
 {
   template<class F = listify, class C = listify>
   using matrix_shortest_with = try_contract<
-    mp::matrix_shortest_with<subcontract<F>, subcontract<C>>>;
+    mp::matrix_shortest_with<subcontract<F>, monadic_xs<subcontract<C>>>>;
 
   template<class C = listify>
   using matrix_shortest = matrix_shortest_with<listify, C>;
@@ -14338,7 +14366,7 @@ namespace jln::mp::detail
   struct sliding_0size
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_XS(xs, C);
+    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
   };
 
   template<int_ size, int_ stride>
@@ -14386,14 +14414,14 @@ namespace jln::mp::detail
   struct _sliding<1>
   {
     template<class C, int_, int_, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), list<xs...>);
+    using f = JLN_MP_CALL_TRACE(C, list<xs...>);
   };
 
   template<>
   struct _sliding<2>
   {
     template<class C, int_, int_, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), list<xs>...);
+    using f = JLN_MP_CALL_TRACE(C, list<xs>...);
   };
 
   template<>
@@ -14427,10 +14455,9 @@ namespace jln::mp::detail
     };
 
     template<class C, int_ size, int_, class... xs>
-    using f = typename memoize_call<
-      make_int_sequence_v<impl<C, size-1, drop_front_c<size-1>>>,
-      number<size>
-    >::template f<xs...>;
+    using f = typename make_int_sequence_v<impl<C, size-1, drop_front_c<size-1>>>
+      ::template f<number<size>>
+      ::template f<xs...>;
   };
 
   template<>
@@ -14453,10 +14480,9 @@ namespace jln::mp::detail
     };
 
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename memoize_call<
-      make_int_sequence_v<impl<C, (sizeof...(xs) - size) / stride + 1, stride>>,
-      number<size>
-    >::template f<xs...>;
+    using f = typename make_int_sequence_v<impl<C, (sizeof...(xs) - size) / stride + 1, stride>>
+      ::template f<number<size>>
+      ::template f<xs...>;
   };
 
   constexpr int_ slinding8_pivot(int_ nx, int_ size, int_ stride)
@@ -14487,22 +14513,21 @@ namespace jln::mp::detail
     };
 
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename memoize_call<
-      make_int_sequence_v<impl<
-        C,
-        (sizeof...(xs) - size) / stride + 2,
-        stride,
-        slinding8_pivot(sizeof...(xs), size, stride)
-      >>,
-      number<size>
-    >::template f<xs...>;
+    using f = typename make_int_sequence_v<impl<
+      C,
+      (sizeof...(xs) - size) / stride + 2,
+      stride,
+      slinding8_pivot(sizeof...(xs), size, stride)
+    >>
+    ::template f<number<size>>
+    ::template f<xs...>;
   };
 
   template<>
   struct _sliding<9>
   {
     template<class C, int_ size, int_, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), typename take_front_c<size>::template f<xs...>);
+    using f = JLN_MP_CALL_TRACE(C, typename take_front_c<size>::template f<xs...>);
   };
 }
 /// \endcond
@@ -14515,9 +14540,8 @@ namespace jln::mp
   /// \post If `sizeof...(xs) >= 2`, then the number of 2-tuples is `sizeof...(xs) - 1`
   /// \semantics
   ///   \code
-  ///   call<pairwise<>>,
-  ///     a, b, c, d
-  ///   > = list<
+  ///   pairwise<>::f<a, b, c, d>
+  ///   == list<
   ///     list<a, b>,
   ///     list<b, c>,
   ///     list<c, d>
@@ -14672,14 +14696,14 @@ namespace jln::mp::detail
   struct _permutations<1>
   {
     template<class C, class x>
-    using f = JLN_MP_CALL_TRACE((C), list<x>);
+    using f = JLN_MP_CALL_TRACE(C, list<x>);
   };
 
   template<>
   struct _permutations<2>
   {
     template<class C, class x0, class x1>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       list<x0, x1>, list<x1, x0>
     );
   };
@@ -14688,7 +14712,7 @@ namespace jln::mp::detail
   struct _permutations<3>
   {
     template<class C, class x0, class x1, class x2>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       list<x0, x1, x2>, list<x0, x2, x1>,
       list<x1, x0, x2>, list<x1, x2, x0>,
       list<x2, x0, x1>, list<x2, x1, x0>
@@ -14699,7 +14723,7 @@ namespace jln::mp::detail
   struct _permutations<4>
   {
     template<class C, class x0, class x1, class x2, class x3>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       list<x0, x1, x2, x3>, list<x0, x1, x3, x2>,
       list<x0, x2, x1, x3>, list<x0, x2, x3, x1>,
       list<x0, x3, x1, x2>, list<x0, x3, x2, x1>,
@@ -14888,7 +14912,7 @@ namespace jln::mp
   /// Computes the powerset of a \sequence.
   /// \semantics
   ///   \code
-  ///   call<powerset<>, a, b, c> == list<
+  ///   powerset<>::f<a, b, c> == list<
   ///     list<>,
   ///     list<a>, list<b>, list<a, b>, list<c>,
   ///     list<a, c>, list<b, c>,
@@ -14986,7 +15010,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<C, list<x, xs>...>::type;
+      ::template f<JLN_MP_TRACE_F(C), list<x, xs>...>::type;
   };
 
   namespace emp
@@ -15119,7 +15143,7 @@ namespace jln::mp::detail
     template<class C, std::size_t count                  \
       mp_xs(JLN_MP_COMMA class, JLN_MP_NIL, JLN_MP_NIL), \
       class... xs>                                       \
-    using f = JLN_MP_CALL_TRACE((C),                     \
+    using f = JLN_MP_CALL_TRACE(C,                     \
       mp_rxs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA));     \
   };
 
@@ -15200,7 +15224,7 @@ namespace jln::mp
   struct reverse_fold
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename detail::_reverse_fold<
         detail::sub_1_n_4_or_less_8_16_64_256(sizeof...(xs))
       >::template f<JLN_MP_TRACE_F(F)::template f, xs...>
@@ -16556,7 +16580,7 @@ namespace jln::mp::detail
     struct to_index
     {
       template<class... xs>
-      using f = JLN_MP_DCALL(0 < sizeof...(xs), TC, number<sizeof...(xs) - n>);
+      using f = JLN_MP_DCALL_TRACE_XS(xs, TC, number<sizeof...(xs) - n>);
     };
 
     template<class... xs>
@@ -16677,12 +16701,12 @@ namespace jln::mp::detail
   struct _sort<3, Cmp>
   {
     template<class... xs>
-    using f = typename memoize_call<_merge<
+    using f = typename _merge<
       typename take_front_c<sizeof...(xs) / 2, _sort<min(3, sizeof...(xs) / 2), Cmp>>
         ::template f<xs...>,
       typename drop_front_c<sizeof...(xs) / 2, _sort<min(3, (sizeof...(xs) + 1) / 2), Cmp>>
         ::template f<xs...>
-    >, Cmp>::type;
+    >::template f<Cmp>::type;
   };
 
   template<bool>
@@ -16703,7 +16727,7 @@ namespace jln::mp::detail
   struct _sort<2, Cmp>
   {
     template<class x, class y>
-    using f = typename mk_list2<bool(call<Cmp, y, x>::value)>
+    using f = typename mk_list2<bool(Cmp::template f<y, x>::value)>
       ::template f<x, y>;
   };
 
@@ -16776,7 +16800,8 @@ namespace jln::mp
   /// The split value is inserted at the end of the previous list.
   /// \semantics
   ///   \code
-  ///   call<split_after_if<is<_0>, _0, _1, _2, _0, _3> == list<
+  ///   split_after_if<is<_0>>::f<_0, _1, _2, _0, _3>
+  ///   == list<
   ///     list<_0>,
   ///     list<_1, _2, _0>,
   ///     list<_3>
@@ -16985,7 +17010,9 @@ namespace jln::mp
   /// The split value is inserted at the beginning of the following list.
   /// \semantics
   ///   \code
-  ///   call<split_before_if<is<_0>, _0, _1, _2, _0, _3> == list<
+  ///   split_before_if<is<_0>>::f<_0, _1, _2, _0, _3>
+  ///   ==
+  ///   list<
   ///     list<>,
   ///     list<_0, _1, _2>,
   ///     list<_0, _3>
@@ -17056,7 +17083,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_split_by_i<
-      JLN_MP_DCALL_XS(xs, GetIndex, xs...), SubC1, SubC2, C, xs...>;
+      JLN_MP_DCALL_TRACE_XS(xs, GetIndex, xs...), SubC1, SubC2, C, xs...>;
   };
 
   template<class GetIndex, class C = listify>
@@ -17158,7 +17185,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<C, list<xs, x>...>::type;
+      ::template f<JLN_MP_TRACE_F(C), list<xs, x>...>::type;
   };
 
   namespace emp
@@ -17237,14 +17264,14 @@ namespace jln::mp
   struct drop_back<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
 
   template<class C>
   struct drop_back_max<number<0>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(sizeof...(xs) >= 0, C, xs...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
   /// \endcond
 }
@@ -17270,7 +17297,7 @@ namespace jln::mp
     using f = typename detail::take_while_impl<
       typename detail::_drop_while<
         detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
-      >::template f<0, Pred, xs...>
+      >::template f<0, JLN_MP_TRACE_F(Pred), xs...>
     >::template f<C, xs...>;
   };
 }
@@ -17283,7 +17310,7 @@ namespace jln::mp::detail
   struct take_while_impl<_drop_while_continue>
   {
     template<class C, class... xs>
-    using f = typename C::template f<xs...>;
+    using f = JLN_MP_CALL_TRACE(C, xs...);
   };
 
   template<std::size_t n>
@@ -17343,7 +17370,7 @@ namespace jln::mp
       typename detail::_drop_while_xs<
         detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)),
         true
-      >::template f<sizeof...(xs), Pred, xs...>
+      >::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<C, xs...>;
   };
 
@@ -17358,7 +17385,7 @@ namespace jln::mp
     using f = typename detail::take_while_impl<
       typename detail::drop_while_xs_call<
         detail::partial_drop_while_xs_size(OffsetEnd::value, sizeof...(xs)),
-        Pred, xs...
+        JLN_MP_TRACE_F(Pred), xs...
       >
     >::template f<C, xs...>;
   };
@@ -17468,14 +17495,13 @@ namespace jln::mp
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///   call<
-  ///     unfold<
-  ///       if_<
-  ///         less_than_c<5>,
-  ///         inc<lift<Some>>,
-  ///         None
-  ///       >
-  ///     >,
+  ///   unfold<
+  ///     if_<
+  ///       less_than_c<5>,
+  ///       inc<lift<Some>>,
+  ///       None
+  ///     >
+  ///   >::f<
   ///     number<0>
   ///   >
   ///   == list<number<1>, number<2>, number<3>, number<4>, number<5>>
@@ -17488,7 +17514,7 @@ namespace jln::mp
   namespace emp
   {
     template<class state, class F, class C = mp::listify>
-    using unfold = JLN_MP_CALL_TRACE((mp::unfold<F, C>), state);
+    using unfold = JLN_MP_CALL_TRACE(JLN_MP_IDENT(mp::unfold<F, C>), state);
   }
 }
 
@@ -17517,7 +17543,7 @@ namespace jln::mp::detail
   struct unfold_impl
   {
     template<class state, class... xs>
-    using f = typename unfold_next<JLN_MP_CALL_TRACE((F), state)>::template f<xs...>;
+    using f = typename unfold_next<JLN_MP_CALL_TRACE(F, state)>::template f<xs...>;
   };
 }
 /// \endcond
@@ -17834,7 +17860,7 @@ namespace jln::mp
   struct capture
   {
     template<class C, class... ys>
-    using f = JLN_MP_CALL_TRACE((C), xs..., ys...);
+    using f = JLN_MP_DCALL_TRACE_XS(ys, C, xs..., ys...);
   };
 
   template<class... xs>
@@ -17844,19 +17870,11 @@ namespace jln::mp
     using f = typename C::template f<xs::value..., ys::value...>;
   };
 
-#if __cplusplus >= 201703L
-  template<auto... xs>
+  template<JLN_MP_TPL_AUTO_OR_INT... xs>
   using capture_c = capture<val<xs>...>;
 
-  template<auto... xs>
+  template<JLN_MP_TPL_AUTO_OR_INT... xs>
   struct capture_v_c
-#else
-  template<int_... xs>
-  using capture_c = capture<number<xs>...>;
-
-  template<int_... xs>
-  struct capture_v_c
-#endif
   {
     template<class C, class... ys>
     using f = typename C::template f<xs..., ys::value...>;
@@ -17866,7 +17884,7 @@ namespace jln::mp
   struct reverse_capture
   {
     template<class C, class... ys>
-    using f = JLN_MP_CALL_TRACE((C), ys..., xs...);
+    using f = JLN_MP_DCALL_TRACE_XS(ys, C, ys..., xs...);
   };
 
   template<class... xs>
@@ -17876,19 +17894,11 @@ namespace jln::mp
     using f = typename C::template f<ys::value..., xs::value...>;
   };
 
-#if __cplusplus >= 201703L
-  template<auto... xs>
+  template<JLN_MP_TPL_AUTO_OR_INT... xs>
   using reverse_capture_c = reverse_capture<val<xs>...>;
 
-  template<auto... xs>
+  template<JLN_MP_TPL_AUTO_OR_INT... xs>
   struct reverse_capture_v_c
-#else
-  template<int_... xs>
-  using reverse_capture_c = reverse_capture<number<xs>...>;
-
-  template<int_... xs>
-  struct reverse_capture_v_c
-#endif
   {
     template<class C, class... ys>
     using f = typename C::template f<ys::value..., xs...>;
@@ -17918,19 +17928,11 @@ namespace jln::mp::smp
   template<class... xs>
   using capture_v = decltype(detail::smp_capture_v(static_cast<xs*>(nullptr)...));
 
-#if __cplusplus >= 201703L
-  template<auto... xs>
+  template<JLN_MP_TPL_AUTO_OR_INT... xs>
   using capture_c = capture<val<xs>...>;
 
-  template<auto... xs>
+  template<JLN_MP_TPL_AUTO_OR_INT... xs>
   using capture_v_c = try_contract<mp::capture_v_c<xs...>>;
-#else
-  template<int_... xs>
-  using capture_c = capture<number<xs>...>;
-
-  template<int_... xs>
-  using capture_v_c = try_contract<mp::capture_v_c<xs...>>;
-#endif
 
   template<class... xs>
   using reverse_capture = try_contract<mp::reverse_capture<xs...>>;
@@ -17939,19 +17941,11 @@ namespace jln::mp::smp
   using reverse_capture_v = decltype(detail::smp_reverse_capture_v(
     static_cast<xs*>(nullptr)...));
 
-#if __cplusplus >= 201703L
-  template<auto... xs>
+  template<JLN_MP_TPL_AUTO_OR_INT... xs>
   using reverse_capture_c = reverse_capture<val<xs>...>;
 
-  template<int_... xs>
+  template<JLN_MP_TPL_AUTO_OR_INT... xs>
   using reverse_capture_v_c = try_contract<mp::capture_v_c<xs...>>;
-#else
-  template<int_... xs>
-  using reverse_capture_c = reverse_capture<number<xs>...>;
-
-  template<int_... xs>
-  using reverse_capture_v_c = try_contract<mp::capture_v_c<xs...>>;
-#endif
 }
 
 /// \cond
@@ -17981,11 +17975,7 @@ namespace jln::mp::detail
     using type = smp::reverse_capture_v<xs...>;
   };
 
-#if __cplusplus >= 201703L
-  template<template<class> class sfinae, auto... xs>
-#else
-  template<template<class> class sfinae, int_... xs>
-#endif
+  template<template<class> class sfinae, JLN_MP_TPL_AUTO_OR_INT... xs>
   struct _sfinae<sfinae, reverse_capture_v_c<xs...>>
   {
     using type = smp::reverse_capture_v_c<xs...>;
@@ -18068,8 +18058,7 @@ namespace jln::mp
   struct eval
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_XS(xs,
-      C, decltype(F.template operator()<xs...>()));
+    using f = JLN_MP_CALL_TRACE(C, decltype(F.template operator()<xs...>()));
   };
 
   namespace emp
@@ -18112,7 +18101,7 @@ namespace jln::mp
   struct fix
   {
     template<class... xs>
-    using f = call<C, fix<C>, xs...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, fix<C>, xs...);
   };
 
   namespace emp
@@ -18212,7 +18201,7 @@ namespace jln::mp::detail
   struct _on_select<0, C, Fs...>
   {
     template<class... xs>
-    using f = call<C, call<Fs, xs>...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_CALL_TRACE(Fs, xs)...);
   };
 
   // partial
@@ -18358,7 +18347,7 @@ namespace jln::mp
   struct as_list
   {
     template<class seq>
-    using f = JLN_MP_CALL_TRACE((C), typename detail::_as_list<seq>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_as_list<seq>::type);
   };
 
   namespace emp
@@ -18736,7 +18725,7 @@ namespace jln::mp
   struct offset
   {
     template <class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(I::value - int_{sizeof...(xs)})>);
+    using f = JLN_MP_CALL_TRACE(C, number<(I::value - int_{sizeof...(xs)})>);
   };
 
   /// \cond
@@ -19147,7 +19136,7 @@ namespace jln::mp::detail
   struct if_valid_index
   {
     template<class... xs>
-    using f = JLN_MP_DCALL(unsigned{int(sizeof...(xs)) - int{i}} < JLN_MP_MAX_CALL_ELEMENT, C, xs...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
 
   template<unsigned i, unsigned j>
@@ -19325,7 +19314,7 @@ namespace jln::mp
   struct is_number
   {
     template<class x>
-    using f = call<C, typename detail::_is_number<x>::type>;
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_is_number<x>::type);
   };
 
   namespace emp
@@ -19558,7 +19547,7 @@ namespace jln::mp
   struct alignof_
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<alignof(x)>);
+    using f = JLN_MP_CALL_TRACE(C, number<alignof(x)>);
   };
 
   namespace emp
@@ -19621,7 +19610,7 @@ namespace jln::mp
   struct has_type
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), typename detail::_has_type<x>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_has_type<x>::type);
   };
 
   namespace emp
@@ -19686,7 +19675,7 @@ namespace jln::mp
   struct has_value_type
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), typename detail::_has_value_type<x>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_has_value_type<x>::type);
   };
 
   namespace emp
@@ -19751,7 +19740,7 @@ namespace jln::mp
   struct is_specialization_of
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename detail::_is_specialization_of<Tpl, x>::type);
   };
 
@@ -19839,7 +19828,7 @@ namespace jln::mp::detail
   struct _iterate<0>
   {
     template<uint_ i, class C, class F, class x>
-    using f = JLN_MP_CALL_TRACE((C), x);
+    using f = JLN_MP_CALL_TRACE(C, x);
   };
 
 #define JLN_MP_ITERATE(n, mp_xs, mp_rsx, mp_rep)  \
@@ -19847,7 +19836,7 @@ namespace jln::mp::detail
   struct _iterate<n>                              \
   {                                               \
     template<uint_ i, class C, class F, class x>  \
-    using f = JLN_MP_CALL_TRACE((C),              \
+    using f = JLN_MP_CALL_TRACE(C,              \
       mp_rep(typename F::template f<, JLN_MP_NIL) \
       x                                           \
       mp_rep(>, JLN_MP_NIL)                       \
@@ -19909,7 +19898,7 @@ namespace jln::mp
   struct sizeof_
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<sizeof(x)>);
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof(x)>);
   };
 
   namespace emp
@@ -19943,7 +19932,7 @@ namespace jln::mp::traits
   struct Name                                     \
   {                                               \
     template<class... xs>                         \
-    using f = JLN_MP_DCALL_XS(xs, C,              \
+    using f = JLN_MP_CALL_TRACE(C,              \
       typename std::Name<xs...>::type);           \
   };                                              \
                                                   \
@@ -20057,7 +20046,7 @@ namespace jln::mp::traits
   struct extent
   {
     template<class x, class... i>
-    using f = call<C, typename std::extent<x, i::value...>::type>;
+    using f = JLN_MP_CALL_TRACE(C, typename std::extent<x, i::value...>::type);
   };
 
   namespace emp
@@ -20145,7 +20134,9 @@ namespace jln::mp::traits
   struct aligned_storage
   {
     template<class Len, class... Alignment>
-    using f = call<C, typename std::aligned_storage<Len::value, Alignment::value...>::type>;
+    using f = JLN_MP_CALL_TRACE(C,
+      typename std::aligned_storage<Len::value, Alignment::value...>::type
+    );
   };
 
   namespace emp
@@ -20168,7 +20159,9 @@ namespace jln::mp::traits
   struct aligned_union
   {
     template<class len, class... xs>
-    using f = call<C, typename std::aligned_union<len::value, xs...>::type>;
+    using f = JLN_MP_CALL_TRACE(C,
+      typename std::aligned_union<len::value, xs...>::type
+    );
   };
 
   namespace emp
@@ -20193,7 +20186,8 @@ namespace jln::mp
   namespace smp::traits                             \
   {                                                 \
     template <class C = identity>                   \
-    using Name = try_contract<mp::traits::Name<C>>; \
+    using Name = try_contract<                      \
+      mp::traits::Name<subcontract<C>>>;            \
   }                                                 \
                                                     \
   namespace detail                                  \
@@ -20298,25 +20292,7 @@ namespace jln::mp
   JLN_MP_SMP_MAKE_TRAIT(alignment_of)
   JLN_MP_SMP_MAKE_TRAIT(rank)
 
-  template<class C = identity>
-  struct extent
-  {
-    template<class x, class... i>
-    using f = call<C, typename std::extent<x, i::value...>::type>;
-  };
-
-  namespace emp
-  {
-    template<class x, class i = number<0>>
-    using extent = typename std::extent<x, i::value>::type;
-  }
-
-  template<>
-  struct extent<identity>
-  {
-    template<class x, class i = number<0>>
-    using f = typename std::extent<x, i::value>::type;
-  };
+  JLN_MP_SMP_MAKE_TRAIT(extent)
 
   // type relations:
   JLN_MP_SMP_MAKE_TRAIT(is_same)
@@ -20397,7 +20373,7 @@ namespace jln::mp
   struct type_
   {
     template<class x>
-    using f = typename C::template f<typename x::type>;
+    using f = JLN_MP_CALL_TRACE(C, typename x::type);
   };
 
   template<>
@@ -20441,7 +20417,7 @@ namespace jln::mp
   struct value_type
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), typename x::value_type);
+    using f = JLN_MP_CALL_TRACE(C, typename x::value_type);
   };
 
   template<>
@@ -20487,10 +20463,10 @@ namespace jln::mp
   {
 #if __cplusplus >= 201703L
     template<class x>
-    using f = JLN_MP_DCALL(sizeof(x), C, val<x::value>);
+    using f = JLN_MP_CALL_TRACE(C, val<x::value>);
 #else
     template<class x>
-    using f = JLN_MP_DCALL(sizeof(x), C, typed_value<decltype(x::value), x::value>);
+    using f = JLN_MP_CALL_TRACE(C, typed_value<decltype(x::value), x::value>);
 #endif
   };
 
@@ -20548,8 +20524,7 @@ namespace jln::mp
   struct has_value
   {
     template<class x>
-    using f = typename C::template f<
-      typename detail::_has_value<x>::type>;
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_has_value<x>::type);
   };
 
   namespace emp
@@ -20614,7 +20589,7 @@ namespace jln::mp
   struct is_val
   {
     template<class x>
-    using f = call<C, typename detail::_is_val<x>::type>;
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_is_val<x>::type);
   };
 
   namespace emp
@@ -20675,21 +20650,21 @@ namespace jln::mp
   struct val_or
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), val<(false || ... || xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(false || ... || xs::value)>);
   };
 
   template<class C = identity>
   struct val_and
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), val<(true && ... && xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(true && ... && xs::value)>);
   };
 
   template<class C = identity>
   struct val_add
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), val<(... + xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(... + xs::value)>);
   };
 
   template<class C = identity>
@@ -20699,7 +20674,7 @@ namespace jln::mp
   struct val_sub
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), val<(... - xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(... - xs::value)>);
   };
 
   template<class C = identity>
@@ -20709,7 +20684,7 @@ namespace jln::mp
   struct val_lshift
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), val<(... << xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(... << xs::value)>);
   };
 
   template<class C = identity>
@@ -20719,7 +20694,7 @@ namespace jln::mp
   struct val_rshift
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), val<(... >> xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(... >> xs::value)>);
   };
 
   template<class C = identity>
@@ -20729,7 +20704,7 @@ namespace jln::mp
   struct val_mul
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), val<(... * xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(... * xs::value)>);
   };
 
   template<class C = identity>
@@ -20742,7 +20717,7 @@ namespace jln::mp
   struct val_div
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), val<(... / xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(... / xs::value)>);
   };
 
   template<class C = identity>
@@ -20755,7 +20730,7 @@ namespace jln::mp
   struct val_mod
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), val<(... % xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(... % xs::value)>);
   };
 
   template<class C = identity>
@@ -20768,7 +20743,7 @@ namespace jln::mp
   struct val_xor
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), val<(... ^ xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(... ^ xs::value)>);
   };
 
   template<class C = identity>
@@ -20778,7 +20753,7 @@ namespace jln::mp
   struct val_bit_and
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), val<(... & xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(... & xs::value)>);
   };
 
   template<class C = identity>
@@ -20788,7 +20763,7 @@ namespace jln::mp
   struct val_bit_or
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), val<(... | xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(... | xs::value)>);
   };
 
   template<class C = identity>
@@ -20798,84 +20773,84 @@ namespace jln::mp
   struct val_neg
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), val<(-x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(-x::value)>);
   };
 
   template<class C = identity>
   struct val_unary_plus
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), val<(+x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(+x::value)>);
   };
 
   template<class C = identity>
   struct val_not
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), val<(!x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(!x::value)>);
   };
 
   template<class C = identity>
   struct val_bit_not
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), val<(~x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(~x::value)>);
   };
 
   template<class C = identity>
   struct val_inc
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), val<(x::value+1)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(x::value+1)>);
   };
 
   template<class C = identity>
   struct val_dec
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), val<(x::value-1)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(x::value-1)>);
   };
 
   template<class C = identity>
   struct val_equal
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), val<(x::value == y::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(x::value == y::value)>);
   };
 
   template<class C = identity>
   struct val_not_equal
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), val<(x::value != y::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(x::value != y::value)>);
   };
 
   template<class C = identity>
   struct val_less
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), val<(x::value < y::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(x::value < y::value)>);
   };
 
   template<class C = identity>
   struct val_less_equal
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), val<(x::value <= y::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(x::value <= y::value)>);
   };
 
   template<class C = identity>
   struct val_greater
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), val<(x::value > y::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(x::value > y::value)>);
   };
 
   template<class C = identity>
   struct val_greater_equal
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), val<(x::value >= y::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(x::value >= y::value)>);
   };
 
 
@@ -21110,107 +21085,107 @@ namespace jln::mp::emp
   using val_add = val<(... + xs::value)>;
 
   template<class... xs>
-  using val_add0 = call<mp::val_add0<>, xs...>;
+  using val_add0 = typename mp::val_add0<>::template f<xs...>;
 
   template<class... xs>
   using val_sub = val<(... - xs::value)>;
 
   template<class... xs>
-  using val_sub0 = call<mp::val_sub0<>, xs...>;
+  using val_sub0 = typename mp::val_sub0<>::template f<xs...>;
 
   template<class... xs>
   using val_lshift = val<(... << xs::value)>;
 
   template<class... xs>
-  using val_lshift0 = call<mp::val_lshift0<>, xs...>;
+  using val_lshift0 = typename mp::val_lshift0<>::template f<xs...>;
 
   template<class... xs>
   using val_rshift = val<(... >> xs::value)>;
 
   template<class... xs>
-  using val_rshift0 = call<mp::val_rshift0<>, xs...>;
+  using val_rshift0 = typename mp::val_rshift0<>::template f<xs...>;
 
   template<class... xs>
   using val_mul = val<(... * xs::value)>;
 
   template<class... xs>
-  using val_mul0 = call<mp::val_mul0<>, xs...>;
+  using val_mul0 = typename mp::val_mul0<>::template f<xs...>;
 
   template<class... xs>
-  using val_mul1 = call<mp::val_mul1<>, xs...>;
+  using val_mul1 = typename mp::val_mul1<>::template f<xs...>;
 
   template<class... xs>
   using val_div = val<(... / xs::value)>;
 
   template<class... xs>
-  using val_div0 = call<mp::val_div0<>, xs...>;
+  using val_div0 = typename mp::val_div0<>::template f<xs...>;
 
   template<class... xs>
-  using val_div1 = call<mp::val_div1<>, xs...>;
+  using val_div1 = typename mp::val_div1<>::template f<xs...>;
 
   template<class... xs>
   using val_mod = val<(... % xs::value)>;
 
   template<class... xs>
-  using val_mod0 = call<mp::val_mod0<>, xs...>;
+  using val_mod0 = typename mp::val_mod0<>::template f<xs...>;
 
   template<class... xs>
-  using val_mod1 = call<mp::val_mod1<>, xs...>;
+  using val_mod1 = typename mp::val_mod1<>::template f<xs...>;
 
   template<class... xs>
   using val_xor = val<(... ^ xs::value)>;
 
   template<class... xs>
-  using val_xor0 = call<mp::val_xor0<>, xs...>;
+  using val_xor0 = typename mp::val_xor0<>::template f<xs...>;
 
   template<class... xs>
   using val_bit_and = val<(... & xs::value)>;
 
   template<class... xs>
-  using val_bit_and0 = call<mp::val_bit_and0<>, xs...>;
+  using val_bit_and0 = typename mp::val_bit_and0<>::template f<xs...>;
 
   template<class... xs>
   using val_bit_or = val<(... | xs::value)>;
 
   template<class... xs>
-  using val_bit_or0 = call<mp::val_bit_or0<>, xs...>;
+  using val_bit_or0 = typename mp::val_bit_or0<>::template f<xs...>;
 
 
   template<class x, class C = mp::identity>
-  using val_neg = call<mp::val_neg<C>, x>;
+  using val_neg = typename mp::val_neg<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using val_unary_plus = call<mp::val_unary_plus<C>, x>;
+  using val_unary_plus = typename mp::val_unary_plus<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using val_not = call<mp::val_not<C>, x>;
+  using val_not = typename mp::val_not<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using val_bit_not = call<mp::val_bit_not<C>, x>;
+  using val_bit_not = typename mp::val_bit_not<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using val_inc = call<mp::val_inc<C>, x>;
+  using val_inc = typename mp::val_inc<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  using val_dec = call<mp::val_dec<C>, x>;
+  using val_dec = typename mp::val_dec<C>::template f<x>;
 
   template<class x, class y, class C = mp::identity>
-  using val_equal = call<mp::val_equal<C>, x, y>;
+  using val_equal = typename mp::val_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using val_not_equal = call<mp::val_not_equal<C>, x, y>;
+  using val_not_equal = typename mp::val_not_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using val_less = call<mp::val_less<C>, x, y>;
+  using val_less = typename mp::val_less<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using val_less_equal = call<mp::val_less_equal<C>, x, y>;
+  using val_less_equal = typename mp::val_less_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using val_greater = call<mp::val_greater<C>, x, y>;
+  using val_greater = typename mp::val_greater<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  using val_greater_equal = call<mp::val_greater_equal<C>, x, y>;
+  using val_greater_equal = typename mp::val_greater_equal<C>::template f<x, y>;
 }
 
 JLN_MP_DIAGNOSTIC_POP()
@@ -21584,14 +21559,14 @@ namespace jln::mp
   struct values
   {
     template<class... xs>
-    using f = call<C, val<xs::value>...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, val<xs::value>...);
   };
 
   template<class C = listify>
   struct typed_values
   {
     template<class T, class... xs>
-    using f = call<C, val<T(xs::value)>...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, val<T(xs::value)>...);
   };
 
   namespace emp
@@ -21610,14 +21585,14 @@ namespace jln::mp
   struct values
   {
     template<class... xs>
-    using f = call<C, typed_val<decltype(xs::value), xs::value>...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, typed_val<decltype(xs::value), xs::value>...);
   };
 
   template<class C>
   struct typed_values
   {
     template<class T, class... xs>
-    using f = call<C, typed_val<T, xs::value>...>;
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, typed_val<T, xs::value>...);
   };
 
   namespace emp
