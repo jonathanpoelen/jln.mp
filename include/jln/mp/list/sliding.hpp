@@ -119,7 +119,7 @@ namespace jln::mp::detail
   struct sliding_0size
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C);
+    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
   };
 
   template<int_ size, int_ stride>
