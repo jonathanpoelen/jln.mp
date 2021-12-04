@@ -99,7 +99,7 @@ jobs:
 
   auto-gen:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: [linux, macos, windows]
+    needs: [linux, macos, windows, windows-cl]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
