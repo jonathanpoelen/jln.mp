@@ -38,6 +38,7 @@ TEST()
     .not_invocable<list<int>>()
     ;
 
+  ut::not_invocable<smp::cascade<smp::always<na>>, list<list<>>>();
   ut::not_invocable<smp::cascade<bad_function>, list<list<>>>();
 }
 

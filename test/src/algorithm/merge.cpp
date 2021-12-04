@@ -25,6 +25,7 @@ TEST()
     .not_invocable<list<bad_number>, list<bad_number>>()
     ;
 
+  ut::not_invocable<smp::merge<smp::always<na>>, _1, _1>();
   ut::not_invocable<smp::merge<bad_function>, _1, _1>();
   ut::not_invocable<smp::merge<always<void>>, _1, _1>();
   ut::not_invocable<smp::merge<bad_function>, _1, _1, _1, _1>();

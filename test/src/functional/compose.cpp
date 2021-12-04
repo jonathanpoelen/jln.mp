@@ -53,6 +53,7 @@ TEST()
     .not_invocable<int>()
   ;
 
+  ut::not_invocable<smp::compose<smp::always<na>, smp::listify>>();
   ut::not_invocable<smp::compose<bad_function, bad_function>>();
   ut::not_invocable<smp::compose<bad_function, bad_function, bad_function>>();
 }

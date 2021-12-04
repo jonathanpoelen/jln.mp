@@ -54,6 +54,7 @@ TEST()
     .not_invocable<>()
     ;
 
+  ut::not_invocable<smp::fold_tree<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::fold_tree<listify, bad_function>, _1>();
   ut::not_invocable<smp::fold_tree<bad_function>, _1, _2>();
   ut::not_invocable<smp::fold_tree<add<>>, _1, _2, void>();

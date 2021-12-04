@@ -76,10 +76,12 @@ TEST()
     .not_invocable<another_list<>>()
     ;
 
+  ut::not_invocable<smp::zip<smp::always<na>>, seq_0_0, seq_0_0>();
   ut::not_invocable<smp::zip<bad_function>>();
   ut::not_invocable<smp::zip<bad_function>, list<>>();
   ut::not_invocable<smp::zip<bad_function>,
     list<>, list<>, list<>, list<>, list<>, list<>, list<>, list<>, list<>>();
+  ut::not_invocable<smp::zip_with<smp::always<na>>, seq_0_0, seq_0_0>();
   ut::not_invocable<smp::zip_with<always<_1>, bad_function>>();
   ut::not_invocable<smp::zip_with<always<_1>, bad_function>, list<>>();
   ut::not_invocable<smp::zip_with<always<_1>, bad_function>,

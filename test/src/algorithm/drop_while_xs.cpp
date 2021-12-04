@@ -3,6 +3,7 @@
 
 #include "jln/mp/smp/algorithm/drop_while_xs.hpp"
 #include "jln/mp/smp/number/operators.hpp"
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/utility/is_not.hpp"
 #include "jln/mp/smp/list/front.hpp"
 
@@ -139,6 +140,8 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
+  ut::not_invocable<smp::partial_drop_while_xs<_2, smp::always<na>>, _1, _1, _1>();
+  ut::not_invocable<smp::partial_drop_while_xs<smp::always<na>, smp::always<na>>>();
   ut::not_invocable<smp::partial_drop_while_xs<is<_3>, bad_function>>();
   ut::not_invocable<smp::partial_drop_while_xs<is<_3>, bad_function>, void>();
   ut::not_invocable<smp::partial_drop_while_xs<is<_3>, void>>();

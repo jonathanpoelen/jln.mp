@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/list/sliding.hpp"
 
 TEST_SUITE_BEGIN()
@@ -134,11 +135,13 @@ TEST()
   ut::not_invocable<smp::sliding_with_stride<_3, _2, bad_function>, _1, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::sliding_with_stride<_5, _2, bad_function>, _1, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::sliding_with_stride<_2, _5, bad_function>, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::sliding_with_stride<smp::always<na>, _1>, _1, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::sliding_with_stride<_0, bad_number>, _1, _1, _1, _1>();
   ut::not_invocable<smp::sliding_with_stride<bad_number, _1>, _1, _1, _1, _1>();
   ut::not_invocable<smp::sliding_with_stride<_0, number<-1>, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::sliding_with_stride<_1, number<-1>, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::sliding_with_stride<bad_number, bad_number, bad_function>, _1, _1>();
+  ut::not_invocable<smp::sliding_with_stride<smp::always<na>, smp::always<na>>, _1, _1>();
 }
 
 TEST_SUITE_END()

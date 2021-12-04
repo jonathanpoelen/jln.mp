@@ -32,6 +32,7 @@ TEST()
     .not_invocable<list<>>()
     ;
 
+  ut::not_invocable<smp::any_of<smp::always<na>>, _1>();
   ut::not_invocable<smp::any_of<bad_function>, _1>();
   ut::not_invocable<smp::any_of<always<void>>, _1>();
   ut::not_invocable<smp::any_of<always<true_>, bad_function>>();

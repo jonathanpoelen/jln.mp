@@ -23,6 +23,7 @@ TEST()
     .not_invocable<int, int, int>()
     ;
 
+  ut::not_invocable<smp::compare_with<smp::always<na>>, int, int>();
   ut::not_invocable<smp::compare_with<bad_function>, int, int>();
   ut::not_invocable<smp::compare_with<smp::sizeof_<>, bad_function>, int, int>();
 }

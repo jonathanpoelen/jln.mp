@@ -59,6 +59,7 @@ TEST()
     ;
 
   ut::not_invocable<smp::is_subset<bad_function>>();
+  ut::not_invocable<smp::is_subset_with<smp::always<na>>, list<_1>, list<_0>>();
   ut::not_invocable<smp::is_subset_with<always<void>>, list<_1>, list<_0>>();
   ut::not_invocable<smp::is_subset_with<always<void>, bad_function>>();
   ut::not_invocable<smp::is_subset_with<always<true_>, bad_function>>();

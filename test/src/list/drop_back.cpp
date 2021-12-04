@@ -81,10 +81,12 @@ TEST()
     .test<seq_0, _0, _1, _2>()
     ;
 
-  ut::not_invocable<smp::drop_back_max<_1, bad_function>>();
-  ut::not_invocable<smp::drop_back_max<_1, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::drop_back<smp::always<na>>>();
   ut::not_invocable<smp::drop_back<_1, bad_function>>();
   ut::not_invocable<smp::drop_back<_1, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::drop_back_max<smp::always<na>>>();
+  ut::not_invocable<smp::drop_back_max<_1, bad_function>>();
+  ut::not_invocable<smp::drop_back_max<_1, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

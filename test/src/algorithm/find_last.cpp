@@ -74,6 +74,7 @@ TEST()
     ;
 
   ut::not_invocable<smp::find_last<_1, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::find_last_if<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::find_last_if<void>, _1, _1, _1>();
   ut::not_invocable<smp::find_last_if<always<void>>, _1, _1, _1>();
   ut::not_invocable<smp::find_last_if<always<_1>, bad_function>, _1, _1, _1>();

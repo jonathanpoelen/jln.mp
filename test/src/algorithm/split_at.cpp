@@ -34,6 +34,7 @@ TEST()
 
   ut::not_invocable<smp::split_at_c<-1>, _1, _1, _1>();
   ut::not_invocable<smp::split_at<_1, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::split_at<bad_number>, _1, _1, _1>();
   ut::not_invocable<smp::split_at<bad_number, bad_function>, _1, _1, _1>();
 }
 

@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/algorithm/cartesian.hpp"
 
 TEST_SUITE_BEGIN()
@@ -55,6 +56,7 @@ TEST()
     .not_invocable<int>()
     ;
 
+  ut::not_invocable<smp::cartesian<smp::always<na>>>();
   ut::not_invocable<smp::cartesian<bad_function>>();
   ut::not_invocable<smp::cartesian<bad_function>, seq_0>();
   ut::not_invocable<smp::cartesian<bad_function>, seq_0_1, seq_0_1>();

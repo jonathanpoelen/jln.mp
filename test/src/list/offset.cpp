@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/list/offset.hpp"
 
 TEST_SUITE_BEGIN()
@@ -28,6 +29,7 @@ TEST()
     .not_invocable<>()
     ;
 
+  ut::not_invocable<smp::offset<smp::always<na>>>();
   ut::not_invocable<smp::offset<_1, bad_function>>();
   ut::not_invocable<smp::offset<_1, bad_function>, _1, _1, _1>();
 }

@@ -33,7 +33,7 @@ TEST()
     .test<list<>>()
     .not_invocable<_1>()
     ;
-  
+
   test_context<each<inc<>, dec<>, listify>, smp::each<smp::inc<>, smp::dec<>, smp::listify>>()
     .test<list<_1, _3>, _0, _4>()
     .not_invocable<>()
@@ -54,6 +54,7 @@ TEST()
     smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, foo
   >, _1, _1, _1, _1, _1>();
 
+  ut::not_invocable<smp::each<smp::always<na>, smp::listify>, _1>();
   ut::not_invocable<smp::each<bad_function>>();
   ut::not_invocable<smp::each<bad_function, bad_function, bad_function>, _1, _1>();
   ut::not_invocable<smp::each<identity, identity, bad_function>, _1, _1>();

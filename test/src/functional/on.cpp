@@ -97,6 +97,7 @@ TEST()
     .not_invocable<_0, _0, _0>()
     ;
 
+  ut::not_invocable<smp::on<smp::always<na>, smp::listify>>();
   ut::not_invocable<smp::on<bad_function>>();
   ut::not_invocable<smp::on<bad_function, bad_function>, _1, _1>();
   ut::not_invocable<smp::on<identity, bad_function>, _1, _1>();

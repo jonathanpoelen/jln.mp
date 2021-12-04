@@ -41,6 +41,7 @@ TEST()
     .not_invocable<list<c>, e>()
     ;
 
+  ut::not_invocable<smp::join<smp::always<na>>>();
   ut::not_invocable<smp::join<bad_function>>();
   ut::not_invocable<smp::join<bad_function>, seq_0_0, seq_0_0>();
 }

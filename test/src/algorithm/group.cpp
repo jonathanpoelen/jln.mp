@@ -56,6 +56,7 @@ TEST()
 
   ut::not_invocable<smp::group<bad_function>>();
   ut::not_invocable<smp::group<bad_function>, _1, _1, _1, _2>();
+  ut::not_invocable<smp::group_by<smp::always<na>>, _1, _1>();
   ut::not_invocable<smp::group_by<always<void>>, _1, _1>();
   ut::not_invocable<smp::group_by<cmp, bad_function>>();
   ut::not_invocable<smp::group_by<cmp, bad_function>, _1, _1, _1>();

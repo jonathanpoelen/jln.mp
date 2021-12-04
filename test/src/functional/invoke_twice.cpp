@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/functional/invoke_twice.hpp"
 #include "jln/mp/smp/functional/lift.hpp"
 #include "jln/mp/smp/list/pop_front.hpp"
@@ -29,6 +30,7 @@ TEST()
     .not_invocable<_5, void, int, char, long>()
     ;
 
+  ut::not_invocable<smp::invoke_twice<smp::always<na>>>();
   ut::not_invocable<smp::invoke_twice<bad_function>>();
   ut::not_invocable<smp::invoke_twice<always<bad_function>>>();
 }

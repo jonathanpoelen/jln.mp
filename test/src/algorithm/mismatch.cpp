@@ -94,6 +94,7 @@ TEST()
     .not_invocable<int, int>()
     ;
 
+  ut::not_invocable<smp::mismatch<smp::always<na>>, seq_1_2, seq_1_2>();
   ut::not_invocable<smp::mismatch<bad_function>, seq_0_1_2, seq_1_2>();
 }
 

@@ -2,6 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/algorithm/group_by_type.hpp"
+#include "jln/mp/smp/utility/always.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -26,6 +27,7 @@ TEST()
         int, char, short, int, short, float>()
     ;
 
+  ut::not_invocable<smp::group_by_type<smp::always<na>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::group_by_type<bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::group_by_type_with<bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::group_by_type_with<lift_t<list>>, _1, _1, _1, _1>();

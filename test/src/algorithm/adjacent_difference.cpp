@@ -25,6 +25,8 @@ TEST()
     .not_invocable<void, _0, _1, _2>()
     .not_invocable<_0, _1, _2, void>()
     ;
+
+  ut::not_invocable<smp::adjacent_difference<bad_function>, _1>();
 }
 
 TEST_SUITE_END()

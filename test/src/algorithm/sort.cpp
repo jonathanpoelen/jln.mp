@@ -240,6 +240,8 @@ TEST()
     .not_invocable<_0, _0, _0, _0, _0, _0, _0, _0, bad_number, _0, _0, _0, _0>()
     ;
 
+  ut::not_invocable<smp::sort<smp::always<na>>, _1, _1>();
+  ut::not_invocable<smp::sort<smp::always<na>>, _1, _1, _1, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::sort<bad_function>, _1, _1>();
   ut::not_invocable<smp::sort<bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::sort<bad_function>, _1, _1, _1, _1>();

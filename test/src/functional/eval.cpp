@@ -6,6 +6,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/functional/eval.hpp"
 #include "jln/mp/smp/list/push_front.hpp"
 #include "jln/mp/smp/list/listify.hpp"
@@ -45,6 +46,7 @@ TEST()
     .not_invocable<int, int>()
     ;
 
+  ut::not_invocable<smp::eval<smp::always<na>>>();
   ut::not_invocable<smp::eval<bad_function>>();
 }
 

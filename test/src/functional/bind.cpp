@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/functional/bind.hpp"
 #include "jln/mp/smp/list/push_front.hpp"
 #include "jln/mp/smp/list/pop_front.hpp"
@@ -70,6 +71,7 @@ TEST()
     ;
 
 
+  ut::not_invocable<smp::bind1st<smp::always<na>, smp::listify>, void>();
   ut::not_invocable<smp::bind1st<push_front<int>, bad_function>>();
   ut::not_invocable<smp::bind1st<bad_function, bad_function>>();
   ut::not_invocable<smp::bind2nd<push_front<int>, bad_function>>();

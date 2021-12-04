@@ -2,6 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/algorithm/powerset.hpp"
+#include "jln/mp/smp/utility/always.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -32,6 +33,7 @@ TEST()
       _0, _1, _2, _3>()
     ;
 
+  ut::not_invocable<smp::powerset<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::powerset<bad_function>, _1, _1, _1>();
 }
 

@@ -28,6 +28,7 @@ TEST()
     .not_invocable<_0, list<>>()
     ;
 
+  ut::not_invocable<smp::disjunction<smp::always<na>>>();
   ut::not_invocable<smp::disjunction<bad_function>>();
 }
 

@@ -1,13 +1,14 @@
 #pragma once
 
 #include <jln/mp/smp/contract.hpp>
+#include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/algorithm/matrix_shortest.hpp>
 
 namespace jln::mp::smp
 {
   template<class F = listify, class C = listify>
   using matrix_shortest_with = try_contract<
-    mp::matrix_shortest_with<subcontract<F>, subcontract<C>>>;
+    mp::matrix_shortest_with<subcontract<F>, monadic_xs<subcontract<C>>>>;
 
   template<class C = listify>
   using matrix_shortest = matrix_shortest_with<listify, C>;

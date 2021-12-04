@@ -26,6 +26,7 @@ TEST()
     .not_invocable<_0, seq_0, seq_0_0>()
     ;
 
+  ut::not_invocable<smp::accumulate<smp::always<na>>>();
   ut::not_invocable<smp::accumulate<bad_function>>();
   ut::not_invocable<smp::accumulate<bad_function>, _1, _1>();
   ut::not_invocable<smp::accumulate<bad_function, bad_function>>();

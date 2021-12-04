@@ -52,6 +52,7 @@ TEST()
     ;
 
   ut::not_invocable<smp::is_unique<bad_function>>();
+  ut::not_invocable<smp::is_unique_with<smp::always<na>>, _1, _1>();
   ut::not_invocable<smp::is_unique_with<always<void>>, _1, _1>();
   ut::not_invocable<smp::is_unique_with<always<void>, bad_function>>();
   ut::not_invocable<smp::is_unique_with<always<true_>, bad_function>>();

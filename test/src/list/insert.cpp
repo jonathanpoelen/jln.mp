@@ -30,6 +30,7 @@ TEST()
     .not_invocable<>()
     ;
 
+  ut::not_invocable<smp::insert<smp::always<na>, _2>, _1, _1, _1, _1>();
   ut::not_invocable<smp::insert<_2, void, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::insert<bad_number, bad_function>, _1, _1, _1>();
 }

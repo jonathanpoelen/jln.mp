@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/algorithm/combine.hpp"
 
 TEST_SUITE_BEGIN()
@@ -37,6 +38,7 @@ TEST()
       _0, _1, _2>()
     ;
 
+  ut::not_invocable<smp::combine<smp::always<na>>>();
   ut::not_invocable<smp::combine<bad_function>>();
   ut::not_invocable<smp::combine<bad_function>, _1>();
   ut::not_invocable<smp::combine<bad_function>, _1, _1>();

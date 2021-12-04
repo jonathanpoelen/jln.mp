@@ -35,6 +35,7 @@ TEST()
     .not_invocable<int, int>()
     ;
 
+  ut::not_invocable<smp::memoize<smp::always<na>>>();
   ut::not_invocable<smp::memoize<bad_function>>();
 }
 

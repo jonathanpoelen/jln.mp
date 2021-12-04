@@ -59,6 +59,7 @@ TEST()
     ;
 
   ut::not_invocable<smp::remove_unique<bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::remove_unique_if<smp::always<na>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::remove_unique_if<always<void>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::remove_unique_if<bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::remove_unique_if<lift<std::is_same>, bad_function>, _1, _1, _1, _1>();

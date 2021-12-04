@@ -22,6 +22,7 @@ TEST()
     .not_invocable<list<>>()
     ;
 
+  ut::not_invocable<smp::transform<smp::always<na>>, _1>();
   ut::not_invocable<smp::transform<bad_function>, _1>();
   ut::not_invocable<smp::transform<identity, bad_function>, _1>();
   ut::not_invocable<smp::transform<bad_function, bad_function>, _1>();

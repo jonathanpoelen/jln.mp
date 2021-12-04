@@ -32,6 +32,7 @@ TEST()
     .test<list<_1, _2, _3, _4, _5>, _1, _2, _3, _4, _5>()
   ;
 
+  ut::not_invocable<smp::while_<smp::always<na>, smp::next_recursion>, _1, _1>();
   ut::not_invocable<smp::while_<smp::always<_0>, smp::next_recursion>, _1, _1>();
   ut::not_invocable<smp::while_<bad_function, smp::always<_0>>, _1>();
   ut::not_invocable<smp::while_<smp::always<_1>, bad_function>, _1>();

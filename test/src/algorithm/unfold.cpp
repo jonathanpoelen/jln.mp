@@ -42,6 +42,7 @@ TEST()
     .not_invocable<list<>>()
     ;
 
+  ut::not_invocable<smp::unfold<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::unfold<smp_f, bad_function>, _1>();
   ut::not_invocable<smp::unfold<listify, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::unfold<listify, bad_function>, list<>>();

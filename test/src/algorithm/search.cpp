@@ -298,18 +298,21 @@ TEST()
     ;
 
 
+  ut::not_invocable<smp::search<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::search<is<_3>, listify, bad_function>>();
   ut::not_invocable<smp::search<is<_3>, bad_function>, void>();
   ut::not_invocable<smp::search<is<_3>, void>>();
   ut::not_invocable<smp::search<always<void>>, void>();
   ut::not_invocable<smp::search<void>, void>();
 
+  ut::not_invocable<smp::search_before<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::search_before<is<_3>, listify, bad_function>>();
   ut::not_invocable<smp::search_before<is<_3>, bad_function>, void>();
   ut::not_invocable<smp::search_before<is<_3>, void>>();
   ut::not_invocable<smp::search_before<always<void>>, void>();
   ut::not_invocable<smp::search_before<void>, void>();
 
+  ut::not_invocable<smp::search_before_extended_by_n<smp::always<na>, _1>, _1, _1, _1>();
   ut::not_invocable<smp::search_before_extended_by_n<is<_3>, void>>();
   ut::not_invocable<smp::search_before_extended_by_n<is<_3>, void>, void>();
   ut::not_invocable<smp::search_before_extended_by_n<is<_3>, _1, listify, bad_function>>();
@@ -319,6 +322,7 @@ TEST()
   ut::not_invocable<smp::search_before_extended_by_n<always<void>, _1>, void>();
   ut::not_invocable<smp::search_before_extended_by_n<void, _1>, void>();
 
+  ut::not_invocable<smp::partial_search<_1, smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::partial_search<_1, is<_3>, listify, bad_function>>();
   ut::not_invocable<smp::partial_search<_1, is<_3>, bad_function>, void, void>();
   ut::not_invocable<smp::partial_search<_1, is<_3>, void>>();
@@ -326,6 +330,7 @@ TEST()
   ut::not_invocable<smp::partial_search<_1, void>, void, void>();
   ut::not_invocable<smp::partial_search<void, is<_3>>>();
 
+  ut::not_invocable<smp::partial_search_before<_1, smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::partial_search_before<_1, is<_3>, listify, bad_function>>();
   ut::not_invocable<smp::partial_search_before<_1, is<_3>, bad_function>, void, void>();
   ut::not_invocable<smp::partial_search_before<_1, is<_3>, void>>();
@@ -333,6 +338,7 @@ TEST()
   ut::not_invocable<smp::partial_search_before<_1, void>, void, void>();
   ut::not_invocable<smp::partial_search_before<void, is<_3>>>();
 
+  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, smp::always<na>, _1>, _1, _1, _1>();
   ut::not_invocable<smp::partial_search_before_extended_by_n<_1, is<_3>, void>>();
   ut::not_invocable<smp::partial_search_before_extended_by_n<_1, is<_3>, void>, void, void>();
   ut::not_invocable<smp::partial_search_before_extended_by_n<_1, is<_3>, _1, listify, bad_function>>();

@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/algorithm/counter.hpp"
 #include "jln/mp/smp/functional/flip.hpp"
 
@@ -54,6 +55,7 @@ TEST()
         int, char, short, int, short, float>()
     ;
 
+  ut::not_invocable<smp::counter_wrapped_with<smp::always<na>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::counter_wrapped_with<bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::counter_wrapped_with<lift_t<list>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::counter_wrapped_with<listify, bad_function>, _1, _1, _1, _1>();

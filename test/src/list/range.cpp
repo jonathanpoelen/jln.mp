@@ -62,6 +62,7 @@ TEST()
     .test<list<_2, _3>, _0, _1, _2, _3, _4, _5>()
     ;
 
+  ut::not_invocable<smp::range<smp::always<na>, _2>, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::range<_0, _9, bad_function>, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::range<_2, _9, bad_function>, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::range<_0, number<-1>, bad_function>, _1, _1, _1, _1, _1, _1, _1, _1>();

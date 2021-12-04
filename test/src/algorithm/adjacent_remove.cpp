@@ -44,6 +44,7 @@ TEST()
     ;
 
   ut::not_invocable<smp::adjacent_remove<bad_function>>();
+  ut::not_invocable<smp::adjacent_remove<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::adjacent_remove<bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::adjacent_remove_if<bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::adjacent_remove_if<always<void>>, _1, _1, _1>();

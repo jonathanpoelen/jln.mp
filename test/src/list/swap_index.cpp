@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/list/swap_index.hpp"
 
 TEST_SUITE_BEGIN()
@@ -34,6 +35,7 @@ TEST()
     ;
 
   ut::not_invocable<smp::swap_index<_1, _2, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::swap_index<smp::always<na>, smp::always<na>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::swap_index<bad_number, bad_number, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::swap_index<bad_function, bad_function, bad_function>, _1, _1, _1, _1>();
 }

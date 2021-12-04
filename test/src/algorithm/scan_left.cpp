@@ -65,6 +65,7 @@ TEST()
     .not_invocable<_0, _1, na>()
     ;
 
+  ut::not_invocable<smp::scan_left<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::scan_left<listify, bad_function>, _1>();
   ut::not_invocable<smp::scan_left<listify, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::scan_left<bad_function, bad_function>, _1>();

@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/list/take_back.hpp"
 
 TEST_SUITE_BEGIN()
@@ -36,6 +37,7 @@ TEST()
     .test<seq_2_3, _0, _1, _2, _3>()
     ;
 
+  ut::not_invocable<smp::take_back<smp::always<na>>>();
   ut::not_invocable<smp::take_back<_1, bad_function>>();
   ut::not_invocable<smp::take_back<_1, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::take_back_max<_1, bad_function>>();

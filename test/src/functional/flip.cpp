@@ -1,5 +1,6 @@
 #include "test.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/functional/flip.hpp"
 
 TEST_SUITE_BEGIN()
@@ -19,6 +20,7 @@ TEST()
     .not_invocable<int>()
     ;
 
+  ut::not_invocable<smp::flip<smp::always<na>>, void, int>();
   ut::not_invocable<smp::flip<bad_function>, void, int>();
 }
 

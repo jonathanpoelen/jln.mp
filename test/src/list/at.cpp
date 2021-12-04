@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/list/at.hpp"
 
 TEST_SUITE_BEGIN()
@@ -39,6 +40,7 @@ TEST()
     .not_invocable<_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11>()
     ;
 
+  ut::not_invocable<smp::at<smp::always<na>>>();
   ut::not_invocable<smp::at<_1, bad_function>>();
   ut::not_invocable<smp::at<_1, bad_function>, _1, _1>();
 }

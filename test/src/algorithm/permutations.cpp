@@ -2,6 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/algorithm/permutations.hpp"
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/list/size.hpp"
 
 TEST_SUITE_BEGIN()
@@ -28,6 +29,7 @@ TEST()
     .not_invocable<void, void, void, void, void, void, void, void>()
     ;
 
+  ut::not_invocable<smp::permutations<smp::always<na>>>();
   ut::not_invocable<smp::permutations<bad_function>>();
   ut::not_invocable<smp::permutations<bad_function>, _1, _1, _1, _1>();
 }

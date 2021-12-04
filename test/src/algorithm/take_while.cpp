@@ -50,6 +50,7 @@ TEST()
   //   .not_invocable<void>()
   //   ;
 
+  ut::not_invocable<smp::take_while<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::take_while<is<_3>, bad_function>>();
   ut::not_invocable<smp::take_while<is<_3>, bad_function>, void>();
   ut::not_invocable<smp::take_while<is<_3>, void>>();

@@ -69,6 +69,7 @@ TEST()
   ut::invoke_r<x_tee_xxx_not, lift<not_fn>, x_tee_xxx2_not>();
   ut::invoke_r<x_tee_xxx_not_not, lift<not_fn>, x_tee_xxx3_not>();
 
+  ut::not_invocable<smp::not_fn<smp::always<na>>, _1>();
   ut::not_invocable<smp::not_fn<bad_function>, _1>();
   ut::not_invocable<smp::not_fn<always<void>>, _1>();
   ut::not_invocable<smp::not_fn<identity, bad_function>>();

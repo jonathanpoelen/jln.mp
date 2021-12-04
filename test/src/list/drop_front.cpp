@@ -81,8 +81,10 @@ TEST()
     .test<seq_2, _0, _1, _2>()
     ;
 
+  ut::not_invocable<smp::drop_front<smp::always<na>>>();
   ut::not_invocable<smp::drop_front<_1, bad_function>>();
   ut::not_invocable<smp::drop_front<_1, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::drop_front_max<smp::always<na>>>();
   ut::not_invocable<smp::drop_front_max<_1, bad_function>>();
   ut::not_invocable<smp::drop_front_max<_1, bad_function>, _1, _1, _1>();
 }

@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/list/pop_back.hpp"
 
 TEST_SUITE_BEGIN()
@@ -19,6 +20,7 @@ TEST()
     .not_invocable<>()
     ;
 
+  ut::not_invocable<smp::pop_back<smp::always<na>>>();
   ut::not_invocable<smp::pop_back<bad_function>>();
 }
 

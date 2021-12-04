@@ -32,6 +32,7 @@ TEST()
     .not_invocable<bad_number>()
     ;
 
+  ut::not_invocable<smp::partition<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::partition<mod2, bad_function>>();
   ut::not_invocable<smp::partition<mod2, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::partition<always<void>>, _1>();

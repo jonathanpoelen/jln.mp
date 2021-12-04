@@ -2,6 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/algorithm/indices.hpp"
+#include "jln/mp/smp/utility/always.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -23,6 +24,7 @@ TEST()
     .test<seq_0_1_2, _0, _0, _0>()
     ;
 
+  ut::not_invocable<smp::indices<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::indices<bad_function>, _1, _1, _1>();
 }
 

@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/algorithm/repeat.hpp"
 
 TEST_SUITE_BEGIN()
@@ -21,6 +22,7 @@ TEST()
     .test<emp::numbers<1, 2, 1, 2, 1, 2>, _1, _2>()
     ;
 
+  ut::not_invocable<smp::repeat<smp::always<na>>>();
   ut::not_invocable<smp::repeat<_2, bad_function>>();
   ut::not_invocable<smp::repeat<_2, bad_function>, _1>();
   ut::not_invocable<smp::repeat<_2, bad_function>, _1, _1, _1>();

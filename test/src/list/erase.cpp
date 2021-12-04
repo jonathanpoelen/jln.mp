@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/list/erase.hpp"
 
 TEST_SUITE_BEGIN()
@@ -27,6 +28,7 @@ TEST()
     .not_invocable<_0, _1, _2, _3, _4, _5>()
     ;
 
+  ut::not_invocable<smp::erase<_1, smp::always<na>>, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::erase<_1, _3, bad_function>, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::erase<bad_number, bad_number, bad_function>, _1, _1, _1, _1, _1>();
 }

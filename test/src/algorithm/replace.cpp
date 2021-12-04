@@ -62,6 +62,7 @@ TEST()
     ;
 
   ut::not_invocable<smp::replace<void, void, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::replace_if<smp::always<na>, void>, _1, _1, _1>();
   ut::not_invocable<smp::replace_if<always<_1>, void, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::replace_if<bad_function, void>, _1, _1, _1>();
   ut::not_invocable<smp::replace_if<always<void>, void>, _1, _1, _1>();

@@ -88,6 +88,9 @@ TEST()
     .not_invocable<list<>>()
     .not_invocable<int, int>()
     ;
+
+  ut::not_invocable<smp::mismatch_index<smp::always<na>>, seq_1_2, seq_1_2>();
+  ut::not_invocable<smp::mismatch_index<bad_function>, seq_0_1_2, seq_1_2>();
 }
 
 TEST_SUITE_END()

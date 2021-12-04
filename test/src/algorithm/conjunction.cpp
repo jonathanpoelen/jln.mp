@@ -24,6 +24,7 @@ TEST()
     .not_invocable<_1, _1, list<>>()
     ;
 
+  ut::not_invocable<smp::conjunction<smp::always<na>>>();
   ut::not_invocable<smp::conjunction<bad_function>>();
 }
 

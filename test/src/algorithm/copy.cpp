@@ -39,7 +39,9 @@ TEST()
     ;
 
   ut::not_invocable<smp::copy<_1, bad_function>>();
+  ut::not_invocable<smp::copy<_1, bad_function>>();
   ut::not_invocable<smp::copy<_1, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::copy_if<smp::always<na>>, _1>();
   ut::not_invocable<smp::copy_if<always<void>, bad_function>, _1>();
   ut::not_invocable<smp::copy_if<always<_1>, bad_function>>();
   ut::not_invocable<smp::copy_if<always<_1>, bad_function>, _1, _1, _1>();

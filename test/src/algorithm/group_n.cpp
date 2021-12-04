@@ -44,6 +44,7 @@ TEST()
   ut::not_invocable<smp::group_n<_3, bad_function>, _1>();
   ut::not_invocable<smp::group_n<_3, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::group_n<_3, bad_function>, _1, _1, _1, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::group_n<smp::always<na>>>();
   ut::not_invocable<smp::group_n<bad_number, bad_function>>();
   ut::not_invocable<smp::group_n<bad_number, bad_function>, _1>();
   ut::not_invocable<smp::group_n<bad_number, bad_function>, _1, _1, _1>();

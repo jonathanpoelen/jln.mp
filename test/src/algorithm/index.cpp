@@ -26,6 +26,7 @@ TEST()
     ;
 
   ut::not_invocable<smp::index_of<void, bad_function, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::index_if<smp::always<na>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::index_if<void>, _1, _1, _1, _1>();
   ut::not_invocable<smp::index_if<always<void>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::index_if<always<_1>, bad_function, size<>>, _1, _1, _1, _1>();

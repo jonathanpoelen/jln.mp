@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/functional/fix.hpp"
 #include "jln/mp/smp/utility/conditional.hpp"
 
@@ -28,6 +29,7 @@ TEST()
     .not_invocable<>()
     ;
 
+  ut::not_invocable<smp::fix<smp::always<na>>, _1>();
   ut::not_invocable<smp::fix<bad_function>, _1>();
 }
 

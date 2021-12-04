@@ -51,6 +51,7 @@ TEST()
     smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, foo
   >, _1>();
 
+  ut::not_invocable<smp::tee<smp::always<na>, smp::listify>>();
   ut::not_invocable<smp::tee<bad_function>>();
   ut::not_invocable<smp::tee<bad_function, bad_function, bad_function, bad_function, listify>>();
   ut::not_invocable<smp::tee<bad_function, bad_function, bad_function, bad_function, bad_function>>();

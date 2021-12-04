@@ -127,6 +127,7 @@ TEST()
     .test<list<_0>, seq_1_2, seq_0_1>()
   ;
 
+  ut::not_invocable<smp::lexicographical_compare<smp::always<na>>, seq_0_1_2, seq_1_2>();
   ut::not_invocable<smp::lexicographical_compare<bad_function>, seq_0_1_2, seq_1_2>();
   ut::not_invocable<smp::lexicographical_compare<mp::equal<>, bad_function>, seq_0_1_2, seq_1_2>();
 
