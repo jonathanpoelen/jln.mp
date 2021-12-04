@@ -15,7 +15,7 @@ namespace jln::mp
   struct to_bool
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<bool(x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<bool(x::value)>);
   };
 
   namespace emp

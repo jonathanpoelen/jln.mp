@@ -158,7 +158,7 @@ namespace jln::mp::detail
   struct _recursively_next<_next_recursion<xs...>>
   {
     template<class F>
-    using f = typename _recursively_next<JLN_MP_CALL_TRACE((F), xs...)>
+    using f = typename _recursively_next<JLN_MP_CALL_TRACE(F, xs...)>
               ::template g<xs...>;
 
     template<class...>
@@ -170,7 +170,7 @@ namespace jln::mp::detail
   {
     template<class F, class C>
     using f = typename _recursively<
-      typename _recursively_next<JLN_MP_CALL_TRACE((F), xs...)>
+      typename _recursively_next<JLN_MP_CALL_TRACE(F, xs...)>
       ::template g<xs...>
       ::template f<F>
       ::template f<F>
@@ -241,7 +241,7 @@ namespace jln::mp::detail
   struct _recursively_as_much_as_possible_next<_next_recursion<xs...>>
   {
     template<class F>
-    using f = typename _recursively_as_much_as_possible_next<JLN_MP_CALL_TRACE((F), xs...)>
+    using f = typename _recursively_as_much_as_possible_next<JLN_MP_CALL_TRACE(F, xs...)>
               ::template g<xs...>;
 
     template<class...>
@@ -253,7 +253,7 @@ namespace jln::mp::detail
   {
     template<class F, class C>
     using f = typename _recursively_as_much_as_possible<
-      typename _recursively_as_much_as_possible_next<JLN_MP_CALL_TRACE((F), xs...)>
+      typename _recursively_as_much_as_possible_next<JLN_MP_CALL_TRACE(F, xs...)>
       ::template g<xs...>
       ::template f<F>
       ::template f<F>
@@ -269,7 +269,7 @@ namespace jln::mp::detail
   struct _recursively_as_much_as_possible<_recursively_as_much_as_possible_next<_recursion_result<xs...>>>
   {
     template<class F, class C>
-    using f = JLN_MP_CALL_TRACE((C), xs...);
+    using f = JLN_MP_CALL_TRACE(C, xs...);
   };
 }
 /// \endcond

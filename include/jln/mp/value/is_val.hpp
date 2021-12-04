@@ -22,7 +22,7 @@ namespace jln::mp
   struct is_val
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), typename detail::_is_val<x>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_is_val<x>::type);
   };
 
   namespace emp

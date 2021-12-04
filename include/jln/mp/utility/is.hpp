@@ -15,6 +15,6 @@ namespace jln::mp
   struct is
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<std::is_same<T, x>::value>);
+    using f = JLN_MP_CALL_TRACE(C, number<std::is_same<T, x>::value>);
   };
 } // namespace jln::mp

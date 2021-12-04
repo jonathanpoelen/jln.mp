@@ -22,7 +22,7 @@ namespace jln::mp
   struct same
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename detail::_same<detail::min(sizeof...(xs), 3)>::template f<xs...>);
   };
 

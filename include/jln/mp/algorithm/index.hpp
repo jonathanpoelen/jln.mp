@@ -57,14 +57,14 @@ namespace jln::mp::detail
   struct index_if_impl<_drop_while_continue>
   {
     template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE((FC), xs...);
+    using f = JLN_MP_CALL_TRACE(FC, xs...);
   };
 
   template<std::size_t n>
   struct index_if_impl<_drop_while_result<n>>
   {
     template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE((TC), number<sizeof...(xs)-n-1>);
+    using f = JLN_MP_CALL_TRACE(TC, number<sizeof...(xs)-n-1>);
   };
 }
 /// \endcond

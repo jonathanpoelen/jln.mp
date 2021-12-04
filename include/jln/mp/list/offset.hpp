@@ -19,7 +19,7 @@ namespace jln::mp
   struct offset
   {
     template <class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<(I::value - int_{sizeof...(xs)})>);
+    using f = JLN_MP_CALL_TRACE(C, number<(I::value - int_{sizeof...(xs)})>);
   };
 
   /// \cond

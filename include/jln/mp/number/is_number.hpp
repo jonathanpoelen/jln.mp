@@ -23,7 +23,7 @@ namespace jln::mp
   struct is_number
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), typename detail::_is_number<x>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_is_number<x>::type);
   };
 
   namespace emp

@@ -96,14 +96,14 @@ namespace jln::mp::detail
   struct _fold_tree<1>
   {
     template<class C, class F, class x>
-    using f = JLN_MP_CALL_TRACE((C), x);
+    using f = JLN_MP_CALL_TRACE(C, x);
   };
 
   template<>
   struct _fold_tree<2>
   {
     template<class C, class F, class x, class y>
-    using f = JLN_MP_CALL_TRACE((C), JLN_MP_CALL_TRACE((F), x, y));
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_CALL_TRACE(F, x, y));
   };
 
   template<class F, uint_>
@@ -120,14 +120,14 @@ namespace jln::mp::detail
   struct fold_tree_impl<F, 1>
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((F), x, y);
+    using f = JLN_MP_CALL_TRACE(F, x, y);
   };
 
   template<class F, uint_ n>
   struct fold_tree_impl
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((F),
+    using f = JLN_MP_CALL_TRACE(F,
       typename take_front_c<n, fold_tree_impl<F, n/2>>::template f<xs...>,
       typename drop_front_c<n, fold_tree_impl<F, bit_ceil(sizeof...(xs)-n)/2>>::template f<xs...>
     );
@@ -137,7 +137,7 @@ namespace jln::mp::detail
   struct _fold_tree<3>
   {
     template<class C, class F, class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename fold_tree_impl<F, bit_ceil(sizeof...(xs))/2>::template f<xs...>
     );
   };
@@ -172,14 +172,14 @@ namespace jln::mp::detail
   struct fold_balanced_tree_impl<F, 2>
   {
     template<class x, class y>
-    using f = JLN_MP_CALL_TRACE((F), x, y);
+    using f = JLN_MP_CALL_TRACE(F, x, y);
   };
 
   template<class F, uint_ n>
   struct fold_balanced_tree_impl
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((F),
+    using f = JLN_MP_CALL_TRACE(F,
       typename take_front_c<(n+1)/2, fold_balanced_tree_impl<F, (n+1)/2>>::template f<xs...>,
       typename drop_front_c<(n+1)/2, fold_balanced_tree_impl<F, n-(n+1)/2>>::template f<xs...>
     );
@@ -189,7 +189,7 @@ namespace jln::mp::detail
   struct _fold_balanced_tree<3>
   {
     template<class C, class F, class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename fold_balanced_tree_impl<F, sizeof...(xs)>::template f<xs...>
     );
   };

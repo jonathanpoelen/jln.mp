@@ -13,7 +13,7 @@ namespace jln::mp
   struct size
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), number<sizeof...(xs)>);
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof...(xs)>);
   };
 
   namespace emp

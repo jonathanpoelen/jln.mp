@@ -13,7 +13,7 @@ namespace jln::mp
   struct front
   {
     template<class x, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), x);
+    using f = JLN_MP_CALL_TRACE(C, x);
   };
 
   namespace emp

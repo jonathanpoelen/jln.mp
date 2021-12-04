@@ -45,9 +45,9 @@ namespace jln::mp::detail
     template<class... xs>
 #if JLN_MP_MSVC_LIKE
     // workaround for MSVC which has a broken EBO
-    using f = JLN_MP_CALL_TRACE((C), typename _is_set<xs...>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename _is_set<xs...>::type);
 #else
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       mp::number<sizeof(inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>);
 #endif
   };

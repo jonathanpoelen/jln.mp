@@ -70,14 +70,14 @@ namespace jln::mp::detail
   struct _permutations<1>
   {
     template<class C, class x>
-    using f = JLN_MP_CALL_TRACE((C), list<x>);
+    using f = JLN_MP_CALL_TRACE(C, list<x>);
   };
 
   template<>
   struct _permutations<2>
   {
     template<class C, class x0, class x1>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       list<x0, x1>, list<x1, x0>
     );
   };
@@ -86,7 +86,7 @@ namespace jln::mp::detail
   struct _permutations<3>
   {
     template<class C, class x0, class x1, class x2>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       list<x0, x1, x2>, list<x0, x2, x1>,
       list<x1, x0, x2>, list<x1, x2, x0>,
       list<x2, x0, x1>, list<x2, x1, x0>
@@ -97,7 +97,7 @@ namespace jln::mp::detail
   struct _permutations<4>
   {
     template<class C, class x0, class x1, class x2, class x3>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       list<x0, x1, x2, x3>, list<x0, x1, x3, x2>,
       list<x0, x2, x1, x3>, list<x0, x2, x3, x1>,
       list<x0, x3, x1, x2>, list<x0, x3, x2, x1>,

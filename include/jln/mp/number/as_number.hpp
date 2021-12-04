@@ -15,7 +15,7 @@ namespace jln::mp
   struct as_number
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<int_{x::value}>);
+    using f = JLN_MP_CALL_TRACE(C, number<int_{x::value}>);
   };
 
   namespace emp

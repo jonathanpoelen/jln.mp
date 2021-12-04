@@ -22,7 +22,7 @@ namespace jln::mp
   struct has_value
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), typename detail::_has_value<x>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_has_value<x>::type);
   };
 
   namespace emp

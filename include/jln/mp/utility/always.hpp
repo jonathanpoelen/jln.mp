@@ -14,7 +14,7 @@ namespace jln::mp
   struct always
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), x);
+    using f = JLN_MP_CALL_TRACE(C, x);
   };
 
   template<class x>

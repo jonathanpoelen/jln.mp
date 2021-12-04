@@ -287,7 +287,7 @@ namespace jln::mp::detail
   struct search_before_impl<_drop_while_continue>
   {
     template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE((FC), xs...);
+    using f = JLN_MP_CALL_TRACE(FC, xs...);
   };
 
   template<std::size_t n>
@@ -302,7 +302,7 @@ namespace jln::mp::detail
   struct search_before_extended_by_n_impl<_drop_while_continue>
   {
     template<class TC, class FC, class ExtendedByN, class... xs>
-    using f = JLN_MP_CALL_TRACE((FC), xs...);
+    using f = JLN_MP_CALL_TRACE(FC, xs...);
   };
 
   constexpr int_ extended_by_n(int_ seq_len, int_ n, int_ extended)

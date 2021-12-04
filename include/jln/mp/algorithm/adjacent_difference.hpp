@@ -44,7 +44,7 @@ namespace jln::mp::detail
 {
 #if JLN_MP_MSVC
   template<class C, class x, int_... xs>
-  using _adjacent_difference_msvc = JLN_MP_CALL_TRACE((C), x, number<xs>...);
+  using _adjacent_difference_msvc = JLN_MP_CALL_TRACE(C, x, number<xs>...);
 #endif
 
   template<class y, class... ys>
@@ -55,7 +55,7 @@ namespace jln::mp::detail
     using f = _adjacent_difference_msvc<C, x, (xs::value - ys::value)...>;
 #else
     template<class C, class x, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), x, number<xs::value - ys::value>...);
+    using f = JLN_MP_CALL_TRACE(C, x, number<xs::value - ys::value>...);
 #endif
   };
 

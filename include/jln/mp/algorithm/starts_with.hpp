@@ -26,7 +26,7 @@ namespace jln::mp
   struct starts_with<list<Ts...>, C>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename conditional_c<sizeof...(Ts) <= sizeof...(xs)>
       ::template f<take_front_c<sizeof...(Ts), lift<list, is<list<Ts...>>>>,
                    always<false_>>
@@ -39,7 +39,7 @@ namespace jln::mp
   struct starts_with<list<T>, C>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename conditional_c<1 <= sizeof...(xs)>
       ::template f<front<is<T>>, always<false_>>
       ::template f<xs...>
@@ -50,7 +50,7 @@ namespace jln::mp
   struct starts_with<list<>, C>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), true_);
+    using f = JLN_MP_CALL_TRACE(C, true_);
   };
   /// \endcond
 }

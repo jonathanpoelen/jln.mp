@@ -72,8 +72,8 @@ namespace jln::mp::detail
   struct counter_impl
   {
     template<class C, class F, class... ys>
-    using f = JLN_MP_CALL_TRACE((C),
-      JLN_MP_CALL_TRACE((F), xs, mp::number<count_unique_v<xs, ys...>>)...
+    using f = JLN_MP_CALL_TRACE(C,
+      JLN_MP_CALL_TRACE(F, xs, mp::number<count_unique_v<xs, ys...>>)...
     );
   };
 }

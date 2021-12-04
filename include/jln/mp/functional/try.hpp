@@ -92,21 +92,21 @@ namespace jln::mp::detail
   template<class F, class... xs>
   struct _try_impl<F, list<xs...>, std::void_t<typename F::template f<xs...>>>
   {
-    using type = JLN_MP_CALL_TRACE((F), xs...);
+    using type = JLN_MP_CALL_TRACE(F, xs...);
   };
 
   template<class x>
   struct _try_dispatch
   {
     template<class TC, class FC, class...>
-    using f = JLN_MP_CALL_TRACE((TC), x);
+    using f = JLN_MP_CALL_TRACE(TC, x);
   };
 
   template<>
   struct _try_dispatch<na>
   {
     template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE((FC), xs...);
+    using f = JLN_MP_CALL_TRACE(FC, xs...);
   };
 }
 /// \endcond

@@ -243,13 +243,24 @@ preproc = P{
       / function(v, f, args) return f .. '::f<' .. preproc:match(args) .. '>'
                                  .. (v ~= '' and '::value' or '') end
     )
-  + ('JLN_MP_CALL_TRACE' * P'_T'^0 * '(' * ws0 * '(' * C((1-S'()' + balancedparent)^1)
-     * ')' * ws0 * ',' * ws0 * C((1-S'()' + balancedparent)^1)
+  + (P'JLN_MP_TRACE_F(' * C((1-S'()' + balancedparent)^1) * ')'
+     / function(f) return f end
+    )
+  + ('JLN_MP_CALL_TRACE' * P'_T'^0 * '(' * C((1-S'(),' + balancedparent)^1)
+     * ',' * ws0 * C((1-S'()' + balancedparent)^1)
      * ')'
      / function(f, args) return f .. '::f<' .. preproc:match(args) .. '>' end
     )
+  + ('JLN_MP_DCALL_TRACE_XS_0('
+      * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
+      * ')'
+      / function(f, args) return f .. '::f<>' end
+    )
   + ('JLN_MP_CALL_TRACE_0_ARGS(' * ws0 * C((1-S'()' + balancedparent)^1) * ')'
      / function(f) return f .. '::f<>' end
+    )
+  + (P'JLN_MP_IDENT(' * C((1-S'()' + balancedparent)^1) * ')'
+     / function(f) return f end
     )
   + (P'JLN_MP_TPL_AUTO_OR_INT' / 'auto /*or int_*/')
 

@@ -59,14 +59,14 @@ namespace jln::mp::detail
   struct _unpack<Seq<ys...>>
   {
     template<class C, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), xs..., ys...);
+    using f = JLN_MP_CALL_TRACE(C, xs..., ys...);
   };
 
   template<template<class...> class Seq, class... xs>
   struct _unpack_append<Seq<xs...>>
   {
     template<class C, class... ys>
-    using f = JLN_MP_CALL_TRACE((C), xs..., ys...);
+    using f = JLN_MP_CALL_TRACE(C, xs..., ys...);
   };
 
   template<class C>

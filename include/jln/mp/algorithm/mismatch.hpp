@@ -188,14 +188,14 @@ namespace jln::mp::detail
     struct apply_index
     {
       template<class C, class NC, class, class>
-      using f = JLN_MP_CALL_TRACE((C), i, number<0>);
+      using f = JLN_MP_CALL_TRACE(C, i, number<0>);
     };
 
     template<class n>
     struct apply_index<n, n>
     {
       template<class C, class NC, class i, class r>
-      using f = JLN_MP_CALL_TRACE((NC), i, r);
+      using f = JLN_MP_CALL_TRACE(NC, i, r);
     };
 
     template<bool, bool>
@@ -248,7 +248,7 @@ namespace jln::mp::detail
   struct _mismatch<Txs<>, Tys<ys...>>
   {
     template<class Cmp, class C, class NC>
-    using f = JLN_MP_CALL_TRACE((NC), number<0>, number<-1>);
+    using f = JLN_MP_CALL_TRACE(NC, number<0>, number<-1>);
   };
 
   template<
@@ -257,14 +257,14 @@ namespace jln::mp::detail
   struct _mismatch<Txs<xs...>, Tys<>>
   {
     template<class Cmp, class C, class NC>
-    using f = JLN_MP_CALL_TRACE((NC), number<0>, number<1>);
+    using f = JLN_MP_CALL_TRACE(NC, number<0>, number<1>);
   };
 
   template<template<class...> class Txs, template<class...> class Tys>
   struct _mismatch<Txs<>, Tys<>>
   {
     template<class Cmp, class C, class NC>
-    using f = JLN_MP_CALL_TRACE((NC), number<-1>, number<0>);
+    using f = JLN_MP_CALL_TRACE(NC, number<-1>, number<0>);
   };
 }
 /// \endcond

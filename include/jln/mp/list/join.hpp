@@ -59,7 +59,7 @@ namespace jln::mp::detail
       mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>  \
     struct f<F, mp_xs(list<, ...>, JLN_MP_COMMA)> \
     {                                             \
-      using type = JLN_MP_CALL_TRACE((F),         \
+      using type = JLN_MP_CALL_TRACE(F,         \
         mp_xs(JLN_MP_NIL, ..., JLN_MP_COMMA));    \
     };                                            \
   };

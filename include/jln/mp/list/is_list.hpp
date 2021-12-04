@@ -22,13 +22,13 @@ namespace jln::mp
   struct is_list
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), typename detail::_is_list<x>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_is_list<x>::type);
   };
 
   namespace emp
   {
     template<class x, class C = mp::identity>
-    using is_list = JLN_MP_CALL_TRACE((C), typename detail::_is_list<x>::type);
+    using is_list = JLN_MP_CALL_TRACE(C, typename detail::_is_list<x>::type);
   }
 } // namespace jln::mp
 

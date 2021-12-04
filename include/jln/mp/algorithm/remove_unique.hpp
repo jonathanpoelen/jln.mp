@@ -150,7 +150,7 @@ namespace jln::mp::detail
   struct _copy_unique<true>
   {
     template<class C, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), xs...);
+    using f = JLN_MP_CALL_TRACE(C, xs...);
   };
 
 
@@ -228,7 +228,7 @@ namespace jln::mp::detail
   struct copy_unique_if_impl<std::integer_sequence<std::size_t, i>>
   {
     template<class C, class Cmp, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), xs...);
+    using f = JLN_MP_CALL_TRACE(C, xs...);
   };
 
   template<class Cmp, class C>

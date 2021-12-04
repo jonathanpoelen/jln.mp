@@ -24,7 +24,7 @@ namespace jln::mp
   struct as_list
   {
     template<class seq>
-    using f = JLN_MP_CALL_TRACE((C), typename detail::_as_list<seq>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_as_list<seq>::type);
   };
 
   namespace emp

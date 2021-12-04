@@ -167,14 +167,14 @@ namespace jln::mp::detail
   struct _sliding<1>
   {
     template<class C, int_, int_, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), list<xs...>);
+    using f = JLN_MP_CALL_TRACE(C, list<xs...>);
   };
 
   template<>
   struct _sliding<2>
   {
     template<class C, int_, int_, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), list<xs>...);
+    using f = JLN_MP_CALL_TRACE(C, list<xs>...);
   };
 
   template<>
@@ -280,7 +280,7 @@ namespace jln::mp::detail
   struct _sliding<9>
   {
     template<class C, int_ size, int_, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), typename take_front_c<size>::template f<xs...>);
+    using f = JLN_MP_CALL_TRACE(C, typename take_front_c<size>::template f<xs...>);
   };
 }
 /// \endcond

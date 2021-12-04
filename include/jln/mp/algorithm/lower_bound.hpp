@@ -184,7 +184,7 @@ namespace jln::mp::detail
   {                                                          \
     template<unsigned n, class Pred, class C, class NC,      \
       class x>                                               \
-    using f = JLN_MP_CALL_TRACE_T((Cond(x)                   \
+    using f = JLN_MP_CALL_TRACE_T(JLN_MP_IDENT(Cond(x)       \
       ::template f<_cartesian<NC, 0> /* for NC::f<> */, C>), \
       x);                                                    \
   };                                                         \
@@ -194,7 +194,7 @@ namespace jln::mp::detail
   {                                                          \
     template<unsigned n, class Pred, class C, class NC,      \
       class x, class... xs>                                  \
-    using f = JLN_MP_CALL_TRACE_T((Cond(x)                   \
+    using f = JLN_MP_CALL_TRACE_T(JLN_MP_IDENT(Cond(x)       \
       ::template f<pop_front<C>, C>),                        \
       x, xs...);                                             \
   };

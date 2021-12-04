@@ -98,7 +98,7 @@ namespace jln::mp::detail
     template<unsigned size, class C,           \
       mp_rep(class JLN_MP_COMMA, JLN_MP_NIL)   \
       class... xs>                             \
-    using f = JLN_MP_CALL_TRACE((C), xs...);   \
+    using f = JLN_MP_CALL_TRACE(C, xs...);   \
   };
 
   JLN_MP_GEN_XS_0_TO_8(JLN_MP_DROP_IMPL)

@@ -48,7 +48,7 @@ namespace jln::mp
   namespace emp
   {
     template<class state, class F, class C = mp::listify>
-    using unfold = JLN_MP_CALL_TRACE((mp::unfold<F, C>), state);
+    using unfold = JLN_MP_CALL_TRACE(JLN_MP_IDENT(mp::unfold<F, C>), state);
   }
 }
 
@@ -77,7 +77,7 @@ namespace jln::mp::detail
   struct unfold_impl
   {
     template<class state, class... xs>
-    using f = typename unfold_next<JLN_MP_CALL_TRACE((F), state)>::template f<xs...>;
+    using f = typename unfold_next<JLN_MP_CALL_TRACE(F, state)>::template f<xs...>;
   };
 }
 /// \endcond

@@ -98,7 +98,7 @@ namespace jln::mp::detail
   struct _cartesian<C, 1>
   {
     template<class seq>
-    using f = JLN_MP_CALL_TRACE((C), typename _product1<seq>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename _product1<seq>::type);
   };
 
   template<>

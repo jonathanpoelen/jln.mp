@@ -77,7 +77,7 @@ namespace jln::mp::detail
     template<unsigned size, class C,                      \
       mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
       class... xs>                                        \
-    using f = JLN_MP_CALL_TRACE((C),                      \
+    using f = JLN_MP_CALL_TRACE(C,                      \
       xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)); \
   };
 

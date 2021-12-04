@@ -14,7 +14,7 @@ namespace jln::mp
   struct sizeof_
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<sizeof(x)>);
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof(x)>);
   };
 
   namespace emp

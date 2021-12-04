@@ -51,7 +51,7 @@ namespace jln::mp::detail
   struct _iterate<0>
   {
     template<uint_ i, class C, class F, class x>
-    using f = JLN_MP_CALL_TRACE((C), x);
+    using f = JLN_MP_CALL_TRACE(C, x);
   };
 
 #define JLN_MP_ITERATE(n, mp_xs, mp_rsx, mp_rep)  \
@@ -59,7 +59,7 @@ namespace jln::mp::detail
   struct _iterate<n>                              \
   {                                               \
     template<uint_ i, class C, class F, class x>  \
-    using f = JLN_MP_CALL_TRACE((C),              \
+    using f = JLN_MP_CALL_TRACE(C,              \
       mp_rep(typename F::template f<, JLN_MP_NIL) \
       x                                           \
       mp_rep(>, JLN_MP_NIL)                       \

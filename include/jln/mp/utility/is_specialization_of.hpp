@@ -22,7 +22,7 @@ namespace jln::mp
   struct is_specialization_of
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename detail::_is_specialization_of<Tpl, x>::type);
   };
 

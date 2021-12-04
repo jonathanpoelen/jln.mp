@@ -23,7 +23,7 @@ namespace jln::mp
   struct is_sorted
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename detail::_is_sorted<detail::min(sizeof...(xs), 3)>
       ::template f<Cmp, xs...>
     );

@@ -15,7 +15,7 @@ namespace jln::mp
   struct lift_t
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), JLN_MP_DCALLF_XS(xs, F, xs...)::type);
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_XS(xs, F, xs...)::type);
   };
 
   /// \cond
@@ -34,7 +34,7 @@ namespace jln::mp
   struct lift
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), JLN_MP_DCALLF_XS(xs, F, xs...));
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_XS(xs, F, xs...));
   };
 
   /// \cond
@@ -50,7 +50,7 @@ namespace jln::mp
   struct lift_c
   {
     template<JLN_MP_TPL_AUTO_OR_INT... xs>
-    using f = JLN_MP_CALL_TRACE((C), JLN_MP_DCALLF_C_XS(xs, F, xs...));
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs...));
   };
 
   /// \cond
@@ -66,7 +66,7 @@ namespace jln::mp
   struct lift_v
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C), JLN_MP_DCALLF_C_XS(xs, F, xs::value...));
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs::value...));
   };
 
   /// \cond

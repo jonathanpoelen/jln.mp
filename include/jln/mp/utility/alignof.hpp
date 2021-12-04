@@ -14,7 +14,7 @@ namespace jln::mp
   struct alignof_
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), number<alignof(x)>);
+    using f = JLN_MP_CALL_TRACE(C, number<alignof(x)>);
   };
 
   namespace emp

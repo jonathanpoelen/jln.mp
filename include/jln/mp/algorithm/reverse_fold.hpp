@@ -35,7 +35,7 @@ namespace jln::mp
   struct reverse_fold
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((C),
+    using f = JLN_MP_CALL_TRACE(C,
       typename detail::_reverse_fold<
         detail::sub_1_n_4_or_less_8_16_64_256(sizeof...(xs))
       >::template f<JLN_MP_TRACE_F(F)::template f, xs...>

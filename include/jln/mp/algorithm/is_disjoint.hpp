@@ -27,7 +27,7 @@ namespace jln::mp
   struct is_disjoint_with
   {
     template<class... seqs>
-    using f = JLN_MP_CALL_TRACE((C), number<
+    using f = JLN_MP_CALL_TRACE(C, number<
       detail::_is_disjoint<detail::min(3, sizeof...(seqs))>
       ::template f<JLN_MP_TRACE_F(detail::to_not_fn_t<Equal>), seqs...>
       ::value

@@ -39,7 +39,7 @@ namespace jln::mp::detail
   struct take_while_impl<_drop_while_continue>
   {
     template<class C, class... xs>
-    using f = JLN_MP_CALL_TRACE((C), xs...);
+    using f = JLN_MP_CALL_TRACE(C, xs...);
   };
 
   template<std::size_t n>

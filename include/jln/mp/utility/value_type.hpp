@@ -13,7 +13,7 @@ namespace jln::mp
   struct value_type
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE((C), typename x::value_type);
+    using f = JLN_MP_CALL_TRACE(C, typename x::value_type);
   };
 
   template<>
