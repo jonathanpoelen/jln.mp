@@ -280,7 +280,6 @@ executable('check_inc', [
   'test/autogen/algorithm@zip.cpp',
   'test/autogen/detail@type_identity.cpp',
   'test/autogen/detail@compiler.cpp',
-  'test/autogen/detail@call_trace.cpp',
   'test/autogen/detail@enumerate.cpp',
   'test/autogen/functional@bind.cpp',
   'test/autogen/functional@call.cpp',
