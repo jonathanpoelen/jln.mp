@@ -7,6 +7,7 @@
 
 #if ! JLN_MP_ENABLE_DEBUG
   #define JLN_MP_TRACE_F(...) __VA_ARGS__
+  #define JLN_MP_TRACE_TYPENAME
 
   #define JLN_MP_CALL_TRACE(C, ...) typename JLN_MP_IDENT C ::template f<__VA_ARGS__>
   #define JLN_MP_CALL_TRACE_T(C, ...) typename JLN_MP_IDENT C ::template f<__VA_ARGS__>
@@ -14,6 +15,7 @@
 #else
   // does not compile with msvc...
   #define JLN_MP_TRACE_F(...) memoize<__VA_ARGS__>
+  #define JLN_MP_TRACE_TYPENAME typename
 
   #define JLN_MP_CALL_TRACE(C, ...)                \
     typename ::jln::mp::detail::memoizer_impl<     \

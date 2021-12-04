@@ -19,7 +19,7 @@ namespace jln::mp
   struct capture_v
   {
     template<class C, class... ys>
-    using f = typename JLN_MP_TRACE_F(C)::template f<xs::value..., ys::value...>;
+    using f = typename C::template f<xs::value..., ys::value...>;
   };
 
   template<JLN_MP_TPL_AUTO_OR_INT... xs>
@@ -29,7 +29,7 @@ namespace jln::mp
   struct capture_v_c
   {
     template<class C, class... ys>
-    using f = typename JLN_MP_TRACE_F(C)::template f<xs..., ys::value...>;
+    using f = typename C::template f<xs..., ys::value...>;
   };
 
   template<class... xs>
@@ -43,7 +43,7 @@ namespace jln::mp
   struct reverse_capture_v
   {
     template<class C, class... ys>
-    using f = typename JLN_MP_TRACE_F(C)::template f<ys::value..., xs::value...>;
+    using f = typename C::template f<ys::value..., xs::value...>;
   };
 
   template<JLN_MP_TPL_AUTO_OR_INT... xs>
@@ -53,7 +53,7 @@ namespace jln::mp
   struct reverse_capture_v_c
   {
     template<class C, class... ys>
-    using f = typename JLN_MP_TRACE_F(C)::template f<ys::value..., xs...>;
+    using f = typename C::template f<ys::value..., xs...>;
   };
 
 }

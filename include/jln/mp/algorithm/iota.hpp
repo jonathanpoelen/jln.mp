@@ -59,7 +59,7 @@ namespace jln::mp::detail
   struct _iota
   {
     template<int_... ns>
-    using f = JLN_MP_CALL_TRACE((C), (start + ns * stride)...);
+    using f = typename C::template f<(start + ns * stride)...>;
   };
 
   template<int_ start, int_ stride>

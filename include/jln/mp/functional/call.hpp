@@ -33,7 +33,17 @@ using call = C::f<xs...>;
 #define JLN_MP_DCALLF_XS(xs, F, ...) F<__VA_ARGS__>
 #define JLN_MP_DCALLF_C_XS(xs, F, ...) F<__VA_ARGS__>
 
-#elif JLN_MP_MSVC
+#else
+
+#define JLN_MP_DCALLF_XS(xs, C, ...)                               \
+  typename detail::dcallf<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+    ::template f<C, __VA_ARGS__>
+
+#define JLN_MP_DCALLF_C_XS(xs, C, ...)                               \
+  typename detail::dcallf_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+    ::template f<C, __VA_ARGS__>
+
+# if JLN_MP_MSVC
 
 template<class C, class... xs>
 using call = memoize_call<C, xs...>;
@@ -44,10 +54,7 @@ using call = memoize_call<C, xs...>;
 #  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) \
     ::jln::detail::_memoizer<C, __VA_ARGS__>::type::value
 
-#  define JLN_MP_DCALL_R_TRACE_XS(xs, C, ...) \
-    typename ::jln::detail::_memoizer<C, __VA_ARGS__>::type
-
-#else
+# else
 
 template<class C, class... xs>
 using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
@@ -65,11 +72,7 @@ using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
       ::template f<__VA_ARGS__>                                                    \
       ::value
 
-#  define JLN_MP_DCALL_R_TRACE_XS(xs, C, ...)                                      \
-    ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>              \
-      ::template f<JLN_MP_TRACE_F(C), ::jln::mp::detail::too_many_arguments_error> \
-      ::template f<__VA_ARGS__>
-
+# endif
 #endif
 
 
@@ -86,14 +89,6 @@ using call_c = typename detail::dcall_c<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT
 
 template<class C, class... xs>
 using call_t = typename call<C, xs...>::type;
-
-#define JLN_MP_DCALLF_XS(xs, C, ...)                               \
-  typename detail::dcallf<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
-    ::template f<C, __VA_ARGS__>
-
-#define JLN_MP_DCALLF_C_XS(xs, C, ...)                               \
-  typename detail::dcallf_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
-    ::template f<C, __VA_ARGS__>
 
 }
 

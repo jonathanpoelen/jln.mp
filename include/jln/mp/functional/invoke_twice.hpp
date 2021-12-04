@@ -13,6 +13,7 @@ namespace jln::mp
   struct invoke_twice
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE((JLN_MP_DCALL_R_TRACE_XS(xs, F, xs...)), xs...);
+    using f = JLN_MP_TRACE_TYPENAME JLN_MP_TRACE_F(JLN_MP_DCALL_TRACE_XS(xs, F, xs...))
+      ::template f<xs...>;
   };
 }
