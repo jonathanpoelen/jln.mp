@@ -246,9 +246,15 @@ preproc = P{
   + (P'JLN_MP_TRACE_F(' * C((1-S'()' + balancedparent)^1) * ')'
      / function(f) return preproc:match(f) end
     )
-  + ((P'JLN_MP_CALL_TRACE' + P'JLN_MP_MSVC_FIX_CALL') * P'_T'^0
-     * '(' * C((1-S'(),' + balancedparent)^1)
+  + (P'JLN_MP_CALL_TRACE' * P'_T'^0 * '('
+     * C((1-S'(),' + balancedparent)^1)
      * ',' * ws0 * C((1-S'()' + balancedparent)^1)
+     * ')'
+     / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
+    )
+  + (P'JLN_MP_MSVC_FIX_CALL' * P'_T'^0 * '(' * ws0
+     * '(' * C((1-S'()' + balancedparent)^1) * '),'
+     * ws0 * C((1-S'()' + balancedparent)^1)
      * ')'
      / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
     )
