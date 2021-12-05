@@ -49,7 +49,6 @@ namespace jln::mp
 
 #include <jln/mp/detail/enumerate.hpp>
 #include <jln/mp/list/join.hpp>
-#include <algorithm>
 
 /// \cond
 namespace jln::mp::detail

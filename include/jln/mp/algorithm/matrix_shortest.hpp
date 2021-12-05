@@ -4,7 +4,7 @@
 #include <jln/mp/list/take_front.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/functional/each.hpp>
-#include <algorithm>
+#include <initializer_list>
 
 namespace jln::mp
 {
@@ -18,9 +18,11 @@ namespace jln::mp
       ::template f<unpack<take_front_c<min, F>>, G>
     ...>;
 
+    constexpr int_ min_seq(std::initializer_list<int_> l);
+
     template<class F, class G, class C, class... ns>
     using matrix_shortest_impl = matrix_shortest_each_impl<
-      F, G, C, std::min({int_(~0u), ns::value...}), ns...>;
+      F, G, C, min_seq({ns::value...}), ns...>;
   }
   /// \endcond
 
@@ -67,3 +69,27 @@ namespace jln::mp
     using matrix_shortest = unpack<L, mp::matrix_shortest<C>>;
   }
 }
+
+/// \cond
+namespace jln::mp::detail
+{
+  constexpr int_ min_seq(std::initializer_list<int_> l)
+  {
+    if (l.size()) {
+      auto first = l.begin();
+      auto last = l.end();
+
+      int_ r = *first++;
+      for (; first != last; ++first) {
+        if (*first < r) {
+          r = *first;
+        }
+      }
+
+      return r;
+    }
+
+    return 0;
+  }
+}
+/// \endcond
