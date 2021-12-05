@@ -264,6 +264,7 @@ preproc = P{
      / function(f) return preproc:match(f) end
     )
   + (P'JLN_MP_TPL_AUTO_OR_INT' / 'auto /*or int_*/')
+  + (P'JLN_MP_TRACE_TYPENAME' / '')
 
 , p='#' * sp0 / '' *
     ( 'ifdef JLN_MP_DOXYGENATING'
