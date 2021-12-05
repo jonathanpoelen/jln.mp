@@ -92,7 +92,7 @@ namespace jln::mp
 #  define JLN_MP_MSVC_LIKE 1
 #  define JLN_MP_CLANG_CL 1
 #  define JLN_MP_CLANG 0
-#  define JLN_MP_MSVC 0
+#  define JLN_MP_MSVC 1
 #  define JLN_MP_GCC 0
 #elif defined(__clang__)
 #  define JLN_MP_CLANG_LIKE 1
@@ -149,10 +149,10 @@ namespace jln::mp
 
 // Diagnostic
 //@{
-#if JLN_MP_CLANG_LIKE || JLN_MP_GCC
+#if JLN_MP_CLANG || JLN_MP_GCC
 
-#  define JLN_MP_DIAGNOSTIC_PUSH() JLN_MP_PRAGMA_I(GCC diagnostic push)
-#  define JLN_MP_DIAGNOSTIC_POP() JLN_MP_PRAGMA_I(GCC diagnostic pop)
+#  define JLN_MP_DIAGNOSTIC_PUSH() _Pragma("GCC diagnostic push")
+#  define JLN_MP_DIAGNOSTIC_POP() _Pragma("GCC diagnostic pop")
 
 #  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X)
 #  define JLN_MP_DIAGNOSTIC_GCC_IGNORE(X) JLN_MP_PRAGMA_I(GCC diagnostic ignored X)
@@ -184,22 +184,29 @@ namespace jln::mp
 #  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X) JLN_MP_PRAGMA_I(warning(disable:X))
 #  define JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
 #  define JLN_MP_DIAGNOSTIC_GCC_IGNORE(X)
-#  define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X)
 
 #  define JLN_MP_DIAGNOSTIC_MSVC_WARNING(X) JLN_MP_PRAGMA_I(warning(4:X))
 #  define JLN_MP_DIAGNOSTIC_GCC_ONLY_WARNING(X)
 #  define JLN_MP_DIAGNOSTIC_GCC_WARNING(X)
-#  define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X)
 
 #  define JLN_MP_DIAGNOSTIC_MSVC_ERROR(X) JLN_MP_PRAGMA_I(error(X))
 #  define JLN_MP_DIAGNOSTIC_GCC_ONLY_ERROR(X)
 #  define JLN_MP_DIAGNOSTIC_GCC_ERROR(X)
-#  define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X)
+
+#  if JLN_MP_CLANG_LIKE
+#    define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X) JLN_MP_PRAGMA_I(GCC diagnostic ignored X)
+#    define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X) JLN_MP_PRAGMA_I(GCC diagnostic warning X)
+#    define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X) JLN_MP_PRAGMA_I(GCC diagnostic error X)
+#  else
+#    define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X)
+#    define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X)
+#    define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X)
+#  endif
 
 #else
 
-#  define JLN_MP_DIAGNOSTIC_PUSH
-#  define JLN_MP_DIAGNOSTIC_POP
+#  define JLN_MP_DIAGNOSTIC_PUSH()
+#  define JLN_MP_DIAGNOSTIC_POP()
 
 #  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X)
 #  define JLN_MP_DIAGNOSTIC_GCC_IGNORE(X)
@@ -428,16 +435,16 @@ using call = C::f<xs...>;
 # if JLN_MP_MSVC
 
 template<class C, class... xs>
-using call = typename detail::_memoizer<C, list<xs...>>::type;
+using call = typename detail::memoizer_impl<C, list<xs...>>::type;
 
 #  define JLN_MP_DCALL_TRACE_XS(xs, C, ...) \
-    typename ::jln::detail::_memoizer<C, ::jln::list<__VA_ARGS__>>::type
+    typename ::jln::mp::detail::memoizer_impl<C, ::jln::mp::list<__VA_ARGS__>>::type
 
 #  define JLN_MP_DCALL_TRACE_XS_0(xs, C) \
-    typename ::jln::detail::_memoizer<C, ::jln::list<>>::type
+    typename ::jln::mp::detail::memoizer_impl<C, ::jln::mp::list<>>::type
 
 #  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) \
-    ::jln::detail::_memoizer<C, ::jln::list<__VA_ARGS__>>::type::value
+    ::jln::mp::detail::memoizer_impl<C, ::jln::mp::list<__VA_ARGS__>>::type::value
 
 # else
 
@@ -467,9 +474,14 @@ using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
 
 
 #if JLN_MP_MSVC
-# define JLN_MP_MSVC_FIX_CALL(C, ...) ::jln::mp::detail::raw_call<C, __VA_ARGS__>
+# define JLN_MP_MSVC_FIX_CALL(C, ...) \
+  ::jln::mp::detail::raw_call<typename JLN_MP_IDENT C, __VA_ARGS__>
+
+# define JLN_MP_MSVC_FIX_CALL_T(C, ...) \
+  ::jln::mp::detail::raw_call<JLN_MP_IDENT C, __VA_ARGS__>
 #else
 # define JLN_MP_MSVC_FIX_CALL(C, ...) typename JLN_MP_IDENT C::template f<__VA_ARGS__>
+# define JLN_MP_MSVC_FIX_CALL_T(C, ...) typename JLN_MP_IDENT C::template f<__VA_ARGS__>
 #endif
 
 
@@ -6911,7 +6923,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename join<C>::template f<
-      typename wrap_in_list_c<selectors::value>::template f<xs>...
+      JLN_MP_MSVC_FIX_CALL_T((wrap_in_list_c<selectors::value>), xs)...
     >;
   };
 
@@ -9335,8 +9347,11 @@ namespace jln::mp
   template<class C = identity>
   using is_unique = typename detail::mk_is_unique<lift<std::is_same>, C>::type;
 
+  /// Checks whether no \values are identical.
+  /// The search stops at the first value which is not unique.
+  /// \treturn \number
   template<class Cmp = lift<std::is_same>, class C = identity>
-  using is_unique_with = typename detail::mk_is_unique<Cmp, C>::type;
+  using is_unique_if = typename detail::mk_is_unique<Cmp, C>::type;
 
   namespace emp
   {
@@ -9344,7 +9359,7 @@ namespace jln::mp
     using is_unique = unpack<L, is_unique<C>>;
 
     template<class L, class Cmp = lift<std::is_same>, class C = mp::identity>
-    using is_unique_with = unpack<L, is_unique_with<Cmp, C>>;
+    using is_unique_if = unpack<L, is_unique_if<Cmp, C>>;
   }
 }
 
@@ -9353,7 +9368,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<class C>
-  struct _is_unique
+  struct is_unique_impl
   {
     template<class... xs>
 #if JLN_MP_MSVC_LIKE
@@ -9365,16 +9380,53 @@ namespace jln::mp::detail
 #endif
   };
 
+  template<bool>
+  struct is_unique_unpack_impl;
+
+  template<>
+  struct is_unique_unpack_impl<false>
+  {
+    template<class C, class seq, class... xs>
+    using f = typename _unpack<seq>::template f<C, xs...>;
+  };
+
+  template<>
+  struct is_unique_unpack_impl<true>
+  {
+    template<class C, class seq, class... xs>
+    using f = void;
+  };
+
+  template<class C>
+  struct is_unique_unpack
+  {
+    template<class seq, class... xs>
+    using f = typename is_unique_unpack_impl<std::is_same<seq, void>::value>
+      ::template f<C, seq, xs...>;
+  };
+
+  template<class Cmp>
+  struct is_unique_set_cmp_push_back_or_void
+  {
+    template<class x, class... xs>
+    using f = typename conditional_c<
+      index_if<push_back<x, Cmp>, identity, always<number<-1>>>::template f<xs...>::value == -1
+    >::template f<list<xs..., x>, void>;
+  };
+
   template<class Cmp, class C>
   struct mk_is_unique
   {
-    using type = tee<unique_if<Cmp>, listify, lift_t<std::is_same, to_bool<C>>>;
+    using type = push_front<list<>, fold_left<
+      is_unique_unpack<is_unique_set_cmp_push_back_or_void<JLN_MP_TRACE_F(Cmp)>>,
+      is_not<void, C>
+    >>;
   };
 
   template<class C>
   struct mk_is_unique<lift<std::is_same>, C>
   {
-    using type = _is_unique<C>;
+    using type = is_unique_impl<C>;
   };
 
   template<class C>
@@ -13350,10 +13402,8 @@ namespace jln::mp::detail
   // each
   template <class C, class... Fs>
   struct _on_select<0, C, Fs...>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_CALL_TRACE(Fs, xs)...);
-  };
+  : _each<C, Fs...>
+  {};
 
   // partial
   template <class C, class... Fs>
