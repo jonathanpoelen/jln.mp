@@ -63,10 +63,8 @@ namespace jln::mp::detail
   // each
   template <class C, class... Fs>
   struct _on_select<0, C, Fs...>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_CALL_TRACE(Fs, xs)...);
-  };
+  : _each<C, Fs...>
+  {};
 
   // partial
   template <class C, class... Fs>

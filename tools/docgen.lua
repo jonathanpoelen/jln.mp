@@ -236,25 +236,26 @@ preproc = P{
   )^0)
 
 , c=('JLN_MP_DCALL' * (P'F'^0) * C(P'_V'^0) * (P'_C'^0) * (P'_TRACE'^0) * '_XS('
-      * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
-      * ',' * ws0 * cid
-      * ',' * ws0 * C((1-S'()' + balancedparent)^1)
-      * ')'
-      / function(v, f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>'
-                                 .. (v ~= '' and '::value' or '') end
+     * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
+     * ',' * ws0 * cid
+     * ',' * ws0 * C((1-S'()' + balancedparent)^1)
+     * ')'
+     / function(v, f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>'
+                                .. (v ~= '' and '::value' or '') end
     )
   + (P'JLN_MP_TRACE_F(' * C((1-S'()' + balancedparent)^1) * ')'
      / function(f) return preproc:match(f) end
     )
-  + ('JLN_MP_CALL_TRACE' * P'_T'^0 * '(' * C((1-S'(),' + balancedparent)^1)
+  + ((P'JLN_MP_CALL_TRACE' + P'JLN_MP_MSVC_FIX_CALL') * P'_T'^0
+     * '(' * C((1-S'(),' + balancedparent)^1)
      * ',' * ws0 * C((1-S'()' + balancedparent)^1)
      * ')'
      / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
     )
   + ('JLN_MP_DCALL_TRACE_XS_0('
-      * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
-      * ')'
-      / function(f, args) return preproc:match(f) .. '::f<>' end
+     * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
+     * ')'
+     / function(f, args) return preproc:match(f) .. '::f<>' end
     )
   + ('JLN_MP_CALL_TRACE_0_ARGS(' * ws0 * C((1-S'()' + balancedparent)^1) * ')'
      / function(f) return preproc:match(f) .. '::f<>' end

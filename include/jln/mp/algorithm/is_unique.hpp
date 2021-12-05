@@ -40,7 +40,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<class C>
-  struct _is_unique
+  struct is_unique_impl
   {
     template<class... xs>
 #if JLN_MP_MSVC_LIKE
@@ -61,7 +61,7 @@ namespace jln::mp::detail
   template<class C>
   struct mk_is_unique<lift<std::is_same>, C>
   {
-    using type = _is_unique<C>;
+    using type = is_unique_impl<C>;
   };
 
   template<class C>

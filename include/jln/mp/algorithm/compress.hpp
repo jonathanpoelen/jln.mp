@@ -28,7 +28,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename join<C>::template f<
-      typename wrap_in_list_c<selectors::value>::template f<xs>...
+      JLN_MP_MSVC_FIX_CALL_T((wrap_in_list_c<selectors::value>), xs)...
     >;
   };
 

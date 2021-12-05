@@ -117,8 +117,12 @@ using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
 #if JLN_MP_MSVC
 # define JLN_MP_MSVC_FIX_CALL(C, ...) \
   ::jln::mp::detail::raw_call<typename JLN_MP_IDENT C, __VA_ARGS__>
+
+# define JLN_MP_MSVC_FIX_CALL_T(C, ...) \
+  ::jln::mp::detail::raw_call<JLN_MP_IDENT C, __VA_ARGS__>
 #else
 # define JLN_MP_MSVC_FIX_CALL(C, ...) typename JLN_MP_IDENT C::template f<__VA_ARGS__>
+# define JLN_MP_MSVC_FIX_CALL_T(C, ...) typename JLN_MP_IDENT C::template f<__VA_ARGS__>
 #endif
 
 

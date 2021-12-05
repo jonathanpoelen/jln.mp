@@ -28,7 +28,7 @@ namespace jln::mp::smp
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, _is_unique<C>>
+  struct _sfinae<sfinae, is_unique_impl<C>>
   {
     using type = smp::is_unique<sfinae<C>>;
   };
