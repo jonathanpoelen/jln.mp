@@ -11,15 +11,16 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    struct _drop_back
-    {
-      template<class F, class G, int_ min, class n>
-      using impl = typename conditional_c<min != n::value>
-        ::template f<unpack<take_front_c<min, F>>, G>;
+    template<class F, class G, class C, int_ min, class... ns>
+    using matrix_shortest_each_impl = _each<
+      C,
+      typename conditional_c<min != ns::value>
+      ::template f<unpack<take_front_c<min, F>>, G>
+    ...>;
 
-      template<class F, class G, class C, class... ns>
-      using f = _each<C, impl<F, G, std::min({int_(~0u), ns::value...}), ns>...>;
-    };
+    template<class F, class G, class C, class... ns>
+    using matrix_shortest_impl = matrix_shortest_each_impl<
+      F, G, C, std::min({int_(~0u), ns::value...}), ns...>;
   }
   /// \endcond
 
@@ -48,7 +49,7 @@ namespace jln::mp
   struct matrix_shortest_with
   {
     template<class... seqs>
-    using f = typename detail::_drop_back::f<
+    using f = typename detail::matrix_shortest_impl<
       F, typename detail::optimize_useless_unpack<unpack<F>>::type,
       C, unpack<size<>>::f<seqs>...
     >::template f<seqs...>;
