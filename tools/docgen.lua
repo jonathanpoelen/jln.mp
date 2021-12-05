@@ -224,6 +224,8 @@ sanitize_struct_impl = function(s)
   return s
 end
 
+local blockComment = '/*' * Until'*/' * 2
+
 local f_ident = function(s) return s end
 local preproc -- used into JLN_MP_CALL transformation
 preproc = P{
@@ -286,7 +288,7 @@ preproc = P{
     + 'define ' * List(Until(S'\n\\'), P'\\' * 1) * 1 / ''
     )
   + '/// \\cond' * Until'\\endcond' * 9 / ''
-  + '/*' * Until'*/' * 2 / ''
+  + blockComment / ''
 
 , ['endif']=Until('#' * sp0 * (P'endif' + 'if'))
     * ('#' * sp0 * ('if' * unl * V'endif' + 'endif'))
@@ -295,7 +297,8 @@ preproc = P{
 local lines = Ct(List(C(unl) * sp0, '///' * P' '^-1 * -P'\\'))
 local tparam = Ct(
   (C('template' * balancedtag) + Cc(nil)) * ws0
-  * C(id * balancedtag^-1) * ws0 * C(P'...'^-1) * ws0 * (cid + Cc(nil)) * ws0
+  * C(id * balancedtag^-1 * (ws0 * blockComment)^-1)
+  * ws0 * C(P'...'^-1) * ws0 * (cid + Cc(nil)) * ws0
   * ('=' * ws0 * C(id * ws0 * balancedtag^-1))^-1)
 local tparams = Ct('<' * List(ws0 * tparam, ',') * '>')
 local template = 'template' * ws0 * tparams
