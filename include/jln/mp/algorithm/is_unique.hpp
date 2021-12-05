@@ -19,8 +19,11 @@ namespace jln::mp
   template<class C = identity>
   using is_unique = typename detail::mk_is_unique<lift<std::is_same>, C>::type;
 
+  /// Checks whether no \values are identical.
+  /// The search stops at the first value which is not unique.
+  /// \treturn \number
   template<class Cmp = lift<std::is_same>, class C = identity>
-  using is_unique_with = typename detail::mk_is_unique<Cmp, C>::type;
+  using is_unique_if = typename detail::mk_is_unique<Cmp, C>::type;
 
   namespace emp
   {
@@ -28,13 +31,14 @@ namespace jln::mp
     using is_unique = unpack<L, is_unique<C>>;
 
     template<class L, class Cmp = lift<std::is_same>, class C = mp::identity>
-    using is_unique_with = unpack<L, is_unique_with<Cmp, C>>;
+    using is_unique_if = unpack<L, is_unique_if<Cmp, C>>;
   }
 }
 
 
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/number/to_bool.hpp>
+#include <jln/mp/utility/is_not.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -52,10 +56,47 @@ namespace jln::mp::detail
 #endif
   };
 
+  template<bool>
+  struct is_unique_unpack_impl;
+
+  template<>
+  struct is_unique_unpack_impl<false>
+  {
+    template<class C, class seq, class... xs>
+    using f = typename _unpack<seq>::template f<C, xs...>;
+  };
+
+  template<>
+  struct is_unique_unpack_impl<true>
+  {
+    template<class C, class seq, class... xs>
+    using f = void;
+  };
+
+  template<class C>
+  struct is_unique_unpack
+  {
+    template<class seq, class... xs>
+    using f = typename is_unique_unpack_impl<std::is_same<seq, void>::value>
+      ::template f<C, seq, xs...>;
+  };
+
+  template<class Cmp>
+  struct is_unique_set_cmp_push_back_or_void
+  {
+    template<class x, class... xs>
+    using f = typename conditional_c<
+      index_if<push_back<x, Cmp>, identity, always<number<-1>>>::template f<xs...>::value == -1
+    >::template f<list<xs..., x>, void>;
+  };
+
   template<class Cmp, class C>
   struct mk_is_unique
   {
-    using type = tee<unique_if<Cmp>, listify, lift_t<std::is_same, to_bool<C>>>;
+    using type = push_front<list<>, fold_left<
+      is_unique_unpack<is_unique_set_cmp_push_back_or_void<JLN_MP_TRACE_F(Cmp)>>,
+      is_not<void, C>
+    >>;
   };
 
   template<class C>

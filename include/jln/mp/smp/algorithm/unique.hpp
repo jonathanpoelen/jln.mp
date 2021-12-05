@@ -73,14 +73,28 @@ namespace jln::mp::detail
     >::template f<list<xs..., x>, list<xs...>>;
   };
 
+  template<class C>
+  struct smp_unique_if_continuation
+  {
+    using type = C;
+  };
+
+  template<>
+  struct smp_unique_if_continuation<try_<unpack<lift<list>>>>
+  {
+    using type = contract<mp::identity>;
+  };
+
   template<template<class> class sfinae, class Cmp, class C>
   struct _sfinae<sfinae, push_front<list<>, fold_left<
     unpack<_set_cmp_push_back<JLN_MP_TRACE_F(Cmp)>>, C
   >>>
   {
     using type = contract<push_front<list<>, smp::fold_left<
-      contract<unpack<try_<_smp_set_cmp_push_back<JLN_MP_TRACE_F(sfinae<Cmp>)>>>>,
-      typename smp_unique_continuation<
+      contract<unpack<try_<_smp_set_cmp_push_back<
+        JLN_MP_TRACE_F(assume_binary<sfinae<Cmp>>)
+      >>>>,
+      typename smp_unique_if_continuation<
         assume_unary<sfinae<C>>
       >::type
     >>>;
