@@ -41,7 +41,12 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<std::size_t n>
-  struct _join_select : _join_select<n_16_64_256_1024(n)>
+  struct _join_select : _join_select<
+      n <= 16 ? 16
+    : n <= 64 ? 64
+    : n <= 256 ? 256
+    : 512
+  >
   {};
 
   JLN_MP_DIAGNOSTIC_PUSH()
@@ -59,7 +64,7 @@ namespace jln::mp::detail
       mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>  \
     struct f<F, mp_xs(list<, ...>, JLN_MP_COMMA)> \
     {                                             \
-      using type = JLN_MP_CALL_TRACE(F,         \
+      using type = JLN_MP_CALL_TRACE(F,           \
         mp_xs(JLN_MP_NIL, ..., JLN_MP_COMMA));    \
     };                                            \
   };
@@ -69,19 +74,19 @@ namespace jln::mp::detail
 #undef JLN_MP_JOIN_SELECT
 
   template<>
-  struct _join_select<1024>
+  struct _join_select<512>
   {
     template<class F,
-      JLN_MP_XS_1024(class, = list<>, JLN_MP_COMMA),
+      JLN_MP_XS_512(class, = list<>, JLN_MP_COMMA),
       class... tail>
     struct f;
 
     template<class F,
-      JLN_MP_XS_1024(class..., JLN_MP_NIL, JLN_MP_COMMA),
+      JLN_MP_XS_512(class..., JLN_MP_NIL, JLN_MP_COMMA),
       class... tail>
-    struct f<F, JLN_MP_XS_1024(list<, ...>, JLN_MP_COMMA), tail...>
+    struct f<F, JLN_MP_XS_512(list<, ...>, JLN_MP_COMMA), tail...>
     : _join_select<sizeof...(tail)+1>
-    ::template f<F, list<JLN_MP_XS_1024(JLN_MP_NIL, ..., JLN_MP_COMMA)>, tail...>
+    ::template f<F, list<JLN_MP_XS_512(JLN_MP_NIL, ..., JLN_MP_COMMA)>, tail...>
     {};
   };
 
