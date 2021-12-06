@@ -2,22 +2,15 @@
 
 #include "./is_invocable.hpp"
 #include "./is_same.hpp"
+#include "jln/mp/list/listify.hpp"
+#include "jln/mp/functional/if.hpp"
 #include "jln/mp/functional/call.hpp"
 #include "jln/mp/functional/lift.hpp"
-#include "jln/mp/utility/always.hpp"
-#include "jln/mp/smp/utility/unpack.hpp"
-#include "jln/mp/smp/utility/conditional.hpp"
 #include "jln/mp/smp/functional/sfinaefwd.hpp"
 
 namespace ut
 {
   using jln::mp::detail::sfinae;
-
-  template<class...>
-  struct other_list
-  {};
-
-  using other_listify = jln::mp::lift<other_list>;
 
   namespace detail
   {
@@ -176,12 +169,3 @@ using ut::test_pack;
 using ut::test_pack2;
 using ut::test_pack3;
 using ut::bad_function;
-
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae>
-  struct _sfinae<sfinae, lift<ut::other_list>>
-  {
-    using type = contract<lift<ut::other_list>>;
-  };
-}

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <jln/mp/functional/try.hpp>
-#include <jln/mp/number/operators.hpp>
 
 namespace jln::mp
 {

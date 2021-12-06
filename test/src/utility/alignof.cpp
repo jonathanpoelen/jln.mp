@@ -2,6 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/utility/alignof.hpp"
+#include "jln/mp/list/size.hpp"
 
 JLN_MP_DIAGNOSTIC_PUSH()
 JLN_MP_DIAGNOSTIC_MSVC_IGNORE(4324)

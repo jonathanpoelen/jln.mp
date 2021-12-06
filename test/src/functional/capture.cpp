@@ -2,6 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/functional/capture.hpp"
+#include "jln/mp/smp/functional/identity.hpp"
 #include "jln/mp/smp/list/pop_front.hpp"
 
 TEST_SUITE_BEGIN()

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <jln/mp/smp/contract.hpp>
+#include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/algorithm/matrix_shortest.hpp>
 

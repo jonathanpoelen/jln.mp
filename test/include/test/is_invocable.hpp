@@ -1,6 +1,5 @@
 #pragma once
 
-#include "jln/mp/number/number.hpp"
 #include "jln/mp/functional/is_invocable.hpp"
 #include "jln/mp/detail/compiler.hpp"
 

@@ -5,8 +5,10 @@
 #include "jln/mp/smp/functional/lift.hpp"
 #include "jln/mp/smp/functional/if.hpp"
 #include "jln/mp/smp/list/push_back.hpp"
+#include "jln/mp/smp/list/is_size_of.hpp"
 #include "jln/mp/smp/utility/is_not.hpp"
 #include "jln/mp/smp/utility/stl_traits.hpp"
+#include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
 

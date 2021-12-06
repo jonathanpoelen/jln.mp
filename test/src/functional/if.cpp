@@ -2,6 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/functional/if.hpp"
+#include "jln/mp/smp/list/listify.hpp"
 #include "jln/mp/smp/list/front.hpp"
 #include "jln/mp/number/number.hpp"
 

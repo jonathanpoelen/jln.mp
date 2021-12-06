@@ -4,6 +4,7 @@
 #include "jln/mp/smp/algorithm/remove_unique.hpp"
 #include "jln/mp/smp/functional/each.hpp"
 #include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/utility/unpack.hpp"
 #include "jln/mp/smp/list/at.hpp"
 
 TEST_SUITE_BEGIN()

@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/utility/unpack.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()

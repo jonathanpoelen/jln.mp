@@ -1,6 +1,7 @@
 #pragma once
 
 #include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/functional/recursively.hpp>
 

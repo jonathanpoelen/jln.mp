@@ -5,6 +5,7 @@
 #include "jln/mp/smp/functional/lift.hpp"
 #include "jln/mp/smp/functional/if.hpp"
 #include "jln/mp/smp/number/operators.hpp"
+#include "jln/mp/smp/utility/unpack.hpp"
 
 TEST_SUITE_BEGIN()
 

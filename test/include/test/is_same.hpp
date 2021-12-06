@@ -1,7 +1,5 @@
 #pragma once
 
-#include "jln/mp/functional/call.hpp"
-
 namespace ut
 {
 namespace
@@ -43,7 +41,7 @@ namespace
   template<class R, class C, class... xs>
   constexpr void invoke_r()
   {
-    Expected<R> should_be_same = Result<jln::mp::call<C, xs...>>();
+    Expected<R> should_be_same = Result<typename C::template f<xs...>>();
     (void)should_be_same;
   }
 }

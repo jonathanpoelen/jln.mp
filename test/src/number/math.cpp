@@ -3,6 +3,7 @@
 
 #include "jln/mp/smp/number/math.hpp"
 #include "jln/mp/smp/number/numbers.hpp"
+#include "jln/mp/smp/utility/unpack.hpp"
 
 TEST_SUITE_BEGIN()
 

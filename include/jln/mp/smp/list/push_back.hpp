@@ -3,13 +3,10 @@
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/list/push_back.hpp>
 
-namespace jln::mp
+namespace jln::mp::smp
 {
-  namespace smp
-  {
-    template<class x, class C = listify>
-    using push_back = contract<mp::push_back<x, subcontract<C>>>;
-  }
+  template<class x, class C = listify>
+  using push_back = contract<mp::push_back<x, subcontract<C>>>;
 }
 
 /// \cond

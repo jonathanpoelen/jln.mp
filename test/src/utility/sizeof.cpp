@@ -2,6 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/utility/sizeof.hpp"
+#include "jln/mp/list/size.hpp"
 
 TEST_SUITE_BEGIN()
 

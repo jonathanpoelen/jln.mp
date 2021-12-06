@@ -8,6 +8,7 @@
 #include <jln/mp/smp/list/push_back.hpp>
 #include <jln/mp/smp/list/push_front.hpp>
 #include <jln/mp/smp/list/pop_front.hpp>
+#include <jln/mp/smp/utility/always.hpp>
 
 /// \cond
 namespace jln::mp::detail
