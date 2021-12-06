@@ -21,7 +21,6 @@ namespace jln::mp::smp
 #include <jln/mp/smp/algorithm/same.hpp>
 #include <jln/mp/smp/algorithm/index.hpp>
 #include <jln/mp/smp/utility/unpack.hpp>
-#include <jln/mp/smp/functional/memoize.hpp>
 
 /// \cond
 namespace jln::mp::detail

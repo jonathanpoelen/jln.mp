@@ -127,7 +127,7 @@ using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
 
 
 template<class C, JLN_MP_TPL_AUTO_OR_INT... xs>
-using call_c = typename detail::dcall_c<(sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT)>
+using call_c = typename detail::dcall_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
   ::template f<C, xs...>;
 
 template<class C, class... xs>
