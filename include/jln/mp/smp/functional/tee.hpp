@@ -16,7 +16,7 @@ namespace jln::mp::smp
   using tee = typename mp::conditional_c<sizeof...(Fs) == 0>
     ::template f<
       na,
-      rotate<number<-1>, detail::_smp_tee>>
+      rotate_c<-1, detail::_smp_tee>>
     ::template f<subcontract<Fs>...>;
 }
 

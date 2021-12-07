@@ -38,7 +38,7 @@ namespace jln::mp::detail
   template<>
   struct mk_smp_split_at<true>
   {
-    template<int_ i, class C, template<int_, class...> class Tpl, class... F>
+    template<int_ i, class C, template<unsigned, class...> class Tpl, class... F>
     using f = test_contract<
       mp::size<mp::greater_equal_than_c<i>>,
       Tpl<i, F..., assume_binary_list<C>>>;
@@ -47,7 +47,7 @@ namespace jln::mp::detail
   template<>
   struct mk_smp_split_at<false>
   {
-    template<int_ i, class C, template<int_, class...> class Tpl, class... F>
+    template<int_ i, class C, template<unsigned, class...> class Tpl, class... F>
     using f = bad_contract;
   };
 }

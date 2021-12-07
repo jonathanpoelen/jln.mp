@@ -17,7 +17,7 @@ namespace jln::mp::smp
   using on = typename mp::conditional_c<sizeof...(Fs) == 0>
     ::template f<
       na,
-      rotate<number<-1>, detail::_smp_on>>
+      rotate_c<-1, detail::_smp_on>>
     ::template f<subcontract<Fs>...>;
 }
 

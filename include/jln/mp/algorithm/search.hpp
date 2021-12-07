@@ -8,7 +8,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<int, bool found>
+    template<int, bool found = false>
     struct _search;
 
     template<class>
@@ -33,9 +33,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::find_if_impl<
-      typename detail::_search<
-        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
-      >::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
+      typename detail::_search<sizeof...(xs)>
+      ::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
 
@@ -51,9 +50,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::search_before_impl<
-      typename detail::_search<
-        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
-      >::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
+      typename detail::_search<sizeof...(xs)>
+      ::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
 
@@ -68,9 +66,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::search_before_extended_by_n_impl<
-      typename detail::_search<
-        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
-      >::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
+      typename detail::_search<sizeof...(xs)>
+      ::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, ExtendedByN, xs...>;
   };
 
@@ -79,63 +76,57 @@ namespace jln::mp
   /// \see search, search_before, after, search_index
   /// \see search_before_extended_by_n
   /// \see partial_search_before, partial_search_before_extended_by_n
-  template<class StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
-  struct partial_search
+  template<int_ StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
+  struct partial_search_c
   {
     template<class... xs>
     using f = typename detail::find_if_impl<
       typename detail::_search<
-        detail::n_8_or_less_16_32_64_128_256(
-          sizeof...(xs) > StopWhenAtLeast::value ? sizeof...(xs) - StopWhenAtLeast::value : 0
-        ), false
-      >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), JLN_MP_TRACE_F(Pred), xs...>
+        StopWhenAtLeast < sizeof...(xs) ? sizeof...(xs) - StopWhenAtLeast : 0
+      >::template f<size_t(sizeof...(xs) - StopWhenAtLeast), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
 
-  template<int_ StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
-  using partial_search_c = partial_search<number<StopWhenAtLeast>, Pred, TC, FC>;
+  template<class StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
+  using partial_search = partial_search_c<StopWhenAtLeast::value, Pred, TC, FC>;
 
   /// Same \c search_before, but it stops when there is StopWhenAtLeast::value element or less.
   /// \treturn \sequence
   /// \see search, search_before, partial_search, after, search_index
   /// \see search_before_extended_by_n, partial_search_before_extended_by_n
-  template<class StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
-  struct partial_search_before
+  template<int_ StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
+  struct partial_search_before_c
   {
     template<class... xs>
     using f = typename detail::search_before_impl<
       typename detail::_search<
-        detail::n_8_or_less_16_32_64_128_256(
-          sizeof...(xs) > StopWhenAtLeast::value ? sizeof...(xs) - StopWhenAtLeast::value : 0
-        ), false
-      >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), JLN_MP_TRACE_F(Pred), xs...>
+        StopWhenAtLeast < sizeof...(xs) ? sizeof...(xs) - StopWhenAtLeast : 0
+      >::template f<size_t(sizeof...(xs) - StopWhenAtLeast), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
 
-  template<int_ StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
-  using partial_search_before_c = partial_search_before<number<StopWhenAtLeast>, Pred, TC, FC>;
+  template<class StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
+  using partial_search_before = partial_search_before_c<StopWhenAtLeast::value, Pred, TC, FC>;
 
   /// Same \c search_before, but it stops when there is StopWhenAtLeast::value element or less.
   /// \treturn \sequence
   /// \see search, search_before, partial_search, after, search_index
   /// \see search_before_extended_by_n, partial_search_before
-  template<class StopWhenAtLeast, class Pred, class ExtendedByN,
+  template<int_ StopWhenAtLeast, class Pred, class ExtendedByN,
            class TC = listify, class FC = clear<TC>>
-  struct partial_search_before_extended_by_n
+  struct partial_search_before_extended_by_n_c
   {
     template<class... xs>
     using f = typename detail::search_before_extended_by_n_impl<
       typename detail::_search<
-        detail::n_8_or_less_16_32_64_128_256(
-          sizeof...(xs) > StopWhenAtLeast::value ? sizeof...(xs) - StopWhenAtLeast::value : 0
-        ), false
-      >::template f<size_t(sizeof...(xs) - StopWhenAtLeast::value), JLN_MP_TRACE_F(Pred), xs...>
+        StopWhenAtLeast < sizeof...(xs) ? sizeof...(xs) - StopWhenAtLeast : 0
+      >::template f<size_t(sizeof...(xs) - StopWhenAtLeast), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, ExtendedByN, xs...>;
   };
 
-  template<int_ StopWhenAtLeast, class Pred, class ExtendedByN, class TC = listify, class FC = clear<TC>>
-  using partial_search_before_extended_by_n_c
-    = partial_search_before_extended_by_n<number<StopWhenAtLeast>, Pred, ExtendedByN, TC, FC>;
+  template<class StopWhenAtLeast, class Pred, class ExtendedByN, class TC = listify, class FC = clear<TC>>
+  using partial_search_before_extended_by_n
+    = partial_search_before_extended_by_n_c<StopWhenAtLeast::value, Pred, ExtendedByN, TC, FC>;
 
   /// Search the index of first sub-\sequence that satisfy a \predicate.
   /// \treturn \sequence
@@ -145,9 +136,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::index_if_impl<
-      typename detail::_search<
-        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), false
-      >::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
+      typename detail::_search<sizeof...(xs)>
+      ::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
 
@@ -182,17 +172,17 @@ namespace jln::mp
 
     template<class L, int_ StopWhenAtLeast, class Pred,
       class TC = mp::listify, class FC = mp::clear<TC>>
-    using partial_search_c = unpack<L, mp::partial_search<Pred, number<StopWhenAtLeast>, TC, FC>>;
+    using partial_search_c = unpack<L, mp::partial_search_c<StopWhenAtLeast, Pred, TC, FC>>;
 
     template<class L, int_ StopWhenAtLeast, class Pred,
       class TC = mp::listify, class FC = mp::clear<TC>>
     using partial_search_before_c = unpack<L,
-      mp::partial_search_before<Pred, number<StopWhenAtLeast>, TC, FC>>;
+      mp::partial_search_before_c<StopWhenAtLeast, Pred, TC, FC>>;
 
     template<class L, int_ StopWhenAtLeast, class Pred, class ExtendedByN,
       class TC = mp::listify, class FC = mp::clear<TC>>
     using partial_search_before_extended_by_n_c = unpack<L,
-      mp::partial_search_before_extended_by_n<Pred, mp::number<StopWhenAtLeast>, TC, FC>>;
+      mp::partial_search_before_extended_by_n_c<StopWhenAtLeast, Pred, TC, FC>>;
 
 
     template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
@@ -209,21 +199,21 @@ namespace jln::mp
   // optimize search with starts_with
   template<class T, class U, class... Ts, class C, class TC, class FC>
   struct search<starts_with<list<T, U, Ts...>, C>, TC, FC>
-  : partial_search<number<sizeof...(Ts)+1>,
+  : partial_search_c<sizeof...(Ts)+1,
       starts_with<list<T, U, Ts...>, C>, TC, FC>
   {};
 
   // optimize search_before with starts_with
   template<class T, class U, class... Ts, class C, class TC, class FC>
   struct search_before<starts_with<list<T, U, Ts...>, C>, TC, FC>
-  : partial_search_before<number<sizeof...(Ts)+1>,
+  : partial_search_before_c<sizeof...(Ts)+1,
       starts_with<list<T, U, Ts...>, C>, TC, FC>
   {};
 
   // optimize search_before_extended_by_n with starts_with
   template<class T, class U, class... Ts, class C, class ExtendedByN, class TC, class FC>
   struct search_before_extended_by_n<starts_with<list<T, U, Ts...>, C>, ExtendedByN, TC, FC>
-  : partial_search_before_extended_by_n<number<sizeof...(Ts)+1>,
+  : partial_search_before_extended_by_n_c<sizeof...(Ts)+1,
       starts_with<list<T, U, Ts...>, C>, ExtendedByN, TC, FC>
   {};
 
@@ -234,9 +224,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::index_if_impl<
       typename detail::_search<
-        detail::n_8_or_less_16_32_64_128_256(
-          sizeof...(xs) > sizeof...(Ts)+1 ? sizeof...(xs) - sizeof...(Ts) - 1 : 0
-        ), false
+        sizeof...(Ts)+1 < sizeof...(xs) ? sizeof...(xs) - sizeof...(Ts) - 1 : 0
       >::template f<sizeof...(xs) - sizeof...(Ts) - 1u, starts_with<list<T, U, Ts...>, C>, xs...>
     >::template f<TC, FC, xs...>;
   };
@@ -244,21 +232,21 @@ namespace jln::mp
   // optimize search with ends_with
   template<class T, class U, class... Ts, class C, class TC, class FC>
   struct search<ends_with<list<T, U, Ts...>, C>, TC, FC>
-  : partial_search<number<sizeof...(Ts)+1>,
+  : partial_search_c<sizeof...(Ts)+1,
       ends_with<list<T, U, Ts...>, C>, TC, FC>
   {};
 
   // optimize search_before with ends_with
   template<class T, class U, class... Ts, class C, class TC, class FC>
   struct search_before<ends_with<list<T, U, Ts...>, C>, TC, FC>
-  : partial_search_before<number<sizeof...(Ts)+1>,
+  : partial_search_before_c<sizeof...(Ts)+1,
       ends_with<list<T, U, Ts...>, C>, TC, FC>
   {};
 
   // optimize search_before_extended_by_n with ends_with
   template<class T, class U, class... Ts, class C, class ExtendedByN, class TC, class FC>
   struct search_before_extended_by_n<ends_with<list<T, U, Ts...>, C>, ExtendedByN, TC, FC>
-  : partial_search_before_extended_by_n<number<sizeof...(Ts)+1>,
+  : partial_search_before_extended_by_n_c<sizeof...(Ts)+1,
       ends_with<list<T, U, Ts...>, C>, ExtendedByN, TC, FC>
   {};
 
@@ -269,9 +257,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::index_if_impl<
       typename detail::_search<
-        detail::n_8_or_less_16_32_64_128_256(
-          sizeof...(xs) > sizeof...(Ts)+1 ? sizeof...(xs) - sizeof...(Ts) - 1 : 0
-        ), false
+        sizeof...(Ts)+1 < sizeof...(xs)? sizeof...(xs) - sizeof...(Ts) - 1 : 0
       >::template f<sizeof...(xs) - sizeof...(Ts) - 1u, ends_with<list<T, U, Ts...>, C>, xs...>
     >::template f<TC, FC, xs...>;
   };
@@ -279,6 +265,7 @@ namespace jln::mp
 /// \endcond
 
 #include <jln/mp/list/take_front.hpp>
+#include <jln/mp/algorithm/drop_while_xs.hpp> // drop_while_xs_impl_false
 
 /// \cond
 namespace jln::mp::detail
@@ -294,7 +281,7 @@ namespace jln::mp::detail
   struct search_before_impl<_drop_while_result<n>>
   {
     template<class TC, class FC, class... xs>
-    using f = typename take_front<number<sizeof...(xs)-n-1>, TC>::template f<xs...>;
+    using f = typename take_front_c<sizeof...(xs)-n-1, TC>::template f<xs...>;
   };
 
 
@@ -318,11 +305,22 @@ namespace jln::mp::detail
   struct search_before_extended_by_n_impl<_drop_while_result<n>>
   {
     template<class TC, class FC, class ExtendedByN, class... xs>
-    using f = typename take_front<number<
-      extended_by_n(sizeof...(xs), n+1, ExtendedByN::value)
-    >, TC>::template f<xs...>;
+    using f = typename take_front_c<
+      extended_by_n(sizeof...(xs), n+1, ExtendedByN::value),
+      TC
+    >::template f<xs...>;
   };
 
+  template<int n>
+  struct _search<n, false> : _search<
+      n <= 16 ? 16
+    : n <= 32 ? 32
+    : n <= 64 ? 64
+    : n <= 128 ? 128
+    : 256,
+    false
+  >
+  {};
 
 #define JLN_MP_SEARCH_IMPL(n, m)                                      \
   template<>                                                          \
@@ -334,11 +332,8 @@ namespace jln::mp::detail
   };                                                                  \
                                                                       \
   template<>                                                          \
-  struct _search<n, true>                                             \
-  {                                                                   \
-    template<std::size_t remaining, class Pred, class... xs>          \
-    using f = _drop_while_result<sizeof...(xs)>;                      \
-  }
+  struct _search<n, true> : drop_while_xs_impl_false                  \
+  {}
 
   JLN_MP_SEARCH_IMPL(7, 6);
   JLN_MP_SEARCH_IMPL(6, 5);
@@ -386,23 +381,21 @@ namespace jln::mp::detail
       ::template f<7, Pred,
                    JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA),
                    xs...>
-      ::template f<_search<n_8_or_less_16_32_64_128_256(remaining-8), false>,
-                   remaining-8, Pred, xs...>;
+      ::template f<_search<remaining-8>, remaining-8, Pred, xs...>;
   };
 
-#define JLN_MP_SEARCH_IMPL(n, m, xs)                                          \
-  template<>                                                                  \
-  struct _search<n, false>                                                    \
-  {                                                                           \
-    template<                                                                 \
-      std::size_t remaining,                                                  \
-      class Pred,                                                             \
-      xs(class, JLN_MP_NIL, JLN_MP_COMMA),                                    \
-      class... xs>                                                            \
-    using f = typename _search<m, false>                                      \
-      ::template f<m, Pred, xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...>  \
-      ::template f<_search<n_8_or_less_16_32_64_128_256(remaining-m), false>, \
-                   remaining-m, Pred, xs...>;                                 \
+#define JLN_MP_SEARCH_IMPL(n, m, xs)                                         \
+  template<>                                                                 \
+  struct _search<n, false>                                                   \
+  {                                                                          \
+    template<                                                                \
+      std::size_t remaining,                                                 \
+      class Pred,                                                            \
+      xs(class, JLN_MP_NIL, JLN_MP_COMMA),                                   \
+      class... xs>                                                           \
+    using f = typename _search<m, false>                                     \
+      ::template f<m, Pred, xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...> \
+      ::template f<_search<remaining-m>, remaining-m, Pred, xs...>;          \
   }
 
   JLN_MP_SEARCH_IMPL(32, 16, JLN_MP_XS_16);

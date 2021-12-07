@@ -90,8 +90,8 @@ namespace jln::mp::smp
     ::template f<Pred, TC, FC>;
 
   template<int_ StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
-  using partial_search_c = contract<mp::partial_search<
-    number<StopWhenAtLeast>,
+  using partial_search_c = contract<mp::partial_search_c<
+    StopWhenAtLeast,
     detail::_smp_search_pred<Pred>,
     detail::_smp_search_tc<Pred, TC>,
     subcontract<FC>
@@ -99,8 +99,8 @@ namespace jln::mp::smp
 
   template<int_ StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
   using partial_search_before_c = contract<mp::invoke_twice<
-    mp::partial_search<
-      number<StopWhenAtLeast>,
+    mp::partial_search_c<
+      StopWhenAtLeast,
       detail::_smp_search_pred<Pred>,
       mp::if_<
         smp::concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
@@ -177,8 +177,8 @@ namespace jln::mp::detail
   struct _smp_partial_search<StopWhenAtLeast, std::void_t<number<int_{StopWhenAtLeast::value}>>>
   {
     template<class Pred, class TC, class FC>
-    using f = contract<mp::partial_search<
-      number<StopWhenAtLeast::value>,
+    using f = contract<mp::partial_search_c<
+      StopWhenAtLeast::value,
       _smp_search_pred<Pred>,
       _smp_search_tc<Pred, TC>,
       subcontract<FC>
@@ -199,8 +199,8 @@ namespace jln::mp::detail
   {
     template<class Pred, class TC, class FC>
     using f = contract<mp::invoke_twice<
-      mp::partial_search<
-        number<StopWhenAtLeast::value>,
+      mp::partial_search_c<
+        StopWhenAtLeast::value,
         detail::_smp_search_pred<Pred>,
         mp::if_<
           smp::concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
@@ -253,8 +253,8 @@ namespace jln::mp::detail
   {
     template<class Pred, class TC, class FC>
     using f = contract<mp::invoke_twice<
-      mp::partial_search<
-        number<StopWhenAtLeast::value>,
+      mp::partial_search_c<
+        StopWhenAtLeast::value,
         detail::_smp_search_pred<Pred>,
         mp::if_<
           smp::concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
@@ -305,28 +305,28 @@ namespace jln::mp::detail
   };
 
 
-  template<template<class> class sfinae, class StopWhenAtLeast,
+  template<template<class> class sfinae, int_ StopWhenAtLeast,
     class Pred, class TC, class FC>
-  struct _sfinae<sfinae, partial_search<StopWhenAtLeast, Pred, TC, FC>>
+  struct _sfinae<sfinae, partial_search_c<StopWhenAtLeast, Pred, TC, FC>>
   {
-    using type = smp::partial_search<
+    using type = smp::partial_search_c<
       StopWhenAtLeast, sfinae<Pred>, sfinae<TC>, sfinae<FC>>;
   };
 
-  template<template<class> class sfinae, class StopWhenAtLeast,
+  template<template<class> class sfinae, int_ StopWhenAtLeast,
     class Pred, class TC, class FC>
-  struct _sfinae<sfinae, partial_search_before<StopWhenAtLeast, Pred, TC, FC>>
+  struct _sfinae<sfinae, partial_search_before_c<StopWhenAtLeast, Pred, TC, FC>>
   {
-    using type = smp::partial_search_before<
+    using type = smp::partial_search_before_c<
       StopWhenAtLeast, sfinae<Pred>, sfinae<TC>, sfinae<FC>>;
   };
 
-  template<template<class> class sfinae, class StopWhenAtLeast,
+  template<template<class> class sfinae, int_ StopWhenAtLeast,
     class Pred, class ExtendedByN, class TC, class FC>
-  struct _sfinae<sfinae, partial_search_before_extended_by_n<
+  struct _sfinae<sfinae, partial_search_before_extended_by_n_c<
     StopWhenAtLeast, Pred, ExtendedByN, TC, FC>>
   {
-    using type = smp::partial_search_before_extended_by_n<
+    using type = smp::partial_search_before_extended_by_n_c<
       StopWhenAtLeast, sfinae<Pred>, ExtendedByN, sfinae<TC>, sfinae<FC>>;
   };
 

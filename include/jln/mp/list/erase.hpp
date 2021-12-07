@@ -12,28 +12,28 @@ namespace jln::mp
   /// \pre `0 <= start < sizeof...(xs)`
   /// \pre `0 <= start + size < sizeof...(xs)`
   /// \treturn \sequence
-  template<class start, class size = number<1>, class C = listify>
-  struct erase
+  template<unsigned start, unsigned size = 1, class C = listify>
+  struct erase_c
   {
     template<class... xs>
     using f = typename join<C>::template f<
-      typename take_front<start>::template f<xs...>,
+      typename take_front_c<start>::template f<xs...>,
       typename drop_front_c<detail::min(
         sizeof...(xs),
-        start::value + size::value
+        start + size
       )>::template f<xs...>
     >;
   };
 
-  template<int_ start, int_ size = 1, class C = listify>
-  using erase_c = erase<number<start>, number<size>, C>;
+  template<class start, class size = number<1>, class C = listify>
+  using erase = erase_c<start::value, size::value, C>;
 
   namespace emp
   {
     template<class L, class start, class size = mp::number<1>, class C = mp::listify>
     using erase = unpack<L, mp::erase<start, size, C>>;
 
-    template<class L, int_ start, int_ size = 1, class C = mp::listify>
-    using erase_c = erase<L, number<start>, number<size>, C>;
+    template<class L, unsigned start, unsigned size = 1, class C = mp::listify>
+    using erase_c = unpack<L, mp::erase_c<start, size, C>>;
   }
 }

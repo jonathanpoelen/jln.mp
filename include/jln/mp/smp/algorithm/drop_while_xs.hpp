@@ -24,8 +24,8 @@ namespace jln::mp::smp
   >>;
 
   template<int_ OffsetEnd, class Pred, class C = listify>
-  using partial_drop_while_xs_c = contract<mp::partial_drop_while_xs<
-    number<OffsetEnd>,
+  using partial_drop_while_xs_c = contract<mp::partial_drop_while_xs_c<
+    OffsetEnd,
     concepts::predicate<assume_unary_or_more<Pred>>,
     mp::if_<
       mp::if_<
@@ -51,10 +51,10 @@ namespace jln::mp::detail
     using type = smp::drop_while_xs<sfinae<Pred>, sfinae<C>>;
   };
 
-  template<template<class> class sfinae, class OffsetEnd, class Pred, class C>
-  struct _sfinae<sfinae, partial_drop_while_xs<OffsetEnd, Pred, C>>
+  template<template<class> class sfinae, int_ OffsetEnd, class Pred, class C>
+  struct _sfinae<sfinae, partial_drop_while_xs_c<OffsetEnd, Pred, C>>
   {
-    using type = smp::partial_drop_while_xs<OffsetEnd, sfinae<Pred>, sfinae<C>>;
+    using type = smp::partial_drop_while_xs_c<OffsetEnd, sfinae<Pred>, sfinae<C>>;
   };
 }
 /// \endcond

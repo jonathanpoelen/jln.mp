@@ -10,13 +10,7 @@ namespace jln::mp
   namespace detail
   {
     template<unsigned>
-    struct _reverse;
-
-    constexpr unsigned _rotate_select(unsigned n)
-    {
-      return (detail::n_8_or_less_16_64_256(n) == n) * 20
-        + detail::n_8_or_less_16_64_256(n);
-    }
+    struct reverse_impl;
   }
   /// \endcond
 
@@ -28,9 +22,8 @@ namespace jln::mp
   struct reverse
   {
     template<class... xs>
-    using f = typename detail::_reverse<
-      detail::_rotate_select(sizeof...(xs))
-    >::template f<C, sizeof...(xs), xs...>;
+    using f = typename detail::reverse_impl<sizeof...(xs)>
+      ::template f<C, sizeof...(xs), xs...>;
   };
 
   namespace emp
@@ -47,9 +40,27 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
+  template<unsigned n>
+  struct reverse_impl2 : reverse_impl2<
+      n < 16 ? 8
+    : n < 64 ? 16
+    : n < 256 ? 64
+    : 256
+  >
+  {};
+
+  template<unsigned n>
+  struct reverse_impl : reverse_impl2<
+      n < 16 ? 8
+    : n < 64 ? 16
+    : n < 256 ? 64
+    : 256
+  >
+  {};
+
 #define JLN_MP_REVERSE_IMPL(n, mp_xs, mp_rxs, mp_rep)    \
   template<>                                             \
-  struct _reverse<n>                                     \
+  struct reverse_impl2<n>                                \
   {                                                      \
     template<class C, std::size_t count                  \
       mp_xs(JLN_MP_COMMA class, JLN_MP_NIL, JLN_MP_NIL), \
@@ -59,12 +70,12 @@ namespace jln::mp::detail
         mp_rxs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>>;  \
   };                                                     \
   template<>                                             \
-  struct _reverse<n+20>                                  \
+  struct reverse_impl<n>                                 \
   {                                                      \
     template<class C, std::size_t count                  \
       mp_xs(JLN_MP_COMMA class, JLN_MP_NIL, JLN_MP_NIL), \
       class... xs>                                       \
-    using f = JLN_MP_CALL_TRACE(C,                     \
+    using f = JLN_MP_CALL_TRACE(C,                       \
       mp_rxs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA));     \
   };
 
@@ -74,24 +85,15 @@ namespace jln::mp::detail
 
 #define JLN_MP_REVERSE_IMPL(n, mp_xs, mp_rxs, mp_rep) \
   template<>                                          \
-  struct _reverse<n>                                  \
+  struct reverse_impl2<n>                             \
   {                                                   \
     template<class C, std::size_t count,              \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),         \
       class... xs>                                    \
-    using f = typename _reverse<                      \
-      detail::n_8_or_less_16_64_256(count-n)          \
+    using f = typename reverse_impl2<                 \
+      count-n                                         \
     >::template f<C, count-n, xs..., list<            \
       mp_rxs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>>; \
-  };                                                  \
-  template<>                                          \
-  struct _reverse<n+20>                               \
-  {                                                   \
-    template<class C, std::size_t count,              \
-      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),         \
-      class... xs>                                    \
-    using f = typename C::template f<                 \
-      mp_rxs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>;  \
   };
 
   JLN_MP_GEN_XS_8_16_64_256(JLN_MP_REVERSE_IMPL)

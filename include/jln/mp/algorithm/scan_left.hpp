@@ -31,9 +31,8 @@ namespace jln::mp
   struct scan_left
   {
     template<class... xs>
-    using f = typename detail::_scan_left<
-      detail::n_8_or_less_16_32_64_128_256(sizeof...(xs))
-    >::template f<sizeof...(xs), C, JLN_MP_TRACE_F(F)::template f, xs...>;
+    using f = typename detail::_scan_left<sizeof...(xs)>
+      ::template f<sizeof...(xs), C, JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
   namespace emp
@@ -49,6 +48,16 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
+  template<unsigned n>
+  struct _scan_left : _scan_left<
+      n <= 16 ? 16
+    : n <= 32 ? 32
+    : n <= 64 ? 64
+    : n <= 128 ? 128
+    : 256
+  >
+  {};
+
   template<>
   struct _scan_left<0>
   {
@@ -205,7 +214,7 @@ namespace jln::mp::detail
   //       class _0, {args},
   //       class... xs>
   //     using f = typename g<F, {ps}>
-  //       ::template f<remaining-{n-1}, _scan_left<n_8_or_less_16_32_64_128_256(remaining-{n-1})>, C, F, xs...>;
+  //       ::template f<remaining-{n-1}, _scan_left<remaining-{n-1}>, C, F, xs...>;
   //   }};''')
 
   template<>
@@ -223,8 +232,7 @@ namespace jln::mp::detail
       class _1, class _2, class _3, class _4, class _5, class _6, class _7,
       class... xs>
     using f = typename g<F, _0, _1, _2, _3, _4, _5, _6, _7>::template f<
-      remaining - 7, _scan_left<n_8_or_less_16_32_64_128_256(remaining - 7)>,
-      C, F, xs...>;
+      remaining - 7, _scan_left<remaining - 7>, C, F, xs...>;
   };
 
   template<>
@@ -251,9 +259,7 @@ namespace jln::mp::detail
       class... xs>
     using f = typename g<
       F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15
-    >::template f<remaining - 15,
-                  _scan_left<n_8_or_less_16_32_64_128_256(remaining - 15)>,
-                  C, F, xs...>;
+    >::template f<remaining - 15, _scan_left<remaining - 15>, C, F, xs...>;
   };
 
   template<>
@@ -293,9 +299,7 @@ namespace jln::mp::detail
       F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15,
       _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30,
       _31
-    >::template f<remaining - 31,
-                  _scan_left<n_8_or_less_16_32_64_128_256(remaining - 31)>,
-                  C, F, xs...>;
+    >::template f<remaining - 31, _scan_left<remaining - 31>, C, F, xs...>;
   };
 
   template<>
@@ -360,9 +364,7 @@ namespace jln::mp::detail
       _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45,
       _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
       _61, _62,
-      _63>::template f<remaining - 63,
-                       _scan_left<n_8_or_less_16_32_64_128_256(remaining - 63)>,
-                       C, F, xs...>;
+      _63>::template f<remaining - 63, _scan_left<remaining - 63>, C, F, xs...>;
   };
 
   template<>
@@ -484,9 +486,7 @@ namespace jln::mp::detail
       _91, _92, _93, _94, _95, _96, _97, _98, _99, _100, _101, _102, _103, _104,
       _105, _106, _107, _108, _109, _110, _111, _112, _113, _114, _115, _116,
       _117, _118, _119, _120, _121, _122, _123, _124, _125, _126, _127>::
-      template f<remaining - 127,
-                 _scan_left<n_8_or_less_16_32_64_128_256(remaining - 127)>,
-                 C, F, xs...>;
+      template f<remaining - 127, _scan_left<remaining - 127>, C, F, xs...>;
   };
 }
 /// \endcond

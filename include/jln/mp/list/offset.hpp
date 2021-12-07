@@ -15,24 +15,24 @@ namespace jln::mp
   ///   size<push_front<I, sub<C>>>
   ///   \endcode
   /// \treturn \number
-  template <class I, class C = identity>
-  struct offset
+  template <int_ I, class C = identity>
+  struct offset_c
   {
     template <class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<(I::value - int_{sizeof...(xs)})>);
+    using f = JLN_MP_CALL_TRACE(C, number<(I - int_{sizeof...(xs)})>);
   };
 
   /// \cond
-  template <class I>
-  struct offset<I, identity>
+  template <int_ I>
+  struct offset_c<I, identity>
   {
     template <class... xs>
-    using f = number<(I::value - int_{sizeof...(xs)})>;
+    using f = number<(I - int_{sizeof...(xs)})>;
   };
   /// \endcond
 
-  template<int_ i, class C = identity>
-  using offset_c = offset<number<i>, C>;
+  template<class I, class C = identity>
+  using offset = offset_c<I::value, C>;
 
   namespace emp
   {
@@ -40,6 +40,6 @@ namespace jln::mp
     using offset = unpack<L, mp::offset<I, C>>;
 
     template<class L, int_ i, class C = mp::identity>
-    using offset_c = unpack<L, mp::offset<number<i>, C>>;
+    using offset_c = unpack<L, mp::offset_c<i, C>>;
   }
 }

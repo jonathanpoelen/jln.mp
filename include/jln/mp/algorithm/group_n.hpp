@@ -30,16 +30,16 @@ namespace jln::mp
   ///   >
   ///   \endcode
   /// \treturn \sequence
-  template<class n, class C = listify>
-  struct group_n
+  template<int_ n, class C = listify>
+  struct group_n_c
   {
     template<class... xs>
-    using f = typename detail::_group_n<sizeof...(xs) != 0 && (n::value > 0)>
-      ::template f<C, n::value, xs...>;
+    using f = typename detail::_group_n<sizeof...(xs) != 0 && 0 < n>
+      ::template f<C, n, xs...>;
   };
 
-  template<int_ n, class C = listify>
-  using group_n_c = group_n<number<n>, C>;
+  template<class n, class C = listify>
+  using group_n = group_n_c<n::value, C>;
 
   namespace emp
   {

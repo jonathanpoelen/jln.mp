@@ -26,8 +26,13 @@ namespace jln::mp::smp
   template<class... xs>
   using capture_v = decltype(detail::smp_capture_v(static_cast<xs*>(nullptr)...));
 
+#if __cplusplus >= 201703L
   template<JLN_MP_TPL_AUTO_OR_INT... xs>
   using capture_c = capture<val<xs>...>;
+#else
+  template<int_... xs>
+  using capture_c = capture<typed_val<int_, xs>...>;
+#endif
 
   template<JLN_MP_TPL_AUTO_OR_INT... xs>
   using capture_v_c = try_contract<mp::capture_v_c<xs...>>;
@@ -39,8 +44,13 @@ namespace jln::mp::smp
   using reverse_capture_v = decltype(detail::smp_reverse_capture_v(
     static_cast<xs*>(nullptr)...));
 
+#if __cplusplus >= 201703L
   template<JLN_MP_TPL_AUTO_OR_INT... xs>
   using reverse_capture_c = reverse_capture<val<xs>...>;
+#else
+  template<int_... xs>
+  using reverse_capture_c = reverse_capture<typed_val<int_, xs>...>;
+#endif
 
   template<JLN_MP_TPL_AUTO_OR_INT... xs>
   using reverse_capture_v_c = try_contract<mp::capture_v_c<xs...>>;

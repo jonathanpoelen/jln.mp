@@ -89,7 +89,7 @@ namespace jln::mp::detail
 
   template<>
   struct _smp_partial_select<5>
-  : mp::rotate<mp::number<-1>, _smp_partial>
+  : mp::rotate_c<-1, _smp_partial>
   {};
 }
 /// \endcond

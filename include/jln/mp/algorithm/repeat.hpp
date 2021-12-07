@@ -17,18 +17,19 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Returns a \sequence that contains a \number of copies of the same \sequence.
+  /// \pre N >= 0
   /// \treturn \sequence
-  template<class N, class C = listify>
-  struct repeat
+  template<unsigned N, class C = listify>
+  struct repeat_c
   {
     template<class... xs>
-    using f = emp::make_int_sequence<N,
+    using f = emp::make_int_sequence_c<N,
       typename detail::_repeat<detail::min(sizeof...(xs), 2)>
         ::template f<C, xs...>>;
   };
 
-  template<int_ n, class C = listify>
-  using repeat_c = repeat<number<n>, C>;
+  template<class N, class C = listify>
+  using repeat = repeat_c<N::value, C>;
 
   namespace emp
   {
@@ -36,7 +37,7 @@ namespace jln::mp
     using repeat = unpack<L, mp::repeat<n, C>>;
 
     template<class L, int_ n, class C = mp::listify>
-    using repeat_c = unpack<L, mp::repeat<number<n>, C>>;
+    using repeat_c = unpack<L, mp::repeat_c<n, C>>;
   }
 }
 

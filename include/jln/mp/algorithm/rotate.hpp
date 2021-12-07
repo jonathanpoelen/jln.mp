@@ -12,14 +12,9 @@ namespace jln::mp
   namespace detail
   {
     template <unsigned n>
-    struct _rotate;
+    struct rotate_impl;
 
-    constexpr unsigned _rotate_size(int_ n, unsigned size)
-    {
-      return n >= size
-        ? (size ? n % size : 0)
-        : (n < 0 ? (size && n % size ? size + n % size : 0) : n);
-    }
+    constexpr unsigned rotate_size(int_ n, unsigned size);
   }
   /// \endcond
 
@@ -40,21 +35,21 @@ namespace jln::mp
   ///     C::f<...xs[n:], ...xs[:n]>
   ///   \endcode
   /// \treturn \sequence
-  template <class N, class C = listify>
-  struct rotate
+  template <int_ N, class C = listify>
+  struct rotate_c
   {
     template<class... xs>
-    using f = typename detail::_rotate<detail::n_8_or_less_16_64_256(
-      detail::_rotate_size(N::value, sizeof...(xs))
-    )>
+    using f = typename detail::rotate_impl<
+      detail::rotate_size(N, sizeof...(xs))
+    >
     ::template f<
-      detail::_rotate_size(N::value, sizeof...(xs)),
+      detail::rotate_size(N, sizeof...(xs)),
       C, xs...
     >;
   };
 
-  template <int_ n, class C = listify>
-  using rotate_c = rotate<number<n>, C>;
+  template <class N, class C = listify>
+  using rotate = rotate_c<N::value, C>;
 
   namespace emp
   {
@@ -62,7 +57,7 @@ namespace jln::mp
     using rotate = unpack<L, mp::rotate<n, C>>;
 
     template <class L, int_ n, class C = mp::listify>
-    using rotate_c = unpack<L, mp::rotate<number<n>, C>>;
+    using rotate_c = unpack<L, mp::rotate_c<n, C>>;
   }
 }
 
@@ -70,14 +65,30 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
+  constexpr unsigned rotate_size(int_ n, unsigned size)
+  {
+    return n >= size
+      ? (size ? n % size : 0)
+      : (n < 0 ? (size && n % size ? size + n % size : 0) : n);
+  }
+
+  template <unsigned n>
+  struct rotate_impl : rotate_impl<
+      n < 16 ? 8
+    : n < 64 ? 16
+    : n < 256 ? 64
+    : 256
+  >
+  {};
+
 #define JLN_MP_ROTATE_IMPL(n, mp_xs, mp_rxs, _)           \
   template<>                                              \
-  struct _rotate<n>                                       \
+  struct rotate_impl<n>                                   \
   {                                                       \
     template<unsigned size, class C,                      \
       mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
       class... xs>                                        \
-    using f = JLN_MP_CALL_TRACE(C,                      \
+    using f = JLN_MP_CALL_TRACE(C,                        \
       xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)); \
   };
 
@@ -85,27 +96,21 @@ namespace jln::mp::detail
 
 #undef JLN_MP_ROTATE_IMPL
 
-#define JLN_MP_ROTATE_IMPL(n, mp_xs, mp_rxs, mp_rep) \
-  JLN_MP_ROTATE_IMPL2(n, mp_xs, mp_rep, mp_rxs,      \
-    n_8_or_less_16_64_256)
-
-#define JLN_MP_ROTATE_IMPL2(n, mp_xs, mp_rxs, _, next_int) \
-  template<>                                               \
-  struct _rotate<n>                                        \
-  {                                                        \
-    template<unsigned size, class C,                       \
-      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)               \
-      class... xs>                                         \
-    using f = typename _rotate<next_int (size-n)>          \
-      ::template f<size-n, C,                              \
-        xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)  \
-      >;                                                   \
+#define JLN_MP_ROTATE_IMPL(n, mp_xs, mp_rxs, _)           \
+  template<>                                              \
+  struct rotate_impl<n>                                   \
+  {                                                       \
+    template<unsigned size, class C,                      \
+      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
+      class... xs>                                        \
+    using f = typename rotate_impl<size-n>                \
+      ::template f<size-n, C,                             \
+        xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL) \
+      >;                                                  \
   };
 
-  JLN_MP_GEN_XS_8_args(JLN_MP_ROTATE_IMPL2, JLN_MP_NIL)
-  JLN_MP_GEN_XS_16_64_256(JLN_MP_ROTATE_IMPL)
+  JLN_MP_GEN_XS_8_16_64_256(JLN_MP_ROTATE_IMPL)
 
-#undef JLN_MP_ROTATE_IMPL2
 #undef JLN_MP_ROTATE_IMPL
 } // namespace jln::mp
 /// \endcond

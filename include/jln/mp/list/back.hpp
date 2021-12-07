@@ -10,7 +10,7 @@ namespace jln::mp
   /// Retrieves the last element of a sequence.
   /// \treturn \value
   template<class C = identity>
-  using back = rotate<number<-1>, front<C>>;
+  using back = rotate_c<-1, front<C>>;
 
   namespace emp
   {

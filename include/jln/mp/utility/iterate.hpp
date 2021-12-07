@@ -12,7 +12,7 @@ namespace jln::mp
   namespace detail
   {
     template<uint_>
-    struct _iterate;
+    struct iterate_impl;
   }
   /// \endcond
 
@@ -20,18 +20,18 @@ namespace jln::mp
 
   /// Apply a function \c n times to its argument.
   /// \treturn \value
-  template <class n, class F, class C = identity>
-  struct iterate
+  template <uint_ n, class F, class C = identity>
+  struct iterate_c
   {
     template<class x>
-    using f = typename detail::_iterate<detail::sub_n_8_or_less_16_32_64_128_256(n::value)>
-      ::template f<n::value, C, JLN_MP_TRACE_F(F), x>;
+    using f = typename detail::iterate_impl<n>
+      ::template f<n, C, JLN_MP_TRACE_F(F), x>;
   };
 
   /// Apply a function \c n times to its argument.
   /// \treturn \value
-  template <uint_ n, class F, class C = identity>
-  using iterate_c = iterate<number<n>, F, C>;
+  template <class n, class F, class C = identity>
+  using iterate = iterate_c<n::value, F, C>;
 
   namespace emp
   {
@@ -39,7 +39,7 @@ namespace jln::mp
     using iterate = unpack<L, mp::iterate<n, F, C>>;
 
     template<class L, uint_ n, class F, class C = mp::identity>
-    using iterate_c = unpack<L, mp::iterate<number<n>, F, C>>;
+    using iterate_c = unpack<L, mp::iterate_c<n, F, C>>;
   }
 } // namespace jln::mp
 
@@ -47,8 +47,19 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
+  template<uint_ n>
+  struct iterate_impl : iterate_impl<
+      n <= 16 ? 8
+    : n <= 32 ? 16
+    : n <= 64 ? 32
+    : n <= 128 ? 64
+    : 128
+  >
+  {
+  };
+
   template<>
-  struct _iterate<0>
+  struct iterate_impl<0>
   {
     template<uint_ i, class C, class F, class x>
     using f = JLN_MP_CALL_TRACE(C, x);
@@ -56,10 +67,10 @@ namespace jln::mp::detail
 
 #define JLN_MP_ITERATE(n, mp_xs, mp_rsx, mp_rep)  \
   template<>                                      \
-  struct _iterate<n>                              \
+  struct iterate_impl<n>                          \
   {                                               \
     template<uint_ i, class C, class F, class x>  \
-    using f = JLN_MP_CALL_TRACE(C,              \
+    using f = JLN_MP_CALL_TRACE(C,                \
       mp_rep(typename F::template f<, JLN_MP_NIL) \
       x                                           \
       mp_rep(>, JLN_MP_NIL)                       \
@@ -70,17 +81,17 @@ namespace jln::mp::detail
 
 #undef JLN_MP_ITERATE
 
-#define JLN_MP_ITERATE(n, mp_xs, mp_rsx, mp_rep)                       \
-  template<>                                                           \
-  struct _iterate<n>                                                   \
-  {                                                                    \
-    template<uint_ i, class C, class F, class x>                       \
-    using f = typename _iterate<sub_n_8_or_less_16_32_64_128_256(i-n)> \
-      ::template f<i-n, C, F,                                          \
-        mp_rep(typename F::template f<, JLN_MP_NIL)                    \
-        x                                                              \
-        mp_rep(>, JLN_MP_NIL)                                          \
-      >;                                                               \
+#define JLN_MP_ITERATE(n, mp_xs, mp_rsx, mp_rep)    \
+  template<>                                        \
+  struct iterate_impl<n>                            \
+  {                                                 \
+    template<uint_ i, class C, class F, class x>    \
+    using f = typename iterate_impl<i-n>            \
+      ::template f<i-n, C, F,                       \
+        mp_rep(typename F::template f<, JLN_MP_NIL) \
+        x                                           \
+        mp_rep(>, JLN_MP_NIL)                       \
+      >;                                            \
   };
 
   JLN_MP_GEN_XS_8_16_32_64_128(JLN_MP_ITERATE)

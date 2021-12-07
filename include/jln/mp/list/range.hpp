@@ -24,8 +24,8 @@ namespace jln::mp
   /// A negative value represents an index starting from the end.
   /// if finally, \c end <= \c beg, then an empty \list is returned.
   /// \treturn \sequence
-  template<class beg, class end, class C = listify>
-  struct range : detail::_range<beg::value, end::value, C>::type
+  template<int_ beg, int_ end, class C = listify>
+  struct range_c : detail::_range<beg, end, C>::type
   {
 #ifdef JLN_MP_DOXYGENATING
     template<class... xs>
@@ -33,12 +33,8 @@ namespace jln::mp
 #endif
   };
 
-  template<int_ beg, int_ end, class C = listify>
-#ifdef JLN_MP_DOXYGENATING
-  using range_c = range<number<beg>, number<end>, C>;
-#else
-  using range_c = typename detail::_range<beg, end, C>::type;
-#endif
+  template<class beg, class end, class C = listify>
+  using range = range_c<beg::value, end::value, C>;
 
   namespace emp
   {

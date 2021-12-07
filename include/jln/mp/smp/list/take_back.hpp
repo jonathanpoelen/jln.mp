@@ -34,16 +34,16 @@ JLN_MP_MAKE_REGULAR_SMP2_P(take_back_max, (N), (C, smp::listify), smp::take_back
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class N, class C>
-  struct _sfinae<sfinae, take_back<N, C>>
+  template<template<class> class sfinae, unsigned N, class C>
+  struct _sfinae<sfinae, take_back_c<N, C>>
   {
-    using type = smp::take_back<N, sfinae<C>>;
+    using type = smp::take_back_c<N, sfinae<C>>;
   };
 
-  template<template<class> class sfinae, class N, class C>
-  struct _sfinae<sfinae, take_back_max<N, C>>
+  template<template<class> class sfinae, unsigned N, class C>
+  struct _sfinae<sfinae, take_back_max_c<N, C>>
   {
-    using type = smp::take_back_max<N, sfinae<C>>;
+    using type = smp::take_back_max_c<N, sfinae<C>>;
   };
 
   template<>
@@ -52,7 +52,7 @@ namespace jln::mp::detail
     template<int_ n, class C>
     using f = test_contract<
       mp::size<mp::greater_equal_than_c<n>>,
-      mp::take_back<mp::number<n>, subcontract<C>>>;
+      mp::take_back_c<n, subcontract<C>>>;
   };
 
   template<>
@@ -66,7 +66,7 @@ namespace jln::mp::detail
   struct mk_take_back_max<true>
   {
     template<int_ n, class C>
-    using f = contract<mp::take_back_max<mp::number<n>, subcontract<C>>>;
+    using f = contract<mp::take_back_max_c<n, subcontract<C>>>;
   };
 
   template<>

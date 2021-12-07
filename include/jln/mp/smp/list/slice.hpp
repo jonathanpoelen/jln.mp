@@ -47,13 +47,13 @@ namespace jln::mp::detail
     template<unsigned start, unsigned size, unsigned stride, class C>
     using f = test_contract<
       smp_slice_check<start, size, stride>,
-      mp::slice<number<start>, number<size>, number<stride>, subcontract<C>>>;
+      mp::slice_c<start, size, stride, subcontract<C>>>;
   };
 
-  template<template<class> class sfinae, class start, class size, class stride, class C>
-  struct _sfinae<sfinae, slice<start, size, stride, C>>
+  template<template<class> class sfinae, unsigned start, unsigned size, unsigned stride, class C>
+  struct _sfinae<sfinae, slice_c<start, size, stride, C>>
   {
-    using type = smp::slice<start, size, stride, sfinae<C>>;
+    using type = smp::slice_c<start, size, stride, sfinae<C>>;
   };
 }
 /// \endcond

@@ -9,8 +9,8 @@
 namespace jln::mp::smp
 {
   template<uint_ n, class F, class C = identity>
-  using iterate_c = test_contract<mp::is_size_of_c<1>, mp::iterate<
-    mp::number<n>,
+  using iterate_c = test_contract<mp::is_size_of_c<1>, mp::iterate_c<
+    n,
     mp::monadic0<assume_unary<F>>,
     mp::monadic0<assume_unary<C>>>
   >;
@@ -22,10 +22,10 @@ JLN_MP_MAKE_REGULAR_SMP3_P(iterate, (n), (F), (C, smp::identity),
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class n, class F, class C>
-  struct _sfinae<sfinae, iterate<n, F, C>>
+  template<template<class> class sfinae, uint_ n, class F, class C>
+  struct _sfinae<sfinae, iterate_c<n, F, C>>
   {
-    using type = smp::iterate<n, sfinae<F>, sfinae<C>>;
+    using type = smp::iterate_c<n, sfinae<F>, sfinae<C>>;
   };
 }
 /// \endcond

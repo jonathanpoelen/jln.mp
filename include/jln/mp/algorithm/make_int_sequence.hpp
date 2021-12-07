@@ -68,17 +68,29 @@ namespace jln::mp
 
   namespace emp
   {
-    template<class n, class C = mp::numbers<>>
-    using make_int_sequence_v = typename mp::make_int_sequence_v<C>::template f<n>;
+#if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
+    template<unsigned n, class C = mp::numbers<>>
+    using make_int_sequence_v_c = typename detail::_make_int_sequence<n>
+      ::type::template f<C>;
 
-    template<int_ n, class C = mp::numbers<>>
-    using make_int_sequence_v_c = make_int_sequence_v<mp::number<n>, C>;
+    template<unsigned n, class C = mp::listify>
+    using make_int_sequence_c = typename detail::_make_int_sequence<n>
+      ::type::template f<mp::numbers<C>>;
+#else
+    template<unsigned n, class C = mp::numbers<>>
+    using make_int_sequence_v_c = typename detail::_make_int_sequence<
+      std::make_index_sequence<n>>::template f<C>;
+
+    template<unsigned n, class C = mp::listify>
+    using make_int_sequence_c = typename detail::_make_int_sequence<
+      std::make_index_sequence<n>>::template f<mp::numbers<C>>;
+#endif
+
+    template<class n, class C = mp::numbers<>>
+    using make_int_sequence_v = make_int_sequence_v_c<n::value, C>;
 
     template<class n, class C = mp::listify>
-    using make_int_sequence = typename mp::make_int_sequence<C>::template f<n>;
-
-    template<int_ n, class C = mp::listify>
-    using make_int_sequence_c = make_int_sequence<mp::number<n>, C>;
+    using make_int_sequence = make_int_sequence_c<n::value, C>;
   }
 } // namespace jln::mp
 

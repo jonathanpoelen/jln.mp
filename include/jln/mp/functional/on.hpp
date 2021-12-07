@@ -37,7 +37,7 @@ namespace jln::mp
 #else
   template <class... Fs>
   struct on
-  : rotate<number<-1>, lift<detail::_on>>
+  : rotate_c<-1, lift<detail::_on>>
   ::template f<Fs...>
   {};
 #endif

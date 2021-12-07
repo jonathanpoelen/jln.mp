@@ -14,11 +14,11 @@ namespace jln::mp
   /// \pre `0 <= i < sizeof...(xs)`
   /// \pre seq must be a \list
   /// \treturn \sequence
-  template<class i, class seq, class C = listify>
-  using insert_range = tee<take_front<i>, always<seq>, drop_front<i>, join<C>>;
+  template<unsigned i, class seq, class C = listify>
+  using insert_range_c = tee<take_front_c<i>, always<seq>, drop_front_c<i>, join<C>>;
 
-  template<int_ i, class seq, class C = listify>
-  using insert_range_c = insert_range<number<i>, seq, C>;
+  template<class i, class seq, class C = listify>
+  using insert_range = insert_range_c<i::value, seq, C>;
 
   namespace emp
   {

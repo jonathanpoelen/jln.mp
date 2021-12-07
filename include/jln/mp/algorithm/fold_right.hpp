@@ -11,7 +11,7 @@ namespace jln::mp
   namespace detail
   {
     template<int>
-    struct _fold_right;
+    struct fold_right_impl;
   }
   /// \endcond
 
@@ -32,8 +32,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      typename detail::_fold_right<
-        detail::sub_1_n_4_or_less_8_16_64_256(sizeof...(xs))
+      typename detail::fold_right_impl<
+        int(sizeof...(xs)) - 1
       >::template f<JLN_MP_TRACE_F(F)::template f, xs...>
     );
   };
@@ -50,16 +50,26 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
+  template<int n>
+  struct fold_right_impl : fold_right_impl<
+      n < 8 ? 4
+    : n < 16 ? 8
+    : n < 64 ? 16
+    : n < 256 ? 64
+    : 256
+  >
+  {};
+
 #define JLN_MP_FOLD_RIGHT_SELECT(n, mp_xs, mp_rxs, mp_dup) \
   template<>                                               \
-  struct _fold_right<n>                                    \
+  struct fold_right_impl<n>                                \
   {                                                        \
     template<template<class...> class F, class state,      \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),              \
       class... xs>                                         \
     using f = mp_xs(F<, JLN_MP_COMMA, JLN_MP_NIL)          \
-      typename _fold_right<                                \
-        detail::n_4_or_less_8_16_64_256(sizeof...(xs))     \
+      typename fold_right_impl<                            \
+        sizeof...(xs)                                      \
       >::template f<F, state, xs...>                       \
     mp_dup(>, JLN_MP_NIL);                                 \
   };
@@ -70,7 +80,7 @@ namespace jln::mp::detail
 
 #define JLN_MP_FOLD_RIGHT_SELECT(n, mp_xs, mp_rxs, mp_dup) \
   template<>                                               \
-  struct _fold_right<n>                                    \
+  struct fold_right_impl<n>                                \
   {                                                        \
     template<template<class...> class F, class state,      \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA)>              \
@@ -83,14 +93,14 @@ namespace jln::mp::detail
 #undef JLN_MP_FOLD_RIGHT_SELECT
 
   template<>
-  struct _fold_right<0>
+  struct fold_right_impl<0>
   {
     template<template<class...> class, class state>
     using f = state;
   };
 
   template<>
-  struct _fold_right<-1>
+  struct fold_right_impl<-1>
   {};
 }
 /// \endcond

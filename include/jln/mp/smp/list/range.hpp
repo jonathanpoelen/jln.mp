@@ -16,10 +16,10 @@ JLN_MP_MAKE_REGULAR_SMP3_P(range, (beg), (end), (C, smp::listify),
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class beg, class end, class C>
-  struct _sfinae<sfinae, range<beg, end, C>>
+  template<template<class> class sfinae, int_ beg, int_ end, class C>
+  struct _sfinae<sfinae, range_c<beg, end, C>>
   {
-    using type = smp::range<beg, end, sfinae<C>>;
+    using type = smp::range_c<beg, end, sfinae<C>>;
   };
 }
 /// \endcond

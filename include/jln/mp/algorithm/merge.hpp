@@ -89,11 +89,6 @@ namespace jln::mp::detail
     using f = always<type_identity<list<>>>;
   };
 
-  constexpr int _fast_merge_impl_select(bool b, int xn, int yn)
-  {
-    return b ? (yn >= 4) : (xn >= 4) + 2;
-  }
-
   template<int>
   struct _fast_merge_impl;
 
@@ -189,9 +184,9 @@ namespace jln::mp::detail
 
   template<class xh, class... xt, class yh, class... yt, class... zs, class cmp>
   struct _merge_impl<list<xh, xt...>, list<yh, yt...>, list<zs...>, cmp>
-  : _fast_merge_impl<_fast_merge_impl_select(
-    bool(cmp::template f<yh, xh>::value), sizeof...(xt), sizeof...(yt)
-  )>::template f<
+  : _fast_merge_impl<
+    cmp::template f<yh, xh>::value ? 4 <= sizeof...(yt) : (sizeof...(xt) >= 4) + 2
+  >::template f<
     list<xh, xt...>, list<yh, yt...>, list<zs...>, cmp>
   {};
 
@@ -218,15 +213,15 @@ namespace jln::mp::detail
     // x.size + y.size >= 100, unless empty list
     (sizeof...(xs) && sizeof...(ys) && sizeof...(xs) > 0 && sizeof...(ys) >= 100u)>>
   {
-    using xm = number<(sizeof...(xs) + 1) / 2>;
-    using ym = number<(sizeof...(ys) + 1) / 2>;
+    static const unsigned xm = (sizeof...(xs) + 1) / 2;
+    static const unsigned ym = (sizeof...(ys) + 1) / 2;
 
-    using xr = typename drop_front<xm>::template f<xs...>;
-    using yr = typename drop_front<ym>::template f<ys...>;
+    using xr = typename drop_front_c<xm>::template f<xs...>;
+    using yr = typename drop_front_c<ym>::template f<ys...>;
 
     using l = _merge<
-      typename take_front<xm>::template f<xs...>,
-      typename take_front<ym>::template f<ys...>,
+      typename take_front_c<xm>::template f<xs...>,
+      typename take_front_c<ym>::template f<ys...>,
       z
     >;
 

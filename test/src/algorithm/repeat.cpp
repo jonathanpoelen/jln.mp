@@ -12,7 +12,6 @@ TEST()
   using namespace ut::ints;
 
   test_pack2<repeat, _1>();
-  test_pack2<repeat>();
 
   ut::same<seq_1_1_1, emp::repeat_c<seq_1, 3>>();
 

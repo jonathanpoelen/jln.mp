@@ -11,95 +11,6 @@ namespace jln::mp::detail
   {
     return a < b ? b : a;
   }
-
-  constexpr unsigned n_8_or_less_16_64_256(unsigned n)
-  {
-    return
-      n <= 8 ? n
-    : n < 16 ? 8
-    : n < 64 ? 16
-    : n < 256 ? 64
-    : 256
-    ;
-  }
-
-  constexpr unsigned n_8_or_less_16_64(unsigned n)
-  {
-    return
-      n <= 8 ? n
-    : n < 16 ? 8
-    : n < 64 ? 16
-    : 64
-    ;
-  }
-
-  constexpr int n_4_or_less_8_16_64(int n)
-  {
-    return
-      n <= 4 ? n
-    : n < 8 ? 4
-    : n < 16 ? 8
-    : n < 64 ? 16
-    : 64
-    ;
-  }
-
-  constexpr int n_4_or_less_8_16_64_256(int n)
-  {
-    return
-      n <= 4 ? n
-    : n < 8 ? 4
-    : n < 16 ? 8
-    : n < 64 ? 16
-    : n < 256 ? 64
-    : 256
-    ;
-  }
-
-  constexpr int sub_1_n_4_or_less_8_16_64(int n)
-  {
-    --n;
-    return
-      n <= 4 ? n
-    : n < 8 ? 4
-    : n < 16 ? 8
-    : n < 64 ? 16
-    : 64
-    ;
-  }
-
-  constexpr int sub_1_n_4_or_less_8_16_64_256(int n)
-  {
-    --n;
-    return
-      n <= 4 ? n
-    : n < 8 ? 4
-    : n < 16 ? 8
-    : n < 64 ? 16
-    : n < 256 ? 64
-    : 256
-    ;
-  }
-
-  constexpr unsigned sub_n_8_or_less_16_32_64_128_256(unsigned n)
-  {
-    return n <= 8 ? n
-         : n <= 16 ? 8
-         : n <= 32 ? 16
-         : n <= 64 ? 32
-         : n <= 128 ? 64
-         : 128;
-  }
-
-  constexpr unsigned n_8_or_less_16_32_64_128_256(unsigned n)
-  {
-    return n <= 8 ? n
-         : n <= 16 ? 16
-         : n <= 32 ? 32
-         : n <= 64 ? 64
-         : n <= 128 ? 128
-         : 256;
-  }
 }
 
 #define JLN_MP_NIL
@@ -107,14 +18,11 @@ namespace jln::mp::detail
 #define JLN_MP_PAREN_OPEN (
 #define JLN_MP_PAREN_CLOSE )
 
-#define JLN_MP_GEN_XS_8_args(func, ...) \
-  func(8,   JLN_MP_XS_8,   JLN_MP_RXS_8,   JLN_MP_REPEAT_8, __VA_ARGS__)
-
-#define JLN_MP_GEN_XS_8_16_32_64_128(func)                    \
-  func(8,   JLN_MP_XS_8,   JLN_MP_RXS_8,   JLN_MP_REPEAT_8)   \
-  func(16,  JLN_MP_XS_16,  JLN_MP_RXS_16,  JLN_MP_REPEAT_16)  \
-  func(32,  JLN_MP_XS_32,  JLN_MP_RXS_32,  JLN_MP_REPEAT_32)  \
-  func(64,  JLN_MP_XS_64,  JLN_MP_RXS_64,  JLN_MP_REPEAT_64)  \
+#define JLN_MP_GEN_XS_8_16_32_64_128(func)                   \
+  func(8,   JLN_MP_XS_8,   JLN_MP_RXS_8,   JLN_MP_REPEAT_8)  \
+  func(16,  JLN_MP_XS_16,  JLN_MP_RXS_16,  JLN_MP_REPEAT_16) \
+  func(32,  JLN_MP_XS_32,  JLN_MP_RXS_32,  JLN_MP_REPEAT_32) \
+  func(64,  JLN_MP_XS_64,  JLN_MP_RXS_64,  JLN_MP_REPEAT_64) \
   func(128, JLN_MP_XS_128, JLN_MP_RXS_128, JLN_MP_REPEAT_128)
 
 #define JLN_MP_GEN_XS_16_64_256(func)                        \

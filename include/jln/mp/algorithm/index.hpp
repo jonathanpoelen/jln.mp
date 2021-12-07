@@ -26,9 +26,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::index_if_impl<
-      typename detail::_drop_while<
-        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
-      >::template f<0, JLN_MP_TRACE_F(detail::to_not_fn_t<Pred>), xs...>
+      typename detail::_drop_while<sizeof...(xs)>
+      ::template f<0, JLN_MP_TRACE_F(detail::to_not_fn_t<Pred>), xs...>
     >::template f<TC, FC, xs...>;
   };
 

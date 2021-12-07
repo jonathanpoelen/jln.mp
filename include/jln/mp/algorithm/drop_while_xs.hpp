@@ -7,7 +7,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<int, bool not_found>
+    template<int, bool not_found = true>
     struct _drop_while_xs;
 
     constexpr int_ partial_drop_while_xs_size(int_ i, int_ size)
@@ -20,10 +20,8 @@ namespace jln::mp
     }
 
     template<int_ Size, class Pred, class... xs>
-    using drop_while_xs_call = typename detail::_drop_while_xs<
-      detail::n_8_or_less_16_32_64_128_256(Size),
-      true
-    >::template f<Size, Pred, xs...>;
+    using drop_while_xs_call = typename detail::_drop_while_xs<Size>
+      ::template f<Size, Pred, xs...>;
   }
   /// \endcond
 
@@ -39,10 +37,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::drop_while_impl<
-      typename detail::_drop_while_xs<
-        detail::n_8_or_less_16_32_64_128_256(sizeof...(xs)),
-        true
-      >::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
+      typename detail::_drop_while_xs<sizeof...(xs)>
+        ::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<C, xs...>;
   };
 
@@ -50,20 +46,20 @@ namespace jln::mp
   /// \tparam OffsetEnd  a negative value start to end of sequence.
   /// \treturn \sequence
   /// \see drop_front, drop_back, drop_while, drop_while_xs, take_while, take_while_xs
-  template<class OffsetEnd, class Pred, class C = listify>
-  struct partial_drop_while_xs
+  template<int_ OffsetEnd, class Pred, class C = listify>
+  struct partial_drop_while_xs_c
   {
     template<class... xs>
     using f = typename detail::drop_while_impl<
       typename detail::drop_while_xs_call<
-        detail::partial_drop_while_xs_size(OffsetEnd::value, sizeof...(xs)),
+        detail::partial_drop_while_xs_size(OffsetEnd, sizeof...(xs)),
         JLN_MP_TRACE_F(Pred), xs...
       >
     >::template f<C, xs...>;
   };
 
-  template<int_ OffsetEnd, class Pred, class C = listify>
-  using partial_drop_while_xs_c = partial_drop_while_xs<number<OffsetEnd>, Pred, C>;
+  template<class OffsetEnd, class Pred, class C = listify>
+  using partial_drop_while_xs = partial_drop_while_xs_c<OffsetEnd::value, Pred, C>;
 
   namespace emp
   {
@@ -76,7 +72,7 @@ namespace jln::mp
 
     template<class L, int_ OffsetEnd, class Pred, class C = mp::listify>
     using partial_drop_while_xs_c = unpack<L,
-      mp::partial_drop_while_xs<number<OffsetEnd>, Pred, C>>;
+      mp::partial_drop_while_xs_c<OffsetEnd, Pred, C>>;
   }
 }
 
@@ -84,6 +80,23 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
+  template<int n>
+  struct _drop_while_xs<n, true> : _drop_while_xs<
+      n <= 16 ? 16
+    : n <= 32 ? 32
+    : n <= 64 ? 64
+    : n <= 128 ? 128
+    : 256,
+    true
+  >
+  {};
+
+  struct drop_while_xs_impl_false
+  {
+    template<std::size_t remaining, class Pred, class... xs>
+    using f = _drop_while_result<sizeof...(xs)>;
+  };
+
 #define JLN_DROP_WHILE_IMPL(n, m)                                           \
   template<>                                                                \
   struct _drop_while_xs<n, true>                                            \
@@ -94,11 +107,8 @@ namespace jln::mp::detail
   };                                                                        \
                                                                             \
   template<>                                                                \
-  struct _drop_while_xs<n, false>                                           \
-  {                                                                         \
-    template<std::size_t remaining, class Pred, class... xs>                \
-    using f = _drop_while_result<sizeof...(xs)>;                            \
-  }
+  struct _drop_while_xs<n, false> : drop_while_xs_impl_false                \
+  {}
 
   JLN_DROP_WHILE_IMPL(7, 6);
   JLN_DROP_WHILE_IMPL(6, 5);
@@ -145,23 +155,21 @@ namespace jln::mp::detail
         _1, _2, _3, _4, _5, _6, _7, _8, xs...
       >::value>
       ::template f<7, Pred, _2, _3, _4, _5, _6, _7, _8, xs...>
-      ::template f<_drop_while_xs<n_8_or_less_16_32_64_128_256(remaining-8), true>,
-                   remaining-8, Pred, xs...>;
+      ::template f<_drop_while_xs<remaining-8>, remaining-8, Pred, xs...>;
   };
 
-#define JLN_DROP_WHILE_IMPL(n, m, xs)                                               \
-  template<>                                                                        \
-  struct _drop_while_xs<n, true>                                                    \
-  {                                                                                 \
-    template<                                                                       \
-      std::size_t remaining,                                                        \
-      class Pred,                                                                   \
-      xs(class, JLN_MP_NIL, JLN_MP_COMMA),                                          \
-      class... xs>                                                                  \
-    using f = typename _drop_while_xs<m, true>                                      \
-      ::template f<m, Pred, xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...>        \
-      ::template f<_drop_while_xs<n_8_or_less_16_32_64_128_256(remaining-m), true>, \
-                   remaining-m, Pred, xs...>;                                       \
+#define JLN_DROP_WHILE_IMPL(n, m, xs)                                        \
+  template<>                                                                 \
+  struct _drop_while_xs<n, true>                                             \
+  {                                                                          \
+    template<                                                                \
+      std::size_t remaining,                                                 \
+      class Pred,                                                            \
+      xs(class, JLN_MP_NIL, JLN_MP_COMMA),                                   \
+      class... xs>                                                           \
+    using f = typename _drop_while_xs<m, true>                               \
+      ::template f<m, Pred, xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...> \
+      ::template f<_drop_while_xs<remaining-m>, remaining-m, Pred, xs...>;   \
   }
 
   JLN_DROP_WHILE_IMPL(32, 16, JLN_MP_XS_16);

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <jln/mp/number/number.hpp>
 #include <jln/mp/detail/enumerate.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/list/list.hpp>
@@ -34,13 +33,13 @@ namespace jln::mp
     detail::sliding_stride(size::value, stride::value)
   >::template f<C>;
 
-  template<class size, class C = listify>
-  using sliding = sliding_with_stride<size, number<1>, C>;
-
   template<int_ size, int_ stride = 1, class C = listify>
   using sliding_with_stride_c = typename detail::mk_sliding<size, stride,
     detail::sliding_stride(size, stride)
   >::template f<C>;
+
+  template<class size, class C = listify>
+  using sliding = sliding_with_stride_c<size::value, 1, C>;
 
   template<int_ size, class C = listify>
   using sliding_c = sliding_with_stride_c<size, 1, C>;
@@ -208,9 +207,9 @@ namespace jln::mp::detail
     };
 
     template<class C, int_ size, int_, class... xs>
-    using f = typename make_int_sequence_v<impl<C, size-1, drop_front_c<size-1>>>
-      ::template f<number<size>>
-      ::template f<xs...>;
+    using f = typename emp::make_int_sequence_v_c<
+      size, impl<C, size-1, drop_front_c<size-1>>
+    >::template f<xs...>;
   };
 
   template<>
@@ -233,9 +232,9 @@ namespace jln::mp::detail
     };
 
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename make_int_sequence_v<impl<C, (sizeof...(xs) - size) / stride + 1, stride>>
-      ::template f<number<size>>
-      ::template f<xs...>;
+    using f = typename emp::make_int_sequence_v_c<
+      size, impl<C, (sizeof...(xs) - size) / stride + 1, stride>
+    >::template f<xs...>;
   };
 
   constexpr int_ slinding8_pivot(int_ nx, int_ size, int_ stride)
@@ -266,13 +265,12 @@ namespace jln::mp::detail
     };
 
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename make_int_sequence_v<impl<
+    using f = typename emp::make_int_sequence_v_c<size, impl<
       C,
       (sizeof...(xs) - size) / stride + 2,
       stride,
       slinding8_pivot(sizeof...(xs), size, stride)
     >>
-    ::template f<number<size>>
     ::template f<xs...>;
   };
 

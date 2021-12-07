@@ -30,7 +30,7 @@ namespace jln::mp
 #else
   template <class... Fs>
   struct each
-  : rotate<number<-1>, lift<detail::_each>>
+  : rotate_c<-1, lift<detail::_each>>
   ::template f<Fs...>
   {};
 #endif

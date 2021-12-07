@@ -57,7 +57,7 @@ namespace jln::mp::detail
   {
     template<class x>
     using f = number<!std::is_same<_drop_while_continue, typename _drop_while<
-      n_8_or_less_16_32_64_128_256(sizeof...(xs)), true
+      sizeof...(xs)
     >::template f<0, push_back<x, NotEqual>, xs...>>::value>;
   };
 
@@ -97,7 +97,7 @@ namespace jln::mp::detail
   {
     template<class NotEqual, class seq0, class... seqs>
     using f = number<std::is_same<_drop_while_continue, typename _drop_while<
-      n_8_or_less_16_32_64_128_256(sizeof...(seqs)), true
+      sizeof...(seqs)
     >::template f<
       0,
       unpack<to_is_subset_impl<NotEqual, seq0>>,

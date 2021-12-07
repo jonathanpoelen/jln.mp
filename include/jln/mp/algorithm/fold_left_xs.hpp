@@ -11,7 +11,7 @@ namespace jln::mp
   namespace detail
   {
     template<int>
-    struct _fold_left_xs;
+    struct fold_left_xs_impl;
 
     constexpr int_ _partial_fold_left_xs_size(int_ i, int_ size)
     {
@@ -25,9 +25,8 @@ namespace jln::mp
     }
 
     template<class F, int_ n, class... xs>
-    using partial_fold_left_xs_select = typename detail::_fold_left_xs<
-      detail::sub_1_n_4_or_less_8_16_64(n)
-    >::template f<F::template f, n-1, xs...>;
+    using partial_fold_left_xs_select = typename detail::fold_left_xs_impl<n-1>
+      ::template f<F::template f, n-1, xs...>;
   }
   /// \endcond
 
@@ -43,25 +42,25 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \value
   /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
-  template<class OffsetEnd, class F, class C = identity>
-  struct partial_fold_left_xs
+  template<int_ OffsetEnd, class F, class C = identity>
+  struct partial_fold_left_xs_c
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
       detail::partial_fold_left_xs_select<
         JLN_MP_TRACE_F(F),
-        detail::_partial_fold_left_xs_size(OffsetEnd::value, sizeof...(xs)),
+        detail::_partial_fold_left_xs_size(OffsetEnd, sizeof...(xs)),
         xs...
       >
     );
   };
 
-  template<int_ OffsetEnd, class F, class C = identity>
-  using partial_fold_left_xs_c = partial_fold_left_xs<number<OffsetEnd>, F, C>;
+  template<class OffsetEnd, class F, class C = identity>
+  using partial_fold_left_xs = partial_fold_left_xs_c<OffsetEnd::value, F, C>;
 
 #ifdef JLN_MP_DOXYGENATING
   template<class F, class C = identity>
-  using fold_left_xs = partial_fold_left_xs<number<-1>, F, C>;
+  using fold_left_xs = partial_fold_left_xs_c<-1, F, C>;
 #else
   template<class F, class C = identity>
   struct fold_left_xs
@@ -81,7 +80,7 @@ namespace jln::mp
 
     template<class L, int_ OffsetEnd, class state, class F, class C = mp::identity>
     using partial_fold_left_xs_c = unpack<L,
-      mp::push_front<state, mp::partial_fold_left_xs<number<OffsetEnd>, F, C>>>;
+      mp::push_front<state, mp::partial_fold_left_xs_c<OffsetEnd, F, C>>>;
 
     template<class L, class state, class F, class C = mp::identity>
     using fold_left_xs = unpack<L,
@@ -93,26 +92,35 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<>
-  struct _fold_left_xs<-1>
+  template<int n>
+  struct fold_left_xs_impl : fold_left_xs_impl<
+      n < 8 ? 4
+    : n < 16 ? 8
+    : n < 64 ? 16
+    : 64
+  >
   {};
 
   template<>
-  struct _fold_left_xs<0>
+  struct fold_left_xs_impl<-1>
+  {};
+
+  template<>
+  struct fold_left_xs_impl<0>
   {
     template<template<class...> class, int m, class state>
     using f = state;
   };
 
   template<>
-  struct _fold_left_xs<1>
+  struct fold_left_xs_impl<1>
   {
     template<template<class...> class F, int m, class state, class... xs>
     using f = F<state, xs...>;
   };
 
   template<>
-  struct _fold_left_xs<2>
+  struct fold_left_xs_impl<2>
   {
     template<template<class...> class F, int m, class state,
       class _1, class... xs>
@@ -120,7 +128,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _fold_left_xs<3>
+  struct fold_left_xs_impl<3>
   {
     template<template<class...> class F, int m, class state,
       class _1, class _2, class... xs>
@@ -133,23 +141,23 @@ namespace jln::mp::detail
   //   ps = [f'_{i}, ' for i in range(1, n)]
   //   print(f'''
   //   template<>
-  //   struct _fold_left_xs<{n}>
+  //   struct fold_left_xs_impl<{n}>
   //   {{
   //     template<template<class...> class F, int m, class state,
   //       {args}, class... xs>
-  //     using f = typename _fold_left_xs<
-  //       detail::n_4_or_less_8_16_64(m-{n-1})
+  //     using f = typename fold_left_xs_impl<
+  //       m-{n-1}
   //     >::template f<F, m-{n-1}, {'F<' * (n-1)}state{''.join(f',{newline}      {"".join(ps[i:])}xs...>' for i in range(n))};
   //   }};
   // ''', end='')
 
   template<>
-  struct _fold_left_xs<4>
+  struct fold_left_xs_impl<4>
   {
     template<template<class...> class F, int m, class state,
       class _1, class _2, class _3, class... xs>
-    using f = typename _fold_left_xs<
-      detail::n_4_or_less_8_16_64(m-3)
+    using f = typename fold_left_xs_impl<
+      m-3
     >::template f<F, m-3, F<F<F<state,
       _1, _2, _3, xs...>,
       _2, _3, xs...>,
@@ -158,12 +166,12 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _fold_left_xs<8>
+  struct fold_left_xs_impl<8>
   {
     template<template<class...> class F, int m, class state,
       class _1, class _2, class _3, class _4, class _5, class _6, class _7, class... xs>
-    using f = typename _fold_left_xs<
-      detail::n_4_or_less_8_16_64(m-7)
+    using f = typename fold_left_xs_impl<
+      m-7
     >::template f<F, m-7, F<F<F<F<F<F<F<state,
       _1, _2, _3, _4, _5, _6, _7, xs...>,
       _2, _3, _4, _5, _6, _7, xs...>,
@@ -176,14 +184,14 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _fold_left_xs<16>
+  struct fold_left_xs_impl<16>
   {
     template<template<class...> class F, int m, class state,
       class _1, class _2, class _3, class _4, class _5, class _6, class _7,
       class _8, class _9, class _10, class _11, class _12, class _13, class _14,
       class _15, class... xs>
-    using f = typename _fold_left_xs<
-      detail::n_4_or_less_8_16_64(m-15)
+    using f = typename fold_left_xs_impl<
+      m-15
     >::template f<F, m-15, F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<state,
       _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
       _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
@@ -204,7 +212,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _fold_left_xs<64>
+  struct fold_left_xs_impl<64>
   {
     template<template<class...> class F, int m, class state,
       class _1, class _2, class _3, class _4, class _5, class _6, class _7,
@@ -219,8 +227,8 @@ namespace jln::mp::detail
       class _56, class _57, class _58, class _59, class _60, class _61,
       class _62, class _63,
       class... xs>
-    using f = typename _fold_left_xs<
-      detail::n_4_or_less_8_16_64(m-63)
+    using f = typename fold_left_xs_impl<
+      m-63
     >::template f<F, m-63, F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<
                            F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<
                            F<F<F<F<F<F<F<F<F<F<F<

@@ -8,10 +8,10 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<class position, class C1, class C2, class C, class... xs>
+    template<unsigned position, class C1, class C2, class C, class... xs>
     using _split_by_i = typename C::template f<
-      typename take_front<position, C1>::template f<xs...>,
-      typename drop_front<position, C2>::template f<xs...>
+      typename take_front_c<position, C1>::template f<xs...>,
+      typename drop_front_c<position, C2>::template f<xs...>
     >;
   }
   /// \endcond
@@ -26,7 +26,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_split_by_i<
-      JLN_MP_DCALL_TRACE_XS(xs, GetIndex, xs...), SubC1, SubC2, C, xs...>;
+      JLN_MP_DCALL_V_TRACE_XS(xs, GetIndex, xs...), SubC1, SubC2, C, xs...>;
   };
 
   template<class GetIndex, class C = listify>

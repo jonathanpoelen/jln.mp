@@ -34,6 +34,12 @@ namespace jln::mp::smp
 
 namespace jln::mp::detail
 {
+  struct smp_split_by_i
+  {
+    template<class position, class C1, class C2, class C, class... xs>
+    using f = _split_by_i<position::value, C1, C2, C, xs...>;
+  };
+
   template<class SubC1, class SubC2, class C>
   struct _smp_split_by
   {
@@ -49,7 +55,7 @@ namespace jln::mp::detail
     {
       template<class... xs>
       using f = typename conditional_c<i::value <= sizeof...(xs)>
-        ::template f<mp::lift<_split_by_i>, violation>
+        ::template f<smp_split_by_i, violation>
         ::template f<i, SubC1, SubC2, monadic_xs<C>, xs...>;
     };
 

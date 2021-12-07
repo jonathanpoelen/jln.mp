@@ -36,7 +36,7 @@ namespace jln::mp
 #else
   template <class... Fs>
   struct partial
-  : rotate<number<-1>, lift<detail::_partial>>
+  : rotate_c<-1, lift<detail::_partial>>
   ::template f<Fs...>
   {};
 #endif

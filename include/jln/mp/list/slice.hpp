@@ -13,7 +13,7 @@ namespace jln::mp
     template<int>
     struct _slice;
 
-    constexpr int_ slide_select(int_ nx, int_ size, int_ stride);
+    constexpr unsigned slide_select(unsigned nx, unsigned size, unsigned stride);
   }
   /// \endcond
 
@@ -25,27 +25,27 @@ namespace jln::mp
   /// \pre `0 <= size`
   /// \pre `0 <= (size - 1) * stride + start + 1 <= sizeof...(xs)`
   /// \treturn \sequence
-  template<class start, class size, class stride = number<1>, class C = listify>
-  struct slice
+  template<unsigned start, unsigned size, unsigned stride = 1, class C = listify>
+  struct slice_c
   {
     template<class... xs>
     using f = typename detail::_slice<
-      detail::slide_select(int_(sizeof...(xs)) - start::value, size::value, stride::value)
+      detail::slide_select(sizeof...(xs) - start, size, stride)
     >
-    ::template f<start::value, size::value, stride::value, C, sizeof...(xs)>
+    ::template f<start, size, stride, C, sizeof...(xs)>
     ::template f<xs...>;
   };
 
-  template<int_ start, int_ size, int_ stride = 1, class C = listify>
-  using slice_c = slice<number<start>, number<size>, number<stride>, C>;
+  template<class start, class size, class stride = number<1>, class C = listify>
+  using slice = slice_c<start::value, size::value, stride::value, C>;
 
   namespace emp
   {
     template<class L, class start, class size, class stride = number<1>, class C = mp::listify>
     using slice = unpack<L, slice<start, size, stride, C>>;
 
-    template<class L, int_ start, int_ size, int_ stride = 1, class C = mp::listify>
-    using slice_c = slice<L, number<start>, number<size>, number<stride>, C>;
+    template<class L, unsigned start, unsigned size, unsigned stride = 1, class C = mp::listify>
+    using slice_c = unpack<L, slice_c<start, size, stride, C>>;
   }
 }
 
@@ -61,7 +61,7 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  constexpr int_ slide_select(int_ nx, int_ size, int_ stride)
+  constexpr unsigned slide_select(unsigned nx, unsigned size, unsigned stride)
   {
     return !size ? 0
       : size == 1 ? 3
@@ -73,19 +73,19 @@ namespace jln::mp::detail
   template<>
   struct _slice<2>
   {
-    template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
+    template<unsigned start, unsigned size, unsigned /*stride*/, class C, std::size_t len>
     using f = drop_front_c<start, take_front_c<size, C>>;
   };
 
 #if JLN_MP_MSVC
-  template<int_ size, int_ stride, int_ i, class x>
+  template<unsigned size, unsigned stride, unsigned i, class x>
   using slice_impl_msvc = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
 #endif
 
-  template<int_ size, int_ stride, class C>
+  template<unsigned size, unsigned stride, class C>
   struct _slice_impl
   {
-    template<int_... ints>
+    template<unsigned... ints>
     struct impl
     {
       template<class... xs>
@@ -103,7 +103,7 @@ namespace jln::mp::detail
   template<>
   struct _slice<1>
   {
-    template<int_ start, int_ size, unsigned stride, class C, std::size_t len>
+    template<unsigned start, unsigned size, unsigned stride, class C, std::size_t len>
     using f = drop_front_c<
       start,
       typename emp::make_int_sequence_v_c<
@@ -117,14 +117,14 @@ namespace jln::mp::detail
   template<>
   struct _slice<0>
   {
-    template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
+    template<unsigned start, unsigned size, unsigned /*stride*/, class C, std::size_t len>
     using f = clear<C>;
   };
 
   template<>
   struct _slice<3>
   {
-    template<int_ start, int_ size, unsigned /*stride*/, class C, std::size_t len>
+    template<unsigned start, unsigned size, unsigned /*stride*/, class C, std::size_t len>
     using f = drop_front_c<start, front<C>>;
   };
 }

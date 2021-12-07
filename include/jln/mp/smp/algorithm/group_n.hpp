@@ -15,10 +15,10 @@ JLN_MP_MAKE_REGULAR_SMP2_P(group_n, (N), (C, smp::listify), smp::group_n_c<N::va
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class n, class C>
-  struct _sfinae<sfinae, group_n<n, C>>
+  template<template<class> class sfinae, int_ n, class C>
+  struct _sfinae<sfinae, group_n_c<n, C>>
   {
-    using type = smp::group_n<n, sfinae<C>>;
+    using type = smp::group_n_c<n, sfinae<C>>;
   };
 }
 /// \endcond

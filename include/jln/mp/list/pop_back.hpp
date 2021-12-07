@@ -11,7 +11,7 @@ namespace jln::mp
   /// \pre `sizeof...(xs) > 0`
   /// \treturn \sequence
   template<class C = listify>
-  using pop_back = rotate<number<-1>, pop_front<C>>;
+  using pop_back = rotate_c<-1, pop_front<C>>;
 
   namespace emp
   {

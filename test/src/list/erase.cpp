@@ -24,10 +24,8 @@ TEST()
     .not_invocable<>()
     ;
 
-  test_context<erase_c<-1, 3>, smp::erase_c<-1, 3>>()
-    .not_invocable<_0, _1, _2, _3, _4, _5>()
-    ;
-
+  ut::not_invocable<smp::erase_c<-1, 3>, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::erase<number<-1>, _3>, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::erase<_1, smp::always<na>>, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::erase<_1, _3, bad_function>, _1, _1, _1, _1, _1>();
   ut::not_invocable<smp::erase<bad_number, bad_number, bad_function>, _1, _1, _1, _1, _1>();

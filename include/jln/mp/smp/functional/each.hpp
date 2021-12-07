@@ -75,7 +75,7 @@ namespace jln::mp::detail
 
   template<>
   struct _smp_each_select<5>
-  : mp::rotate<mp::number<-1>, detail::_smp_each>
+  : mp::rotate_c<-1, detail::_smp_each>
   {};
 }
 /// \endcond
