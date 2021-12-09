@@ -1,6 +1,5 @@
 #pragma once
 
-#include <jln/mp/detail/enumerate.hpp>
 #include <jln/mp/algorithm/cartesian.hpp>
 #include <jln/mp/algorithm/repeat.hpp>
 

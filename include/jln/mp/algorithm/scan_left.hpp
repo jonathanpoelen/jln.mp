@@ -1,7 +1,6 @@
 #pragma once
 
 #include <jln/mp/utility/unpack.hpp>
-#include <jln/mp/detail/enumerate.hpp>
 
 namespace jln::mp
 {

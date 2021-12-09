@@ -1,6 +1,5 @@
 #pragma once
 
-#include <jln/mp/detail/enumerate.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/list/list.hpp>
 
