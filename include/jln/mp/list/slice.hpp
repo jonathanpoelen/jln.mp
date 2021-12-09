@@ -85,7 +85,7 @@ namespace jln::mp::detail
   template<unsigned size, unsigned stride, class C>
   struct _slice_impl
   {
-    template<unsigned... ints>
+    template<int_... ints>
     struct impl
     {
       template<class... xs>
