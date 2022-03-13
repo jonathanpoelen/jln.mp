@@ -1,6 +1,5 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm/remove.hpp>
 #include <jln/mp/smp/algorithm/transform.hpp>
 #include <jln/mp/smp/functional/if.hpp>
 #include <jln/mp/smp/utility/always.hpp>
