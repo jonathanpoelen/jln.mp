@@ -8,6 +8,7 @@
 #include <jln/mp/list/at.hpp>
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/size.hpp>
+#include <jln/mp/list/wrap_in_list.hpp>
 
 #include <functional>
 
@@ -40,6 +41,8 @@ struct Var
     return to_value<Var<c...>>(values);
   }
 
+  Var() = default;
+  Var(Var const&) = default;
   Var& operator=(Var const&) = default;
 
   template<class T>
@@ -81,7 +84,8 @@ struct is_expression<Expression<Ts...>> : std::true_type
 
 template<class T>
 using to_expr_type = mp::if_<
-  mp::lift<is_expression>, mp::identity,
+  mp::lift<is_expression>,
+  mp::identity,
   mp::if_<
     mp::lift<is_var>,
     mp::identity,
@@ -110,12 +114,8 @@ struct extract_vars : mp::unpack<
   mp::transform<
     mp::if_<
       mp::lift<is_expression>,
-      extract_vars,
-      mp::if_<
-        mp::lift<is_var>,
-        mp::listify,
-        mp::always<mp::list<>>
-      >
+      extract_vars, // recursivity
+      mp::wrap_in_list_if<mp::lift<is_var>>
     >,
     mp::join<>
   >
@@ -162,9 +162,9 @@ namespace error
   };
 }
 
-template<template<class...> class Cat, class L, class... Ts>
+template<template<class...> class Error, class L, class... Ts>
 using extract_unknown_variables = mp::call<
-  mp::join<mp::lift<Cat>>,
+  mp::join<mp::lift<Error>>,
   mp::call<
     mp::conditional<
       mp::emp::contains<L, Ts>
@@ -196,7 +196,7 @@ template<class Expr, class... Values>
 auto eval(Expr expr, Values... values)
 {
   using expr_variables = mp::emp::unique<detail::extract_vars::f<Expr>>;
-  using value_variables = mp::transform<mp::unpack<mp::at1<>>>::f<Values...>;
+  using value_variables = mp::list<mp::unpack<mp::at1<>>::f<Values>...>;
   using factory = detail::values_factory<expr_variables, value_variables>;
   using values_type = typename factory::template values_type<Values...>;
   return expr.eval(values_type{values...});
@@ -212,8 +212,8 @@ int main()
   auto expr = (a + b) * (2 + a);
   std::printf("%d\n", eval(expr, a=3, b=4)); // 35
 
-  //Var<'c'> c;
-  //std::printf("%d\n", eval(expr, b=4)); // error::missing_variables<Var<'a'>>
-  //std::printf("%d\n", eval(expr, c=2, a=3, b=4)); // error::too_many_variables<Var<'c'>>
+  // Var<'c'> c;
+  // std::printf("%d\n", eval(expr, b=4)); // error::missing_variables<Var<'a'>>
+  // std::printf("%d\n", eval(expr, c=2, a=3, b=4)); // error::too_many_variables<Var<'c'>>
   //std::printf("%d\n", eval(expr, a=3, b=4, b=2)); // error::duplicate_variables<Var<'b'>>
 }
