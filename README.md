@@ -1,6 +1,6 @@
 [![CI](https://github.com/jonathanpoelen/jln.mp/workflows/CI/badge.svg?branch=master&event=push)](https://github.com/jonathanpoelen/jln.mp/actions?query=workflow%3ACI)
 
-[Jln.mp](https://github.com/jonathanpoelen/jln.mp) is a single header C++17 metaprogramming library designed for fast compilation speed.
+[Jln.mp](https://github.com/jonathanpoelen/jln.mp) is a single header C++17 metaprogramming library designed for fast compilation speed (strongly inspired by [Kvasir::mpl](https://github.com/kvasir-io/mpl)).
 
 Licence: MIT
 
@@ -123,7 +123,7 @@ using my_tuple_cat_result_type = mp::call<
     mp::join<mp::lift<std::tuple>>,
     // convert a tuple like to mp::list
     emp::make_int_sequence<
-        std::tuple_size<std::remove_reference_t<Tuples>>,
+        std::tuple_size<std::decay_t<Tuples>>,
         // convert a sequence of tuple index to a mp::list of tuple element
         mp::transform<my_tuple_element<std::decay_t<Tuples>>>
     >...
@@ -148,7 +148,7 @@ constexpr R my_tuple_cat(Tuples&&... args)
     using index_by_tuple = emp::make_int_sequence_c<
         sizeof...(Tuples),
         // repeat each index by number of element
-        mp::each<mp::repeat<std::tuple_size<std::remove_reference_t<Tuples>>>...,
+        mp::each<mp::repeat<std::tuple_size<std::decay_t<Tuples>>>...,
             mp::join<>
         >
     >;
@@ -156,7 +156,7 @@ constexpr R my_tuple_cat(Tuples&&... args)
     // ex:    tuple_size=3     tuple_size=2     tuple_size=4
     // list<    0, 1, 2,           0, 1,         0, 1, 2, 3   >
     using index_by_value = emp::join<
-        emp::make_int_sequence<std::tuple_size<std::remove_reference_t<Tuples>>>...
+        emp::make_int_sequence<std::tuple_size<std::decay_t<Tuples>>>...
     >;
 
     return my_tuple_cat_impl(index_by_tuple{}, index_by_value{}, std::tuple<Tuples&&...>(args...));
