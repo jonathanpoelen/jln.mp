@@ -8,14 +8,14 @@ on: [push, pull_request]
 #     branches: [ master ]
 
 jobs:
-  windows:
-    name: Windows ${{ matrix.env }} dbg=${{ matrix.debug }}
+  windows-gcc:
+    name: Windows ${{ matrix.compiler }} dbg=${{ matrix.debug }}
     runs-on: windows-latest
     timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
-        env: [clang-cl, g++]
+        compiler: [g++]
         debug: ['false', 'true']
 
     steps:
@@ -23,27 +23,53 @@ jobs:
     - uses: actions/setup-python@v1
     - shell: cmd
       env:
-        CXX: ${{ matrix.env }}
+        CXX: ${{ matrix.compiler }}
       run: |
-        if "%CXX%"=="g++" goto :after_vc
-        call "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86
-        IF ERRORLEVEL 1 EXIT
-        set PATH=%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Tools\Llvm\bin;%PATH%
-        :after_vc
         set CC=%CXX%
         python -m pip install ninja meson
         meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
         type D:\a\jln.mp\jln.mp\build\meson-logs\meson-log.txt
         ninja -C build -k10
 
-  windows-cl:
-    name: Windows ${{ matrix.env }} dbg=${{ matrix.debug }}
+  windows-clang:
+    name: Windows ${{ matrix.compiler }} dbg=${{ matrix.debug }}
     runs-on: windows-latest
     timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
-        env: [cl]
+        compiler: [clang-cl]
+        debug: ['false', 'true']
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install Python Dependencies
+      run: pip install meson ninja
+    - name: Prepare MSVC
+      uses: bus1/cabuild/action/msdevshell@v1
+      with:
+        architecture: x64
+    - shell: cmd
+      env:
+        CC: ${{ matrix.compiler }}
+        CXX: ${{ matrix.compiler }}
+      run: |
+        meson setup build -Dcpp_winlibs= -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
+        type D:\a\jln.mp\jln.mp\build\meson-logs\meson-log.txt
+        ninja -C build -k10
+
+  windows-cl:
+    name: Windows ${{ matrix.compiler }} dbg=${{ matrix.debug }}
+    runs-on: windows-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [cl]
         debug: ['false']
 
     steps:
@@ -51,16 +77,13 @@ jobs:
     - uses: actions/setup-python@v1
     - shell: cmd
       env:
-        CXX: ${{ matrix.env }}
+        CC: ${{ matrix.compiler }}
+        CXX: ${{ matrix.compiler }}
       run: |
-        call "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86
-        IF ERRORLEVEL 1 EXIT
-        set PATH=%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Enterprise\VC\Tools\Llvm\bin;%PATH%
-        set CC=%CXX%
         python -m pip install ninja meson
-        meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
+        meson setup --backend vs --vsenv -Dcpp_winlibs= -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Db_colorout=always build
         type D:\a\jln.mp\jln.mp\build\meson-logs\meson-log.txt
-        ninja -C build -k10
+        meson -v -C build
 
   macos:
     name: MacOs clang dbg=${{ matrix.debug }}
