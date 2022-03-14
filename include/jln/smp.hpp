@@ -13302,29 +13302,32 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-namespace jln::mp::smp
-{
-  template<class Pred, class C = listify>
-  using remove_if = contract<mp::transform<
-    subcontract<wrap_in_list_if_not<assume_unary_barrier<Pred>>>,
-    mp::monadic_xs<mp::join<subcontract<C>>>>>;
-
-  template<class x, class C = listify>
-  using remove = contract<mp::remove<x, subcontract<C>>>;
-}
 namespace jln::mp
 {
-  /// \ingroup group
+  /// \cond
+  namespace detail
+  {
+    template<bool... bs>
+    struct partition_impl;
 
-  // TODO remove <-> copy
-  // Pred::f<xs>::value... -> mk_list<b>::f<xs> | mk_list<!b>::f<xs>
+    struct partition_caller;
+  }
+  /// \endcond
+
+  /// \ingroup group
 
   /// Splits a \list in two according to a predicate.
   /// The first value contains all elements for which the predicate returns true,
   /// the second value contains all elements for which predicate returns false
   /// \treturn \sequence of two \values
   template<class Pred, class F = listify, class C = listify>
-  using partition_with = tee<copy_if<Pred, F>, remove_if<Pred, F>, C>;
+  struct partition_with
+  {
+    template<class... xs>
+    using f = typename transform<Pred, detail::partition_caller>
+      ::template f<xs...>
+      ::template f<C, F, xs...>;
+  };
 
   /// Splits a \list in two according to a predicate.
   /// The first value contains all elements for which the predicate returns true,
@@ -13332,7 +13335,7 @@ namespace jln::mp
   /// \treturn \sequence of two \lists
   /// \see partition_with
   template<class Pred, class C = listify>
-  using partition = tee<copy_if<Pred>, remove_if<Pred>, C>;
+  using partition = partition_with<Pred, listify, C>;
 
   namespace emp
   {
@@ -13343,15 +13346,68 @@ namespace jln::mp
     using partition = unpack<L, mp::partition<Pred, C>>;
   }
 }
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<bool... bs>
+  struct partition_impl
+  {
+    template<class C, class F, class... xs>
+    using f = typename C::template f<
+      typename mp::join<F>::template f<typename mp::wrap_in_list_c<bs>::template f<xs>...>,
+      typename mp::join<F>::template f<typename mp::wrap_in_list_c<!bs>::template f<xs>...>
+    >;
+  };
+
+  struct partition_caller
+  {
+    template<class... xs>
+    using f = partition_impl<xs::value...>;
+  };
+}
+/// \endcond
+/// \cond
+namespace jln::mp::detail
+{
+  template<class Pred, class F, class C>
+  struct smp_partition_with;
+}
+/// \endcond
+
 namespace jln::mp::smp
 {
   template<class Pred, class F = listify, class C = listify>
-  using partition_with = tee<copy_if<Pred, F>, remove_if<Pred, F>,
-    assume_binary_list_barrier<C>>;
+  using partition_with = try_contract<detail::smp_partition_with<
+      assume_unary<Pred>, subcontract<F>, subcontract<C>>>;
 
   template<class Pred, class C = listify>
   using partition = partition_with<Pred, listify, C>;
 }
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class Pred, class F, class C>
+  struct smp_partition_with
+  {
+    template<class... xs>
+    using f = typename mp::transform<
+      Pred,
+      mp::try_or<partition_caller, violation>
+    >::template f<xs...>
+     ::template f<mp::monadic_xs<C>, F, xs...>;
+  };
+
+  template<template<class> class sfinae, class Pred, class F, class C>
+  struct _sfinae<sfinae, partition_with<Pred, F, C>>
+  {
+    using type = smp::partition_with<sfinae<Pred>, sfinae<F>, sfinae<C>>;
+  };
+}
+/// \endcond
 namespace jln::mp
 {
   /// \cond
@@ -13753,6 +13809,16 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp::smp
+{
+  template<class Pred, class C = listify>
+  using remove_if = contract<mp::transform<
+    subcontract<wrap_in_list_if_not<assume_unary_barrier<Pred>>>,
+    mp::monadic_xs<mp::join<subcontract<C>>>>>;
+
+  template<class x, class C = listify>
+  using remove = contract<mp::remove<x, subcontract<C>>>;
+}
 /// \cond
 namespace jln::mp::detail
 {
