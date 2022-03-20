@@ -36,10 +36,22 @@ namespace jln::mp
   };
 #endif
 
+  template<class... keys>
+  using collapse_for = collapse<list<keys...>>;
+
+  template<bool... keys>
+  using collapse_for_c = collapse<list<number<keys>...>>;
+
   namespace emp
   {
     template<class L, class Keys, class C = mp::listify>
     using collapse = unpack<L, mp::collapse<Keys, C>>;
+
+    template<class L, class... keys>
+    using collapse_for = unpack<L, mp::collapse<mp::list<keys...>>>;
+
+    template<class L, bool... keys>
+    using collapse_for_c = unpack<L, mp::collapse<mp::list<number<keys>...>>>;
   }
 
 
