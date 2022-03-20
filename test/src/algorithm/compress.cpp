@@ -17,7 +17,7 @@ TEST()
   using result = list<_1, _3, _4>;
 
   ut::same<result, emp::compress<emp::numbers<0,1,2,3,4>, selectors>>();
-  ut::same<result, emp::compress_with_c<emp::numbers<0,1,2,3,4>, 0, 1, 0, 1, 1>>();
+  ut::same<result, emp::compress_for_c<emp::numbers<0,1,2,3,4>, 0, 1, 0, 1, 1>>();
 
   test_context<compress<selectors>, smp::compress<selectors>>()
     .test<result, _0, _1, _2, _3, _4>()

@@ -32,15 +32,21 @@ namespace jln::mp
     >;
   };
 
+  template<class... Selectors>
+  using compress_for = compress<list<Selectors...>>;
+
   template<bool... selectors>
-  using compress_with_c = compress<list<number<selectors>...>>;
+  using compress_for_c = compress<list<number<selectors>...>>;
 
   namespace emp
   {
     template<class L, class Selectors, class C = mp::listify>
     using compress = unpack<L, mp::compress<Selectors, C>>;
 
+    template<class L, class... Selectors>
+    using compress_for = unpack<L, mp::compress<mp::list<Selectors...>>>;
+
     template<class L, bool... selectors>
-    using compress_with_c = unpack<L, mp::compress<list<number<selectors>...>>>;
+    using compress_for_c = unpack<L, mp::compress<mp::list<number<selectors>...>>>;
   }
 }

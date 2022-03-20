@@ -16,8 +16,11 @@ namespace jln::mp::smp
   using compress = typename detail::smp_compress_select<Selectors>
     ::template f<C>;
 
+  template<class... Selectors>
+  using compress_for = compress<mp::list<Selectors...>>;
+
   template<bool... selectors>
-  using compress_with_c = test_contract<
+  using compress_for_c = test_contract<
     mp::size<mp::is<mp::number<sizeof...(selectors)>>>,
     mp::compress<mp::list<mp::number<selectors>...>>
   >;
