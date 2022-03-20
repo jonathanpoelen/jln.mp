@@ -19,12 +19,20 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Composition of two \metafunctions or more.
+  /// \semantics
+  ///   \code
+  ///   compose_f<foo, bar>::f<a, b> == bar<foo<a, b>>
+  ///   \endcode
   /// \treturn \function
   template<template<class...> class F, template<class...> class... Fs>
   using compose_f = typename detail::_compose_f<detail::min(8, sizeof...(Fs))>
     ::template f<F, Fs...>;
 
   /// Composition of two \functions or more.
+  /// \semantics
+  ///   \code
+  ///   compose<foo, bar>::f<a, b> == bar::f<foo::f<a, b>>
+  ///   \endcode
   /// \treturn \function
   template<class F, class... Fs>
   using compose = typename conditional_c<sizeof...(Fs) == 0>

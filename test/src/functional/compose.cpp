@@ -25,6 +25,7 @@ TEST()
 
   test_context<smp::compose_f<h, g, f>, void>()
     .test<f<g<h<int>>>, int>()
+    .test<f<g<h<int, int>>>, int, int>()
   ;
 
   test_context<smp::compose_f<f, g, h>, void>()
