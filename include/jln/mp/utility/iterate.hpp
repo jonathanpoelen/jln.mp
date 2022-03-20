@@ -20,7 +20,7 @@ namespace jln::mp
 
   /// Apply a function \c n times to its argument.
   /// \treturn \value
-  template <uint_ n, class F, class C = identity>
+  template<uint_ n, class F, class C = identity>
   struct iterate_c
   {
     template<class x>
@@ -30,7 +30,7 @@ namespace jln::mp
 
   /// Apply a function \c n times to its argument.
   /// \treturn \value
-  template <class n, class F, class C = identity>
+  template<class n, class F, class C = identity>
   using iterate = iterate_c<n::value, F, C>;
 
   namespace emp
