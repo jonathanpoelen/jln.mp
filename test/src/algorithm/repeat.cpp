@@ -21,6 +21,7 @@ TEST()
     .test<emp::numbers<1, 2, 1, 2, 1, 2>, _1, _2>()
     ;
 
+  ut::not_invocable<smp::repeat_c<-3>>();
   ut::not_invocable<smp::repeat<smp::always<na>>>();
   ut::not_invocable<smp::repeat<_2, bad_function>>();
   ut::not_invocable<smp::repeat<_2, bad_function>, _1>();

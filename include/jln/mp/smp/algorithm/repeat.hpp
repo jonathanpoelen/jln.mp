@@ -39,7 +39,7 @@ namespace jln::mp::detail
   template<>
   struct mk_repeat<false>
   {
-    template<int_ i, int_ start, class C>
+    template<int_ i, class C>
     using f = bad_contract;
   };
 }
