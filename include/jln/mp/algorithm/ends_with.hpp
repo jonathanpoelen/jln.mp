@@ -13,7 +13,8 @@ namespace jln::mp
   /// \treturn \bool
   /// \see starts_with
   template<class Seq, class C = identity>
-  struct ends_with;
+  struct ends_with
+  {};
 
   namespace emp
   {
