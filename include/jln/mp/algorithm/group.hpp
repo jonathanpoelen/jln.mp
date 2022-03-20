@@ -20,7 +20,7 @@ namespace jln::mp
   /// Groups adjacent elements that respect a predicate.
   /// \semantics
   ///   \code
-  ///   group<same<>>::f<void, void, int, void>
+  ///   group_by<same<>>::f<void, void, int, void>
   ///   == list<
   ///     list<void, void>,
   ///     list<int>,
