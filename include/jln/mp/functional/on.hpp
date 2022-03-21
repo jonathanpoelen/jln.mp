@@ -72,7 +72,7 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename _join_select<2>::f<
-      C,
+      JLN_MP_TRACE_F(C),
       typename take_front_c<sizeof...(Fs), _each<listify, Fs...>>::template f<xs...>,
       typename drop_front_c<sizeof...(Fs)>::template f<xs...>
     >::type;
@@ -83,7 +83,7 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename _join_select<2>::f<
-      C,
+      JLN_MP_TRACE_F(C),
       typename take_front_c<sizeof...(xs)+1, lift<_each>>
         ::template f<listify, Fs...>
         ::template f<xs...>,
