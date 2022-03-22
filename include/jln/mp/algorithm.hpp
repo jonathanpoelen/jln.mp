@@ -42,6 +42,7 @@
 #include <jln/mp/algorithm/lexicographical_compare.hpp>
 #include <jln/mp/algorithm/lower_bound.hpp>
 #include <jln/mp/algorithm/make_int_sequence.hpp>
+#include <jln/mp/algorithm/matrix_longest.hpp>
 #include <jln/mp/algorithm/matrix_shortest.hpp>
 #include <jln/mp/algorithm/merge.hpp>
 #include <jln/mp/algorithm/mismatch.hpp>
@@ -78,3 +79,4 @@
 #include <jln/mp/algorithm/unique.hpp>
 #include <jln/mp/algorithm/upper_bound.hpp>
 #include <jln/mp/algorithm/zip.hpp>
+#include <jln/mp/algorithm/zip_longest.hpp>

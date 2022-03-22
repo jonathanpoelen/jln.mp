@@ -16,12 +16,13 @@ namespace jln::mp
 
   /// \ingroup group
 
-  /// n-ary version of transform.
+  /// Turns rows into columns, and columns into rows.
+  /// This is similar to transposing a matrix.
   /// \pre all parameters must be \lists
   /// \pre all lists must be the same size
   /// \semantics
   ///   \code
-  ///   zip<listify>::f<
+  ///   zip<>::f<
   ///     list<_1, _2, _3>,
   ///     list<_a, _b, _c>
   ///   > = list<
@@ -31,6 +32,7 @@ namespace jln::mp
   ///   >
   ///   \endcode
   /// \treturn \sequence of \list
+  /// \see zip_longest
   template<class C = listify>
   using zip = detail::_zip<detail::optimize_useless_transform_unpack_t<C>>;
 
