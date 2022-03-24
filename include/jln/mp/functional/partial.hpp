@@ -53,7 +53,8 @@ namespace jln::mp
   struct partial<F, C>
   {
     template <class x, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_CALL_TRACE(F, x), xs...); };
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_CALL_TRACE(F, x), xs...);
+  };
 
   template <class F0, class F1, class C>
   struct partial<F0, F1, C>
