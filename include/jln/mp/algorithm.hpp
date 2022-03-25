@@ -29,7 +29,6 @@
 #include <jln/mp/algorithm/fold_right.hpp>
 #include <jln/mp/algorithm/fold_tree.hpp>
 #include <jln/mp/algorithm/group.hpp>
-#include <jln/mp/algorithm/group_by_type.hpp>
 #include <jln/mp/algorithm/group_n.hpp>
 #include <jln/mp/algorithm/index.hpp>
 #include <jln/mp/algorithm/indices.hpp>
@@ -53,6 +52,7 @@
 #include <jln/mp/algorithm/permutations.hpp>
 #include <jln/mp/algorithm/powerset.hpp>
 #include <jln/mp/algorithm/prefix.hpp>
+#include <jln/mp/algorithm/regroup.hpp>
 #include <jln/mp/algorithm/remove.hpp>
 #include <jln/mp/algorithm/remove_unique.hpp>
 #include <jln/mp/algorithm/repeat.hpp>

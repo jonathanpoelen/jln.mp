@@ -18,7 +18,7 @@ namespace jln::mp
   /// Elements are sorted in order of first appearance.
   /// \semantics
   ///   \code
-  ///   group_by_type_with<listify>::f<int, int, char, double, int, double>
+  ///   regroup_with<listify>::f<int, int, char, double, int, double>
   ///   == list<
   ///     list<int, int, int>,
   ///     list<char>,
@@ -27,18 +27,18 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence of \list of type and \number
   template<class F, class C = listify>
-  using group_by_type_with = counter_wrapped_with<detail::counter_to_repeat<F>, C>;
+  using regroup_with = counter_wrapped_with<detail::counter_to_repeat<F>, C>;
 
   template<class C = listify>
-  using group_by_type = group_by_type_with<listify, C>;
+  using regroup = regroup_with<listify, C>;
 
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using group_by_type = unpack<L, mp::group_by_type<C>>;
+    using regroup = unpack<L, mp::regroup<C>>;
 
     template<class L, class F = mp::listify, class C = mp::listify>
-    using group_by_type_with = unpack<L, mp::group_by_type_with<F, C>>;
+    using regroup_with = unpack<L, mp::regroup_with<F, C>>;
   }
 }
 

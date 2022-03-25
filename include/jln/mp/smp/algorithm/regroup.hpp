@@ -3,16 +3,16 @@
 #include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/functional/monadic.hpp>
-#include <jln/mp/algorithm/group_by_type.hpp>
+#include <jln/mp/algorithm/regroup.hpp>
 
 
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using group_by_type = contract<mp::group_by_type<assume_lists<C>>>;
+  using regroup = contract<mp::regroup<assume_lists<C>>>;
 
   template<class F = listify, class C = listify>
-  using group_by_type_with = contract<mp::counter_wrapped_with<
+  using regroup_with = contract<mp::counter_wrapped_with<
     mp::if_<
       mp::size<mp::is<mp::number<2>>>,
       detail::counter_to_repeat<subcontract<F>>,
@@ -24,14 +24,14 @@ namespace jln::mp::smp
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, group_by_type<C>>
+  struct _sfinae<sfinae, regroup<C>>
   {
-    using type = smp::group_by_type<sfinae<C>>;
+    using type = smp::regroup<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class F, class C>
-  struct _sfinae<sfinae, group_by_type_with<F, C>>
+  struct _sfinae<sfinae, regroup_with<F, C>>
   {
-    using type = smp::group_by_type_with<sfinae<F>, sfinae<C>>;
+    using type = smp::regroup_with<sfinae<F>, sfinae<C>>;
   };
 }
