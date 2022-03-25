@@ -27,7 +27,7 @@ namespace jln::mp
   ///     list<void>
   ///   >
   ///   \endcode
-  /// \treturn \sequence
+  /// \treturn \sequence of \list
   template<class Cmp, class C = listify>
   struct group_by
   {
