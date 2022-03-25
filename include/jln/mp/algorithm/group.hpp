@@ -51,17 +51,35 @@ namespace jln::mp
 
 
 #include <jln/mp/algorithm/split.hpp>
+#include <jln/mp/algorithm/transform.hpp>
 #include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/push_front.hpp>
-#include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/functional/lift.hpp>
-#include <jln/mp/functional/partial.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
   template<class x, class C>
-  using _group_insert_x = partial<unpack<push_front<x>>, C>;
+  struct _group_insert_x
+  {
+    template<class seq, class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(
+      xs, C,
+      typename detail::_unpack<seq>::template f<push_front<x>>,
+      xs...
+    );
+  };
+
+  template<class x, class F, class C>
+  struct _group_insert_x<x, transform<unpack<F>, C>>
+  {
+    template<class seq, class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(
+      xs, C,
+      typename detail::_unpack<seq>::template f<push_front<x, F>>,
+      typename detail::_unpack<xs>::template f<F>...
+    );
+  };
 
   template<class...>
   struct _group_impl;

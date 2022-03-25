@@ -5,6 +5,7 @@
 #include "jln/mp/smp/list/push_front.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 #include "jln/mp/smp/algorithm/transform.hpp"
+#include "jln/mp/smp/utility/unpack.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -52,6 +53,18 @@ TEST()
       _0, _0, _0, _1, _1, _0, _2>()
     .test<list<seq_1_1_1>, _1, _1, _1>()
     .test<list<seq_0, seq_1, seq_3>, _0, _1, _3>()
+    ;
+
+  test_context<
+    group<transform<unpack<size<>>>>,
+    smp::group<smp::transform<smp::unpack<smp::size<>>>>,
+    0
+  >()
+    .test<list<>>()
+    .test<list<_3, _2, _1, _1>,
+      _0, _0, _0, _1, _1, _0, _2>()
+    .test<list<_3>, _1, _1, _1>()
+    .test<list<_1, _1, _1>, _0, _1, _3>()
     ;
 
   ut::not_invocable<smp::group<bad_function>>();
