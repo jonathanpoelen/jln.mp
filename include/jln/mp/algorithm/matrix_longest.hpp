@@ -2,6 +2,7 @@
 
 #include <jln/mp/algorithm/repeat.hpp>
 #include <jln/mp/list/size.hpp>
+#include <jln/mp/list/push_front.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/functional/each.hpp>
 #include <jln/mp/functional/lift.hpp>

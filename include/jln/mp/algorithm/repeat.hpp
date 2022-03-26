@@ -23,9 +23,9 @@ namespace jln::mp
   struct repeat_c
   {
     template<class... xs>
-    using f = emp::make_int_sequence_c<N,
+    using f = emp::make_int_sequence_v_c<N,
       typename detail::_repeat<detail::min(sizeof...(xs), 2)>
-        ::template f<C, xs...>>;
+        ::template impl<C, xs...>>;
   };
 
   template<class N, class C = listify>
@@ -42,10 +42,8 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/algorithm/transform.hpp>
-#include <jln/mp/algorithm/cartesian.hpp>
 #include <jln/mp/list/join.hpp>
-#include <jln/mp/utility/always.hpp>
+#include <jln/mp/functional/memoize.hpp> // _first
 
 /// \cond
 namespace jln::mp::detail
@@ -54,21 +52,33 @@ namespace jln::mp::detail
   struct _repeat<0>
   {
     template<class C>
-    using f = _cartesian<C, 0>; // for C::f<>
+    struct impl
+    {
+      template<int_...>
+      using f = JLN_MP_CALL_TRACE_0_ARG(C);
+    };
   };
 
   template<>
   struct _repeat<1>
   {
     template<class C, class x>
-    using f = transform<always<x>, C>;
+    struct impl
+    {
+      template<int_... ns>
+      using f = JLN_MP_DCALL_TRACE_XS(ns, C, _first<x, decltype(ns)>...);
+    };
   };
 
   template<>
   struct _repeat<2>
   {
     template<class C, class... xs>
-    using f = transform<always<list<xs...>>, join<C>>;
+    struct impl
+    {
+      template<int_... ns>
+      using f = JLN_MP_DCALL_TRACE_XS(ns, join<C>, _first<list<xs...>, decltype(ns)>...);
+    };
   };
 }
 /// \endcond
