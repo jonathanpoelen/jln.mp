@@ -31,7 +31,9 @@ namespace jln::mp
   /// The \predicate takes all the elements of the current position until
   /// the end of the list.
   /// \treturn \sequence
-  /// \see drop_front, drop_back, drop_while, partial_drop_while_xs, take_while, take_while_xs
+  /// \see drop_front, drop_back, drop_while, partial_drop_while_xs
+  /// \see take_while, take_while_xs
+  /// \see search
   template<class Pred, class C = listify>
   struct drop_while_xs
   {
@@ -45,7 +47,9 @@ namespace jln::mp
   /// Same as \c drop_while_xs, but stop searching at position \c OffsetEnd.
   /// \tparam OffsetEnd  a negative value start to end of sequence.
   /// \treturn \sequence
-  /// \see drop_front, drop_back, drop_while, drop_while_xs, take_while, take_while_xs
+  /// \see drop_front, drop_back, drop_while, drop_while_xs
+  /// \see take_while, take_while_xs
+  /// \see search, partial_search
   template<int_ OffsetEnd, class Pred, class C = listify>
   struct partial_drop_while_xs_c
   {
@@ -119,6 +123,8 @@ namespace jln::mp::detail
   JLN_DROP_WHILE_IMPL(1, 0);
 
 #undef JLN_DROP_WHILE_IMPL
+
+  // _drop_while_xs<n, b> is a _search<n, !b>
 
   template<>
   struct _drop_while_xs<0, true>

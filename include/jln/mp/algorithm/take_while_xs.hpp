@@ -9,7 +9,9 @@ namespace jln::mp
 
   /// Extracts the first elements of a \sequence that satisfy a \predicate.
   /// \treturn \sequence
-  /// \see take_front, take_back, take_while, partial_take_while_xs, drop_while, drop_while_xs
+  /// \see take_front, take_back, take_while, partial_take_while_xs
+  /// \see drop_while, drop_while_xs
+  /// \see search
   template<class Pred, class C = listify>
   struct take_while_xs
   {
@@ -23,7 +25,9 @@ namespace jln::mp
   /// Same as \c take_while_xs, but stop searching at position \c OffsetEnd.
   /// \tparam OffsetEnd  a negative value start to end of sequence.
   /// \treturn \sequence
-  /// \see drop_front, drop_back, drop_while, drop_while_xs, take_while, take_while_xs
+  /// \see drop_front, drop_back, drop_while, drop_while_xs
+  /// \see take_while, take_while_xs
+  /// \see search, partial_search
   template<int_ OffsetEnd, class Pred, class C = listify>
   struct partial_take_while_xs_c
   {

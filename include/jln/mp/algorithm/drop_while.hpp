@@ -21,7 +21,9 @@ namespace jln::mp
 
   /// Remove the first elements of a \sequence that satisfy a \predicate.
   /// \treturn \sequence
-  /// \see drop_front, drop_back, take_while
+  /// \see drop_front, drop_back, drop_while_xs
+  /// \see take_while, take_while_xs
+  /// \see search, partial_search
   template<class Pred, class C = listify>
   struct drop_while
   {

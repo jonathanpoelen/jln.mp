@@ -28,6 +28,7 @@ namespace jln::mp
   /// \see search_before, partial_search, after, search_index
   /// \see search_before_extended_by_n
   /// \see partial_search_before, partial_search_before_extended_by_n
+  /// \see drop_while, drop_while_xs, take_while, take_while_xs
   template<class Pred, class TC = listify, class FC = clear<TC>>
   struct search
   {
@@ -45,6 +46,7 @@ namespace jln::mp
   /// \see search, partial_search, after, search_index
   /// \see search_before_extended_by_n
   /// \see partial_search_before, partial_search_before_extended_by_n
+  /// \see drop_while, drop_while_xs, take_while, take_while_xs
   template<class Pred, class TC = listify, class FC = clear<TC>>
   struct search_before
   {
@@ -61,6 +63,7 @@ namespace jln::mp
   /// \treturn \sequence
   /// \see search, search_before, partial_search, after, search_index
   /// \see partial_search_before, partial_search_before_extended_by_n
+  /// \see drop_while, drop_while_xs, take_while, take_while_xs
   template<class Pred, class ExtendedByN, class TC = listify, class FC = clear<TC>>
   struct search_before_extended_by_n
   {
@@ -76,6 +79,7 @@ namespace jln::mp
   /// \see search, search_before, after, search_index
   /// \see search_before_extended_by_n
   /// \see partial_search_before, partial_search_before_extended_by_n
+  /// \see drop_while, drop_while_xs, take_while, take_while_xs
   template<int_ StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
   struct partial_search_c
   {
@@ -94,6 +98,7 @@ namespace jln::mp
   /// \treturn \sequence
   /// \see search, search_before, partial_search, after, search_index
   /// \see search_before_extended_by_n, partial_search_before_extended_by_n
+  /// \see drop_while, drop_while_xs, take_while, take_while_xs
   template<int_ StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
   struct partial_search_before_c
   {
@@ -112,6 +117,7 @@ namespace jln::mp
   /// \treturn \sequence
   /// \see search, search_before, partial_search, after, search_index
   /// \see search_before_extended_by_n, partial_search_before
+  /// \see drop_while, drop_while_xs, take_while, take_while_xs
   template<int_ StopWhenAtLeast, class Pred, class ExtendedByN,
            class TC = listify, class FC = clear<TC>>
   struct partial_search_before_extended_by_n_c
@@ -345,6 +351,8 @@ namespace jln::mp::detail
 
 #undef JLN_MP_SEARCH_IMPL
 
+  // _search<n, b> is a _drop_while_xs<n, !b>
+
   template<>
   struct _search<0, false>
   {
@@ -373,14 +381,13 @@ namespace jln::mp::detail
     template<
       std::size_t remaining,
       class Pred,
-      JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA),
+      class _1, class _2, class _3, class _4,
+      class _5, class _6, class _7, class _8,
       class... xs>
     using f = typename _search<7, Pred::template f<
-        JLN_MP_XS_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...
+        _1, _2, _3, _4, _5, _6, _7, _8, xs...
       >::value>
-      ::template f<7, Pred,
-                   JLN_MP_XS_2_TO_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA),
-                   xs...>
+      ::template f<7, Pred, _2, _3, _4, _5, _6, _7, _8, xs...>
       ::template f<_search<remaining-8>, remaining-8, Pred, xs...>;
   };
 

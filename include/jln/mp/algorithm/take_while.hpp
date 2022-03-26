@@ -16,7 +16,9 @@ namespace jln::mp
 
   /// Extracts the first elements of a \sequence that satisfy a \predicate.
   /// \treturn \sequence
-  /// \see take_front, take_back, drop_while
+  /// \see take_front, take_back, take_while_xs
+  /// \see drop_while, drop_while_xs
+  /// \see search, partial_search
   template<class Pred, class C = listify>
   struct take_while
   {
