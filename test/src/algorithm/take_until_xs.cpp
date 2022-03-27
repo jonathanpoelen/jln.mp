@@ -1,25 +1,25 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/algorithm/take_while_xs.hpp"
+#include "jln/mp/smp/algorithm/take_until_xs.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 #include "jln/mp/smp/utility/is_not.hpp"
 #include "jln/mp/smp/list/front.hpp"
 
 TEST_SUITE_BEGIN()
 
-// take_while_xs
+// take_until_xs
 TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<take_while_xs, is<int>>();
-  test_pack3<take_while_xs>();
+  test_pack2<take_until_xs, is<int>>();
+  test_pack3<take_until_xs>();
 
   test_context<
-    take_while_xs<size<greater_than_c<3>>>,
-    smp::take_while_xs<smp::size<smp::greater_than_c<3>>>
+    take_until_xs<size<less_equal_than_c<3>>>,
+    smp::take_until_xs<smp::size<smp::less_equal_than_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
@@ -77,8 +77,8 @@ TEST()
     ;
 
   test_context<
-    take_while_xs<size<less_than_c<3>>, mp::listify, mp::always<void>>,
-    smp::take_while_xs<smp::size<smp::less_than_c<3>>, smp::listify, smp::always<void>>
+    take_until_xs<size<greater_equal_than_c<3>>, mp::listify, mp::always<void>>,
+    smp::take_until_xs<smp::size<smp::greater_equal_than_c<3>>, smp::listify, smp::always<void>>
   >()
     .test<void>()
     .test<void, _0>()
@@ -87,8 +87,8 @@ TEST()
     ;
 
   test_context<
-    take_while_xs<front<equal_to_c<3>>>,
-    smp::take_while_xs<smp::front<smp::equal_to_c<3>>>
+    take_until_xs<front<not_equal_to_c<3>>>,
+    smp::take_until_xs<smp::front<smp::not_equal_to_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _1>()
@@ -99,27 +99,27 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::take_while_xs<smp::always<na>>, _1, _1, _1>();
-  ut::not_invocable<smp::take_while_xs<is<_3>, bad_function>>();
-  ut::not_invocable<smp::take_while_xs<is<_3>, bad_function>, void>();
-  ut::not_invocable<smp::take_while_xs<is<_3>, void>>();
-  ut::not_invocable<smp::take_while_xs<always<void>>, void>();
-  ut::not_invocable<smp::take_while_xs<_3>, void>();
-  ut::not_invocable<smp::take_while_xs<void>, void>();
+  ut::not_invocable<smp::take_until_xs<smp::always<na>>, _1, _1, _1>();
+  ut::not_invocable<smp::take_until_xs<is<_3>, bad_function>>();
+  ut::not_invocable<smp::take_until_xs<is<_3>, bad_function>, void>();
+  ut::not_invocable<smp::take_until_xs<is<_3>, void>>();
+  ut::not_invocable<smp::take_until_xs<always<void>>, void>();
+  ut::not_invocable<smp::take_until_xs<_3>, void>();
+  ut::not_invocable<smp::take_until_xs<void>, void>();
 }
 
-// take_inclusive_while_xs
+// take_inclusive_until_xs
 TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<take_inclusive_while_xs, is<int>>();
-  test_pack3<take_inclusive_while_xs>();
+  test_pack2<take_inclusive_until_xs, is<int>>();
+  test_pack3<take_inclusive_until_xs>();
 
   test_context<
-    take_inclusive_while_xs<size<greater_than_c<3>>>,
-    smp::take_inclusive_while_xs<smp::size<smp::greater_than_c<3>>>
+    take_inclusive_until_xs<size<less_equal_than_c<3>>>,
+    smp::take_inclusive_until_xs<smp::size<smp::less_equal_than_c<3>>>
   >()
     .test<list<>>()
     .test<list<_0>, _0>()
@@ -177,8 +177,8 @@ TEST()
     ;
 
   test_context<
-    take_inclusive_while_xs<size<less_than_c<3>>, mp::listify, mp::always<void>>,
-    smp::take_inclusive_while_xs<smp::size<smp::less_than_c<3>>, smp::listify, smp::always<void>>
+    take_inclusive_until_xs<size<greater_equal_than_c<3>>, mp::listify, mp::always<void>>,
+    smp::take_inclusive_until_xs<smp::size<smp::greater_equal_than_c<3>>, smp::listify, smp::always<void>>
   >()
     .test<void>()
     .test<void, _0>()
@@ -187,8 +187,8 @@ TEST()
     ;
 
   test_context<
-    take_inclusive_while_xs<front<equal_to_c<3>>>,
-    smp::take_inclusive_while_xs<smp::front<smp::equal_to_c<3>>>
+    take_inclusive_until_xs<front<not_equal_to_c<3>>>,
+    smp::take_inclusive_until_xs<smp::front<smp::not_equal_to_c<3>>>
   >()
     .test<list<>>()
     .test<list<_1>, _1>()
@@ -199,28 +199,28 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::take_inclusive_while_xs<smp::always<na>>, _1, _1, _1>();
-  ut::not_invocable<smp::take_inclusive_while_xs<is<_3>, bad_function>>();
-  ut::not_invocable<smp::take_inclusive_while_xs<is<_3>, bad_function>, void>();
-  ut::not_invocable<smp::take_inclusive_while_xs<is<_3>, void>>();
-  ut::not_invocable<smp::take_inclusive_while_xs<always<void>>, void>();
-  ut::not_invocable<smp::take_inclusive_while_xs<_3>, void>();
-  ut::not_invocable<smp::take_inclusive_while_xs<void>, void>();
+  ut::not_invocable<smp::take_inclusive_until_xs<smp::always<na>>, _1, _1, _1>();
+  ut::not_invocable<smp::take_inclusive_until_xs<is<_3>, bad_function>>();
+  ut::not_invocable<smp::take_inclusive_until_xs<is<_3>, bad_function>, void>();
+  ut::not_invocable<smp::take_inclusive_until_xs<is<_3>, void>>();
+  ut::not_invocable<smp::take_inclusive_until_xs<always<void>>, void>();
+  ut::not_invocable<smp::take_inclusive_until_xs<_3>, void>();
+  ut::not_invocable<smp::take_inclusive_until_xs<void>, void>();
 }
 
-// partial_take_while_xs
+// partial_take_until_xs
 TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<partial_take_while_xs, _1, is<int>>();
-  test_pack3<partial_take_while_xs, is<int>>();
-  test_pack3<partial_take_while_xs>();
+  test_pack2<partial_take_until_xs, _1, is<int>>();
+  test_pack3<partial_take_until_xs, is<int>>();
+  test_pack3<partial_take_until_xs>();
 
   test_context<
-    partial_take_while_xs_c<65, size<greater_than_c<3>>>,
-    smp::partial_take_while_xs_c<65, smp::size<smp::greater_than_c<3>>>
+    partial_take_until_xs_c<65, size<less_equal_than_c<3>>>,
+    smp::partial_take_until_xs_c<65, smp::size<smp::less_equal_than_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
@@ -280,8 +280,8 @@ TEST()
     ;
 
   test_context<
-    partial_take_while_xs_c<4, size<less_than_c<3>>, mp::listify, mp::always<void>>,
-    smp::partial_take_while_xs_c<4, smp::size<smp::less_than_c<3>>, smp::listify, smp::always<void>>
+    partial_take_until_xs_c<4, size<greater_equal_than_c<3>>, mp::listify, mp::always<void>>,
+    smp::partial_take_until_xs_c<4, smp::size<smp::greater_equal_than_c<3>>, smp::listify, smp::always<void>>
   >()
     .test<void>()
     .test<void, _0>()
@@ -290,8 +290,8 @@ TEST()
     ;
 
   test_context<
-    partial_take_while_xs_c<66, front<equal_to_c<3>>>,
-    smp::partial_take_while_xs_c<66, smp::front<smp::equal_to_c<3>>>
+    partial_take_until_xs_c<66, front<not_equal_to_c<3>>>,
+    smp::partial_take_until_xs_c<66, smp::front<smp::not_equal_to_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _1>()
@@ -304,29 +304,29 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::partial_take_while_xs<_1, smp::always<na>>, _1, _1, _1>();
-  ut::not_invocable<smp::partial_take_while_xs<is<_3>, bad_function>>();
-  ut::not_invocable<smp::partial_take_while_xs<is<_3>, bad_function>, void>();
-  ut::not_invocable<smp::partial_take_while_xs<is<_3>, void>>();
-  ut::not_invocable<smp::partial_take_while_xs<_3, always<void>>, void>();
-  ut::not_invocable<smp::partial_take_while_xs<_3, _3>, void>();
-  ut::not_invocable<smp::partial_take_while_xs<_3, void>, void>();
-  ut::not_invocable<smp::partial_take_while_xs<void, front<>>>();
+  ut::not_invocable<smp::partial_take_until_xs<_1, smp::always<na>>, _1, _1, _1>();
+  ut::not_invocable<smp::partial_take_until_xs<is<_3>, bad_function>>();
+  ut::not_invocable<smp::partial_take_until_xs<is<_3>, bad_function>, void>();
+  ut::not_invocable<smp::partial_take_until_xs<is<_3>, void>>();
+  ut::not_invocable<smp::partial_take_until_xs<_3, always<void>>, void>();
+  ut::not_invocable<smp::partial_take_until_xs<_3, _3>, void>();
+  ut::not_invocable<smp::partial_take_until_xs<_3, void>, void>();
+  ut::not_invocable<smp::partial_take_until_xs<void, front<>>>();
 }
 
-// partial_take_inclusive_while_xs
+// partial_take_inclusive_until_xs
 TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<partial_take_inclusive_while_xs, _1, is<int>>();
-  test_pack3<partial_take_inclusive_while_xs, is<int>>();
-  test_pack3<partial_take_inclusive_while_xs>();
+  test_pack2<partial_take_inclusive_until_xs, _1, is<int>>();
+  test_pack3<partial_take_inclusive_until_xs, is<int>>();
+  test_pack3<partial_take_inclusive_until_xs>();
 
   test_context<
-    partial_take_inclusive_while_xs_c<65, size<greater_than_c<3>>>,
-    smp::partial_take_inclusive_while_xs_c<65, smp::size<smp::greater_than_c<3>>>
+    partial_take_inclusive_until_xs_c<65, size<less_equal_than_c<3>>>,
+    smp::partial_take_inclusive_until_xs_c<65, smp::size<smp::less_equal_than_c<3>>>
   >()
     .test<list<>>()
     .test<list<_0>, _0>()
@@ -386,8 +386,8 @@ TEST()
     ;
 
   test_context<
-    partial_take_inclusive_while_xs_c<4, size<less_than_c<3>>, mp::listify, mp::always<void>>,
-    smp::partial_take_inclusive_while_xs_c<4, smp::size<smp::less_than_c<3>>, smp::listify, smp::always<void>>
+    partial_take_inclusive_until_xs_c<4, size<greater_equal_than_c<3>>, mp::listify, mp::always<void>>,
+    smp::partial_take_inclusive_until_xs_c<4, smp::size<smp::greater_equal_than_c<3>>, smp::listify, smp::always<void>>
   >()
     .test<void>()
     .test<void, _0>()
@@ -396,8 +396,8 @@ TEST()
     ;
 
   test_context<
-    partial_take_inclusive_while_xs_c<66, front<equal_to_c<3>>>,
-    smp::partial_take_inclusive_while_xs_c<66, smp::front<smp::equal_to_c<3>>>
+    partial_take_inclusive_until_xs_c<66, front<not_equal_to_c<3>>>,
+    smp::partial_take_inclusive_until_xs_c<66, smp::front<smp::not_equal_to_c<3>>>
   >()
     .test<list<>>()
     .test<list<_1>, _1>()
@@ -410,14 +410,14 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::partial_take_inclusive_while_xs<_1, smp::always<na>>, _1, _1, _1>();
-  ut::not_invocable<smp::partial_take_inclusive_while_xs<is<_3>, bad_function>>();
-  ut::not_invocable<smp::partial_take_inclusive_while_xs<is<_3>, bad_function>, void>();
-  ut::not_invocable<smp::partial_take_inclusive_while_xs<is<_3>, void>>();
-  ut::not_invocable<smp::partial_take_inclusive_while_xs<_3, always<void>>, void>();
-  ut::not_invocable<smp::partial_take_inclusive_while_xs<_3, _3>, void>();
-  ut::not_invocable<smp::partial_take_inclusive_while_xs<_3, void>, void>();
-  ut::not_invocable<smp::partial_take_inclusive_while_xs<void, front<>>>();
+  ut::not_invocable<smp::partial_take_inclusive_until_xs<_1, smp::always<na>>, _1, _1, _1>();
+  ut::not_invocable<smp::partial_take_inclusive_until_xs<is<_3>, bad_function>>();
+  ut::not_invocable<smp::partial_take_inclusive_until_xs<is<_3>, bad_function>, void>();
+  ut::not_invocable<smp::partial_take_inclusive_until_xs<is<_3>, void>>();
+  ut::not_invocable<smp::partial_take_inclusive_until_xs<_3, always<void>>, void>();
+  ut::not_invocable<smp::partial_take_inclusive_until_xs<_3, _3>, void>();
+  ut::not_invocable<smp::partial_take_inclusive_until_xs<_3, void>, void>();
+  ut::not_invocable<smp::partial_take_inclusive_until_xs<void, front<>>>();
 }
 
 TEST_SUITE_END()

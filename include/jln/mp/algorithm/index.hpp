@@ -1,9 +1,8 @@
 #pragma once
 
-#include <jln/mp/algorithm/drop_while.hpp>
+#include <jln/mp/algorithm/drop_until.hpp>
 #include <jln/mp/list/size.hpp>
 #include <jln/mp/utility/is.hpp>
-#include <jln/mp/functional/not_fn.hpp>
 
 namespace jln::mp
 {
@@ -26,8 +25,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::index_if_impl<
-      typename detail::_drop_while<sizeof...(xs)>
-      ::template f<0, JLN_MP_TRACE_F(detail::to_not_fn_t<Pred>), xs...>
+      typename detail::_drop_until<sizeof...(xs)>
+      ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
 

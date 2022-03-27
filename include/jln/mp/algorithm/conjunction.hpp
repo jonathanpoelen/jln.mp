@@ -3,6 +3,7 @@
 #include <jln/mp/algorithm/index.hpp>
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/number/to_bool.hpp>
+#include <jln/mp/number/operators.hpp>
 
 
 namespace jln::mp

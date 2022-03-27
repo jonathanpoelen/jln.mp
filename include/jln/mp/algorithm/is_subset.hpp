@@ -22,11 +22,10 @@ namespace jln::mp
   struct is_subset_with
   {
     template<class... seqs>
-    using f = JLN_MP_CALL_TRACE(C, number<
-      detail::_is_subset<detail::min(3, sizeof...(seqs))>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename detail::_is_subset<detail::min(3, sizeof...(seqs))>
       ::template f<JLN_MP_TRACE_F(detail::to_not_fn_t<Equal>), seqs...>
-      ::value
-    >);
+    );
   };
 
   /// Checks whether \value in `seqs[0]` are subset from the \value in `seqs[1:]`.
@@ -49,6 +48,8 @@ namespace jln::mp
 }
 
 
+#include <jln/mp/list/is_empty.hpp>
+
 /// \cond
 namespace jln::mp::detail
 {
@@ -56,9 +57,9 @@ namespace jln::mp::detail
   struct _is_subset_of
   {
     template<class x>
-    using f = number<!std::is_same<_drop_while_continue, typename _drop_while<
-      sizeof...(xs)
-    >::template f<0, push_back<x, NotEqual>, xs...>>::value>;
+    using f = number<!is_drop_while_continue<
+      typename _drop_while<sizeof...(xs)>::template f<0, push_back<x, NotEqual>, xs...>
+    >::type::value>;
   };
 
   template<>
@@ -78,7 +79,7 @@ namespace jln::mp::detail
       if_<
         size<>,
         lift<_is_subset_of>,
-        always<size<not_<>>>
+        always<is_empty<>>
       >,
       NotEqual
     >
@@ -96,13 +97,12 @@ namespace jln::mp::detail
   struct _is_subset<3>
   {
     template<class NotEqual, class seq0, class... seqs>
-    using f = number<std::is_same<_drop_while_continue, typename _drop_while<
-      sizeof...(seqs)
-    >::template f<
-      0,
-      unpack<to_is_subset_impl<NotEqual, seq0>>,
-      seqs...
-    >>::value>;
+    using f = typename detail::is_drop_while_continue<
+      typename _drop_while<sizeof...(seqs)>::template f<
+        0,
+        unpack<to_is_subset_impl<NotEqual, seq0>>,
+        seqs...
+    >>::type;
   };
 }
 
@@ -110,14 +110,14 @@ namespace jln::mp::detail
 namespace jln::mp::emp
 {
   template<class L1, class L2, class C = mp::identity>
-  using is_subset = typename C::template f<number<
-    detail::_is_subset<2>::f<mp::lift<std::is_same, mp::not_<>>, L1, L2>::value
-  >>;
+  using is_subset = typename C::template f<
+    typename detail::_is_subset<2>::f<mp::lift<std::is_same, mp::not_<>>, L1, L2>
+  >;
 
   template<class L1, class L2, class Equal = lift<std::is_same>, class C = mp::identity>
-  using is_subset_with = typename C::template f<number<
-    detail::_is_subset<2>::f<detail::to_not_fn_t<Equal>, L1, L2>::value
-  >>;
+  using is_subset_with = typename C::template f<
+    typename detail::_is_subset<2>::f<detail::to_not_fn_t<Equal>, L1, L2>
+  >;
 }
 #endif
 /// \endcond

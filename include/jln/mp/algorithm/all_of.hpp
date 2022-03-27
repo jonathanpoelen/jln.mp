@@ -1,7 +1,6 @@
 #pragma once
 
-#include <jln/mp/algorithm/drop_while.hpp>
-#include <jln/mp/list/is_empty.hpp>
+#include <jln/mp/algorithm/index.hpp>
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/functional/not_fn.hpp>
 
@@ -12,7 +11,7 @@ namespace jln::mp
   /// Checks whether a predicate holds for all elements of a \sequence.
   /// \treturn \bool
   template<class Pred, class C = identity>
-  using all_of = drop_while<not_fn<not_fn<Pred>>, is_empty<C>>;
+  using all_of = index_if<not_fn<Pred>, always<false_, C>, always<true_, C>>;
 
   namespace emp
   {

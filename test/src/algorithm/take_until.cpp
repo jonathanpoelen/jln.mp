@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/algorithm/take_while.hpp"
+#include "jln/mp/smp/algorithm/take_until.hpp"
 #include "jln/mp/smp/utility/is_not.hpp"
 
 TEST_SUITE_BEGIN()
@@ -11,10 +11,10 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<take_while, is<int>>();
-  test_pack3<take_while>();
+  test_pack2<take_until, is<int>>();
+  test_pack3<take_until>();
 
-  test_context<take_while<is_not<_3>>, smp::take_while<smp::is_not<_3>>>()
+  test_context<take_until<is<_3>>, smp::take_until<smp::is<_3>>>()
     .test<list<>>()
     .test<list<>, _3>()
     .test<list<>, _3, _2>()
@@ -37,8 +37,8 @@ TEST()
     ;
 
   test_context<
-    take_while<is_not<_3>, mp::listify, mp::always<void>>,
-    smp::take_while<smp::is_not<_3>, smp::listify, smp::always<void>>
+    take_until<is<_3>, mp::listify, mp::always<void>>,
+    smp::take_until<smp::is<_3>, smp::listify, smp::always<void>>
   >()
     .test<void>()
     .test<void, _0>()
@@ -47,7 +47,7 @@ TEST()
     .test<list<>, _3, _2>()
     ;
 
-  test_context<take_while<equal_to_c<3>>, smp::take_while<smp::equal_to_c<3>>>()
+  test_context<take_until<not_equal_to_c<3>>, smp::take_until<smp::not_equal_to_c<3>>>()
     .test<list<>>()
     .test<list<>, _1>()
     .test<seq_3, _3>()
@@ -56,12 +56,12 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::take_while<smp::always<na>>, _1, _1, _1>();
-  ut::not_invocable<smp::take_while<is<_3>, bad_function>>();
-  ut::not_invocable<smp::take_while<is<_3>, bad_function>, void>();
-  ut::not_invocable<smp::take_while<is<_3>, void>>();
-  ut::not_invocable<smp::take_while<always<void>>, void>();
-  ut::not_invocable<smp::take_while<void>, void>();
+  ut::not_invocable<smp::take_until<smp::always<na>>, _1, _1, _1>();
+  ut::not_invocable<smp::take_until<is<_3>, bad_function>>();
+  ut::not_invocable<smp::take_until<is<_3>, bad_function>, void>();
+  ut::not_invocable<smp::take_until<is<_3>, void>>();
+  ut::not_invocable<smp::take_until<always<void>>, void>();
+  ut::not_invocable<smp::take_until<void>, void>();
 }
 
 TEST()
@@ -69,10 +69,10 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<take_inclusive_while, is<int>>();
-  test_pack3<take_inclusive_while>();
+  test_pack2<take_inclusive_until, is<int>>();
+  test_pack3<take_inclusive_until>();
 
-  test_context<take_inclusive_while<is_not<_3>>, smp::take_inclusive_while<smp::is_not<_3>>>()
+  test_context<take_inclusive_until<is<_3>>, smp::take_inclusive_until<smp::is<_3>>>()
     .test<list<>>()
     .test<seq_3, _3>()
     .test<seq_3, _3, _2>()
@@ -95,8 +95,8 @@ TEST()
     ;
 
   test_context<
-    take_inclusive_while<is_not<_3>, mp::listify, mp::always<void>>,
-    smp::take_inclusive_while<smp::is_not<_3>, smp::listify, smp::always<void>>
+    take_inclusive_until<is<_3>, mp::listify, mp::always<void>>,
+    smp::take_inclusive_until<smp::is<_3>, smp::listify, smp::always<void>>
   >()
     .test<void>()
     .test<void, _0>()
@@ -105,7 +105,10 @@ TEST()
     .test<seq_3, _3, _2>()
     ;
 
-  test_context<take_inclusive_while<equal_to_c<3>>, smp::take_inclusive_while<smp::equal_to_c<3>>>()
+  test_context<
+    take_inclusive_until<not_equal_to_c<3>>,
+    smp::take_inclusive_until<smp::not_equal_to_c<3>>
+  >()
     .test<list<>>()
     .test<list<_1>, _1>()
     .test<seq_3, _3>()
@@ -114,12 +117,12 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::take_inclusive_while<smp::always<na>>, _1, _1, _1>();
-  ut::not_invocable<smp::take_inclusive_while<is<_3>, bad_function>>();
-  ut::not_invocable<smp::take_inclusive_while<is<_3>, bad_function>, void>();
-  ut::not_invocable<smp::take_inclusive_while<is<_3>, void>>();
-  ut::not_invocable<smp::take_inclusive_while<always<void>>, void>();
-  ut::not_invocable<smp::take_inclusive_while<void>, void>();
+  ut::not_invocable<smp::take_inclusive_until<smp::always<na>>, _1, _1, _1>();
+  ut::not_invocable<smp::take_inclusive_until<is<_3>, bad_function>>();
+  ut::not_invocable<smp::take_inclusive_until<is<_3>, bad_function>, void>();
+  ut::not_invocable<smp::take_inclusive_until<is<_3>, void>>();
+  ut::not_invocable<smp::take_inclusive_until<always<void>>, void>();
+  ut::not_invocable<smp::take_inclusive_until<void>, void>();
 }
 
 TEST_SUITE_END()

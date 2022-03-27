@@ -4,6 +4,7 @@
 #include "jln/mp/smp/algorithm/find_last.hpp"
 #include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/number/operators.hpp"
+#include "jln/mp/smp/number/to_bool.hpp"
 #include "jln/mp/algorithm/iota.hpp"
 
 TEST_SUITE_BEGIN()
@@ -16,7 +17,7 @@ TEST()
   test_pack2<find_last>();
   test_pack2<find_last_if, identity>();
 
-  ut::same<seq_3, emp::find_last_if<seq_0_1_2_3, identity>>();
+  ut::same<seq_3, emp::find_last_if<seq_0_1_2_3, to_bool<>>>();
 
   ut::invoke_r<list<_12, _13>, iota<find_last<_12>>, _0, _14>();
   ut::invoke_r<list<_20, _21>, iota<find_last<_20>>, _0, _22>();
@@ -30,7 +31,7 @@ TEST()
   ut::invoke_r<list<number<580>, number<581>>, iota<find_last<number<580>>>, _0, number<582>>();
   ut::invoke_r<list<number<780>, number<781>>, iota<find_last<number<780>>>, _0, number<782>>();
 
-  test_context<find_last_if<identity>, smp::find_last_if<smp::identity>>()
+  test_context<find_last_if<to_bool<>>, smp::find_last_if<smp::to_bool<>>>()
     .test<list<>>()
     .test<list<>, _0>()
     .test<seq_1, _1>()
@@ -42,7 +43,7 @@ TEST()
     .not_invocable<_0, void>()
     ;
 
-  test_context<find_last_if_not<identity>, smp::find_last_if_not<smp::identity>, 0>()
+  test_context<find_last_if_not<to_bool<>>, smp::find_last_if_not<smp::to_bool<>>, 0>()
     .test<list<>>()
     .test<seq_0, _0>()
     .test<list<>, _1>()

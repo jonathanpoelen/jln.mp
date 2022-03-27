@@ -8,7 +8,7 @@
 namespace jln::mp::smp
 {
   template<class x, class C = identity>
-  using is_not = try_contract<mp::is<x, not_<C>>>;
+  using is_not = try_contract<mp::is<x, mp::not_<subcontract<C>>>>;
 }
 
 /// \cond

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/algorithm/index.hpp>
+#include <jln/mp/algorithm/drop_until.hpp>
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/number/to_bool.hpp>
 
@@ -25,7 +25,7 @@ namespace jln::mp
   };
 #else
   template<class C = identity>
-  using disjunction = index_if<to_bool<>, always<true_, C>, always<false_, C>>;
+  using disjunction = drop_until<to_bool<>, always<true_, C>, always<false_, C>>;
 #endif
 
   namespace emp

@@ -3,6 +3,7 @@
 
 #include "jln/mp/smp/algorithm/unique.hpp"
 #include "jln/mp/smp/functional/each.hpp"
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/list/at.hpp"
 
 TEST_SUITE_BEGIN()

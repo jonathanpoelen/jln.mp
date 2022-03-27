@@ -33,7 +33,7 @@ namespace jln::mp
   struct search
   {
     template<class... xs>
-    using f = typename detail::find_if_impl<
+    using f = typename detail::drop_while_impl<
       typename detail::_search<sizeof...(xs)>
       ::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
@@ -84,7 +84,7 @@ namespace jln::mp
   struct partial_search_c
   {
     template<class... xs>
-    using f = typename detail::find_if_impl<
+    using f = typename detail::drop_while_impl<
       typename detail::_search<
         StopWhenAtLeast < sizeof...(xs) ? sizeof...(xs) - StopWhenAtLeast : 0
       >::template f<size_t(sizeof...(xs) - StopWhenAtLeast), JLN_MP_TRACE_F(Pred), xs...>

@@ -1,6 +1,8 @@
 #pragma once
 
-#include <jln/mp/algorithm/any_of.hpp>
+#include <jln/mp/algorithm/index.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/functional/not_fn.hpp>
 
 namespace jln::mp
 {
@@ -9,7 +11,7 @@ namespace jln::mp
   /// Checks whether a predicate does not hold for any element of a \sequence.
   /// \treturn \bool
   template<class Pred, class C = identity>
-  using none_of = drop_while<not_fn<Pred>, is_empty<C>>;
+  using none_of = index_if<not_fn<not_fn<Pred>>, always<false_, C>, always<true_, C>>;
 
   namespace emp
   {

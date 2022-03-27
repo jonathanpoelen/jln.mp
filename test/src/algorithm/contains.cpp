@@ -14,6 +14,7 @@ TEST()
   test_pack2<contains, void>();
 
   ut::same<true_, emp::contains<seq_0_1_2, _1>>();
+  ut::same<false_, emp::contains<seq_0_1_2, _3>>();
 
   test_context<contains<_1>, smp::contains<_1>, 0>()
     .test<false_>()

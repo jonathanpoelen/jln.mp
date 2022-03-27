@@ -6,6 +6,7 @@
 #include <jln/mp/algorithm/after.hpp>
 #include <jln/mp/algorithm/all_of.hpp>
 #include <jln/mp/algorithm/any_of.hpp>
+#include <jln/mp/algorithm/before.hpp>
 #include <jln/mp/algorithm/cartesian.hpp>
 #include <jln/mp/algorithm/collapse.hpp>
 #include <jln/mp/algorithm/combine.hpp>
@@ -18,6 +19,8 @@
 #include <jln/mp/algorithm/count.hpp>
 #include <jln/mp/algorithm/counter.hpp>
 #include <jln/mp/algorithm/disjunction.hpp>
+#include <jln/mp/algorithm/drop_until.hpp>
+#include <jln/mp/algorithm/drop_until_xs.hpp>
 #include <jln/mp/algorithm/drop_while.hpp>
 #include <jln/mp/algorithm/drop_while_xs.hpp>
 #include <jln/mp/algorithm/ends_with.hpp>
@@ -72,6 +75,8 @@
 #include <jln/mp/algorithm/split_by.hpp>
 #include <jln/mp/algorithm/starts_with.hpp>
 #include <jln/mp/algorithm/suffix.hpp>
+#include <jln/mp/algorithm/take_until.hpp>
+#include <jln/mp/algorithm/take_until_xs.hpp>
 #include <jln/mp/algorithm/take_while.hpp>
 #include <jln/mp/algorithm/take_while_xs.hpp>
 #include <jln/mp/algorithm/transform.hpp>

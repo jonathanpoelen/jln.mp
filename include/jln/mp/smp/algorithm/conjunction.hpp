@@ -1,9 +1,10 @@
 #pragma once
 
 #include <jln/mp/smp/utility/always.hpp>
-#include <jln/mp/smp/number/to_bool.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/is_empty.hpp>
+#include <jln/mp/number/to_bool.hpp>
 #include <jln/mp/algorithm/drop_while.hpp>
 #include <jln/mp/algorithm/conjunction.hpp>
 

@@ -18,6 +18,8 @@
 #include <jln/mp/smp/algorithm/count.hpp>
 #include <jln/mp/smp/algorithm/counter.hpp>
 #include <jln/mp/smp/algorithm/disjunction.hpp>
+#include <jln/mp/smp/algorithm/drop_until.hpp>
+#include <jln/mp/smp/algorithm/drop_until_xs.hpp>
 #include <jln/mp/smp/algorithm/drop_while.hpp>
 #include <jln/mp/smp/algorithm/drop_while_xs.hpp>
 #include <jln/mp/smp/algorithm/ends_with.hpp>
@@ -72,6 +74,8 @@
 #include <jln/mp/smp/algorithm/split_by.hpp>
 #include <jln/mp/smp/algorithm/starts_with.hpp>
 #include <jln/mp/smp/algorithm/suffix.hpp>
+#include <jln/mp/smp/algorithm/take_until.hpp>
+#include <jln/mp/smp/algorithm/take_until_xs.hpp>
 #include <jln/mp/smp/algorithm/take_while.hpp>
 #include <jln/mp/smp/algorithm/take_while_xs.hpp>
 #include <jln/mp/smp/algorithm/transform.hpp>

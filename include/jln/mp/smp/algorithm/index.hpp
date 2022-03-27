@@ -1,9 +1,12 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm/find.hpp>
+#include <jln/mp/smp/concepts.hpp>
+#include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/list/size.hpp>
-#include <jln/mp/smp/functional/identity.hpp>
 #include <jln/mp/smp/utility/is.hpp>
+#include <jln/mp/smp/number/operators.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/smp/algorithm/conjunction.hpp> // because conjunction is a index_if
 #include <jln/mp/algorithm/drop_while.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/push_back.hpp>
@@ -21,19 +24,16 @@ namespace jln::mp::smp
     mp::drop_while<
       concepts::predicate<assume_unary<Pred>, mp::not_<>>,
       mp::if_<
-        mp::size<>,
-        mp::if_<
-          mp::front<concepts::predicate<assume_unary<Pred>, mp::always<true_>>>,
-          mp::size<
-            mp::push_back<
-              sub<TC>,
-              mp::compose_f<mp::push_back, mp::size>
-            >
-          >,
-          mp::always<violation>
+        mp::front<concepts::predicate<assume_unary<Pred>, mp::always<true_>>>,
+        mp::size<
+          mp::push_back<
+            sub<TC>,
+            mp::compose_f<mp::push_back, mp::size>
+          >
         >,
-        mp::always<subcontract<FC>>
-      >
+        mp::always<violation>
+      >,
+      mp::always<subcontract<FC>>
     >
   >>;
 

@@ -55,7 +55,7 @@ namespace jln::mp::detail
 
   template<class Pred>
   using smp_is_disjoint_impl = smp::drop_while<
-    Pred, contract_barrier<mp::size<mp::not_<>>>
+    Pred, contract_barrier<mp::always<mp::false_>>, contract_barrier<mp::always<mp::true_>>
   >;
 
   template<class NotEqual, class... xs>

@@ -6,6 +6,7 @@
 #include <jln/mp/list/size.hpp>
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/algorithm/disjunction.hpp>
+#include <jln/mp/number/operators.hpp>
 
 
 namespace jln::mp::smp
