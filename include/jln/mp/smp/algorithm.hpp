@@ -66,6 +66,10 @@
 #include <jln/mp/smp/algorithm/scan_left.hpp>
 #include <jln/mp/smp/algorithm/scan_right.hpp>
 #include <jln/mp/smp/algorithm/search.hpp>
+#include <jln/mp/smp/algorithm/skip_until.hpp>
+#include <jln/mp/smp/algorithm/skip_until_xs.hpp>
+#include <jln/mp/smp/algorithm/skip_while.hpp>
+#include <jln/mp/smp/algorithm/skip_while_xs.hpp>
 #include <jln/mp/smp/algorithm/sort.hpp>
 #include <jln/mp/smp/algorithm/split.hpp>
 #include <jln/mp/smp/algorithm/split_after.hpp>
