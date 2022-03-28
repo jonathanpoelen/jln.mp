@@ -1,9 +1,7 @@
 #pragma once
 
-#include <jln/mp/algorithm/drop_until.hpp>
-#include <jln/mp/utility/always.hpp>
+#include <jln/mp/algorithm/any_of.hpp>
 #include <jln/mp/number/to_bool.hpp>
-
 
 namespace jln::mp
 {
@@ -16,17 +14,8 @@ namespace jln::mp
   /// instantiation of `xs[j]::value` for j > i
   /// \treturn \bool
   /// \see conjunction, drop_while, take_while
-#ifdef JLN_MP_DOXYGENATING
   template<class C = identity>
-  struct disjunction
-  {
-    template<class... xs>
-    using f;
-  };
-#else
-  template<class C = identity>
-  using disjunction = drop_until<to_bool<>, always<true_, C>, always<false_, C>>;
-#endif
+  using disjunction = any_of<to_bool<>, C>;
 
   namespace emp
   {

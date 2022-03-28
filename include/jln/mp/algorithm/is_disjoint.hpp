@@ -58,18 +58,6 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<class>
-  struct is_drop_while_continue
-  {
-    using type = false_;
-  };
-
-  template<>
-  struct is_drop_while_continue<_drop_while_continue>
-  {
-    using type = true_;
-  };
-
   template<class Pred>
   struct is_disjoint_impl
   {

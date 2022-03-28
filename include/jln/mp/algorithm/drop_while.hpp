@@ -69,6 +69,7 @@ namespace jln::mp
 
 
 #include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/number/number.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -84,6 +85,19 @@ namespace jln::mp::detail
   {
     template<class C, std::size_t consumed, class Pred, class... xs>
     using f = typename C::template f<consumed, Pred, xs...>;
+  };
+
+
+  template<class>
+  struct is_drop_while_continue
+  {
+    using type = false_;
+  };
+
+  template<>
+  struct is_drop_while_continue<_drop_while_continue>
+  {
+    using type = true_;
   };
 
 
