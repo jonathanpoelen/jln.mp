@@ -26,6 +26,7 @@ namespace jln::mp::smp
 }
 
 
+#include <jln/mp/smp/algorithm/drop_until.hpp>
 #include <jln/mp/smp/algorithm/drop_while.hpp>
 #include <jln/mp/smp/utility/unpack.hpp>
 
@@ -58,13 +59,15 @@ namespace jln::mp::detail
     Pred, contract_barrier<mp::always<mp::false_>>, contract_barrier<mp::always<mp::true_>>
   >;
 
-  template<class NotEqual, class... xs>
+  template<class Equal, class... xs>
   struct smp_is_disjoint_of
   {
     template<class x>
-    using f = typename smp_is_disjoint_impl<contract_barrier<
-      push_back<x, NotEqual>
-    >>::template f<xs...>;
+    using f = typename smp::drop_until<
+      contract_barrier<push_back<x, Equal>>,
+      contract_barrier<mp::always<mp::false_>>,
+      contract_barrier<mp::always<mp::true_>>
+    >::template f<xs...>;
   };
 
   template<uint_>
@@ -73,7 +76,7 @@ namespace jln::mp::detail
   template<>
   struct smp_is_disjoint_n<0>
   {
-    template<class NotEqual, class... xs>
+    template<class Equal, class... xs>
     using f = true_;
   };
 
@@ -82,25 +85,25 @@ namespace jln::mp::detail
   : try_<seqs_to_list<mp::always<true_>, mp::always<true_>>>
   {};
 
-  template<class NotEqual, class seq0>
+  template<class Equal, class seq0>
   using smp_to_is_disjoint_impl = smp::unpack<smp_is_disjoint_impl<
-    typename smp::unpack<lift<smp_is_disjoint_of>>
-    ::template f<seq0, NotEqual>
+    typename smp::unpack<contract_barrier<lift<smp_is_disjoint_of>>>
+    ::template f<seq0, Equal>
   >>;
 
   template<>
   struct smp_is_disjoint_n<2>
   {
-    template<class NotEqual, class seq0, class seq1>
-    using f = typename smp_to_is_disjoint_impl<NotEqual, seq0>
+    template<class Equal, class seq0, class seq1>
+    using f = typename smp_to_is_disjoint_impl<Equal, seq0>
       ::template f<seq1>;
   };
 
   template<>
   struct smp_is_disjoint_n<3>
   {
-    template<class NotEqual, class seq0, class... seqs>
-    using f = typename smp_is_disjoint_impl<smp_to_is_disjoint_impl<NotEqual, seq0>>
+    template<class Equal, class seq0, class... seqs>
+    using f = typename smp_is_disjoint_impl<smp_to_is_disjoint_impl<Equal, seq0>>
       ::template f<seqs...>;
   };
 
@@ -119,7 +122,7 @@ namespace jln::mp::detail
   {
     template<class C>
     using f = contract<smp_is_disjoint_with<
-      smp::concepts::predicate<assume_binary<Equal>, mp::not_<>, violation>, C>>;
+      smp::concepts::predicate<assume_binary<Equal>, mp::identity, violation>, C>>;
   };
 
   template<>

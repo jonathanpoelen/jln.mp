@@ -9,6 +9,7 @@ namespace jln::mp
 
   /// Checks whether a predicate holds for at least some element of a \sequence.
   /// \treturn \bool
+  /// \see all_of, none_of
   template<class Pred, class C = identity>
   using any_of = none_of<Pred, not_<C>>;
 

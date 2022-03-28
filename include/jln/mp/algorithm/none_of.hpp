@@ -8,6 +8,7 @@ namespace jln::mp
 
   /// Checks whether a predicate does not hold for any element of a \sequence.
   /// \treturn \bool
+  /// \see all_of, any_of
   template<class Pred, class C = identity>
   struct none_of
   {

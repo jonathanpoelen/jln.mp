@@ -2,7 +2,7 @@
 
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/utility/unpack.hpp>
-#include <jln/mp/functional/not_fn.hpp>
+#include <jln/mp/detail/enumerate.hpp>
 
 #include <type_traits>
 
@@ -28,7 +28,7 @@ namespace jln::mp
     template<class... seqs>
     using f = JLN_MP_CALL_TRACE(C,
       typename detail::_is_disjoint<detail::min(3, sizeof...(seqs))>
-      ::template f<JLN_MP_TRACE_F(detail::to_not_fn_t<Equal>), seqs...>);
+      ::template f<JLN_MP_TRACE_F(Equal), seqs...>);
   };
 
   /// Checks whether \value in `seqs[0]` are disjoint from the \value in `seqs[1:]`.
@@ -51,9 +51,10 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/algorithm/drop_while.hpp>
+#include <jln/mp/algorithm/drop_until.hpp>
 #include <jln/mp/list/push_back.hpp>
 #include <jln/mp/utility/always.hpp>
+#include <jln/mp/number/operators.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -67,19 +68,19 @@ namespace jln::mp::detail
     >::type;
   };
 
-  template<class NotEqual, class... xs>
+  template<class Equal, class... xs>
   struct _is_disjoint_of
   {
     template<class x>
     using f = typename is_drop_while_continue<
-      typename _drop_while<sizeof...(xs)>::template f<0, push_back<x, NotEqual>, xs...>
+      typename _drop_until<sizeof...(xs)>::template f<0, push_back<x, Equal>, xs...>
     >::type;
   };
 
   template<>
   struct _is_disjoint<0>
   {
-    template<class NotEqual, class... xs>
+    template<class Equal, class... xs>
     using f = true_;
   };
 
@@ -87,27 +88,27 @@ namespace jln::mp::detail
   struct _is_disjoint<1> : _is_disjoint<0>
   {};
 
-  template<class NotEqual, class seq0>
+  template<class Equal, class seq0>
   using to_is_disjoint_impl = is_disjoint_impl<
-    typename _unpack<seq0>::template f<lift<_is_disjoint_of>, NotEqual>
+    typename _unpack<seq0>::template f<lift<_is_disjoint_of>, Equal>
   >;
 
   template<>
   struct _is_disjoint<2>
   {
-    template<class NotEqual, class seq0, class seq1>
+    template<class Equal, class seq0, class seq1>
     using f = typename _unpack<seq1>
-      ::template f<to_is_disjoint_impl<NotEqual, seq0>>;
+      ::template f<to_is_disjoint_impl<Equal, seq0>>;
   };
 
   template<>
   struct _is_disjoint<3>
   {
-    template<class NotEqual, class seq0, class... seqs>
+    template<class Equal, class seq0, class... seqs>
     using f = typename is_drop_while_continue<
       typename _drop_while<sizeof...(seqs)>::template f<
         0,
-        unpack<to_is_disjoint_impl<NotEqual, seq0>>,
+        unpack<to_is_disjoint_impl<Equal, seq0>>,
         seqs...
       >
     >::type;
@@ -119,12 +120,12 @@ namespace jln::mp::emp
 {
   template<class L1, class L2, class C = mp::identity>
   using is_disjoint = typename C::template f<
-    typename detail::_is_disjoint<2>::f<mp::lift<std::is_same, mp::not_<>>, L1, L2>
+    typename detail::_is_disjoint<2>::f<mp::lift<std::is_same>, L1, L2>
   >;
 
   template<class L1, class L2, class Equal = lift<std::is_same>, class C = mp::identity>
   using is_disjoint_with = typename C::template f<
-    typename detail::_is_disjoint<2>::f<detail::to_not_fn_t<Equal>, L1, L2>
+    typename detail::_is_disjoint<2>::f<Equal, L1, L2>
   >;
 }
 #endif

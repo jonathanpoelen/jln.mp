@@ -40,53 +40,47 @@ namespace jln::mp::detail
   };
 
 
-  template<class NotEqual, class... xs>
+  template<class Equal, class... xs>
   struct smp_is_subset_of
   {
     template<class x>
-    using f = number<!smp_is_disjoint_impl<contract_barrier<
-      push_back<x, NotEqual>
-    >>::template f<xs...>::value>;
+    using f = typename smp::drop_until<
+      contract_barrier<push_back<x, Equal>>,
+      contract_barrier<mp::always<mp::true_>>,
+      contract_barrier<mp::always<mp::false_>>
+    >::template f<xs...>;
   };
 
   template<uint_>
   struct smp_is_subset_n;
 
   template<>
-  struct smp_is_subset_n<0>
-  {
-    template<class NotEqual, class... xs>
-    using f = true_;
-  };
-
-  template<>
-  struct smp_is_subset_n<1>
-  : try_<seqs_to_list<mp::always<true_>, mp::always<true_>>>
+  struct smp_is_subset_n<0> : smp_is_disjoint_n<0>
   {};
 
-  template<class NotEqual, class seq0>
+  template<>
+  struct smp_is_subset_n<1> : smp_is_disjoint_n<1>
+  {};
+
+  template<class Equal, class seq0>
   using smp_to_is_subset_impl = smp::unpack<smp_is_disjoint_impl<
-    typename smp::unpack<contract_barrier<if_<
-      size<>,
-      lift<smp_is_subset_of>,
-      always<size<not_<>>>
-    >>>
-    ::template f<seq0, NotEqual>
+    typename smp::unpack<contract_barrier<lift<smp_is_subset_of>>>
+    ::template f<seq0, Equal>
   >>;
 
   template<>
   struct smp_is_subset_n<2>
   {
-    template<class NotEqual, class seq0, class seq1>
-    using f = typename smp_to_is_subset_impl<NotEqual, seq0>
+    template<class Equal, class seq0, class seq1>
+    using f = typename smp_to_is_subset_impl<Equal, seq0>
       ::template f<seq1>;
   };
 
   template<>
   struct smp_is_subset_n<3>
   {
-    template<class NotEqual, class seq0, class... seqs>
-    using f = typename smp_is_disjoint_impl<smp_to_is_subset_impl<NotEqual, seq0>>
+    template<class Equal, class seq0, class... seqs>
+    using f = typename smp_is_disjoint_impl<smp_to_is_subset_impl<Equal, seq0>>
       ::template f<seqs...>;
   };
 
@@ -105,7 +99,7 @@ namespace jln::mp::detail
   {
     template<class C>
     using f = contract<smp_is_subset_with<
-      smp::concepts::predicate<assume_binary<Equal>, mp::not_<>, violation>, C>>;
+      smp::concepts::predicate<assume_binary<Equal>, mp::identity, violation>, C>>;
   };
 
   template<>
