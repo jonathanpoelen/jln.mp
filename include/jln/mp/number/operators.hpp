@@ -701,5 +701,15 @@ namespace jln::mp
     template<class x>
     using f = JLN_MP_CALL_TRACE(C, number<!bool(x::value)>);
   };
+
+  template<class TC, class FC>
+  struct if_<size<not_<>>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<!sizeof...(xs)>
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+      ::template f<xs...>;
+  };
 }
+
 /// \endcond

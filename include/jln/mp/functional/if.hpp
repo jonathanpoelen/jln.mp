@@ -26,3 +26,19 @@ namespace jln::mp
     using if_ = typename mp::if_<Pred, TC, FC>::template f<xs...>;
   }
 }
+
+/// \cond
+#include <jln/mp/list/size.hpp>
+
+namespace jln::mp
+{
+  template<class TC, class FC>
+  struct if_<size<>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<!sizeof...(xs)>
+      ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
+      ::template f<xs...>;
+  };
+}
+/// \endcond
