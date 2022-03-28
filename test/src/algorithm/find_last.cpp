@@ -43,7 +43,7 @@ TEST()
     .not_invocable<_0, void>()
     ;
 
-  test_context<find_last_if_not<to_bool<>>, smp::find_last_if_not<smp::to_bool<>>, 0>()
+  test_context<find_last_if_not<to_bool<>>, smp::find_last_if_not<smp::to_bool<>>>()
     .test<list<>>()
     .test<seq_0, _0>()
     .test<list<>, _1>()

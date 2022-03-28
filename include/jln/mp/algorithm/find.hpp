@@ -1,20 +1,10 @@
 #pragma once
 
-#include <jln/mp/algorithm/drop_while.hpp>
-#include <jln/mp/list/clear.hpp>
+#include <jln/mp/algorithm/drop_until.hpp>
 #include <jln/mp/utility/is.hpp>
-#include <jln/mp/functional/not_fn.hpp>
 
 namespace jln::mp
 {
-  /// \cond
-  namespace detail
-  {
-    template<class>
-    struct find_if_impl;
-  }
-  /// \endcond
-
   /// \ingroup search
 
   /// Finds the first element that satisfy a \predicate.
@@ -23,18 +13,11 @@ namespace jln::mp
   /// \treturn \sequence
   /// \see find_if_not, find, find_last_if, find_last
   template<class Pred, class TC = listify, class FC = clear<TC>>
-  struct find_if
-  {
-    template<class... xs>
-    using f = typename detail::find_if_impl<
-      typename detail::_drop_while<sizeof...(xs)>
-      ::template f<0, JLN_MP_TRACE_F(detail::to_not_fn_t<Pred>), xs...>
-    >::template f<TC, FC, xs...>;
-  };
+  using find_if = drop_until<Pred, TC, FC>;
 
   /// \see find_if, find, find_last_if, find_last
   template<class Pred, class TC = listify, class FC = clear<TC>>
-  using find_if_not = find_if<not_fn<Pred>, TC, FC>;
+  using find_if_not = drop_while<Pred, TC, FC>;
 
   /// \see find_if, find_if_not, find_last_if, find_last
   template<class T, class TC = listify, class FC = clear<TC>>
@@ -52,23 +35,3 @@ namespace jln::mp
     using find = unpack<L, mp::find_if<mp::is<T>, TC, FC>>;
   }
 }
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<>
-  struct find_if_impl<_drop_while_continue>
-  {
-    template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE(FC, xs...);
-  };
-
-  template<std::size_t n>
-  struct find_if_impl<_drop_while_result<n>>
-  {
-    template<class TC, class FC, class... xs>
-    using f = typename drop_front_c<sizeof...(xs)-n-1, TC>::template f<xs...>;
-  };
-}
-/// \endcond

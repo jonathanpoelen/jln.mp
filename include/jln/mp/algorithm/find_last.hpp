@@ -21,7 +21,10 @@ namespace jln::mp
 
   /// \see find_last_if, find_last, find
   template<class Pred, class TC = listify, class FC = clear<TC>>
-  using find_last_if_not = find_last_if<not_fn<Pred>, TC, FC>;
+  using find_last_if_not = find_if_not<Pred, recursively<
+    pop_front<find_if_not<Pred, next_recursion, stop_recursion>>,
+    TC
+  >, FC>;
 
   /// \see find_last_if, find_last_if_not, find_last, find
   template<class T, class TC = listify, class FC = clear<TC>>
