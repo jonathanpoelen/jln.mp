@@ -12,6 +12,9 @@ namespace jln::mp::smp
     try_subcontract<F, mp::identity, mp::always<na, mp::recursion_result>>,
     monadic_xs<subcontract<C>>>>;
 
+  template<class F, class C = listify>
+  using recursively_xs = recursively<F, C>;
+
   template<class F, class C = identity>
   using recursively_as_much_as_possible = contract<mp::recursively_as_much_as_possible<
     try_subcontract<F, mp::identity, mp::always<na, mp::recursion_result>>,

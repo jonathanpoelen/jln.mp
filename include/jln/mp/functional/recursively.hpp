@@ -30,6 +30,8 @@ namespace jln::mp
   }
   /// \endcond
 
+  /// \ingroup functional
+
   /// Stop the recursion, the input values will be used as result.
   struct stop_recursion
   {

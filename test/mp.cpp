@@ -108,6 +108,7 @@
 #include "src/functional/recursively.cpp"
 #include "src/functional/tee.cpp"
 #include "src/functional/try.cpp"
+#include "src/functional/until.cpp"
 #include "src/functional/while.cpp"
 #include "src/list/append.cpp"
 #include "src/list/as_list.cpp"
