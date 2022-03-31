@@ -89,6 +89,8 @@
 #include "src/algorithm/zip_longest.cpp"
 #include "src/assume.cpp"
 #include "src/functional/bind.cpp"
+#include "src/functional/bind_back.cpp"
+#include "src/functional/bind_front.cpp"
 #include "src/functional/capture.cpp"
 #include "src/functional/cascade.cpp"
 #include "src/functional/compose.cpp"

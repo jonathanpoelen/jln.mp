@@ -3,7 +3,7 @@
 
 #include "jln/mp/smp/algorithm/partition.hpp"
 #include "jln/mp/smp/number/operators.hpp"
-#include "jln/mp/smp/functional/bind.hpp"
+#include "jln/mp/smp/functional/bind_back.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -31,8 +31,8 @@ TEST()
     ;
 
   test_context<
-    partition<reverse_bind<less<>, _1>>,
-    smp::partition<smp::reverse_bind<smp::less<>, _1>>
+    partition<bind_back<less<>, _1>>,
+    smp::partition<smp::bind_back<smp::less<>, _1>>
   >()
     .test<list<list<>, list<>>>()
     .test<list<seq_0_0_0, list<>>, _0, _0, _0>()

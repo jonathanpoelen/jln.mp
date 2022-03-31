@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/smp/contract.hpp>
 #include <jln/mp/functional/capture.hpp>
 
 /// \cond

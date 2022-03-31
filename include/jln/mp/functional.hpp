@@ -1,6 +1,8 @@
 #pragma once
 
 #include <jln/mp/functional/bind.hpp>
+#include <jln/mp/functional/bind_back.hpp>
+#include <jln/mp/functional/bind_front.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/capture.hpp>
 #include <jln/mp/functional/cascade.hpp>

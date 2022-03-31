@@ -20,34 +20,11 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<bind>();
   test_pack2<bind1st, listify>();
   test_pack2<bind2nd, listify>();
 
   ut::same<void, bind1st<identity, identity>::template f<void>>();
   ut::same<list<int, void>, bind1st<always<int>, listify>::template f<void, void>>();
-  ut::same<list<int, void, char, long>, bind<listify, int, void>::template f<char, long>>();
-  ut::same<list<char, long, int, void>, reverse_bind<listify, int, void>::template f<char, long>>();
-
-  test_context<
-    bind<pop_front<>, int, long>,
-    smp::bind<smp::pop_front<>, int, long>
-  >()
-    .test<list<long>>()
-    .test<list<long, void, char>, void, char>()
-    ;
-
-  ut::not_invocable<smp::bind<smp::pop_front<>>>();
-
-  test_context<
-    reverse_bind<pop_front<>, int, long>,
-    smp::reverse_bind<smp::pop_front<>, int, long>
-  >()
-    .test<list<long>>()
-    .test<list<char, int, long>, void, char>()
-    ;
-
-  ut::not_invocable<smp::reverse_bind<smp::pop_front<>>>();
 
   test_context<
     bind1st<push_front<_9>, listify>,
