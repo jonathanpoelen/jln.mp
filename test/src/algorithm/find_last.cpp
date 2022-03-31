@@ -56,8 +56,7 @@ TEST()
 
   test_context<
     find_last<_3, listify, always<void>>,
-    smp::find_last<_3, smp::listify, smp::always<void>>,
-    0
+    smp::find_last<_3, smp::listify, smp::always<void>>
   >()
     .test<void>()
     .test<void, _0>()

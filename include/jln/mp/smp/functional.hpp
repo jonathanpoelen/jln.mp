@@ -21,4 +21,5 @@
 #include <jln/mp/smp/functional/sfinaefwd.hpp>
 #include <jln/mp/smp/functional/tee.hpp>
 #include <jln/mp/smp/functional/until.hpp>
+#include <jln/mp/smp/functional/until_last.hpp>
 #include <jln/mp/smp/functional/while.hpp>

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <jln/mp/algorithm/find.hpp>
-#include <jln/mp/list/pop_front.hpp>
-#include <jln/mp/functional/recursively.hpp>
+#include <jln/mp/functional/until_last.hpp>
+#include <jln/mp/algorithm/drop_until.hpp>
+#include <jln/mp/algorithm/drop_while.hpp>
 
 namespace jln::mp
 {
@@ -14,17 +14,11 @@ namespace jln::mp
   /// \treturn \sequence
   /// \see find_last_if_not, find_last, find
   template<class Pred, class TC = listify, class FC = clear<TC>>
-  using find_last_if = find_if<Pred, recursively<
-    pop_front<find_if<Pred, next_recursion, stop_recursion>>,
-    TC
-  >, FC>;
+  using find_last_if = until_last_t<drop_until, Pred, TC, FC>;
 
   /// \see find_last_if, find_last, find
   template<class Pred, class TC = listify, class FC = clear<TC>>
-  using find_last_if_not = find_if_not<Pred, recursively<
-    pop_front<find_if_not<Pred, next_recursion, stop_recursion>>,
-    TC
-  >, FC>;
+  using find_last_if_not = until_last_t<drop_while, Pred, TC, FC>;
 
   /// \see find_last_if, find_last_if_not, find_last, find
   template<class T, class TC = listify, class FC = clear<TC>>
