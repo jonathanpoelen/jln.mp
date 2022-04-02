@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/algorithm/find.hpp>
+#include <jln/mp/algorithm/drop_until_xs.hpp>
 #include <jln/mp/algorithm/index.hpp>
 
 namespace jln::mp
@@ -8,9 +8,6 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<int, bool found = false>
-    struct _search;
-
     template<class>
     struct search_before_impl;
 
@@ -34,7 +31,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::drop_while_impl<
-      typename detail::_search<sizeof...(xs)>
+      typename detail::_drop_until_xs<sizeof...(xs)>
       ::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
@@ -52,7 +49,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::search_before_impl<
-      typename detail::_search<sizeof...(xs)>
+      typename detail::_drop_until_xs<sizeof...(xs)>
       ::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
@@ -69,7 +66,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::search_before_extended_by_n_impl<
-      typename detail::_search<sizeof...(xs)>
+      typename detail::_drop_until_xs<sizeof...(xs)>
       ::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, ExtendedByN, xs...>;
   };
@@ -85,7 +82,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::drop_while_impl<
-      typename detail::_search<
+      typename detail::_drop_until_xs<
         StopWhenAtLeast < sizeof...(xs) ? sizeof...(xs) - StopWhenAtLeast : 0
       >::template f<size_t(sizeof...(xs) - StopWhenAtLeast), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
@@ -104,7 +101,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::search_before_impl<
-      typename detail::_search<
+      typename detail::_drop_until_xs<
         StopWhenAtLeast < sizeof...(xs) ? sizeof...(xs) - StopWhenAtLeast : 0
       >::template f<size_t(sizeof...(xs) - StopWhenAtLeast), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
@@ -124,7 +121,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::search_before_extended_by_n_impl<
-      typename detail::_search<
+      typename detail::_drop_until_xs<
         StopWhenAtLeast < sizeof...(xs) ? sizeof...(xs) - StopWhenAtLeast : 0
       >::template f<size_t(sizeof...(xs) - StopWhenAtLeast), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, ExtendedByN, xs...>;
@@ -142,7 +139,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::index_if_impl<
-      typename detail::_search<sizeof...(xs)>
+      typename detail::_drop_until_xs<sizeof...(xs)>
       ::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
     >::template f<TC, FC, xs...>;
   };
@@ -229,7 +226,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::index_if_impl<
-      typename detail::_search<
+      typename detail::_drop_until_xs<
         sizeof...(Ts)+1 < sizeof...(xs) ? sizeof...(xs) - sizeof...(Ts) - 1 : 0
       >::template f<sizeof...(xs) - sizeof...(Ts) - 1u, starts_with<list<T, U, Ts...>, C>, xs...>
     >::template f<TC, FC, xs...>;
@@ -262,7 +259,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::index_if_impl<
-      typename detail::_search<
+      typename detail::_drop_until_xs<
         sizeof...(Ts)+1 < sizeof...(xs)? sizeof...(xs) - sizeof...(Ts) - 1 : 0
       >::template f<sizeof...(xs) - sizeof...(Ts) - 1u, ends_with<list<T, U, Ts...>, C>, xs...>
     >::template f<TC, FC, xs...>;
@@ -271,7 +268,6 @@ namespace jln::mp
 /// \endcond
 
 #include <jln/mp/list/take_front.hpp>
-#include <jln/mp/algorithm/drop_while_xs.hpp> // drop_while_xs_impl_false
 
 /// \cond
 namespace jln::mp::detail
@@ -316,100 +312,5 @@ namespace jln::mp::detail
       TC
     >::template f<xs...>;
   };
-
-  template<int n>
-  struct _search<n, false> : _search<
-      n <= 16 ? 16
-    : n <= 32 ? 32
-    : n <= 64 ? 64
-    : n <= 128 ? 128
-    : 256,
-    false
-  >
-  {};
-
-#define JLN_MP_SEARCH_IMPL(n, m)                                      \
-  template<>                                                          \
-  struct _search<n, false>                                            \
-  {                                                                   \
-    template<std::size_t remaining, class Pred, class x, class... xs> \
-    using f = typename _search<m, Pred::template f<x, xs...>::value>  \
-            ::template f<remaining-1, Pred, xs...>;                   \
-  };                                                                  \
-                                                                      \
-  template<>                                                          \
-  struct _search<n, true> : drop_while_xs_impl_false                  \
-  {}
-
-  JLN_MP_SEARCH_IMPL(7, 6);
-  JLN_MP_SEARCH_IMPL(6, 5);
-  JLN_MP_SEARCH_IMPL(5, 4);
-  JLN_MP_SEARCH_IMPL(4, 3);
-  JLN_MP_SEARCH_IMPL(3, 2);
-  JLN_MP_SEARCH_IMPL(2, 1);
-  JLN_MP_SEARCH_IMPL(1, 0);
-
-#undef JLN_MP_SEARCH_IMPL
-
-  // _search<n, b> is a _drop_while_xs<n, !b>
-
-  template<>
-  struct _search<0, false>
-  {
-    template<std::size_t remaining, class Pred, class... xs>
-    using f = _drop_while_continue;
-  };
-
-  template<>
-  struct _search<0, true>
-  {
-    template<std::size_t remaining, class Pred, class... xs>
-    using f = _drop_while_result<sizeof...(xs)>;
-  };
-
-  template<>
-  struct _search<8, false>
-  {
-    template<std::size_t remaining, class Pred, class x, class... xs>
-    using f = typename _search<7, Pred::template f<x, xs...>::value>
-      ::template f<remaining-8, Pred, xs...>;
-  };
-
-  template<>
-  struct _search<16, false>
-  {
-    template<
-      std::size_t remaining,
-      class Pred,
-      class _1, class _2, class _3, class _4,
-      class _5, class _6, class _7, class _8,
-      class... xs>
-    using f = typename _search<7, Pred::template f<
-        _1, _2, _3, _4, _5, _6, _7, _8, xs...
-      >::value>
-      ::template f<7, Pred, _2, _3, _4, _5, _6, _7, _8, xs...>
-      ::template f<_search<remaining-8>, remaining-8, Pred, xs...>;
-  };
-
-#define JLN_MP_SEARCH_IMPL(n, m, xs)                                         \
-  template<>                                                                 \
-  struct _search<n, false>                                                   \
-  {                                                                          \
-    template<                                                                \
-      std::size_t remaining,                                                 \
-      class Pred,                                                            \
-      xs(class, JLN_MP_NIL, JLN_MP_COMMA),                                   \
-      class... xs>                                                           \
-    using f = typename _search<m, false>                                     \
-      ::template f<m, Pred, xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...> \
-      ::template f<_search<remaining-m>, remaining-m, Pred, xs...>;          \
-  }
-
-  JLN_MP_SEARCH_IMPL(32, 16, JLN_MP_XS_16);
-  JLN_MP_SEARCH_IMPL(64, 32, JLN_MP_XS_32);
-  JLN_MP_SEARCH_IMPL(128, 64, JLN_MP_XS_64);
-  JLN_MP_SEARCH_IMPL(256, 128, JLN_MP_XS_128);
-
-#undef JLN_MP_SEARCH_IMPL
 }
 /// \endcond
