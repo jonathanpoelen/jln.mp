@@ -9,13 +9,13 @@ namespace jln::mp
 {
   /// \ingroup functional
 
-  /// Invoking \c F with its first parameters bound to bound to args.
+  /// Invoking \c F with its last parameters bound to bound to args.
   /// \semantics
   ///   \code
   ///   bind_back<F, c, d>::f<a, b> == F<a, b, c, d>
   ///   \endcode
   /// \treturn \sequence
-  /// \see bind_front
+  /// \see bind_front, capture_back, capture_front
   template<class F, class... BoundArgs>
   struct bind_back
   {

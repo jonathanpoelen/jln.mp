@@ -4,7 +4,8 @@
 #include <jln/mp/functional/bind_back.hpp>
 #include <jln/mp/functional/bind_front.hpp>
 #include <jln/mp/functional/call.hpp>
-#include <jln/mp/functional/capture.hpp>
+#include <jln/mp/functional/capture_back.hpp>
+#include <jln/mp/functional/capture_front.hpp>
 #include <jln/mp/functional/cascade.hpp>
 #include <jln/mp/functional/compose.hpp>
 #include <jln/mp/functional/each.hpp>

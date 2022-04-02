@@ -15,7 +15,7 @@ namespace jln::mp
   ///   bind_front<F, a, b>::f<c, d> == F<a, b, c, d>
   ///   \endcode
   /// \treturn \sequence
-  /// \see bind_back
+  /// \see bind_back, capture_front, capture_back
   template<class F, class... BoundArgs>
   struct bind_front
   {
