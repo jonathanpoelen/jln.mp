@@ -49,7 +49,7 @@ namespace jln::mp::detail
 
   template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, push_front<list<>, fold_left<
-    unpack<_set_cmp_push_back<JLN_MP_TRACE_F(contract_barrier<mp::lift<std::is_same>>)>>, C
+    unpack<_set_cmp_push_back<JLN_MP_TRACE_F(contract<mp::lift<std::is_same>>)>>, C
   >>>
   {
     using type = contract<push_front<list<>, fold_left<

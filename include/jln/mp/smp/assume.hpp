@@ -67,16 +67,16 @@ namespace jln::mp
     try_<assume_binary<F>, TC, FC>>::type;
 
   template<class F>
-  using assume_unary_barrier = contract_barrier<assume_unary<F>>;
+  using assume_unary_barrier = contract<assume_unary<F>>;
 
   template<class F>
-  using assume_binary_barrier = contract_barrier<assume_binary<F>>;
+  using assume_binary_barrier = contract<assume_binary<F>>;
 
   template<class F>
-  using assume_number_barrier = contract_barrier<assume_number<F>>;
+  using assume_number_barrier = contract<assume_number<F>>;
 
   template<class F>
-  using assume_binary_list_barrier = contract_barrier<assume_binary_list<F>>;
+  using assume_binary_list_barrier = contract<assume_binary_list<F>>;
 }
 
 

@@ -20,7 +20,7 @@ namespace jln::mp::smp
     mp::zip<assume_lists<C>>>;
 
   template<class F = listify, class C = listify>
-  using zip_with = zip<contract_barrier<transform<unpack<F>, C>>>;
+  using zip_with = zip<transform<unpack<F>, C>>;
 }
 
 /// \cond

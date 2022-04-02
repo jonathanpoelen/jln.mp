@@ -30,7 +30,7 @@ namespace jln::mp::detail
   template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, push_front<list<>, fold_left<
     is_unique_unpack<is_unique_set_cmp_push_back_or_void<
-      JLN_MP_TRACE_F(contract_barrier<mp::lift<std::is_same>>)
+      JLN_MP_TRACE_F(contract<mp::lift<std::is_same>>)
     >>, C
   >>>
   {

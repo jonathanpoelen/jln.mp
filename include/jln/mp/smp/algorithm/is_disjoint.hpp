@@ -56,7 +56,7 @@ namespace jln::mp::detail
 
   template<class Pred>
   using smp_is_disjoint_impl = smp::drop_while<
-    Pred, contract_barrier<mp::always<mp::false_>>, contract_barrier<mp::always<mp::true_>>
+    Pred, contract<mp::always<mp::false_>>, contract<mp::always<mp::true_>>
   >;
 
   template<class Equal, class... xs>
@@ -64,9 +64,9 @@ namespace jln::mp::detail
   {
     template<class x>
     using f = typename smp::drop_until<
-      contract_barrier<push_back<x, Equal>>,
-      contract_barrier<mp::always<mp::false_>>,
-      contract_barrier<mp::always<mp::true_>>
+      contract<push_back<x, Equal>>,
+      contract<always<false_>>,
+      contract<always<true_>>
     >::template f<xs...>;
   };
 
@@ -87,7 +87,7 @@ namespace jln::mp::detail
 
   template<class Equal, class seq0>
   using smp_to_is_disjoint_impl = smp::unpack<smp_is_disjoint_impl<
-    typename smp::unpack<contract_barrier<lift<smp_is_disjoint_of>>>
+    typename smp::unpack<contract<lift<smp_is_disjoint_of>>>
     ::template f<seq0, Equal>
   >>;
 

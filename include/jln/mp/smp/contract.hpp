@@ -48,14 +48,8 @@ namespace jln::mp
   using try_subcontract = typename detail::_optimize_try_<
     try_<subcontract<F>, TC, FC>>::type;
 
-
   template<class F>
-  struct contract_barrier
-  : F
-  {};
-
-  template<class F>
-  using subcontract_barrier = contract_barrier<subcontract<F>>;
+  using subcontract_barrier = contract<subcontract<F>>;
 }
 
 
@@ -105,12 +99,6 @@ namespace jln::mp::detail
   struct _subcontract<try_<F, TC, FC>>
   {
     using type = try_<F, TC, FC>;
-  };
-
-  template<class F>
-  struct _subcontract<contract_barrier<F>>
-  {
-    using type = F;
   };
 
   template<class x>
@@ -283,12 +271,6 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, try_<F, TC, FC>>
   {
     using type = contract<try_<F, TC, FC>>;
-  };
-
-  template<template<class> class sfinae, class F>
-  struct _sfinae<sfinae, contract_barrier<F>>
-  {
-    using type = contract<F>;
   };
 }
 /// \endcond
