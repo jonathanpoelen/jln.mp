@@ -46,7 +46,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::drop_while_impl<
-      typename detail::drop_until_xs_call<
+      detail::drop_until_xs_call<
         detail::partial_drop_while_xs_size(OffsetEnd, sizeof...(xs)),
         JLN_MP_TRACE_F(Pred), xs...
       >
@@ -115,7 +115,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::drop_while_impl<
       typename detail::to_drop_upto<
-        typename detail::drop_until_xs_call<
+        detail::drop_until_xs_call<
           detail::partial_drop_while_xs_size(OffsetEnd, sizeof...(xs)),
           JLN_MP_TRACE_F(Pred), xs...
         >

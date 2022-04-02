@@ -2,6 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/algorithm/index.hpp"
+#include "jln/mp/smp/algorithm/starts_with.hpp"
 #include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
@@ -13,6 +14,7 @@ TEST()
   using namespace ut::ints;
 
   test_pack2<index_of, int>();
+  test_pack2<index_if_xs, is<int>>();
 
   ut::same<_2, emp::index_of<seq_0_1_2_3, _2>>();
   ut::same<_4, emp::index_of<seq_0_1_2_3, int>>();
@@ -23,6 +25,29 @@ TEST()
     .test<_2, _1, _2, _3>()
     .not_invocable<void, void>()
     .not_invocable<void>()
+    ;
+
+  test_context<
+    index_if_xs<size<is<_2>>>,
+    smp::index_if_xs<smp::size<smp::is<_2>>>
+  >()
+    .test<_0>()
+    .test<_1, _0>()
+    .test<_0, _1, _2>()
+    .test<_1, _1, _2, _3>()
+    .test<_2, _1, _2, _3, _4>()
+    ;
+
+  using start = list<_1, _2>;
+  test_context<
+    index_if_xs<starts_with<start>>,
+    smp::index_if_xs<smp::starts_with<start>>
+  >()
+    .test<_0>()
+    .test<_1, _2>()
+    .test<_0, _1, _2, _3>()
+    .test<_4, _1, _0, _2, _3>()
+    .test<_1, _0, _1, _2, _3>()
     ;
 
   ut::not_invocable<smp::index_of<void, bad_function, bad_function>, _1, _1, _1, _1>();

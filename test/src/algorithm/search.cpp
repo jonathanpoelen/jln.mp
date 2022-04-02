@@ -29,8 +29,6 @@ TEST()
   test_pack3<partial_search_before, _1>();
   test_pack2<partial_search_before_extended_by_n, _1, is<int>>();
   test_pack3<partial_search_before_extended_by_n, _1>();
-  test_pack2<search_index, is<int>>();
-  test_pack3<search_index>();
 
   test_context<search<size<is<_3>>>, smp::search<smp::size<smp::is<_3>>>>()
     .test<list<>>()
@@ -247,19 +245,6 @@ TEST()
 
   using start = list<_1, _2>;
   test_context<
-    search_index<size<is<_2>>>,
-    smp::search_index<smp::size<smp::is<_2>>>
-  >()
-    .test<_0>()
-    .test<_1, _0>()
-    .test<_0, _1, _2>()
-    .test<_1, _1, _2, _3>()
-    .test<_2, _1, _2, _3, _4>()
-    ;
-
-
-  using start = list<_1, _2>;
-  test_context<
     search<starts_with<start>>,
     smp::search<smp::starts_with<start>>
   >()
@@ -285,16 +270,6 @@ TEST()
     .test<list<>, _0, _1>()
     .test<seq_0_1, _0, _1, _2>()
     .test<seq_0_1, _0, _1, _2, _3>()
-    ;
-  test_context<
-    search_index<starts_with<start>>,
-    smp::search_index<smp::starts_with<start>>
-  >()
-    .test<_0>()
-    .test<_1, _2>()
-    .test<_0, _1, _2, _3>()
-    .test<_4, _1, _0, _2, _3>()
-    .test<_1, _0, _1, _2, _3>()
     ;
 
 

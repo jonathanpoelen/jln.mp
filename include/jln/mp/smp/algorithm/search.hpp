@@ -117,19 +117,6 @@ namespace jln::mp::smp
     typename detail::_smp_partial_search_extended_by_n<
       number<StopWhenAtLeast>, ExtendedByN>
     ::template f<Pred, TC, FC>;
-
-  template<class Pred, class TC = identity, class FC = size<>>
-  using search_index = contract<mp::invoke_twice<
-    mp::search<
-      detail::_smp_search_pred<Pred>,
-      mp::if_<
-        concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
-        detail::_smp_search_to_index<subcontract<TC>>,
-        mp::always<violation>
-      >,
-      mp::always<subcontract<FC>>
-    >
-  >>;
 }
 
 /// \cond
@@ -328,13 +315,6 @@ namespace jln::mp::detail
   {
     using type = smp::partial_search_before_extended_by_n_c<
       StopWhenAtLeast, sfinae<Pred>, ExtendedByN, sfinae<TC>, sfinae<FC>>;
-  };
-
-
-  template<template<class> class sfinae, class Pred, class TC, class FC>
-  struct _sfinae<sfinae, search_index<Pred, TC, FC>>
-  {
-    using type = smp::search_index<sfinae<Pred>, sfinae<TC>, sfinae<FC>>;
   };
 }
 /// \endcond
