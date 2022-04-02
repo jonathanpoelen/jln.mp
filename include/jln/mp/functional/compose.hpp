@@ -46,7 +46,6 @@ namespace jln::mp
 
 #include <jln/mp/detail/enumerate.hpp>
 #include <jln/mp/functional/tee.hpp>
-#include <jln/mp/functional/bind.hpp>
 
 /// \cond
 namespace jln::mp::detail

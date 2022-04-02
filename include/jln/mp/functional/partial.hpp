@@ -10,7 +10,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template <class, class...>
+    template <class C, class... Fs>
     struct _partial;
   }
   /// \endcond
@@ -18,14 +18,15 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invokes multiple functions each taking the parameter corresponding to its position
+  /// (or without parameter whether it does not exist)
   /// then calls \c C with the results and the rest of the parameters.
-  /// \pre `sizeof...(xs) >= sizeof...(Fs)`
   /// \semantics
   ///   \code
+  ///   partial<F,G,C>::f<a> == C::f<F::f<a>, G::f<>>
   ///   partial<F,G,C>::f<a,b,c,d> == C::f<F::f<a>, G::f<b>, c, d>
   ///   \endcode
   /// \treturn \value
-  /// \see each, tee, on
+  /// \see each, tee, partial
 #ifdef JLN_MP_DOXYGENATING
   template <class... Fs, class C>
   struct partial
@@ -40,53 +41,33 @@ namespace jln::mp
   ::template f<Fs...>
   {};
 #endif
-
-  /// \cond
-  template <class C>
-  struct partial<C>
-  {
-    template <class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
-  };
-
-  template <class F, class C>
-  struct partial<F, C>
-  {
-    template <class x, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_CALL_TRACE(F, x), xs...);
-  };
-
-  template <class F0, class F1, class C>
-  struct partial<F0, F1, C>
-  {
-    template <class x0, class x1, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_CALL_TRACE(F0, x0),
-                                           JLN_MP_CALL_TRACE(F1, x1),
-                                           xs...);
-  };
-
-  template <class F0, class F1, class F2, class C>
-  struct partial<F0, F1, F2, C>
-  {
-    template <class x0, class x1, class x2, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_CALL_TRACE(F0, x0),
-                                           JLN_MP_CALL_TRACE(F1, x1),
-                                           JLN_MP_CALL_TRACE(F2, x2),
-                                           xs...);
-  };
-  /// \endcond
 }
 
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/functional/each.hpp>
+#include <jln/mp/functional/tee.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
+  constexpr int on_select(std::size_t nf, std::size_t nx)
+  {
+    return (nf < nx) ? 1 : (nf > nx) ? 2 : 0;
+  }
+
+  template <int, class C, class... Fs>
+  struct _partial_select;
+
+  // each
   template <class C, class... Fs>
-  struct _partial
+  struct _partial_select<0, C, Fs...>
+  : _each<C, Fs...>
+  {};
+
+  template <class C, class... Fs>
+  struct _partial_select<1, C, Fs...>
   {
     template<class... xs>
     using f = typename _join_select<2>::f<
@@ -94,6 +75,29 @@ namespace jln::mp::detail
       typename take_front_c<sizeof...(Fs), _each<listify, Fs...>>::template f<xs...>,
       typename drop_front_c<sizeof...(Fs)>::template f<xs...>
     >::type;
+  };
+
+  template <class C, class... Fs>
+  struct _partial_select<2, C, Fs...>
+  {
+    template<class... xs>
+    using f = typename _join_select<2>::f<
+      JLN_MP_TRACE_F(C),
+      typename take_front_c<sizeof...(xs)+1, lift<_each>>
+        ::template f<listify, Fs...>
+        ::template f<xs...>,
+      typename drop_front_c<sizeof...(xs), lift<tee>>
+        ::template f<Fs..., listify>
+        ::template f<>
+    >::type;
+  };
+
+  template <class C, class... Fs>
+  struct _partial
+  {
+    template<class... xs>
+    using f = typename _partial_select<on_select(sizeof...(Fs), sizeof...(xs)), C, Fs...>
+      ::template f<xs...>;
   };
 } // namespace jln::mp
 /// \endcond

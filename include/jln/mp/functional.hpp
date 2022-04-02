@@ -1,6 +1,5 @@
 #pragma once
 
-#include <jln/mp/functional/bind.hpp>
 #include <jln/mp/functional/bind_back.hpp>
 #include <jln/mp/functional/bind_front.hpp>
 #include <jln/mp/functional/call.hpp>
@@ -20,7 +19,6 @@
 #include <jln/mp/functional/memoize.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/functional/not_fn.hpp>
-#include <jln/mp/functional/on.hpp>
 #include <jln/mp/functional/partial.hpp>
 #include <jln/mp/functional/recursively.hpp>
 #include <jln/mp/functional/tee.hpp>
