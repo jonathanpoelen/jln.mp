@@ -1,7 +1,6 @@
 #pragma once
 
-#include <jln/mp/algorithm/find.hpp>
-#include <jln/mp/algorithm/search.hpp>
+#include <jln/mp/algorithm/drop_until_xs.hpp>
 #include <jln/mp/algorithm/starts_with.hpp>
 #include <jln/mp/list/drop_front.hpp>
 
@@ -20,10 +19,10 @@ namespace jln::mp
 
   template<class... Ts, class TC, class FC>
   struct after<list<Ts...>, TC, FC>
-  : partial_search_c<sizeof...(Ts) - 1,
-                     starts_with<list<Ts...>>,
-                     drop_front_c<sizeof...(Ts), TC>,
-                     FC>
+  : partial_drop_until_extended_by_n_xs_c<-int_{sizeof...(Ts)},
+                                          sizeof...(Ts),
+                                          starts_with<list<Ts...>>,
+                                          TC, FC>
   {};
 
   namespace emp
@@ -35,7 +34,7 @@ namespace jln::mp
   /// \cond
   template<class T, class TC, class FC>
   struct after<list<T>, TC, FC>
-  : find<T, drop_front_c<1, TC>, FC>
+  : drop_until_extended_by_n_c<1, is<T>, TC, FC>
   {};
 
   template<class TC, class FC>
