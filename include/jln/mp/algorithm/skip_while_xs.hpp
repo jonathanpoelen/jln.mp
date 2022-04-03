@@ -13,8 +13,8 @@ namespace jln::mp
   /// \see skip_while, partial_skip_while_xs, skip_inclusive_while_xs
   /// \see take_while_xs, take_until_xs
   /// \see drop_while_xs, drop_until_xs
-  template<class Pred, class C = listify>
-  using skip_while_xs = drop_while_xs<Pred, C, clear<C>>;
+  template<class Pred, class TC = listify, class FC = TC>
+  using skip_while_xs = drop_while_xs<Pred, TC, clear<FC>>;
 
   /// Same as \c skip_while_xs, but stop searching at position \c OffsetEnd.
   /// \tparam OffsetEnd  a negative value start to end of sequence.
@@ -22,45 +22,45 @@ namespace jln::mp
   /// \see skip_while, skip_while_xs, skip_inclusive_while_xs
   /// \see take_while_xs, take_until_xs
   /// \see drop_while_xs, drop_until_xs
-  template<int_ OffsetEnd, class Pred, class C = listify>
-  using partial_skip_while_xs_c = partial_drop_while_xs_c<OffsetEnd, Pred, C, clear<C>>;
+  template<int_ OffsetEnd, class Pred, class TC = listify, class FC = TC>
+  using partial_skip_while_xs_c = partial_drop_while_xs_c<OffsetEnd, Pred, TC, clear<FC>>;
 
-  template<class OffsetEnd, class Pred, class C = listify>
-  using partial_skip_while_xs = partial_drop_while_xs<OffsetEnd, Pred, C, clear<C>>;
+  template<class OffsetEnd, class Pred, class TC = listify, class FC = TC>
+  using partial_skip_while_xs = partial_drop_while_xs<OffsetEnd, Pred, TC, clear<FC>>;
 
-  template<class Pred, class C = listify>
-  using skip_inclusive_while_xs = drop_inclusive_while_xs<Pred, C, clear<C>>;
+  template<class Pred, class TC = listify, class FC = TC>
+  using skip_inclusive_while_xs = drop_inclusive_while_xs<Pred, TC, clear<FC>>;
 
-  template<int_ OffsetEnd, class Pred, class C = listify>
+  template<int_ OffsetEnd, class Pred, class TC = listify, class FC = TC>
   using partial_skip_inclusive_while_xs_c
-    = partial_drop_inclusive_while_xs_c<OffsetEnd, Pred, C, clear<C>>;
+    = partial_drop_inclusive_while_xs_c<OffsetEnd, Pred, TC, clear<FC>>;
 
-  template<class OffsetEnd, class Pred, class C = listify>
+  template<class OffsetEnd, class Pred, class TC = listify, class FC = TC>
   using partial_skip_inclusive_while_xs
-    = partial_drop_inclusive_while_xs<OffsetEnd, Pred, C, clear<C>>;
+    = partial_drop_inclusive_while_xs<OffsetEnd, Pred, TC, clear<FC>>;
 
   namespace emp
   {
-    template<class L, class Pred, class C = mp::listify>
-    using skip_while_xs = unpack<L, mp::skip_while_xs<Pred, C>>;
+    template<class L, class Pred, class TC = mp::listify, class FC = TC>
+    using skip_while_xs = unpack<L, mp::skip_while_xs<Pred, TC, FC>>;
 
-    template<class L, class OffsetEnd, class state, class Pred, class C = mp::listify>
+    template<class L, class OffsetEnd, class state, class Pred, class TC = mp::listify, class FC = TC>
     using partial_skip_while_xs = unpack<L,
-      mp::partial_skip_while_xs<OffsetEnd, Pred, C>>;
+      mp::partial_skip_while_xs<OffsetEnd, Pred, TC, FC>>;
 
-    template<class L, int_ OffsetEnd, class Pred, class C = mp::listify>
+    template<class L, int_ OffsetEnd, class Pred, class TC = mp::listify, class FC = TC>
     using partial_skip_while_xs_c = unpack<L,
-      mp::partial_skip_while_xs_c<OffsetEnd, Pred, C>>;
+      mp::partial_skip_while_xs_c<OffsetEnd, Pred, TC, FC>>;
 
-    template<class L, class Pred, class C = mp::listify>
-    using skip_inclusive_while_xs = unpack<L, mp::skip_inclusive_while_xs<Pred, C>>;
+    template<class L, class Pred, class TC = mp::listify, class FC = TC>
+    using skip_inclusive_while_xs = unpack<L, mp::skip_inclusive_while_xs<Pred, TC, FC>>;
 
-    template<class L, class OffsetEnd, class state, class Pred, class C = mp::listify>
+    template<class L, class OffsetEnd, class state, class Pred, class TC = mp::listify, class FC = TC>
     using partial_skip_inclusive_while_xs = unpack<L,
-      mp::partial_skip_inclusive_while_xs<OffsetEnd, Pred, C>>;
+      mp::partial_skip_inclusive_while_xs<OffsetEnd, Pred, TC, FC>>;
 
-    template<class L, int_ OffsetEnd, class Pred, class C = mp::listify>
+    template<class L, int_ OffsetEnd, class Pred, class TC = mp::listify, class FC = TC>
     using partial_skip_inclusive_while_xs_c = unpack<L,
-      mp::partial_skip_inclusive_while_xs_c<OffsetEnd, Pred, C>>;
+      mp::partial_skip_inclusive_while_xs_c<OffsetEnd, Pred, TC, FC>>;
   }
 }
