@@ -77,7 +77,7 @@
 #include <jln/mp/smp/algorithm/split_after.hpp>
 #include <jln/mp/smp/algorithm/split_at.hpp>
 #include <jln/mp/smp/algorithm/split_before.hpp>
-#include <jln/mp/smp/algorithm/split_by.hpp>
+#include <jln/mp/smp/algorithm/split_from.hpp>
 #include <jln/mp/smp/algorithm/starts_with.hpp>
 #include <jln/mp/smp/algorithm/suffix.hpp>
 #include <jln/mp/smp/algorithm/take_until.hpp>
