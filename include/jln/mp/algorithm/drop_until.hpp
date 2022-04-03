@@ -34,13 +34,34 @@ namespace jln::mp
     >::template f<TC, FC, xs...>;
   };
 
+  template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
+  struct drop_until_extended_by_n_c
+  {
+    template<class... xs>
+    using f = typename detail::drop_while_extended_by_n_impl<
+      typename detail::_drop_until<sizeof...(xs)>
+      ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
+    >::template f<ExtendedByN, TC, FC, xs...>;
+  };
+
+  template<class ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
+  using drop_until_extended_by_n = drop_until_extended_by_n_c<ExtendedByN::value, Pred, TC, FC>;
+
   template<class Pred, class TC = listify, class FC = clear<TC>>
-  using drop_inclusive_until = drop_until<Pred, drop_front_c<1, TC>, FC>;
+  using drop_inclusive_until = drop_until_extended_by_n_c<1, Pred, TC, FC>;
 
   namespace emp
   {
     template<class L, class Pred, class C = mp::listify>
     using drop_until = unpack<L, mp::drop_until<Pred, C>>;
+
+    template<class L, std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
+    using drop_until_extended_by_n_c = unpack<L,
+      mp::drop_until_extended_by_n_c<ExtendedByN, Pred, TC, FC>>;
+
+    template<class L, class ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
+    using drop_until_extended_by_n = unpack<L,
+      mp::drop_until_extended_by_n<ExtendedByN, Pred, TC, FC>>;
 
     template<class L, class Pred, class TC = mp::listify, class FC = mp::clear<TC>>
     using drop_inclusive_until = unpack<L, mp::drop_inclusive_until<Pred, TC, FC>>;
@@ -49,15 +70,8 @@ namespace jln::mp
   /// \cond
   template<class Pred, class TC, class FC>
   struct drop_until<Pred, drop_front_c<1, TC>, FC>
-  {
-    template<class... xs>
-    using f = typename detail::drop_while_impl<
-      typename detail::to_drop_upto<
-        typename detail::_drop_until<sizeof...(xs)>
-        ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
-      >::type
-    >::template f<TC, FC, xs...>;
-  };
+  : drop_until_extended_by_n_c<1, Pred, TC, FC>
+  {};
   /// \endcond
 }
 

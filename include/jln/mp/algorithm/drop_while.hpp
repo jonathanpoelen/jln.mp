@@ -17,6 +17,9 @@ namespace jln::mp
 
     template<class>
     struct drop_while_impl;
+
+    template<class>
+    struct drop_while_extended_by_n_impl;
   }
   /// \endcond
 
@@ -40,13 +43,34 @@ namespace jln::mp
     >::template f<TC, FC, xs...>;
   };
 
+  template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
+  struct drop_while_extended_by_n_c
+  {
+    template<class... xs>
+    using f = typename detail::drop_while_extended_by_n_impl<
+      typename detail::_drop_while<sizeof...(xs)>
+      ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
+    >::template f<ExtendedByN, TC, FC, xs...>;
+  };
+
+  template<class ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
+  using drop_while_extended_by_n = drop_while_extended_by_n_c<ExtendedByN::value, Pred, TC, FC>;
+
   template<class Pred, class TC = listify, class FC = clear<TC>>
-  using drop_inclusive_while = drop_while<Pred, drop_front_c<1, TC>, FC>;
+  using drop_inclusive_while = drop_while_extended_by_n_c<1, Pred, TC, FC>;
 
   namespace emp
   {
     template<class L, class Pred, class TC = mp::listify, class FC = mp::clear<TC>>
     using drop_while = unpack<L, mp::drop_while<Pred, TC, FC>>;
+
+    template<class L, std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
+    using drop_while_extended_by_n_c = unpack<L,
+      mp::drop_while_extended_by_n_c<ExtendedByN, Pred, TC, FC>>;
+
+    template<class L, class ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
+    using drop_while_extended_by_n = unpack<L,
+      mp::drop_while_extended_by_n<ExtendedByN, Pred, TC, FC>>;
 
     template<class L, class Pred, class TC = mp::listify, class FC = mp::clear<TC>>
     using drop_inclusive_while = unpack<L, mp::drop_inclusive_while<Pred, TC, FC>>;
@@ -55,15 +79,8 @@ namespace jln::mp
   /// \cond
   template<class Pred, class TC, class FC>
   struct drop_while<Pred, drop_front_c<1, TC>, FC>
-  {
-    template<class... xs>
-    using f = typename detail::drop_while_impl<
-      typename detail::to_drop_upto<
-        typename detail::_drop_while<sizeof...(xs)>
-        ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
-      >::type
-    >::template f<TC, FC, xs...>;
-  };
+  : drop_while_extended_by_n_c<1, Pred, TC, FC>
+  {};
   /// \endcond
 }
 
@@ -117,15 +134,20 @@ namespace jln::mp::detail
 
 
   template<>
-  struct to_drop_upto<_drop_while_continue>
+  struct drop_while_extended_by_n_impl<_drop_while_continue>
   {
-    using type = _drop_while_continue;
+    template<std::size_t ExtendedByN, class TC, class FC, class... xs>
+    using f = JLN_MP_CALL_TRACE(FC, xs...);
   };
 
   template<std::size_t n>
-  struct to_drop_upto<_drop_while_result<n>>
+  struct drop_while_extended_by_n_impl<_drop_while_result<n>>
   {
-    using type = _drop_while_result<n-1>;
+    template<std::size_t ExtendedByN, class TC, class FC, class... xs>
+    using f = typename drop_front_c<
+      sizeof...(xs) - (n >= ExtendedByN ? n - ExtendedByN + 1 : 0),
+      TC
+    >::template f<xs...>;
   };
 
 

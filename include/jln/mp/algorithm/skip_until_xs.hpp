@@ -37,6 +37,22 @@ namespace jln::mp
   using partial_skip_inclusive_until_xs
     = partial_drop_inclusive_until_xs<OffsetEnd, Pred, TC, clear<FC>>;
 
+  template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
+  using skip_until_extended_by_n_xs_c
+    = drop_until_extended_by_n_xs_c<ExtendedByN, Pred, TC, clear<FC>>;
+
+  template<class ExtendedByN, class Pred, class TC = listify, class FC = TC>
+  using skip_until_extended_by_n_xs
+    = drop_until_extended_by_n_xs<ExtendedByN, Pred, TC, clear<FC>>;
+
+  template<int_ OffsetEnd, std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
+  using partial_skip_until_extended_by_n_xs_c
+    = partial_drop_until_extended_by_n_xs_c<OffsetEnd, ExtendedByN, Pred, TC, clear<FC>>;
+
+  template<class OffsetEnd, class ExtendedByN, class Pred, class TC = listify, class FC = TC>
+  using partial_skip_until_extended_by_n_xs
+    = partial_drop_until_extended_by_n_xs<OffsetEnd, ExtendedByN, Pred, TC, clear<FC>>;
+
   namespace emp
   {
     template<class L, class Pred, class TC = mp::listify, class FC = TC>
@@ -60,5 +76,23 @@ namespace jln::mp
     template<class L, int_ OffsetEnd, class Pred, class TC = mp::listify, class FC = TC>
     using partial_skip_inclusive_until_xs_c = unpack<L,
       mp::partial_skip_inclusive_until_xs_c<OffsetEnd, Pred, TC, FC>>;
+
+    template<class L, std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
+    using skip_until_extended_by_n_xs_c = unpack<L,
+      mp::drop_until_extended_by_n_xs_c<ExtendedByN, Pred, TC, clear<FC>>>;
+
+    template<class L, class ExtendedByN, class Pred, class TC = listify, class FC = TC>
+    using skip_until_extended_by_n_xs = unpack<L,
+      mp::drop_until_extended_by_n_xs<ExtendedByN, Pred, TC, clear<FC>>>;
+
+    template<class L, int_ OffsetEnd, std::size_t ExtendedByN,
+             class Pred, class TC = listify, class FC = TC>
+    using partial_skip_until_extended_by_n_xs_c = unpack<L,
+      mp::partial_drop_until_extended_by_n_xs_c<OffsetEnd, ExtendedByN, Pred, TC, clear<FC>>>;
+
+    template<class L, class OffsetEnd, class ExtendedByN,
+             class Pred, class TC = listify, class FC = TC>
+    using partial_skip_until_extended_by_n_xs = unpack<L,
+      mp::partial_drop_until_extended_by_n_xs<OffsetEnd, ExtendedByN, Pred, TC, clear<FC>>>;
   }
 }

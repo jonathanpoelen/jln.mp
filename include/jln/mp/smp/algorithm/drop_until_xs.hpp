@@ -3,6 +3,7 @@
 #include <jln/mp/smp/concepts.hpp>
 #include <jln/mp/smp/list/clear.hpp>
 #include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/algorithm/drop_while_xs.hpp>
 #include <jln/mp/algorithm/drop_until_xs.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/size.hpp>
@@ -35,11 +36,24 @@ namespace jln::mp::smp
 
   template<class Pred, class TC = listify, class FC = clear<TC>>
   using drop_inclusive_until_xs = drop_until_xs<
-    Pred, contract<mp::drop_front_c<1, subcontract<TC>>>, subcontract<FC>>;
+    Pred, contract<mp::drop_front_c<1, subcontract<TC>>>, FC>;
 
   template<int_ OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
   using partial_drop_inclusive_until_xs_c = partial_drop_until_xs_c<
-    OffsetEnd, Pred, contract<mp::drop_front_c<1, subcontract<TC>>>, subcontract<FC>>;
+    OffsetEnd, Pred, contract<mp::drop_front_c<1, subcontract<TC>>>, FC>;
+
+  template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
+  using drop_until_extended_by_n_xs_c = drop_until_xs<
+    Pred,
+    typename detail::smp_drop_while_for_size<ExtendedByN == 0>::template f<ExtendedByN, TC>,
+    FC>;
+
+  template<int_ OffsetEnd, std::size_t ExtendedByN,
+           class Pred, class TC = listify, class FC = clear<TC>>
+  using partial_drop_until_extended_by_n_xs_c = partial_drop_until_xs_c<
+    OffsetEnd, Pred,
+    typename detail::smp_drop_while_for_size<ExtendedByN == 0>::template f<ExtendedByN, TC>,
+    FC>;
 }
 
 JLN_MP_MAKE_REGULAR_SMP3_P(partial_drop_until_xs, (OffsetEnd), (Pred), (C, smp::listify),
@@ -47,6 +61,14 @@ JLN_MP_MAKE_REGULAR_SMP3_P(partial_drop_until_xs, (OffsetEnd), (Pred), (C, smp::
 
 JLN_MP_MAKE_REGULAR_SMP3_P(partial_drop_inclusive_until_xs, (OffsetEnd), (Pred), (C, smp::listify),
   smp::partial_drop_inclusive_until_xs_c<OffsetEnd::value, Pred, C>)
+
+JLN_MP_MAKE_REGULAR_SMP4_P(drop_until_extended_by_n_xs,
+  (ExtendedByN), (Pred), (TC, smp::listify), (FC, smp::clear<TC>),
+  smp::drop_until_extended_by_n_xs_c<ExtendedByN::value, Pred, TC, FC>)
+
+JLN_MP_MAKE_REGULAR_SMP5_P(partial_drop_until_extended_by_n_xs,
+  (OffsetEnd), (ExtendedByN), (Pred), (TC, smp::listify), (FC, smp::clear<TC>),
+  smp::partial_drop_until_extended_by_n_xs_c<OffsetEnd::value, ExtendedByN::value, Pred, TC, FC>)
 
 /// \cond
 namespace jln::mp::detail
@@ -57,10 +79,19 @@ namespace jln::mp::detail
     using type = smp::drop_until_xs<sfinae<Pred>, sfinae<TC>, sfinae<FC>>;
   };
 
-  template<template<class> class sfinae, int_ OffsetEnd, class Pred, class TC, class FC>
-  struct _sfinae<sfinae, partial_drop_until_xs_c<OffsetEnd, Pred, TC, FC>>
+  template<template<class> class sfinae, std::size_t ExtendedByN, class Pred, class TC, class FC>
+  struct _sfinae<sfinae, drop_until_extended_by_n_xs_c<ExtendedByN, Pred, TC, FC>>
   {
-    using type = smp::partial_drop_until_xs_c<OffsetEnd, sfinae<Pred>, sfinae<TC>, sfinae<FC>>;
+    using type = smp::drop_until_extended_by_n_xs_c<ExtendedByN, sfinae<Pred>, sfinae<TC>, sfinae<FC>>;
+  };
+
+  template<template<class> class sfinae, int_ OffsetEnd, std::size_t ExtendedByN,
+           class Pred, class TC, class FC>
+  struct _sfinae<sfinae, partial_drop_until_extended_by_n_xs_c<OffsetEnd, ExtendedByN, Pred, TC, FC>>
+  {
+    using type = smp::partial_drop_until_extended_by_n_xs_c<
+      OffsetEnd, ExtendedByN, sfinae<Pred>, sfinae<TC>, sfinae<FC>
+    >;
   };
 }
 /// \endcond

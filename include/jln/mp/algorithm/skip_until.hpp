@@ -17,6 +17,14 @@ namespace jln::mp
   template<class Pred, class TC = listify, class FC = TC>
   using skip_inclusive_until = drop_inclusive_until<Pred, TC, clear<FC>>;
 
+  template<class ExtendedByN, class Pred, class TC = listify, class FC = TC>
+  using skip_until_extended_by_n = drop_until_extended_by_n_c<
+    ExtendedByN::value, Pred, TC, clear<FC>>;
+
+  template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
+  using skip_until_extended_by_n_c = drop_until_extended_by_n_c<
+    ExtendedByN, Pred, TC, clear<FC>>;
+
   namespace emp
   {
     template<class L, class Pred, class TC = mp::listify, class FC = TC>
@@ -24,5 +32,13 @@ namespace jln::mp
 
     template<class L, class Pred, class TC = mp::listify, class FC = TC>
     using skip_inclusive_until = unpack<L, mp::skip_inclusive_until<Pred, TC, FC>>;
+
+    template<class L, std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
+    using skip_until_extended_by_n_c = unpack<L,
+      mp::skip_until_extended_by_n_c<ExtendedByN, Pred, TC, FC>>;
+
+    template<class L, class ExtendedByN, class Pred, class TC = listify, class FC = TC>
+    using skip_until_extended_by_n = unpack<L,
+      mp::skip_until_extended_by_n<ExtendedByN, Pred, TC, FC>>;
   }
 }
