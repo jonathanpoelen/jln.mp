@@ -5,6 +5,7 @@
 #include "src/algorithm/all_of.cpp"
 #include "src/algorithm/any_of.cpp"
 #include "src/algorithm/before.cpp"
+#include "src/algorithm/before_after.cpp"
 #include "src/algorithm/cartesian.cpp"
 #include "src/algorithm/collapse.cpp"
 #include "src/algorithm/combine.cpp"

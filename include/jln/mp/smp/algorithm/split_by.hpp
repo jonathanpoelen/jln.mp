@@ -16,13 +16,13 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template<class GetIndex, class SubC1 = listify, class SubC2 = SubC1, class C = listify>
-  using split_by = contract<mp::invoke_twice<mp::tee<
+  using split_by2 = contract<mp::invoke_twice<mp::tee<
     subcontract<GetIndex>,
     detail::_smp_split_by<subcontract<SubC1>, subcontract<SubC2>, subcontract<C>>
   >>>;
 
   template<class GetIndex, class C = listify>
-  using split_by2 = contract<mp::invoke_twice<mp::tee<
+  using split_by = contract<mp::invoke_twice<mp::tee<
     subcontract<GetIndex>,
     detail::_smp_split_by<mp::listify, mp::listify, subcontract<C>>
   >>>;
@@ -65,9 +65,9 @@ namespace jln::mp::detail
 
 
   template<template<class> class sfinae, class GetIndex, class SubC1, class SubC2, class C>
-  struct _sfinae<sfinae, split_by<GetIndex, SubC1, SubC2, C>>
+  struct _sfinae<sfinae, split_by2<GetIndex, SubC1, SubC2, C>>
   {
-    using type = smp::split_by<sfinae<GetIndex>, sfinae<SubC1>, sfinae<SubC2>, sfinae<C>>;
+    using type = smp::split_by2<sfinae<GetIndex>, sfinae<SubC1>, sfinae<SubC2>, sfinae<C>>;
   };
 }
 /// \endcond

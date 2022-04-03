@@ -7,6 +7,7 @@
 #include <jln/mp/smp/algorithm/all_of.hpp>
 #include <jln/mp/smp/algorithm/any_of.hpp>
 #include <jln/mp/smp/algorithm/before.hpp>
+#include <jln/mp/smp/algorithm/before_after.hpp>
 #include <jln/mp/smp/algorithm/cartesian.hpp>
 #include <jln/mp/smp/algorithm/collapse.hpp>
 #include <jln/mp/smp/algorithm/combine.hpp>

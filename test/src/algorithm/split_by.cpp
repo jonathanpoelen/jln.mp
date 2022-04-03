@@ -15,7 +15,7 @@ TEST()
 
   test_pack3<split_by, index_of<_3>>();
 
-  test_context<split_by<identity>, smp::split_by<smp::identity>>()
+  test_context<split_by2<identity>, smp::split_by2<smp::identity>>()
     .test<list<list<>, seq_0>, _0>()
     .test<list<seq_1, list<>>, _1>()
     .not_invocable<>()
@@ -25,17 +25,17 @@ TEST()
     ;
 
   test_context<
-    split_by<index_if<is<_3>>>,
-    smp::split_by<smp::index_if<smp::is<_3>>>
+    split_by2<index_if<is<_3>>>,
+    smp::split_by2<smp::index_if<smp::is<_3>>>
   >()
     .test<list<list<>, list<>>>()
     .test<list<seq_1_2, list<>>, _1, _2>()
     .test<list<seq_1_2, list<_3>>, _1, _2, _3>()
     ;
 
-  ut::not_invocable<smp::split_by<smp::always<void>>, _1>();
-  ut::not_invocable<smp::split_by<bad_function>, _1, _1, _1>();
-  ut::not_invocable<smp::split_by2<smp::identity, bad_function>, _1>();
+  ut::not_invocable<smp::split_by2<smp::always<void>>, _1>();
+  ut::not_invocable<smp::split_by2<bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::split_by<smp::identity, bad_function>, _1>();
 }
 
 TEST_SUITE_END()
