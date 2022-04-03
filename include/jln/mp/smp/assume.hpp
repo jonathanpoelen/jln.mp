@@ -81,6 +81,8 @@ namespace jln::mp
 
 
 /// \cond
+#include <jln/mp/detail/unpack.hpp>
+
 namespace jln::mp::detail
 {
   template<class F>
@@ -90,8 +92,6 @@ namespace jln::mp::detail
   template<class F>
   struct expected_argument<memoize<F>> : expected_argument<F>
   {};
-
-#define JLN_MP_UNPACK(...) __VA_ARGS__
 
 #define JLN_MP_MAKE_EXPECTED_ARGUMENT(expected, tpl, spe) \
   template<JLN_MP_UNPACK tpl>                             \

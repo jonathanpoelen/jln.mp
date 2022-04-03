@@ -72,6 +72,7 @@ namespace jln::mp
 /// \cond
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/functional/try.hpp>
+#include <jln/mp/detail/unpack.hpp>
 
 namespace jln::mp::detail
 {
@@ -96,64 +97,49 @@ namespace jln::mp::detail
     >, FC>;
   };
 
-  template<template<class, class, class> class Tpl, class Pred, class TC, class FC>
-  struct until_last_impl<Tpl<Pred, TC, FC>>
-  {
-    using type = Tpl<Pred, recursively<
-      pop_front<Tpl<Pred, next_recursion, stop_recursion>>,
-      TC
-    >, FC>;
-  };
+#define JLN_MP_MK_UNTIL_LAST_IMPL(tpl_params, arg_names)                       \
+  template<                                                                    \
+    template<JLN_MP_UNPACK tpl_params, class, class> class Tpl,                \
+    JLN_MP_UNPACK tpl_params, class TC, class FC>                              \
+  struct until_last_impl<Tpl<JLN_MP_UNPACK arg_names, TC, FC>>                 \
+  {                                                                            \
+    using type = Tpl<JLN_MP_UNPACK arg_names, recursively<                     \
+      pop_front<Tpl<JLN_MP_UNPACK arg_names, next_recursion, stop_recursion>>, \
+      TC                                                                       \
+    >, FC>;                                                                    \
+  }
 
-  template<
-    template<class, class, class, class> class Tpl,
-    class Data, class Pred, class TC, class FC>
-  struct until_last_impl<Tpl<Data, Pred, TC, FC>>
-  {
-    using type = Tpl<Data, Pred, recursively<
-      pop_front<Tpl<Data, Pred, next_recursion, stop_recursion>>,
-      TC
-    >, FC>;
-  };
+  JLN_MP_MK_UNTIL_LAST_IMPL((class Pred), (Pred));
 
-  template<
-    template<class, class, class, class, class> class Tpl,
-    class Data1, class Data2, class Pred, class TC, class FC>
-  struct until_last_impl<Tpl<Data1, Data2, Pred, TC, FC>>
-  {
-    using type = Tpl<Data1, Data2, Pred, recursively<
-      pop_front<Tpl<Data1, Data2, Pred, next_recursion, stop_recursion>>,
-      TC
-    >, FC>;
-  };
+  JLN_MP_MK_UNTIL_LAST_IMPL((class Data1, class Pred), (Data1, Pred));
+  JLN_MP_MK_UNTIL_LAST_IMPL((class Data1, class Data2, class Pred),
+                            (Data1, Data2, Pred));
+  JLN_MP_MK_UNTIL_LAST_IMPL((class Data1, class Data2, class Data3, class Pred),
+                            (Data1, Data2, Data3, Pred));
 
-  template<template<int_, class, class> class Tpl, int_ OffsetEnd, class TC, class FC>
-  struct until_last_impl<Tpl<OffsetEnd, TC, FC>>
-  {
-    using type = Tpl<OffsetEnd, recursively<
-      pop_front<Tpl<OffsetEnd, next_recursion, stop_recursion>>,
-      TC
-    >, FC>;
-  };
+  JLN_MP_MK_UNTIL_LAST_IMPL((int_ Data1, class Pred), (Data1, Pred));
+  JLN_MP_MK_UNTIL_LAST_IMPL((int_ Data1, class Data2, class Pred),
+                            (Data1, Data2, Pred));
 
-  template<template<int_, class, class, class> class Tpl, int_ OffsetEnd, class Pred, class TC, class FC>
-  struct until_last_impl<Tpl<OffsetEnd, Pred, TC, FC>>
-  {
-    using type = Tpl<OffsetEnd, Pred, recursively<
-      pop_front<Tpl<OffsetEnd, Pred, next_recursion, stop_recursion>>,
-      TC
-    >, FC>;
-  };
+  JLN_MP_MK_UNTIL_LAST_IMPL((int_ Data1, int_ Data2, class Pred),
+                            (Data1, Data2, Pred));
+  JLN_MP_MK_UNTIL_LAST_IMPL((int_ Data1, int_ Data2, class Data3, class Pred),
+                            (Data1, Data2, Data3, Pred));
 
-  template<
-    template<int_, class, class, class, class> class Tpl,
-    int_ OffsetEnd, class Data, class Pred, class TC, class FC>
-  struct until_last_impl<Tpl<OffsetEnd, Data, Pred, TC, FC>>
-  {
-    using type = Tpl<OffsetEnd, Data, Pred, recursively<
-      pop_front<Tpl<OffsetEnd, Data, Pred, next_recursion, stop_recursion>>,
-      TC
-    >, FC>;
-  };
+  JLN_MP_MK_UNTIL_LAST_IMPL((std::size_t Data1, class Pred), (Data1, Pred));
+  JLN_MP_MK_UNTIL_LAST_IMPL((std::size_t Data1, class Data2, class Pred),
+                            (Data1, Data2, Pred));
+
+  JLN_MP_MK_UNTIL_LAST_IMPL((std::size_t Data1, std::size_t Data2, class Pred),
+                            (Data1, Data2, Pred));
+  JLN_MP_MK_UNTIL_LAST_IMPL((std::size_t Data1, std::size_t Data2, class Data3, class Pred),
+                            (Data1, Data2, Data3, Pred));
+
+  JLN_MP_MK_UNTIL_LAST_IMPL((int_ Data1, std::size_t Data2, class Pred),
+                            (Data1, Data2, Pred));
+  JLN_MP_MK_UNTIL_LAST_IMPL((int_ Data1, std::size_t Data2, class Data3, class Pred),
+                            (Data1, Data2, Data3, Pred));
+
+#undef JLN_MP_MK_UNTIL_LAST_IMPL
 }
 /// \endcond

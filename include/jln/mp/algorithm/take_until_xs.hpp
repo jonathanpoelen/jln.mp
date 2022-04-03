@@ -35,7 +35,7 @@ namespace jln::mp
   };
 
   template<class ExtendedByN, class Pred, class TC = listify, class FC = TC>
-  using take_until_extended_by_n_xs = take_until_extended_by_n_c<ExtendedByN::value, Pred, TC, FC>;
+  using take_until_extended_by_n_xs = take_until_extended_by_n_xs_c<ExtendedByN::value, Pred, TC, FC>;
 
   template<class Pred, class TC = listify, class FC = TC>
   using take_inclusive_until_xs = take_until_extended_by_n_xs_c<1, Pred, TC, FC>;

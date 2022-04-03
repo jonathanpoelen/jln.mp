@@ -21,14 +21,14 @@ TEST()
   test_pack3<search>();
   test_pack2<search_before, is<int>>();
   test_pack3<search_before_extended_by_n>();
-  test_pack2<search_before_extended_by_n, is<int>, _2>();
+  test_pack2<search_before_extended_by_n, _2, is<int>>();
   test_pack3<search_before>();
   test_pack2<partial_search, _1, is<int>>();
   test_pack3<partial_search, _1>();
   test_pack2<partial_search_before, _1, is<int>>();
   test_pack3<partial_search_before, _1>();
-  test_pack2<partial_search_before_extended_by_n, _1, is<int>>();
-  test_pack3<partial_search_before_extended_by_n, _1>();
+  test_pack2<partial_search_before_extended_by_n, _1, _1, is<int>>();
+  test_pack3<partial_search_before_extended_by_n, _1, _1>();
 
   test_context<search<size<is<_3>>>, smp::search<smp::size<smp::is<_3>>>>()
     .test<list<>>()
@@ -111,8 +111,8 @@ TEST()
 
 
   test_context<
-    search_before_extended_by_n<size<is<_3>>, _2>,
-    smp::search_before_extended_by_n<smp::size<smp::is<_3>>, _2>
+    search_before_extended_by_n<_2, size<is<_3>>>,
+    smp::search_before_extended_by_n<_2, smp::size<smp::is<_3>>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
@@ -147,21 +147,18 @@ TEST()
     ;
 
   test_context<
-    search_before_extended_by_n<size<is<_3>>, number<-2>>,
-    smp::search_before_extended_by_n<smp::size<smp::is<_3>>, number<-2>>
+    search_before_extended_by_n_c<2, size<is<_3>>>,
+    smp::search_before_extended_by_n_c<2, smp::size<smp::is<_3>>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
-    .test<list<>, _0, _1, _2>()
-    .test<list<>, _0, _1, _2, _3>()
-    .test<list<>, _0, _1, _2, _3, _4>()
-    .test<seq_0, _0, _1, _2, _3, _4, _5>()
-    .test<seq_0_1_2, _0, _1, _2, _3, _4, _5, _6, _7>()
+    .test<list<_0, _1>, _0, _1, _2>()
+    .test<list<_0, _1, _2>, _0, _1, _2, _3>()
     ;
 
   test_context<
-    search_before_extended_by_n<if_<front<>, add<to_bool<>>>, _2>,
-    smp::search_before_extended_by_n<smp::if_<smp::front<>, smp::add<smp::to_bool<>>>, _2>
+    search_before_extended_by_n_c<2, if_<front<>, add<to_bool<>>>>,
+    smp::search_before_extended_by_n_c<2, smp::if_<smp::front<>, smp::add<smp::to_bool<>>>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
@@ -221,8 +218,8 @@ TEST()
 
 
   test_context<
-    partial_search_before_extended_by_n<_3, size<is<_2>>, _2>,
-    smp::partial_search_before_extended_by_n<_3, smp::size<smp::is<_2>>, _2>
+    partial_search_before_extended_by_n_c<3, 2, size<is<_2>>>,
+    smp::partial_search_before_extended_by_n_c<3, 2, smp::size<smp::is<_2>>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
@@ -232,8 +229,8 @@ TEST()
     ;
 
   test_context<
-    partial_search_before_extended_by_n<_2, size<is<_3>>, _2>,
-    smp::partial_search_before_extended_by_n<_2, smp::size<smp::is<_3>>, _2>
+    partial_search_before_extended_by_n_c<2, 2, size<is<_3>>>,
+    smp::partial_search_before_extended_by_n_c<2, 2, smp::size<smp::is<_3>>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
@@ -263,8 +260,8 @@ TEST()
     .test<seq_0, _0, _1, _2, _3>()
     ;
   test_context<
-    search_before_extended_by_n<starts_with<start>, _1>,
-    smp::search_before_extended_by_n<smp::starts_with<start>, _1>
+    search_before_extended_by_n_c<1, starts_with<start>>,
+    smp::search_before_extended_by_n_c<1, smp::starts_with<start>>
   >()
     .test<list<>>()
     .test<list<>, _0, _1>()
@@ -287,15 +284,15 @@ TEST()
   ut::not_invocable<smp::search_before<always<void>>, void>();
   ut::not_invocable<smp::search_before<void>, void>();
 
-  ut::not_invocable<smp::search_before_extended_by_n<smp::always<na>, _1>, _1, _1, _1>();
+  ut::not_invocable<smp::search_before_extended_by_n<_1, smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::search_before_extended_by_n<is<_3>, void>>();
   ut::not_invocable<smp::search_before_extended_by_n<is<_3>, void>, void>();
-  ut::not_invocable<smp::search_before_extended_by_n<is<_3>, _1, listify, bad_function>>();
-  ut::not_invocable<smp::search_before_extended_by_n<is<_3>, _1, bad_function>, void>();
-  ut::not_invocable<smp::search_before_extended_by_n<is<_3>, _1, void>>();
-  ut::not_invocable<smp::search_before_extended_by_n<is<_3>, _1, void>, _3>();
-  ut::not_invocable<smp::search_before_extended_by_n<always<void>, _1>, void>();
-  ut::not_invocable<smp::search_before_extended_by_n<void, _1>, void>();
+  ut::not_invocable<smp::search_before_extended_by_n<_1, is<_3>, listify, bad_function>>();
+  ut::not_invocable<smp::search_before_extended_by_n<_1, is<_3>, bad_function>, void>();
+  ut::not_invocable<smp::search_before_extended_by_n<_1, is<_3>, void>>();
+  ut::not_invocable<smp::search_before_extended_by_n<_1, is<_3>, void>, _3>();
+  ut::not_invocable<smp::search_before_extended_by_n<_1, always<void>>, void>();
+  ut::not_invocable<smp::search_before_extended_by_n<_1, void>, void>();
 
   ut::not_invocable<smp::partial_search<_1, smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::partial_search<_1, is<_3>, listify, bad_function>>();
@@ -313,16 +310,16 @@ TEST()
   ut::not_invocable<smp::partial_search_before<_1, void>, void, void>();
   ut::not_invocable<smp::partial_search_before<void, is<_3>>>();
 
-  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, smp::always<na>, _1>, _1, _1, _1>();
-  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, is<_3>, void>>();
-  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, is<_3>, void>, void, void>();
-  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, is<_3>, _1, listify, bad_function>>();
-  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, is<_3>, _1, bad_function>, void, void>();
-  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, is<_3>, _1, void>>();
-  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, is<_3>, _1, void>, _3>();
-  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, always<void>, _1>, void, void>();
-  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, void, _1>, void, void>();
-  ut::not_invocable<smp::partial_search_before_extended_by_n<void, is<_3>, _1>>();
+  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, _1, smp::always<na>>, _1, _1, _1>();
+  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, void, is<_3>>>();
+  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, void, is<_3>>, void, void>();
+  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, _1, is<_3>, listify, bad_function>>();
+  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, _1, is<_3>, bad_function>, void, void>();
+  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, _1, is<_3>, void>>();
+  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, _1, is<_3>, void>, _3>();
+  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, _1, always<void>>, void, void>();
+  ut::not_invocable<smp::partial_search_before_extended_by_n<_1, _1, void>, void, void>();
+  ut::not_invocable<smp::partial_search_before_extended_by_n<void, _1, is<_3>>>();
 }
 
 TEST_SUITE_END()

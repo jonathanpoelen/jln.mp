@@ -87,25 +87,8 @@ namespace jln::mp
 
 
 #include <jln/mp/number/number.hpp>
-#include <jln/mp/algorithm/starts_with.hpp>
-#include <jln/mp/algorithm/ends_with.hpp>
 
 /// \cond
-namespace jln::mp
-{
-  // optimize index_if_xs with starts_with
-  template<class... Ts, class C, class TC, class FC>
-  struct index_if_xs<starts_with<list<Ts...>, C>, TC, FC>
-  : partial_index_if_xs_c<-int_(sizeof...(Ts))-1, starts_with<list<Ts...>, C>, TC, FC>
-  {};
-
-  // optimize index_if_xs with ends_with
-  template<class... Ts, class C, class TC, class FC>
-  struct index_if_xs<ends_with<list<Ts...>, C>, TC, FC>
-  : partial_index_if_xs_c<-int_(sizeof...(Ts))-1, ends_with<list<Ts...>, C>, TC, FC>
-  {};
-}
-
 namespace jln::mp::detail
 {
   template<>

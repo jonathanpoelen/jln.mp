@@ -242,6 +242,22 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
+  test_context<
+    partial_drop_while_xs_c<-2, front<equal_to_c<3>>>,
+    smp::partial_drop_while_xs_c<-2, smp::front<smp::equal_to_c<3>>>
+  >()
+    .test<list<>>()
+    .test<list<>, void>()
+    .test<list<>, _3>()
+    .test<list<>, _3, _3>()
+    .test<list<>, _3, _3, _3>()
+    .test<list<>, _3, _3, _3, _3>()
+    .test<list<>, _3, _3, _3, _1>()
+    .test<seq_1_1, _3, _3, _1, _1>()
+    .test<seq_1_1_1, _3, _1, _1, _1>()
+    .not_invocable<void, void>()
+    ;
+
   ut::not_invocable<smp::partial_drop_while_xs<_2, smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::partial_drop_while_xs<smp::always<na>, smp::always<na>>>();
   ut::not_invocable<smp::partial_drop_while_xs<is<_3>, bad_function>>();
