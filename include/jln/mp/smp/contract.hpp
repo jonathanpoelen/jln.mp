@@ -261,6 +261,39 @@ namespace jln::mp::detail
   jln::mp::smp, jln::mp::detail, smp_##name, name, a, b, c, d, __VA_ARGS__)
 
 
+#define JLN_MP_MAKE_REGULAR_SMP5_II(                                              \
+  ns_smp, ns_detail, smp_name, name, na, nb, nc, nd, ne, da, db, dc, dd, de, ...) \
+  namespace ns_detail {                                                           \
+    template<class na, class nb, class nc, class nd, class ne, class = void>      \
+    struct smp_name {};                                                           \
+    template<class na, class nb, class nc, class nd, class ne>                    \
+    struct smp_name<na, nb, nc, nd, ne, std::void_t<__VA_ARGS__>>                 \
+    { using type = __VA_ARGS__; };                                                \
+  }                                                                               \
+  namespace ns_smp {                                                              \
+    template<class da, class db, class dc, class dd, class de>                    \
+    using name = decltype(::jln::mp::detail::lazy_build<                          \
+      ::ns_detail::smp_name<na, nb, nc, nd, ne>>(1));                             \
+  }
+
+#define JLN_MP_MAKE_REGULAR_SMP5_I(                                               \
+  ns_smp, ns_detail, smp_name, name, na, nb, nc, nd, ne, da, db, dc, dd, de, ...) \
+  JLN_MP_MAKE_REGULAR_SMP5_II(                                                    \
+    ns_smp, ns_detail, smp_name, name, na, nb, nc, nd, ne, da, db, dc, dd, de, __VA_ARGS__)
+
+#define JLN_MP_MAKE_REGULAR_SMP5(ns_smp, ns_detail, smp_name, name, a, b, c, d, e, ...) \
+  JLN_MP_MAKE_REGULAR_SMP5_I(ns_smp, ns_detail, smp_name, name,                         \
+    JLN_MP_PARAM_NAME(a), JLN_MP_PARAM_NAME(b),                                         \
+    JLN_MP_PARAM_NAME(c), JLN_MP_PARAM_NAME(d),                                         \
+    JLN_MP_PARAM_NAME(e),                                                               \
+    JLN_MP_PARAM_DECL(a), JLN_MP_PARAM_DECL(b),                                         \
+    JLN_MP_PARAM_DECL(c), JLN_MP_PARAM_DECL(d),                                         \
+    JLN_MP_PARAM_DECL(e), __VA_ARGS__)
+
+#define JLN_MP_MAKE_REGULAR_SMP5_P(name, a, b, c, d, e, ...) JLN_MP_MAKE_REGULAR_SMP5( \
+  jln::mp::smp, jln::mp::detail, smp_##name, name, a, b, c, d, e, __VA_ARGS__)
+
+
   template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, contract<C>>
   {

@@ -69,6 +69,37 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  test_pack2<take_while_extended_by_n, _1, is<int>>();
+  test_pack3<take_while_extended_by_n, _1>();
+
+  test_context<
+    take_while_extended_by_n_c<2, is_not<_3>>,
+    smp::take_while_extended_by_n_c<2, smp::is_not<_3>>
+  >()
+    .test<list<>>()
+    .test<seq_3, _3>()
+    .test<seq_3_2, _3, _2>()
+    .test<seq_3_2, _3, _2, _1>()
+    .test<seq_4_3_2, _4, _3, _2, _1>()
+    .test<seq_0, _0>()
+    .test<seq_0_1, _0, _1>()
+    .test<seq_0_1_2, _0, _1, _2>()
+    .test<seq_0_1_2_3, _0, _1, _2, _3>()
+    ;
+
+  ut::not_invocable<smp::take_while_extended_by_n_c<2, smp::always<na>>, _1, _1, _1>();
+  ut::not_invocable<smp::take_while_extended_by_n_c<2, is_not<_3>, bad_function>>();
+  ut::not_invocable<smp::take_while_extended_by_n_c<2, is_not<_3>, bad_function>, void>();
+  ut::not_invocable<smp::take_while_extended_by_n_c<2, is_not<_3>, void>>();
+  ut::not_invocable<smp::take_while_extended_by_n_c<2, always<void>>, void>();
+  ut::not_invocable<smp::take_while_extended_by_n_c<2, void>, void>();
+}
+
+TEST()
+{
+  using namespace jln::mp;
+  using namespace ut::ints;
+
   test_pack2<take_inclusive_while, is<int>>();
   test_pack3<take_inclusive_while>();
 

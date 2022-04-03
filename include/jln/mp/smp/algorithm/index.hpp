@@ -52,8 +52,8 @@ namespace jln::mp::smp
   template<class Pred, class TC = identity, class FC = size<>>
   using index_if_xs = contract<mp::invoke_twice<
     mp::drop_while_xs<
-      concepts::predicate<subcontract<Pred>, mp::not_<>>,
-      detail::smp_index_if_cond<subcontract<Pred>, TC>,
+      concepts::predicate<assume_unary_or_more<Pred>, mp::not_<>>,
+      detail::smp_index_if_cond<assume_unary_or_more<Pred>, TC>,
       mp::always<subcontract<FC>>
     >
   >>;
@@ -62,8 +62,8 @@ namespace jln::mp::smp
   using partial_index_if_xs_c = contract<mp::invoke_twice<
     mp::partial_drop_while_xs_c<
       OffsetEnd,
-      concepts::predicate<subcontract<Pred>, mp::not_<>>,
-      detail::smp_index_if_cond<subcontract<Pred>, TC>,
+      concepts::predicate<assume_unary_or_more<Pred>, mp::not_<>>,
+      detail::smp_index_if_cond<assume_unary_or_more<Pred>, TC>,
       mp::always<subcontract<FC>>
     >
   >>;
