@@ -1,13 +1,20 @@
 #pragma once
 
-#include <jln/mp/list/front.hpp>
-#include <jln/mp/list/take_front.hpp>
-#include <jln/mp/utility/is.hpp>
-#include <jln/mp/utility/always.hpp>
-#include <jln/mp/utility/conditional.hpp>
+#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/functional/call.hpp>
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/list/list.hpp>
 
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    template<bool>
+    struct starts_with_impl;
+  }
+  /// \endcond
+
   /// \ingroup algorithm
 
   /// Checks if the \sequence begins with the given prefix.
@@ -28,20 +35,40 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      typename conditional_c<sizeof...(Ts) <= sizeof...(xs)>
-      ::template f<take_front_c<sizeof...(Ts), lift<list, is<list<Ts...>>>>,
-                   always<false_>>
-      ::template f<xs...>
+      typename detail::starts_with_impl<sizeof...(Ts) <= sizeof...(xs)>
+      ::template f<sizeof...(Ts), list<Ts...>, xs...>
     );
   };
 }
 
 /// \cond
+
+#include <jln/mp/list/take_front.hpp>
+#include <jln/mp/utility/is.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/algorithm/drop_while_xs.hpp>
 #include <jln/mp/algorithm/take_while_xs.hpp>
 #include <jln/mp/algorithm/index.hpp>
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/list/front.hpp>
+
+namespace jln::mp::detail
+{
+  template<>
+  struct starts_with_impl<true>
+  {
+    template<unsigned n, class L, class... xs>
+    using f = number<std::is_same<typename take_front_c<n>::template f<xs...>, L>::value>;
+  };
+
+  template<>
+  struct starts_with_impl<false>
+  {
+    template<unsigned n, class L, class... xs>
+    using f = false_;
+  };
+}
 
 namespace jln::mp
 {
