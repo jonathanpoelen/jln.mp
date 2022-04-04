@@ -22,7 +22,16 @@ struct foo
   }
 };
 
-constexpr struct { } noop {};
+struct bar
+{
+  template<class T, class U>
+  T operator()() const
+  {
+    return T{};
+  }
+};
+
+static constexpr struct { } noop {};
 
 TEST()
 {
@@ -30,10 +39,10 @@ TEST()
   using namespace ut::ints;
 
   (void)eval<noop, ut::unary>();
-  (void)eval<noop, ut::binary>();
   (void)eval<noop, ut::listify>();
   (void)eval<noop, ut::variadic>();
 
+  ut::not_invocable<eval<noop>>();
   ut::not_invocable<eval<noop>, int>();
 
   constexpr foo f;
@@ -45,9 +54,6 @@ TEST()
     .not_invocable<>()
     .not_invocable<int, int>()
     ;
-
-  ut::not_invocable<smp::eval<smp::always<na>>>();
-  ut::not_invocable<smp::eval<bad_function>>();
 }
 
 TEST_SUITE_END()
