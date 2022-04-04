@@ -16,7 +16,7 @@ TEST()
   using l1 = list<_1>;
   using l2 = list<_1, _2>;
 
-  test_pack2<before_after, l0>();
+  test_pack3<before_after, l0>();
   test_pack2<before_after, l1>();
   test_pack2<before_after, l2>();
   test_pack3<before_after>();

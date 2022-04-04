@@ -11,7 +11,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<contains, void>();
+  test_pack3<contains, void>();
 
   ut::same<true_, emp::contains<seq_0_1_2, _1>>();
   ut::same<false_, emp::contains<seq_0_1_2, _3>>();

@@ -15,7 +15,7 @@ TEST()
   ut::same<false_, emp::all_of<seq_0_1_2, to_bool<>>>();
   ut::same<true_, emp::all_of<seq_1_2_3, to_bool<>>>();
 
-  test_pack2<all_of, to_bool<>>();
+  test_pack3<all_of, to_bool<>>();
   test_pack2<all_of>();
 
   test_context<all_of<to_bool<>>, smp::all_of<smp::to_bool<>>>()

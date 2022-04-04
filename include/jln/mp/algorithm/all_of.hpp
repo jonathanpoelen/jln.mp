@@ -13,8 +13,8 @@ namespace jln::mp
   struct all_of
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(
-      xs, C,
+    using f = JLN_MP_CALL_TRACE(
+      C,
       typename detail::is_drop_while_continue<
         typename detail::_drop_while<sizeof...(xs)>
         ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
@@ -59,8 +59,8 @@ namespace jln::mp
   struct all_of<Pred, not_<C>>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(
-      xs, C,
+    using f = JLN_MP_CALL_TRACE(
+      C,
       number<!detail::is_drop_while_continue<
         typename detail::_drop_while<sizeof...(xs)>
         ::template f<0, JLN_MP_TRACE_F(Pred), xs...>

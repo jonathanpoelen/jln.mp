@@ -63,7 +63,7 @@ namespace jln::mp
   struct before_after2<list<>, SubC1, SubC2, TC, FC>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, TC,
+    using f = JLN_MP_CALL_TRACE(TC,
       JLN_MP_DCALL_TRACE_XS_0(xs, SubC1),
       JLN_MP_DCALL_TRACE_XS(xs, SubC2, xs...)
     );
