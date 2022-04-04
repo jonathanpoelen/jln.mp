@@ -16,10 +16,12 @@
 #include <jln/mp/functional/invoke_twice.hpp>
 #include <jln/mp/functional/is_invocable.hpp>
 #include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/make_id.hpp>
 #include <jln/mp/functional/memoize.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/functional/not_fn.hpp>
 #include <jln/mp/functional/partial.hpp>
+#include <jln/mp/functional/random.hpp>
 #include <jln/mp/functional/recursively.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/functional/try.hpp>

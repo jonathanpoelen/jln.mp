@@ -15,9 +15,11 @@
 #include <jln/mp/smp/functional/invoke_twice.hpp>
 #include <jln/mp/smp/functional/is_invocable.hpp>
 #include <jln/mp/smp/functional/lift.hpp>
+#include <jln/mp/smp/functional/make_id.hpp>
 #include <jln/mp/smp/functional/memoize.hpp>
 #include <jln/mp/smp/functional/not_fn.hpp>
 #include <jln/mp/smp/functional/partial.hpp>
+#include <jln/mp/smp/functional/random.hpp>
 #include <jln/mp/smp/functional/recursively.hpp>
 #include <jln/mp/smp/functional/sfinaefwd.hpp>
 #include <jln/mp/smp/functional/tee.hpp>

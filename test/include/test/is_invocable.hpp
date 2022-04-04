@@ -7,6 +7,8 @@ namespace ut
 {
 namespace
 {
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunused-template")
   template<class F, class... xs>
   void invocable()
   {
@@ -14,8 +16,6 @@ namespace
     (void)x;
   }
 
-  JLN_MP_DIAGNOSTIC_PUSH()
-  JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunused-template")
   template<class F, class... xs>
   void not_invocable()
   {
