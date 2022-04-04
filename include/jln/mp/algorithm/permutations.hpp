@@ -16,7 +16,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup group
 
   /// Generates all permutations of \sequence.
   /// \post sizeof...(result) == sizeof...(xs)!

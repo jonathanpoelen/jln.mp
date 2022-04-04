@@ -32,7 +32,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup group
 
   /// Fills a \sequence of \typelist to the longest size.
   /// \post `emp::size<result> == emp::max<emp::size<seqs>> && ...`

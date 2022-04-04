@@ -6,7 +6,7 @@
 
 namespace jln::mp
 {
-  /// \ingroup algorithm
+  /// \ingroup filter
 
   /// Removes elements that have a corresponding element in selectors to 0.
   /// \pre `emp::unpack<Selectors, listify> == Selectors`

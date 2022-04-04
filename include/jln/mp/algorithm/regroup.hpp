@@ -12,7 +12,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup group
 
   /// Group identical type together.
   /// Elements are sorted in order of first appearance.

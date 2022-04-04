@@ -5,7 +5,7 @@
 
 namespace jln::mp
 {
-  /// \ingroup algorithm
+  /// \ingroup group
 
   /// Computes all possible combinations (with repetition) from the elements in a \sequence.
   /// \treturn \sequence of \list

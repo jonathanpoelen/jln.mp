@@ -5,7 +5,7 @@
 
 namespace jln::mp
 {
-  /// \ingroup algorithm
+  /// \ingroup filter
 
   /// Copies all elements that satisfy a predicate.
   /// \treturn \sequence

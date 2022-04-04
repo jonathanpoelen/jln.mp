@@ -13,7 +13,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup group
 
   /// Computes the powerset of a \sequence.
   /// \semantics

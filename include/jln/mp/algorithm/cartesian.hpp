@@ -14,7 +14,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup group
 
   /// Computes the cartesian product of \lists.
   /// \pre `emp::is_list<seqs> && ...`

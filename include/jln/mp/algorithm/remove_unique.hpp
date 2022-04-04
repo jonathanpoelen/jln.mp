@@ -24,7 +24,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup filter
 
   /// Remove unique elements from a \sequence.
   /// \treturn \sequence

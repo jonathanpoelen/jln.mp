@@ -7,7 +7,7 @@
 
 namespace jln::mp
 {
-  /// \ingroup algorithm
+  /// \ingroup filter
 
   /// Removes all elements that satisfy a predicate.
   /// \treturn \sequence

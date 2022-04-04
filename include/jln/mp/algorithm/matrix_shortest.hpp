@@ -31,7 +31,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup group
 
   /// Truncates a \sequence of \typelist to the smallest size.
   /// \post `emp::size<result> == emp::min<emp::size<seqs>> && ...`

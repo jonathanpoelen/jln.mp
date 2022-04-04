@@ -14,7 +14,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup filter
 
   /// Removes each element in a \sequence which respect a predicate with privious element.
   /// \treturn \sequence
