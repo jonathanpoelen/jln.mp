@@ -91,6 +91,19 @@ namespace jln::mp
   };
 
 
+  template<class C>
+  struct optimized_starts_with_empty
+  {
+    using type = if_<size<>, always<true_, C>>;
+  };
+
+  template<>
+  struct optimized_starts_with_empty<identity>
+  {
+    using type = size<>;
+  };
+
+
   template<int_>
   struct optimized_index_if_xs_starts_with;
 
@@ -98,7 +111,7 @@ namespace jln::mp
   struct optimized_index_if_xs_starts_with<0>
   {
     template<class C, class TC, class FC, class... Ts>
-    using f = if_<if_<size<>, always<true_, C>>, always<number<0>, TC>, FC>;
+    using f = if_<typename optimized_starts_with_empty<C>::type, always<number<0>, TC>, FC>;
   };
 
   template<>
@@ -131,7 +144,7 @@ namespace jln::mp
   struct optimized_drop_while_starts_with<0>
   {
     template<class C, class TC, class FC, class... Ts>
-    using f = if_<if_<size<>, always<true_, C>>, clear<TC>, FC>;
+    using f = if_<typename optimized_starts_with_empty<C>::type, clear<TC>, FC>;
   };
 
   template<>
@@ -163,7 +176,7 @@ namespace jln::mp
   struct optimized_take_while_starts_with<0>
   {
     template<class C, class TC, class FC, class... Ts>
-    using f = if_<if_<size<>, always<true_, C>>, TC, FC>;
+    using f = if_<typename optimized_starts_with_empty<C>::type, TC, FC>;
   };
 
   template<>
@@ -195,7 +208,7 @@ namespace jln::mp
   struct optimized_take_while_extended_by_n_starts_with<0>
   {
     template<std::size_t ExtendedByN, class C, class TC, class FC, class... Ts>
-    using f = if_<if_<size<>, always<true_, C>>, TC, FC>;
+    using f = if_<typename optimized_starts_with_empty<C>::type, TC, FC>;
   };
 
   template<>
