@@ -23,15 +23,6 @@ namespace jln::mp
     using f = JLN_MP_DCALL_TRACE_XS(xs, F, BoundArgs..., xs...);
   };
 
-  template<class F, class... BoundArgs>
-  struct bind_front_v
-  {
-    template<class... xs>
-    using f = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
-      ::template f<JLN_MP_TRACE_F(F), ::jln::mp::detail::too_many_arguments_error>
-      ::template f<BoundArgs::value..., xs::value...>;
-  };
-
 #if __cplusplus >= 201703L
   template<class F, JLN_MP_TPL_AUTO_OR_INT... BoundArgs>
   using bind_front_c = bind_front<F, val<BoundArgs>...>;
@@ -44,8 +35,13 @@ namespace jln::mp
   struct bind_front_v_c
   {
     template<class... xs>
-    using f = typename F::template f<BoundArgs..., xs::value...>;
+    using f = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
+      ::template f<F, ::jln::mp::detail::too_many_arguments_error>
+      ::template f<BoundArgs..., xs::value...>;
   };
+
+  template<class F, class... BoundArgs>
+  using bind_front_v = bind_front_v_c<F, BoundArgs::value...>;
 
   namespace emp
   {

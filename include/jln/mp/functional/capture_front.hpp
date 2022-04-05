@@ -23,13 +23,6 @@ namespace jln::mp
     using f = JLN_MP_DCALL_TRACE_XS(xs, F, BoundArgs..., xs...);
   };
 
-  template<class... BoundArgs>
-  struct capture_front_v
-  {
-    template<class F, class... xs>
-    using f = typename F::template f<BoundArgs::value..., xs::value...>;
-  };
-
 #if __cplusplus >= 201703L
   template<JLN_MP_TPL_AUTO_OR_INT... BoundArgs>
   using capture_front_c = capture_front<val<BoundArgs>...>;
@@ -44,6 +37,9 @@ namespace jln::mp
     template<class F, class... xs>
     using f = typename F::template f<BoundArgs..., xs::value...>;
   };
+
+  template<class... BoundArgs>
+  using capture_front_v = capture_front_v_c<BoundArgs::value...>;
 
   namespace emp
   {

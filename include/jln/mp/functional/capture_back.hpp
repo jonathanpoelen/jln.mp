@@ -3,6 +3,7 @@
 #include <jln/mp/value/val.hpp>
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/functional/call.hpp>
 
 namespace jln::mp
@@ -23,13 +24,6 @@ namespace jln::mp
     using f = JLN_MP_DCALL_TRACE_XS(xs, F, xs..., BoundArgs...);
   };
 
-  template<class... BoundArgs>
-  struct capture_back_v
-  {
-    template<class F, class... xs>
-    using f = typename JLN_MP_TRACE_F(F)::template f<xs::value..., BoundArgs::value...>;
-  };
-
 #if __cplusplus >= 201703L
   template<JLN_MP_TPL_AUTO_OR_INT... BoundArgs>
   using capture_back_c = capture_back<val<BoundArgs>...>;
@@ -42,8 +36,11 @@ namespace jln::mp
   struct capture_back_v_c
   {
     template<class F, class... xs>
-    using f = typename JLN_MP_TRACE_F(F)::template f<xs::value..., BoundArgs...>;
+    using f = typename F::template f<xs::value..., BoundArgs...>;
   };
+
+  template<class... BoundArgs>
+  using capture_back_v = capture_back_v_c<BoundArgs::value...>;
 
   namespace emp
   {

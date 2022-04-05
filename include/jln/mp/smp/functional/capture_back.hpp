@@ -3,24 +3,10 @@
 #include <jln/mp/smp/contract.hpp>
 #include <jln/mp/functional/capture_back.hpp>
 
-/// \cond
-namespace jln::mp::detail
-{
-  template<class... xs>
-  decltype(((void(xs::value), ...), try_contract<mp::capture_back_v<xs...>>{}))
-  smp_capture_back_v(xs*...);
-
-  bad_contract smp_capture_back_v(...);
-}
-/// \endcond
-
 namespace jln::mp::smp
 {
   template<class... xs>
   using capture_back = try_contract<mp::capture_back<xs...>>;
-
-  template<class... xs>
-  using capture_back_v = decltype(detail::smp_capture_back_v(static_cast<xs*>(nullptr)...));
 
 #if __cplusplus >= 201703L
   template<JLN_MP_TPL_AUTO_OR_INT... xs>
@@ -32,6 +18,13 @@ namespace jln::mp::smp
 
   template<JLN_MP_TPL_AUTO_OR_INT... xs>
   using capture_back_v_c = try_contract<mp::capture_back_v_c<xs...>>;
+
+  template<class... xs>
+  using capture_back_v = typename try_<
+    mp::lift<mp::capture_back_v, mp::lift<try_contract>>,
+    mp::identity,
+    always<bad_contract>
+  >::template f<xs...>;
 }
 
 /// \cond
@@ -41,12 +34,6 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, capture_back<xs...>>
   {
     using type = smp::capture_back<xs...>;
-  };
-
-  template<template<class> class sfinae, class... xs>
-  struct _sfinae<sfinae, capture_back_v<xs...>>
-  {
-    using type = smp::capture_back_v<xs...>;
   };
 
   template<template<class> class sfinae, JLN_MP_TPL_AUTO_OR_INT... xs>
