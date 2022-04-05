@@ -6,12 +6,14 @@
 
 namespace jln::mp
 {
+  /// \ingroup filter
+
   /// List unique elements, preserving order.
   /// Remember only the element just seen.
   /// \semantics
   ///   \code
   ///   unique_justseen_by<same<>>::f<void, void, int, void>
-  ///   == list<void, int, void>
+  ///     == list<void, int, void>
   ///   \endcode
   /// \treturn \sequence
   template<class Cmp, class C = listify>
