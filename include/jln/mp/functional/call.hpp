@@ -81,8 +81,11 @@ using call = typename detail::memoizer_impl<C, list<xs...>>::type;
 #  define JLN_MP_DCALL_TRACE_XS(xs, C, ...) \
     typename ::jln::mp::detail::memoizer_impl<C, ::jln::mp::list<__VA_ARGS__>>::type
 
-#  define JLN_MP_DCALL_TRACE_XS_0(xs, C) \
-    typename ::jln::mp::detail::memoizer_impl<C, ::jln::mp::list<>>::type
+#  define JLN_MP_DCALL_TRACE_XS_0(xs, C)                                           \
+    typename ::jln::mp::detail::memoizer_impl<C,                                   \
+      typename ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>   \
+      ::template f<::jln::mp::list<>, ::jln::mp::detail::too_many_arguments_error> \
+    >::type
 
 #  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) \
     ::jln::mp::detail::memoizer_impl<C, ::jln::mp::list<__VA_ARGS__>>::type::value
