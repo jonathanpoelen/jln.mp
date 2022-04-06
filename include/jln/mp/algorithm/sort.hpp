@@ -74,7 +74,10 @@ namespace jln::mp::detail
   };
 
   template<bool>
-  struct mk_list2
+  struct mk_list2;
+
+  template<>
+  struct mk_list2<false>
   {
     template<class... xs>
     using f = list<xs...>;
