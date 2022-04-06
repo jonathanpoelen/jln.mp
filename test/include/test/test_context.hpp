@@ -8,6 +8,12 @@
 #include "jln/mp/functional/lift.hpp"
 #include "jln/mp/smp/functional/sfinaefwd.hpp"
 
+namespace jln::mp
+{
+  template<class C>
+  struct contract;
+}
+
 namespace ut
 {
   using jln::mp::detail::sfinae;
@@ -39,6 +45,18 @@ namespace ut
     };
   }
 
+  template<class>
+  struct is_contract
+  {
+    static constexpr bool value = false;
+  };
+
+  template<class T>
+  struct is_contract<::jln::mp::contract<T>>
+  {
+    static constexpr bool value = true;
+  };
+
   // 1: check Smp == sfinae<Mp>
   // 0: check Smp != sfinae<Mp>
   // -1: not sfinae<Mp>
@@ -47,6 +65,7 @@ namespace ut
   {
     static_assert(detail::same_smp<(VerifySfinae > 0), typename detail::maybe_sfinae<(VerifySfinae >= 0), Mp>::type, Smp>::value);
     static_assert((same<Smp, sfinae<Smp>>(), 1));
+    static_assert(is_contract<Smp>::value);
 
     template<class R, class... xs>
     static test_context test()
