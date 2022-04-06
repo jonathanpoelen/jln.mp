@@ -82,6 +82,8 @@ namespace jln::mp
 
 /// \cond
 #include <jln/mp/detail/unpack.hpp>
+#include <jln/mp/list/is_list.hpp>
+#include <jln/mp/algorithm/all_of.hpp>
 
 namespace jln::mp::detail
 {
@@ -108,6 +110,12 @@ namespace jln::mp::detail
 #define JLN_MP_MAKE_EXPECTED_ARGUMENT2(expected, name) \
   template<class F, class C>                           \
   struct expected_argument<name<F, C>>                 \
+  : number<expected>                                   \
+  {}
+
+#define JLN_MP_MAKE_EXPECTED_ARGUMENT3(expected, name) \
+  template<class G, class F, class C>                  \
+  struct expected_argument<name<G, F, C>>              \
   : number<expected>                                   \
   {}
 
@@ -164,5 +172,29 @@ namespace jln::mp::detail
   JLN_MP_MK_ASSUME(binary_or_more);
 
 #undef JLN_MP_MK_ASSUME
+
+  template<class TC>
+  struct _assume_lists<if_<mp::all_of<mp::is_list<>>, TC, violation>>
+  {
+    using type = TC;
+  };
+
+  template<class TC>
+  struct _assume_unary_or_more<if_<mp::size<>, TC, violation>>
+  {
+    using type = TC;
+  };
+
+  template<class TC>
+  struct _assume_unary<if_<mp::size<mp::is<number<1>>>, TC, violation>>
+  {
+    using type = TC;
+  };
+
+  template<class TC>
+  struct _assume_binary<if_<mp::size<mp::is<number<2>>>, TC, violation>>
+  {
+    using type = TC;
+  };
 }
 /// \endcond

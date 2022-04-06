@@ -25,6 +25,7 @@ TEST()
     .not_invocable<dummy, dummy>()
     ;
 
+  ut::not_invocable<smp::value_type<smp::value_type<>>, dummy>();
   ut::not_invocable<smp::value_type<bad_function>>();
   ut::not_invocable<smp::value_type<bad_function>, int>();
   ut::not_invocable<smp::value_type<bad_function>, dummy>();

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/contract.hpp>
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/functional/monadic.hpp>
@@ -36,5 +37,8 @@ namespace jln::mp::detail
   {
     using type = smp::right_matrix_longest_with<FillValue, sfinae<F>, sfinae<C>>;
   };
+
+  JLN_MP_MAKE_EXPECTED_ARGUMENT3(argument_category::lists, left_matrix_longest_with);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT3(argument_category::lists, right_matrix_longest_with);
 }
 /// \endcond

@@ -17,5 +17,9 @@ namespace jln::mp::detail
   {
     using type = smp::is_specialization_of<Tpl, sfinae<C>>;
   };
+
+  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::unary,
+    (template<class...> class Tpl, class C),
+    (is_specialization_of<Tpl, C>));
 }
 /// \endcond

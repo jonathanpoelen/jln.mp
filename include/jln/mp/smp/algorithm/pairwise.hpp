@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using pairwise = contract<pairwise<subcontract<C>>>;
+  using pairwise = contract<mp::pairwise<subcontract<C>>>;
 }
 
 /// \cond

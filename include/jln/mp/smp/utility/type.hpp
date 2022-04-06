@@ -18,7 +18,5 @@ namespace jln::mp::detail
   {
     using type = smp::type_<sfinae<C>>;
   };
-
-  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, type_);
 }
 /// \endcond

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/smp/assume.hpp>
 #include <jln/mp/list/front.hpp>
 
 namespace jln::mp::smp
@@ -17,5 +18,7 @@ namespace jln::mp::detail
   {
     using type = smp::front<sfinae<C>>;
   };
+
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary_or_more, front);
 }
 /// \endcond

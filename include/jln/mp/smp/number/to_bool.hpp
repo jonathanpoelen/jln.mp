@@ -18,7 +18,5 @@ namespace jln::mp::detail
   {
     using type = smp::to_bool<sfinae<C>>;
   };
-
-  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, to_bool);
 }
 /// \endcond
