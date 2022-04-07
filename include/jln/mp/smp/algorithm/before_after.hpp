@@ -14,7 +14,7 @@ namespace jln::mp::smp
   using before_after_with = typename mp::conditional_c<detail::_is_list<Seq>::type::value>
     ::template f<
       contract<mp::before_after_with<Seq, subcontract<SubC1>, subcontract<SubC2>,
-               subcontract<TC>, subcontract<FC>>>,
+               assume_binary<TC>, subcontract<FC>>>,
       bad_contract
     >;
 

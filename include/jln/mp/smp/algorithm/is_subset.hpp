@@ -14,11 +14,11 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using is_subset = try_contract<detail::seqs_to_list<mp::is_subset<assume_number<C>>>>;
+  using is_subset = try_contract<detail::seqs_to_list<mp::is_subset<assume_positive_number<C>>>>;
 
   template<class Equal = lift<std::is_same>, class C = identity>
   using is_subset_with = typename detail::mk_smp_is_subset_with<Equal>
-    ::template f<assume_number<C>>;
+    ::template f<assume_positive_number<C>>;
 }
 
 

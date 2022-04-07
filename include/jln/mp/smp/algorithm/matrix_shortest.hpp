@@ -13,14 +13,14 @@ namespace jln::mp::smp
     mp::left_matrix_shortest_with<subcontract<F>, monadic_xs<subcontract<C>>>>;
 
   template<class C = listify>
-  using left_matrix_shortest = left_matrix_shortest_with<listify, C>;
+  using left_matrix_shortest = left_matrix_shortest_with<listify, assume_lists_barrier<C>>;
 
   template<class F = listify, class C = listify>
   using right_matrix_shortest_with = try_contract<
     mp::right_matrix_shortest_with<subcontract<F>, monadic_xs<subcontract<C>>>>;
 
   template<class C = listify>
-  using right_matrix_shortest = right_matrix_shortest_with<listify, C>;
+  using right_matrix_shortest = right_matrix_shortest_with<listify, assume_lists_barrier<C>>;
 }
 
 /// \cond

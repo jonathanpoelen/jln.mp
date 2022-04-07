@@ -12,14 +12,14 @@ namespace jln::mp::smp
     mp::size<>,
     mp::partial_fold_left_xs_c<
       OffsetEnd,
-      mp::monadic_xs<subcontract<F>>,
+      mp::monadic_xs<assume_binary_or_more<F>>,
       mp::monadic<assume_unary<C>>>>;
 
   template<class F, class C = identity>
   using fold_left_xs = test_contract<
     mp::size<>,
     mp::fold_left_xs<
-      mp::monadic_xs<subcontract<F>>,
+      mp::monadic_xs<assume_binary_or_more<F>>,
       mp::monadic<assume_unary<C>>>>;
 }
 

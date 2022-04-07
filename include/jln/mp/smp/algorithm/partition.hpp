@@ -20,7 +20,7 @@ namespace jln::mp::smp
       assume_unary<Pred>, subcontract<F>, subcontract<C>>>;
 
   template<class Pred, class C = listify>
-  using partition = partition_with<Pred, listify, C>;
+  using partition = partition_with<Pred, listify, assume_lists_barrier<C>>;
 }
 
 

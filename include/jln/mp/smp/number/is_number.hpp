@@ -7,7 +7,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using is_number = try_contract<mp::is_number<assume_unary<C>>>;
+  using is_number = try_contract<mp::is_number<assume_positive_number<C>>>;
 }
 
 /// \cond

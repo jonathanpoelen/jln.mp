@@ -14,5 +14,5 @@ namespace jln::mp::smp
   using find_if_not = drop_while<Pred, TC, FC>;
 
   template<class T, class TC = listify, class FC = clear<TC>>
-  using find = contract<mp::find<T, subcontract<TC>, subcontract<FC>>>;
+  using find = contract<mp::find<T, assume_unary_or_more<TC>, subcontract<FC>>>;
 }

@@ -15,7 +15,7 @@ namespace jln::mp::traits
   struct Name                                     \
   {                                               \
     template<class... xs>                         \
-    using f = JLN_MP_CALL_TRACE(C,              \
+    using f = JLN_MP_CALL_TRACE(C,                \
       typename std::Name<xs...>::type);           \
   };                                              \
                                                   \

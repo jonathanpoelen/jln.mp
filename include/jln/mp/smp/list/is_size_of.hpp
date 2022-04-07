@@ -8,7 +8,7 @@
 namespace jln::mp::smp
 {
   template<int_ n, class C = identity>
-  using is_size_of_c = contract<mp::is_size_of_c<n, assume_number<C>>>;
+  using is_size_of_c = contract<mp::is_size_of_c<n, assume_positive_number<C>>>;
 }
 
 JLN_MP_MAKE_REGULAR_SMP2_P(is_size_of, (N), (C, smp::identity), smp::is_size_of_c<N::value, C>)

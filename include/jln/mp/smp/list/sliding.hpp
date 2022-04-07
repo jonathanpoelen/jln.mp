@@ -1,16 +1,17 @@
 #pragma once
 
+#include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/list/sliding.hpp>
 
 namespace jln::mp::smp
 {
   template<int_ size, class C = listify>
-  using sliding_c = try_contract<mp::sliding_c<size, subcontract<C>>>;
+  using sliding_c = try_contract<mp::sliding_c<size, assume_lists<C>>>;
 
   template<int_ size, int_ stride, class C = listify>
   using sliding_with_stride_c = try_contract<
-    mp::sliding_with_stride_c<size, stride, subcontract<C>>>;
+    mp::sliding_with_stride_c<size, stride, assume_lists<C>>>;
 }
 
 JLN_MP_MAKE_REGULAR_SMP2_P(sliding, (size), (C, smp::listify),

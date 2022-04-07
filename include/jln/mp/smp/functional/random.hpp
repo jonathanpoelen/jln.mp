@@ -9,7 +9,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using random = contract<mp::random<assume_unary<C>>>;
+  using random = contract<mp::random<assume_positive_number<C>>>;
 }
 
 /// \cond
@@ -18,7 +18,7 @@ namespace jln::mp::detail
   template<template<class> class sfinae, class C, auto v>
   struct _sfinae<sfinae, random<C, v>>
   {
-    using type = contract<mp::random<assume_unary<C>, v>>;
+    using type = contract<mp::random<assume_positive_number<C>, v>>;
   };
 
   template<class C, auto v>

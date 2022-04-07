@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using sizeof_ = try_contract<mp::sizeof_<assume_unary<C>>>;
+  using sizeof_ = try_contract<mp::sizeof_<assume_positive_number<C>>>;
 }
 
 /// \cond

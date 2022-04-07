@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using as_bool = try_contract<mp::as_bool<assume_number<C>>>;
+  using as_bool = try_contract<mp::as_bool<assume_positive_number<C>>>;
 }
 
 /// \cond

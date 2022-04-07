@@ -10,7 +10,7 @@ namespace jln::mp::smp
 {
   template<class Seq, class C = identity>
   using ends_with = typename mp::conditional_c<detail::_is_list<Seq>::type::value>
-    ::template f<contract<mp::ends_with<Seq, assume_number<C>>>, bad_contract>;
+    ::template f<contract<mp::ends_with<Seq, assume_positive_number<C>>>, bad_contract>;
 }
 
 /// \cond

@@ -14,13 +14,13 @@ namespace jln::mp::smp
   using is_sorted = contract<
     mp::if_<
       mp::size<mp::less_than_c<2>>,
-      always<mp::number<1>, C>,
+      always<mp::number<1>, assume_positive_number_barrier<C>>,
       mp::tee<
         mp::pop_front<>,
         mp::rotate_c<-1, mp::pop_front<>>,
         mp::zip_with<
           try_assume_binary<Cmp>,
-          mp::try_<mp::or_<mp::not_<try_assume_unary<C>>>>
+          mp::try_<mp::or_<mp::not_<try_assume_positive_number<C>>>>
         >
       >
     >

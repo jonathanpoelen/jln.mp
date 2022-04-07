@@ -8,12 +8,12 @@ namespace jln::mp::smp
 {
   template<class F, class C = identity>
   using fold_tree = contract<mp::fold_tree<
-    mp::monadic_xs<subcontract<F>>,
+    mp::monadic_xs<assume_binary<F>>,
     mp::monadic_xs<subcontract<C>>>>;
 
   template<class F, class C = identity>
   using fold_balanced_tree = contract<mp::fold_balanced_tree<
-    mp::monadic_xs<subcontract<F>>,
+    mp::monadic_xs<assume_binary<F>>,
     mp::monadic_xs<subcontract<C>>>>;
 }
 

@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using alignof_ = try_contract<mp::alignof_<assume_unary<C>>>;
+  using alignof_ = try_contract<mp::alignof_<assume_positive_number<C>>>;
 }
 
 /// \cond

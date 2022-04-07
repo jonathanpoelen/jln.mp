@@ -9,10 +9,10 @@
 namespace jln::mp::smp
 {
   template<class Tag, class C = identity>
-  using make_id_for = try_contract<mp::make_id_for<Tag, assume_unary<C>>>;
+  using make_id_for = try_contract<mp::make_id_for<Tag, assume_positive_number<C>>>;
 
   template<class C = identity>
-  using make_id = try_contract<mp::make_id_for<default_make_id_tag, assume_unary<C>>>;
+  using make_id = try_contract<mp::make_id_for<default_make_id_tag, assume_positive_number<C>>>;
 }
 
 /// \cond

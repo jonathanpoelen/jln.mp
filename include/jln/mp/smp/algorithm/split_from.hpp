@@ -1,5 +1,6 @@
 #pragma once
 
+#include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/algorithm/split_from.hpp>
 #include <jln/mp/functional/invoke_twice.hpp>
@@ -24,7 +25,7 @@ namespace jln::mp::smp
   template<class GetIndex, class C = listify>
   using split_from = contract<mp::invoke_twice<mp::tee<
     subcontract<GetIndex>,
-    detail::_smp_split_from<mp::listify, mp::listify, subcontract<C>>
+    detail::_smp_split_from<mp::listify, mp::listify, assume_lists<C>>
   >>>;
 }
 

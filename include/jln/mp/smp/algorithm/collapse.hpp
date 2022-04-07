@@ -7,7 +7,7 @@
 namespace jln::mp::smp
 {
   template<class Keys, class C = listify>
-  using collapse = try_contract<collapse<Keys, assume_lists<C>>>;
+  using collapse = try_contract<mp::collapse<Keys, assume_lists<C>>>;
 
   template<class... Keys>
   using collapse_for = collapse<mp::list<Keys...>>;

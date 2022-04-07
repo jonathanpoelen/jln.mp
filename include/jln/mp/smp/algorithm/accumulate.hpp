@@ -36,7 +36,7 @@ namespace jln::mp::smp
         >
       >
     >,
-    detail::_smp_accumulate<subcontract<F>, assume_unary<C>>>;
+    detail::_smp_accumulate<assume_binary<F>, assume_unary<C>>>;
 }
 
 /// \cond

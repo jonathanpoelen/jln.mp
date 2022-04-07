@@ -7,7 +7,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using has_value_type = try_contract<mp::has_value_type<assume_unary<C>>>;
+  using has_value_type = try_contract<mp::has_value_type<assume_positive_number<C>>>;
 }
 
 /// \cond

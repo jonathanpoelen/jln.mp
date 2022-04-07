@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using same = contract<mp::same<assume_unary<C>>>;
+  using same = contract<mp::same<assume_positive_number<C>>>;
 }
 
 /// \cond

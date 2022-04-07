@@ -1,12 +1,13 @@
 #pragma once
 
+#include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/algorithm/pairwise.hpp>
 
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using pairwise = contract<mp::pairwise<subcontract<C>>>;
+  using pairwise = contract<mp::pairwise<assume_lists<C>>>;
 }
 
 /// \cond

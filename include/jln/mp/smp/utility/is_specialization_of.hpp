@@ -6,7 +6,7 @@
 namespace jln::mp::smp
 {
   template<template<class...> class Tpl, class C = identity>
-  using is_specialization_of = try_contract<mp::is_specialization_of<Tpl, assume_unary<C>>>;
+  using is_specialization_of = try_contract<mp::is_specialization_of<Tpl, assume_positive_number<C>>>;
 }
 
 /// \cond

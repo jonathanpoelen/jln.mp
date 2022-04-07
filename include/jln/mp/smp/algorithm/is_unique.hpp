@@ -10,11 +10,11 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using is_unique = contract<mp::is_unique<assume_number<C>>>;
+  using is_unique = contract<mp::is_unique<assume_positive_number<C>>>;
 
   template<class Cmp = contract<mp::lift<std::is_same>>, class C = identity>
   using is_unique_if = detail::sfinae<mp::is_unique_if<
-    assume_binary_barrier<Cmp>, assume_unary_barrier<C>>>;
+    assume_binary_barrier<Cmp>, assume_positive_number_barrier<C>>>;
 }
 
 

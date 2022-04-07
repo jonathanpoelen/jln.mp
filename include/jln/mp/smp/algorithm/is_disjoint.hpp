@@ -18,11 +18,11 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using is_disjoint = try_contract<detail::seqs_to_list<mp::is_disjoint<assume_number<C>>>>;
+  using is_disjoint = try_contract<detail::seqs_to_list<mp::is_disjoint<assume_positive_number<C>>>>;
 
   template<class Equal = lift<std::is_same>, class C = identity>
   using is_disjoint_with = typename detail::mk_smp_is_disjoint_with<Equal>
-    ::template f<assume_number<C>>;
+    ::template f<assume_positive_number<C>>;
 }
 
 

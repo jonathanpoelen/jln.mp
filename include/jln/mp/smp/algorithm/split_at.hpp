@@ -18,7 +18,7 @@ namespace jln::mp::smp
 {
   template<int_ i, class F = listify, class C = listify>
   using split_at_with_c = typename detail::mk_smp_split_at<i >= 0>
-    ::template f<i, C, mp::split_at_with_c, subcontract<F>>;
+    ::template f<i, C, mp::split_at_with_c, assume_binary<F>>;
 
   template<int_ i, class C = listify>
   using split_at_c = typename detail::mk_smp_split_at<i >= 0>

@@ -26,7 +26,7 @@ namespace jln::mp::detail
     mp::front<smp::concepts::predicate<assume_unary<Pred>, mp::always<true_>>>,
     mp::size<
       mp::push_back<
-        smp::sub<TC>,
+        smp::sub<assume_positive_number_barrier<TC>>,
         mp::compose_f<mp::push_back, mp::size>
       >
     >,

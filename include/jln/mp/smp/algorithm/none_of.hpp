@@ -7,7 +7,9 @@
 namespace jln::mp::smp
 {
   template<class Pred, class C = identity>
-  using none_of = drop_until<Pred, always<false_, C>, always<true_, C>>;
+  using none_of = drop_until<Pred,
+    always<false_, assume_positive_number_barrier<C>>,
+    always<true_, assume_positive_number_barrier<C>>>;
 }
 
 /// \cond

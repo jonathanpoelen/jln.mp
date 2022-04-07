@@ -59,12 +59,19 @@ namespace jln::mp
     try_<assume_unary_or_more<F>, TC, FC>>::type;
 
   template<class F, class TC = identity, class FC = violation>
+  using try_assume_positive_number = typename detail::_optimize_try_<
+    try_<assume_positive_number<F>, TC, FC>>::type;
+
+  template<class F, class TC = identity, class FC = violation>
   using try_assume_unary = typename detail::_optimize_try_<
     try_<assume_unary<F>, TC, FC>>::type;
 
   template<class F, class TC = identity, class FC = violation>
   using try_assume_binary = typename detail::_optimize_try_<
     try_<assume_binary<F>, TC, FC>>::type;
+
+  template<class F>
+  using assume_lists_barrier = contract<assume_lists<F>>;
 
   template<class F>
   using assume_unary_barrier = contract<assume_unary<F>>;
@@ -74,6 +81,9 @@ namespace jln::mp
 
   template<class F>
   using assume_number_barrier = contract<assume_number<F>>;
+
+  template<class F>
+  using assume_positive_number_barrier = contract<assume_positive_number<F>>;
 
   template<class F>
   using assume_binary_list_barrier = contract<assume_binary_list<F>>;
@@ -193,6 +203,12 @@ namespace jln::mp::detail
 
   template<class TC>
   struct _assume_binary<if_<mp::size<mp::is<number<2>>>, TC, violation>>
+  {
+    using type = TC;
+  };
+
+  template<class TC>
+  struct _assume_binary_or_more<if_<mp::size<mp::is<number<2>>>, TC, violation>>
   {
     using type = TC;
   };

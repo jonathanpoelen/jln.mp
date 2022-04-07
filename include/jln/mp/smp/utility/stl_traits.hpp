@@ -12,7 +12,7 @@ namespace jln::mp
   {                                                 \
     template <class C = identity>                   \
     using Name = try_contract<                      \
-      mp::traits::Name<subcontract<C>>>;            \
+      mp::traits::Name<assume_unary<C>>>;           \
   }                                                 \
                                                     \
   namespace detail                                  \
