@@ -9,18 +9,26 @@
 
 namespace jln::mp::smp
 {
+  template<class Seq, class SubC1 = listify, class SubC2 = SubC1,
+           class TC = listify, class FC = clear<TC>>
+  using before_after_with = typename mp::conditional_c<detail::_is_list<Seq>::type::value>
+    ::template f<
+      contract<mp::before_after_with<Seq, subcontract<SubC1>, subcontract<SubC2>,
+               subcontract<TC>, subcontract<FC>>>,
+      bad_contract
+    >;
+
   template<class Seq, class TC = listify, class FC = clear<TC>>
-  using before_after = typename mp::conditional_c<detail::_is_list<Seq>::type::value>
-    ::template f<contract<mp::before_after<Seq, subcontract<TC>, subcontract<FC>>>, bad_contract>;
+  using before_after = before_after_with<Seq, listify, listify, TC, FC>;
 }
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class Seq, class TC, class FC>
-  struct _sfinae<sfinae, before_after<Seq, TC, FC>>
+  template<template<class> class sfinae, class Seq, class SubC1, class SubC2, class TC, class FC>
+  struct _sfinae<sfinae, before_after_with<Seq, SubC1, SubC2, TC, FC>>
   {
-    using type = smp::before_after<Seq, sfinae<TC>, sfinae<FC>>;
+    using type = smp::before_after_with<Seq, sfinae<SubC1>, sfinae<SubC2>, sfinae<TC>, sfinae<FC>>;
   };
 }
 /// \endcond
