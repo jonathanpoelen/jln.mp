@@ -33,8 +33,17 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence of \list
   /// \see zip_longest
+#ifdef JLN_MP_DOXYGENATING
+  template<class C = listify>
+  struct zip
+  {
+    template<class... seqs>
+    using f;
+  };
+#else
   template<class C = listify>
   using zip = detail::_zip<detail::optimize_useless_transform_unpack_t<C>>;
+#endif
 
   template<class F = listify, class C = listify>
   using zip_with = zip<transform<unpack<F>, C>>;
