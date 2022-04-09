@@ -54,22 +54,6 @@ namespace jln::mp
   using assume_unary_or_more = typename detail::_assume_unary_or_more<subcontract<C>>::type;
 
 
-  template<class F, class TC = identity, class FC = violation>
-  using try_assume_unary_or_more = typename detail::_optimize_try_<
-    try_<assume_unary_or_more<F>, TC, FC>>::type;
-
-  template<class F, class TC = identity, class FC = violation>
-  using try_assume_positive_number = typename detail::_optimize_try_<
-    try_<assume_positive_number<F>, TC, FC>>::type;
-
-  template<class F, class TC = identity, class FC = violation>
-  using try_assume_unary = typename detail::_optimize_try_<
-    try_<assume_unary<F>, TC, FC>>::type;
-
-  template<class F, class TC = identity, class FC = violation>
-  using try_assume_binary = typename detail::_optimize_try_<
-    try_<assume_binary<F>, TC, FC>>::type;
-
   template<class F>
   using assume_lists_barrier = contract<assume_lists<F>>;
 

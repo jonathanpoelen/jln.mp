@@ -16,7 +16,7 @@ namespace jln::mp
   namespace detail
   {
     template<class C> struct _subcontract;
-    template<class x> struct _optimize_try_;
+    template<class x> struct _try_subcontract;
   }
 
   template<class C>
@@ -45,8 +45,7 @@ namespace jln::mp
   using subcontract = typename detail::_subcontract<C>::type;
 
   template<class F, class TC = identity, class FC = violation>
-  using try_subcontract = typename detail::_optimize_try_<
-    try_<subcontract<F>, TC, FC>>::type;
+  using try_subcontract = typename detail::_try_subcontract<F>::template f<TC, FC>;
 
   template<class F>
   using subcontract_barrier = contract<subcontract<F>>;
@@ -101,28 +100,50 @@ namespace jln::mp::detail
     using type = try_<F, TC, FC>;
   };
 
-  template<class x>
-  struct _optimize_try_
+  template<class F>
+  struct optimize_try
   {
-    using type = x;
+    using type = F;
   };
 
-  template<class F, class FC>
-  struct _optimize_try_<
-    try_<try_<F, identity, FC>, identity, FC>>
-  : _optimize_try_<try_<F, identity, FC>>
-  {};
+  template<class F>
+  struct _try_subcontract
+  {
+    template<class TC, class FC>
+    using f = try_<F, TC, FC>;
+  };
 
-  template<class F, class TC, class FC>
-  struct _optimize_try_<
-    try_<try_<F>, TC, FC>>
-  : _optimize_try_<try_<F, TC, FC>>
-  {};
+  template<class TC, class FC>
+  struct _try_subcontract_contract
+  {
+    template<class F>
+    using f = typename optimize_try<try_<F, TC, FC>>::type;
+  };
+
+  template<>
+  struct _try_subcontract_contract<identity, violation>
+  {
+    template<class F>
+    using f = F;
+  };
 
   template<class F>
-  struct _optimize_try_<
-    try_<try_<F>>>
-  : _optimize_try_<try_<F>>
+  struct _try_subcontract<contract<F>>
+  {
+    template<class TC, class FC>
+    using f = typename _try_subcontract_contract<TC, FC>::template f<F>;
+  };
+
+  template<class F, class TC1, class FC1>
+  struct _try_subcontract<try_<F, TC1, FC1>>
+  {
+    template<class TC, class FC>
+    using f = typename optimize_try<try_<try_<F, TC1, FC1>, TC, FC>>::type;
+  };
+
+  template<class F, class TC, class FC, class FC2>
+  struct optimize_try<try_<try_<F, TC, FC>, identity, FC2>>
+  : optimize_try<try_<F, TC, FC>>
   {};
 
 

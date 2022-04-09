@@ -8,7 +8,8 @@ namespace jln::mp::smp
 {
   template<class Cmp, class C = listify>
   using group_by = try_contract<mp::group_by<
-    try_assume_binary<Cmp>, assume_lists<C>>>;
+    typename detail::optimize_try<try_<assume_binary<Cmp>>>::type,
+    assume_lists<C>>>;
 
   template<class C = listify>
   using group = contract<mp::group<assume_lists<C>>>;
