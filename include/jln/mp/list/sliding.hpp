@@ -61,6 +61,7 @@ namespace jln::mp
 
 
 #include <jln/mp/algorithm/zip.hpp>
+#include <jln/mp/algorithm/pairwise.hpp>
 #include <jln/mp/algorithm/make_int_sequence.hpp>
 #include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/algorithm/transform.hpp>
@@ -154,6 +155,7 @@ namespace jln::mp::detail
   struct _sliding<-1>
   {};
 
+  // sizeof...(xs) == 0
   template<>
   struct _sliding<0>
   {
@@ -161,6 +163,7 @@ namespace jln::mp::detail
     using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
+  // sizeof...(xs) < size
   template<>
   struct _sliding<1>
   {
@@ -168,6 +171,7 @@ namespace jln::mp::detail
     using f = JLN_MP_CALL_TRACE(C, list<xs...>);
   };
 
+  // size=1  stride=1
   template<>
   struct _sliding<2>
   {
@@ -175,6 +179,7 @@ namespace jln::mp::detail
     using f = JLN_MP_CALL_TRACE(C, list<xs>...);
   };
 
+  // size=1  stride!=1
   template<>
   struct _sliding<3>
   {
@@ -184,17 +189,17 @@ namespace jln::mp::detail
       ::template f<xs...>;
   };
 
+  // size=2  stride=1
   template<>
   struct _sliding<4>
   {
-    template<class C, int_, int_, class x, class... xs>
-    using f = typename _zip_impl<
-      C,
-      mp::rotate_c<-1, drop_front_c<1>>::f<x, xs...>,
-      list<xs...>
-    >::type;
+    template<class C, int_, int_, class... xs>
+    using f = typename detail::pairwise_impl<rotate_c<-1>::f<xs...>>
+      ::template f<C, listify, xs...>
+      ;
   };
 
+  // size!=2  stride=1
   template<>
   struct _sliding<5>
   {
