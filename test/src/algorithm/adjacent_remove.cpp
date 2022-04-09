@@ -34,6 +34,22 @@ TEST()
     ;
 
   test_context<
+    adjacent_remove_if<not_equal<>>,
+    smp::adjacent_remove_if<smp::not_equal<>>
+  >()
+    .test<list<>>()
+    .test<seq_0, _0>()
+    .test<seq_0_0, _0, _0>()
+    .test<seq_0, _0, _1>()
+    .test<seq_0, _0, _1, _2>()
+    .test<seq_0_0, _0, _0, _1, _2>()
+    .test<seq_0_2, _0, _1, _2, _2>()
+    .test<seq_0_1, _0, _1, _1, _2>()
+    .test<emp::numbers<0, 0, 1, 2>, _0, _0, _1, _1, _2, _2>()
+    .test<seq_0, _0, _1, _2, _0>()
+    ;
+
+  test_context<
     adjacent_remove_if<always<na>>,
     smp::adjacent_remove_if<smp::always<na>>
   >()

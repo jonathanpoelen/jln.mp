@@ -1,7 +1,7 @@
 #pragma once
 
-#include <jln/mp/algorithm/same.hpp>
 #include <jln/mp/algorithm/rotate.hpp>
+#include <jln/mp/algorithm/same.hpp>
 
 
 namespace jln::mp
@@ -10,7 +10,7 @@ namespace jln::mp
   namespace detail
   {
     template<class>
-    struct _adjacent_remove;
+    struct adjacent_remove_impl;
   }
   /// \endcond
 
@@ -22,9 +22,9 @@ namespace jln::mp
   struct adjacent_remove_if
   {
     template<class... xs>
-    using f = typename detail::_adjacent_remove<
-      rotate_c<-1>::template f<xs...>
-    >::template f<C, JLN_MP_TRACE_F(BinaryPred), xs...>;
+    using f = typename detail::adjacent_remove_impl<rotate_c<-1>::f<xs...>>
+      ::template f<C, BinaryPred, xs...>
+      ;
   };
 
   /// Removes each element in a \sequence which is the same type as the privious element.
@@ -43,25 +43,45 @@ namespace jln::mp
 }
 
 
+#include <jln/mp/detail/compiler.hpp>
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
+  template<class BinaryPred, class x, class y>
+  using adjacent_remove_transform = typename wrap_in_list_c<
+    !JLN_MP_TRACE_F(BinaryPred)::template f<x, y>::value
+  >::template f<x>;
+
   template<class y, class... ys>
-  struct _adjacent_remove<list<y, ys...>>
+  struct adjacent_remove_impl<list<y, ys...>>
   {
     template<class C, class BinaryPred, class x, class... xs>
-    using f = typename join<C>::template f<
+    using f = typename detail::_join_select<sizeof...(ys)+1>::template f<
+      JLN_MP_TRACE_F(C),
       list<x>,
-      typename wrap_in_list_c<!BinaryPred::template f<xs, ys>::value>::template f<xs>...>;
+#if JLN_MP_GCC
+      adjacent_remove_transform<BinaryPred, xs, ys>...
+#else
+      typename wrap_in_list_c<!JLN_MP_TRACE_F(BinaryPred)::template f<xs, ys>::value>
+        ::template f<xs>...
+#endif
+    >::type;
   };
 
-  template<class>
-  struct _adjacent_remove
+  template<class x>
+  struct adjacent_remove_impl<list<x>>
   {
-    template<class C, class...>
+    template<class C, class F, class y>
+    using f = typename JLN_MP_TRACE_F(C)::template f<y>;
+  };
+
+  template<>
+  struct adjacent_remove_impl<list<>>
+  {
+    template<class C, class F, class... ys>
     using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 }
