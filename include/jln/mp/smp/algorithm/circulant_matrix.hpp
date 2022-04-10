@@ -49,7 +49,7 @@ namespace jln::mp::detail
   struct smp_listify_or_monadic_xs_impl<true>
   {
     template<class C>
-    using f = mp::listify;
+    using f = assume_lists<C>;
   };
 }
 /// \endcond
