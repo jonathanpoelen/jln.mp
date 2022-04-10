@@ -40,9 +40,9 @@ namespace jln::mp
 }
 
 
+#include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/drop_front.hpp>
-#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/at.hpp>
 #include <jln/mp/functional/call.hpp>
 
@@ -54,9 +54,9 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename join<C>::template f<
-      typename take_front_c<i>::template f<xs...>,
+      typename rotate_c<i, drop_front_c<sizeof...(xs) - i>>::template f<xs...>,
       list<typename at_c<j>::template f<xs...>>,
-      typename drop_front_c<i+1, take_front_c<j-i-1>>::template f<xs...>,
+      typename rotate_c<j, drop_front_c<sizeof...(xs) - j + i + 1>>::template f<xs...>,
       list<typename at_c<i>::template f<xs...>>,
       typename drop_front_c<j+1>::template f<xs...>
     >;

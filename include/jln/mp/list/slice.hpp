@@ -53,8 +53,8 @@ namespace jln::mp
 #include <jln/mp/algorithm/make_int_sequence.hpp>
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
+#include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/list/join.hpp>
-#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/clear.hpp>
 
@@ -73,8 +73,8 @@ namespace jln::mp::detail
   template<>
   struct _slice<2>
   {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, std::size_t len>
-    using f = drop_front_c<start, take_front_c<size, C>>;
+    template<int_ start, int_ size, unsigned /*stride*/, class C, int_ len>
+    using f = rotate_c<start + size, drop_front_c<len - size, C>>;
   };
 
 #if JLN_MP_MSVC

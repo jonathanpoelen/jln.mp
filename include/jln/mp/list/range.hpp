@@ -100,7 +100,7 @@ namespace jln::mp::detail
     bool = (beg < n), bool = (end < n)>
   struct _range_impl // true, true
   {
-    using type = drop_front_c<beg, take_front_c<end - beg, C>>;
+    using type = rotate_c<end, drop_front_c<n - end + beg, C>>;
   };
 
   template<int_ end, int_ n, class C>
