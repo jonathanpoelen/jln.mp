@@ -1473,8 +1473,17 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence of \list
   /// \see zip_longest
+#ifdef JLN_MP_DOXYGENATING
+  template<class C = listify>
+  struct zip
+  {
+    template<class... seqs>
+    using f;
+  };
+#else
   template<class C = listify>
   using zip = detail::_zip<detail::optimize_useless_transform_unpack_t<C>>;
+#endif
 
   template<class F = listify, class C = listify>
   using zip_with = zip<transform<unpack<F>, C>>;
@@ -1979,7 +1988,7 @@ namespace jln::mp
   namespace detail
   {
     template<class>
-    struct _adjacent_remove;
+    struct adjacent_remove_impl;
   }
   /// \endcond
 
@@ -1991,9 +2000,9 @@ namespace jln::mp
   struct adjacent_remove_if
   {
     template<class... xs>
-    using f = typename detail::_adjacent_remove<
-      rotate_c<-1>::template f<xs...>
-    >::template f<C, JLN_MP_TRACE_F(BinaryPred), xs...>;
+    using f = typename detail::adjacent_remove_impl<rotate_c<-1>::f<xs...>>
+      ::template f<C, BinaryPred, xs...>
+      ;
   };
 
   /// Removes each element in a \sequence which is the same type as the privious element.
@@ -3291,19 +3300,38 @@ namespace jln::mp::detail
 /// \cond
 namespace jln::mp::detail
 {
+  template<class BinaryPred, class x, class y>
+  using adjacent_remove_transform = typename wrap_in_list_c<
+    !JLN_MP_TRACE_F(BinaryPred)::template f<x, y>::value
+  >::template f<x>;
+
   template<class y, class... ys>
-  struct _adjacent_remove<list<y, ys...>>
+  struct adjacent_remove_impl<list<y, ys...>>
   {
     template<class C, class BinaryPred, class x, class... xs>
-    using f = typename join<C>::template f<
+    using f = typename detail::_join_select<sizeof...(ys)+1>::template f<
+      JLN_MP_TRACE_F(C),
       list<x>,
-      typename wrap_in_list_c<!BinaryPred::template f<xs, ys>::value>::template f<xs>...>;
+#if JLN_MP_GCC
+      adjacent_remove_transform<BinaryPred, xs, ys>...
+#else
+      typename wrap_in_list_c<!JLN_MP_TRACE_F(BinaryPred)::template f<xs, ys>::value>
+        ::template f<xs>...
+#endif
+    >::type;
   };
 
-  template<class>
-  struct _adjacent_remove
+  template<class x>
+  struct adjacent_remove_impl<list<x>>
   {
-    template<class C, class...>
+    template<class C, class F, class y>
+    using f = typename JLN_MP_TRACE_F(C)::template f<y>;
+  };
+
+  template<>
+  struct adjacent_remove_impl<list<>>
+  {
+    template<class C, class F, class... ys>
     using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 }
@@ -5194,6 +5222,228 @@ namespace jln::mp
 /// \endcond
 namespace jln::mp
 {
+  /// \ingroup number
+
+  template<class C = listify>
+  struct numbers
+  {
+    template<int_... ns>
+    using f = JLN_MP_DCALL_TRACE_XS(ns, C, number<ns>...);
+  };
+
+  /// \cond
+  template<>
+  struct numbers<listify>
+  {
+    template<int_... ns>
+    using f = list<number<ns>...>;
+  };
+  /// \endcond
+
+  namespace emp
+  {
+    template<int_... vs>
+    using numbers = list<number<vs>...>;
+  }
+}
+#if defined(__has_builtin)
+#  if __has_builtin(__make_integer_seq)
+#    define JLN_MP_USE_INTEGER_PACK 0
+#    define JLN_MP_USE_MAKE_INTEGER_SEQ 1
+#  elif __has_builtin(__integer_pack)
+#    define JLN_MP_USE_INTEGER_PACK 1
+#    define JLN_MP_USE_MAKE_INTEGER_SEQ 0
+#  endif
+#elif defined(_MSC_VER)
+#  define JLN_MP_USE_INTEGER_PACK 0
+#  define JLN_MP_USE_MAKE_INTEGER_SEQ 1
+#elif defined(__GNUC__)
+#  if __GNUC__ >= 8
+#    define JLN_MP_USE_INTEGER_PACK 1
+#    define JLN_MP_USE_MAKE_INTEGER_SEQ 0
+#  endif
+#endif
+
+#ifndef JLN_MP_USE_INTEGER_PACK
+#  define JLN_MP_USE_INTEGER_PACK 0
+#  define JLN_MP_USE_MAKE_INTEGER_SEQ 0
+#endif
+
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+#if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
+    template<std::size_t>
+#else
+    template<class>
+#endif
+    struct _make_int_sequence;
+  }
+  /// \endcond
+
+
+  /// \ingroup number
+
+  /// Generates an incremental sequence of \c n \c int_.
+  /// \treturn \sequence
+  /// \see make_int_sequence, iota
+  template<class C = numbers<>>
+  struct make_int_sequence_v
+  {
+    template<class n>
+#if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
+    using f = typename detail::_make_int_sequence<n::value>
+      ::type::template f<C>;
+#else
+    using f = typename detail::_make_int_sequence<
+      std::make_index_sequence<n::value>>::template f<C>;
+#endif
+  };
+
+  template<class C = mp::listify>
+  using make_int_sequence = make_int_sequence_v<mp::numbers<C>>;
+
+  namespace emp
+  {
+#if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
+    template<unsigned n, class C = mp::numbers<>>
+    using make_int_sequence_v_c = typename detail::_make_int_sequence<n>
+      ::type::template f<C>;
+
+    template<unsigned n, class C = mp::listify>
+    using make_int_sequence_c = typename detail::_make_int_sequence<n>
+      ::type::template f<mp::numbers<C>>;
+#else
+    template<unsigned n, class C = mp::numbers<>>
+    using make_int_sequence_v_c = typename detail::_make_int_sequence<
+      std::make_index_sequence<n>>::template f<C>;
+
+    template<unsigned n, class C = mp::listify>
+    using make_int_sequence_c = typename detail::_make_int_sequence<
+      std::make_index_sequence<n>>::template f<mp::numbers<C>>;
+#endif
+
+    template<class n, class C = mp::numbers<>>
+    using make_int_sequence_v = make_int_sequence_v_c<n::value, C>;
+
+    template<class n, class C = mp::listify>
+    using make_int_sequence = make_int_sequence_c<n::value, C>;
+  }
+} // namespace jln::mp
+
+
+/// \cond
+namespace jln::mp::detail
+{
+#if JLN_MP_USE_MAKE_INTEGER_SEQ
+  template<class, int_... ns>
+  struct _make_int_sequence_impl
+  {
+    template<class C>
+    using f = typename C::template f<ns...>;
+  };
+
+  template<std::size_t n>
+  struct _make_int_sequence
+  {
+    using type = __make_integer_seq<_make_int_sequence_impl, int_, n>;
+  };
+#elif JLN_MP_USE_INTEGER_PACK
+  template<int_... ns>
+  struct _make_int_sequence_impl
+  {
+    template<class C>
+    using f = typename JLN_MP_TRACE_F(C)::template f<ns...>;
+  };
+
+  template<std::size_t n>
+  struct _make_int_sequence
+  {
+    using type = _make_int_sequence_impl<__integer_pack(n)...>;
+  };
+#else
+  template<std::size_t... ns>
+  struct _make_int_sequence<std::integer_sequence<std::size_t, ns...>>
+  {
+    template<class C>
+    using f = typename JLN_MP_TRACE_F(C)::template f<int_(ns)...>;
+  };
+#endif
+}
+/// \endcond
+
+#undef JLN_MP_USE_INTEGER_PACK
+#undef JLN_MP_USE_MAKE_INTEGER_SEQ
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class F>
+    struct anticirculant_matrix_impl;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// square matrix in which all row vectors are composed of the
+  /// same elements and each row vector is rotated one element to
+  /// the left relative to the preceding row vector.
+  /// \semantics
+  ///   \code
+  ///   anticirculant_matrix_with<>::f<a, b, c, d>
+  ///   == list<
+  ///     list<a, b, c, d>,
+  ///     list<b, c, d, a>,
+  ///     list<c, d, a, b>,
+  ///     list<d, a, b, c>
+  ///   >
+  ///   \endcode
+  /// \treturn \value
+  /// \see circulant_matrix
+  template<class F = listify, class C = listify>
+  struct anticirculant_matrix_with
+  {
+    template<class... xs>
+    using f = typename emp::make_int_sequence_v_c<
+      sizeof...(xs),
+      detail::anticirculant_matrix_impl<F>
+    >::template g<C>::template f<xs...>;
+  };
+
+  template<class C = listify>
+  using anticirculant_matrix = anticirculant_matrix_with<listify, C>;
+
+  namespace emp
+  {
+    template<class L, class F, class C = mp::listify>
+    using anticirculant_matrix_with = unpack<L, mp::anticirculant_matrix_with<F, C>>;
+
+    template<class L, class C = mp::listify>
+    using anticirculant_matrix = unpack<L, mp::anticirculant_matrix<C>>;
+  }
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class F>
+  struct anticirculant_matrix_impl
+  {
+    template<int_... i>
+    struct f
+    {
+      template<class C>
+      using g = _tee<C, rotate_c<i, F>...>;
+    };
+  };
+}
+/// \endcond
+namespace jln::mp
+{
   /// \ingroup algorithm
 
   /// Checks whether a predicate does not hold for any element of a \sequence.
@@ -5554,14 +5804,14 @@ namespace jln::mp
     class Seq,
     class SubC1 = listify, class SubC2 = SubC1,
     class TC = listify, class FC = clear<TC>>
-  struct before_after2
+  struct before_after_with
   {};
 
   template<class Seq, class TC = listify, class FC = clear<TC>>
-  using before_after = before_after2<Seq, listify, listify, TC, FC>;
+  using before_after = before_after_with<Seq, listify, listify, TC, FC>;
 
   template<class... Ts, class SubC1, class SubC2, class TC, class FC>
-  struct before_after2<list<Ts...>, SubC1, SubC2, TC, FC>
+  struct before_after_with<list<Ts...>, SubC1, SubC2, TC, FC>
   : invoke_twice<index_if_xs<starts_with<list<Ts...>>,
                              detail::before_after_defer_i<sizeof...(Ts), SubC1, SubC2, TC>,
                              mp::always<FC>>>
@@ -5575,19 +5825,19 @@ namespace jln::mp
     template<class L, class Seq,
              class SubC1 = mp::listify, class SubC2 = SubC1,
              class TC = mp::listify, class FC = mp::clear<TC>>
-    using before_after2 = unpack<L, mp::before_after2<Seq, SubC1, SubC2, TC, FC>>;
+    using before_after_with = unpack<L, mp::before_after_with<Seq, SubC1, SubC2, TC, FC>>;
   }
 
   /// \cond
   template<class T, class SubC1, class SubC2, class TC, class FC>
-  struct before_after2<list<T>, SubC1, SubC2, TC, FC>
+  struct before_after_with<list<T>, SubC1, SubC2, TC, FC>
   : invoke_twice<index_if<is<T>,
                           detail::before_after_defer_i<1, SubC1, SubC2, TC>,
                           mp::always<FC>>>
   {};
 
   template<class SubC1, class SubC2, class TC, class FC>
-  struct before_after2<list<>, SubC1, SubC2, TC, FC>
+  struct before_after_with<list<>, SubC1, SubC2, TC, FC>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(TC,
@@ -5732,6 +5982,71 @@ namespace jln::mp::detail
     template<class seq, class... seqs>
     using f = typename fold_left<lift_t<detail::_cartesian_impl>>
       ::template f<typename _product1<seq>::type, seqs...>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class F>
+    struct circulant_matrix_impl;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// square matrix in which all row vectors are composed of the
+  /// same elements and each row vector is rotated one element to
+  /// the right relative to the preceding row vector.
+  /// \semcs
+  ///   \code
+  ///   circulant_matrix_with<>::f<a, b, c, d>
+  ///   == list<
+  ///     list<a, b, c, d>,
+  ///     list<d, a, b, c>,
+  ///     list<c, d, a, b>,
+  ///     list<b, c, d, a>
+  ///   >
+  ///   \endcode
+  /// \treturn \value
+  /// \see anticirculant_matrix
+  template<class F = listify, class C = listify>
+  struct circulant_matrix_with
+  {
+    template<class... xs>
+    using f = typename emp::make_int_sequence_v_c<
+      sizeof...(xs),
+      detail::circulant_matrix_impl<F>
+    >::template g<C>::template f<xs...>;
+  };
+
+  template<class C = listify>
+  using circulant_matrix = circulant_matrix_with<listify, C>;
+
+  namespace emp
+  {
+    template<class L, class F, class C = mp::listify>
+    using circulant_matrix_with = unpack<L, mp::circulant_matrix_with<F, C>>;
+
+    template<class L, class C = mp::listify>
+    using circulant_matrix = unpack<L, mp::circulant_matrix<C>>;
+  }
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class F>
+  struct circulant_matrix_impl
+  {
+    template<int_... i>
+    struct f
+    {
+      template<class C>
+      using g = _tee<C, rotate_c<-i, F>...>;
+    };
   };
 }
 /// \endcond
@@ -6254,223 +6569,6 @@ namespace jln::mp::detail
     >;
   };
 }
-namespace jln::mp
-{
-  /// \ingroup number
-
-  template<class C = listify>
-  struct numbers
-  {
-    template<int_... ns>
-    using f = JLN_MP_DCALL_TRACE_XS(ns, C, number<ns>...);
-  };
-
-  /// \cond
-  template<>
-  struct numbers<listify>
-  {
-    template<int_... ns>
-    using f = list<number<ns>...>;
-  };
-  /// \endcond
-
-  namespace emp
-  {
-    template<int_... vs>
-    using numbers = list<number<vs>...>;
-  }
-}
-#if defined(__has_builtin)
-#  if __has_builtin(__make_integer_seq)
-#    define JLN_MP_USE_INTEGER_PACK 0
-#    define JLN_MP_USE_MAKE_INTEGER_SEQ 1
-#  elif __has_builtin(__integer_pack)
-#    define JLN_MP_USE_INTEGER_PACK 1
-#    define JLN_MP_USE_MAKE_INTEGER_SEQ 0
-#  endif
-#elif defined(_MSC_VER)
-#  define JLN_MP_USE_INTEGER_PACK 0
-#  define JLN_MP_USE_MAKE_INTEGER_SEQ 1
-#elif defined(__GNUC__)
-#  if __GNUC__ >= 8
-#    define JLN_MP_USE_INTEGER_PACK 1
-#    define JLN_MP_USE_MAKE_INTEGER_SEQ 0
-#  endif
-#endif
-
-#ifndef JLN_MP_USE_INTEGER_PACK
-#  define JLN_MP_USE_INTEGER_PACK 0
-#  define JLN_MP_USE_MAKE_INTEGER_SEQ 0
-#endif
-
-
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-#if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
-    template<std::size_t>
-#else
-    template<class>
-#endif
-    struct _make_int_sequence;
-  }
-  /// \endcond
-
-
-  /// \ingroup number
-
-  /// Generates an incremental sequence of \c n \c int_.
-  /// \treturn \sequence
-  /// \see make_int_sequence, iota
-  template<class C = numbers<>>
-  struct make_int_sequence_v
-  {
-    template<class n>
-#if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
-    using f = typename detail::_make_int_sequence<n::value>
-      ::type::template f<C>;
-#else
-    using f = typename detail::_make_int_sequence<
-      std::make_index_sequence<n::value>>::template f<C>;
-#endif
-  };
-
-  template<class C = mp::listify>
-  using make_int_sequence = make_int_sequence_v<mp::numbers<C>>;
-
-  namespace emp
-  {
-#if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
-    template<unsigned n, class C = mp::numbers<>>
-    using make_int_sequence_v_c = typename detail::_make_int_sequence<n>
-      ::type::template f<C>;
-
-    template<unsigned n, class C = mp::listify>
-    using make_int_sequence_c = typename detail::_make_int_sequence<n>
-      ::type::template f<mp::numbers<C>>;
-#else
-    template<unsigned n, class C = mp::numbers<>>
-    using make_int_sequence_v_c = typename detail::_make_int_sequence<
-      std::make_index_sequence<n>>::template f<C>;
-
-    template<unsigned n, class C = mp::listify>
-    using make_int_sequence_c = typename detail::_make_int_sequence<
-      std::make_index_sequence<n>>::template f<mp::numbers<C>>;
-#endif
-
-    template<class n, class C = mp::numbers<>>
-    using make_int_sequence_v = make_int_sequence_v_c<n::value, C>;
-
-    template<class n, class C = mp::listify>
-    using make_int_sequence = make_int_sequence_c<n::value, C>;
-  }
-} // namespace jln::mp
-
-
-/// \cond
-namespace jln::mp::detail
-{
-#if JLN_MP_USE_MAKE_INTEGER_SEQ
-  template<class, int_... ns>
-  struct _make_int_sequence_impl
-  {
-    template<class C>
-    using f = typename C::template f<ns...>;
-  };
-
-  template<std::size_t n>
-  struct _make_int_sequence
-  {
-    using type = __make_integer_seq<_make_int_sequence_impl, int_, n>;
-  };
-#elif JLN_MP_USE_INTEGER_PACK
-  template<int_... ns>
-  struct _make_int_sequence_impl
-  {
-    template<class C>
-    using f = typename JLN_MP_TRACE_F(C)::template f<ns...>;
-  };
-
-  template<std::size_t n>
-  struct _make_int_sequence
-  {
-    using type = _make_int_sequence_impl<__integer_pack(n)...>;
-  };
-#else
-  template<std::size_t... ns>
-  struct _make_int_sequence<std::integer_sequence<std::size_t, ns...>>
-  {
-    template<class C>
-    using f = typename JLN_MP_TRACE_F(C)::template f<int_(ns)...>;
-  };
-#endif
-}
-/// \endcond
-
-#undef JLN_MP_USE_INTEGER_PACK
-#undef JLN_MP_USE_MAKE_INTEGER_SEQ
-
-#if 0
-namespace jln::mp::emp
-{
-  template<int_ n, class C = listify>
-  using make_int_sequence_c = typename _make_int_sequence<
-    (n == 0 ? 0 : n == 1 ? -1 : n-1)
-  >::template f<jln::mp::numbers<C>>;
-}
-
-namespace jln::mp::detail
-{
-  template<int_...>
-  class enumeration;
-
-  template<bool, int_ n, class ns>
-  struct _make_int_sequence_impl;
-
-  template<int_ n, int_... ns>
-  struct _make_int_sequence_impl<false, n, enumeration<ns...>>
-  {
-    using type = enumeration<ns..., (n+ns)...>;
-
-    template<class C>
-    using f = typename C::template f<0, ns..., (n+ns)...>;
-  };
-
-  template<int_ n, int_... ns>
-  struct _make_int_sequence_impl<true, n, enumeration<ns...>>
-  {
-    using type = enumeration<ns..., (n+ns)..., n*2+1>;
-
-    template<class C>
-    using f = typename C::template f<0, ns..., (n+ns)..., n*2+1>;
-  };
-
-  template<int_ n>
-  struct _make_int_sequence
- : _make_int_sequence_impl<bool(n & 1), n/2, typename _make_int_sequence<n / 2>::type>
-  {};
-
-  template<>
-  struct _make_int_sequence<0>
-  {
-    using type = enumeration<>;
-
-    template<class C>
-    using f = typename C::template f<>;
-  };
-
-  template<>
-  struct _make_int_sequence<-1>
-  {
-    using type = enumeration<>;
-
-    template<class C>
-    using f = typename C::template f<0>;
-  };
-}
-#endif
 namespace jln::mp
 {
   /// \cond
@@ -8039,7 +8137,7 @@ namespace jln::mp
     template<int>
     struct fold_left_xs_impl;
 
-    constexpr int_ _partial_fold_left_xs_size(int_ i, int_ size)
+    constexpr int_ partial_fold_left_xs_size(int_ i, int_ size)
     {
       // size contains state + xs...
       return (size == 0) ? 0
@@ -8075,7 +8173,7 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C,
       detail::partial_fold_left_xs_select<
         JLN_MP_TRACE_F(F),
-        detail::_partial_fold_left_xs_size(OffsetEnd, sizeof...(xs)),
+        detail::partial_fold_left_xs_size(OffsetEnd, sizeof...(xs)),
         xs...
       >
     );
@@ -8967,34 +9065,92 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<unsigned>
-    struct _is_sorted;
+    template<class>
+    struct pairwise_impl;
   }
   /// \endcond
 
+  /// \ingroup group
+
+  /// Returns successive overlapping pairs.
+  /// \post If `sizeof...(xs) <= 1`, then the result sequence is empty
+  /// \post If `sizeof...(xs) > 1`, then the number of 2-tuples is `sizeof...(xs) - 1`
+  /// \semantics
+  ///   \code
+  ///   pairwise<>::f<a, b, c, d>
+  ///   == list<
+  ///     list<a, b>,
+  ///     list<b, c>,
+  ///     list<c, d>
+  ///   >
+  ///   \endcode
+  /// \treturn \sequence of \list
+  /// \see sliding, group_n
+  template<class F = listify, class C = listify>
+  struct pairwise_with
+  {
+    template<class... xs>
+    using f = typename detail::pairwise_impl<rotate_c<-1>::f<xs...>>
+      ::template f<C, JLN_MP_TRACE_F(F), xs...>
+      ;
+  };
+
+  template<class C = listify>
+  using pairwise = pairwise_with<listify, C>;
+
+  namespace emp
+  {
+    template<class L, class F = mp::listify, class C = mp::listify>
+    using pairwise_with = unpack<L, mp::pairwise_with<F, C>>;
+
+    template<class L, class C = mp::listify>
+    using pairwise = unpack<L, mp::pairwise<C>>;
+  }
+}
+
+namespace jln::mp::detail
+{
+  template<class>
+  struct pairwise_impl;
+
+  template<class x, class... xs>
+  struct pairwise_impl<list<x, xs...>>
+  {
+    template<class C, class F, class y, class... ys>
+    using f = typename JLN_MP_TRACE_F(C)::template f<
+      typename F::template f<xs, ys>...
+    >;
+  };
+
+  template<class x>
+  struct pairwise_impl<list<x>>
+  {
+    template<class C, class F, class...>
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
+  };
+
+  template<>
+  struct pairwise_impl<list<>>
+  {
+    template<class C, class F>
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
+  };
+}
+namespace jln::mp
+{
   /// \ingroup algorithm
 
   /// Checks wheteher a \sequence is sorted.
   /// \treturn \number
   template<class Cmp = less<>, class C = identity>
   struct is_sorted
+  : pairwise_with<Cmp, and_<>>
   {
+    #ifdef JLN_MP_DOXYGENATING
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      typename detail::_is_sorted<detail::min(sizeof...(xs), 3)>
-      ::template f<Cmp, xs...>
-    );
+    using f;
+    #endif
   };
-
-  /// \cond
-  template<class Cmp>
-  struct is_sorted<Cmp, identity>
-  {
-    template<class... xs>
-    using f = typename detail::_is_sorted<detail::min(sizeof...(xs), 3)>
-      ::template f<Cmp, xs...>;
-  };
-  /// \endcond
 
   namespace emp
   {
@@ -9002,43 +9158,6 @@ namespace jln::mp
     using is_sorted = unpack<L, mp::is_sorted<Cmp, C>>;
   }
 }
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<>
-  struct _is_sorted<0>
-  {
-    template<class Cmp>
-    using f = number<1>;
-  };
-
-  template<>
-  struct _is_sorted<1>
-  {
-    template<class Cmp, class x>
-    using f = number<1>;
-  };
-
-  template<>
-  struct _is_sorted<2>
-  {
-    template<class Cmp, class x, class y>
-    using f = number<!JLN_MP_TRACE_F(Cmp)::template f<y, x>::value>;
-  };
-
-  template<>
-  struct _is_sorted<3>
-  {
-    template<class Cmp, class x, class y, class... xs>
-    using f = typename zip_with<Cmp, or_<not_<>>>::template f<
-      list<y, xs...>,
-      rotate_c<-1, pop_front<>>::f<x, y, xs...>
-    >;
-  };
-}
-/// \endcond
 namespace jln::mp
 {
   /// \cond
@@ -10603,428 +10722,6 @@ namespace jln::mp
   {
     template<class seq1, class seq2, class Cmp = mp::equal<>, class C = mp::identity>
     using mismatch_index = typename mismatch_index<Cmp, C>::template f<seq1, seq2>;
-  }
-}
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    constexpr int_ sliding_stride(int_ size, int_ stride);
-
-    template<int_ size, int_ stride, int_>
-    struct mk_sliding;
-  }
-  /// \endcond
-
-  /// \ingroup list
-
-  /// Returns sliding windows of width \c size.
-  /// \pre `stride != 0`
-  /// \pre `size >= 0`
-  /// \treturn \sequence of \list
-  /// Given a sequence and a count n, place a window over the first n elements of the underlying range. Return the contents of that window as the first element of the adapted range, then slide the window forward one element at a time until hitting the end of the underlying range.
-  /// \semantics
-  ///     If `stride < 0`, then `stride = stride + size`
-  ///     If `sizeof...(xs) < size`, then `f = C::f<xs...>`
-  ///     If `stride > 1`, the last window may be smaller than \c size
-  template<class size, class stride, class C = listify>
-  using sliding_with_stride = typename detail::mk_sliding<
-    size::value, stride::value,
-    detail::sliding_stride(size::value, stride::value)
-  >::template f<C>;
-
-  template<int_ size, int_ stride = 1, class C = listify>
-  using sliding_with_stride_c = typename detail::mk_sliding<size, stride,
-    detail::sliding_stride(size, stride)
-  >::template f<C>;
-
-  template<class size, class C = listify>
-  using sliding = sliding_with_stride_c<size::value, 1, C>;
-
-  template<int_ size, class C = listify>
-  using sliding_c = sliding_with_stride_c<size, 1, C>;
-
-  namespace emp
-  {
-    template<class L, class size, class stride, class C = mp::listify>
-    using sliding_with_stride = unpack<L, mp::sliding_with_stride<size, stride, C>>;
-
-    template<class L, int_ size, int_ stride, class C = mp::listify>
-    using sliding_with_stride_c = unpack<L, mp::sliding_with_stride_c<size, stride, C>>;
-
-    template<class L, class size, class C = mp::listify>
-    using sliding = unpack<L, mp::sliding<size, C>>;
-
-    template<class L, int_ size, class C = mp::listify>
-    using sliding_c = unpack<L, mp::sliding_c<size, C>>;
-  }
-}
-
-
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<int>
-    struct _slice;
-
-    constexpr unsigned slide_select(unsigned nx, unsigned size, unsigned stride);
-  }
-  /// \endcond
-
-  /// \ingroup list
-
-  /// Returns a subset of elements in a \c xs picked at regular intervals in range.
-  /// \pre `0 <= start <= sizeof...(xs)`
-  /// \pre `0 < stride`
-  /// \pre `0 <= size`
-  /// \pre `0 <= (size - 1) * stride + start + 1 <= sizeof...(xs)`
-  /// \treturn \sequence
-  template<unsigned start, unsigned size, unsigned stride = 1, class C = listify>
-  struct slice_c
-  {
-    template<class... xs>
-    using f = typename detail::_slice<
-      detail::slide_select(sizeof...(xs) - start, size, stride)
-    >
-    ::template f<start, size, stride, C, sizeof...(xs)>
-    ::template f<xs...>;
-  };
-
-  template<class start, class size, class stride = number<1>, class C = listify>
-  using slice = slice_c<start::value, size::value, stride::value, C>;
-
-  namespace emp
-  {
-    template<class L, class start, class size, class stride = number<1>, class C = mp::listify>
-    using slice = unpack<L, slice<start, size, stride, C>>;
-
-    template<class L, unsigned start, unsigned size, unsigned stride = 1, class C = mp::listify>
-    using slice_c = unpack<L, slice_c<start, size, stride, C>>;
-  }
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  constexpr unsigned slide_select(unsigned nx, unsigned size, unsigned stride)
-  {
-    return !size ? 0
-      : size == 1 ? 3
-      : stride <= 1 ? 2
-      : nx < stride ? 2
-      : 1;
-  }
-
-  template<>
-  struct _slice<2>
-  {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, std::size_t len>
-    using f = drop_front_c<start, take_front_c<size, C>>;
-  };
-
-#if JLN_MP_MSVC
-  template<unsigned size, unsigned stride, unsigned i, class x>
-  using slice_impl_msvc = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
-#endif
-
-  template<unsigned size, unsigned stride, class C>
-  struct _slice_impl
-  {
-    template<int_... ints>
-    struct impl
-    {
-      template<class... xs>
-      using f = typename join<C>::template f<
-#if JLN_MP_MSVC
-        slice_impl_msvc<size, stride, ints, xs>...
-#else
-        typename wrap_in_list_c<(ints <= size && ints % stride == 0)>
-        ::template f<xs>...
-#endif
-      >;
-    };
-  };
-
-  template<>
-  struct _slice<1>
-  {
-    template<unsigned start, unsigned size, unsigned stride, class C, std::size_t len>
-    using f = drop_front_c<
-      start,
-      typename emp::make_int_sequence_v_c<
-        len - start,
-        lift_c<_slice_impl<size * stride - stride + 1, stride, C>
-               ::template impl>
-      >
-    >;
-  };
-
-  template<>
-  struct _slice<0>
-  {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, std::size_t len>
-    using f = clear<C>;
-  };
-
-  template<>
-  struct _slice<3>
-  {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, std::size_t len>
-    using f = drop_front_c<start, front<C>>;
-  };
-}
-/// \endcond
-/// \cond
-namespace jln::mp::detail
-{
-  constexpr int_ sliding_stride(int_ size, int_ stride)
-  {
-    if (!stride || size < 1) {
-      return size == 0 ? -2 : -1;
-    }
-
-    if (stride < 0) {
-      stride += size;
-      if (stride <= 0) {
-        return -1;
-      }
-    }
-
-    return stride;
-  }
-
-  template<int>
-  struct _sliding;
-
-  constexpr int sliding_select(int n, int_ size, int_ stride);
-
-  template<int_ size, int_ stride, class C>
-  struct sliding_
-  {
-    template<class... xs>
-    using f = typename detail::_sliding<detail::sliding_select(
-      sizeof...(xs), size, stride)
-    >::template f<C, size, stride, xs...>;
-  };
-
-  template<int_ size, int_, int_ stride>
-  struct mk_sliding
-  {
-    template<class C>
-    using f = sliding_<size, stride, optimize_useless_transform_unpack_t<C>>;
-  };
-
-  template<class C>
-  struct sliding_nostride
-  {};
-
-  template<class C>
-  struct sliding_0size
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
-  };
-
-  template<int_ size, int_ stride>
-  struct mk_sliding<size, stride, -1>
-  {
-    template<class C>
-    using f = sliding_nostride<C>;
-  };
-
-  template<int_ size, int_ stride>
-  struct mk_sliding<size, stride, -2>
-  {
-    template<class C>
-    using f = sliding_0size<C>;
-  };
-
-  constexpr int_ slinding_pivot(int_ nx, int_ size, int_ stride)
-  {
-    return nx - (nx - size + stride - 1) / stride * stride - 1;
-  }
-
-  constexpr int sliding_select(int n, int_ size, int_ stride)
-  {
-    return n <= size ? (n ? 1 : 0)         // C<list<xs...>>
-      : size == 1 ? (stride == 1 ? 2 : 3)  // C<list<xs>...> / slice<0, n/stride, stride>
-      : stride > n ? 9                     // take_front
-      : stride == 1 ? (size == 2 ? 4 : 5)  // common case
-      : stride == size ? 6                 // group_n
-      // slice<zip_longest> / slice<zip>
-      : ((n - size) % stride) ? (slinding_pivot(n, size, stride)  < 0  ?  7 : 8) : 7;
-  }
-
-  template<>
-  struct _sliding<-1>
-  {};
-
-  template<>
-  struct _sliding<0>
-  {
-    template<class C, int_, int_, class...>
-    using f = JLN_MP_CALL_TRACE_0_ARG(C);
-  };
-
-  template<>
-  struct _sliding<1>
-  {
-    template<class C, int_, int_, class... xs>
-    using f = JLN_MP_CALL_TRACE(C, list<xs...>);
-  };
-
-  template<>
-  struct _sliding<2>
-  {
-    template<class C, int_, int_, class... xs>
-    using f = JLN_MP_CALL_TRACE(C, list<xs>...);
-  };
-
-  template<>
-  struct _sliding<3>
-  {
-    template<class C, int_, int_ stride, class... xs>
-    using f = typename _slice<1>
-      ::template f<0, (sizeof...(xs) + stride - 1) / stride, stride, transform<listify, C>, sizeof...(xs)>
-      ::template f<xs...>;
-  };
-
-  template<>
-  struct _sliding<4>
-  {
-    template<class C, int_, int_, class x, class... xs>
-    using f = typename _zip_impl<
-      C,
-      mp::rotate_c<-1, drop_front_c<1>>::f<x, xs...>,
-      list<xs...>
-    >::type;
-  };
-
-  template<>
-  struct _sliding<5>
-  {
-    template<class C, int_ size, class drop_front>
-    struct impl
-    {
-      template<int_... i>
-      using f = _tee<zip<C>, rotate_c<i-size, drop_front>...>;
-    };
-
-    template<class C, int_ size, int_, class... xs>
-    using f = typename emp::make_int_sequence_v_c<
-      size, impl<C, size-1, drop_front_c<size-1>>
-    >::template f<xs...>;
-  };
-
-  template<>
-  struct _sliding<6>
-  {
-    template<class C, int_ size, int_, class... xs>
-    using f = typename emp::make_int_sequence_v_c<
-      sizeof...(xs), lift_c<_group_n_impl>
-    >::template f<C, size, xs...>;
-  };
-
-  template<>
-  struct _sliding<7>
-  {
-    template<class C, int_ size, int_ stride>
-    struct impl
-    {
-      template<size_t... i>
-      using f = _tee<zip<C>, slice_c<i, size, stride>...>;
-    };
-
-    template<class C, int_ size, int_ stride, class... xs>
-    using f = typename emp::make_int_sequence_v_c<
-      size, impl<C, (sizeof...(xs) - size) / stride + 1, stride>
-    >::template f<xs...>;
-  };
-
-  constexpr int_ slinding8_pivot(int_ nx, int_ size, int_ stride)
-  {
-    int_ r = slinding_pivot(nx, size, stride);
-    return r < 0 ? size : r;
-  }
-
-  template<>
-  struct _sliding<8>
-  {
-    template<class F, class C>
-    struct adjust
-    {
-      template<class x, class... xs>
-      using f = typename C::template f<xs..., typename F::template f<x>>;
-    };
-
-    template<class C, int_ size, int_ stride, int_ pivot>
-    struct impl
-    {
-      template<int_... i>
-      using f = _tee<zip<
-        rotate_c<-1, adjust<unpack<rotate_c<-1, pop_front<>>>, C>>
-      >, slice_c<i, size - (pivot < i), stride,
-        typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>
-      >...>;
-    };
-
-    template<class C, int_ size, int_ stride, class... xs>
-    using f = typename emp::make_int_sequence_v_c<size, impl<
-      C,
-      (sizeof...(xs) - size) / stride + 2,
-      stride,
-      slinding8_pivot(sizeof...(xs), size, stride)
-    >>
-    ::template f<xs...>;
-  };
-
-  template<>
-  struct _sliding<9>
-  {
-    template<class C, int_ size, int_, class... xs>
-    using f = JLN_MP_CALL_TRACE(C, typename take_front_c<size>::template f<xs...>);
-  };
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \ingroup group
-
-  /// Returns successive overlapping pairs.
-  /// \post If `sizeof...(xs) < 2`, then the result sequence is empty
-  /// \post If `sizeof...(xs) >= 2`, then the number of 2-tuples is `sizeof...(xs) - 1`
-  /// \semantics
-  ///   \code
-  ///   pairwise<>::f<a, b, c, d>
-  ///   == list<
-  ///     list<a, b>,
-  ///     list<b, c>,
-  ///     list<c, d>
-  ///   >
-  ///   \endcode
-  /// \treturn \sequence of \list
-  /// \see sliding, group_n
-#ifdef JLN_MP_DOXYGENATING
-  template<class C = listify>
-  using pairwise = if_<size<less_than<2>>, clear<C>, sliding_c<2, C>>;
-#else
-  template<class C = listify>
-  struct pairwise
-  {
-    template<class... xs>
-    using f = typename conditional_c<(sizeof...(xs) < 2)>
-      ::template f<clear<C>, sliding_c<2, C>>::template f<xs...>;
-  };
-#endif
-
-  namespace emp
-  {
-    template<class L, class C = mp::listify>
-    using pairwise = unpack<L, mp::pairwise<C>>;
   }
 }
 namespace jln::mp
@@ -13128,7 +12825,10 @@ namespace jln::mp::detail
   };
 
   template<bool>
-  struct mk_list2
+  struct mk_list2;
+
+  template<>
+  struct mk_list2<false>
   {
     template<class... xs>
     using f = list<xs...>;
@@ -14839,7 +14539,7 @@ namespace jln::mp::detail
     bool = (beg < n), bool = (end < n)>
   struct _range_impl // true, true
   {
-    using type = drop_front_c<beg, take_front_c<end - beg, C>>;
+    using type = rotate_c<end, drop_front_c<n - end + beg, C>>;
   };
 
   template<int_ end, int_ n, class C>
@@ -14904,6 +14604,411 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
+    template<int>
+    struct _slice;
+
+    constexpr unsigned slide_select(unsigned nx, unsigned size, unsigned stride);
+  }
+  /// \endcond
+
+  /// \ingroup list
+
+  /// Returns a subset of elements in a \c xs picked at regular intervals in range.
+  /// \pre `0 <= start <= sizeof...(xs)`
+  /// \pre `0 < stride`
+  /// \pre `0 <= size`
+  /// \pre `0 <= (size - 1) * stride + start + 1 <= sizeof...(xs)`
+  /// \treturn \sequence
+  template<unsigned start, unsigned size, unsigned stride = 1, class C = listify>
+  struct slice_c
+  {
+    template<class... xs>
+    using f = typename detail::_slice<
+      detail::slide_select(sizeof...(xs) - start, size, stride)
+    >
+    ::template f<start, size, stride, C, sizeof...(xs)>
+    ::template f<xs...>;
+  };
+
+  template<class start, class size, class stride = number<1>, class C = listify>
+  using slice = slice_c<start::value, size::value, stride::value, C>;
+
+  namespace emp
+  {
+    template<class L, class start, class size, class stride = number<1>, class C = mp::listify>
+    using slice = unpack<L, slice<start, size, stride, C>>;
+
+    template<class L, unsigned start, unsigned size, unsigned stride = 1, class C = mp::listify>
+    using slice_c = unpack<L, slice_c<start, size, stride, C>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  constexpr unsigned slide_select(unsigned nx, unsigned size, unsigned stride)
+  {
+    return !size ? 0
+      : size == 1 ? 3
+      : stride <= 1 ? 2
+      : nx < stride ? 2
+      : 1;
+  }
+
+  template<>
+  struct _slice<2>
+  {
+    template<int_ start, int_ size, unsigned /*stride*/, class C, int_ len>
+    using f = rotate_c<start + size, drop_front_c<len - size, C>>;
+  };
+
+#if JLN_MP_MSVC
+  template<unsigned size, unsigned stride, unsigned i, class x>
+  using slice_impl_msvc = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
+#endif
+
+  template<unsigned size, unsigned stride, class C>
+  struct _slice_impl
+  {
+    template<int_... ints>
+    struct impl
+    {
+      template<class... xs>
+      using f = typename join<C>::template f<
+#if JLN_MP_MSVC
+        slice_impl_msvc<size, stride, ints, xs>...
+#else
+        typename wrap_in_list_c<(ints <= size && ints % stride == 0)>
+        ::template f<xs>...
+#endif
+      >;
+    };
+  };
+
+  template<>
+  struct _slice<1>
+  {
+    template<unsigned start, unsigned size, unsigned stride, class C, std::size_t len>
+    using f = drop_front_c<
+      start,
+      typename emp::make_int_sequence_v_c<
+        len - start,
+        lift_c<_slice_impl<size * stride - stride + 1, stride, C>
+               ::template impl>
+      >
+    >;
+  };
+
+  template<>
+  struct _slice<0>
+  {
+    template<unsigned start, unsigned size, unsigned /*stride*/, class C, std::size_t len>
+    using f = clear<C>;
+  };
+
+  template<>
+  struct _slice<3>
+  {
+    template<unsigned start, unsigned size, unsigned /*stride*/, class C, std::size_t len>
+    using f = drop_front_c<start, front<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    constexpr int_ sliding_stride(int_ size, int_ stride);
+
+    template<int_ size, int_ stride, int_>
+    struct mk_sliding;
+  }
+  /// \endcond
+
+  /// \ingroup list
+
+  /// Returns sliding windows of width \c size.
+  /// \pre `stride != 0`
+  /// \pre `size >= 0`
+  /// \treturn \sequence of \list
+  /// Given a sequence and a count n, place a window over the first n elements of the underlying range. Return the contents of that window as the first element of the adapted range, then slide the window forward one element at a time until hitting the end of the underlying range.
+  /// \semantics
+  ///     If `stride < 0`, then `stride = stride + size`
+  ///     If `sizeof...(xs) < size`, then `f = C::f<xs...>`
+  ///     If `stride > 1`, the last window may be smaller than \c size
+  template<class size, class stride, class C = listify>
+  using sliding_with_stride = typename detail::mk_sliding<
+    size::value, stride::value,
+    detail::sliding_stride(size::value, stride::value)
+  >::template f<C>;
+
+  template<int_ size, int_ stride = 1, class C = listify>
+  using sliding_with_stride_c = typename detail::mk_sliding<size, stride,
+    detail::sliding_stride(size, stride)
+  >::template f<C>;
+
+  template<class size, class C = listify>
+  using sliding = sliding_with_stride_c<size::value, 1, C>;
+
+  template<int_ size, class C = listify>
+  using sliding_c = sliding_with_stride_c<size, 1, C>;
+
+  namespace emp
+  {
+    template<class L, class size, class stride, class C = mp::listify>
+    using sliding_with_stride = unpack<L, mp::sliding_with_stride<size, stride, C>>;
+
+    template<class L, int_ size, int_ stride, class C = mp::listify>
+    using sliding_with_stride_c = unpack<L, mp::sliding_with_stride_c<size, stride, C>>;
+
+    template<class L, class size, class C = mp::listify>
+    using sliding = unpack<L, mp::sliding<size, C>>;
+
+    template<class L, int_ size, class C = mp::listify>
+    using sliding_c = unpack<L, mp::sliding_c<size, C>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  constexpr int_ sliding_stride(int_ size, int_ stride)
+  {
+    if (!stride || size < 1) {
+      return size == 0 ? -2 : -1;
+    }
+
+    if (stride < 0) {
+      stride += size;
+      if (stride <= 0) {
+        return -1;
+      }
+    }
+
+    return stride;
+  }
+
+  template<int>
+  struct _sliding;
+
+  constexpr int sliding_select(int n, int_ size, int_ stride);
+
+  template<int_ size, int_ stride, class C>
+  struct sliding_
+  {
+    template<class... xs>
+    using f = typename detail::_sliding<detail::sliding_select(
+      sizeof...(xs), size, stride)
+    >::template f<C, size, stride, xs...>;
+  };
+
+  template<int_ size, int_, int_ stride>
+  struct mk_sliding
+  {
+    template<class C>
+    using f = sliding_<size, stride, optimize_useless_transform_unpack_t<C>>;
+  };
+
+  template<class C>
+  struct sliding_nostride
+  {};
+
+  template<class C>
+  struct sliding_0size
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
+  };
+
+  template<int_ size, int_ stride>
+  struct mk_sliding<size, stride, -1>
+  {
+    template<class C>
+    using f = sliding_nostride<C>;
+  };
+
+  template<int_ size, int_ stride>
+  struct mk_sliding<size, stride, -2>
+  {
+    template<class C>
+    using f = sliding_0size<C>;
+  };
+
+  constexpr int_ slinding_pivot(int_ nx, int_ size, int_ stride)
+  {
+    return nx - (nx - size + stride - 1) / stride * stride - 1;
+  }
+
+  constexpr int sliding_select(int n, int_ size, int_ stride)
+  {
+    return n <= size ? (n ? 1 : 0)         // C<list<xs...>>
+      : size == 1 ? (stride == 1 ? 2 : 3)  // C<list<xs>...> / slice<0, n/stride, stride>
+      : stride > n ? 9                     // take_front
+      : stride == 1 ? (size == 2 ? 4 : 5)  // common case
+      : stride == size ? 6                 // group_n
+      // slice<zip_longest> / slice<zip>
+      : ((n - size) % stride) ? (slinding_pivot(n, size, stride) < 0 ? 7 : 8) : 7;
+  }
+
+  template<>
+  struct _sliding<-1>
+  {};
+
+  // sizeof...(xs) == 0
+  template<>
+  struct _sliding<0>
+  {
+    template<class C, int_, int_, class...>
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
+  };
+
+  // sizeof...(xs) < size
+  template<>
+  struct _sliding<1>
+  {
+    template<class C, int_, int_, class... xs>
+    using f = JLN_MP_CALL_TRACE(C, list<xs...>);
+  };
+
+  // size=1  stride=1
+  template<>
+  struct _sliding<2>
+  {
+    template<class C, int_, int_, class... xs>
+    using f = JLN_MP_CALL_TRACE(C, list<xs>...);
+  };
+
+  // size=1  stride!=1
+  template<>
+  struct _sliding<3>
+  {
+    template<class C, int_, int_ stride, class... xs>
+    using f = typename _slice<1>
+      ::template f<0, (sizeof...(xs) + stride - 1) / stride, stride, transform<listify, C>, sizeof...(xs)>
+      ::template f<xs...>;
+  };
+
+  // stride>size
+  template<>
+  struct _sliding<9>
+  {
+    template<class C, int_ size, int_, class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename rotate_c<size, drop_front_c<sizeof...(xs)-size>>::template f<xs...>
+    );
+  };
+
+  // size=2  stride=1  (pairwise)
+  template<>
+  struct _sliding<4>
+  {
+    template<class C, int_, int_, class... xs>
+    using f = typename detail::pairwise_impl<rotate_c<-1>::f<xs...>>
+      ::template f<C, listify, xs...>
+      ;
+  };
+
+  // size>2  stride=1
+  template<>
+  struct _sliding<5>
+  {
+    struct impl
+    {
+      template<int_... i>
+      struct f
+      {
+        template<class C, int_ size, class drop_front>
+        using g = _tee<zip<C>, rotate_c<i-size, drop_front>...>;
+      };
+    };
+
+    template<class C, int_ size, int_, class... xs>
+    using f = typename emp::make_int_sequence_v_c<size, impl>
+      ::template g<C, size-1, drop_front_c<size-1>>
+      ::template f<xs...>;
+  };
+
+  // stride=size (group_n)
+  template<>
+  struct _sliding<6>
+  {
+    template<class C, int_ size, int_, class... xs>
+    using f = typename emp::make_int_sequence_v_c<
+      sizeof...(xs), lift_c<_group_n_impl>
+    >::template f<C, size, xs...>;
+  };
+
+  // size>1  stride>1  (all list = size)
+  template<>
+  struct _sliding<7>
+  {
+    struct impl
+    {
+      template<int_... i>
+      struct f
+      {
+        template<class C, int_ size, int_ stride>
+        using g = _tee<zip<C>, slice_c<i, size, stride>...>;
+      };
+    };
+
+    template<class C, int_ size, int_ stride, class... xs>
+    using f = typename emp::make_int_sequence_v_c<size, impl>
+      ::template g<C, (sizeof...(xs) - size) / stride + 1, stride>
+      ::template f<xs...>;
+  };
+
+  constexpr int_ slinding8_pivot(int_ nx, int_ size, int_ stride)
+  {
+    int_ r = slinding_pivot(nx, size, stride);
+    return r < 0 ? size : r;
+  }
+
+  // size>1  stride>1  (last list < size)
+  template<>
+  struct _sliding<8>
+  {
+    template<class F, class C>
+    struct adjust
+    {
+      template<class x, class... xs>
+      using f = typename C::template f<xs..., typename F::template f<x>>;
+    };
+
+    struct impl
+    {
+      template<int_... i>
+      struct f
+      {
+        template<class C, int_ size, int_ stride, int_ pivot>
+        using g = _tee<zip<
+          rotate_c<-1, adjust<unpack<rotate_c<-1, pop_front<>>>, C>>
+        >, slice_c<i, size - (pivot < i), stride,
+          typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>
+        >...>;
+      };
+    };
+
+    template<class C, int_ size, int_ stride, class... xs>
+    using f = typename emp::make_int_sequence_v_c<size, impl>
+      ::template g<
+        C,
+        (sizeof...(xs) - size) / stride + 2,
+        stride,
+        slinding8_pivot(sizeof...(xs), size, stride)
+      >
+      ::template f<xs...>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
     template<unsigned i, unsigned j, bool = (i < j), bool = (i == j)>
     struct _select_swap_index;
   }
@@ -14943,9 +15048,9 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename join<C>::template f<
-      typename take_front_c<i>::template f<xs...>,
+      typename rotate_c<i, drop_front_c<sizeof...(xs) - i>>::template f<xs...>,
       list<typename at_c<j>::template f<xs...>>,
-      typename drop_front_c<i+1, take_front_c<j-i-1>>::template f<xs...>,
+      typename rotate_c<j, drop_front_c<sizeof...(xs) - j + i + 1>>::template f<xs...>,
       list<typename at_c<i>::template f<xs...>>,
       typename drop_front_c<j+1>::template f<xs...>
     >;
@@ -15441,7 +15546,7 @@ namespace jln::mp::traits
   struct Name                                     \
   {                                               \
     template<class... xs>                         \
-    using f = JLN_MP_CALL_TRACE(C,              \
+    using f = JLN_MP_CALL_TRACE(C,                \
       typename std::Name<xs...>::type);           \
   };                                              \
                                                   \
