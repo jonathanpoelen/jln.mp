@@ -2,6 +2,7 @@
 
 #include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/algorithm/circulant_matrix.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/algorithm/pairwise.hpp>
 
@@ -9,7 +10,7 @@ namespace jln::mp::smp
 {
   template<class F = listify, class C = listify>
   using pairwise_with = contract<mp::pairwise_with<
-    assume_binary<F>, mp::monadic_xs<assume_lists<C>>
+    assume_binary<F>, detail::smp_listify_or_monadic_xs<F, C>
   >>;
 
   template<class C = listify>

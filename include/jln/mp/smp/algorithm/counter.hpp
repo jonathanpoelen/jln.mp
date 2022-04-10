@@ -2,6 +2,7 @@
 
 #include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/algorithm/circulant_matrix.hpp>
 #include <jln/mp/algorithm/counter.hpp>
 #include <jln/mp/functional/monadic.hpp>
 
@@ -13,7 +14,7 @@ namespace jln::mp::smp
 
   template<class F = listify, class C = listify>
   using counter_wrapped_with = contract<mp::counter_wrapped_with<
-    assume_binary<F>, mp::monadic_xs<subcontract<C>>>>;
+    assume_binary<F>, detail::smp_listify_or_monadic_xs<F, C>>>;
 }
 
 namespace jln::mp::detail

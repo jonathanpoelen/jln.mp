@@ -2,6 +2,7 @@
 
 #include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/algorithm/circulant_matrix.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/algorithm/regroup.hpp>
 
@@ -18,7 +19,8 @@ namespace jln::mp::smp
       detail::counter_to_repeat<subcontract<F>>,
       violation
     >,
-    mp::monadic_xs<subcontract<C>>>>;
+    detail::smp_listify_or_monadic_xs<F, C>>
+  >;
 }
 
 namespace jln::mp::detail
