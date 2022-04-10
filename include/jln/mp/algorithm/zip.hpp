@@ -9,8 +9,8 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<class C = listify>
-    struct _zip;
+    template<int>
+    struct _zip_dispatch;
   }
   /// \endcond
 
@@ -33,20 +33,17 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence of \list
   /// \see zip_longest
-#ifdef JLN_MP_DOXYGENATING
-  template<class C = listify>
-  struct zip
+  template<class F = listify, class C = listify>
+  struct zip_with
   {
     template<class... seqs>
-    using f;
+    using f = typename detail::_zip_dispatch<
+      sizeof...(seqs) ? sizeof...(seqs) <= 8 ? 1 : 2 : 0
+    >::template f<C, F, seqs...>;
   };
-#else
-  template<class C = listify>
-  using zip = detail::_zip<detail::optimize_useless_transform_unpack_t<C>>;
-#endif
 
-  template<class F = listify, class C = listify>
-  using zip_with = zip<transform<unpack<F>, C>>;
+  template<class C = listify>
+  using zip = zip_with<listify, C>;
 
   namespace emp
   {
@@ -67,86 +64,75 @@ namespace jln::mp::detail
   template<class...>
   struct _zip_impl;
 
-#define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep)        \
-  template<class C, mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)> \
-  struct _zip_impl<C, mp_xs(list<, ...>, JLN_MP_COMMA)>        \
-  {                                                            \
-    using type = JLN_MP_CALL_TRACE(C, list<                    \
-      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)              \
-    >...);                                                     \
-  };                                                           \
-                                                               \
-  template<class F, class C,                                   \
-    mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>                 \
-  struct _zip_impl<                                            \
-    transform<unpack<F>, C>, mp_xs(list<, ...>, JLN_MP_COMMA)> \
-  {                                                            \
-    using type = JLN_MP_CALL_TRACE(C, JLN_MP_CALL_TRACE(F,     \
-      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)              \
-    )...);                                                     \
+#define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep) \
+  template<mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>   \
+  struct _zip_impl<mp_xs(list<, ...>, JLN_MP_COMMA)>    \
+  {                                                     \
+    template<class C, class F>                          \
+    using f = typename C::template f<                   \
+      typename F::template f<                           \
+        mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)     \
+      >...                                              \
+    >;                                                  \
   };
 
   JLN_MP_GEN_XS_1_TO_8_INCLUDED(JLN_MP_TRANSPOSE_IMPL)
 
 #undef JLN_MP_TRANSPOSE_IMPL
 
-  template<int>
-  struct _zip_dispatch;
-
-  template<class C>
-  struct _zip
-  {
-    template<class... seqs>
-    using f = typename _zip_dispatch<
-      sizeof...(seqs) ? (sizeof...(seqs) > 8 ? 2 : 1) : 0
-    >::template f<C, seqs...>;
-  };
-
   template<>
   struct _zip_dispatch<0>
   {
-    template<class C>
+    template<class C, class F>
     using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
   template<>
   struct _zip_dispatch<1>
   {
-    template<class C, class... seqs>
-    using f = typename _zip_impl<C, seqs...>::type;
+    template<class C, class F, class... seqs>
+    using f = typename _zip_impl<seqs...>::template f<C, F>;
   };
 
   template<int>
-  struct _recursive_zip
-  {
-    template<int n, class C,
-      class _0, class _1, class _2, class _3, class _4,
-      class _5, class _6, class _7, class... seqs>
-    using f = typename _recursive_zip<(n >= 8 ? 8 : n)>
-      ::template f<
-        n-8, C, seqs..., typename _zip_impl<listify,
-          _0, _1, _2, _3, _4, _5, _6, _7>::type
-      >;
-  };
+  struct _recursive_zip;
 
   template<>
   struct _recursive_zip<0>
   {
-    template<int, class C, class... seqs>
-    using f = typename zip<transform<unpack<join<>>, C>>
-      ::template f<seqs...>;
+    template<int n, class C, class F, class... seqs>
+    using f = typename detail::_zip_dispatch<
+      sizeof...(seqs) <= 8 ? 1 : 2
+    >::template f<C, F, seqs...>;
   };
 
-#define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep)      \
-  template<>                                                 \
-  struct _recursive_zip<n>                                   \
-  {                                                          \
-    template<int, class C                                    \
-      mp_xs(JLN_MP_COMMA class, JLN_MP_NIL, JLN_MP_NIL),     \
-      class... seqs>                                         \
-    using f = typename zip<transform<unpack<join<>>, C>>     \
-      ::template f<seqs..., typename _zip_impl<listify,      \
-        mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>::type>; \
+#define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep)                 \
+  template<>                                                            \
+  struct _recursive_zip<n>                                              \
+  {                                                                     \
+    template<int, class C, class F                                      \
+      mp_xs(JLN_MP_COMMA class, JLN_MP_NIL, JLN_MP_NIL),                \
+      class... seqs>                                                    \
+    using f = typename detail::_zip_dispatch<                           \
+      sizeof...(seqs) < 8 ? 1 : 2                                       \
+    >::template f<C, join<F>, seqs...,                                  \
+        typename _zip_impl<mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)> \
+        ::template f<listify, listify>                                  \
+      >;                                                                \
+  };
+
+  template<>
+  struct _recursive_zip<8>
+  {
+    template<int n, class C, class F,
+      class _0, class _1, class _2, class _3, class _4,
+      class _5, class _6, class _7, class... seqs>
+    using f = typename _recursive_zip<n < 8 ? n : 8>
+      ::template f<
+        n-8, C, F, seqs..., typename _zip_impl<
+          _0, _1, _2, _3, _4, _5, _6, _7
+        >::template f<listify, listify>
+      >;
   };
 
   JLN_MP_GEN_XS_1_TO_8(JLN_MP_TRANSPOSE_IMPL)
@@ -156,10 +142,9 @@ namespace jln::mp::detail
   template<>
   struct _zip_dispatch<2>
   {
-    template<class C, class... seqs>
-    using f = typename _recursive_zip<
-      (sizeof...(seqs) >= 8 ? 8 : sizeof...(seqs))
-    >::template f<sizeof...(seqs)-8, C, seqs...>;
+    template<class C, class F, class... seqs>
+    using f = typename _recursive_zip<!sizeof...(seqs) + 8>
+      ::template f<sizeof...(seqs)-8, C, F, seqs...>;
   };
 }
 /// \endcond
