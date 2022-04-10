@@ -12,7 +12,7 @@ namespace jln::mp
     template<int>
     struct fold_left_xs_impl;
 
-    constexpr int_ _partial_fold_left_xs_size(int_ i, int_ size)
+    constexpr int_ partial_fold_left_xs_size(int_ i, int_ size)
     {
       // size contains state + xs...
       return (size == 0) ? 0
@@ -48,7 +48,7 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C,
       detail::partial_fold_left_xs_select<
         JLN_MP_TRACE_F(F),
-        detail::_partial_fold_left_xs_size(OffsetEnd, sizeof...(xs)),
+        detail::partial_fold_left_xs_size(OffsetEnd, sizeof...(xs)),
         xs...
       >
     );
