@@ -63,6 +63,7 @@ TEST()
     .test<list<seq_0_1>, _0, _1>()
     .test<list<seq_0_1_2>, _0, _1, _2>()
     .test<list<seq_0_1_2, seq_1_2_3>, _0, _1, _2, _3>()
+    .test<list<seq_0_1_2, seq_1_2_3, seq_2_3_4>, _0, _1, _2, _3, _4>()
     ;
 
   test_context<sliding_with_stride<_1, _2>, smp::sliding_with_stride<_1, _2>>()

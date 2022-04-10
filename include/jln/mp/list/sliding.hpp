@@ -148,7 +148,7 @@ namespace jln::mp::detail
       : stride == 1 ? (size == 2 ? 4 : 5)  // common case
       : stride == size ? 6                 // group_n
       // slice<zip_longest> / slice<zip>
-      : ((n - size) % stride) ? (slinding_pivot(n, size, stride)  < 0  ?  7 : 8) : 7;
+      : ((n - size) % stride) ? (slinding_pivot(n, size, stride) < 0 ? 7 : 8) : 7;
   }
 
   template<>
@@ -189,7 +189,17 @@ namespace jln::mp::detail
       ::template f<xs...>;
   };
 
-  // size=2  stride=1
+  // stride>size
+  template<>
+  struct _sliding<9>
+  {
+    template<class C, int_ size, int_, class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename rotate_c<size, drop_front_c<sizeof...(xs)-size>>::template f<xs...>
+    );
+  };
+
+  // size=2  stride=1  (pairwise)
   template<>
   struct _sliding<4>
   {
@@ -199,23 +209,27 @@ namespace jln::mp::detail
       ;
   };
 
-  // size!=2  stride=1
+  // size>2  stride=1
   template<>
   struct _sliding<5>
   {
-    template<class C, int_ size, class drop_front>
     struct impl
     {
       template<int_... i>
-      using f = _tee<zip<C>, rotate_c<i-size, drop_front>...>;
+      struct f
+      {
+        template<class C, int_ size, class drop_front>
+        using g = _tee<zip<C>, rotate_c<i-size, drop_front>...>;
+      };
     };
 
     template<class C, int_ size, int_, class... xs>
-    using f = typename emp::make_int_sequence_v_c<
-      size, impl<C, size-1, drop_front_c<size-1>>
-    >::template f<xs...>;
+    using f = typename emp::make_int_sequence_v_c<size, impl>
+      ::template g<C, size-1, drop_front_c<size-1>>
+      ::template f<xs...>;
   };
 
+  // stride=size (group_n)
   template<>
   struct _sliding<6>
   {
@@ -225,20 +239,24 @@ namespace jln::mp::detail
     >::template f<C, size, xs...>;
   };
 
+  // size>1  stride>1  (all list = size)
   template<>
   struct _sliding<7>
   {
-    template<class C, int_ size, int_ stride>
     struct impl
     {
-      template<size_t... i>
-      using f = _tee<zip<C>, slice_c<i, size, stride>...>;
+      template<int_... i>
+      struct f
+      {
+        template<class C, int_ size, int_ stride>
+        using g = _tee<zip<C>, slice_c<i, size, stride>...>;
+      };
     };
 
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename emp::make_int_sequence_v_c<
-      size, impl<C, (sizeof...(xs) - size) / stride + 1, stride>
-    >::template f<xs...>;
+    using f = typename emp::make_int_sequence_v_c<size, impl>
+      ::template g<C, (sizeof...(xs) - size) / stride + 1, stride>
+      ::template f<xs...>;
   };
 
   constexpr int_ slinding8_pivot(int_ nx, int_ size, int_ stride)
@@ -247,6 +265,7 @@ namespace jln::mp::detail
     return r < 0 ? size : r;
   }
 
+  // size>1  stride>1  (last list < size)
   template<>
   struct _sliding<8>
   {
@@ -257,32 +276,29 @@ namespace jln::mp::detail
       using f = typename C::template f<xs..., typename F::template f<x>>;
     };
 
-    template<class C, int_ size, int_ stride, int_ pivot>
     struct impl
     {
       template<int_... i>
-      using f = _tee<zip<
-        rotate_c<-1, adjust<unpack<rotate_c<-1, pop_front<>>>, C>>
-      >, slice_c<i, size - (pivot < i), stride,
-        typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>
-      >...>;
+      struct f
+      {
+        template<class C, int_ size, int_ stride, int_ pivot>
+        using g = _tee<zip<
+          rotate_c<-1, adjust<unpack<rotate_c<-1, pop_front<>>>, C>>
+        >, slice_c<i, size - (pivot < i), stride,
+          typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>
+        >...>;
+      };
     };
 
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename emp::make_int_sequence_v_c<size, impl<
-      C,
-      (sizeof...(xs) - size) / stride + 2,
-      stride,
-      slinding8_pivot(sizeof...(xs), size, stride)
-    >>
-    ::template f<xs...>;
-  };
-
-  template<>
-  struct _sliding<9>
-  {
-    template<class C, int_ size, int_, class... xs>
-    using f = JLN_MP_CALL_TRACE(C, typename take_front_c<size>::template f<xs...>);
+    using f = typename emp::make_int_sequence_v_c<size, impl>
+      ::template g<
+        C,
+        (sizeof...(xs) - size) / stride + 2,
+        stride,
+        slinding8_pivot(sizeof...(xs), size, stride)
+      >
+      ::template f<xs...>;
   };
 }
 /// \endcond
