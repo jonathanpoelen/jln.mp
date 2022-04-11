@@ -38,6 +38,7 @@ namespace jln::mp
 #include <jln/mp/list/list.hpp>
 #include <type_traits>
 
+/// \cond
 namespace jln::mp
 {
   template<>
@@ -48,7 +49,6 @@ namespace jln::mp
   };
 }
 
-/// \cond
 namespace jln::mp::detail
 {
   template<>
