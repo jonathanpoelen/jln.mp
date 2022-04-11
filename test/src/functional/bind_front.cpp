@@ -26,23 +26,21 @@ TEST()
     ;
 
   test_context<
-    bind_front_v<numbers<>, _3>,
-    smp::bind_front_v<smp::numbers<>, _3>,
+    bind_front_c<listify, 3>,
+    smp::bind_front_c<smp::listify, 3>,
     -1
   >()
     .test<seq_3>()
     .test<seq_3_1, _1>()
-    .not_invocable<int>()
     ;
 
   test_context<
-    bind_front_v_c<numbers<>, 3>,
-    smp::bind_front_v_c<smp::numbers<>, 3>,
+    bind_front_v<listify, 3>,
+    smp::bind_front_v<smp::listify, 3>,
     -1
   >()
-    .test<seq_3>()
-    .test<seq_3_1, _1>()
-    .not_invocable<int>()
+    .test<list<val<3>>>()
+    .test<list<val<3>, _1>, _1>()
     ;
 
   ut::not_invocable<smp::bind_front<smp::pop_front<>>>();

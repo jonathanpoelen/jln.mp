@@ -17,11 +17,13 @@ namespace jln::mp
 
 #if defined( __cpp_nontype_template_parameter_auto)
 # if  __cpp_nontype_template_parameter_auto >= 201606L
+#  define JLN_MP_ENABLE_TPL_AUTO 1
 #  define JLN_MP_TPL_AUTO_OR_INT auto
 # endif
 #endif
 
 #ifndef JLN_MP_TPL_AUTO_OR_INT
 # define JLN_MP_TPL_AUTO_OR_INT ::jln::mp::int_
+# define JLN_MP_ENABLE_TPL_AUTO 0
 #endif
 }

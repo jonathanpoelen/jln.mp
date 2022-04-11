@@ -23,35 +23,25 @@ namespace jln::mp
     using f = JLN_MP_DCALL_TRACE_XS(xs, F, BoundArgs..., xs...);
   };
 
-#if __cplusplus >= 201703L
-  template<class F, JLN_MP_TPL_AUTO_OR_INT... BoundArgs>
-  using bind_front_c = bind_front<F, val<BoundArgs>...>;
-#else
   template<class F, int_... BoundArgs>
-  using bind_front_c = bind_front<F, typed_val<int_, BoundArgs>...>;
+  using bind_front_c = bind_front<F, number<BoundArgs>...>;
+
+#if JLN_MP_ENABLE_TPL_AUTO
+  template<class F, auto... BoundArgs>
+  using bind_front_v = bind_front<F, val<BoundArgs>...>;
 #endif
-
-  template<class F, JLN_MP_TPL_AUTO_OR_INT... BoundArgs>
-  struct bind_front_v_c
-  {
-    template<class... xs>
-    using f = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
-      ::template f<F, ::jln::mp::detail::too_many_arguments_error>
-      ::template f<BoundArgs..., xs::value...>;
-  };
-
-  template<class F, class... BoundArgs>
-  using bind_front_v = bind_front_v_c<F, BoundArgs::value...>;
 
   namespace emp
   {
     template<class L, class F, class... BoundArgs>
     using bind_front = unpack<L, mp::bind_front<F, BoundArgs...>>;
 
-    template<class L, class F, class... BoundArgs>
-    using bind_front_v = unpack<L, mp::bind_front_v<F, BoundArgs...>>;
+    template<class L, class F, int_... BoundArgs>
+    using bind_front_c = unpack<L, mp::bind_front_c<F, BoundArgs...>>;
 
-    template<class L, class F, JLN_MP_TPL_AUTO_OR_INT... BoundArgs>
-    using bind_front_v_c = unpack<L, mp::bind_front_v_c<F, BoundArgs...>>;
+#if JLN_MP_ENABLE_TPL_AUTO
+    template<class L, class F, auto... BoundArgs>
+    using bind_front_v = unpack<L, mp::bind_front_v<F, BoundArgs...>>;
+#endif
   }
 } // namespace jln::mp
