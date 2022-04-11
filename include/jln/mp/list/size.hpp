@@ -21,4 +21,13 @@ namespace jln::mp
     template<class L, class C = mp::identity>
     using size = unpack<L, mp::size<C>>;
   }
+
+  /// \cond
+  template<>
+  struct size<identity>
+  {
+    template<class... xs>
+    using f = number<sizeof...(xs)>;
+  };
+  /// \endcond
 }

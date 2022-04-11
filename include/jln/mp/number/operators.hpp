@@ -748,6 +748,102 @@ JLN_MP_DIAGNOSTIC_POP()
 namespace jln::mp
 {
   template<>
+  struct or_<identity>
+  {
+    template<class... xs>
+    using f = number<(xs::value || ... || false)>;
+  };
+
+  template<>
+  struct left_or<identity>
+  {
+    template<class... xs>
+    using f = number<(false || ... || xs::value)>;
+  };
+
+
+  template<>
+  struct and_<identity>
+  {
+    template<class... xs>
+    using f = number<(xs::value && ... && true)>;
+  };
+
+  template<>
+  struct left_and<identity>
+  {
+    template<class... xs>
+    using f = number<(true && ... && xs::value)>;
+  };
+
+
+  template<>
+  struct add<identity>
+  {
+    template<class... xs>
+    using f = number<(xs::value + ...)>;
+  };
+
+  template<>
+  struct left_add<identity>
+  {
+    template<class... xs>
+    using f = number<(... + xs::value)>;
+  };
+
+
+  template<>
+  struct not_<identity>
+  {
+    template<class x>
+    using f = number<(!x::value)>;
+  };
+
+
+  template<>
+  struct equal<identity>
+  {
+    template<class x, class y>
+    using f = number<(x::value == y::value)>;
+  };
+
+  template<>
+  struct not_equal<identity>
+  {
+    template<class x, class y>
+    using f = number<(x::value != y::value)>;
+  };
+
+  template<>
+  struct less<identity>
+  {
+    template<class x, class y>
+    using f = number<(x::value < y::value)>;
+  };
+
+  template<>
+  struct less_equal<identity>
+  {
+    template<class x, class y>
+    using f = number<(x::value <= y::value)>;
+  };
+
+  template<>
+  struct greater<identity>
+  {
+    template<class x, class y>
+    using f = number<(x::value > y::value)>;
+  };
+
+  template<>
+  struct greater_equal<identity>
+  {
+    template<class x, class y>
+    using f = number<(x::value >= y::value)>;
+  };
+
+
+  template<>
   struct as_bool<not_<>>
   {
     template<class x>

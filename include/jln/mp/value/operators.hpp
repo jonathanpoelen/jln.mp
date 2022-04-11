@@ -755,3 +755,96 @@ namespace jln::mp::emp
 }
 
 JLN_MP_DIAGNOSTIC_POP()
+
+/// \cond
+namespace jln::mp
+{
+  template<>
+  struct val_or<identity>
+  {
+    template<class... xs>
+    using f = val<(xs::value || ... || false)>;
+  };
+
+  template<>
+  struct val_left_or<identity>
+  {
+    template<class... xs>
+    using f = val<(false || ... || xs::value)>;
+  };
+
+
+  template<>
+  struct val_and<identity>
+  {
+    template<class... xs>
+    using f = val<(xs::value && ... && true)>;
+  };
+
+  template<>
+  struct val_left_and<identity>
+  {
+    template<class... xs>
+    using f = val<(true && ... && xs::value)>;
+  };
+
+
+  template<>
+  struct val_add<identity>
+  {
+    template<class... xs>
+    using f = val<(xs::value + ...)>;
+  };
+
+
+  template<>
+  struct val_not<identity>
+  {
+    template<class x>
+    using f = val<(!x::value)>;
+  };
+
+
+  template<>
+  struct val_equal<identity>
+  {
+    template<class x, class y>
+    using f = val<(x::value == y::value)>;
+  };
+
+  template<>
+  struct val_not_equal<identity>
+  {
+    template<class x, class y>
+    using f = val<(x::value != y::value)>;
+  };
+
+  template<>
+  struct val_less<identity>
+  {
+    template<class x, class y>
+    using f = val<(x::value < y::value)>;
+  };
+
+  template<>
+  struct val_less_equal<identity>
+  {
+    template<class x, class y>
+    using f = val<(x::value <= y::value)>;
+  };
+
+  template<>
+  struct val_greater<identity>
+  {
+    template<class x, class y>
+    using f = val<(x::value > y::value)>;
+  };
+
+  template<>
+  struct val_greater_equal<identity>
+  {
+    template<class x, class y>
+    using f = val<(x::value >= y::value)>;
+  };
+}
+/// \endcond
