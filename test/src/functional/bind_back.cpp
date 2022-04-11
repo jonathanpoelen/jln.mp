@@ -34,6 +34,7 @@ TEST()
     .test<seq_1_3, _1>()
     ;
 
+#if JLN_MP_ENABLE_TPL_AUTO
   test_context<
     bind_back_v<listify, 3>,
     smp::bind_back_v<smp::listify, 3>,
@@ -42,6 +43,7 @@ TEST()
     .test<list<val<3>>>()
     .test<list<_1, val<3>>, _1>()
     ;
+#endif
 
   ut::not_invocable<smp::bind_back<smp::pop_back<>>>();
 }
