@@ -44,6 +44,7 @@ namespace jln::mp
 
 
 #include <jln/mp/algorithm/merge.hpp>
+#include <jln/mp/list/take_front.hpp>
 
 namespace jln::mp
 {
@@ -65,12 +66,14 @@ namespace jln::mp::detail
   struct _sort<3, Cmp>
   {
     template<class... xs>
-    using f = typename _merge<
+    using f = typename detail::merge_impl<
+      list<>,
       typename take_front_c<sizeof...(xs) / 2, _sort<min(3, sizeof...(xs) / 2), Cmp>>
         ::template f<xs...>,
       typename drop_front_c<sizeof...(xs) / 2, _sort<min(3, (sizeof...(xs) + 1) / 2), Cmp>>
-        ::template f<xs...>
-    >::template f<Cmp>::type;
+        ::template f<xs...>,
+      Cmp
+    >::type;
   };
 
   template<bool>
