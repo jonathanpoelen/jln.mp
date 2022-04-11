@@ -65,6 +65,7 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
+  ut::not_invocable<smp::drop_while<smp::always<_3>>, _1, _1, _1>();
   ut::not_invocable<smp::drop_while<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::drop_while<is<_3>, smp::listify, bad_function>>();
   ut::not_invocable<smp::drop_while<is<_3>, bad_function>, void>();
@@ -141,6 +142,7 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
+  ut::not_invocable<smp::drop_inclusive_while<smp::always<_3>>, _1, _1, _1>();
   ut::not_invocable<smp::drop_inclusive_while<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::drop_inclusive_while<is<_3>, smp::listify, bad_function>>();
   ut::not_invocable<smp::drop_inclusive_while<is<_3>, bad_function>, void>();

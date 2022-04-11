@@ -21,25 +21,52 @@ namespace jln::mp
   struct val_or
   {
     template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, val<(xs::value || ... || false)>);
+  };
+
+  template<class C = identity>
+  struct val_left_or
+  {
+    template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, val<(false || ... || xs::value)>);
   };
+
 
   template<class C = identity>
   struct val_and
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, val<(true && ... && xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(xs::value && ... && true)>);
   };
 
   template<class C = identity>
+  struct val_left_and
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, val<(true && ... && xs::value)>);
+  };
+
+
+  template<class C = identity>
   struct val_add
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, val<(xs::value + ...)>);
+  };
+
+  template<class C = identity>
+  using val_add0 = if_<size<>, val_add<C>, always<val<0>, C>>;
+
+  template<class C = identity>
+  struct val_left_add
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, val<(... + xs::value)>);
   };
 
   template<class C = identity>
-  using val_add0 = if_<size<>, val_add<C>, always<val<0>, C>>;
+  using val_left_add0 = if_<size<>, val_left_add<C>, always<val<0>, C>>;
+
 
   template<class C = identity>
   struct val_sub
@@ -71,11 +98,12 @@ namespace jln::mp
   template<class C = identity>
   using val_rshift0 = if_<size<>, val_rshift<C>, always<val<0>, C>>;
 
+
   template<class C = identity>
   struct val_mul
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, val<(... * xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(xs::value * ...)>);
   };
 
   template<class C = identity>
@@ -83,6 +111,20 @@ namespace jln::mp
 
   template<class C = identity>
   using val_mul1 = if_<size<>, val_mul<C>, always<val<1>, C>>;
+
+  template<class C = identity>
+  struct val_left_mul
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, val<(... * xs::value)>);
+  };
+
+  template<class C = identity>
+  using val_left_mul0 = if_<size<>, val_left_mul<C>, always<val<0>, C>>;
+
+  template<class C = identity>
+  using val_left_mul1 = if_<size<>, val_left_mul<C>, always<val<1>, C>>;
+
 
   template<class C = identity>
   struct val_div
@@ -110,35 +152,69 @@ namespace jln::mp
   template<class C = identity>
   using val_mod1 = if_<size<>, val_mod<C>, always<val<1>, C>>;
 
+
   template<class C = identity>
   struct val_xor
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, val<(... ^ xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(xs::value ^ ...)>);
   };
 
   template<class C = identity>
   using val_xor0 = if_<size<>, val_xor<C>, always<val<0>, C>>;
 
   template<class C = identity>
+  struct val_left_xor
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, val<(... ^ xs::value)>);
+  };
+
+  template<class C = identity>
+  using val_left_xor0 = if_<size<>, val_left_xor<C>, always<val<0>, C>>;
+
+
+  template<class C = identity>
   struct val_bit_and
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, val<(... & xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, val<(xs::value & ...)>);
   };
 
   template<class C = identity>
   using val_bit_and0 = if_<size<>, val_bit_and<C>, always<val<0>, C>>;
 
   template<class C = identity>
+  struct val_left_bit_and
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, val<(... & xs::value)>);
+  };
+
+  template<class C = identity>
+  using val_left_bit_and0 = if_<size<>, val_bit_and<C>, always<val<0>, C>>;
+
+
+  template<class C = identity>
   struct val_bit_or
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, val<(xs::value | ...)>);
+  };
+
+  template<class C = identity>
+  using val_bit_or0 = if_<size<>, val_bit_or<C>, always<val<0>, C>>;
+
+  template<class C = identity>
+  struct val_left_bit_or
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, val<(... | xs::value)>);
   };
 
   template<class C = identity>
-  using val_bit_or0 = if_<size<>, val_bit_or<C>, always<val<0>, C>>;
+  using val_left_bit_or0 = if_<size<>, val_left_bit_or<C>, always<val<0>, C>>;
+
 
   template<class C = identity>
   struct val_neg
@@ -272,10 +348,22 @@ namespace jln::mp::emp
   using val_and_seq = unpack<L, mp::val_and<C>>;
 
   template<class L, class C = mp::identity>
+  using val_left_or_seq = unpack<L, mp::val_left_or<C>>;
+
+  template<class L, class C = mp::identity>
+  using val_left_and_seq = unpack<L, mp::val_left_and<C>>;
+
+  template<class L, class C = mp::identity>
   using val_add_seq = unpack<L, mp::val_add<C>>;
 
   template<class L, class C = mp::identity>
   using val_add0_seq = unpack<L, mp::val_add0<C>>;
+
+  template<class L, class C = mp::identity>
+  using val_left_add_seq = unpack<L, mp::val_left_add<C>>;
+
+  template<class L, class C = mp::identity>
+  using val_left_add0_seq = unpack<L, mp::val_left_add0<C>>;
 
   template<class L, class C = mp::identity>
   using val_sub_seq = unpack<L, mp::val_sub<C>>;
@@ -305,6 +393,15 @@ namespace jln::mp::emp
   using val_mul1_seq = unpack<L, mp::val_mul1<C>>;
 
   template<class L, class C = mp::identity>
+  using val_left_mul_seq = unpack<L, mp::val_left_mul<C>>;
+
+  template<class L, class C = mp::identity>
+  using val_left_mul0_seq = unpack<L, mp::val_left_mul0<C>>;
+
+  template<class L, class C = mp::identity>
+  using val_left_mul1_seq = unpack<L, mp::val_left_mul1<C>>;
+
+  template<class L, class C = mp::identity>
   using val_div_seq = unpack<L, mp::val_div<C>>;
 
   template<class L, class C = mp::identity>
@@ -329,10 +426,22 @@ namespace jln::mp::emp
   using val_xor0_seq = unpack<L, mp::val_xor0<C>>;
 
   template<class L, class C = mp::identity>
+  using val_left_xor_seq = unpack<L, mp::val_left_xor<C>>;
+
+  template<class L, class C = mp::identity>
+  using val_left_xor0_seq = unpack<L, mp::val_left_xor0<C>>;
+
+  template<class L, class C = mp::identity>
   using val_bit_and_seq = unpack<L, mp::val_bit_and<C>>;
 
   template<class L, class C = mp::identity>
   using val_bit_and0_seq = unpack<L, mp::val_bit_and0<C>>;
+
+  template<class L, class C = mp::identity>
+  using val_left_bit_and_seq = unpack<L, mp::val_left_bit_and<C>>;
+
+  template<class L, class C = mp::identity>
+  using val_left_bit_and0_seq = unpack<L, mp::val_left_bit_and0<C>>;
 
   template<class L, class C = mp::identity>
   using val_bit_or_seq = unpack<L, mp::val_bit_or<C>>;
@@ -340,18 +449,36 @@ namespace jln::mp::emp
   template<class L, class C = mp::identity>
   using val_bit_or0_seq = unpack<L, mp::val_bit_or0<C>>;
 
+  template<class L, class C = mp::identity>
+  using val_left_bit_or_seq = unpack<L, mp::val_left_bit_or<C>>;
+
+  template<class L, class C = mp::identity>
+  using val_left_bit_or0_seq = unpack<L, mp::val_left_bit_or0<C>>;
+
 
   template<auto... xs>
-  using val_or_c = val<(false || ... || xs)>;
+  using val_or_c = val<(xs || ... || false)>;
 
   template<auto... xs>
-  using val_and_c = val<(true && ... && xs)>;
+  using val_and_c = val<(xs && ... && true)>;
 
   template<auto... xs>
-  using val_add_c = val<(... + xs)>;
+  using val_left_or_c = val<(false || ... || xs)>;
+
+  template<auto... xs>
+  using val_left_and_c = val<(true && ... && xs)>;
+
+  template<auto... xs>
+  using val_add_c = val<(xs + ...)>;
 
   template<auto... xs>
   using val_add0_c = val_add_c<xs..., 0>;
+
+  template<auto... xs>
+  using val_left_add_c = val<(... + xs)>;
+
+  template<auto... xs>
+  using val_left_add0_c = val_left_add_c<xs..., 0>;
 
   template<auto... xs>
   using val_sub_c = val<(... - xs)>;
@@ -372,13 +499,22 @@ namespace jln::mp::emp
   using val_rshift0_c = val_rshift_c<xs..., 0>;
 
   template<auto... xs>
-  using val_mul_c = val<(... * xs)>;
+  using val_mul_c = val<(xs * ...)>;
 
   template<auto... xs>
   using val_mul0_c = val_mul_c<xs..., (sizeof...(xs) ? 1 : 0)>;
 
   template<auto... xs>
   using val_mul1_c = val_mul_c<xs..., 1>;
+
+  template<auto... xs>
+  using val_left_mul_c = val<(... * xs)>;
+
+  template<auto... xs>
+  using val_left_mul0_c = val_left_mul_c<xs..., (sizeof...(xs) ? 1 : 0)>;
+
+  template<auto... xs>
+  using val_left_mul1_c = val_left_mul_c<xs..., 1>;
 
   template<auto... xs>
   using val_div_c = val<(... / xs)>;
@@ -391,72 +527,31 @@ namespace jln::mp::emp
 
   template<auto... xs>
   using val_mod_c = val<(... % xs)>;
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<bool, template<auto...> class f, int_ d>
-  struct val_emp_op;
-
-  template<template<auto...> class F, int_ d>
-  struct val_emp_op<true, F, d>
-  {
-    template<auto... xs>
-    using f = F<xs...>;
-  };
-
-  template<template<auto...> class F, int_ d>
-  struct val_emp_op<false, F, d>
-  {
-    template<auto...>
-    using f = val<d>;
-  };
-}
-/// \endcond
-
-namespace jln::mp::emp
-{
-  template<auto... xs>
-  using val_mod0_c = typename detail::val_emp_op<sizeof...(xs) != 0, val_mod_c, 0>
-    ::template f<xs...>;
-
-  template<auto... xs>
-  using val_mod1_c = typename detail::val_emp_op<sizeof...(xs) != 0, val_mod_c, 1>
-    ::template f<xs...>;
-
-  template<auto... xs>
-  using val_xor_c = val<(... ^ xs)>;
-
-  template<auto... xs>
-  using val_xor0_c = val_xor_c<xs..., 0, 0>;
-
-  template<auto... xs>
-  using val_bit_and_c = val<(... & xs)>;
-
-  template<auto... xs>
-  using val_bit_and0_c = typename detail::val_emp_op<sizeof...(xs) != 0, val_bit_and_c, 0>
-    ::template f<xs...>;
-
-  template<auto... xs>
-  using val_bit_or_c = val<(... | xs)>;
-
-  template<auto... xs>
-  using val_bit_or0_c = typename detail::val_emp_op<sizeof...(xs) != 0, val_bit_or_c, 0>
-    ::template f<xs...>;
 
 
   template<class... xs>
-  using val_or = val<(false || ... || xs::value)>;
+  using val_or = val<(xs::value || ... || false)>;
 
   template<class... xs>
-  using val_and = val<(true && ... && xs::value)>;
+  using val_and = val<(xs::value && ... && true)>;
 
   template<class... xs>
-  using val_add = val<(... + xs::value)>;
+  using val_left_or = val<(false || ... || xs::value)>;
+
+  template<class... xs>
+  using val_left_and = val<(true && ... && xs::value)>;
+
+  template<class... xs>
+  using val_add = val<(xs::value + ...)>;
 
   template<class... xs>
   using val_add0 = typename mp::val_add0<>::template f<xs...>;
+
+  template<class... xs>
+  using val_left_add = val<(... + xs::value)>;
+
+  template<class... xs>
+  using val_left_add0 = typename mp::val_add0<>::template f<xs...>;
 
   template<class... xs>
   using val_sub = val<(... - xs::value)>;
@@ -477,13 +572,22 @@ namespace jln::mp::emp
   using val_rshift0 = typename mp::val_rshift0<>::template f<xs...>;
 
   template<class... xs>
-  using val_mul = val<(... * xs::value)>;
+  using val_mul = val<(xs::value * ...)>;
 
   template<class... xs>
   using val_mul0 = typename mp::val_mul0<>::template f<xs...>;
 
   template<class... xs>
   using val_mul1 = typename mp::val_mul1<>::template f<xs...>;
+
+  template<class... xs>
+  using val_left_mul = val<(... * xs::value)>;
+
+  template<class... xs>
+  using val_left_mul0 = typename mp::val_left_mul0<>::template f<xs...>;
+
+  template<class... xs>
+  using val_left_mul1 = typename mp::val_left_mul1<>::template f<xs...>;
 
   template<class... xs>
   using val_div = val<(... / xs::value)>;
@@ -504,22 +608,40 @@ namespace jln::mp::emp
   using val_mod1 = typename mp::val_mod1<>::template f<xs...>;
 
   template<class... xs>
-  using val_xor = val<(... ^ xs::value)>;
+  using val_xor_ = val<(xs::value ^ ...)>;
 
   template<class... xs>
   using val_xor0 = typename mp::val_xor0<>::template f<xs...>;
 
   template<class... xs>
-  using val_bit_and = val<(... & xs::value)>;
+  using val_left_xor = val<(... ^ xs::value)>;
+
+  template<class... xs>
+  using val_left_xor0 = typename mp::val_left_xor0<>::template f<xs...>;
+
+  template<class... xs>
+  using val_bit_and = val<(xs::value & ...)>;
 
   template<class... xs>
   using val_bit_and0 = typename mp::val_bit_and0<>::template f<xs...>;
 
   template<class... xs>
-  using val_bit_or = val<(... | xs::value)>;
+  using val_left_bit_and = val<(... & xs::value)>;
+
+  template<class... xs>
+  using val_left_bit_and0 = typename mp::val_left_bit_and0<>::template f<xs...>;
+
+  template<class... xs>
+  using val_bit_or = val<(xs::value | ...)>;
 
   template<class... xs>
   using val_bit_or0 = typename mp::val_bit_or0<>::template f<xs...>;
+
+  template<class... xs>
+  using val_left_bit_or = val<(... | xs::value)>;
+
+  template<class... xs>
+  using val_left_bit_or0 = typename mp::val_left_bit_or0<>::template f<xs...>;
 
 
   template<class x, class C = mp::identity>
@@ -557,6 +679,79 @@ namespace jln::mp::emp
 
   template<class x, class y, class C = mp::identity>
   using val_greater_equal = typename mp::val_greater_equal<C>::template f<x, y>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<bool, template<auto...> class f, int_ d>
+  struct val_emp_op;
+
+  template<template<auto...> class F, int_ d>
+  struct val_emp_op<true, F, d>
+  {
+    template<auto... xs>
+    using f = F<xs...>;
+  };
+
+  template<template<auto...> class F, int_ d>
+  struct val_emp_op<false, F, d>
+  {
+    template<auto...>
+    using f = val<d>;
+  };
+}
+/// \endcond
+
+namespace jln::mp::emp
+{
+  template<auto... xs>
+  using val_mod0_c = typename detail::val_emp_op<sizeof...(xs) != 0, val_mod_c, 0>
+    ::template f<xs...>;
+
+  template<auto... xs>
+  using val_mod1_c = typename detail::val_emp_op<sizeof...(xs) != 0, val_mod_c, 1>
+    ::template f<xs...>;
+
+  template<auto... xs>
+  using val_xor_c = val<(xs ^ ...)>;
+
+  template<auto... xs>
+  using val_xor0_c = val_xor_c<xs..., 0, 0>;
+
+  template<auto... xs>
+  using val_left_xor_c = val<(... ^ xs)>;
+
+  template<auto... xs>
+  using val_left_xor0_c = val_left_xor_c<xs..., 0, 0>;
+
+  template<auto... xs>
+  using val_bit_and_c = val<(xs & ...)>;
+
+  template<auto... xs>
+  using val_bit_and0_c = typename detail::val_emp_op<sizeof...(xs) != 0, val_bit_and_c, 0>
+    ::template f<xs...>;
+
+  template<auto... xs>
+  using val_left_bit_and_c = val<(... & xs)>;
+
+  template<auto... xs>
+  using val_left_bit_and0_c = typename detail::val_emp_op<sizeof...(xs) != 0, val_left_bit_and_c, 0>
+    ::template f<xs...>;
+
+  template<auto... xs>
+  using val_bit_or_c = val<(xs | ...)>;
+
+  template<auto... xs>
+  using val_bit_or0_c = typename detail::val_emp_op<sizeof...(xs) != 0, val_bit_or_c, 0>
+    ::template f<xs...>;
+
+  template<auto... xs>
+  using val_left_bit_or_c = val<(... | xs)>;
+
+  template<auto... xs>
+  using val_left_bit_or0_c = typename detail::val_emp_op<sizeof...(xs) != 0, val_left_bit_or_c, 0>
+    ::template f<xs...>;
 }
 
 JLN_MP_DIAGNOSTIC_POP()

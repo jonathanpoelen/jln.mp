@@ -11,9 +11,9 @@ namespace jln::mp::smp
 {
   template<class Pred, class TC = listify, class FC = clear<listify>>
   using drop_while = contract<mp::drop_while<
-    concepts::predicate<assume_unary<Pred>, mp::identity, mp::always<false_>>,
+    concepts::strong_predicate<assume_unary<Pred>, mp::identity, mp::always<false_>>,
     mp::if_<
-      mp::front<concepts::predicate<assume_unary<Pred>, mp::always<true_>>>,
+      mp::front<concepts::strong_predicate<assume_unary<Pred>, mp::always<true_>>>,
       assume_unary_or_more<TC>,
       violation
     >,

@@ -21,11 +21,13 @@ TEST()
     .test<_0, _0, _0>()
     .test<_1, _0, _1>()
     .test<_0, _1, _0>()
+    .test<_1, _0, _0, _0>()
     .test<_1, _0, _1, _2>()
     .test<_0, _1, _0, _2>()
     .test<_0, _0, _2, _1>()
     .test<_1, _0, _1, _2, _3, _4>()
     .test<_0, _0, _1, _2, _4, _3>()
+    .test<_1, _0, _0, _0, _0, _0, _1, _1, _1, _1, _1, _1>()
     .test<_1, bad_number>()
     .not_invocable<bad_number, bad_number>()
     .not_invocable<bad_number, bad_number, bad_number>()
@@ -36,6 +38,7 @@ TEST()
     .not_invocable<_1, _2>()
     ;
 
+  ut::not_invocable<smp::is_sorted<always<_2>>, _1, _1>();
   ut::not_invocable<smp::is_sorted<less<>, bad_function>, _1, _1>();
   ut::not_invocable<smp::is_sorted<less<>, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::is_sorted<smp::always<na>>, _1, _1, _1>();

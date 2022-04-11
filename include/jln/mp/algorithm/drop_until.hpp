@@ -17,6 +17,7 @@ namespace jln::mp
   /// \ingroup search
 
   /// Remove the first elements of a \sequence that does not satisfy a \predicate.
+  /// \pre \c Pred::f<x> must return a boolean, 1 or 0
   /// When an element satisfy the predicate,
   /// call \c TC with it and those that follow it..
   /// Otherwise \c FC is called on the whole sequence.

@@ -7,6 +7,7 @@ namespace jln::mp
   /// \ingroup search
 
   /// Remove the first elements of a \sequence that does not satisfy a \predicate.
+  /// \pre \c Pred::f<x> must return a boolean, 1 or 0
   /// \treturn \sequence
   /// \see skip_while, skip_until_xs
   /// \see drop_while, drop_until

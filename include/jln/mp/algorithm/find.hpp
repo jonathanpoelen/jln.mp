@@ -8,6 +8,7 @@ namespace jln::mp
   /// \ingroup search
 
   /// Finds the first element that satisfy a \predicate.
+  /// \pre \c Pred::f<x> must return a boolean, 1 or 0
   /// Calls \c TC with all the elements since the one found at the end.
   /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence

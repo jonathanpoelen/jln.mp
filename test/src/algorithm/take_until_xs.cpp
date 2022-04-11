@@ -99,6 +99,7 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
+  ut::not_invocable<smp::take_until_xs<smp::always<_3>>, _1, _1, _1>();
   ut::not_invocable<smp::take_until_xs<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::take_until_xs<is<_3>, bad_function>>();
   ut::not_invocable<smp::take_until_xs<is<_3>, bad_function>, void>();
@@ -199,6 +200,7 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
+  ut::not_invocable<smp::take_inclusive_until_xs<smp::always<_3>>, _1, _1, _1>();
   ut::not_invocable<smp::take_inclusive_until_xs<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::take_inclusive_until_xs<is<_3>, bad_function>>();
   ut::not_invocable<smp::take_inclusive_until_xs<is<_3>, bad_function>, void>();
@@ -320,6 +322,7 @@ TEST()
     .not_invocable<void, void>()
     ;
 
+  ut::not_invocable<smp::partial_take_until_xs_c<1, smp::always<_3>>, _1, _1, _1>();
   ut::not_invocable<smp::partial_take_until_xs<_1, smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::partial_take_until_xs<is<_3>, bad_function>>();
   ut::not_invocable<smp::partial_take_until_xs<is<_3>, bad_function>, void>();
@@ -426,6 +429,7 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
+  ut::not_invocable<smp::partial_take_inclusive_until_xs_c<1, smp::always<_3>>, _1, _1, _1>();
   ut::not_invocable<smp::partial_take_inclusive_until_xs<_1, smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::partial_take_inclusive_until_xs<is<_3>, bad_function>>();
   ut::not_invocable<smp::partial_take_inclusive_until_xs<is<_3>, bad_function>, void>();

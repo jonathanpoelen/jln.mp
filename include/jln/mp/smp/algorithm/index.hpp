@@ -23,7 +23,7 @@ namespace jln::mp::detail
 {
   template<class Pred, class TC>
   using smp_index_if_cond = mp::if_<
-    mp::front<smp::concepts::predicate<assume_unary<Pred>, mp::always<true_>>>,
+    mp::front<smp::concepts::strong_predicate<assume_unary<Pred>, mp::always<true_>>>,
     mp::size<
       mp::push_back<
         smp::sub<assume_positive_number_barrier<TC>>,
@@ -40,7 +40,7 @@ namespace jln::mp::smp
   template<class Pred, class TC = identity, class FC = size<>>
   using index_if = contract<mp::invoke_twice<
     mp::drop_while<
-      concepts::predicate<assume_unary<Pred>, mp::not_<>>,
+      concepts::strong_predicate<assume_unary<Pred>, mp::not_<>>,
       detail::smp_index_if_cond<assume_unary<Pred>, TC>,
       mp::always<subcontract<FC>>
     >
@@ -52,7 +52,7 @@ namespace jln::mp::smp
   template<class Pred, class TC = identity, class FC = size<>>
   using index_if_xs = contract<mp::invoke_twice<
     mp::drop_while_xs<
-      concepts::predicate<assume_unary_or_more<Pred>, mp::not_<>>,
+      concepts::strong_predicate<assume_unary_or_more<Pred>, mp::not_<>>,
       detail::smp_index_if_cond<assume_unary_or_more<Pred>, TC>,
       mp::always<subcontract<FC>>
     >
@@ -62,7 +62,7 @@ namespace jln::mp::smp
   using partial_index_if_xs_c = contract<mp::invoke_twice<
     mp::partial_drop_while_xs_c<
       OffsetEnd,
-      concepts::predicate<assume_unary_or_more<Pred>, mp::not_<>>,
+      concepts::strong_predicate<assume_unary_or_more<Pred>, mp::not_<>>,
       detail::smp_index_if_cond<assume_unary_or_more<Pred>, TC>,
       mp::always<subcontract<FC>>
     >

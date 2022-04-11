@@ -24,25 +24,52 @@ namespace jln::mp
   struct or_
   {
     template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<(xs::value || ... || false)>);
+  };
+
+  template<class C = identity>
+  struct left_or
+  {
+    template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, number<(false || ... || xs::value)>);
   };
+
 
   template<class C = identity>
   struct and_
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<(true && ... && xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(xs::value && ... && true)>);
   };
 
   template<class C = identity>
+  struct left_and
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<(true && ... && xs::value)>);
+  };
+
+
+  template<class C = identity>
   struct add
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<(xs::value + ...)>);
+  };
+
+  template<class C = identity>
+  using add0 = if_<size<>, add<C>, always<number<0>, C>>;
+
+  template<class C = identity>
+  struct left_add
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, number<(... + xs::value)>);
   };
 
   template<class C = identity>
-  using add0 = if_<size<>, add<C>, always<number<0>, C>>;
+  using left_add0 = if_<size<>, left_add<C>, always<number<0>, C>>;
+
 
   template<class C = identity>
   struct sub
@@ -74,11 +101,12 @@ namespace jln::mp
   template<class C = identity>
   using rshift0 = if_<size<>, rshift<C>, always<number<0>, C>>;
 
+
   template<class C = identity>
   struct mul
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<(... * xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(xs::value * ...)>);
   };
 
   template<class C = identity>
@@ -86,6 +114,20 @@ namespace jln::mp
 
   template<class C = identity>
   using mul1 = if_<size<>, mul<C>, always<number<1>, C>>;
+
+  template<class C = identity>
+  struct left_mul
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<(... * xs::value)>);
+  };
+
+  template<class C = identity>
+  using left_mul0 = if_<size<>, left_mul<C>, always<number<0>, C>>;
+
+  template<class C = identity>
+  using left_mul1 = if_<size<>, left_mul<C>, always<number<1>, C>>;
+
 
   template<class C = identity>
   struct div
@@ -113,35 +155,69 @@ namespace jln::mp
   template<class C = identity>
   using mod1 = if_<size<>, mod<C>, always<number<1>, C>>;
 
+
   template<class C = identity>
   struct xor_
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<(... ^ xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(xs::value ^ ...)>);
   };
 
   template<class C = identity>
   using xor0 = if_<size<>, xor_<C>, always<number<0>, C>>;
 
   template<class C = identity>
+  struct left_xor
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<(... ^ xs::value)>);
+  };
+
+  template<class C = identity>
+  using left_xor0 = if_<size<>, left_xor<C>, always<number<0>, C>>;
+
+
+  template<class C = identity>
   struct bit_and
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<(... & xs::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<(xs::value & ...)>);
   };
 
   template<class C = identity>
   using bit_and0 = if_<size<>, bit_and<C>, always<number<0>, C>>;
 
   template<class C = identity>
+  struct left_bit_and
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<(... & xs::value)>);
+  };
+
+  template<class C = identity>
+  using left_bit_and0 = if_<size<>, left_bit_and<C>, always<number<0>, C>>;
+
+
+  template<class C = identity>
   struct bit_or
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<(xs::value | ...)>);
+  };
+
+  template<class C = identity>
+  using bit_or0 = if_<size<>, bit_or<C>, always<number<0>, C>>;
+
+  template<class C = identity>
+  struct left_bit_or
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, number<(... | xs::value)>);
   };
 
   template<class C = identity>
-  using bit_or0 = if_<size<>, bit_or<C>, always<number<0>, C>>;
+  using left_bit_or0 = if_<size<>, left_bit_or<C>, always<number<0>, C>>;
+
 
   template<class C = identity>
   struct neg
@@ -242,6 +318,12 @@ namespace jln::mp
   using add_by = push_back<N, add<C>>;
 
   template<class N, class C = identity>
+  using left_add_to = push_front<N, left_add<C>>;
+
+  template<class N, class C = identity>
+  using left_add_by = push_back<N, left_add<C>>;
+
+  template<class N, class C = identity>
   using sub_to = push_front<N, sub<C>>;
 
   template<class N, class C = identity>
@@ -266,6 +348,12 @@ namespace jln::mp
   using mul_by = push_back<N, mul<C>>;
 
   template<class N, class C = identity>
+  using left_mul_to = push_front<N, left_mul<C>>;
+
+  template<class N, class C = identity>
+  using left_mul_by = push_back<N, left_mul<C>>;
+
+  template<class N, class C = identity>
   using div_to = push_front<N, div<C>>;
 
   template<class N, class C = identity>
@@ -284,16 +372,34 @@ namespace jln::mp
   using xor_by = push_back<N, xor_<C>>;
 
   template<class N, class C = identity>
+  using left_xor_to = push_front<N, left_xor<C>>;
+
+  template<class N, class C = identity>
+  using left_xor_by = push_back<N, left_xor<C>>;
+
+  template<class N, class C = identity>
   using bit_and_to = push_front<N, bit_and<C>>;
 
   template<class N, class C = identity>
   using bit_and_by = push_back<N, bit_and<C>>;
 
   template<class N, class C = identity>
+  using left_bit_and_to = push_front<N, left_bit_and<C>>;
+
+  template<class N, class C = identity>
+  using left_bit_and_by = push_back<N, left_bit_and<C>>;
+
+  template<class N, class C = identity>
   using bit_or_to = push_front<N, bit_or<C>>;
 
   template<class N, class C = identity>
   using bit_or_by = push_back<N, bit_or<C>>;
+
+  template<class N, class C = identity>
+  using left_bit_or_to = push_front<N, left_bit_or<C>>;
+
+  template<class N, class C = identity>
+  using left_bit_or_by = push_back<N, left_bit_or<C>>;
 
 
   template<class N, class C = identity>
@@ -322,6 +428,12 @@ namespace jln::mp
   using add_by_c = add_by<number<n>, C>;
 
   template<int_ n, class C = identity>
+  using left_add_to_c = left_add_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using left_add_by_c = left_add_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
   using sub_to_c = sub_to<number<n>, C>;
 
   template<int_ n, class C = identity>
@@ -346,6 +458,12 @@ namespace jln::mp
   using mul_by_c = mul_by<number<n>, C>;
 
   template<int_ n, class C = identity>
+  using left_mul_to_c = left_mul_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using left_mul_by_c = left_mul_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
   using div_to_c = div_to<number<n>, C>;
 
   template<int_ n, class C = identity>
@@ -364,16 +482,34 @@ namespace jln::mp
   using xor_by_c = xor_by<number<n>, C>;
 
   template<int_ n, class C = identity>
+  using left_xor_to_c = left_xor_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using left_xor_by_c = left_xor_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
   using bit_and_to_c = bit_and_to<number<n>, C>;
 
   template<int_ n, class C = identity>
   using bit_and_by_c = bit_and_by<number<n>, C>;
 
   template<int_ n, class C = identity>
+  using left_bit_and_to_c = left_bit_and_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using left_bit_and_by_c = left_bit_and_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
   using bit_or_to_c = bit_or_to<number<n>, C>;
 
   template<int_ n, class C = identity>
   using bit_or_by_c = bit_or_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using left_bit_or_to_c = left_bit_or_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using left_bit_or_by_c = left_bit_or_by<number<n>, C>;
 
 
   template<int_ n, class C = identity>
@@ -404,10 +540,22 @@ namespace jln::mp::emp
   using and_seq = unpack<L, mp::and_<C>>;
 
   template<class L, class C = mp::identity>
+  using or_left_seq = unpack<L, mp::left_or<C>>;
+
+  template<class L, class C = mp::identity>
+  using and_left_seq = unpack<L, mp::left_and<C>>;
+
+  template<class L, class C = mp::identity>
   using add_seq = unpack<L, mp::add<C>>;
 
   template<class L, class C = mp::identity>
   using add0_seq = unpack<L, mp::add0<C>>;
+
+  template<class L, class C = mp::identity>
+  using left_add_seq = unpack<L, mp::left_add<C>>;
+
+  template<class L, class C = mp::identity>
+  using left_add0_seq = unpack<L, mp::left_add0<C>>;
 
   template<class L, class C = mp::identity>
   using sub_seq = unpack<L, mp::sub<C>>;
@@ -437,6 +585,15 @@ namespace jln::mp::emp
   using mul1_seq = unpack<L, mp::mul1<C>>;
 
   template<class L, class C = mp::identity>
+  using left_mul_seq = unpack<L, mp::left_mul<C>>;
+
+  template<class L, class C = mp::identity>
+  using left_mul0_seq = unpack<L, mp::left_mul0<C>>;
+
+  template<class L, class C = mp::identity>
+  using left_mul1_seq = unpack<L, mp::left_mul1<C>>;
+
+  template<class L, class C = mp::identity>
   using div_seq = unpack<L, mp::div<C>>;
 
   template<class L, class C = mp::identity>
@@ -461,10 +618,22 @@ namespace jln::mp::emp
   using xor0_seq = unpack<L, mp::xor0<C>>;
 
   template<class L, class C = mp::identity>
+  using left_xor_seq = unpack<L, mp::left_xor<C>>;
+
+  template<class L, class C = mp::identity>
+  using left_xor0_seq = unpack<L, mp::left_xor0<C>>;
+
+  template<class L, class C = mp::identity>
   using bit_and_seq = unpack<L, mp::bit_and<C>>;
 
   template<class L, class C = mp::identity>
   using bit_and0_seq = unpack<L, mp::bit_and0<C>>;
+
+  template<class L, class C = mp::identity>
+  using left_bit_and_seq = unpack<L, mp::left_bit_and<C>>;
+
+  template<class L, class C = mp::identity>
+  using left_bit_and0_seq = unpack<L, mp::left_bit_and0<C>>;
 
   template<class L, class C = mp::identity>
   using bit_or_seq = unpack<L, mp::bit_or<C>>;
@@ -472,18 +641,36 @@ namespace jln::mp::emp
   template<class L, class C = mp::identity>
   using bit_or0_seq = unpack<L, mp::bit_or0<C>>;
 
+  template<class L, class C = mp::identity>
+  using left_bit_or_seq = unpack<L, mp::left_bit_or<C>>;
+
+  template<class L, class C = mp::identity>
+  using left_bit_or0_seq = unpack<L, mp::left_bit_or0<C>>;
+
 
   template<int_... xs>
-  using or_c = number<(false || ... || xs)>;
+  using or_c = number<(xs || ... || false)>;
 
   template<int_... xs>
-  using and_c = number<(true && ... && xs)>;
+  using left_or_c = number<(false || ... || xs)>;
 
   template<int_... xs>
-  using add_c = number<(... + xs)>;
+  using and_c = number<(xs && ... && true)>;
+
+  template<int_... xs>
+  using left_and_c = number<(true && ... && xs)>;
+
+  template<int_... xs>
+  using add_c = number<(xs + ...)>;
 
   template<int_... xs>
   using add0_c = add_c<xs..., 0>;
+
+  template<int_... xs>
+  using left_add_c = number<(... + xs)>;
+
+  template<int_... xs>
+  using left_add0_c = left_add_c<xs..., 0>;
 
   template<int_... xs>
   using sub_c = number<(... - xs)>;
@@ -504,13 +691,22 @@ namespace jln::mp::emp
   using rshift0_c = rshift_c<xs..., 0>;
 
   template<int_... xs>
-  using mul_c = number<(... * xs)>;
+  using mul_c = number<(xs * ...)>;
 
   template<int_... xs>
   using mul0_c = mul_c<xs..., (sizeof...(xs) ? 1 : 0)>;
 
   template<int_... xs>
   using mul1_c = mul_c<xs..., 1>;
+
+  template<int_... xs>
+  using left_mul_c = number<(... * xs)>;
+
+  template<int_... xs>
+  using left_mul0_c = left_mul_c<xs..., (sizeof...(xs) ? 1 : 0)>;
+
+  template<int_... xs>
+  using left_mul1_c = left_mul_c<xs..., 1>;
 
   template<int_... xs>
   using div_c = number<(... / xs)>;
@@ -533,37 +729,69 @@ namespace jln::mp::emp
     (sizeof...(xs) ? std::numeric_limits<int_>::min() : 1)>;
 
   template<int_... xs>
-  using xor_c = number<(... ^ xs)>;
+  using xor_c = number<(xs ^ ...)>;
 
   template<int_... xs>
   using xor0_c = xor_c<xs..., 0, 0>;
 
   template<int_... xs>
-  using bit_and_c = number<(... & xs)>;
+  using left_xor_c = number<(... ^ xs)>;
+
+  template<int_... xs>
+  using left_xor0_c = left_xor_c<xs..., 0, 0>;
+
+  template<int_... xs>
+  using bit_and_c = number<(xs & ...)>;
 
   template<int_... xs>
   using bit_and0_c = bit_and_c<xs...,
     (sizeof...(xs) ? std::numeric_limits<int_>::max() : 0)>;
 
   template<int_... xs>
-  using bit_or_c = number<(... | xs)>;
+  using left_bit_and_c = number<(... & xs)>;
+
+  template<int_... xs>
+  using left_bit_and0_c = left_bit_and_c<xs...,
+    (sizeof...(xs) ? std::numeric_limits<int_>::max() : 0)>;
+
+  template<int_... xs>
+  using bit_or_c = number<(xs | ...)>;
 
   template<int_... xs>
   using bit_or0_c = bit_or_c<xs...,
     (sizeof...(xs) ? std::numeric_limits<int_>::max() : 0)>;
 
+  template<int_... xs>
+  using left_bit_or_c = number<(... | xs)>;
+
+  template<int_... xs>
+  using left_bit_or0_c = left_bit_or_c<xs...,
+    (sizeof...(xs) ? std::numeric_limits<int_>::max() : 0)>;
+
 
   template<class... xs>
-  using or_ = number<(false || ... || xs::value)>;
+  using or_ = number<(xs::value || ... || false)>;
 
   template<class... xs>
-  using and_ = number<(true && ... && xs::value)>;
+  using and_ = number<(xs::value && ... && true)>;
 
   template<class... xs>
-  using add = number<(... + xs::value)>;
+  using left_or = number<(false || ... || xs::value)>;
+
+  template<class... xs>
+  using left_and = number<(true && ... && xs::value)>;
+
+  template<class... xs>
+  using add = number<(xs::value + ...)>;
 
   template<class... xs>
   using add0 = typename mp::add0<>::template f<xs...>;
+
+  template<class... xs>
+  using left_add = number<(... + xs::value)>;
+
+  template<class... xs>
+  using left_add0 = typename mp::add0<>::template f<xs...>;
 
   template<class... xs>
   using sub = number<(... - xs::value)>;
@@ -584,13 +812,22 @@ namespace jln::mp::emp
   using rshift0 = typename mp::rshift0<>::template f<xs...>;
 
   template<class... xs>
-  using mul = number<(... * xs::value)>;
+  using mul = number<(xs::value * ...)>;
 
   template<class... xs>
   using mul0 = typename mp::mul0<>::template f<xs...>;
 
   template<class... xs>
   using mul1 = typename mp::mul1<>::template f<xs...>;
+
+  template<class... xs>
+  using left_mul = number<(... * xs::value)>;
+
+  template<class... xs>
+  using left_mul0 = typename mp::left_mul0<>::template f<xs...>;
+
+  template<class... xs>
+  using left_mul1 = typename mp::left_mul1<>::template f<xs...>;
 
   template<class... xs>
   using div = number<(... / xs::value)>;
@@ -611,22 +848,40 @@ namespace jln::mp::emp
   using mod1 = typename mp::mod1<>::template f<xs...>;
 
   template<class... xs>
-  using xor_ = number<(... ^ xs::value)>;
+  using xor_ = number<(xs::value ^ ...)>;
 
   template<class... xs>
   using xor0 = typename mp::xor0<>::template f<xs...>;
 
   template<class... xs>
-  using bit_and = number<(... & xs::value)>;
+  using left_xor = number<(... ^ xs::value)>;
+
+  template<class... xs>
+  using left_xor0 = typename mp::left_xor0<>::template f<xs...>;
+
+  template<class... xs>
+  using bit_and = number<(xs::value & ...)>;
 
   template<class... xs>
   using bit_and0 = typename mp::bit_and0<>::template f<xs...>;
 
   template<class... xs>
-  using bit_or = number<(... | xs::value)>;
+  using left_bit_and = number<(... & xs::value)>;
+
+  template<class... xs>
+  using left_bit_and0 = typename mp::left_bit_and0<>::template f<xs...>;
+
+  template<class... xs>
+  using bit_or = number<(xs::value | ...)>;
 
   template<class... xs>
   using bit_or0 = typename mp::bit_or0<>::template f<xs...>;
+
+  template<class... xs>
+  using left_bit_or = number<(... | xs::value)>;
+
+  template<class... xs>
+  using left_bit_or0 = typename mp::left_bit_or0<>::template f<xs...>;
 
 
   template<class x, class C = mp::identity>

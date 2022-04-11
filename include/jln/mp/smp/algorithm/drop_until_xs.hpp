@@ -5,7 +5,6 @@
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/smp/algorithm/drop_while_xs.hpp>
 #include <jln/mp/algorithm/drop_until_xs.hpp>
-#include <jln/mp/list/front.hpp>
 #include <jln/mp/list/size.hpp>
 #include <jln/mp/functional/if.hpp>
 
@@ -13,9 +12,9 @@ namespace jln::mp::smp
 {
   template<class Pred, class TC = listify, class FC = clear<TC>>
   using drop_until_xs = contract<mp::drop_until_xs<
-    concepts::predicate<assume_unary_or_more<Pred>, mp::identity, mp::always<true_>>,
+    concepts::strong_predicate<assume_unary_or_more<Pred>, mp::identity, mp::always<true_>>,
     mp::if_<
-      concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
+      concepts::strong_predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
       assume_unary_or_more<TC>,
       violation
     >,
@@ -25,9 +24,9 @@ namespace jln::mp::smp
   template<int_ OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
   using partial_drop_until_xs_c = contract<mp::partial_drop_until_xs_c<
     OffsetEnd,
-    concepts::predicate<assume_unary_or_more<Pred>, mp::identity, mp::always<true_>>,
+    concepts::strong_predicate<assume_unary_or_more<Pred>, mp::identity, mp::always<true_>>,
     mp::if_<
-      concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
+      concepts::strong_predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
       assume_unary_or_more<TC>,
       violation
     >,

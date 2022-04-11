@@ -5,8 +5,6 @@
 #include <jln/mp/smp/algorithm/take_while.hpp>
 #include <jln/mp/list/drop_back.hpp>
 #include <jln/mp/algorithm/drop_while.hpp>
-#include <jln/mp/list/front.hpp>
-#include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/list/push_back.hpp>
 #include <jln/mp/list/size.hpp>
 #include <jln/mp/algorithm/take_while_xs.hpp>
@@ -18,9 +16,9 @@ namespace jln::mp::smp
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
   using take_while_extended_by_n_xs_c = contract<mp::invoke_twice<
     mp::drop_while_xs<
-      concepts::predicate<assume_unary_or_more<Pred>, mp::identity, mp::always<false_>>,
+      concepts::strong_predicate<assume_unary_or_more<Pred>, mp::identity, mp::always<false_>>,
       mp::if_<
-        concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
+        concepts::strong_predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
         detail::smp_take_drop_for_size<ExtendedByN, TC>,
         mp::always<violation>
       >,
@@ -35,9 +33,9 @@ namespace jln::mp::smp
   using partial_take_while_extended_by_n_xs_c = contract<mp::invoke_twice<
     mp::partial_drop_while_xs_c<
       OffsetEnd,
-      concepts::predicate<assume_unary_or_more<Pred>, mp::identity, mp::always<false_>>,
+      concepts::strong_predicate<assume_unary_or_more<Pred>, mp::identity, mp::always<false_>>,
       mp::if_<
-        concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
+        concepts::strong_predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
         detail::smp_take_drop_for_size<ExtendedByN, TC>,
         mp::always<violation>
       >,

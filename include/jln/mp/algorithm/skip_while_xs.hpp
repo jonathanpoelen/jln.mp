@@ -7,6 +7,7 @@ namespace jln::mp
   /// \ingroup search
 
   /// Remove the first elements of a \sequence that satisfy a \predicate.
+  /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
   /// Same as \c skip_while, but the \predicate takes all the elements of
   /// the current position until the end of the list.
   /// \treturn \sequence

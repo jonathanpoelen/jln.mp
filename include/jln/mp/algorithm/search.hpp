@@ -8,6 +8,7 @@ namespace jln::mp
   /// \ingroup search
 
   /// Search the first sub-\sequence that satisfy a \predicate.
+  /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
   /// Calls \c TC with all the elements from sub-\sequence found at the end.
   /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence
@@ -19,6 +20,7 @@ namespace jln::mp
   using search = drop_until_xs<Pred, TC, FC>;
 
   /// Search elements before sub-\sequence that satisfy a \predicate.
+  /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
   /// Calls \c TC with the elements from the beginning to sub-\sequence found.
   /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence
@@ -30,6 +32,7 @@ namespace jln::mp
   using search_before = take_until_xs<Pred, TC, FC>;
 
   /// Search elements before sub-\sequence that satisfy a \predicate.
+  /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
   /// Calls \c TC with the elements from the beginning to sub-\sequence found + \c ExtendedByN.
   /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence
@@ -43,6 +46,7 @@ namespace jln::mp
   using search_before_extended_by_n_c = take_until_extended_by_n_xs_c<ExtendedByN, Pred, TC, FC>;
 
   /// Same \c search, but it stops when there is StopWhenAtLeast::value element or less.
+  /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
   /// \treturn \sequence
   /// \see search, search_before, after, index_if
   /// \see search_before_extended_by_n
@@ -55,6 +59,7 @@ namespace jln::mp
   using partial_search_c = partial_drop_until_xs_c<-int_{StopWhenAtLeast}-1, Pred, TC, FC>;
 
   /// Same \c search_before, but it stops when there is StopWhenAtLeast::value element or less.
+  /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
   /// \treturn \sequence
   /// \see search, search_before, partial_search, after, index_if
   /// \see search_before_extended_by_n, partial_search_before_extended_by_n
@@ -66,6 +71,7 @@ namespace jln::mp
   using partial_search_before_c = partial_take_until_xs_c<-int_{StopWhenAtLeast}-1, Pred, TC, FC>;
 
   /// Same \c search_before, but it stops when there is StopWhenAtLeast::value element or less.
+  /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
   /// \treturn \sequence
   /// \see search, search_before, partial_search, after, index_if
   /// \see search_before_extended_by_n, partial_search_before

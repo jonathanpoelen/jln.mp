@@ -67,10 +67,22 @@ namespace jln::mp::smp
   using and_ = try_contract<mp::and_<assume_number<C>>>;
 
   template<class C = identity>
+  using left_or = try_contract<mp::left_or<assume_number<C>>>;
+
+  template<class C = identity>
+  using left_and = try_contract<mp::left_and<assume_number<C>>>;
+
+  template<class C = identity>
   using add = try_contract<mp::add<assume_number<C>>>;
 
   template<class C = identity>
   using add0 = detail::smp_op_default<mp::add, C>;
+
+  template<class C = identity>
+  using left_add = try_contract<mp::left_add<assume_number<C>>>;
+
+  template<class C = identity>
+  using left_add0 = detail::smp_op_default<mp::left_add, C>;
 
   template<class C = identity>
   using sub = try_contract<mp::sub<assume_number<C>>>;
@@ -100,6 +112,15 @@ namespace jln::mp::smp
   using mul1 = detail::smp_op_default<mp::mul, C, 1>;
 
   template<class C = identity>
+  using left_mul = try_contract<mp::left_mul<assume_number<C>>>;
+
+  template<class C = identity>
+  using left_mul0 = detail::smp_op_default<mp::left_mul, C>;
+
+  template<class C = identity>
+  using left_mul1 = detail::smp_op_default<mp::left_mul, C, 1>;
+
+  template<class C = identity>
   using div = JLN_smp_op_without_zero_and_with_value<mp::div<assume_number<C>>>;
 
   template<class C = identity>
@@ -124,16 +145,34 @@ namespace jln::mp::smp
   using xor0 = detail::smp_op_default<mp::xor_, C>;
 
   template<class C = identity>
+  using left_xor = try_contract<mp::left_xor<assume_number<C>>>;
+
+  template<class C = identity>
+  using left_xor0 = detail::smp_op_default<mp::left_xor, C>;
+
+  template<class C = identity>
   using bit_and = try_contract<mp::bit_and<assume_number<C>>>;
 
   template<class C = identity>
   using bit_and0 = detail::smp_op_default<mp::bit_and, C>;
 
   template<class C = identity>
+  using left_bit_and = try_contract<mp::left_bit_and<assume_number<C>>>;
+
+  template<class C = identity>
+  using left_bit_and0 = detail::smp_op_default<mp::left_bit_and, C>;
+
+  template<class C = identity>
   using bit_or = try_contract<mp::bit_or<assume_number<C>>>;
 
   template<class C = identity>
   using bit_or0 = detail::smp_op_default<mp::bit_or, C>;
+
+  template<class C = identity>
+  using left_bit_or = try_contract<mp::left_bit_or<assume_number<C>>>;
+
+  template<class C = identity>
+  using left_bit_or0 = detail::smp_op_default<mp::left_bit_or, C>;
 
   template<class C = identity>
   using neg = try_contract<mp::neg<assume_number<C>>>;
@@ -179,6 +218,12 @@ namespace jln::mp::smp
   using add_by = contract<mp::push_back<N, subcontract<add<C>>>>;
 
   template<class N, class C = identity>
+  using left_add_to = contract<mp::push_front<N, subcontract<left_add<C>>>>;
+
+  template<class N, class C = identity>
+  using left_add_by = contract<mp::push_back<N, subcontract<left_add<C>>>>;
+
+  template<class N, class C = identity>
   using sub_to = contract<mp::push_front<N, subcontract<sub<C>>>>;
 
   template<class N, class C = identity>
@@ -203,6 +248,12 @@ namespace jln::mp::smp
   using mul_by = contract<mp::push_back<N, subcontract<mul<C>>>>;
 
   template<class N, class C = identity>
+  using left_mul_to = contract<mp::push_front<N, subcontract<left_mul<C>>>>;
+
+  template<class N, class C = identity>
+  using left_mul_by = contract<mp::push_back<N, subcontract<left_mul<C>>>>;
+
+  template<class N, class C = identity>
   using div_to = contract<mp::push_front<N, subcontract<div<C>>>>;
 
   template<class N, class C = identity>
@@ -221,16 +272,34 @@ namespace jln::mp::smp
   using xor_by = contract<mp::push_back<N, subcontract<xor_<C>>>>;
 
   template<class N, class C = identity>
+  using left_xor_to = contract<mp::push_front<N, subcontract<left_xor<C>>>>;
+
+  template<class N, class C = identity>
+  using left_xor_by = contract<mp::push_back<N, subcontract<left_xor<C>>>>;
+
+  template<class N, class C = identity>
   using bit_and_to = contract<mp::push_front<N, subcontract<bit_and<C>>>>;
 
   template<class N, class C = identity>
   using bit_and_by = contract<mp::push_back<N, subcontract<bit_and<C>>>>;
 
   template<class N, class C = identity>
+  using left_bit_and_to = contract<mp::push_front<N, subcontract<left_bit_and<C>>>>;
+
+  template<class N, class C = identity>
+  using left_bit_and_by = contract<mp::push_back<N, subcontract<left_bit_and<C>>>>;
+
+  template<class N, class C = identity>
   using bit_or_to = contract<mp::push_front<N, subcontract<bit_or<C>>>>;
 
   template<class N, class C = identity>
   using bit_or_by = contract<mp::push_back<N, subcontract<bit_or<C>>>>;
+
+  template<class N, class C = identity>
+  using left_bit_or_to = contract<mp::push_front<N, subcontract<left_bit_or<C>>>>;
+
+  template<class N, class C = identity>
+  using left_bit_or_by = contract<mp::push_back<N, subcontract<left_bit_or<C>>>>;
 
 
   template<class N, class C = identity>
@@ -271,6 +340,12 @@ namespace jln::mp::smp
   using add_by_c = add_by<number<n>, C>;
 
   template<int_ n, class C = identity>
+  using left_add_to_c = left_add_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using left_add_by_c = left_add_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
   using sub_to_c = sub_to<number<n>, C>;
 
   template<int_ n, class C = identity>
@@ -295,6 +370,12 @@ namespace jln::mp::smp
   using mul_by_c = mul_by<number<n>, C>;
 
   template<int_ n, class C = identity>
+  using left_mul_to_c = left_mul_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using left_mul_by_c = left_mul_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
   using div_to_c = div_to<number<n>, C>;
 
   template<int_ n, class C = identity>
@@ -313,16 +394,34 @@ namespace jln::mp::smp
   using xor_by_c = xor_by<number<n>, C>;
 
   template<int_ n, class C = identity>
+  using left_xor_to_c = left_xor_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using left_xor_by_c = left_xor_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
   using bit_and_to_c = bit_and_to<number<n>, C>;
 
   template<int_ n, class C = identity>
   using bit_and_by_c = bit_and_by<number<n>, C>;
 
   template<int_ n, class C = identity>
+  using left_bit_and_to_c = left_bit_and_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using left_bit_and_by_c = left_bit_and_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
   using bit_or_to_c = bit_or_to<number<n>, C>;
 
   template<int_ n, class C = identity>
   using bit_or_by_c = bit_or_by<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using left_bit_or_to_c = left_bit_or_to<number<n>, C>;
+
+  template<int_ n, class C = identity>
+  using left_bit_or_by_c = left_bit_or_by<number<n>, C>;
 
 
   template<int_ n, class C = identity>
@@ -360,9 +459,27 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, left_or<C>>
+  {
+    using type = smp::left_or<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, left_and<C>>
+  {
+    using type = smp::left_and<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, add<C>>
   {
     using type = smp::add<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, left_add<C>>
+  {
+    using type = smp::left_add<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
@@ -390,6 +507,12 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, left_mul<C>>
+  {
+    using type = smp::left_mul<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, div<C>>
   {
     using type = smp::div<sfinae<C>>;
@@ -408,15 +531,33 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, left_xor<C>>
+  {
+    using type = smp::left_xor<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, bit_and<C>>
   {
     using type = smp::bit_and<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, left_bit_and<C>>
+  {
+    using type = smp::left_bit_and<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, bit_or<C>>
   {
     using type = smp::bit_or<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, left_bit_or<C>>
+  {
+    using type = smp::left_bit_or<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
@@ -494,19 +635,27 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, or_);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, and_);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, left_or);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, left_and);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, add0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, left_add0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, sub0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, lshift0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, rshift0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, mul0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, mul1);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, left_mul0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, left_mul1);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, div0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, div1);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, mod0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, mod1);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, xor0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, left_xor0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, bit_and0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, left_bit_and0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, bit_or0);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, left_bit_or0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, not_);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, inc);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, dec);

@@ -12,12 +12,12 @@
 namespace jln::mp::smp
 {
   template<class Pred>
-  using wrap_in_list_if = try_contract<
-    mp::wrap_in_list_if<concepts::predicate_or<assume_unary_or_more<Pred>, mp::violation>>>;
+  using wrap_in_list_if = try_contract<mp::wrap_in_list_if<
+    concepts::strong_predicate_or<assume_unary_or_more<Pred>, mp::violation>>>;
 
   template<class Pred>
-  using wrap_in_list_if_not = try_contract<
-    mp::wrap_in_list_if_not<concepts::predicate_or<assume_unary_or_more<Pred>, mp::violation>>>;
+  using wrap_in_list_if_not = try_contract<mp::wrap_in_list_if_not<
+    concepts::strong_predicate_or<assume_unary_or_more<Pred>, mp::violation>>>;
 
   template<bool b>
   using wrap_in_list_c = contract<mp::wrap_in_list_c<b>>;

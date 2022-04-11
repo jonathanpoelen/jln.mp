@@ -66,10 +66,22 @@ namespace jln::mp::smp
   using val_and = try_contract<mp::val_and<assume_unary<C>>>;
 
   template<class C = identity>
+  using val_left_or = try_contract<mp::val_left_or<assume_unary<C>>>;
+
+  template<class C = identity>
+  using val_left_and = try_contract<mp::val_left_and<assume_unary<C>>>;
+
+  template<class C = identity>
   using val_add = try_contract<mp::val_add<assume_unary<C>>>;
 
   template<class C = identity>
   using val_add0 = detail::smp_opv_default<mp::val_add, C>;
+
+  template<class C = identity>
+  using val_left_add = try_contract<mp::val_left_add<assume_unary<C>>>;
+
+  template<class C = identity>
+  using val_left_add0 = detail::smp_opv_default<mp::val_left_add, C>;
 
   template<class C = identity>
   using val_sub = try_contract<mp::val_sub<assume_unary<C>>>;
@@ -99,6 +111,15 @@ namespace jln::mp::smp
   using val_mul1 = detail::smp_opv_default<mp::val_mul, C, 1>;
 
   template<class C = identity>
+  using val_left_mul = try_contract<mp::val_left_mul<assume_unary<C>>>;
+
+  template<class C = identity>
+  using val_left_mul0 = detail::smp_opv_default<mp::val_left_mul, C>;
+
+  template<class C = identity>
+  using val_left_mul1 = detail::smp_opv_default<mp::val_left_mul, C, 1>;
+
+  template<class C = identity>
   using val_div = JLN_smp_opv_without_zero_and_with_value<mp::val_div<assume_unary<C>>>;
 
   template<class C = identity>
@@ -123,16 +144,34 @@ namespace jln::mp::smp
   using val_xor0 = detail::smp_opv_default<mp::val_xor, C>;
 
   template<class C = identity>
+  using val_left_xor = try_contract<mp::val_left_xor<assume_unary<C>>>;
+
+  template<class C = identity>
+  using val_left_xor0 = detail::smp_opv_default<mp::val_left_xor, C>;
+
+  template<class C = identity>
   using val_bit_and = try_contract<mp::val_bit_and<assume_unary<C>>>;
 
   template<class C = identity>
   using val_bit_and0 = detail::smp_opv_default<mp::val_bit_and, C>;
 
   template<class C = identity>
+  using val_left_bit_and = try_contract<mp::val_left_bit_and<assume_unary<C>>>;
+
+  template<class C = identity>
+  using val_left_bit_and0 = detail::smp_opv_default<mp::val_left_bit_and, C>;
+
+  template<class C = identity>
   using val_bit_or = try_contract<mp::val_bit_or<assume_unary<C>>>;
 
   template<class C = identity>
   using val_bit_or0 = detail::smp_opv_default<mp::val_bit_or, C>;
+
+  template<class C = identity>
+  using val_left_bit_or = try_contract<mp::val_left_bit_or<assume_unary<C>>>;
+
+  template<class C = identity>
+  using val_left_bit_or0 = detail::smp_opv_default<mp::val_left_bit_or, C>;
 
   template<class C = identity>
   using val_neg = try_contract<mp::val_neg<assume_unary<C>>>;
@@ -235,9 +274,27 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, val_left_or<C>>
+  {
+    using type = smp::val_left_or<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, val_left_and<C>>
+  {
+    using type = smp::val_left_and<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, val_add<C>>
   {
     using type = smp::val_add<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, val_left_add<C>>
+  {
+    using type = smp::val_left_add<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
@@ -265,6 +322,12 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, val_left_mul<C>>
+  {
+    using type = smp::val_left_mul<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, val_div<C>>
   {
     using type = smp::val_div<sfinae<C>>;
@@ -283,15 +346,33 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, val_left_xor<C>>
+  {
+    using type = smp::val_left_xor<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, val_bit_and<C>>
   {
     using type = smp::val_bit_and<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, val_left_bit_and<C>>
+  {
+    using type = smp::val_left_bit_and<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, val_bit_or<C>>
   {
     using type = smp::val_bit_or<sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, val_left_bit_or<C>>
+  {
+    using type = smp::val_left_bit_or<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>

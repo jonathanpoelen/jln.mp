@@ -8,6 +8,7 @@ namespace jln::mp
   /// \ingroup search
 
   /// Extracts the first elements of a \sequence that satisfy a \predicate.
+  /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
   /// \treturn \sequence
   /// \see take_front, take_back, take_while, partial_take_while_xs
   /// \see drop_while, drop_while_xs
