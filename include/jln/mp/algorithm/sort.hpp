@@ -9,8 +9,8 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<int n, class Cmp>
-    struct _sort;
+    template<int n>
+    struct sort_impl;
   }
   /// \endcond
 
@@ -24,8 +24,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename unpack<C>::template f<
-      typename detail::_sort<detail::min(3, sizeof...(xs)), JLN_MP_TRACE_F(Cmp)>
-      ::template f<xs...>
+      typename detail::sort_impl<sizeof...(xs)>
+      ::template f<Cmp, xs...>
     >;
   };
 
@@ -53,8 +53,8 @@ namespace jln::mp
   struct sort<Cmp, listify>
   {
     template<class... xs>
-    using f = typename detail::_sort<detail::min(3, sizeof...(xs)), Cmp>
-      ::template f<xs...>;
+    using f = typename detail::sort_impl<sizeof...(xs)>
+      ::template f<Cmp, xs...>;
   };
   /// \endcond
 }
@@ -62,20 +62,6 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<class Cmp>
-  struct _sort<3, Cmp>
-  {
-    template<class... xs>
-    using f = typename detail::merge_impl<
-      list<>,
-      typename take_front_c<sizeof...(xs) / 2, _sort<min(3, sizeof...(xs) / 2), Cmp>>
-        ::template f<xs...>,
-      typename drop_front_c<sizeof...(xs) / 2, _sort<min(3, (sizeof...(xs) + 1) / 2), Cmp>>
-        ::template f<xs...>,
-      Cmp
-    >::type;
-  };
-
   template<bool>
   struct mk_list2;
 
@@ -93,26 +79,175 @@ namespace jln::mp::detail
     using f = list<y, x>;
   };
 
-  template<class Cmp>
-  struct _sort<2, Cmp>
+
+  template<int n>
+  struct sort_impl : sort_impl<
+      n <= 8 ? 8
+    : n <= 16 ? 16
+    : n <= 32 ? 32
+    : n <= 64 ? 64
+    : 128
+  >
+  {};
+
+  template<>
+  struct sort_impl<0>
   {
-    template<class x, class y>
-    using f = typename mk_list2<bool(Cmp::template f<y, x>::value)>
-      ::template f<x, y>;
+    template<class Cmp>
+    using f = list<>;
   };
 
-  template<class Cmp>
-  struct _sort<1, Cmp>
+  template<>
+  struct sort_impl<1>
   {
-    template<class x>
+    template<class Cmp, class x>
     using f = list<x>;
   };
 
-  template<class Cmp>
-  struct _sort<0, Cmp>
+  template<class Cmp, class x, class y>
+  using sort_pair = typename mk_list2<JLN_MP_TRACE_F(Cmp)::template f<y, x>::value>
+    ::template f<x, y>;
+
+  template<>
+  struct sort_impl<2>
   {
-    template<class...>
-    using f = list<>;
+    template<class Cmp, class x, class y>
+    using f = sort_pair<Cmp, x, y>;
+  };
+
+  template<>
+  struct sort_impl<3>
+  {
+    template<class Cmp, class x1, class x2, class x3>
+    using f = typename merge_impl<
+      list<>,
+      sort_pair<Cmp, x1, x2>,
+      list<x3>,
+      Cmp
+    >::type;
+  };
+
+  template<>
+  struct sort_impl<4>
+  {
+    template<class Cmp, class x1, class x2, class x3, class x4>
+    using f = typename merge_impl<
+      list<>,
+      sort_pair<Cmp, x1, x2>,
+      sort_pair<Cmp, x3, x4>,
+      Cmp
+    >::type;
+  };
+
+  template<>
+  struct sort_impl<5>
+  {
+    template<class Cmp, class x1, class x2, class x3, class x4, class x5>
+    using f = typename merge_impl<
+      list<>,
+      sort_pair<Cmp, x1, x2>,
+      typename sort_impl<3>::template f<Cmp, x3, x4, x5>,
+      Cmp
+    >::type;
+  };
+
+  template<>
+  struct sort_impl<6>
+  {
+    template<class Cmp, class x1, class x2, class x3, class x4, class x5,
+             class x6>
+    using f = typename merge_impl<
+      list<>,
+      typename sort_impl<3>::template f<Cmp, x1, x2, x3>,
+      typename sort_impl<3>::template f<Cmp, x4, x5, x6>,
+      Cmp
+    >::type;
+  };
+
+  template<>
+  struct sort_impl<7>
+  {
+    template<class Cmp, class x1, class x2, class x3, class x4, class x5,
+             class x6, class x7>
+    using f = typename merge_impl<
+      list<>,
+      typename sort_impl<4>::template f<Cmp, x1, x2, x3, x4>,
+      typename sort_impl<3>::template f<Cmp, x5, x6, x7>,
+      Cmp
+    >::type;
+  };
+
+  template<>
+  struct sort_impl<8>
+  {
+    template<class Cmp, class x1, class x2, class x3, class x4, class x5,
+             class x6, class x7, class x8>
+    using f = typename merge_impl<
+      list<>,
+      typename sort_impl<4>::template f<Cmp, x1, x2, x3, x4>,
+      typename sort_impl<4>::template f<Cmp, x5, x6, x7, x8>,
+      Cmp
+    >::type;
+  };
+
+  template<>
+  struct sort_impl<16>
+  {
+    template<class Cmp, class x1, class x2, class x3, class x4, class x5,
+             class x6, class x7, class x8, class... xs>
+    using f = typename merge_impl<
+      list<>,
+      typename sort_impl<8>::template f<Cmp, x1, x2, x3, x4, x5, x6, x7, x8>,
+      typename sort_impl<sizeof...(xs)>::template f<Cmp, xs...>,
+      Cmp
+    >::type;
+  };
+
+  template<>
+  struct sort_impl<32>
+  {
+    template<class Cmp, class x1, class x2, class x3, class x4, class x5,
+             class x6, class x7, class x8, class x9, class x10, class x11,
+             class x12, class x13, class x14, class x15, class x16, class... xs>
+    using f = typename merge_impl<
+      list<>,
+      typename sort_impl<16>::template f<
+        Cmp, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16>,
+      typename sort_impl<sizeof...(xs)>::template f<Cmp, xs...>,
+      Cmp
+    >::type;
+  };
+
+  template<>
+  struct sort_impl<64>
+  {
+    template<class Cmp, class x1, class x2, class x3, class x4, class x5,
+             class x6, class x7, class x8, class x9, class x10, class x11,
+             class x12, class x13, class x14, class x15, class x16, class x17,
+             class x18, class x19, class x20, class x21, class x22, class x23,
+             class x24, class x25, class x26, class x27, class x28, class x29,
+             class x30, class x31, class x32, class... xs>
+    using f = typename merge_impl<
+      list<>,
+      typename sort_impl<32>::template f<
+        Cmp, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15,
+        x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29,
+        x30, x31, x32>,
+      typename sort_impl<sizeof...(xs)>::template f<Cmp, xs...>,
+      Cmp
+    >::type;
+  };
+
+  template<>
+  struct sort_impl<128>
+  {
+    template<class Cmp, class... xs>
+    using f = typename merge_impl<
+      list<>,
+      typename take_front_c<sizeof...(xs) / 2, sort<Cmp>>::template f<xs...>,
+      typename drop_front_c<sizeof...(xs) / 2, sort<Cmp>>::template f<xs...>,
+      Cmp
+    >::type;
   };
 }
 /// \endcond
