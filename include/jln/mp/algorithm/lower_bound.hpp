@@ -200,7 +200,7 @@ namespace jln::mp::detail
   };
 
 #define JLN_MP_LOWER_BOUND_PRED_CALL(x) \
-  conditional_c<bool(Pred::template f<x>::value)>
+  conditional_c<Pred::template f<x>::value>
 
 #define JLN_MP_LOWER_BOUND_SMP_PRED_CALL(x) \
   _smp_conditional<typename Pred::template f<x>>
