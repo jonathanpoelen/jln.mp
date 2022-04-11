@@ -38,7 +38,7 @@ TEST()
 
   test_pack2<zip_longest>();
 
-  test_context<zip_longest<void>, smp::zip_longest<void>, 0>()
+  test_context<zip_longest<void>, smp::zip_longest<void>>()
     .test<list<>, list<>, list<>>()
     .test<list<list<_0>>, list<_0>>()
     .test<list<list<_0>, list<_1>>, list<_0, _1>>()
@@ -55,13 +55,13 @@ TEST()
     .not_invocable<another_list<>>()
     ;
 
-  test_context<zip_longest_with<void, add<>>, smp::zip_longest_with<void, smp::add<>>, 0>()
+  test_context<zip_longest_with<void, add<>>, smp::zip_longest_with<void, smp::add<>>>()
     .test<list<>>()
     .test<list<_6, _2>, list<_4, _1>, list<_2, _1>>()
     .not_invocable<list<bad_number>, list<_1>>()
     ;
 
-  test_context<zip_longest_with<_8, add<>>, smp::zip_longest_with<_8, smp::add<>>, 0>()
+  test_context<zip_longest_with<_8, add<>>, smp::zip_longest_with<_8, smp::add<>>>()
     .test<list<_6, _9>, list<_4>, list<_2, _1>>()
     ;
 

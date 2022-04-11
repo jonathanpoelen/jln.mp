@@ -13,14 +13,14 @@ namespace jln::mp::smp
     mp::left_matrix_longest_with<FillValue, subcontract<F>, monadic_xs<subcontract<C>>>>;
 
   template<class FillValue, class C = listify>
-  using left_matrix_longest = left_matrix_longest_with<FillValue, listify, assume_lists_barrier<C>>;
+  using left_matrix_longest = left_matrix_longest_with<FillValue, listify, C>;
 
   template<class FillValue, class F = listify, class C = listify>
   using right_matrix_longest_with = try_contract<
     mp::right_matrix_longest_with<FillValue, subcontract<F>, monadic_xs<subcontract<C>>>>;
 
   template<class FillValue, class C = listify>
-  using right_matrix_longest = right_matrix_longest_with<FillValue, listify, assume_lists_barrier<C>>;
+  using right_matrix_longest = right_matrix_longest_with<FillValue, listify, C>;
 }
 
 /// \cond
