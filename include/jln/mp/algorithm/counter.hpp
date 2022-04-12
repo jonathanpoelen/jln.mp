@@ -63,10 +63,30 @@ namespace jln::mp
 }
 
 /// \cond
+#include <jln/mp/algorithm/fold_left.hpp>
+#include <jln/mp/detail/compiler.hpp>
+
 namespace jln::mp::detail
 {
+#if JLN_MP_GCC || defined(JLN_MP_COUNTER_NO_FOLD)
+  template<class T>
+  struct inc_if
+  {
+    template<class state, class x>
+    using f = number<state::value + std::is_same<T, x>::value>;
+  };
+
+  template<class... xs>
+  struct counter_impl
+  {
+    template<class C, class F, class... ys>
+    using f = JLN_MP_CALL_TRACE(C,
+      JLN_MP_CALL_TRACE(F, xs, typename fold_left<inc_if<xs>>::template f<number<0>, ys...>)...
+    );
+  };
+#else
   template<class x, class... xs>
-  inline constexpr auto count_unique_v = (0 + ... + std::is_same<xs, x>::value);
+  inline constexpr auto count_unique_v = (... + std::is_same<xs, x>::value);
 
   template<class... xs>
   struct counter_impl
@@ -76,5 +96,6 @@ namespace jln::mp::detail
       JLN_MP_CALL_TRACE(F, xs, mp::number<count_unique_v<xs, ys...>>)...
     );
   };
+#endif
 }
 /// \endcond
