@@ -8,5 +8,5 @@
 namespace jln::mp::smp
 {
   template<class F, class Cmp = less<>>
-  using compare_with = each<F, F, Cmp>;
+  using compare_with = each<F, F, assume_binary<Cmp>>;
 }

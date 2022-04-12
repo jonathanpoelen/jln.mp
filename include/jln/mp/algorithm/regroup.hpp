@@ -9,6 +9,9 @@ namespace jln::mp
   {
     template<class C>
     struct counter_to_repeat;
+
+    template<class... xs>
+    struct regroup_if_impl;
   }
   /// \endcond
 
@@ -32,6 +35,18 @@ namespace jln::mp
   template<class C = listify>
   using regroup = regroup_with<listify, C>;
 
+  template<class Cmp = lift<std::is_same>, class F = listify, class C = listify>
+  struct regroup_if_with
+  {
+    template<class... xs>
+    using f = typename unique_if<Cmp, lift<detail::regroup_if_impl>>
+      ::template f<xs...>
+      ::template f<C, F, Cmp, xs...>;
+  };
+
+  template<class Cmp = lift<std::is_same>, class C = listify>
+  using regroup_if = regroup_if_with<Cmp, listify, C>;
+
   namespace emp
   {
     template<class L, class C = mp::listify>
@@ -39,11 +54,24 @@ namespace jln::mp
 
     template<class L, class F = mp::listify, class C = mp::listify>
     using regroup_with = unpack<L, mp::regroup_with<F, C>>;
+
+    template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
+    using regroup_if = unpack<L, mp::regroup_if<Cmp, C>>;
+
+    template<class L, class Cmp = lift<std::is_same>, class F = mp::listify, class C = mp::listify>
+    using regroup_if_with = unpack<L, mp::regroup_if_with<Cmp, F, C>>;
   }
+
+  /// \cond
+  template<class F, class C>
+  struct regroup_if_with<lift<std::is_same>, F, C> : regroup_with<F, C>
+  {};
+  /// \endcond
 }
 
 
 #include <jln/mp/algorithm/repeat.hpp>
+#include <jln/mp/algorithm/copy.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -52,7 +80,16 @@ namespace jln::mp::detail
   struct counter_to_repeat
   {
     template<class x, class n>
-    using f = typename mp::repeat<n, C>::template f<x>;
+    using f = typename repeat<n, C>::template f<x>;
+  };
+
+  template<class... xs>
+  struct regroup_if_impl
+  {
+    template<class C, class F, class Cmp, class... ys>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename copy_if<push_front<xs, Cmp>, F>::template f<ys...>...
+    );
   };
 }
 /// \endcond
