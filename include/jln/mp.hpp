@@ -7604,8 +7604,25 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
+#if JLN_MP_GCC || defined(JLN_MP_COUNTER_NO_FOLD)
+  template<class T>
+  struct inc_if
+  {
+    template<class state, class x>
+    using f = number<state::value + std::is_same<T, x>::value>;
+  };
+
+  template<class... xs>
+  struct counter_impl
+  {
+    template<class C, class F, class... ys>
+    using f = JLN_MP_CALL_TRACE(C,
+      JLN_MP_CALL_TRACE(F, xs, typename fold_left<inc_if<xs>>::template f<number<0>, ys...>)...
+    );
+  };
+#else
   template<class x, class... xs>
-  inline constexpr auto count_unique_v = (0 + ... + std::is_same<xs, x>::value);
+  inline constexpr auto count_unique_v = (... + std::is_same<xs, x>::value);
 
   template<class... xs>
   struct counter_impl
@@ -7615,6 +7632,7 @@ namespace jln::mp::detail
       JLN_MP_CALL_TRACE(F, xs, mp::number<count_unique_v<xs, ys...>>)...
     );
   };
+#endif
 }
 /// \endcond
 namespace jln::mp
@@ -11214,6 +11232,9 @@ namespace jln::mp
   {
     template<class C>
     struct counter_to_repeat;
+
+    template<class... xs>
+    struct regroup_if_impl;
   }
   /// \endcond
 
@@ -11237,6 +11258,18 @@ namespace jln::mp
   template<class C = listify>
   using regroup = regroup_with<listify, C>;
 
+  template<class Cmp = lift<std::is_same>, class F = listify, class C = listify>
+  struct regroup_if_with
+  {
+    template<class... xs>
+    using f = typename unique_if<Cmp, lift<detail::regroup_if_impl>>
+      ::template f<xs...>
+      ::template f<C, F, Cmp, xs...>;
+  };
+
+  template<class Cmp = lift<std::is_same>, class C = listify>
+  using regroup_if = regroup_if_with<Cmp, listify, C>;
+
   namespace emp
   {
     template<class L, class C = mp::listify>
@@ -11244,7 +11277,19 @@ namespace jln::mp
 
     template<class L, class F = mp::listify, class C = mp::listify>
     using regroup_with = unpack<L, mp::regroup_with<F, C>>;
+
+    template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
+    using regroup_if = unpack<L, mp::regroup_if<Cmp, C>>;
+
+    template<class L, class Cmp = lift<std::is_same>, class F = mp::listify, class C = mp::listify>
+    using regroup_if_with = unpack<L, mp::regroup_if_with<Cmp, F, C>>;
   }
+
+  /// \cond
+  template<class F, class C>
+  struct regroup_if_with<lift<std::is_same>, F, C> : regroup_with<F, C>
+  {};
+  /// \endcond
 }
 
 
@@ -11255,7 +11300,16 @@ namespace jln::mp::detail
   struct counter_to_repeat
   {
     template<class x, class n>
-    using f = typename mp::repeat<n, C>::template f<x>;
+    using f = typename repeat<n, C>::template f<x>;
+  };
+
+  template<class... xs>
+  struct regroup_if_impl
+  {
+    template<class C, class F, class Cmp, class... ys>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename copy_if<push_front<xs, Cmp>, F>::template f<ys...>...
+    );
   };
 }
 /// \endcond
@@ -13971,7 +14025,7 @@ namespace jln::mp
   /// Invokes \c FC whether any value is `na`, otherwise \c C.
   /// \treturn \value
   template<class C, class FC = violation>
-  using monadic_xs = if_<transform<is<na>, or_<>>, FC, C>;
+  using monadic_xs = if_<none_of<is<na>>, C, FC>;
 
   /// Monadify only if \c x is \c na.
   /// \treturn \value
