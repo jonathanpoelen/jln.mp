@@ -45,7 +45,10 @@ namespace jln::mp::smp
 
 
   template<class Cmp = less<>, class C = identity>
-  using abs = detail::sfinae<mp::abs<subcontract_barrier<Cmp>, subcontract_barrier<C>>>;
+  using abs = tee<identity, neg<>, if_<Cmp,
+    contract<mp::at1<subcontract<C>>>,
+    contract<mp::at0<subcontract<C>>>
+  >>;
 
 
   template<class C = identity>

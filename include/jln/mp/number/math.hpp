@@ -40,7 +40,7 @@ namespace jln::mp
 
 
   template<class Cmp = less<>, class C = identity>
-  using abs = tee<identity, neg<>, max<Cmp, C>>;
+  using abs = tee<identity, neg<>, if_<Cmp, at1<C>, at0<C>>>;
 
 
   template<class C = identity>
@@ -67,14 +67,17 @@ namespace jln::mp
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
     using max0 = unpack<L, mp::max0<Cmp, C>>;
 
-    template<class L, class Min, class Max, class Cmp = mp::less<>, class C = mp::identity>
-    using clamp = unpack<L, mp::clamp<Min, Max, Cmp, C>>;
+    template<class I, class Min, class Max, class Cmp = mp::less<>, class C = mp::identity>
+    using clamp = typename mp::clamp<Min, Max, Cmp, C>::template f<I>;
 
-    template<class L, int_ min, int_ max, class Cmp = mp::less<>, class C = mp::identity>
-    using clamp_c = unpack<L, mp::clamp_c<min, max, Cmp, C>>;
+    template<int_ I, int_ min, int_ max, class Cmp = mp::less<>, class C = mp::identity>
+    using clamp_c = typename mp::clamp_c<min, max, Cmp, C>::template f<number<I>>;
 
-    template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using abs = unpack<L, mp::abs<Cmp, C>>;
+    template<class I, class Cmp = mp::less<>, class C = mp::identity>
+    using abs = typename mp::abs<Cmp, C>::template f<I>;
+
+    template<int_ I, class Cmp = mp::less<>, class C = mp::identity>
+    using abs_c = typename mp::abs<Cmp, C>::template f<number<I>>;
 
     template<class L, class C = mp::identity>
     using pow = unpack<L, mp::pow<C>>;
