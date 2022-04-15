@@ -16,6 +16,11 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  test_mulary_pack<until, ut::unary>();
+  test_mulary_pack<until, ut::binary>();
+  test_mulary_pack<until, ut::listify>();
+  test_mulary_pack<until, is<void>, is<void>>();
+
   test_context<
     until<is<int****>, traits::add_pointer<>>,
     smp::until<smp::is<int****>, smp::traits::add_pointer<>>

@@ -11,7 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack3<is_disjoint>();
+  test_binary_pack<is_disjoint_with>();
+  test_unary_pack<is_disjoint_with, listify>();
 
   ut::same<_1, emp::is_disjoint<emp::numbers<0, 1, 2>, emp::numbers<3, 4, 5>>>();
   ut::same<_0, emp::is_disjoint<emp::numbers<0, 1, 2>, emp::numbers<3, 2>>>();

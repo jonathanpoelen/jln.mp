@@ -11,8 +11,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<insert_range, _1, list<_2, _3>>();
-  test_pack2<insert_range, _1, void>();
+  test_mulary_pack<insert_range, _1, void>();
 
   ut::same<emp::numbers<0, 3, 1, 2>,
     emp::insert_range_c<seq_0_1_2, 1, list<_3>>>();

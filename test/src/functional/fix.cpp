@@ -20,7 +20,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<fix>();
+  test_mulary_pack<fix>();
 
   ut::same<seq_0_1_2, emp::fix<foo, _2>>();
 

@@ -10,7 +10,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<push_back, void>();
+  test_mulary_pack<push_back, void>();
 
   test_context<push_back<_2>, smp::push_back<_2>>()
     .test<seq_2>()

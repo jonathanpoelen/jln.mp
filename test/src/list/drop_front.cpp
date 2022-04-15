@@ -11,10 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<drop_front, _2>();
-  test_pack3<drop_front>();
-  test_pack2<drop_front_max, _2>();
-  test_pack3<drop_front_max>();
+  test_mulary_pack<drop_front, _2>();
+  test_mulary_pack<drop_front_max, _2>();
 
   test_context<drop_front_c<0>, smp::drop_front_c<0>>()
     .test<list<>>()

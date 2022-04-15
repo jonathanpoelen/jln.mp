@@ -13,8 +13,7 @@ TEST()
 
   ut::same<v2, emp::as_val<_2>>();
 
-  test_pack<as_val>().test_unary();
-  test_pack3<as_val>();
+  test_unary_pack<as_val>();
 
   test_context<as_val<>, smp::as_val<>>()
     .test<v1, _1>()

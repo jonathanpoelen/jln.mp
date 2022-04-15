@@ -12,7 +12,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<permutations>();
+  test_mulary_pack<permutations>();
 
   ut::same<list<
     list<_0, _1, _2>, list<_0, _2, _1>,

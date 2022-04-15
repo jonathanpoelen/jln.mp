@@ -11,8 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<circulant_matrix>();
-  test_pack3<circulant_matrix, listify>();
+  test_mulary_pack<circulant_matrix_with>();
+  test_mulary_pack<circulant_matrix_with, listify>();
 
   test_context<circulant_matrix<>, smp::circulant_matrix<>>()
     .test<list<>>()

@@ -11,8 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack3<remove_if, is<int>>();
-  test_pack3<remove_if, void>();
+  test_unary_pack<remove_if>();
+  test_mulary_pack<remove_if, is<int>>();
 
   ut::same<emp::numbers<1, 2>, emp::remove_if<seq_0_1_2, is<_0>>>();
   ut::same<emp::numbers<0, 2>, emp::remove<seq_0_1_2, _1>>();

@@ -11,8 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<transform, inc<>>();
-  test_pack2<transform, listify>();
+  test_unary_pack<transform>();
+  test_mulary_pack<transform, inc<>>();
 
   ut::same<seq_1_2_3, emp::transform<seq_0_1_2, inc<>>>();
 

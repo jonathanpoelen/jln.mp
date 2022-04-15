@@ -17,18 +17,24 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<search, is<int>>();
-  test_pack3<search>();
-  test_pack2<search_before, is<int>>();
-  test_pack3<search_before_extended_by_n>();
-  test_pack2<search_before_extended_by_n, _2, is<int>>();
-  test_pack3<search_before>();
-  test_pack2<partial_search, _1, is<int>>();
-  test_pack3<partial_search, _1>();
-  test_pack2<partial_search_before, _1, is<int>>();
-  test_pack3<partial_search_before, _1>();
-  test_pack2<partial_search_before_extended_by_n, _1, _1, is<int>>();
-  test_pack3<partial_search_before_extended_by_n, _1, _1>();
+  test_binary_pack<search>();
+  test_mulary_pack<search, size<>>();
+  test_mulary_pack<search, size<>, identity>();
+  test_binary_pack<search_before>();
+  test_mulary_pack<search_before, size<>>();
+  test_mulary_pack<search_before, size<>, identity>();
+  test_binary_pack<search_before_extended_by_n, _2>();
+  test_mulary_pack<search_before_extended_by_n, _2, size<>>();
+  test_mulary_pack<search_before_extended_by_n, _2, size<>, identity>();
+  test_binary_pack<partial_search, _1>();
+  test_mulary_pack<partial_search, _1, size<>>();
+  test_mulary_pack<partial_search, _1, size<>, identity>();
+  test_binary_pack<partial_search_before, _1>();
+  test_mulary_pack<partial_search_before, _1, size<>>();
+  test_mulary_pack<partial_search_before, _1, size<>, identity>();
+  test_binary_pack<partial_search_before_extended_by_n, _1, _1>();
+  test_mulary_pack<partial_search_before_extended_by_n, _1, _1, size<>>();
+  test_mulary_pack<partial_search_before_extended_by_n, _1, _1, size<>, identity>();
 
   test_context<search<size<is<_3>>>, smp::search<smp::size<smp::is<_3>>>>()
     .test<list<>>()

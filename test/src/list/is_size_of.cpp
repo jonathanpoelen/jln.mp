@@ -11,6 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  test_unary_pack<is_size_of, _2>();
+
   ut::same<_0, emp::is_size_of_c<seq_0_1_2, 2>>();
   ut::same<_1, emp::is_size_of_c<seq_0_1_2, 3>>();
 

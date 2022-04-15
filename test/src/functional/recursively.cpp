@@ -26,7 +26,8 @@ void test_rec()
 
   ut::same<_3, call<Mp<until_n_c<3>>, _0>>();
 
-  test_pack2<Mp, identity>();
+  test_mulary_pack<Mp>();
+  test_mulary_pack<Mp, identity>();
 
   using detail::sfinae;
 

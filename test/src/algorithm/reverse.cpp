@@ -12,7 +12,7 @@ TEST()
 
   ut::same<seq_2_1_0, emp::reverse<seq_0_1_2>>();
 
-  test_pack2<reverse>();
+  test_mulary_pack<reverse>();
 
   test_context<reverse<>, smp::reverse<>>()
     .test<list<>>()

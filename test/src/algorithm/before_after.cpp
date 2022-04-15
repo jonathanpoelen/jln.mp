@@ -16,10 +16,18 @@ TEST()
   using l1 = list<_1>;
   using l2 = list<_1, _2>;
 
-  test_pack3<before_after, l0>();
-  test_pack2<before_after, l1>();
-  test_pack2<before_after, l2>();
-  test_pack3<before_after>();
+  test_mulary_pack<before_after_with, l0>();
+  test_mulary_pack<before_after_with, l1>();
+  test_mulary_pack<before_after_with, l2>();
+  test_mulary_pack<before_after_with, l0, listify>();
+  test_mulary_pack<before_after_with, l1, listify>();
+  test_mulary_pack<before_after_with, l2, listify>();
+  test_binary_pack<before_after_with, l0, listify, listify>();
+  test_binary_pack<before_after_with, l1, listify, listify>();
+  test_binary_pack<before_after_with, l2, listify, listify>();
+  test_binary_pack<before_after_with, l0, listify, listify, listify>();
+  test_binary_pack<before_after_with, l1, listify, listify, listify>();
+  test_binary_pack<before_after_with, l2, listify, listify, listify>();
 
   test_context<
     before_after<l0, listify, always<void>>,

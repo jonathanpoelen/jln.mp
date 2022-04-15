@@ -10,7 +10,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<insert, _1, void>();
+  test_mulary_pack<insert, _1, void>();
 
   ut::same<emp::numbers<0, 3, 1, 2>,
     emp::insert_c<seq_0_1_2, 1, _3>>();

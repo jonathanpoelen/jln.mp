@@ -10,7 +10,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<pairwise>();
+  test_binary_pack<pairwise_with>();
+  test_mulary_pack<pairwise_with, listify>();
 
   ut::same<list<>,
     emp::pairwise<seq_0>>();

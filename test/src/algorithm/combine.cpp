@@ -11,7 +11,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<combine>();
+  test_mulary_pack<combine>();
 
   ut::same<list<>, emp::combine<list<>>>();
   ut::same<list<

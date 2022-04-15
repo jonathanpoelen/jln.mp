@@ -18,7 +18,8 @@ TEST()
     emp::left_matrix_shortest<list<seq_0_0_0, seq_0_1, seq_3_2_1>>
   >();
 
-  test_pack2<left_matrix_shortest>();
+  test_mulary_pack<left_matrix_shortest_with>();
+  test_mulary_pack<left_matrix_shortest_with, listify>();
 
   test_context<left_matrix_shortest<>, smp::left_matrix_shortest<>>()
     .test<list<>>()
@@ -68,7 +69,8 @@ TEST()
     emp::right_matrix_shortest<list<seq_0_0_0, seq_0_1, seq_3_2_1>>
   >();
 
-  test_pack2<right_matrix_shortest>();
+  test_mulary_pack<right_matrix_shortest_with>();
+  test_mulary_pack<right_matrix_shortest_with, listify>();
 
   test_context<right_matrix_shortest<>, smp::right_matrix_shortest<>>()
     .test<list<>>()

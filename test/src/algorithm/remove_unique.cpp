@@ -15,7 +15,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<remove_unique>();
+  test_mulary_pack<remove_unique>();
+  test_mulary_pack<remove_unique_if, size<>>();
 
   ut::same<emp::numbers<0, 0, 2, 2>, emp::remove_unique<emp::numbers<0, 1, 0, 2, 2, 3>>>();
 

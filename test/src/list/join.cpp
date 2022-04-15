@@ -10,6 +10,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  test_mulary_pack<join>();
+
   class X;
   using a = list<_0, _1, _2>;
   using b = list<_3, _4>;

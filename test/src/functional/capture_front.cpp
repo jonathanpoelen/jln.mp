@@ -19,6 +19,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  test_mulary_pack<capture_front>();
+
   test_context<capture_front<int, char>, smp::capture_front<int, char>>()
     .test<list<char>, pop_front<>>()
     .test<list<>, pop_front<pop_front<>>>()

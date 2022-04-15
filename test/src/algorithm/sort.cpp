@@ -221,8 +221,8 @@ TEST()
 
   ut::not_invocable<smp::sort<cmp_err>, _0, _0, _0, _1, _1, _1>();
 
-  test_pack2<sort>();
-  test_pack2<sort, listify>();
+  test_binary_pack<sort>();
+  test_mulary_pack<sort, listify>();
 
   ut::same<seq_1_2_3, emp::sort<seq_3_2_1>>();
 

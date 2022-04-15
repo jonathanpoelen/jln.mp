@@ -11,7 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<compress, list<>>();
+  test_mulary_pack<compress, list<>>();
+  test_mulary_pack<compress, emp::numbers<1, 1, 0, 1>>();
 
   using selectors = emp::numbers<0, 1, 0, 1, 1>;
   using result = list<_1, _3, _4>;

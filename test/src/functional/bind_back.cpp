@@ -13,7 +13,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<bind_back>();
+  test_mulary_pack<bind_back>();
 
   ut::same<list<char, long, int, void>, emp::bind_back<list<char, long>, listify, int, void>>();
 

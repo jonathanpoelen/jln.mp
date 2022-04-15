@@ -13,6 +13,8 @@ TEST()
   ut::same<_1, emp::conjunction<seq_1_1>>();
   ut::same<_0, emp::conjunction<seq_1_0>>();
 
+  test_unary_pack<conjunction>();
+
   test_context<conjunction<>, smp::conjunction<>>()
     .test<_1>()
     .test<_1, _1>()

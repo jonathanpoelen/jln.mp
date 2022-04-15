@@ -11,7 +11,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<pop_front>();
+  test_mulary_pack<pop_front>();
 
   test_context<pop_front<>, smp::pop_front<>>()
     .test<list<>, _0>()

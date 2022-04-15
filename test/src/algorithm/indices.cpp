@@ -14,7 +14,7 @@ TEST()
   ut::same<seq_0_1_2, emp::indices<seq_0_1_2>>();
   ut::same<seq_0_1_2, emp::indices<seq_1_2_3>>();
 
-  test_pack2<indices>();
+  test_mulary_pack<indices>();
 
   ut::invocable<smp::indices<>>();
   ut::invocable<smp::indices<>, _1>();

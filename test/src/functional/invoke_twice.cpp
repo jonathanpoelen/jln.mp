@@ -15,7 +15,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<invoke_twice>();
+  test_mulary_pack<invoke_twice>();
 
   ut::same<list<void, int>, invoke_twice<front<lift<take_front, lift<pop_front>>>>
     ::template f<_2, void, int, char, long>>();

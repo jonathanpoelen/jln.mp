@@ -15,8 +15,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<type_>().test_unary();
-  test_pack3<type_>();
+  test_unary_pack<type_>();
 
   test_context<type_<>, smp::type_<>>()
     .test<int, dummy>()

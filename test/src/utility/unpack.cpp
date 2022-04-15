@@ -11,8 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<unpack>();
-  test_pack2<unpack_append>();
+  test_mulary_pack<unpack>();
+  test_mulary_pack<unpack_append>();
 
   ut::same<_3, emp::unpack<seq_0_0_0, size<>>>();
   ut::same<_3, emp::unpack_append<seq_0_0_0, size<>>>();

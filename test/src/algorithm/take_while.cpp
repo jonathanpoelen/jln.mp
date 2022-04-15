@@ -11,8 +11,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<take_while, is<int>>();
-  test_pack3<take_while>();
+  test_unary_pack<take_while>();
+  test_mulary_pack<take_while, is<int>>();
+  test_mulary_pack<take_while, is<int>, identity>();
 
   test_context<take_while<is_not<_3>>, smp::take_while<smp::is_not<_3>>>()
     .test<list<>>()
@@ -70,8 +71,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<take_while_extended_by_n, _1, is<int>>();
-  test_pack3<take_while_extended_by_n, _1>();
+  test_unary_pack<take_while_extended_by_n, _9>();
+  test_mulary_pack<take_while_extended_by_n, _9, is<int>>();
+  test_mulary_pack<take_while_extended_by_n, _9, is<int>, identity>();
 
   test_context<
     take_while_extended_by_n_c<2, is_not<_3>>,
@@ -101,8 +103,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<take_inclusive_while, is<int>>();
-  test_pack3<take_inclusive_while>();
+  test_unary_pack<take_inclusive_while>();
+  test_mulary_pack<take_inclusive_while, is<int>>();
+  test_mulary_pack<take_inclusive_while, is<int>, identity>();
 
   test_context<take_inclusive_while<is_not<_3>>, smp::take_inclusive_while<smp::is_not<_3>>>()
     .test<list<>>()

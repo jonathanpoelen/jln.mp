@@ -11,7 +11,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<always>();
+  test_unary_pack<always, _1>();
 
   test_context<always<_1>, smp::always<_1>>()
     .test<_1>()

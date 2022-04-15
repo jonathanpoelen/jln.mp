@@ -14,6 +14,8 @@ TEST()
 {
   using namespace jln::mp;
 
+  test_unary_pack<as_list>();
+
   using l1 = list<int, char, void>;
   using l2 = fake_list<int, char, void>;
   using l3 = other_list<int, char, void>;

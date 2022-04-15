@@ -17,7 +17,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<alignof_>().test_unary();
+  test_unary_pack<alignof_>();
 
   ut::same<_1, emp::alignof_<aligned<1>>>();
   ut::same<_2, emp::alignof_<aligned<2>>>();

@@ -15,18 +15,8 @@ TEST()
   ut::same<list<list<list<_3, _2>, _1>, _0>,
     emp::reverse_fold<seq_0_1_2, _3, listify>>();
 
-  test_pack3<reverse_fold>();
-  test_pack3<reverse_fold, listify>();
-
-  test_pack<reverse_fold>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-  ;
-  test_pack<reverse_fold, listify>()
-    .test_variadic()
-    .test_unary()
-  ;
+  test_binary_pack<reverse_fold>();
+  test_unary_pack<reverse_fold, listify>();
 
   test_context<reverse_fold<listify>, smp::reverse_fold<smp::listify>>()
     .test<_0, _0>()

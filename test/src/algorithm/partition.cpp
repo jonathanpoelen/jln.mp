@@ -12,8 +12,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack3<partition, is<int>>();
-  test_pack3<partition, void>();
+  test_binary_pack<partition>();
+  test_mulary_pack<partition, listify>();
 
   using mod2 = push_back<_2, mod<>>;
 

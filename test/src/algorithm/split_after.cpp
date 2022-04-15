@@ -26,8 +26,8 @@ TEST()
   ut::same<list<seq_0, seq_1_0, list<_2, _0>, list<_3, _0>, e>,
     emp::split_after<seq_0_1_0_2_0_3_0, _0>>();
 
-  test_pack2<split_after_if>();
-  test_pack2<split_after_if, identity>();
+  test_mulary_pack<split_after_if>();
+  test_mulary_pack<split_after_if, identity>();
 
   test_context<split_after_if<not_<>>, smp::split_after_if<smp::not_<>>>()
     .test<e>()

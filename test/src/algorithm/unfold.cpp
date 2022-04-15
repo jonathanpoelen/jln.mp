@@ -30,7 +30,8 @@ TEST()
 
   ut::same<list<_0, _1, _2, _3, _4>, emp::unfold<_0, f>>();
 
-  test_pack2<unfold, mp::always<None>>();
+  test_mulary_pack<unfold>();
+  test_mulary_pack<unfold, mp::always<None>>();
 
   test_context<make_seq_5, smp_make_seq_5>()
     .test<list<_0, _1, _2, _3, _4>, _0>()

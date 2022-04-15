@@ -9,7 +9,8 @@ TEST()
 {
   using namespace jln::mp;
 
-  test_pack2<compare_with>();
+  test_binary_pack<compare_with>();
+  test_mulary_pack<compare_with, listify>();
 
   ut::same<false_, emp::compare_with<sizeof_<>, int, int>>();
   ut::same<true_, emp::compare_with<sizeof_<>, char[1], char[2]>>();

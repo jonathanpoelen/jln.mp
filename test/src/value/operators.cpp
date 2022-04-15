@@ -34,8 +34,7 @@ TEST()
   ut::same<yes, emp::val_and_c<>>();
 
 
-  test_pack<val_or>().test_unary();
-  test_pack3<val_or>();
+  test_unary_pack<val_or>();
 
   auto ctx = [](auto f){
     using g = unpack<decltype(f)>;
@@ -75,7 +74,7 @@ TEST()
 
   ut::invoke_r<val<0>, val_div0<>>();
   ut::invoke_r<val<int_(1)>, val_div0<>, _1>();
-  // FIX gcc7: val<0> is a val_typedal<int_,0> if val<int_(0)> precedes val<0>
+  // FIX gcc7: val<0> is a typed_val<int_,0> if val<int_(0)> precedes val<0>
   if constexpr (std::is_same_v<val<0>, typed_val<int,0>>) {
     ut::invoke_r<val<0>, smp::val_div0<>>();
     ut::invoke_r<val<1>, smp::val_div1<>>();

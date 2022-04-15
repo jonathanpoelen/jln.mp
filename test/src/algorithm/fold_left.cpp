@@ -15,18 +15,8 @@ TEST()
   ut::same<list<list<list<_0, _1>, _2>, _3>,
     emp::fold_left<seq_1_2_3, _0, listify>>();
 
-  test_pack3<fold_left>();
-  test_pack3<fold_left, listify>();
-
-  test_pack<fold_left>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-  ;
-  test_pack<fold_left, listify>()
-    .test_variadic()
-    .test_unary()
-  ;
+  test_binary_pack<fold_left>();
+  test_unary_pack<fold_left, listify>();
 
   test_context<fold_left<listify>, smp::fold_left<smp::listify>>()
     .test<_0, _0>()

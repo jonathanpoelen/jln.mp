@@ -13,8 +13,7 @@ TEST()
 
   ut::same<list<_3, _1, _2, _0>, emp::swap_index_c<seq_0_1_2_3, 0, 3>>();
 
-  test_pack2<swap_index, _1, _2>();
-  test_pack3<swap_index, void, void>();
+  test_mulary_pack<swap_index, _1, _2>();
 
   ut::same<swap_index_c<1, 2>, swap_index_c<2, 1>>();
   ut::same<smp::swap_index_c<1, 2>, smp::swap_index_c<2, 1>>();

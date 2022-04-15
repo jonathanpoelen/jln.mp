@@ -18,8 +18,7 @@ TEST()
   ut::same<false_, emp::to_bool<a>>();
   ut::same<true_, emp::to_bool<b>>();
 
-  test_pack<to_bool>().test_unary();
-  test_pack3<to_bool>();
+  test_unary_pack<to_bool>();
 
   test_context<to_bool<>, smp::to_bool<>>()
     .test<false_, number<0>>()

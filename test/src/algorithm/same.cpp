@@ -11,8 +11,7 @@ TEST()
   ut::same<true_, emp::same<list<int, int, int>>>();
   ut::same<false_, emp::same<list<int, int, void>>>();
 
-  test_pack<same>().test_unary();
-  test_pack3<same>();
+  test_unary_pack<same>();
 
   test_context<same<>, smp::same<>>()
     .test<true_>()

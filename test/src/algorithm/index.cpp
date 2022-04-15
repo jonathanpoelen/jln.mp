@@ -13,8 +13,12 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<index_of, int>();
-  test_pack2<index_if_xs, is<int>>();
+  test_unary_pack<index_if>();
+  test_mulary_pack<index_if, identity>();
+  test_unary_pack<index_if, identity, identity>();
+  test_mulary_pack<index_if_xs>();
+  test_unary_pack<index_if_xs, listify>();
+  test_mulary_pack<index_if_xs, listify, listify>();
 
   ut::same<_2, emp::index_of<seq_0_1_2_3, _2>>();
   ut::same<_4, emp::index_of<seq_0_1_2_3, int>>();

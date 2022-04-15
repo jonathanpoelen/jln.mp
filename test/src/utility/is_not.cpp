@@ -10,7 +10,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<is_not>();
+  test_unary_pack<is_not, _1>();
 
   test_context<is_not<_1>, smp::is_not<_1>>()
     .test<_1, list<>>()

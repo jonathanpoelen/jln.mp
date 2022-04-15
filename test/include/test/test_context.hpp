@@ -114,77 +114,37 @@ namespace ut
 
   struct binary
   {
-    template<class a, class b> using f = void;
+    template<class a, class b>
+    using f = jln::mp::list<a, b>;
   };
 
-  struct variadic
-  {
-    template<class... xs>
-    using f = jln::mp::list<typename jln::mp::if_<xs, void, void>::type...>;
-  };
-
-  // TODO use test_pack2
   template<template<class...> class Tpl, class... Args>
-  void test_pack3()
+  void test_unary_pack()
   {
-    using jln::mp::lift;
-    using jln::mp::call;
-    using jln::mp::is_invocable;
-
-    static_assert(((void)call<is_invocable<lift<Tpl>>, Args..., void>::value,1));
-    static_assert(((void)call<is_invocable<lift<Tpl>>, Args..., unary>::value,1));
-    static_assert(((void)call<is_invocable<lift<Tpl>>, Args..., binary>::value,1));
-    static_assert(((void)call<is_invocable<lift<Tpl>>, Args..., listify>::value,1));
-    static_assert(((void)call<is_invocable<lift<Tpl>>, Args..., variadic>::value,1));
+    static_assert(((void)Tpl<Args..., unary>{}, 1));
+    static_assert(((void)Tpl<Args..., listify>{}, 1));
   }
 
   template<template<class...> class Tpl, class... Args>
-  void test_pack2()
+  void test_binary_pack()
   {
-    static_assert(((void)Tpl<Args..., void>{}, 1));
+    static_assert(((void)Tpl<Args..., binary>{}, 1));
+    static_assert(((void)Tpl<Args..., listify>{}, 1));
+  }
+
+  template<template<class...> class Tpl, class... Args>
+  void test_mulary_pack()
+  {
     static_assert(((void)Tpl<Args..., unary>{}, 1));
     static_assert(((void)Tpl<Args..., binary>{}, 1));
     static_assert(((void)Tpl<Args..., listify>{}, 1));
-    static_assert(((void)Tpl<Args..., variadic>{}, 1));
-    test_pack3<Tpl, Args...>();
   }
 
   class bad_function {};
-
-  // TODO use test_pack2/3
-  template<template<class...> class Tpl, class... Args>
-  struct test_pack
-  {
-    template<class... xs>
-    static test_pack test_unary()
-    {
-      static_assert(((void)Tpl<Args..., xs..., unary>{}, 1));
-      static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
-      static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
-      return {};
-    }
-
-    template<class... xs>
-    static test_pack test_binary()
-    {
-      static_assert(((void)Tpl<Args..., xs..., binary>{}, 1));
-      static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
-      static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
-      return {};
-    }
-
-    template<class... xs>
-    static test_pack test_variadic()
-    {
-      static_assert(((void)Tpl<Args..., xs..., listify>{}, 1));
-      static_assert(((void)Tpl<Args..., xs..., variadic>{}, 1));
-      return {};
-    }
-  };
 }
 
 using ut::test_context;
-using ut::test_pack;
-using ut::test_pack2;
-using ut::test_pack3;
+using ut::test_unary_pack;
+using ut::test_binary_pack;
+using ut::test_mulary_pack;
 using ut::bad_function;

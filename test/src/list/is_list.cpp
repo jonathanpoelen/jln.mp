@@ -10,6 +10,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  test_unary_pack<is_list>();
+
   ut::same<_0, emp::is_list<_0>>();
   ut::same<_1, emp::is_list<list<>>>();
 

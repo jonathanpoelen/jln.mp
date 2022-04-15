@@ -13,7 +13,10 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack3<split_from, index_of<_3>>();
+  test_mulary_pack<split_from2>();
+  test_mulary_pack<split_from2, identity>();
+  test_mulary_pack<split_from2, identity, identity>();
+  test_binary_pack<split_from2, identity, identity, identity>();
 
   test_context<split_from2<identity>, smp::split_from2<smp::identity>>()
     .test<list<list<>, seq_0>, _0>()

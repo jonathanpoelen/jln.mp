@@ -11,7 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack3<is_subset>();
+  test_binary_pack<is_subset_with>();
+  test_unary_pack<is_subset_with, listify>();
 
   ut::same<_1, emp::is_subset<emp::numbers<0, 1, 2>, emp::numbers<0, 1>>>();
   ut::same<_0, emp::is_subset<emp::numbers<0, 1, 2>, emp::numbers<1, 2, 3>>>();

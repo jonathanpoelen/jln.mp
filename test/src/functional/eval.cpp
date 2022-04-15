@@ -40,7 +40,6 @@ TEST()
 
   (void)eval<noop, ut::unary>();
   (void)eval<noop, ut::listify>();
-  (void)eval<noop, ut::variadic>();
 
   ut::not_invocable<eval<noop>>();
   ut::not_invocable<eval<noop>, int>();

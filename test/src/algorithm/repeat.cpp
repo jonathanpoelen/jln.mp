@@ -11,7 +11,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<repeat, _1>();
+  test_mulary_pack<repeat, _1>();
 
   ut::same<seq_1_1_1, emp::repeat_c<seq_1, 3>>();
 

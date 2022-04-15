@@ -13,7 +13,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<counter>();
+  test_mulary_pack<counter>();
 
   ut::same<list<list<int, _2>, list<char, _1>, list<short, _2>>,
     emp::counter<list<int, char, int, short, short>>>();
@@ -38,8 +38,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<counter_wrapped_with>();
-  test_pack2<counter_wrapped_with, listify>();
+  test_mulary_pack<counter_wrapped_with>();
+  test_mulary_pack<counter_wrapped_with, listify>();
 
   ut::same<list<list<_2, int>, list<_1, char>, list<_2, short>>,
     emp::counter_wrapped_with<list<int, char, int, short, short>, flip<>>>();

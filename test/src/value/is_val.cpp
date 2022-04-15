@@ -11,8 +11,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<is_val>().test_unary();
-  test_pack3<is_val>();
+  test_unary_pack<is_val>();
 
   test_context<is_val<>, smp::is_val<>>()
     .test<_0, list<>>()

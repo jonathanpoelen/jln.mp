@@ -8,7 +8,7 @@ TEST()
 {
   using namespace jln::mp;
 
-  test_pack3<traits::is_same>();
+  test_unary_pack<traits::is_same>();
 
   test_context<traits::is_same<>, smp::traits::is_same<>>()
     .test<std::true_type, int, int>()

@@ -22,7 +22,8 @@ TEST()
   ut::same<false_, emp::not_fn<seq_1, identity>>();
   ut::same<true_, emp::not_fn<seq_0, identity>>();
 
-  test_pack3<not_fn, identity>();
+  test_mulary_pack<not_fn>();
+  test_unary_pack<not_fn, identity>();
 
   test_context<not_fn<identity>, smp::not_fn<smp::identity>, 0>()
     .test<_1, _0>()

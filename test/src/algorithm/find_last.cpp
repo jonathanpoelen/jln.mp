@@ -14,8 +14,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<find_last>();
-  test_pack2<find_last_if, identity>();
+  test_unary_pack<find_last_if>();
+  test_mulary_pack<find_last_if, identity>();
+  test_mulary_pack<find_last_if, identity, listify>();
 
   ut::same<seq_3, emp::find_last_if<seq_0_1_2_3, to_bool<>>>();
 

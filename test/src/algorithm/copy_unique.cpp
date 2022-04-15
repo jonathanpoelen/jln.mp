@@ -15,7 +15,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<copy_unique>();
+  test_binary_pack<copy_unique_if>();
+  test_mulary_pack<copy_unique_if, listify>();
 
   ut::same<emp::numbers<1, 3>, emp::copy_unique<emp::numbers<0, 1, 0, 2, 2, 3>>>();
 

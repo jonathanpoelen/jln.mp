@@ -11,8 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack3<take_back>();
-  test_pack3<take_back_max>();
+  test_mulary_pack<take_back, _1>();
+  test_mulary_pack<take_back_max, _1>();
 
   ut::same<seq_2_3, emp::take_back_c<list<_0, _1, _2, _3>, 2>>();
 

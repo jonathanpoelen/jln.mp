@@ -18,13 +18,10 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  using yes = always<true_>;
-  using no = always<false_>;
-
-  test_pack2<each>();
-  test_pack2<each, yes, yes>();
-  test_pack2<each, yes, no>();
-  test_pack2<each, yes>();
+  test_mulary_pack<each>();
+  test_mulary_pack<each, identity>();
+  test_mulary_pack<each, identity, identity>();
+  test_mulary_pack<each, identity, identity, identity>();
 
   ut::same<int, each<identity, identity, identity, identity, foo>
     ::template f<void, void, void, void>>();

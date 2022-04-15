@@ -16,8 +16,8 @@ TEST()
   ut::same<false_, emp::none_of<seq_0_1_2, to_bool<>>>();
   ut::same<false_, emp::none_of<seq_1_2_3, to_bool<>>>();
 
-  test_pack3<none_of, void>();
-  test_pack3<none_of, to_bool<>>();
+  test_unary_pack<none_of>();
+  test_unary_pack<none_of, to_bool<>>();
 
   test_context<none_of<to_bool<>>, smp::none_of<smp::to_bool<>>>()
     .test<true_>()

@@ -19,8 +19,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<group_n, _2>();
-  test_pack3<group_n>();
+  test_mulary_pack<group_n, _2>();
 
   ut::same<list<list<_0, _2, _3>, list<_4, _5, _6>, list<_7>>,
     emp::group_n<emp::numbers<0, 2, 3, 4, 5, 6, 7>, _3>>();

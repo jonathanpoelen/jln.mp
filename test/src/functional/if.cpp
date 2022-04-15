@@ -13,8 +13,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<if_, _0>();
-  test_pack2<if_, _0, _0>();
+  test_mulary_pack<if_, _0>();
+  test_mulary_pack<if_, _0, identity>();
 
   test_context<
     if_<identity, always<int>>,

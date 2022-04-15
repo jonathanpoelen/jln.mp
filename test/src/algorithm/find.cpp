@@ -13,8 +13,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<find>();
-  test_pack2<find_if, identity>();
+  test_unary_pack<find_if>();
+  test_mulary_pack<find_if, identity>();
+  test_mulary_pack<find_if, identity, listify>();
 
   ut::same<seq_1_2_3, emp::find_if<seq_0_1_2_3, identity>>();
 

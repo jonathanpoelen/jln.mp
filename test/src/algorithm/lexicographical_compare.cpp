@@ -16,7 +16,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<lexicographical_compare>();
+  test_binary_pack<lexicographical_compare>();
+  test_unary_pack<lexicographical_compare, listify>();
 
   ut::same<_0, emp::lexicographical_compare<list<>, list<>>>();
   ut::same<_1, emp::lexicographical_compare<list<>, seq_0_1>>();

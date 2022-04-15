@@ -44,6 +44,9 @@ TEST()
 {
   using namespace ut::ints;
 
+  test_unary_pack<compose>();
+  test_unary_pack<compose, inc<>>();
+
   ut::same<compose<inc<>, dec<>, mul<>>, tee<inc<>, tee<dec<>, mul<>>>>();
 
   test_context<

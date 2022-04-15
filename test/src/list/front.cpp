@@ -10,6 +10,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  test_unary_pack<front>();
+
   ut::same<_0, emp::front<seq_0_1_2>>();
 
   test_context<front<>, smp::front<>>()

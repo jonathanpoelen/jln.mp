@@ -16,7 +16,7 @@ TEST()
   ut::same<seq_0_1_2, emp::iota_v_c<0, 3>>();
   ut::same<seq_1_3_5, emp::iota_v_c<1, 3, 2>>();
 
-  test_pack2<iota>();
+  test_mulary_pack<iota>();
 
   test_context<iota<>, smp::iota<>>()
     .test<list<>, _0, _0>()

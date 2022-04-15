@@ -36,7 +36,8 @@ TEST()
     >, number<9999>>
   >();
 
-  test_pack2<zip_longest>();
+  test_mulary_pack<zip_longest_with, void>();
+  test_mulary_pack<zip_longest_with, void, listify>();
 
   test_context<zip_longest<void>, smp::zip_longest<void>>()
     .test<list<>, list<>, list<>>()

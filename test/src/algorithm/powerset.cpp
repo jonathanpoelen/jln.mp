@@ -11,7 +11,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<powerset>();
+  test_mulary_pack<powerset>();
 
   ut::same<list<>, emp::powerset<list<>>>();
   ut::same<list<list<>, list<_0>, list<_1>, list<_0, _1>>,

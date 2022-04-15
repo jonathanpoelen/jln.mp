@@ -74,7 +74,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<upper_bound>();
+  test_binary_pack<upper_bound, void>();
+  test_mulary_pack<upper_bound, void, listify>();
+  test_mulary_pack<upper_bound, void, listify, listify>();
 
   ut::same<list<_3>, emp::upper_bound_than_c<seq_0_1_2_3, 2>>();
 

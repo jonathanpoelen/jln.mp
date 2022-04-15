@@ -20,8 +20,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<unique_justseen_by, is<int>>();
-  test_pack2<unique_justseen_by, void>();
+  test_binary_pack<unique_justseen_by>();
+  test_mulary_pack<unique_justseen_by, is<int>>();
 
   ut::same<list<_0, _1, _2>,
     emp::unique_justseen<emp::numbers<0, 1, 1, 2, 2, 2>>>();

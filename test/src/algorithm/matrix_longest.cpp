@@ -18,7 +18,8 @@ TEST()
     emp::left_matrix_longest<list<seq_0_0_0, seq_0_1, seq_3_2_1>, void>
   >();
 
-  test_pack2<left_matrix_longest>();
+  test_mulary_pack<left_matrix_longest_with>();
+  test_mulary_pack<left_matrix_longest_with, listify>();
 
   test_context<left_matrix_longest<void>, smp::left_matrix_longest<void>>()
     .test<list<>>()
@@ -72,7 +73,8 @@ TEST()
     emp::right_matrix_longest<list<seq_0_0_0, seq_0_1, seq_3_2_1>, void>
   >();
 
-  test_pack2<right_matrix_longest>();
+  test_mulary_pack<right_matrix_longest_with>();
+  test_mulary_pack<right_matrix_longest_with, listify>();
 
   test_context<right_matrix_longest<void>, smp::right_matrix_longest<void>>()
     .test<list<>>()

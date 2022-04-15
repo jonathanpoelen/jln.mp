@@ -11,7 +11,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<values>();
+  test_mulary_pack<values>();
 
   test_context<values<>, smp::values<>>()
     .test<list<>>()

@@ -15,8 +15,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<has_value_type>().test_unary();
-  test_pack3<has_value_type>();
+  test_unary_pack<has_value_type>();
 
   test_context<has_value_type<>, smp::has_value_type<>>()
     .test<_0, list<>>()

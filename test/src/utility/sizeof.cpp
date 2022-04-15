@@ -14,7 +14,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack<sizeof_>().test_unary();
+  test_unary_pack<sizeof_>();
 
   ut::same<_1, emp::sizeof_<of_size<1>>>();
   ut::same<_2, emp::sizeof_<of_size<2>>>();

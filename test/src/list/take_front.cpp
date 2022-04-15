@@ -11,8 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack3<take_front>();
-  test_pack3<take_front_max>();
+  test_mulary_pack<take_front, _1>();
+  test_mulary_pack<take_front_max, _1>();
 
   ut::same<seq_0_1, emp::take_front_c<list<_0, _1, _2, _3>, 2>>();
 

@@ -1,3 +1,4 @@
+#include "test/test_context.hpp"
 #include "test/test_case.hpp"
 #include "test/is_same.hpp"
 
@@ -8,6 +9,9 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
+
+  test_unary_pack<try_, identity>();
+  test_unary_pack<try_, identity, identity>();
 
   ut::invoke_r<int, try_<identity>, int>();
   ut::invoke_r<int&, try_<identity>, int&>();

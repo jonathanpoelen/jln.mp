@@ -11,8 +11,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<drop_until, is<int>>();
-  test_pack3<drop_until>();
+  test_unary_pack<drop_until>();
+  test_mulary_pack<drop_until, is<int>>();
+  test_mulary_pack<drop_until, is<int>, identity>();
 
   test_context<drop_until<is<_3>>, smp::drop_until<smp::is<_3>>>()
     .test<list<>>()
@@ -78,8 +79,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<drop_inclusive_until, is<int>>();
-  test_pack3<drop_inclusive_until>();
+  test_unary_pack<drop_inclusive_until>();
+  test_mulary_pack<drop_inclusive_until, is<int>>();
+  test_mulary_pack<drop_inclusive_until, is<int>, identity>();
 
   test_context<
     drop_inclusive_until<is<_3>>,

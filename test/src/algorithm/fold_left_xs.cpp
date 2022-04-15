@@ -22,18 +22,8 @@ TEST()
   ut::same<list<list<list<list<_0, _1, _3, _5, _7, _9>, _3, _5, _7, _9>, _5, _7, _9>, _7, _9>,
     emp::partial_fold_left_xs_c<seq_1_3_5_7_9, -2, _0, listify>>();
 
-  test_pack3<fold_left_xs>();
-  test_pack3<fold_left_xs, listify>();
-
-  test_pack<fold_left_xs>()
-    .test_variadic()
-    .test_binary()
-    .test_unary()
-  ;
-  test_pack<fold_left_xs, listify>()
-    .test_variadic()
-    .test_unary()
-  ;
+  test_mulary_pack<fold_left_xs>();
+  test_unary_pack<fold_left_xs, listify>();
 
   test_context<fold_left_xs<listify>, smp::fold_left_xs<smp::listify>>()
     .test<_0, _0>()

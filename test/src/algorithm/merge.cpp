@@ -10,8 +10,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<merge, listify>();
-  test_pack3<merge, void>();
+  test_binary_pack<merge>();
+  test_mulary_pack<merge, listify>();
 
   ut::same<list<_0, _1, _1, _2, _2, _3>, emp::merge<list<seq_0_1_2, seq_1_2_3>>>();
 

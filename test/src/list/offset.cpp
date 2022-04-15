@@ -14,8 +14,7 @@ TEST()
   ut::same<_2, emp::offset<list<int, int, int>, _5>>();
   ut::same<number<-1>, emp::offset<list<int, int, int>, _2>>();
 
-  test_pack<offset, _2>().test_unary();
-  test_pack3<offset, _2>();
+  test_unary_pack<offset, _2>();
 
   test_context<offset<_2>, smp::offset<_2>>()
     .test<_2>()

@@ -15,8 +15,10 @@ TEST()
   ut::same<list<>, emp::fold_tree<list<>, listify, listify>>();
   ut::same<list<list<_0, _1>, _2>, emp::fold_tree<seq_0_1_2, listify>>();
 
-  test_pack2<fold_tree, listify>();
-  test_pack2<fold_balanced_tree, listify>();
+  test_binary_pack<fold_tree>();
+  test_mulary_pack<fold_tree, listify>();
+  test_binary_pack<fold_balanced_tree>();
+  test_mulary_pack<fold_balanced_tree, listify>();
 
   test_context<fold_tree<listify>, smp::fold_tree<smp::listify>>()
     .test<_0, _0>()

@@ -13,7 +13,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<flatten, lift<list>>();
+  test_mulary_pack<flatten, lift<list>>();
 
   ut::same<seq_0_1_2_3, emp::flatten<
     list<_0, list<_1, list<_2>>, list<list<_3>>>>>();

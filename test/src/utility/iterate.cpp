@@ -11,7 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack3<iterate, inc<>>();
+  test_unary_pack<iterate, _0>();
+  test_unary_pack<iterate, _0, inc<>>();
 
   test_context<iterate<_0, inc<>>, smp::iterate<_0, smp::inc<>>>()
     .test<_0, _0>()

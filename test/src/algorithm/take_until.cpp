@@ -11,8 +11,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<take_until, is<int>>();
-  test_pack3<take_until>();
+  test_mulary_pack<take_until>();
+  test_mulary_pack<take_until, is<int>>();
+  test_mulary_pack<take_until, is<int>, identity>();
 
   test_context<take_until<is<_3>>, smp::take_until<smp::is<_3>>>()
     .test<list<>>()
@@ -70,8 +71,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<take_until_extended_by_n, _1, is<int>>();
-  test_pack3<take_until_extended_by_n, _1>();
+  test_mulary_pack<take_until_extended_by_n, _9>();
+  test_mulary_pack<take_until_extended_by_n, _9, is<int>>();
+  test_mulary_pack<take_until_extended_by_n, _9, is<int>, identity>();
 
   test_context<
     take_until_extended_by_n_c<2, is<_3>>,
@@ -102,8 +104,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<take_inclusive_until, is<int>>();
-  test_pack3<take_inclusive_until>();
+  test_mulary_pack<take_inclusive_until>();
+  test_mulary_pack<take_inclusive_until, is<int>>();
+  test_mulary_pack<take_inclusive_until, is<int>, identity>();
 
   test_context<take_inclusive_until<is<_3>>, smp::take_inclusive_until<smp::is<_3>>>()
     .test<list<>>()

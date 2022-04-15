@@ -11,6 +11,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  test_unary_pack<at0>();
+  test_unary_pack<at9>();
+
   ut::same<_0, emp::at0<seq_0_1_2_3_4_5_6_7_8_9>>();
   ut::same<_1, emp::at1<seq_0_1_2_3_4_5_6_7_8_9>>();
   ut::same<_2, emp::at2<seq_0_1_2_3_4_5_6_7_8_9>>();

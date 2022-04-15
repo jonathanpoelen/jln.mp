@@ -14,6 +14,8 @@ TEST()
   ut::same<_1, emp::disjunction<seq_1_0>>();
   ut::same<_0, emp::disjunction<seq_0_0>>();
 
+  test_unary_pack<disjunction>();
+
   test_context<disjunction<>, smp::disjunction<>>()
     .test<_0>()
     .test<_1, _1>()

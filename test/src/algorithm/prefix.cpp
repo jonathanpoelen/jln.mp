@@ -10,7 +10,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<prefix, int>();
+  test_mulary_pack<prefix, int>();
 
   ut::same<list<>, emp::prefix<list<>, int>>();
   ut::same<list<int, _0>, emp::prefix<seq_0, int>>();

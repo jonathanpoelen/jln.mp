@@ -13,8 +13,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack3<count_if, is<int>>();
-  test_pack3<count_if, void>();
+  test_unary_pack<count_if>();
+  test_mulary_pack<count_if, identity>();
 
   using odd = push_back<number<2>, mod<>>;
 

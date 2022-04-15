@@ -12,7 +12,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<copy_if, is<int>>();
+  test_unary_pack<copy_if>();
+  test_mulary_pack<copy_if, listify>();
 
   using odd = push_back<number<2>, mod<>>;
 

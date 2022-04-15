@@ -12,7 +12,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<memoize>();
+  test_mulary_pack<memoize>();
 
   test_context<
     memoize<identity>,

@@ -14,8 +14,7 @@ TEST()
   ut::same<false_, emp::is_number<x>>();
   ut::same<true_, emp::is_number<n>>();
 
-  test_pack<is_number>().test_unary();
-  test_pack3<is_number>();
+  test_unary_pack<is_number>();
 
   test_context<is_number<>, smp::is_number<>>()
     .test<true_, n>()

@@ -13,7 +13,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<mismatch_index>();
+  test_binary_pack<mismatch_index>();
+  test_unary_pack<mismatch_index, listify>();
 
   ut::same<_0, emp::mismatch_index<list<>, list<>>>();
   ut::same<_0, emp::mismatch_index<list<>, seq_0_1>>();

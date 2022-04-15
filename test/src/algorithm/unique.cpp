@@ -13,7 +13,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<unique>();
+  test_mulary_pack<unique>();
+  test_mulary_pack<unique_if>();
+  test_mulary_pack<unique_if, listify>();
 
   ut::same<seq_0_1_2, emp::unique<emp::numbers<0, 1, 0, 2, 2>>>();
 

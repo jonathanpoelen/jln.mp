@@ -16,8 +16,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<drop_while_xs, is<int>>();
-  test_pack3<drop_while_xs>();
+  test_mulary_pack<drop_while_xs>();
+  test_mulary_pack<drop_while_xs, is<int>>();
+  test_mulary_pack<drop_while_xs, is<int>, identity>();
 
   test_context<
     drop_while_xs<size<greater_than_c<3>>>,
@@ -95,8 +96,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<drop_inclusive_while_xs, is<int>>();
-  test_pack3<drop_inclusive_while_xs>();
+  test_mulary_pack<drop_inclusive_while_xs>();
+  test_mulary_pack<drop_inclusive_while_xs, is<int>>();
+  test_mulary_pack<drop_inclusive_while_xs, is<int>, identity>();
 
   test_context<
     drop_inclusive_while_xs<size<greater_than_c<3>>>,
@@ -177,9 +179,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<partial_drop_while_xs, _1, is<int>>();
-  test_pack3<partial_drop_while_xs, is<int>>();
-  test_pack3<partial_drop_while_xs>();
+  test_mulary_pack<partial_drop_while_xs, _9>();
+  test_mulary_pack<partial_drop_while_xs, _9, is<int>>();
+  test_mulary_pack<partial_drop_while_xs, _9, is<int>, identity>();
 
   test_context<
     partial_drop_while_xs_c<65, size<greater_than_c<3>>>,
@@ -278,9 +280,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<partial_drop_inclusive_while_xs, _1, is<int>>();
-  test_pack3<partial_drop_inclusive_while_xs, is<int>>();
-  test_pack3<partial_drop_inclusive_while_xs>();
+  test_mulary_pack<partial_drop_inclusive_while_xs, _9>();
+  test_mulary_pack<partial_drop_inclusive_while_xs, _9, is<int>>();
+  test_mulary_pack<partial_drop_inclusive_while_xs, _9, is<int>, identity>();
 
   test_context<
     partial_drop_inclusive_while_xs_c<65, size<greater_than_c<3>>>,

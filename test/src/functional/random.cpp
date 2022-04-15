@@ -15,6 +15,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  (void)random<identity>();
+  (void)random<listify>();
+
   ut::not_same<emp::random<>, emp::random<>>();
 
   using rd1 = random<>;

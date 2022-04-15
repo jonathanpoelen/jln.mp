@@ -36,7 +36,8 @@ TEST()
     >>
   >();
 
-  test_pack2<zip>();
+  test_mulary_pack<zip_with>();
+  test_mulary_pack<zip_with, listify>();
 
   test_context<zip<>, smp::zip<>>()
     .test<list<>, list<>, list<>>()

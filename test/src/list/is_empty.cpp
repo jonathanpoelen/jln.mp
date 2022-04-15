@@ -10,6 +10,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  test_unary_pack<is_empty>();
+
   ut::same<_0, emp::is_empty<list<int, int, int>>>();
   ut::same<_1, emp::is_empty<list<>>>();
 
@@ -17,7 +19,7 @@ TEST()
     .test<_1>()
     .test<_0, int>()
     ;
-    
+
   // optimized alias :)
   ut::same<smp::is_empty<>, contract<size<not_<identity>>>>();
 

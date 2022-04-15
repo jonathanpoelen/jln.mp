@@ -16,10 +16,12 @@ TEST()
   using l1 = list<_1>;
   using l2 = list<_1, _2>;
 
-  test_pack2<before, l0>();
-  test_pack2<before, l1>();
-  test_pack2<before, l2>();
-  test_pack3<before>();
+  test_mulary_pack<before, l0>();
+  test_mulary_pack<before, l1>();
+  test_mulary_pack<before, l2>();
+  test_mulary_pack<before, l0, listify>();
+  test_mulary_pack<before, l1, listify>();
+  test_mulary_pack<before, l2, listify>();
 
   test_context<
     before<l0, listify, always<void>>,

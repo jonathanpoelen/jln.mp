@@ -11,8 +11,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<skip_until, is<int>>();
-  test_pack3<skip_until>();
+  test_unary_pack<skip_until>();
+  test_mulary_pack<skip_until, is<int>>();
+  test_mulary_pack<skip_until, is<int>, identity>();
 
   test_context<skip_until<is<_3>>, smp::skip_until<smp::is<_3>>>()
     .test<list<>>()
@@ -65,8 +66,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<skip_inclusive_until, is<int>>();
-  test_pack3<skip_inclusive_until>();
+  test_unary_pack<skip_inclusive_until>();
+  test_mulary_pack<skip_inclusive_until, is<int>>();
+  test_mulary_pack<skip_inclusive_until, is<int>, identity>();
 
   test_context<
     skip_inclusive_until<is<_3>>,

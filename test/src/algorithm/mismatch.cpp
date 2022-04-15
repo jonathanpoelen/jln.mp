@@ -16,7 +16,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<mismatch>();
+  test_binary_pack<mismatch>();
+  test_unary_pack<mismatch, listify>();
+  test_unary_pack<mismatch, listify, listify>();
 
   using ne = number<-1>;
 

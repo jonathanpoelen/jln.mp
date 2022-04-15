@@ -16,8 +16,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<skip_until_xs, is<int>>();
-  test_pack3<skip_until_xs>();
+  test_unary_pack<skip_until_xs>();
+  test_mulary_pack<skip_until_xs, is<int>>();
+  test_mulary_pack<skip_until_xs, is<int>, identity>();
 
   test_context<
     skip_until_xs<size<less_equal_than_c<3>>>,
@@ -85,8 +86,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<skip_inclusive_until_xs, is<int>>();
-  test_pack3<skip_inclusive_until_xs>();
+  test_unary_pack<skip_inclusive_until_xs>();
+  test_mulary_pack<skip_inclusive_until_xs, is<int>>();
+  test_mulary_pack<skip_inclusive_until_xs, is<int>, identity>();
 
   test_context<
     skip_inclusive_until_xs<size<less_equal_than_c<3>>>,
@@ -156,9 +158,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<partial_skip_until_xs, _1, is<int>>();
-  test_pack3<partial_skip_until_xs, is<int>>();
-  test_pack3<partial_skip_until_xs>();
+  test_unary_pack<partial_skip_until_xs, _9>();
+  test_mulary_pack<partial_skip_until_xs, _9, is<int>>();
+  test_mulary_pack<partial_skip_until_xs, _9, is<int>, identity>();
 
   test_context<
     partial_skip_until_xs_c<65, size<less_equal_than_c<3>>>,
@@ -231,9 +233,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<partial_skip_inclusive_until_xs, _1, is<int>>();
-  test_pack3<partial_skip_inclusive_until_xs, is<int>>();
-  test_pack3<partial_skip_inclusive_until_xs>();
+  test_unary_pack<partial_skip_inclusive_until_xs, _9>();
+  test_mulary_pack<partial_skip_inclusive_until_xs, _9, is<int>>();
+  test_mulary_pack<partial_skip_inclusive_until_xs, _9, is<int>, identity>();
 
   test_context<
     partial_skip_inclusive_until_xs_c<65, size<less_equal_than_c<3>>>,

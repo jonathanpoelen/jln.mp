@@ -1,3 +1,4 @@
+#include "test/test_context.hpp"
 #include "test/test_case.hpp"
 
 #include "jln/mp/functional/is_invocable.hpp"
@@ -39,6 +40,9 @@ void invoke(a, b, c, d, e, f, g, h, i)
 TEST()
 {
   using namespace jln::mp;
+
+  test_mulary_pack<is_invocable>();
+  test_mulary_pack<is_invocable, identity>();
 
   auto y = true_{};
   auto n = false_{};

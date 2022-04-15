@@ -11,8 +11,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<drop_while, is<int>>();
-  test_pack3<drop_while>();
+  test_unary_pack<drop_while>();
+  test_mulary_pack<drop_while, is<int>>();
+  test_mulary_pack<drop_while, is<int>, identity>();
 
   test_context<drop_while<is_not<_3>>, smp::drop_while<smp::is_not<_3>>>()
     .test<list<>>()
@@ -79,8 +80,9 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<drop_inclusive_while, is<int>>();
-  test_pack3<drop_inclusive_while>();
+  test_unary_pack<drop_inclusive_while>();
+  test_mulary_pack<drop_inclusive_while, is<int>>();
+  test_mulary_pack<drop_inclusive_while, is<int>, identity>();
 
   test_context<
     drop_inclusive_while<is_not<_3>>,

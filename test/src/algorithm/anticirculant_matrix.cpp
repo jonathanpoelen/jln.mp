@@ -11,8 +11,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<anticirculant_matrix>();
-  test_pack3<anticirculant_matrix, listify>();
+  test_mulary_pack<anticirculant_matrix_with>();
+  test_mulary_pack<anticirculant_matrix_with, listify>();
 
   test_context<anticirculant_matrix<>, smp::anticirculant_matrix<>>()
     .test<list<>>()

@@ -18,12 +18,13 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  using yes = always<true_>;
-  using no = always<false_>;
-
-  test_pack3<tee, yes, yes>();
-  test_pack3<tee, yes, no>();
-  test_pack3<tee, yes>();
+  test_mulary_pack<tee>();
+  (void)tee<identity, ut::unary>();
+  (void)tee<identity, ut::listify>();
+  (void)tee<identity, identity, ut::binary>();
+  (void)tee<identity, identity, ut::listify>();
+  (void)tee<identity, identity, identity, ut::listify>();
+  test_mulary_pack<tee, identity, identity, identity, identity>();
 
   ut::same<int, tee<identity, identity, identity, identity, foo>::template f<void>>();
 

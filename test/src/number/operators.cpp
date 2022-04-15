@@ -31,8 +31,7 @@ TEST()
   ut::same<true_, emp::and_c<>>();
 
 
-  test_pack<or_>().test_unary();
-  test_pack3<or_>();
+  test_unary_pack<or_>();
 
   auto ctx = [](auto f){
     using g = unpack<decltype(f)>;

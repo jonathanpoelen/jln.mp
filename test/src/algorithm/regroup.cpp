@@ -13,8 +13,11 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<regroup>();
-  test_pack2<regroup_if>();
+  test_mulary_pack<regroup_with>();
+  test_mulary_pack<regroup_with, listify>();
+  test_binary_pack<regroup_if_with>();
+  test_unary_pack<regroup_if_with, size<>>();
+  test_unary_pack<regroup_if_with, size<>, listify>();
 
   ut::same<list<list<int, int>, list<char>, list<short, short>>,
     emp::regroup<list<int, char, int, short, short>>>();

@@ -21,7 +21,8 @@ TEST()
     emp::scan_right<seq_0_1_2, listify>
   >();
 
-  test_pack2<scan_right, listify>();
+  test_mulary_pack<scan_right>();
+  test_mulary_pack<scan_right, listify>();
 
   test_context<scan_right<listify>, smp::scan_right<smp::listify>>()
     .test<list<>>()

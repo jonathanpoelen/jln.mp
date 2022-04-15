@@ -9,7 +9,7 @@ TEST()
 {
   using namespace jln::mp;
 
-  test_pack2<flip>();
+  test_mulary_pack<flip>();
 
   ut::same<list<char, int, void>, emp::flip<list<int, char, void>>>();
 

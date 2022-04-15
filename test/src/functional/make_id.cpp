@@ -1,3 +1,4 @@
+#include "test/test_context.hpp"
 #include "test/is_invocable.hpp"
 #include "test/is_same.hpp"
 #include "test/test_case.hpp"
@@ -14,6 +15,9 @@ TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
+
+  test_unary_pack<make_id>();
+  test_unary_pack<make_id_for, void>();
 
   ut::same<detail::sfinae<make_id<>>, smp::make_id<>>();
 

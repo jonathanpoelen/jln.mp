@@ -10,6 +10,8 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  test_unary_pack<size>();
+
   ut::same<_3, emp::size<list<int, int, int>>>();
 
   test_context<size<>, smp::size<>>()
@@ -18,7 +20,7 @@ TEST()
     .test<_2, int, void>()
     .test<_3, int, void, char>()
     ;
-    
+
   ut::same<smp::size<>, contract<mp::size<>>>();
 
   ut::not_invocable<smp::size<bad_function>>();

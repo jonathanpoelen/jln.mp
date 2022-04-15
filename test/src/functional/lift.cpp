@@ -24,12 +24,10 @@ TEST()
   (void)lift<ut::unary::f>();
   (void)lift<ut::binary::f>();
   (void)lift<ut::listify::f>();
-  (void)lift<ut::variadic::f>();
 
   (void)lift_t<ut::unary::f>();
   (void)lift_t<ut::binary::f>();
   (void)lift_t<ut::listify::f>();
-  (void)lift_t<ut::variadic::f>();
 
   test_context<lift<foo>, smp::lift<foo>>()
     .test<x, x>()

@@ -10,6 +10,9 @@ TEST()
 {
   using namespace jln::mp;
 
+  (void)is_specialization_of<list, ut::unary>();
+  (void)is_specialization_of<list, ut::listify>();
+
   ut::same<true_, emp::is_specialization_of<list, list<>>>();
   ut::same<true_, emp::is_specialization_of<list, list<int, int>>>();
   ut::same<false_, emp::is_specialization_of<size, list<int, int>>>();

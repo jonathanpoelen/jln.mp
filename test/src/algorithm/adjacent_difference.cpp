@@ -11,7 +11,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_pack2<adjacent_difference>();
+  test_mulary_pack<adjacent_difference>();
 
   ut::same<emp::numbers<0, 0, 1, 2, 4, -3, 1, 0>, emp::adjacent_difference<
     emp::numbers<0, 0, 1, 3, 7, 4, 5, 5>>>();
