@@ -46,8 +46,8 @@ namespace jln::mp
   }
 }
 
-#include <jln/mp/algorithm/cartesian.hpp>
 #include <jln/mp/utility/always.hpp>
+#include <jln/mp/list/clear.hpp>
 #include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/drop_front.hpp>
 
@@ -57,7 +57,7 @@ namespace jln::mp::detail
   template<int_ beg, int_ end, class C>
   struct _range<beg, end, C, false, false, false>
   {
-    using type = _cartesian<C, 0>; // for C::f<>
+    using type = clear<C>;
   };
 
   template<int_ beg, int_ end>
@@ -124,7 +124,7 @@ namespace jln::mp::detail
   template<int_ beg, int_ end, int_ n, class C>
   struct _range_impl<beg, end, n, C, false, false>
   {
-    using type = _cartesian<C, 0>; // for C::f<>
+    using type = clear<C>;
   };
 
   template<int_ beg, int_ end, int_ n>

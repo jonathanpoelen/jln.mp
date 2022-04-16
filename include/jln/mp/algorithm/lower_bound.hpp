@@ -62,9 +62,9 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/algorithm/cartesian.hpp>
 #include <jln/mp/detail/enumerate.hpp>
 #include <jln/mp/list/pop_front.hpp>
+#include <jln/mp/list/clear.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/functional/tee.hpp>
@@ -169,34 +169,34 @@ namespace jln::mp::detail
     ;
   }
 
-#define JLN_MP_LOWER_BOUND_IMPL(prefix, Cond)                \
-  template<>                                                 \
-  struct prefix##lower_bound<0>                              \
-  {                                                          \
-    template<unsigned n, class Pred, class C, class NC,      \
-      class... xs>                                           \
-    using f = JLN_MP_CALL_TRACE_0_ARG(NC);                   \
-  };                                                         \
-                                                             \
-  /* original size == 1 */                                   \
-  template<>                                                 \
-  struct prefix##lower_bound<-1>                             \
-  {                                                          \
-    template<unsigned n, class Pred, class C, class NC,      \
-      class x>                                               \
-    using f = JLN_MP_CALL_TRACE_T(JLN_MP_IDENT(Cond(x)       \
-      ::template f<_cartesian<NC, 0> /* for NC::f<> */, C>), \
-      x);                                                    \
-  };                                                         \
-                                                             \
-  template<>                                                 \
-  struct prefix##lower_bound<1>                              \
-  {                                                          \
-    template<unsigned n, class Pred, class C, class NC,      \
-      class x, class... xs>                                  \
-    using f = JLN_MP_CALL_TRACE_T(JLN_MP_IDENT(Cond(x)       \
-      ::template f<pop_front<C>, C>),                        \
-      x, xs...);                                             \
+#define JLN_MP_LOWER_BOUND_IMPL(prefix, Cond)           \
+  template<>                                            \
+  struct prefix##lower_bound<0>                         \
+  {                                                     \
+    template<unsigned n, class Pred, class C, class NC, \
+      class... xs>                                      \
+    using f = JLN_MP_CALL_TRACE_0_ARG(NC);              \
+  };                                                    \
+                                                        \
+  /* original size == 1 */                              \
+  template<>                                            \
+  struct prefix##lower_bound<-1>                        \
+  {                                                     \
+    template<unsigned n, class Pred, class C, class NC, \
+      class x>                                          \
+    using f = JLN_MP_CALL_TRACE_T(JLN_MP_IDENT(Cond(x)  \
+      ::template f<clear<NC>, C>),                      \
+      x);                                               \
+  };                                                    \
+                                                        \
+  template<>                                            \
+  struct prefix##lower_bound<1>                         \
+  {                                                     \
+    template<unsigned n, class Pred, class C, class NC, \
+      class x, class... xs>                             \
+    using f = JLN_MP_CALL_TRACE_T(JLN_MP_IDENT(Cond(x)  \
+      ::template f<pop_front<C>, C>),                   \
+      x, xs...);                                        \
   };
 
 #define JLN_MP_LOWER_BOUND_PRED_CALL(x) \

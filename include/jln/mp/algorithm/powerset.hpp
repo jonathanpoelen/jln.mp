@@ -43,7 +43,7 @@ namespace jln::mp
 
 
 #include <jln/mp/algorithm/fold_right.hpp>
-#include <jln/mp/algorithm/cartesian.hpp>
+#include <jln/mp/list/clear.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/utility/always.hpp>
@@ -69,8 +69,8 @@ namespace jln::mp::detail
     using type = join<>::f<typename _power<seqs, y>::type...>;
   };
 
-  template<class C, bool>
-  struct _powerset
+  template<class C>
+  struct _powerset<C, true>
   {
     using type = fold_right<lift_t<_powerset_impl>, unpack<C>>;
   };
@@ -84,13 +84,7 @@ namespace jln::mp::detail
   template<class C>
   struct _powerset<C, false>
   {
-    using type = _cartesian<C, 0>; // for C::f<>
-  };
-
-  template<>
-  struct _powerset<listify, false>
-  {
-    using type = always<list<>>;
+    using type = clear<C>;
   };
 }
 /// \endcond
