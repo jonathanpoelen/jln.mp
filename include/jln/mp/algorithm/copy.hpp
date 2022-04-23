@@ -1,7 +1,9 @@
 #pragma once
 
-#include <jln/mp/algorithm/remove.hpp>
-#include <jln/mp/number/operators.hpp>
+#include <jln/mp/list/join.hpp>
+#include <jln/mp/list/wrap_in_list.hpp>
+#include <jln/mp/utility/is.hpp>
+#include <jln/mp/algorithm/transform.hpp>
 
 namespace jln::mp
 {
@@ -10,12 +12,12 @@ namespace jln::mp
   /// Copies all elements that satisfy a predicate.
   /// \treturn \sequence
   template<class Pred, class C = listify>
-  using copy_if = remove_if<tee<Pred, not_<>>, C>;
+  using copy_if = transform<wrap_in_list_if<Pred>, join<C>>;
 
   /// Copies all occurence of a \value.
   /// \treturn \sequence
   template<class x, class C = listify>
-  using copy = remove_if<is<x, not_<>>, C>;
+  using copy = copy_if<is<x>, C>;
 
   namespace emp
   {
