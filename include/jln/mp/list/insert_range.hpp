@@ -23,7 +23,8 @@ namespace jln::mp
   /// \pre seq must be a \list
   /// \treturn \sequence
   template<int_ index, class seq, class C = listify>
-  struct insert_range_c;
+  struct insert_range_c
+  {};
 
   template<int_ index, class... xs, class C>
   struct insert_range_c<index, list<xs...>, C>

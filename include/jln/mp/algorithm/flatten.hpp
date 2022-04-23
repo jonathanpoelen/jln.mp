@@ -30,7 +30,7 @@ namespace jln::mp
   {
     template<class... seqs>
     using f = typename detail::_join_select<sizeof...(seqs)>
-      ::template f<JLN_MP_TRACE_F(C), typename detail::_flatten<S, seqs>::type...>
+      ::template f<JLN_MP_TRACE_F(C)::template f, typename detail::_flatten<S, seqs>::type...>
       ::type;
   };
 
@@ -46,6 +46,17 @@ namespace jln::mp
     template<class L, class... xs>
     using rewrap = typename wrapper<L>::template f<xs...>;
   }
+
+  /// \cond
+  template<template<class...> class S>
+  struct flatten<lift<S, identity>, listify>
+  {
+    template<class... seqs>
+    using f = typename detail::_join_select<sizeof...(seqs)>
+      ::template f<list, typename detail::_flatten<S, seqs>::type...>
+      ::type;
+  };
+  /// \endcond
 }
 
 /// \cond
@@ -60,7 +71,7 @@ namespace jln::mp::detail
   template<template<class...> class S, class... xs>
   struct _flatten<S, S<xs...>>
   : _join_select<sizeof...(xs)>
-    ::template f<listify, typename _flatten<S, xs>::type...>
+    ::template f<list, typename _flatten<S, xs>::type...>
   {};
 
   template<template<class...> class S, class... xs>

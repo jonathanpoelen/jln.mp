@@ -24,8 +24,18 @@ namespace jln::mp
   {
     template<class... seqs>
     using f = typename detail::_join_select<sizeof...(seqs)>
-      ::template f<JLN_MP_TRACE_F(C), seqs...>::type;
+      ::template f<JLN_MP_TRACE_F(C)::template f, seqs...>::type;
   };
+
+  /// \cond
+  template<>
+  struct join<listify>
+  {
+    template<class... seqs>
+    using f = typename detail::_join_select<sizeof...(seqs)>
+      ::template f<list, seqs...>::type;
+  };
+  /// \endcond
 
   namespace emp
   {
@@ -56,16 +66,16 @@ namespace jln::mp::detail
   template<>                                      \
   struct _join_select<n>                          \
   {                                               \
-    template<class F,                             \
+    template<template<class...> class F,          \
       mp_xs(class, = list<>, JLN_MP_COMMA)>       \
     struct f;                                     \
                                                   \
-    template<class F,                             \
+    template<template<class...> class F,          \
       mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>  \
     struct f<F, mp_xs(list<, ...>, JLN_MP_COMMA)> \
     {                                             \
-      using type = JLN_MP_CALL_TRACE(F,           \
-        mp_xs(JLN_MP_NIL, ..., JLN_MP_COMMA));    \
+      using type = F<                             \
+        mp_xs(JLN_MP_NIL, ..., JLN_MP_COMMA)>;    \
     };                                            \
   };
 
@@ -76,12 +86,12 @@ namespace jln::mp::detail
   template<>
   struct _join_select<512>
   {
-    template<class F,
+    template<template<class...> class F,
       JLN_MP_XS_512(class, = list<>, JLN_MP_COMMA),
       class... tail>
     struct f;
 
-    template<class F,
+    template<template<class...> class F,
       JLN_MP_XS_512(class..., JLN_MP_NIL, JLN_MP_COMMA),
       class... tail>
     struct f<F, JLN_MP_XS_512(list<, ...>, JLN_MP_COMMA), tail...>

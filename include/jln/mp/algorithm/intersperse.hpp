@@ -52,7 +52,7 @@ namespace jln::mp::detail
   {
     template<class C, class x, class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<pop_front<C>, list<x, xs>...>::type;
+      ::template f<pop_front<C>::template f, list<x, xs>...>::type;
   };
 }
 /// \endcond

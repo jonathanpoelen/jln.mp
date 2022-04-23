@@ -16,7 +16,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<JLN_MP_TRACE_F(C), list<xs, x>...>::type;
+      ::template f<JLN_MP_TRACE_F(C)::template f, list<xs, x>...>::type;
   };
 
   namespace emp
@@ -24,4 +24,14 @@ namespace jln::mp
     template<class L, class x, class C = mp::listify>
     using suffix = unpack<L, mp::suffix<x, C>>;
   }
+
+  /// \cond
+  template<class x>
+  struct suffix<x, listify>
+  {
+    template<class... xs>
+    using f = typename detail::_join_select<sizeof...(xs)>
+      ::template f<list, list<xs, x>...>::type;
+  };
+  /// \endcond
 }
