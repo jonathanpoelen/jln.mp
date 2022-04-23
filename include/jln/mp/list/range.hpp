@@ -20,7 +20,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Returns a contiguous subsequence of a \sequence.
-  /// A negative value represents an index starting from the end + 1.
+  /// A negative value represents an index starting from the end.
   /// if finally, \c end <= \c beg, then an empty \list is returned.
   /// \treturn \sequence
   template<int_ beg, int_ end, class C = listify>

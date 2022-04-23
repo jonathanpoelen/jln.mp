@@ -6,23 +6,38 @@
 
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    template<bool, bool>
+    struct erase_values;
+
+    template<class C, int_ start, int_ size, int_ n,
+      int_ index = start < 0 ? n+start : start,
+      class s = erase_values<index >= n, index < 0>,
+      int_ index2 = s::template start<index>,
+      int_ dropped = s::template dropped<index, size, n>>
+    using erase_impl = rotate_c<
+      index2,
+      drop_front_c<
+        dropped,
+        rotate_c<n - index2 - dropped, C>
+      >
+    >;
+  }
+  /// \endcond
+
   /// \ingroup list
 
-  /// Removes all elements between two arbitrary indices of a sequence.
-  /// \pre `0 <= start < sizeof...(xs)`
-  /// \pre `0 <= start + size < sizeof...(xs)`
+  /// Removes at most \c size elements from index \c start.
+  /// A negative value represents an index starting from the end.
   /// \treturn \sequence
-  template<unsigned start, unsigned size = 1, class C = listify>
+  template<int_ start, unsigned size = 1, class C = listify>
   struct erase_c
   {
     template<class... xs>
-    using f = typename join<C>::template f<
-      typename take_front_c<start>::template f<xs...>,
-      typename drop_front_c<detail::min(
-        sizeof...(xs),
-        start + size
-      )>::template f<xs...>
-    >;
+    using f = typename detail::erase_impl<C, start, size, sizeof...(xs)>
+      ::template f<xs...>;
   };
 
   template<class start, class size = number<1>, class C = listify>
@@ -33,7 +48,42 @@ namespace jln::mp
     template<class L, class start, class size = mp::number<1>, class C = mp::listify>
     using erase = unpack<L, mp::erase<start, size, C>>;
 
-    template<class L, unsigned start, unsigned size = 1, class C = mp::listify>
+    template<class L, int_ start, unsigned size = 1, class C = mp::listify>
     using erase_c = unpack<L, mp::erase_c<start, size, C>>;
   }
 }
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct erase_values<true, false>
+  {
+    template<int_ index>
+    static constexpr int_ start = 0;
+
+    template<int_ index, int_ size, int_ n>
+    static constexpr int_ dropped = 0;
+  };
+
+  template<>
+  struct erase_values<false, true>
+  {
+    template<int_ index>
+    static constexpr int_ start = 0;
+
+    template<int_ index, int_ size, int_ n>
+    static constexpr int_ dropped = index + size <= 0 ? 0 : index + size <= n ? index + size : n;
+  };
+
+  template<>
+  struct erase_values<false, false>
+  {
+    template<int_ index>
+    static constexpr int_ start = index;
+
+    template<int_ index, int_ size, int_ n>
+    static constexpr int_ dropped = index + size <= n ? size : n - index;
+  };
+}
+/// \endcond
