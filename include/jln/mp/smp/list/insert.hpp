@@ -5,9 +5,9 @@
 
 namespace jln::mp::smp
 {
-  template<int_ i, class x, class C = listify>
-  using insert_c = typename detail::smp_insert_range_dispatch2<true>
-    ::template f<i, list<x>, C>;
+  template<int_ index, class x, class C = listify>
+  using insert_c = insert_range_c<index, list<x>, C>;
 }
 
-JLN_MP_MAKE_REGULAR_SMP3_P(insert, (I), (x), (C, smp::listify), smp::insert_c<I::value, x, C>)
+JLN_MP_MAKE_REGULAR_SMP3_P(insert, (Index), (x), (C, smp::listify),
+  smp::insert_c<Index::value, x, C>)
