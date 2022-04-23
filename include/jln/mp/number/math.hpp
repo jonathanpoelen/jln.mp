@@ -5,6 +5,7 @@
 #include <jln/mp/functional/flip.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/algorithm/fold_left.hpp>
+#include <jln/mp/algorithm/replace.hpp>
 
 namespace jln::mp
 {
@@ -33,7 +34,7 @@ namespace jln::mp
 
   template<class Min, class Max, class Cmp = less<>, class C = identity>
   using clamp = if_<push_back<Min, Cmp>, always<Min>,
-    if_<push_front<Max, Cmp>, always<Max>, identity>>;
+    detail::substitute_if<push_front<Max, Cmp>, Max>>;
 
   template<int_ min, int_ max, class Cmp = less<>, class C = identity>
   using clamp_c = clamp<number<min>, number<max>, Cmp, C>;

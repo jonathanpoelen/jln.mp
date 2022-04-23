@@ -3,6 +3,7 @@
 #include <jln/mp/number/math.hpp>
 #include <jln/mp/smp/number/operators.hpp>
 #include <jln/mp/smp/algorithm/fold_left.hpp>
+#include <jln/mp/smp/algorithm/replace.hpp>
 #include <jln/mp/smp/functional/tee.hpp>
 #include <jln/mp/smp/functional/flip.hpp>
 #include <jln/mp/smp/functional/if.hpp>

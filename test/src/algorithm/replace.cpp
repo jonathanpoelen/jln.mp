@@ -20,8 +20,7 @@ TEST()
 
   test_context<
     replace_if<is<_1>, _2>,
-    smp::replace_if<is<_1>, _2>,
-    0
+    smp::replace_if<smp::is<_1>, _2>
   >()
     .test<list<>>()
     .test<seq_0_0_0, _0, _0, _0>()
@@ -31,21 +30,10 @@ TEST()
 
   test_context<
     replace_if<is<_1>, na>,
-    smp::replace_if<is<_1>, na>,
-    0
+    smp::replace_if<smp::is<_1>, na>
   >()
     .test<list<>>()
     .test<seq_0_0_0, _0, _0, _0>()
-    .not_invocable<_0, _1, _3>()
-    ;
-
-  test_context<
-    replace_if<always<na>, _0>,
-    smp::replace_if<always<na>, _0>,
-    0
-  >()
-    .test<list<>>()
-    .not_invocable<_0, _0, _0>()
     .not_invocable<_0, _1, _3>()
     ;
 

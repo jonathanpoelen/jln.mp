@@ -16,3 +16,17 @@ namespace jln::mp::smp
   using replace = contract<
     mp::replace<T, U, monadic_if_na<U, monadic_xs, subcontract<C>>>>;
 }
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class Pred, class T>
+  struct _sfinae<sfinae, substitute_if<Pred, T>>
+  {
+    using type = try_contract<substitute_if<
+      typename optimize_try<try_<assume_unary<sfinae<Pred>>>>::type,
+      T
+    >>;
+  };
+}
+/// \endcond
