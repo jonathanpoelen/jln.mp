@@ -24,34 +24,38 @@ TEST()
     .test<list<>, list<>, list<_0, _1>>()
     .test<list<>, list<_0, _1>, list<>>()
     .test<list<
-      list<_0, _2>, list<_0, _3>,
-      list<_1, _2>, list<_1, _3>>,
+        list<_0, _2>, list<_0, _3>,
+        list<_1, _2>, list<_1, _3>>,
       list<_0, _1>, list<_2, _3>>()
     .test<list<
-      list<_0, _2>, list<_0, _3>, list<_0, _4>,
-      list<_1, _2>, list<_1, _3>, list<_1, _4>>,
+        list<_0, _2>, list<_0, _3>, list<_0, _4>,
+        list<_1, _2>, list<_1, _3>, list<_1, _4>>,
       list<_0, _1>, list<_2, _3, _4>>()
     .test<list<
-      list<_0, _3>, list<_0, _4>,
-      list<_1, _3>, list<_1, _4>,
-      list<_2, _3>, list<_2, _4>>,
+        list<_0, _3>, list<_0, _4>,
+        list<_1, _3>, list<_1, _4>,
+        list<_2, _3>, list<_2, _4>>,
       list<_0, _1, _2>, list<_3, _4>>()
     .test<list<>,
       list<_0, _1, _2>, list<_3, _4>, list<>>()
     .test<list<>,
+      list<>, list<_0, _1, _2>, list<_3, _4>>()
+    .test<list<>,
+      list<_0, _1, _2>, list<>, list<_3, _4>>()
+    .test<list<>,
       list<_0, _1, _2>, list<_3, _4>, list<>, list<_5>>()
     .test<list<
-      list<_0, _3, _5>, list<_0, _4, _5>,
-      list<_1, _3, _5>, list<_1, _4, _5>,
-      list<_2, _3, _5>, list<_2, _4, _5>>,
+        list<_0, _3, _5>, list<_0, _4, _5>,
+        list<_1, _3, _5>, list<_1, _4, _5>,
+        list<_2, _3, _5>, list<_2, _4, _5>>,
       list<_0, _1, _2>, list<_3, _4>, list<_5>>()
     .test<list<
-      list<_0, _3, _5>, list<_0, _3, _6>,
-      list<_0, _4, _5>, list<_0, _4, _6>,
-      list<_1, _3, _5>, list<_1, _3, _6>,
-      list<_1, _4, _5>, list<_1, _4, _6>,
-      list<_2, _3, _5>, list<_2, _3, _6>,
-      list<_2, _4, _5>, list<_2, _4, _6>>,
+        list<_0, _3, _5>, list<_0, _3, _6>,
+        list<_0, _4, _5>, list<_0, _4, _6>,
+        list<_1, _3, _5>, list<_1, _3, _6>,
+        list<_1, _4, _5>, list<_1, _4, _6>,
+        list<_2, _3, _5>, list<_2, _3, _6>,
+        list<_2, _4, _5>, list<_2, _4, _6>>,
       list<_0, _1, _2>, list<_3, _4>, list<_5, _6>>()
     .not_invocable<int>()
     ;
