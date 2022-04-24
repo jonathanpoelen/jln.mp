@@ -2,7 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/utility/always.hpp"
-#include "jln/mp/smp/algorithm/cartesian.hpp"
+#include "jln/mp/smp/algorithm/product.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -11,12 +11,12 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_mulary_pack<cartesian>();
+  test_mulary_pack<product>();
 
-  ut::same<list<>, emp::cartesian<list<>>>();
-  ut::same<list<seq_0, seq_1>, emp::cartesian<list<list<_0, _1>>>>();
+  ut::same<list<>, emp::product<list<>>>();
+  ut::same<list<seq_0, seq_1>, emp::product<list<list<_0, _1>>>>();
 
-  test_context<cartesian<>, smp::cartesian<>>()
+  test_context<product<>, smp::product<>>()
     .test<list<>>()
     .test<list<>, list<>>()
     .test<list<seq_0>, seq_0>()
@@ -60,10 +60,10 @@ TEST()
     .not_invocable<int>()
     ;
 
-  ut::not_invocable<smp::cartesian<smp::always<na>>>();
-  ut::not_invocable<smp::cartesian<bad_function>>();
-  ut::not_invocable<smp::cartesian<bad_function>, seq_0>();
-  ut::not_invocable<smp::cartesian<bad_function>, seq_0_1, seq_0_1>();
+  ut::not_invocable<smp::product<smp::always<na>>>();
+  ut::not_invocable<smp::product<bad_function>>();
+  ut::not_invocable<smp::product<bad_function>, seq_0>();
+  ut::not_invocable<smp::product<bad_function>, seq_0_1, seq_0_1>();
 }
 
 TEST_SUITE_END()

@@ -9,7 +9,6 @@
 #include <jln/mp/algorithm/any_of.hpp>
 #include <jln/mp/algorithm/before.hpp>
 #include <jln/mp/algorithm/before_after.hpp>
-#include <jln/mp/algorithm/cartesian.hpp>
 #include <jln/mp/algorithm/circulant_matrix.hpp>
 #include <jln/mp/algorithm/collapse.hpp>
 #include <jln/mp/algorithm/combine.hpp>
@@ -58,6 +57,7 @@
 #include <jln/mp/algorithm/permutations.hpp>
 #include <jln/mp/algorithm/powerset.hpp>
 #include <jln/mp/algorithm/prefix.hpp>
+#include <jln/mp/algorithm/product.hpp>
 #include <jln/mp/algorithm/regroup.hpp>
 #include <jln/mp/algorithm/remove.hpp>
 #include <jln/mp/algorithm/remove_unique.hpp>

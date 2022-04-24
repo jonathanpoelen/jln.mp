@@ -5,23 +5,23 @@
 #include <jln/mp/list/is_list.hpp>
 #include <jln/mp/number/operators.hpp>
 #include <jln/mp/algorithm/all_of.hpp>
-#include <jln/mp/algorithm/cartesian.hpp>
+#include <jln/mp/algorithm/product.hpp>
 
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using cartesian = test_contract<
+  using product = test_contract<
     mp::all_of<mp::is_list<>>,
-    mp::cartesian<assume_lists<C>>>;
+    mp::product<assume_lists<C>>>;
 }
 
 /// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, cartesian<C>>
+  struct _sfinae<sfinae, product<C>>
   {
-    using type = smp::cartesian<sfinae<C>>;
+    using type = smp::product<sfinae<C>>;
   };
 }
 /// \endcond

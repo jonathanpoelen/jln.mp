@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/algorithm/cartesian.hpp>
+#include <jln/mp/algorithm/product.hpp>
 #include <jln/mp/algorithm/repeat.hpp>
 
 namespace jln::mp
@@ -13,7 +13,7 @@ namespace jln::mp
   struct combine
   {
     template<class... xs>
-    using f = typename repeat_c<sizeof...(xs), cartesian<C>>
+    using f = typename repeat_c<sizeof...(xs), product<C>>
       ::template f<list<xs...>>;
   };
 

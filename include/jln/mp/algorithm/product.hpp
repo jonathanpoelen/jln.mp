@@ -9,10 +9,10 @@ namespace jln::mp
   namespace detail
   {
     template<class, class>
-    struct _cartesian_impl;
+    struct product_impl;
 
     template<class x, class y>
-    using cartesian_impl_t = typename _cartesian_impl<x, y>::type;
+    using product_impl_t = typename product_impl<x, y>::type;
 
     template<class, class>
     struct _product;
@@ -26,7 +26,7 @@ namespace jln::mp
   /// \post `sizeof...(result) == (emp::size<seqs> * ...)` if `sizeof...(xs) != 0` else `0`
   /// \semantics
   ///   \code
-  ///   call<cartesian<listify>,
+  ///   call<product<listify>,
   ///     list<_0, _1, _2>,
   ///     list<_3, _4>,
   ///     list<_5>
@@ -38,38 +38,38 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence
   template<class C = listify>
-  struct cartesian
+  struct product
   {
     template<class seq = list<>, class... seqs>
     using f = typename unpack<C>::template f<
       typename detail::fold_left_impl<sizeof...(seqs)>
       ::template f<
-        detail::cartesian_impl_t,
+        detail::product_impl_t,
         typename detail::_product<list<>, seq>::type,
         seqs...
       >
     >;
   };
 
+  namespace emp
+  {
+    template<class L, class C = mp::listify>
+    using product = unpack<L, product<C>>;
+  }
+
   /// \cond
   template<>
-  struct cartesian<listify>
+  struct product<listify>
   {
     template<class seq = list<>, class... seqs>
     using f = typename detail::fold_left_impl<sizeof...(seqs)>
       ::template f<
-        detail::cartesian_impl_t,
+        detail::product_impl_t,
         typename detail::_product<list<>, seq>::type,
         seqs...
       >;
   };
   /// \endcond
-
-  namespace emp
-  {
-    template<class L, class C = mp::listify>
-    using cartesian = unpack<L, cartesian<C>>;
-  }
 }
 
 
@@ -85,7 +85,7 @@ namespace jln::mp::detail
   };
 
   template<class... seqs, class seq>
-  struct _cartesian_impl<list<seqs...>, seq>
+  struct product_impl<list<seqs...>, seq>
   : detail::_join_select<sizeof...(seqs)>
     ::template f<list, typename _product<seqs, seq>::type...>
   {};
