@@ -169,6 +169,7 @@
 #include "src/utility/type.cpp"
 #include "src/utility/unpack.cpp"
 #include "src/utility/value_type.cpp"
+#include "src/utility/wrapper.cpp"
 #include "src/value/as_val.cpp"
 #include "src/value/has_value.cpp"
 #include "src/value/is_val.cpp"

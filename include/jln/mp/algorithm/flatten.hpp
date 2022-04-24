@@ -3,6 +3,7 @@
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/utility/wrapper.hpp>
 
 namespace jln::mp
 {
@@ -34,17 +35,10 @@ namespace jln::mp
       ::type;
   };
 
-  /// converts a \typelist to a \c lift<S>
-  template<class L>
-  using wrapper = typename detail::wrapper<L>::type;
-
   namespace emp
   {
     template<class L, class S = wrapper<L>, class C = mp::listify>
     using flatten = unpack<L, mp::flatten<S, C>>;
-
-    template<class L, class... xs>
-    using rewrap = typename wrapper<L>::template f<xs...>;
   }
 
   /// \cond
@@ -73,11 +67,5 @@ namespace jln::mp::detail
   : _join_select<sizeof...(xs)>
     ::template f<list, typename _flatten<S, xs>::type...>
   {};
-
-  template<template<class...> class S, class... xs>
-  struct wrapper<S<xs...>>
-  {
-    using type = lift<S>;
-  };
 }
 /// \endcond
