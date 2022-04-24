@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/list/insert_range.hpp>
+#include <jln/mp/list/insert_sequence.hpp>
 
 namespace jln::mp
 {
@@ -9,10 +9,10 @@ namespace jln::mp
   /// Inserts an elements at an arbitrary position.
   /// \treturn \sequence
   template<int_ index, class x, class C = listify>
-  using insert_c = insert_range_c<index, list<x>, C>;
+  using insert_c = insert_sequence_c<index, list<x>, C>;
 
   template<class index, class x, class C = listify>
-  using insert = insert_range_c<index::value, list<x>, C>;
+  using insert = insert_sequence_c<index::value, list<x>, C>;
 
   namespace emp
   {

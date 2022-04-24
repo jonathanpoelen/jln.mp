@@ -10,7 +10,7 @@
 #include <jln/mp/smp/list/erase.hpp>
 #include <jln/mp/smp/list/front.hpp>
 #include <jln/mp/smp/list/insert.hpp>
-#include <jln/mp/smp/list/insert_range.hpp>
+#include <jln/mp/smp/list/insert_sequence.hpp>
 #include <jln/mp/smp/list/is_empty.hpp>
 #include <jln/mp/smp/list/is_list.hpp>
 #include <jln/mp/smp/list/is_size_of.hpp>
