@@ -44,6 +44,21 @@ namespace jln::mp
     using fold_right = unpack<L,
       mp::push_front<state, mp::fold_right<F, C>>>;
   }
+
+/// \cond
+#if ! JLN_MP_ENABLE_DEBUG
+  template<template<class...> class F, class C>
+  struct fold_right<lift<F>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename detail::fold_right_impl<
+        int(sizeof...(xs)) - 1
+      >::template f<F, xs...>
+    );
+  };
+#endif
+/// \endcond
 }
 
 

@@ -66,9 +66,9 @@ namespace jln::mp::smp
 namespace jln::mp::detail
 {
   template<template<class> class sfinae>
-  struct _sfinae<sfinae, _pow>
+  struct _sfinae<sfinae, lift<_pow>>
   {
-    using type = try_contract<_pow>;
+    using type = try_contract<lift<_pow>>;
   };
 }
 /// \endcond

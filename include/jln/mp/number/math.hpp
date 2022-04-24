@@ -12,7 +12,11 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    struct _pow;
+    template<int_ b, int_ e, int_ r = 1>
+    struct _ipow;
+
+    template<class base, class exponent>
+    using _pow = typename _ipow<base::value, exponent::value, 1>::type;
   }
   /// \endcond
 
@@ -45,7 +49,7 @@ namespace jln::mp
 
 
   template<class C = identity>
-  using pow = fold_left<detail::_pow, C>;
+  using pow = fold_left<lift<detail::_pow>, C>;
 
   template<class C = identity>
   using pow0 = if_<size<>, pow<C>, always<number<0>, C>>;
@@ -94,16 +98,10 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<int_ b, int_ e, int_ r = 1>
+  template<int_ b, int_ e, int_ r>
   struct _ipow
   : _ipow<(b * b), (e / 2), (e % 2 ? b * r : r)>
   {};
-
-  struct _pow
-  {
-    template<class base, class exponent>
-    using f = typename _ipow<base::value, exponent::value, 1>::type;
-  };
 
   template<int_ b, int_ r>
   struct _ipow<b, 0, r>
