@@ -16,11 +16,11 @@ namespace jln::mp
   };
 
   /// \cond
-  template<>
-  struct numbers<listify>
+  template<template<class...> class C>
+  struct numbers<lift<C>>
   {
     template<int_... ns>
-    using f = list<number<ns>...>;
+    using f = C<number<ns>...>;
   };
   /// \endcond
 

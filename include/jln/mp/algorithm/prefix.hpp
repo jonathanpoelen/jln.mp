@@ -26,12 +26,12 @@ namespace jln::mp
   }
 
   /// \cond
-  template<class x>
-  struct prefix<x, listify>
+  template<class x, template<class...> class C>
+  struct prefix<x, lift<C>>
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<list, list<x, xs>...>::type;
+      ::template f<C, list<x, xs>...>::type;
   };
   /// \endcond
 }

@@ -26,12 +26,12 @@ namespace jln::mp
   }
 
   /// \cond
-  template<class x>
-  struct suffix<x, listify>
+  template<class x, template<class...> class C>
+  struct suffix<x, lift<C>>
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<list, list<xs, x>...>::type;
+      ::template f<C, list<xs, x>...>::type;
   };
   /// \endcond
 }

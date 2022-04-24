@@ -48,12 +48,12 @@ namespace jln::mp
   }
 
   /// \cond
-  template<template<class...> class S>
-  struct flatten<lift<S, identity>, listify>
+  template<template<class...> class S, template<class...> class C>
+  struct flatten<lift<S, identity>, lift<C>>
   {
     template<class... seqs>
     using f = typename detail::_join_select<sizeof...(seqs)>
-      ::template f<list, typename detail::_flatten<S, seqs>::type...>
+      ::template f<C, typename detail::_flatten<S, seqs>::type...>
       ::type;
   };
   /// \endcond

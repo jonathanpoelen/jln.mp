@@ -41,12 +41,12 @@ namespace jln::mp
   }
 
   /// \cond
-  template<class BinaryPred>
-  struct adjacent_remove_if<BinaryPred, listify>
+  template<class BinaryPred, template<class...> class C>
+  struct adjacent_remove_if<BinaryPred, lift<C>>
   {
     template<class... xs>
     using f = typename detail::adjacent_remove_impl<rotate_c<-1>::f<xs...>>
-      ::template f<list, BinaryPred, xs...>;
+      ::template f<C, BinaryPred, xs...>;
   };
   /// \endcond
 }

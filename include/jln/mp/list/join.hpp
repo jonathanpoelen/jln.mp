@@ -28,12 +28,12 @@ namespace jln::mp
   };
 
   /// \cond
-  template<>
-  struct join<listify>
+  template<template<class...> class C>
+  struct join<lift<C>>
   {
     template<class... seqs>
     using f = typename detail::_join_select<sizeof...(seqs)>
-      ::template f<list, seqs...>::type;
+      ::template f<C, seqs...>::type;
   };
   /// \endcond
 
