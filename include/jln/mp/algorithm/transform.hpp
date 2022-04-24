@@ -44,7 +44,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
-      ::template f<C, JLN_MP_TRACE_F(F)::template f, xs...>;
+      ::template f<C, F::template f, xs...>;
   };
 
   template<template<class...> class F, class C>
@@ -52,7 +52,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
-      ::template f<JLN_MP_TRACE_F(C)::template f, F, xs...>;
+      ::template f<C::template f, F, xs...>;
   };
 
   template<template<class...> class F, template<class...> class C>
@@ -60,6 +60,28 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
+      ::template f<C, F, xs...>;
+  };
+
+  namespace detail
+  {
+    template<bool>
+    struct transform_impl_t;
+  }
+
+  template<template<class...> class F, class C>
+  struct transform<lift_t<F>, C>
+  {
+    template<class... xs>
+    using f = typename detail::transform_impl_t<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
+      ::template f<C::template f, F, xs...>;
+  };
+
+  template<template<class...> class F, template<class...> class C>
+  struct transform<lift_t<F>, lift<C>>
+  {
+    template<class... xs>
+    using f = typename detail::transform_impl_t<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
       ::template f<C, F, xs...>;
   };
 #endif
@@ -80,6 +102,19 @@ namespace jln::mp::detail
   template<>
   struct transform_impl<false>
   {};
+
+#if ! JLN_MP_ENABLE_DEBUG
+  template<>
+  struct transform_impl_t<true>
+  {
+    template<template<class...> class C, template<class...> class F, class...xs>
+    using f = C<typename F<xs>::type...>;
+  };
+
+  template<>
+  struct transform_impl_t<false>
+  {};
+#endif
 
   template<class T>
   struct optimize_useless_transform_unpack

@@ -85,7 +85,7 @@ namespace jln::mp::detail
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)
+      JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)::value
     >, x);
   };
 
@@ -94,9 +94,47 @@ namespace jln::mp::detail
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      !JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)
+      !JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)::value
     >, x);
   };
+
+#if ! JLN_MP_ENABLE_DEBUG
+  template<template<class...> class Pred>
+  struct _wrap_in_list_if<lift<Pred>>
+  {
+    template<class x, class... xs>
+    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
+      JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::value
+    >, x);
+  };
+
+  template<template<class...> class Pred>
+  struct _wrap_in_list_if_not<lift<Pred>>
+  {
+    template<class x, class... xs>
+    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
+      !JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::value
+    >, x);
+  };
+
+  template<template<class...> class Pred>
+  struct _wrap_in_list_if<lift_t<Pred>>
+  {
+    template<class x, class... xs>
+    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
+      JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::type::value
+    >, x);
+  };
+
+  template<template<class...> class Pred>
+  struct _wrap_in_list_if_not<lift_t<Pred>>
+  {
+    template<class x, class... xs>
+    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
+      !JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::type::value
+    >, x);
+  };
+#endif
 
   template<class Pred>
   struct mk_wrap_in_list_if

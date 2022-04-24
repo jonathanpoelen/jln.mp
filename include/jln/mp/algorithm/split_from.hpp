@@ -26,7 +26,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_split_from_i<
-      JLN_MP_DCALL_V_TRACE_XS(xs, GetIndex, xs...), SubC1, SubC2, C, xs...>;
+      JLN_MP_DCALL_V_TRACE_XS(xs, GetIndex, xs...)::value, SubC1, SubC2, C, xs...>;
   };
 
   template<class GetIndex, class C = listify>
