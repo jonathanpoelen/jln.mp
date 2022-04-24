@@ -65,7 +65,7 @@ TEST()
     .not_invocable<seq_bad_bad>()
     ;
 
-  test_context<clamp_c<-2, 5>, smp::clamp_c<-2, 5>, 0>()
+  test_context<clamp_c<-2, 5>, smp::clamp_c<-2, 5>>()
     .test<_1, _1>()
     .test<_4, _4>()
     .test<_5, _5>()

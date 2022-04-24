@@ -6,49 +6,81 @@
 
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    template<bool>
+    struct transform_impl;
+  }
+  /// \endcond
+
   /// \ingroup algorithm
 
   /// Executes \c F on every element of a \sequence.
   /// \treturn \sequence
-#if defined(JLN_MP_DOXYGENATING) || JLN_MP_MSVC
   template<class F, class C = listify>
   struct transform
   {
+#if defined(JLN_MP_DOXYGENATING)
     template<class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_DCALL_TRACE_XS(xs, F, xs)...);
-  };
 #else
-  /// \cond
-  namespace detail
-  {
-    template<class C, class F, class...xs>
-    using transform_impl = JLN_MP_DCALL_TRACE_XS(xs, C, typename F::template f<xs>...);
-  }
-  /// \endcond
-
-  template<class F, class C = listify>
-  struct transform
-  {
     template<class... xs>
-    using f = detail::transform_impl<C,
-      typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
-      ::template f<JLN_MP_TRACE_F(F), detail::too_many_arguments_error>,
-      xs...
-    >;
-  };
+    using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
+      ::template f<JLN_MP_TRACE_F(C)::template f, JLN_MP_TRACE_F(F)::template f, xs...>;
 #endif
+  };
 
   namespace emp
   {
     template<class L, class C = mp::listify>
     using transform = unpack<L, mp::transform<C>>;
   }
+
+/// \cond
+#if ! JLN_MP_ENABLE_DEBUG
+  template<class F, template<class...> class C>
+  struct transform<F, lift<C>>
+  {
+    template<class... xs>
+    using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
+      ::template f<C, JLN_MP_TRACE_F(F)::template f, xs...>;
+  };
+
+  template<template<class...> class F, class C>
+  struct transform<lift<F>, C>
+  {
+    template<class... xs>
+    using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
+      ::template f<JLN_MP_TRACE_F(C)::template f, F, xs...>;
+  };
+
+  template<template<class...> class F, template<class...> class C>
+  struct transform<lift<F>, lift<C>>
+  {
+    template<class... xs>
+    using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
+      ::template f<C, F, xs...>;
+  };
+#endif
+/// \endcond
 }
 
 
 /// \cond
 namespace jln::mp::detail
 {
+  template<>
+  struct transform_impl<true>
+  {
+    template<template<class...> class C, template<class...> class F, class...xs>
+    using f = C<F<xs>...>;
+  };
+
+  template<>
+  struct transform_impl<false>
+  {};
+
   template<class T>
   struct optimize_useless_transform_unpack
   {
