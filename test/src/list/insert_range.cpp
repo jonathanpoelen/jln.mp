@@ -6,6 +6,8 @@
 
 TEST_SUITE_BEGIN()
 
+template<class...> class other_list;
+
 TEST()
 {
   using namespace jln::mp;
@@ -31,6 +33,13 @@ TEST()
     ;
 
   test_context<insert_range_c<0, list<_6, _7>>, smp::insert_range_c<0, list<_6, _7>>>()
+    .test<list<_6, _7, _0, _1, _2, _3>, _0, _1, _2, _3>()
+    .test<list<_6, _7, _0, _1>, _0, _1>()
+    .test<list<_6, _7, _0>, _0>()
+    .test<list<_6, _7>>()
+    ;
+
+  test_context<insert_range_c<0, other_list<_6, _7>>, smp::insert_range_c<0, other_list<_6, _7>>>()
     .test<list<_6, _7, _0, _1, _2, _3>, _0, _1, _2, _3>()
     .test<list<_6, _7, _0, _1>, _0, _1>()
     .test<list<_6, _7, _0>, _0>()

@@ -20,14 +20,13 @@ namespace jln::mp
 
   /// Inserts all elements of \c seq at an arbitrary position.
   /// A negative value represents an index starting from the end.
-  /// \pre seq must be a \list
   /// \treturn \sequence
   template<int_ index, class seq, class C = listify>
   struct insert_range_c
   {};
 
-  template<int_ index, class... xs, class C>
-  struct insert_range_c<index, list<xs...>, C>
+  template<int_ index, class... xs, template<class...> class List, class C>
+  struct insert_range_c<index, List<xs...>, C>
   {
     template<class... ys>
     using f = typename detail::insert_range_impl<
@@ -36,8 +35,8 @@ namespace jln::mp
   };
 
   /// \cond
-  template<class... xs, class C>
-  struct insert_range_c<0, list<xs...>, C> : bind_front<C, xs...>
+  template<class... xs, template<class...> class List, class C>
+  struct insert_range_c<0, List<xs...>, C> : bind_front<C, xs...>
   {};
   /// \endcond
 
