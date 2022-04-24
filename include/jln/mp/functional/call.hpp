@@ -70,6 +70,10 @@ using call = C::f<xs...>;
   typename detail::dcallf<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
     ::template f<C, __VA_ARGS__>
 
+#define JLN_MP_DCALLF_XS_0(xs, C)                                  \
+  typename detail::dcallf<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+    ::template f<C>
+
 #define JLN_MP_DCALLF_V_XS(xs, C, ...)                    \
   detail::dcallf<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
     ::template f<C, __VA_ARGS__>

@@ -77,6 +77,8 @@ TEST()
     .test<list<>, _0>()
     .test<list<>, _0, _1>()
     .test<seq_2, _0, _1, _2>()
+    .test<seq_2_3, _0, _1, _2, _3>()
+    .test<seq_2_3_4, _0, _1, _2, _3, _4>()
     ;
 
   ut::not_invocable<smp::drop_front<smp::always<na>>>();

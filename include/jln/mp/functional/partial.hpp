@@ -60,12 +60,13 @@ namespace jln::mp::detail
   template<int, class C, class... Fs>
   struct _partial_select;
 
-  // each
+  // each (sizeof...(Fs) == sizeof...(xs))
   template<class C, class... Fs>
   struct _partial_select<0, C, Fs...>
   : _each<C, Fs...>
   {};
 
+  // sizeof...(Fs) < sizeof...(xs)
   template<class C, class... Fs>
   struct _partial_select<1, C, Fs...>
   {
@@ -77,6 +78,7 @@ namespace jln::mp::detail
     >::type;
   };
 
+  // sizeof...(Fs) > sizeof...(xs)
   template<class C, class... Fs>
   struct _partial_select<2, C, Fs...>
   {
@@ -93,6 +95,7 @@ namespace jln::mp::detail
   };
 
 #if ! JLN_MP_ENABLE_DEBUG
+  // sizeof...(Fs) < sizeof...(xs)
   template<template<class...> class C, class... Fs>
   struct _partial_select<1, lift<C>, Fs...>
   {
@@ -104,6 +107,7 @@ namespace jln::mp::detail
     >::type;
   };
 
+  // sizeof...(Fs) > sizeof...(xs)
   template<template<class...> class C, class... Fs>
   struct _partial_select<2, lift<C>, Fs...>
   {

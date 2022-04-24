@@ -16,7 +16,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::drop_front_impl<
       sizeof...(xs) - N
-    >::template f<sizeof...(xs) - N, C, xs...>;
+    >::template f<sizeof...(xs) - N, JLN_MP_TRACE_F(C)::template f, xs...>;
   };
 
   /// Extracts at most \c N elements from the end of a \sequence.
@@ -29,7 +29,11 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::drop_front_impl<
       sizeof...(xs) - detail::min(N, sizeof...(xs))
-    >::template f<sizeof...(xs) - detail::min(N, sizeof...(xs)), C, xs...>;
+    >::template f<
+      sizeof...(xs) - detail::min(N, sizeof...(xs)),
+      JLN_MP_TRACE_F(C)::template f,
+      xs...
+    >;
   };
 
   template<class N, class C = listify>
@@ -54,6 +58,43 @@ namespace jln::mp
   }
 
   /// \cond
+  #if ! JLN_MP_ENABLE_DEBUG
+  template<unsigned N, template<class...> class C>
+  struct take_back_c<N, lift<C>>
+  {
+    template<class... xs>
+    using f = typename detail::drop_front_impl<
+      sizeof...(xs) - N
+    >::template f<sizeof...(xs) - N, C, xs...>;
+  };
+
+  template<unsigned N, template<class...> class C>
+  struct take_back_max_c<N, lift<C>>
+  {
+    template<class... xs>
+    using f = typename detail::drop_front_impl<
+      sizeof...(xs) - detail::min(N, sizeof...(xs))
+    >::template f<
+      sizeof...(xs) - detail::min(N, sizeof...(xs)),
+      C, xs...
+    >;
+  };
+
+  template<template<class...> class C>
+  struct take_back_c<0, lift<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALLF_XS_0(xs, C);
+  };
+
+  template<template<class...> class C>
+  struct take_back_max_c<0, lift<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALLF_XS_0(xs, C);
+  };
+  #endif
+
   template<class C>
   struct take_back_c<0, C>
   {
@@ -66,6 +107,20 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
+  };
+
+  template<>
+  struct take_back_c<0, listify>
+  {
+    template<class... xs>
+    using f = list<>;
+  };
+
+  template<>
+  struct take_back_max_c<0, listify>
+  {
+    template<class... xs>
+    using f = list<>;
   };
   /// \endcond
 }
