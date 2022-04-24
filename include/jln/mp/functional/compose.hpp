@@ -13,6 +13,9 @@ namespace jln::mp
   {
     template<unsigned> struct _compose_f;
     template<class, class> struct _compose;
+
+    template<class x, class y>
+    using compose_t = typename _compose<x, y>::type;
   }
   /// \endcond
 
@@ -38,7 +41,7 @@ namespace jln::mp
   using compose = typename conditional_c<sizeof...(Fs) == 0>
     ::template f<
       at1<F>,
-      mp::fold_right<lift_t<detail::_compose>>
+      mp::fold_right<lift<detail::compose_t>>
     >
     ::template f<identity, F, Fs...>;
 }

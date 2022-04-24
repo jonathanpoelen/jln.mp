@@ -63,7 +63,7 @@ namespace jln::mp::detail
   struct _group_n_impl
   {
     template<class C, unsigned long long n, class... xs>
-    using f = typename fold_right<lift_t<split_state>, unpack<pop_front<C>>>
+    using f = typename fold_right<lift<split_state_t>, unpack<pop_front<C>>>
       ::template f<
         list<list<>>,
         list<number<(i % n ? split_keep : split_before)>, xs>...

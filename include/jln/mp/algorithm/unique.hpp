@@ -119,11 +119,14 @@ namespace jln::mp::detail
     >>;
   };
 
+  template<class x, class y>
+  using set_push_back_t = typename _set_push_back<x, y>::type;
+
   template<class C>
   struct mk_unique<lift<std::is_same>, C>
   {
     using type = push_front<list<>, fold_left<
-      lift_t<_set_push_back>,
+      lift<set_push_back_t>,
       optimize_useless_unpack_t<unpack<C>>
     >>;
   };

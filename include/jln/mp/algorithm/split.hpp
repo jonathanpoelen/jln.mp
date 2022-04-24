@@ -1,7 +1,5 @@
 #pragma once
 
-#include <jln/mp/algorithm/fold_right.hpp>
-#include <jln/mp/functional/lift.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/utility/is.hpp>
 #include <jln/mp/utility/unpack.hpp>
@@ -58,6 +56,9 @@ namespace jln::mp
   }
 }
 
+#include <jln/mp/algorithm/fold_right.hpp>
+#include <jln/mp/functional/lift.hpp>
+
 /// \cond
 namespace jln::mp::detail
 {
@@ -88,11 +89,14 @@ namespace jln::mp::detail
     using type = list<list<>, list<xs...>, Ls...>;
   };
 
+  template<class x, class y>
+  using split_state_t = typename split_state<x, y>::type;
+
   template<>
   struct _split<true>
   {
     template<int_ policy, class C, class Pred, class... xs>
-    using f = typename fold_right<lift_t<split_state>, optimize_useless_unpack_t<unpack<C>>>
+    using f = typename fold_right<lift<split_state_t>, optimize_useless_unpack_t<unpack<C>>>
       ::template f<list<list<>>,
                    list<number<Pred::template f<xs>::value
                      ? policy : split_keep>, xs>...

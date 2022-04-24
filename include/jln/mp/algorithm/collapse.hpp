@@ -87,7 +87,7 @@ namespace jln::mp::detail
   struct _collapse
   {
     template<class x, class... xs>
-    using f = typename fold_right<lift_t<split_state>, unpack<_group_insert_x<x, C>>>
+    using f = typename fold_right<lift<split_state_t>, unpack<_group_insert_x<x, C>>>
       ::template f<list<list<>>, list<ns, xs>...>;
   };
 
