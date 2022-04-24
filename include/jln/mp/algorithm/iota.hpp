@@ -59,7 +59,9 @@ namespace jln::mp::detail
   struct _iota
   {
     template<int_... ns>
-    using f = typename C::template f<(start + ns * stride)...>;
+    using f = typename conditional_c<sizeof...(ns) < JLN_MP_MAX_CALL_ELEMENT>
+      ::template f<JLN_MP_TRACE_F(C), detail::too_many_arguments_error>
+      ::template f<(start + ns * stride)...>;
   };
 
   template<int_ start, int_ stride>

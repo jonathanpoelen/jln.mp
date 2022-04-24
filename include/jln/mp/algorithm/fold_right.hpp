@@ -45,8 +45,17 @@ namespace jln::mp
       mp::push_front<state, mp::fold_right<F, C>>>;
   }
 
-/// \cond
-#if ! JLN_MP_ENABLE_DEBUG
+  /// \cond
+  template<class F>
+  struct fold_right<F, identity>
+  {
+    template<class... xs>
+    using f = typename detail::fold_right_impl<
+      int(sizeof...(xs)) - 1
+    >::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
+  };
+
+  #if ! JLN_MP_ENABLE_DEBUG
   template<template<class...> class F, class C>
   struct fold_right<lift<F>, C>
   {
@@ -57,8 +66,17 @@ namespace jln::mp
       >::template f<F, xs...>
     );
   };
-#endif
-/// \endcond
+
+  template<template<class...> class F>
+  struct fold_right<lift<F>, identity>
+  {
+    template<class... xs>
+    using f = typename detail::fold_right_impl<
+      int(sizeof...(xs)) - 1
+    >::template f<F, xs...>;
+  };
+  #endif
+  /// \endcond
 }
 
 

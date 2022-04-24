@@ -83,6 +83,13 @@ namespace jln::mp::detail
     using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
 
+  template<unsigned i>
+  struct if_valid_index<i, listify>
+  {
+    template<class... xs>
+    using f = list<xs...>;
+  };
+
   template<unsigned i, unsigned j>
   struct _select_swap_index<i, j, false, true>
   {

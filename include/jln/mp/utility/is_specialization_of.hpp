@@ -31,6 +31,15 @@ namespace jln::mp
     template<template<class...> class Tpl, class x>
     using is_specialization_of = typename detail::_is_specialization_of<Tpl, x>::type;
   }
+
+  /// \cond
+  template<template<class...> class Tpl>
+  struct is_specialization_of<Tpl, identity>
+  {
+    template<class x>
+    using f = typename detail::_is_specialization_of<Tpl, x>::type;
+  };
+  /// \endcond
 }
 
 /// \cond

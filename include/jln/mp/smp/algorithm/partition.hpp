@@ -29,15 +29,21 @@ namespace jln::mp::smp
 /// \cond
 namespace jln::mp::detail
 {
+  struct partition_caller_f
+  {
+    template<class... xs>
+    using f = partition_impl<xs::value...>;
+  };
+
   template<class Pred, class F, class C>
   struct smp_partition_with
   {
     template<class... xs>
     using f = typename mp::transform<
       Pred,
-      mp::try_or<partition_caller, violation>
+      mp::try_or<partition_caller_f, violation>
     >::template f<xs...>
-     ::template f<mp::monadic_xs<C>, F, xs...>;
+     ::template f<mp::monadic_xs<C>::template f, F, xs...>;
   };
 
   template<template<class> class sfinae, class Pred, class F, class C>

@@ -24,12 +24,6 @@ namespace jln::mp
   struct starts_with
   {};
 
-  namespace emp
-  {
-    template<class L, class Seq, class C = mp::identity>
-    using starts_with = unpack<starts_with<Seq, C>, L>;
-  }
-
   template<class... Ts, class C>
   struct starts_with<list<Ts...>, C>
   {
@@ -39,6 +33,12 @@ namespace jln::mp
       ::template f<sizeof...(Ts), list<Ts...>, xs...>
     );
   };
+
+  namespace emp
+  {
+    template<class L, class Seq, class C = mp::identity>
+    using starts_with = unpack<starts_with<Seq, C>, L>;
+  }
 }
 
 /// \cond
@@ -88,6 +88,30 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, true_);
+  };
+
+  template<class... Ts>
+  struct starts_with<list<Ts...>, identity>
+  {
+    template<class... xs>
+    using f = typename detail::starts_with_impl<sizeof...(Ts) <= sizeof...(xs)>
+      ::template f<sizeof...(Ts), list<Ts...>, xs...>;
+  };
+
+  template<class T>
+  struct starts_with<list<T>, identity>
+  {
+    template<class... xs>
+    using f = typename conditional_c<1 <= sizeof...(xs)>
+      ::template f<front<is<T>>, always<false_>>
+      ::template f<xs...>;
+  };
+
+  template<>
+  struct starts_with<list<>, identity>
+  {
+    template<class... xs>
+    using f = true_;
   };
 
 

@@ -24,12 +24,6 @@ namespace jln::mp
   struct ends_with
   {};
 
-  namespace emp
-  {
-    template<class L, class Seq, class C = mp::identity>
-    using ends_with = unpack<ends_with<Seq, C>, L>;
-  }
-
   template<class... Ts, class C>
   struct ends_with<list<Ts...>, C>
   {
@@ -39,6 +33,12 @@ namespace jln::mp
       ::template f<sizeof...(Ts), list<Ts...>, xs...>
     );
   };
+
+  namespace emp
+  {
+    template<class L, class Seq, class C = mp::identity>
+    using ends_with = unpack<ends_with<Seq, C>, L>;
+  }
 }
 
 /// \cond
@@ -66,6 +66,14 @@ namespace jln::mp::detail
 
 namespace jln::mp
 {
+  template<class... Ts>
+  struct ends_with<list<Ts...>, identity>
+  {
+    template<class... xs>
+    using f = typename detail::ends_with_impl<sizeof...(Ts) <= sizeof...(xs)>
+      ::template f<sizeof...(Ts), list<Ts...>, xs...>;
+  };
+
   template<class T, class C>
   struct ends_with<list<T>, C>
   {
@@ -77,11 +85,27 @@ namespace jln::mp
     );
   };
 
+  template<class T>
+  struct ends_with<list<T>, identity>
+  {
+    template<class... xs>
+    using f = typename conditional_c<1 <= sizeof...(xs)>
+      ::template f<take_back_c<1, is<T>>, always<false_>>
+      ::template f<xs...>;
+  };
+
   template<class C>
   struct ends_with<list<>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, true_);
+  };
+
+  template<>
+  struct ends_with<list<>, identity>
+  {
+    template<class... xs>
+    using f = true_;
   };
 }
 /// \endcond

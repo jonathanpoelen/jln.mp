@@ -30,6 +30,15 @@ namespace jln::mp
     template<class x>
     using is_val = typename detail::_is_val<x>::type;
   }
+
+  /// \cond
+  template<>
+  struct is_val<identity>
+  {
+    template<class x>
+    using f = typename detail::_is_val<x>::type;
+  };
+  /// \endcond
 }
 
 

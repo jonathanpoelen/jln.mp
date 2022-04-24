@@ -22,4 +22,13 @@ namespace jln::mp
     template<class x>
     using alignof_ = number<alignof(x)>;
   }
+
+  /// \cond
+  template<>
+  struct alignof_<identity>
+  {
+    template<class x>
+    using f = number<alignof(x)>;
+  };
+  /// \endcond
 }

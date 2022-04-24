@@ -33,6 +33,15 @@ namespace jln::mp
     template<class x>
     inline constexpr bool has_type_v = detail::_has_type<x>::type::value;
   }
+
+  /// \cond
+  template<>
+  struct has_type<identity>
+  {
+    template<class x>
+    using f = typename detail::_has_type<x>::type;
+  };
+  /// \endcond
 }
 
 #include <type_traits>

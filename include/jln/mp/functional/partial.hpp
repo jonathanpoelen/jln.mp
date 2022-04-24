@@ -92,6 +92,34 @@ namespace jln::mp::detail
     >::type;
   };
 
+#if ! JLN_MP_ENABLE_DEBUG
+  template<template<class...> class C, class... Fs>
+  struct _partial_select<1, lift<C>, Fs...>
+  {
+    template<class... xs>
+    using f = typename _join_select<2>::f<
+      C,
+      typename take_front_c<sizeof...(Fs), _each<listify, Fs...>>::template f<xs...>,
+      typename drop_front_c<sizeof...(Fs)>::template f<xs...>
+    >::type;
+  };
+
+  template<template<class...> class C, class... Fs>
+  struct _partial_select<2, lift<C>, Fs...>
+  {
+    template<class... xs>
+    using f = typename _join_select<2>::f<
+      C,
+      typename take_front_c<sizeof...(xs)+1, lift<_each>>
+        ::template f<listify, Fs...>
+        ::template f<xs...>,
+      typename drop_front_c<sizeof...(xs), lift<tee>>
+        ::template f<Fs..., listify>
+        ::template f<>
+    >::type;
+  };
+#endif
+
   template<class C, class... Fs>
   struct _partial
   {

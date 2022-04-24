@@ -51,11 +51,18 @@ namespace jln::mp::detail
   template<>
   struct _repeat<0>
   {
-    template<class C>
+    template<class C, class V = void>
     struct impl
     {
       template<int_...>
       using f = JLN_MP_CALL_TRACE_0_ARG(C);
+    };
+
+    template<class V>
+    struct impl<listify, V>
+    {
+      template<int_...>
+      using f = list<>;
     };
   };
 
@@ -68,6 +75,13 @@ namespace jln::mp::detail
       template<int_... ns>
       using f = JLN_MP_DCALL_TRACE_XS(ns, C, _first<x, decltype(ns)>...);
     };
+
+    template<class x>
+    struct impl<listify, x>
+    {
+      template<int_... ns>
+      using f = list<_first<x, decltype(ns)>...>;
+    };
   };
 
   template<>
@@ -77,7 +91,7 @@ namespace jln::mp::detail
     struct impl
     {
       template<int_... ns>
-      using f = JLN_MP_DCALL_TRACE_XS(ns, join<C>, _first<list<xs...>, decltype(ns)>...);
+      using f = typename join<C>::template f<_first<list<xs...>, decltype(ns)>...>;
     };
   };
 }

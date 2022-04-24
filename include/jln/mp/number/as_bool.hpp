@@ -23,7 +23,6 @@ namespace jln::mp
     using as_bool = number<bool{x::value}>;
   }
 
-
   /// \cond
   template<>
   struct as_bool<identity>

@@ -36,7 +36,7 @@ namespace jln::mp
 namespace jln::mp
 {
   template<class Pred>
-  struct none_of<Pred>
+  struct none_of<Pred, identity>
   {
     template<class... xs>
     using f = typename detail::is_drop_while_continue<

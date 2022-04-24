@@ -23,10 +23,10 @@ namespace jln::mp
   struct sort
   {
     template<class... xs>
-    using f = typename unpack<C>::template f<
+    using f = typename detail::_unpack<
       typename detail::sort_impl<sizeof...(xs)>
       ::template f<Cmp, xs...>
-    >;
+    >::template f<C>;
   };
 
   template<class Cmp = less<>, class C = listify>
@@ -40,14 +40,7 @@ namespace jln::mp
     template<class L, class Cmp = mp::less<>, class C = listify>
     using stable_sort = unpack<L, mp::sort<Cmp, C>>;
   }
-}
 
-
-#include <jln/mp/algorithm/merge.hpp>
-#include <jln/mp/list/take_front.hpp>
-
-namespace jln::mp
-{
   /// \cond
   template<class Cmp>
   struct sort<Cmp, listify>
@@ -58,6 +51,10 @@ namespace jln::mp
   };
   /// \endcond
 }
+
+
+#include <jln/mp/algorithm/merge.hpp>
+#include <jln/mp/list/take_front.hpp>
 
 /// \cond
 namespace jln::mp::detail

@@ -30,6 +30,15 @@ namespace jln::mp
     template<class x, class C = mp::identity>
     using is_list = JLN_MP_CALL_TRACE(C, typename detail::_is_list<x>::type);
   }
+
+  /// \cond
+  template<>
+  struct is_list<identity>
+  {
+    template<class x>
+    using f = typename detail::_is_list<x>::type;
+  };
+  /// \endcond
 } // namespace jln::mp
 
 

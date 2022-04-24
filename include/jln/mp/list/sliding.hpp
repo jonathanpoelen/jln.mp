@@ -204,9 +204,7 @@ namespace jln::mp::detail
   struct _sliding<4>
   {
     template<class C, int_, int_, class... xs>
-    using f = typename detail::pairwise_impl<rotate_c<-1>::f<xs...>>
-      ::template f<C, listify, xs...>
-      ;
+    using f = typename pairwise<C>::template f<xs...>;
   };
 
   // size>2  stride=1
@@ -265,28 +263,42 @@ namespace jln::mp::detail
     return r < 0 ? size : r;
   }
 
+  template<class C>
+  struct adjust
+  {
+    template<class x, class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C,
+      xs...,
+      typename _unpack<x>::template f<rotate_c<-1, pop_front<>>>
+    );
+  };
+
+  template<>
+  struct adjust<listify>
+  {
+    template<class x, class... xs>
+    using f = list<
+      xs...,
+      typename _unpack<x>::template f<rotate_c<-1, pop_front<>>>
+    >;
+  };
+
   // size>1  stride>1  (last list < size)
   template<>
   struct _sliding<8>
   {
-    template<class F, class C>
-    struct adjust
-    {
-      template<class x, class... xs>
-      using f = typename C::template f<xs..., typename F::template f<x>>;
-    };
-
     struct impl
     {
       template<int_... i>
       struct f
       {
         template<class C, int_ size, int_ stride, int_ pivot>
-        using g = _tee<zip<
-          rotate_c<-1, adjust<unpack<rotate_c<-1, pop_front<>>>, C>>
-        >, slice_c<i, size - (pivot < i), stride,
-          typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>
-        >...>;
+        using g = _tee<
+          zip<rotate_c<-1, adjust<C>>>,
+          slice_c<i, size - (pivot < i), stride,
+            typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>
+          >...
+        >;
       };
     };
 

@@ -70,6 +70,15 @@ namespace jln::mp
   };
 
   template<class F>
+  struct try_<F, always<false_>, always<true_>>
+  {
+    template<class... xs>
+    using f = number<std::is_same<na,
+      typename detail::_try_impl<F, list<xs...>>::type
+    >::value>;
+  };
+
+  template<class F>
   struct try_<F, identity, violation>
   {
     template<class... xs>

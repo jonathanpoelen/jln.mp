@@ -6,6 +6,9 @@
 
 TEST_SUITE_BEGIN()
 
+template<class x, class y>
+using to = list<x, y, void>;
+
 TEST()
 {
   using namespace jln::mp;
@@ -15,6 +18,7 @@ TEST()
   test_mulary_pack<transform, inc<>>();
 
   ut::same<seq_1_2_3, emp::transform<seq_0_1_2, inc<>>>();
+  ut::same<list<_0, _1, void>, emp::transform<seq_0_1, identity, lift<to>>>();
 
   test_context<transform<inc<>>, smp::transform<smp::inc<>>>()
     .test<list<>>()

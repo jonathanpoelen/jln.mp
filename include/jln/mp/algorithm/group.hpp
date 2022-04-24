@@ -70,6 +70,16 @@ namespace jln::mp::detail
     );
   };
 
+  template<class x>
+  struct _group_insert_x<x, listify>
+  {
+    template<class seq, class... xs>
+    using f = list<
+      typename detail::_unpack<seq>::template f<push_front<x>>,
+      xs...
+    >;
+  };
+
   template<class x, class F, class C>
   struct _group_insert_x<x, transform<unpack<F>, C>>
   {

@@ -85,6 +85,26 @@ namespace jln::mp
     using fold_left_xs = unpack<L,
       mp::push_front<state, mp::fold_left_xs<F, C>>>;
   }
+
+  /// \cond
+  template<int_ OffsetEnd, class F>
+  struct partial_fold_left_xs_c<OffsetEnd, F, identity>
+  {
+    template<class... xs>
+    using f = detail::partial_fold_left_xs_select<
+      JLN_MP_TRACE_F(F),
+      detail::partial_fold_left_xs_size(OffsetEnd, sizeof...(xs)),
+      xs...
+    >;
+  };
+
+  template<class F>
+  struct fold_left_xs<F, identity>
+  {
+    template<class... xs>
+    using f = detail::partial_fold_left_xs_select<JLN_MP_TRACE_F(F), sizeof...(xs), xs...>;
+  };
+  /// \endcond
 }
 
 

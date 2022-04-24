@@ -22,4 +22,13 @@ namespace jln::mp
     template<class x>
     using as_number = number<int_{x::value}>;
   }
+
+  /// \cond
+  template<>
+  struct as_number<identity>
+  {
+    template<class x>
+    using f = number<int_{x::value}>;
+  };
+  /// \endcond
 }

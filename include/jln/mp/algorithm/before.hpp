@@ -22,7 +22,12 @@ namespace jln::mp
   : partial_take_until_xs_c<-int_{sizeof...(Ts)},
                             starts_with<list<Ts...>>,
                             TC, FC>
-  {};
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f;
+#endif
+  };
 
   namespace emp
   {

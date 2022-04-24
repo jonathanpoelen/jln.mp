@@ -38,7 +38,12 @@ namespace jln::mp
   : invoke_twice<index_if_xs<starts_with<list<Ts...>>,
                              detail::before_after_defer_i<sizeof...(Ts), SubC1, SubC2, TC>,
                              mp::always<FC>>>
-  {};
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f;
+#endif
+  };
 
   namespace emp
   {

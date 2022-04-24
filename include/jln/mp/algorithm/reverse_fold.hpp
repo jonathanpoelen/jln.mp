@@ -41,6 +41,15 @@ namespace jln::mp
       >::template f<JLN_MP_TRACE_F(F)::template f, xs...>
     );
   };
+
+  template<class F>
+  struct reverse_fold<F, identity>
+  {
+    template<class... xs>
+    using f = typename detail::reverse_fold_impl<
+      int(sizeof...(xs)) - 1
+    >::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
+  };
 #endif
 
   namespace emp

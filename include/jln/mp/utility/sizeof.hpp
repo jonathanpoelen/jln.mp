@@ -22,4 +22,13 @@ namespace jln::mp
     template<class x>
     using sizeof_ = number<sizeof(x)>;
   }
+
+  /// \cond
+  template<>
+  struct sizeof_<identity>
+  {
+    template<class x>
+    using f = number<sizeof(x)>;
+  };
+  /// \endcond
 }

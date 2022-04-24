@@ -23,6 +23,15 @@ namespace jln::mp
     template<auto F, class... xs>
     using eval = decltype(F.template operator()<xs...>());
   }
+
+  /// \cond
+  template<auto F>
+  struct eval<identity>
+  {
+    template<class... xs>
+    using f = decltype(F.template operator()<xs...>());
+  };
+  /// \endcond
 #endif
 #endif
 }

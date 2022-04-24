@@ -22,4 +22,13 @@ namespace jln::mp
     template<class L, class T, class C = mp::listify>
     using push_back = unpack<L, mp::push_back<T, C>>;
   }
+
+  /// \cond
+  template<class x>
+  struct push_back<x, listify>
+  {
+    template<class... xs>
+    using f = list<xs..., x>;
+  };
+  /// \endcond
 }

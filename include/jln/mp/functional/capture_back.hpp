@@ -21,7 +21,7 @@ namespace jln::mp
   struct capture_back
   {
     template<class F, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, F, xs..., BoundArgs...);
+    using f = JLN_MP_CALL_TRACE(F, xs..., BoundArgs...);
   };
 
 #if __cplusplus >= 201703L

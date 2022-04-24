@@ -11,7 +11,8 @@ namespace jln::mp
     template<bool... bs>
     struct partition_impl;
 
-    struct partition_caller;
+    template<class... xs>
+    using partition_caller = partition_impl<xs::value...>;
   }
   /// \endcond
 
@@ -25,9 +26,9 @@ namespace jln::mp
   struct partition_with
   {
     template<class... xs>
-    using f = typename transform<Pred, detail::partition_caller>
+    using f = typename transform<Pred, lift<detail::partition_caller>>
       ::template f<xs...>
-      ::template f<C, F, xs...>;
+      ::template f<JLN_MP_TRACE_F(C)::template f, F, xs...>;
   };
 
   /// Splits a \list in two according to a predicate.
@@ -46,6 +47,19 @@ namespace jln::mp
     template<class L, class Pred, class C = mp::listify>
     using partition = unpack<L, mp::partition<Pred, C>>;
   }
+
+/// \cond
+#if ! JLN_MP_ENABLE_DEBUG
+  template<class Pred, class F, template<class...> class C>
+  struct partition_with<Pred, F, lift<C>>
+  {
+    template<class... xs>
+    using f = typename transform<Pred, lift<detail::partition_caller>>
+      ::template f<xs...>
+      ::template f<C, F, xs...>;
+  };
+#endif
+/// \endcond
 }
 
 
@@ -58,17 +72,11 @@ namespace jln::mp::detail
   template<bool... bs>
   struct partition_impl
   {
-    template<class C, class F, class... xs>
-    using f = typename C::template f<
+    template<template<class...> class C, class F, class... xs>
+    using f = C<
       typename mp::join<F>::template f<typename mp::wrap_in_list_c<bs>::template f<xs>...>,
       typename mp::join<F>::template f<typename mp::wrap_in_list_c<!bs>::template f<xs>...>
     >;
-  };
-
-  struct partition_caller
-  {
-    template<class... xs>
-    using f = partition_impl<xs::value...>;
   };
 }
 /// \endcond

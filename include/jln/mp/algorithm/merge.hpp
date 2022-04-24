@@ -26,11 +26,11 @@ namespace jln::mp
   struct merge
   {
     template<class seq1, class seq2>
-    using f = typename unpack<C>::template f<
+    using f = typename detail::_unpack<
       typename detail::merge_impl<
         list<>, seq1, seq2, JLN_MP_TRACE_F(Cmp)
       >::type
-    >;
+    >::template f<C>;
   };
 
   namespace emp

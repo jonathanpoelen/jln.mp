@@ -22,4 +22,13 @@ namespace jln::mp
     template<class L, class C = mp::listify>
     using flip = unpack<L, mp::flip<C>>;
   }
+
+  /// \cond
+  template<>
+  struct flip<listify>
+  {
+    template<class x0, class x1, class... xs>
+    using f = list<x1, x0, xs...>;
+  };
+  /// \endcond
 }

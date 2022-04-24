@@ -17,10 +17,12 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C, x);
   };
 
+  /// \cond
   template<class x>
   struct always<x, identity>
   {
     template<class... xs>
     using f = x;
   };
+  /// \endcond
 }

@@ -34,8 +34,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::pairwise_impl<rotate_c<-1>::f<xs...>>
-      ::template f<C, JLN_MP_TRACE_F(F), xs...>
-      ;
+      ::template f<JLN_MP_TRACE_F(C)::template f, JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
   template<class C = listify>
@@ -49,6 +48,34 @@ namespace jln::mp
     template<class L, class C = mp::listify>
     using pairwise = unpack<L, mp::pairwise<C>>;
   }
+
+/// \cond
+#if ! JLN_MP_ENABLE_DEBUG
+  template<class F, template<class...> class C>
+  struct pairwise_with<F, lift<C>>
+  {
+    template<class... xs>
+    using f = typename detail::pairwise_impl<rotate_c<-1>::f<xs...>>
+      ::template f<C, JLN_MP_TRACE_F(F)::template f, xs...>;
+  };
+
+  template<template<class...> class F, class C>
+  struct pairwise_with<lift<F>, C>
+  {
+    template<class... xs>
+    using f = typename detail::pairwise_impl<rotate_c<-1>::f<xs...>>
+      ::template f<JLN_MP_TRACE_F(C)::template f, F, xs...>;
+  };
+
+  template<template<class...> class F, template<class...> class C>
+  struct pairwise_with<lift<F>, lift<C>>
+  {
+    template<class... xs>
+    using f = typename detail::pairwise_impl<rotate_c<-1>::f<xs...>>
+      ::template f<C, F, xs...>;
+  };
+#endif
+/// \endcond
 }
 
 namespace jln::mp::detail
@@ -59,23 +86,21 @@ namespace jln::mp::detail
   template<class x, class... xs>
   struct pairwise_impl<list<x, xs...>>
   {
-    template<class C, class F, class y, class... ys>
-    using f = typename JLN_MP_TRACE_F(C)::template f<
-      typename F::template f<xs, ys>...
-    >;
+    template<template<class...> class C, template<class...> class F, class y, class... ys>
+    using f = C<F<xs, ys>...>;
   };
 
   template<class x>
   struct pairwise_impl<list<x>>
   {
-    template<class C, class F, class...>
-    using f = JLN_MP_CALL_TRACE_0_ARG(C);
+    template<template<class...> class C, template<class...> class F, class...>
+    using f = C<>;
   };
 
   template<>
   struct pairwise_impl<list<>>
   {
-    template<class C, class F>
-    using f = JLN_MP_CALL_TRACE_0_ARG(C);
+    template<template<class...> class C, template<class...> class F>
+    using f = C<>;
   };
 }

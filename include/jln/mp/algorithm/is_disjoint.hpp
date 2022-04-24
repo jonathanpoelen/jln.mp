@@ -48,6 +48,16 @@ namespace jln::mp
     using is_disjoint_with = typename is_disjoint_with<Equal, C>::template f<L1, L2>;
 #endif
   }
+
+  /// \cond
+  template<class Equal>
+  struct is_disjoint_with<Equal, identity>
+  {
+    template<class... seqs>
+    using f = typename detail::_is_disjoint<detail::min(3, sizeof...(seqs))>
+      ::template f<JLN_MP_TRACE_F(Equal), seqs...>;
+  };
+  /// \endcond
 }
 
 

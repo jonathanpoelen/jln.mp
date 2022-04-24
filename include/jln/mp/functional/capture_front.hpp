@@ -20,7 +20,7 @@ namespace jln::mp
   struct capture_front
   {
     template<class F, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, F, BoundArgs..., xs...);
+    using f = JLN_MP_CALL_TRACE(F, BoundArgs..., xs...);
   };
 
 #if __cplusplus >= 201703L
