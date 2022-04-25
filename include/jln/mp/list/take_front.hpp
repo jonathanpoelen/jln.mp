@@ -15,8 +15,8 @@ namespace jln::mp
   struct take_front_c
   {
     template<class... xs>
-    using f = typename rotate_c<N, drop_front_c<sizeof...(xs) - N, C>>
-      ::template f<xs...>;
+    using f = typename detail::rotate_impl<(sizeof...(xs) & 0) + N>
+      ::template f<N, drop_front_c<sizeof...(xs) - N, C>, xs...>;
   };
 
   /// Extracts at most \c N elements from the beginning of a \sequence.
@@ -27,9 +27,12 @@ namespace jln::mp
   struct take_front_max_c
   {
     template<class... xs>
-    using f = typename rotate_c<N, drop_front_max_c<
-      sizeof...(xs) < N ? 0 : sizeof...(xs) - N, C
-    >>::template f<xs...>;
+    using f = typename detail::rotate_impl<sizeof...(xs) < N ? 0 : N>
+      ::template f<
+        N,
+        drop_front_max_c<sizeof...(xs) < N ? 0 : sizeof...(xs) - N, C>,
+        xs...
+      >;
   };
 
   template<class N, class C = listify>
