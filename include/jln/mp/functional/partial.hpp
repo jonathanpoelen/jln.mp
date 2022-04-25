@@ -43,11 +43,10 @@ namespace jln::mp
 #endif
 }
 
-#include <jln/mp/list/join.hpp>
-#include <jln/mp/list/take_front.hpp>
+#include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/functional/each.hpp>
-#include <jln/mp/functional/tee.hpp>
+#include <jln/mp/functional/bind_front.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -66,16 +65,37 @@ namespace jln::mp::detail
   : _each<C, Fs...>
   {};
 
+  template<class... Fs>
+  struct partial_prefix
+  {
+    template<class C, class... xs>
+    using f = bind_front<C, typename JLN_MP_TRACE_F(Fs)::template f<xs>...>;
+  };
+
   // sizeof...(Fs) < sizeof...(xs)
   template<class C, class... Fs>
   struct _partial_select<1, C, Fs...>
   {
     template<class... xs>
-    using f = typename _join_select<2>::f<
-      JLN_MP_TRACE_F(C)::template f,
-      typename take_front_c<sizeof...(Fs), _each<listify, Fs...>>::template f<xs...>,
-      typename drop_front_c<sizeof...(Fs)>::template f<xs...>
-    >::type;
+    using f = typename drop_front_impl<
+      (sizeof...(xs) & 0) + sizeof...(Fs)
+    >::template f<
+      sizeof...(Fs),
+      rotate_impl<(sizeof...(xs) & 0) + sizeof...(Fs)+1>
+      ::template f<
+        sizeof...(Fs)+1,
+        drop_front_c<sizeof...(xs) - sizeof...(Fs), partial_prefix<Fs...>>,
+        C, xs...>
+      ::template f,
+      xs...
+    >;
+  };
+
+  template<class... Fs>
+  struct partial_suffix
+  {
+    template<class C>
+    using f = typename C::template f<typename JLN_MP_TRACE_F(Fs)::template f<>...>;
   };
 
   // sizeof...(Fs) > sizeof...(xs)
@@ -83,46 +103,17 @@ namespace jln::mp::detail
   struct _partial_select<2, C, Fs...>
   {
     template<class... xs>
-    using f = typename _join_select<2>::f<
-      JLN_MP_TRACE_F(C)::template f,
-      typename take_front_c<sizeof...(xs)+1, lift<_each>>
-        ::template f<listify, Fs...>
-        ::template f<xs...>,
-      typename drop_front_c<sizeof...(xs), lift<tee>>
-        ::template f<Fs..., listify>
-        ::template f<>
-    >::type;
+    using f = typename drop_front_c<sizeof...(xs), lift<partial_suffix>>
+      ::template f<Fs...>
+      ::template f<
+        typename rotate_impl<sizeof...(xs)>
+        ::template f<
+          sizeof...(xs),
+          drop_front_c<sizeof...(Fs) - sizeof...(xs), lift<partial_prefix>>,
+          Fs...>
+        ::template f<C, xs...>
+      >;
   };
-
-#if ! JLN_MP_ENABLE_DEBUG
-  // sizeof...(Fs) < sizeof...(xs)
-  template<template<class...> class C, class... Fs>
-  struct _partial_select<1, lift<C>, Fs...>
-  {
-    template<class... xs>
-    using f = typename _join_select<2>::f<
-      C,
-      typename take_front_c<sizeof...(Fs), _each<listify, Fs...>>::template f<xs...>,
-      typename drop_front_c<sizeof...(Fs)>::template f<xs...>
-    >::type;
-  };
-
-  // sizeof...(Fs) > sizeof...(xs)
-  template<template<class...> class C, class... Fs>
-  struct _partial_select<2, lift<C>, Fs...>
-  {
-    template<class... xs>
-    using f = typename _join_select<2>::f<
-      C,
-      typename take_front_c<sizeof...(xs)+1, lift<_each>>
-        ::template f<listify, Fs...>
-        ::template f<xs...>,
-      typename drop_front_c<sizeof...(xs), lift<tee>>
-        ::template f<Fs..., listify>
-        ::template f<>
-    >::type;
-  };
-#endif
 
   template<class C, class... Fs>
   struct _partial
