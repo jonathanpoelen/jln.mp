@@ -39,57 +39,8 @@ namespace jln::mp
     template<class L, class Seq, class C = mp::identity>
     using starts_with = unpack<starts_with<Seq, C>, L>;
   }
-}
 
-/// \cond
-
-#include <jln/mp/list/take_front.hpp>
-#include <jln/mp/utility/is.hpp>
-#include <jln/mp/utility/always.hpp>
-#include <jln/mp/utility/conditional.hpp>
-#include <jln/mp/algorithm/drop_while_xs.hpp>
-#include <jln/mp/algorithm/take_while_xs.hpp>
-#include <jln/mp/algorithm/index.hpp>
-#include <jln/mp/functional/if.hpp>
-#include <jln/mp/list/front.hpp>
-
-namespace jln::mp::detail
-{
-  template<>
-  struct starts_with_impl<true>
-  {
-    template<unsigned n, class L, class... xs>
-    using f = number<std::is_same<typename take_front_c<n>::template f<xs...>, L>::value>;
-  };
-
-  template<>
-  struct starts_with_impl<false>
-  {
-    template<unsigned n, class L, class... xs>
-    using f = false_;
-  };
-}
-
-namespace jln::mp
-{
-  template<class T, class C>
-  struct starts_with<list<T>, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      typename conditional_c<1 <= sizeof...(xs)>
-      ::template f<front<is<T>>, always<false_>>
-      ::template f<xs...>
-    );
-  };
-
-  template<class C>
-  struct starts_with<list<>, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, true_);
-  };
-
+  /// \cond
   template<class... Ts>
   struct starts_with<list<Ts...>, identity>
   {
@@ -98,13 +49,37 @@ namespace jln::mp
       ::template f<sizeof...(Ts), list<Ts...>, xs...>;
   };
 
+  namespace detail
+  {
+    class dummy;
+
+    template<bool>
+    struct starts_with1_impl;
+  }
+
+  template<class T, class C>
+  struct starts_with<list<T>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename detail::starts_with1_impl<1 <= sizeof...(xs)>
+      ::template f<T, xs..., detail::dummy>
+    );
+  };
+
   template<class T>
   struct starts_with<list<T>, identity>
   {
     template<class... xs>
-    using f = typename conditional_c<1 <= sizeof...(xs)>
-      ::template f<front<is<T>>, always<false_>>
-      ::template f<xs...>;
+    using f = typename detail::starts_with1_impl<1 <= sizeof...(xs)>
+      ::template f<T, xs..., detail::dummy>;
+  };
+
+  template<class C>
+  struct starts_with<list<>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, true_);
   };
 
   template<>
@@ -113,8 +88,58 @@ namespace jln::mp
     template<class... xs>
     using f = true_;
   };
+  /// \endcond
+}
 
+/// \cond
 
+#include <jln/mp/list/drop_front.hpp>
+#include <jln/mp/utility/is.hpp>
+#include <jln/mp/utility/always.hpp>
+#include <jln/mp/utility/conditional.hpp>
+#include <jln/mp/algorithm/drop_while_xs.hpp>
+#include <jln/mp/algorithm/take_while_xs.hpp>
+#include <jln/mp/algorithm/rotate.hpp>
+#include <jln/mp/algorithm/index.hpp>
+#include <jln/mp/functional/if.hpp>
+
+namespace jln::mp::detail
+{
+  template<>
+  struct starts_with_impl<true>
+  {
+    template<unsigned n, class L, class... xs>
+    using f = number<std::is_same<
+      // take_front_c<n>
+      typename rotate_impl<n>::template f<n, drop_front_c<sizeof...(xs) - n>, xs...>,
+      L
+    >::value>;
+  };
+
+  template<>
+  struct starts_with_impl<false>
+  {
+    template<unsigned n, class L, class... xs>
+    using f = false_;
+  };
+
+  template<>
+  struct starts_with1_impl<true>
+  {
+    template<class T, class x, class... xs>
+    using f = number<std::is_same<T, x>::value>;
+  };
+
+  template<>
+  struct starts_with1_impl<false>
+  {
+    template<class T, class... xs>
+    using f = false_;
+  };
+}
+
+namespace jln::mp::detail
+{
   template<class C>
   struct optimized_starts_with_empty
   {
@@ -152,15 +177,20 @@ namespace jln::mp
     using f = partial_index_if_xs_c<-int_(sizeof...(Ts)),
       starts_with<list<Ts...>, C>, TC, FC>;
   };
+}
 
+namespace jln::mp
+{
   // optimize index_if_xs with starts_with
   template<class... Ts, class C, class TC, class FC>
   struct index_if_xs<starts_with<list<Ts...>, C>, TC, FC>
-  : optimized_index_if_xs_starts_with<detail::min(sizeof...(Ts), 2)>
+  : detail::optimized_index_if_xs_starts_with<detail::min(sizeof...(Ts), 2)>
     ::template f<C, TC, FC, Ts...>
   {};
+}
 
-
+namespace jln::mp::detail
+{
   template<int_>
   struct optimized_drop_while_starts_with;
 
@@ -185,14 +215,19 @@ namespace jln::mp
     using f = partial_drop_while_xs_c<-int_(sizeof...(Ts)),
       starts_with<list<Ts...>, C>, TC, FC>;
   };
+}
 
+namespace jln::mp
+{
   template<class... Ts, class C, class TC, class FC>
   struct drop_while_xs<starts_with<list<Ts...>, C>, TC, FC>
-  : optimized_drop_while_starts_with<detail::min(sizeof...(Ts), 2)>
+  : detail::optimized_drop_while_starts_with<detail::min(sizeof...(Ts), 2)>
     ::template f<C, TC, FC, Ts...>
   {};
+}
 
-
+namespace jln::mp::detail
+{
   template<int_>
   struct optimized_take_while_starts_with;
 
@@ -217,14 +252,19 @@ namespace jln::mp
     using f = partial_take_while_xs_c<-int_(sizeof...(Ts)),
       starts_with<list<Ts...>, C>, TC, FC>;
   };
+}
 
+namespace jln::mp
+{
   template<class... Ts, class C, class TC, class FC>
   struct take_while_xs<starts_with<list<Ts...>, C>, TC, FC>
-  : optimized_take_while_starts_with<detail::min(sizeof...(Ts), 2)>
+  : detail::optimized_take_while_starts_with<detail::min(sizeof...(Ts), 2)>
     ::template f<C, TC, FC, Ts...>
   {};
+}
 
-
+namespace jln::mp::detail
+{
   template<int_>
   struct optimized_take_while_extended_by_n_starts_with;
 
@@ -250,10 +290,13 @@ namespace jln::mp
       -int_(sizeof...(Ts)), ExtendedByN, starts_with<list<Ts...>, C>, TC, FC
     >;
   };
+}
 
+namespace jln::mp
+{
   template<std::size_t ExtendedByN, class... Ts, class C, class TC, class FC>
   struct take_while_extended_by_n_xs_c<ExtendedByN, starts_with<list<Ts...>, C>, TC, FC>
-  : optimized_take_while_extended_by_n_starts_with<detail::min(sizeof...(Ts), 2)>
+  : detail::optimized_take_while_extended_by_n_starts_with<detail::min(sizeof...(Ts), 2)>
     ::template f<C, TC, FC, Ts...>
   {};
 }

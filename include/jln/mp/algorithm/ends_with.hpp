@@ -39,33 +39,8 @@ namespace jln::mp
     template<class L, class Seq, class C = mp::identity>
     using ends_with = unpack<ends_with<Seq, C>, L>;
   }
-}
 
-/// \cond
-#include <jln/mp/list/take_back.hpp>
-#include <jln/mp/utility/is.hpp>
-#include <jln/mp/utility/always.hpp>
-#include <jln/mp/utility/conditional.hpp>
-
-namespace jln::mp::detail
-{
-  template<>
-  struct ends_with_impl<true>
-  {
-    template<unsigned n, class L, class... xs>
-    using f = number<std::is_same<typename take_back_c<n>::template f<xs...>, L>::value>;
-  };
-
-  template<>
-  struct ends_with_impl<false>
-  {
-    template<unsigned n, class L, class... xs>
-    using f = false_;
-  };
-}
-
-namespace jln::mp
-{
+  /// \cond
   template<class... Ts>
   struct ends_with<list<Ts...>, identity>
   {
@@ -74,31 +49,11 @@ namespace jln::mp
       ::template f<sizeof...(Ts), list<Ts...>, xs...>;
   };
 
-  template<class T, class C>
-  struct ends_with<list<T>, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      typename conditional_c<1 <= sizeof...(xs)>
-      ::template f<take_back_c<1, is<T>>, always<false_>>
-      ::template f<xs...>
-    );
-  };
-
-  template<class T>
-  struct ends_with<list<T>, identity>
-  {
-    template<class... xs>
-    using f = typename conditional_c<1 <= sizeof...(xs)>
-      ::template f<take_back_c<1, is<T>>, always<false_>>
-      ::template f<xs...>;
-  };
-
   template<class C>
   struct ends_with<list<>, C>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, true_);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, true_);
   };
 
   template<>
@@ -106,6 +61,33 @@ namespace jln::mp
   {
     template<class... xs>
     using f = true_;
+  };
+  /// \endcond
+}
+
+/// \cond
+#include <jln/mp/list/take_back.hpp>
+#include <type_traits>
+
+namespace jln::mp::detail
+{
+  template<>
+  struct ends_with_impl<true>
+  {
+    template<unsigned n, class L, class... xs>
+    using f = number<std::is_same<
+      // take_back_c<n>
+      typename detail::drop_front_impl<sizeof...(xs) - n>
+      ::template f<sizeof...(xs) - n, list, xs...>,
+      L
+    >::value>;
+  };
+
+  template<>
+  struct ends_with_impl<false>
+  {
+    template<unsigned n, class L, class... xs>
+    using f = false_;
   };
 }
 /// \endcond
