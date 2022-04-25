@@ -324,7 +324,7 @@ h3, .group__emp {
 
 :root {
   --file-width: 25em;
-  --func-width: 15em;
+  --func-width: 21em;
 }
 
 .index_list.func_list {
