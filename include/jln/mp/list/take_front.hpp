@@ -27,9 +27,9 @@ namespace jln::mp
   struct take_front_max_c
   {
     template<class... xs>
-    using f = typename rotate_c<N, drop_front_max_c<sizeof...(xs)
-                                   - detail::min(sizeof...(xs), N), C>>
-      ::template f<xs...>;
+    using f = typename rotate_c<N, drop_front_max_c<
+      sizeof...(xs) < N ? 0 : sizeof...(xs) - N, C
+    >>::template f<xs...>;
   };
 
   template<class N, class C = listify>

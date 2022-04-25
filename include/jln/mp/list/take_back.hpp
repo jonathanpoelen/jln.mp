@@ -28,9 +28,9 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::drop_front_impl<
-      sizeof...(xs) - detail::min(N, sizeof...(xs))
+      sizeof...(xs) < N ? 0 : sizeof...(xs) - N
     >::template f<
-      sizeof...(xs) - detail::min(N, sizeof...(xs)),
+      sizeof...(xs) < N ? 0 : sizeof...(xs) - N,
       JLN_MP_TRACE_F(C)::template f,
       xs...
     >;
@@ -73,9 +73,9 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::drop_front_impl<
-      sizeof...(xs) - detail::min(N, sizeof...(xs))
+      sizeof...(xs) < N ? 0 : sizeof...(xs) - N
     >::template f<
-      sizeof...(xs) - detail::min(N, sizeof...(xs)),
+      sizeof...(xs) < N ? 0 : sizeof...(xs) - N,
       C, xs...
     >;
   };
