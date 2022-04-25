@@ -30,8 +30,8 @@ namespace jln::mp
 #else
   template<class... Fs>
   struct tee
-  : rotate_c<-1, lift<detail::_tee>>
-  ::template f<Fs...>
+  : detail::rotate_impl<sizeof...(Fs)-1>
+  ::template f<sizeof...(Fs)-1, lift<detail::_tee>, Fs...>
   {};
 #endif
 

@@ -195,7 +195,7 @@ namespace jln::mp::detail
   {
     template<class C, int_ size, int_, class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      typename rotate_c<size, drop_front_c<sizeof...(xs)-size>>::template f<xs...>
+      typename rotate_impl<size>::template f<size, drop_front_c<sizeof...(xs)-size>, xs...>
     );
   };
 

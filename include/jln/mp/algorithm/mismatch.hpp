@@ -161,15 +161,17 @@ namespace jln::mp::detail
 
     template<class... xs>
     using f = typename dispatch<
-      typename rotate_c<size,
+      typename rotate_impl<(sizeof...(xs) & 0) + size>::template f<
+        size,
         drop_front_c<n-size,
           rotate_c<size,
             drop_front_c<n-size,
               typename _mismatch_tree<Cmp, size>::type
             >
           >
-        >
-      >::template f<xs...>
+        >,
+        xs...
+      >
     >::template f<xs...>;
   };
 
