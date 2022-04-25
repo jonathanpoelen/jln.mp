@@ -26,6 +26,13 @@ TEST()
     .not_invocable<emp::numbers<0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10>>()
     ;
 
+  test_context<collapse<seq_0_1>, smp::collapse<seq_0_1>>()
+    .test<list<list<void>, list<int>>, void, int>()
+    .not_invocable<>()
+    .not_invocable<int>()
+    .not_invocable<int, int, int>()
+    ;
+
   test_context<collapse<seq_0>, smp::collapse<seq_0>>()
     .test<list<list<int>>, int>()
     .not_invocable<>()

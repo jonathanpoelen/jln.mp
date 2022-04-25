@@ -110,7 +110,7 @@ namespace jln::mp::detail
   {
     template<unsigned n, class L, class... xs>
     using f = number<std::is_same<
-      // take_front_c<n>
+      // take_front
       typename rotate_impl<n>::template f<n, drop_front_c<sizeof...(xs) - n>, xs...>,
       L
     >::value>;

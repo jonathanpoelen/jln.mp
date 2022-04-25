@@ -81,6 +81,7 @@ namespace jln::mp::detail
       (sizeof...(xs) & 0) + sizeof...(Fs)
     >::template f<
       sizeof...(Fs),
+      // take_front
       rotate_impl<(sizeof...(xs) & 0) + sizeof...(Fs)+1>
       ::template f<
         sizeof...(Fs)+1,
@@ -106,6 +107,7 @@ namespace jln::mp::detail
     using f = typename drop_front_c<sizeof...(xs), lift<partial_suffix>>
       ::template f<Fs...>
       ::template f<
+        // take_front
         typename rotate_impl<sizeof...(xs)>
         ::template f<
           sizeof...(xs),

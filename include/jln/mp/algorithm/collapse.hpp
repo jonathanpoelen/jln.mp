@@ -73,7 +73,9 @@ namespace jln::mp
   template<class key, class... keys, class C>
   struct collapse<list<key, keys...>, C>
   : detail::make_collapse<
-      typename take_front_c<sizeof...(keys)>::template f<key, keys...>,
+      // take_front
+      typename detail::rotate_impl<sizeof...(keys)>
+      ::template f<sizeof...(keys), drop_front_c<1>, key, keys...>,
       keys...
     >::template f<C>
   {};

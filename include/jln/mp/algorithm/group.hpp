@@ -128,7 +128,9 @@ namespace jln::mp::detail
     template<class C, class Cmp, class x, class... xs>
     using f = typename _group_impl<
       C, Cmp, x,
-      typename take_front_c<sizeof...(xs)>::template f<x, xs...>,
+      // take_front
+      typename detail::rotate_impl<sizeof...(xs)>
+      ::template f<sizeof...(xs), drop_front_c<1>, x, xs...>,
       xs...
     >::type;
   };

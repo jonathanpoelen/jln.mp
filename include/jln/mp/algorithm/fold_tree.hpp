@@ -73,7 +73,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   // std::bit_ceil (c++20)
-  constexpr uint_ bit_ceil(uint_ n)
+  constexpr unsigned bit_ceil(uint_ n)
   {
     n--;
     n |= n >> 1;
@@ -106,7 +106,7 @@ namespace jln::mp::detail
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_CALL_TRACE(F, x, y));
   };
 
-  template<class F, uint_>
+  template<class F, unsigned>
   struct fold_tree_impl;
 
   template<class F>
@@ -123,12 +123,14 @@ namespace jln::mp::detail
     using f = JLN_MP_CALL_TRACE(F, x, y);
   };
 
-  template<class F, uint_ n>
+  template<class F, unsigned n>
   struct fold_tree_impl
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(F,
-      typename take_front_c<n, fold_tree_impl<F, n/2>>::template f<xs...>,
+      // take_front
+      typename detail::rotate_impl<(sizeof...(xs) & 0) + n>
+        ::template f<n, drop_front_c<sizeof...(xs) - n, fold_tree_impl<F, n/2>>, xs...>,
       typename drop_front_c<n, fold_tree_impl<F, bit_ceil(sizeof...(xs)-n)/2>>::template f<xs...>
     );
   };
@@ -180,7 +182,12 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(F,
-      typename take_front_c<(n+1)/2, fold_balanced_tree_impl<F, (n+1)/2>>::template f<xs...>,
+      // take_front
+      typename detail::rotate_impl<(sizeof...(xs) & 0) + (n+1)/2>
+      ::template f<
+        (n+1)/2,
+        drop_front_c<sizeof...(xs) - (n+1)/2, fold_balanced_tree_impl<F, (n+1)/2>>,
+        xs...>,
       typename drop_front_c<(n+1)/2, fold_balanced_tree_impl<F, n-(n+1)/2>>::template f<xs...>
     );
   };

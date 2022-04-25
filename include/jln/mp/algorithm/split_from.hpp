@@ -10,7 +10,9 @@ namespace jln::mp
   {
     template<unsigned position, class C1, class C2, class C, class... xs>
     using _split_from_i = typename C::template f<
-      typename take_front_c<position, C1>::template f<xs...>,
+      // take_front
+      typename detail::rotate_impl<position>
+      ::template f<position, drop_front_c<sizeof...(xs) - position, C1>, xs...>,
       typename drop_front_c<position, C2>::template f<xs...>
     >;
   }

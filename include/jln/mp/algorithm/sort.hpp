@@ -241,8 +241,15 @@ namespace jln::mp::detail
     template<class Cmp, class... xs>
     using f = typename merge_impl<
       list<>,
-      typename take_front_c<sizeof...(xs) / 2, sort<Cmp>>::template f<xs...>,
-      typename drop_front_c<sizeof...(xs) / 2, sort<Cmp>>::template f<xs...>,
+      // take_front
+      typename rotate_impl<sizeof...(xs) / 2>
+      ::template f<
+        sizeof...(xs) / 2,
+        drop_front_c<(sizeof...(xs) + 1) / 2, sort<Cmp>>,
+        xs...>,
+      // drop_front
+      typename drop_front_impl<sizeof...(xs) / 2>
+      ::template f<sizeof...(xs) / 2, sort<Cmp>::template f, xs...>,
       Cmp
     >::type;
   };

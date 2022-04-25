@@ -13,12 +13,10 @@ namespace jln::mp
   /// \see drop_back_max, drop_front, take_front, take_back, drop_while
   template<unsigned N, class C = listify>
   struct drop_back_c
-  : rotate_c<-int_(N), drop_front_c<N, C>>
   {
-#ifdef JLN_MP_DOXYGENATING
     template<class... xs>
-    using f;
-#endif
+    using f = typename detail::rotate_impl<sizeof...(xs) - N>
+      ::template f<sizeof...(xs) - N, drop_front_c<N, C>, xs...>;
   };
 
   /// Removes at most \c N elements from the end of a \sequence.
@@ -29,9 +27,11 @@ namespace jln::mp
   struct drop_back_max_c
   {
     template<class... xs>
-    using f = typename rotate_c<-int_(N),
-      drop_front_c<detail::min(N, sizeof...(xs)), C>
-    >::template f<xs...>;
+    using f = typename detail::rotate_impl<N < sizeof...(xs) ? sizeof...(xs) - N : 0>
+      ::template f<
+        N < sizeof...(xs) ? sizeof...(xs) - N : 0,
+        drop_front_c<N < sizeof...(xs) ? N : sizeof...(xs), C>,
+        xs...>;
   };
 
   template<class N, class C = listify>

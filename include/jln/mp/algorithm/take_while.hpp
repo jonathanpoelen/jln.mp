@@ -93,7 +93,9 @@ namespace jln::mp::detail
   struct take_while_impl<_drop_while_result<n>>
   {
     template<class TC, class FC, class... xs>
-    using f = typename take_front_c<sizeof...(xs)-n-1, TC>::template f<xs...>;
+    // take_front
+    using f = typename detail::rotate_impl<sizeof...(xs)-n-1>
+      ::template f<sizeof...(xs)-n-1, drop_front_c<n+1, TC>, xs...>;
   };
 
 
@@ -108,10 +110,14 @@ namespace jln::mp::detail
   struct take_while_extended_by_n_impl<_drop_while_result<n>>
   {
     template<std::size_t ExtendedByN, class TC, class FC, class... xs>
-    using f = typename take_front_c<
+    // take_front
+    using f = typename detail::rotate_impl<
+      sizeof...(xs) - (n >= ExtendedByN ? n - ExtendedByN + 1 : 0)
+    >::template f<
       sizeof...(xs) - (n >= ExtendedByN ? n - ExtendedByN + 1 : 0),
+      drop_front_c<(n >= ExtendedByN ? n - ExtendedByN + 1 : 0),
       TC
-    >::template f<xs...>;
+    >, xs...>;
   };
 }
 /// \encond
