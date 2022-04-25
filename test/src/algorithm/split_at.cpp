@@ -17,7 +17,7 @@ TEST()
 
   test_binary_pack<split_at, _3>();
 
-  test_context<split_at<_3>, smp::split_at<_3>, 0>()
+  test_context<split_at<_3>, smp::split_at<_3>>()
     .test<list<seq_1_2_3, list<>>, _1, _2, _3>()
     .test<list<seq_1_2_3, list<_4>>, _1, _2, _3, _4>()
     .not_invocable<>()
@@ -25,7 +25,7 @@ TEST()
     .not_invocable<_1, _2>()
     ;
 
-  test_context<split_at<_0>, smp::split_at<_0>, 0>()
+  test_context<split_at<_0>, smp::split_at<_0>>()
     .test<list<list<>, list<>>>()
     .test<list<list<>, seq_1>, _1>()
     .test<list<list<>, seq_1_2_3>, _1, _2, _3>()
