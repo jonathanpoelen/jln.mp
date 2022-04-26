@@ -13,10 +13,10 @@
 namespace jln::mp::detail
 {
   template<class C, class F, class Cmp>
-  struct smp_regroup_if_impl;
+  struct smp_regroup_by_impl;
 
   template<class Cmp>
-  struct smp_regroup_if_select;
+  struct smp_regroup_by_select;
 }
 /// \endcond
 
@@ -36,10 +36,10 @@ namespace jln::mp::smp
   >;
 
   template<class Cmp = contract<mp::lift<std::is_same>>, class F = listify, class C = listify>
-  using regroup_if_with = typename detail::smp_regroup_if_select<Cmp>::template f<C, F>;
+  using regroup_by_with = typename detail::smp_regroup_by_select<Cmp>::template f<C, F>;
 
   template<class Cmp = contract<mp::lift<std::is_same>>, class C = listify>
-  using regroup_if = regroup_if_with<Cmp, listify, C>;
+  using regroup_by = regroup_by_with<Cmp, listify, C>;
 }
 
 #include <jln/mp/smp/algorithm/copy.hpp>
@@ -63,30 +63,30 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class Cmp, class F, class C>
-  struct _sfinae<sfinae, regroup_if_with<Cmp, F, C>>
+  struct _sfinae<sfinae, regroup_by_with<Cmp, F, C>>
   {
-    using type = smp::regroup_if_with<sfinae<Cmp>, sfinae<F>, sfinae<C>>;
+    using type = smp::regroup_by_with<sfinae<Cmp>, sfinae<F>, sfinae<C>>;
   };
 
   template<template<class> class sfinae, class F, class C>
-  struct _sfinae<sfinae, regroup_if_with<mp::lift<std::is_same>, F, C>>
+  struct _sfinae<sfinae, regroup_by_with<mp::lift<std::is_same>, F, C>>
   {
     using type = smp::regroup_with<sfinae<F>, sfinae<C>>;
   };
 
   template<>
-  struct smp_regroup_if_select<contract<mp::lift<std::is_same>>>
+  struct smp_regroup_by_select<contract<mp::lift<std::is_same>>>
   {
     template<class C, class F>
     using f = smp::regroup_with<F, C>;
   };
 
   template<class Cmp>
-  struct smp_regroup_if_select
+  struct smp_regroup_by_select
   {
     template<class C, class F>
     using f = smp::invoke_twice<smp::unique_if<Cmp,
-      contract<detail::smp_regroup_if_impl<
+      contract<detail::smp_regroup_by_impl<
         subcontract<C>,
         contract<assume_unary_or_more<F>>,
         contract<assume_binary<Cmp>>>>
@@ -94,7 +94,7 @@ namespace jln::mp::detail
   };
 
   template<class C, class F, class Cmp>
-  struct smp_regroup_if_impl
+  struct smp_regroup_by_impl
   {
     template<class... xs>
     using f = contract<_tee<monadic_xs<C>,

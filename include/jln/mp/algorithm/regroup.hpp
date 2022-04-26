@@ -11,7 +11,7 @@ namespace jln::mp
     struct counter_to_repeat;
 
     template<class... xs>
-    struct regroup_if_impl;
+    struct regroup_by_impl;
   }
   /// \endcond
 
@@ -36,16 +36,16 @@ namespace jln::mp
   using regroup = regroup_with<listify, C>;
 
   template<class Cmp = lift<std::is_same>, class F = listify, class C = listify>
-  struct regroup_if_with
+  struct regroup_by_with
   {
     template<class... xs>
-    using f = typename unique_if<Cmp, lift<detail::regroup_if_impl>>
+    using f = typename unique_if<Cmp, lift<detail::regroup_by_impl>>
       ::template f<xs...>
       ::template f<C, F, Cmp, xs...>;
   };
 
   template<class Cmp = lift<std::is_same>, class C = listify>
-  using regroup_if = regroup_if_with<Cmp, listify, C>;
+  using regroup_by = regroup_by_with<Cmp, listify, C>;
 
   namespace emp
   {
@@ -56,15 +56,15 @@ namespace jln::mp
     using regroup_with = unpack<L, mp::regroup_with<F, C>>;
 
     template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
-    using regroup_if = unpack<L, mp::regroup_if<Cmp, C>>;
+    using regroup_by = unpack<L, mp::regroup_by<Cmp, C>>;
 
     template<class L, class Cmp = lift<std::is_same>, class F = mp::listify, class C = mp::listify>
-    using regroup_if_with = unpack<L, mp::regroup_if_with<Cmp, F, C>>;
+    using regroup_by_with = unpack<L, mp::regroup_by_with<Cmp, F, C>>;
   }
 
   /// \cond
   template<class F, class C>
-  struct regroup_if_with<lift<std::is_same>, F, C> : regroup_with<F, C>
+  struct regroup_by_with<lift<std::is_same>, F, C> : regroup_with<F, C>
   {};
   /// \endcond
 }
@@ -84,7 +84,7 @@ namespace jln::mp::detail
   };
 
   template<class... xs>
-  struct regroup_if_impl
+  struct regroup_by_impl
   {
     template<class C, class F, class Cmp, class... ys>
     using f = JLN_MP_CALL_TRACE(C,

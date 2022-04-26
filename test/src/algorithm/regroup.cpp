@@ -15,9 +15,9 @@ TEST()
 
   test_mulary_pack<regroup_with>();
   test_mulary_pack<regroup_with, listify>();
-  test_binary_pack<regroup_if_with>();
-  test_unary_pack<regroup_if_with, size<>>();
-  test_unary_pack<regroup_if_with, size<>, listify>();
+  test_binary_pack<regroup_by_with>();
+  test_unary_pack<regroup_by_with, size<>>();
+  test_unary_pack<regroup_by_with, size<>, listify>();
 
   ut::same<list<list<int, int>, list<char>, list<short, short>>,
     emp::regroup<list<int, char, int, short, short>>>();
@@ -40,7 +40,7 @@ TEST()
   ut::not_invocable<smp::regroup_with<listify, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::regroup_with<bad_function, bad_function>, _1, _1, _1, _1>();
 
-  test_context<regroup_if<>, smp::regroup_if<>>()
+  test_context<regroup_by<>, smp::regroup_by<>>()
     .test<list<>>()
     .test<list<list<int>>, int>()
     .test<list<list<int, int>>, int, int>()
@@ -52,8 +52,8 @@ TEST()
     ;
 
   test_context<
-    regroup_if<compare_with<traits::extent<>, lift<std::is_same>>>,
-    smp::regroup_if<smp::compare_with<smp::traits::extent<>, contract<lift<std::is_same>>>>
+    regroup_by<compare_with<traits::extent<>, lift<std::is_same>>>,
+    smp::regroup_by<smp::compare_with<smp::traits::extent<>, contract<lift<std::is_same>>>>
   >()
     .test<list<>>()
     .test<list<list<int>>, int>()
@@ -65,9 +65,9 @@ TEST()
         int[1], char[2], short[3], char[1], char[3], float[4]>()
     ;
 
-  ut::not_invocable<smp::regroup_if<bad_function, bad_function>, _1, _1, _1, _1>();
-  ut::not_invocable<smp::regroup_if<smp::always<true_>, bad_function>, _1, _1, _1, _1>();
-  ut::not_invocable<smp::regroup_if_with<smp::always<true_>, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::regroup_by<bad_function, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::regroup_by<smp::always<true_>, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::regroup_by_with<smp::always<true_>, bad_function>, _1, _1, _1, _1>();
 }
 
 TEST_SUITE_END()
