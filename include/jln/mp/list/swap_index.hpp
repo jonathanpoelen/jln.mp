@@ -16,9 +16,9 @@ namespace jln::mp
 
   /// \ingroup list
 
-  /// Swap elements at indexes \c I and \c J of a \sequence.
-  /// \pre `0 < I < sizeof...(xs)`
-  /// \pre `0 < J < sizeof...(xs)`
+  /// Swap elements at indexes \c i and \c j of a \sequence.
+  /// \pre `0 < i < sizeof...(xs)`
+  /// \pre `0 < j < sizeof...(xs)`
   /// \treturn \sequence
   /// \note `swap_index<I, J>` == `swap_index<J, I>`
   template<unsigned i, unsigned j, class C = listify>

@@ -8,7 +8,7 @@ namespace jln::mp
 
   /// Invokes a function computing the fixed point of a function.
   /// \treturn \value
-  /// \see recurse, recurse_fix
+  /// \see recursively
   template<class C>
   struct fix
   {

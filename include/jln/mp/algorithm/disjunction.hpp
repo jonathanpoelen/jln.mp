@@ -11,7 +11,7 @@ namespace jln::mp
   /// Disjunction is short-circuiting: if there is a template type
   /// argument `xs[i]` with `bool(xs[i]::value) != false`, then instantiating
   /// `disjunction<C>::f<xs[0], ..., xs[n-1]>` does not require the
-  /// instantiation of `xs[j]::value` for j > i
+  /// instantiation of `xs[j]::value` for `j > i`
   /// \treturn \bool
   /// \see conjunction, drop_while, take_while
   template<class C = identity>

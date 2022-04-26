@@ -25,13 +25,9 @@ namespace jln::mp
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///     n = 0
   ///     len = sizeof...(xs)
-  ///     if (len) {
-  ///       n = N::value
-  ///       if (n < 0) n = len + (n % len)
-  ///       n = n % len
-  ///     }
+  ///     n = len ? (N < 0 ? len + N % len : N) % size : 0
+  ///
   ///     C::f<...xs[n:], ...xs[:n]>
   ///   \endcode
   /// \treturn \sequence

@@ -31,16 +31,7 @@ namespace jln::mp
 
   /// \ingroup algorithm
 
-  /// Folds left over a list using a mulary predicate.
-  /// fold_left_xs consideres the first element in the input pack as the state,
-  /// use \c push_front<> to add state if needed.
-  /// \semantics
-  ///   Equivalent to
-  ///   \code
-  ///   F::f<... F::f<xs[0], xs[1], ..., xs[n-1]>, xs[2], ..., xs[n-1]>, ..., xs[n-1]>, ...>
-  ///   \endcode
-  /// \treturn \value
-  /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
+  /// As \c fold_left_xs, but stop searching at position \c OffsetEnd.
   template<int_ OffsetEnd, class F, class C = identity>
   struct partial_fold_left_xs_c
   {
@@ -57,6 +48,16 @@ namespace jln::mp
   template<class OffsetEnd, class F, class C = identity>
   using partial_fold_left_xs = partial_fold_left_xs_c<OffsetEnd::value, F, C>;
 
+  /// Folds left over a list using a mulary predicate.
+  /// The first element in the input pack as the state,
+  /// use \c push_front<> to add state if needed.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   F::f<... F::f<xs[0], xs[1], ..., xs[n-1]>, xs[2], ..., xs[n-1]>, ..., xs[n-1]>, ...>
+  ///   \endcode
+  /// \treturn \value
+  /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
 #ifdef JLN_MP_DOXYGENATING
   template<class F, class C = identity>
   using fold_left_xs = partial_fold_left_xs_c<-1, F, C>;

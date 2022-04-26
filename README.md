@@ -87,6 +87,8 @@ jln::mp::call<to_tuple<>, int, double> == std::tuple<int, double>
 - Meta-function: a template class `template<class...> class M`.
 - Lazy meta-function: a meta-function with a `type` member.
 - `C`: Continuation function. Represents the function used to chain calls, typically `listify` or `identity`.
+- `TC`: True Continuation function. Represents a continuation used when something is found.
+- `FC`: False Continuation function. Represents a continuation used when something is not found.
 - `_v` suffix: `C::f` takes values. Usually `C::f<jln::mp::int_...>` (C++17) or `C::f<auto...>` (C++20).
 - `_c` suffix: number type parameters are `jln::mp::int_`. Usually `foo_c<int_ i> = foo<number<i>>`.
 

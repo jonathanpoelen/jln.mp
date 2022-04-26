@@ -15,13 +15,13 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks whether no \values are identical.
-  /// \treturn \number
+  /// \treturn \bool
   template<class C = identity>
   using is_unique = typename detail::mk_is_unique<lift<std::is_same>, C>::type;
 
   /// Checks whether no \values are identical.
   /// The search stops at the first value which is not unique.
-  /// \treturn \number
+  /// \treturn \bool
   template<class Cmp = lift<std::is_same>, class C = identity>
   using is_unique_if = typename detail::mk_is_unique<Cmp, C>::type;
 

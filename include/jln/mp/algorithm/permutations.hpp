@@ -19,7 +19,7 @@ namespace jln::mp
   /// \ingroup group
 
   /// Generates all permutations of \sequence.
-  /// \post sizeof...(result) == sizeof...(xs)!
+  /// \post `sizeof...(result)` == `sizeof...(xs)!`
   /// \treturn \sequence of \list
   template<class C = listify>
   struct permutations

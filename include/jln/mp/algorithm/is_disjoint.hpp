@@ -20,7 +20,7 @@ namespace jln::mp
 
   /// Checks whether \value in `seqs[0]` are disjoint from the \value in `seqs[1:]`.
   /// Returns `mp::true_` when `sizeof...(seqs) < 2`
-  /// \treturn \number
+  /// \treturn \bool
   /// \see is_disjoint, is_subset, is_subset_with
   template<class Equal = lift<std::is_same>, class C = identity>
   struct is_disjoint_with
@@ -33,7 +33,7 @@ namespace jln::mp
 
   /// Checks whether \value in `seqs[0]` are disjoint from the \value in `seqs[1:]`.
   /// Returns `mp::true_` when `sizeof...(seqs) < 2`
-  /// \treturn \number
+  /// \treturn \bool
   /// \see is_disjoint_with, is_subset, is_subset_with
   template<class C = identity>
   using is_disjoint = is_disjoint_with<lift<std::is_same>, C>;

@@ -9,7 +9,7 @@ namespace jln::mp
 
   /// Always evaluate at an arbitrary value.
   /// \post result = x
-  /// \treturn value
+  /// \treturn \value
   template<class x, class C = identity>
   struct always
   {

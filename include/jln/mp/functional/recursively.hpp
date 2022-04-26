@@ -72,7 +72,7 @@ namespace jln::mp
     >::template f<F, C>;
   };
 
-  /// Same than \c recursively, but with listify as continuation.
+  /// Same than \c recursively, but with listify as default continuation.
   /// \treturn \sequence
   /// \see recursively
   template<class F, class C = listify>
@@ -96,7 +96,7 @@ namespace jln::mp
     >::template f<F, C>;
   };
 
-  /// Same than \c recursively_as_much_as_possible, but with listify as continuation.
+  /// Same than \c recursively_as_much_as_possible, but with listify as default continuation.
   /// \treturn \value
   /// \see recursively_as_much_as_possible
   template<class F, class C = listify>

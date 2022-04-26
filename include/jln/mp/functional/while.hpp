@@ -15,7 +15,7 @@ namespace jln::mp
 
   /// Apply a function while some \predicate is satisfied.
   /// \treturn \value
-  /// \see while
+  /// \see while_
   template<class Pred, class F, class C = listify>
   using while_xs = recursively<if_<Pred, F, stop_recursion>, C>;
 

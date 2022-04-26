@@ -47,7 +47,7 @@ namespace jln::mp
   template<>
   struct wrap_in_list_c<false>
   {
-    template<class>
+    template<class... xs>
     using f = list<>;
   };
 

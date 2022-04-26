@@ -34,7 +34,7 @@ namespace jln::mp
   template<class C, class... xs>
   using memoize_call = typename detail::memoizer_impl<C, list<xs...>>::type;
 
-  /// Memoize a call to C::f<xs...>.
+  /// Memoize a call to \c C::f<xs...>.
   template<class C>
   struct memoize
   {

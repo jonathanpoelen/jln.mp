@@ -7,9 +7,9 @@ namespace jln::mp
   /// \ingroup group
 
   /// Groups adjacent elements by adjacent keys.
-  /// \semantics
   /// \pre `emp::is_list<Keys>` == `true`
   /// \pre `emp::size<Keys>` == `sizeof...(xs)`
+  /// \semantics
   ///   \code
   ///   collapse<emp::numbers<1, 1, 0, 0, 0, 1, 2, 2>>
   ///   ::f<int, int, int, int, int, int, int, int>

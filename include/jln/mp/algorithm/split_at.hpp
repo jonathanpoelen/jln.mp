@@ -10,7 +10,7 @@ namespace jln::mp
   /// \ingroup group
 
   /// Splits a sequence at an arbitrary position.
-  /// \pre i >= 0 && i <= sizeof...(xs)
+  /// \pre `i >= 0 && i <= sizeof...(xs)`
   /// \treturn \sequence of two \values
   template<unsigned i, class SubC1 = listify, class SubC2 = SubC1, class C = listify>
   struct split_at2_with_c
@@ -29,7 +29,7 @@ namespace jln::mp
   using split_at_with = split_at2_with_c<i::value, F, F, C>;
 
   /// Splits a sequence at an arbitrary position.
-  /// \pre i >= 0 && i <= sizeof...(xs)
+  /// \pre `i >= 0 && i <= sizeof...(xs)`
   /// \treturn \sequence of two \lists
   template<unsigned i, class C = listify>
   using split_at_c = split_at2_with_c<i, listify, listify, C>;

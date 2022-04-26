@@ -15,25 +15,25 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Returns mismatching info of elements from two sequences.
-  /// Uses \c C when a element mismatch and \c NC when one of
+  /// Uses \c TC when a element mismatch and \c FC when one of
   /// the sequences equals the start of the other.
   /// \semantics
-  ///   `NC::f<number<-1>, number<emp::size<seq1>>>` if \c seq1 == \c seq2.
-  ///   `NC::f<number<i>, number<-1>>` if \c seq2 starts with \c seq1.
-  ///   `NC::f<number<i>, number<1>>` if \c seq1 starts with \c seq2.
-  ///   otherwise `C::f<number<i>, number<0>>`.
+  ///   `FC::f<number<-1>, number<emp::size<seq1>>>` if \c seq1 == \c seq2.
+  ///   `FC::f<number<i>, number<-1>>` if \c seq2 starts with \c seq1.
+  ///   `FC::f<number<i>, number<1>>` if \c seq1 starts with \c seq2.
+  ///   otherwise `TC::f<number<i>, number<0>>`.
   /// \treturn pair or \number
-  template<class Cmp = equal<>, class C = listify, class NC = C>
+  template<class Cmp = equal<>, class TC = listify, class FC = TC>
   struct mismatch
   {
     template<class seq1, class seq2>
-    using f = typename detail::_mismatch<seq1, seq2>::template f<JLN_MP_TRACE_F(Cmp), C, NC>;
+    using f = typename detail::_mismatch<seq1, seq2>::template f<JLN_MP_TRACE_F(Cmp), TC, FC>;
   };
 
   namespace emp
   {
-    template<class seq1, class seq2, class Cmp = mp::equal<>, class C = mp::listify, class NC = C>
-    using mismatch = typename mismatch<Cmp, C, NC>::template f<seq1, seq2>;
+    template<class seq1, class seq2, class Cmp = mp::equal<>, class TC = mp::listify, class FC = TC>
+    using mismatch = typename mismatch<Cmp, TC, FC>::template f<seq1, seq2>;
   }
 }
 
@@ -189,32 +189,32 @@ namespace jln::mp::detail
     template<class i, class n>
     struct apply_index
     {
-      template<class C, class NC, class, class>
+      template<class C, class FC, class, class>
       using f = JLN_MP_CALL_TRACE(C, i, number<0>);
     };
 
     template<class n>
     struct apply_index<n, n>
     {
-      template<class C, class NC, class i, class r>
-      using f = JLN_MP_CALL_TRACE(NC, i, r);
+      template<class C, class FC, class i, class r>
+      using f = JLN_MP_CALL_TRACE(FC, i, r);
     };
 
     template<bool, bool>
     struct impl
     {
-      template<class Cmp, class C, class NC>
+      template<class Cmp, class C, class FC>
       using f = typename apply_index<
         typename _mismatch_tree<Cmp, sizeof...(xs)>::type
         ::template f<xs..., ys...>,
         number<sizeof...(xs)>
-      >::template f<C, NC, number<-1>, number<sizeof...(xs)>>;
+      >::template f<C, FC, number<-1>, number<sizeof...(xs)>>;
     };
 
     template<bool b>
     struct impl<true, b>
     {
-      template<class Cmp, class C, class NC>
+      template<class Cmp, class C, class FC>
       using f = typename apply_index<
         // take_front
         typename detail::rotate_impl<!sizeof(Cmp*) + sizeof...(xs) * 2>
@@ -225,13 +225,13 @@ namespace jln::mp::detail
             typename _mismatch_tree<Cmp, sizeof...(xs)>::type>,
           xs..., ys...>,
         number<sizeof...(xs)>
-      >::template f<C, NC, number<sizeof...(xs)>, number<-1>>;
+      >::template f<C, FC, number<sizeof...(xs)>, number<-1>>;
     };
 
     template<bool b>
     struct impl<b, true>
     {
-      template<class Cmp, class C, class NC>
+      template<class Cmp, class C, class FC>
       using f = typename apply_index<
         // take_front
         typename detail::rotate_impl<!sizeof(Cmp*) + sizeof...(ys) * 2>
@@ -242,14 +242,14 @@ namespace jln::mp::detail
             typename _mismatch_tree<Cmp, sizeof...(ys)>::type>,
           ys..., xs...>,
         number<sizeof...(ys)>
-      >::template f<C, NC, number<sizeof...(ys)>, number<1>>;
+      >::template f<C, FC, number<sizeof...(ys)>, number<1>>;
     };
 
-    template<class Cmp, class C, class NC>
+    template<class Cmp, class C, class FC>
     using f = typename impl<
       (sizeof...(xs) < sizeof...(ys)),
       (sizeof...(ys) < sizeof...(xs))
-    >::template f<Cmp, C, NC>;
+    >::template f<Cmp, C, FC>;
   };
 
   template<
@@ -257,8 +257,8 @@ namespace jln::mp::detail
     template<class...> class Tys, class... ys>
   struct _mismatch<Txs<>, Tys<ys...>>
   {
-    template<class Cmp, class C, class NC>
-    using f = JLN_MP_CALL_TRACE(NC, number<0>, number<-1>);
+    template<class Cmp, class C, class FC>
+    using f = JLN_MP_CALL_TRACE(FC, number<0>, number<-1>);
   };
 
   template<
@@ -266,15 +266,15 @@ namespace jln::mp::detail
     template<class...> class Tys>
   struct _mismatch<Txs<xs...>, Tys<>>
   {
-    template<class Cmp, class C, class NC>
-    using f = JLN_MP_CALL_TRACE(NC, number<0>, number<1>);
+    template<class Cmp, class C, class FC>
+    using f = JLN_MP_CALL_TRACE(FC, number<0>, number<1>);
   };
 
   template<template<class...> class Txs, template<class...> class Tys>
   struct _mismatch<Txs<>, Tys<>>
   {
-    template<class Cmp, class C, class NC>
-    using f = JLN_MP_CALL_TRACE(NC, number<-1>, number<0>);
+    template<class Cmp, class C, class FC>
+    using f = JLN_MP_CALL_TRACE(FC, number<-1>, number<0>);
   };
 }
 /// \endcond

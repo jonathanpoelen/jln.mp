@@ -8,7 +8,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Checks whether a sequence has no elements.
-  /// \treturn \number
+  /// \treturn \bool
   template<class C = identity>
   using is_empty = size<not_<C>>;
 

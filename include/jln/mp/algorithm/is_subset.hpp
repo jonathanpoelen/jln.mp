@@ -16,7 +16,7 @@ namespace jln::mp
 
   /// Checks whether \value in `seqs[0]` are subset from the \value in `seqs[1:]`.
   /// Returns `mp::true_` when `sizeof...(seqs) < 2`
-  /// \treturn \number
+  /// \treturn \bool
   /// \see is_subset
   template<class Equal = lift<std::is_same>, class C = identity>
   struct is_subset_with
@@ -30,7 +30,7 @@ namespace jln::mp
 
   /// Checks whether \value in `seqs[0]` are subset from the \value in `seqs[1:]`.
   /// Returns `mp::true_` when `sizeof...(seqs) < 2`
-  /// \treturn \number
+  /// \treturn \bool
   /// \see is_subset_with
   template<class C = identity>
   using is_subset = is_subset_with<lift<std::is_same>, C>;

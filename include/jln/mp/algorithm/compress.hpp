@@ -10,7 +10,7 @@ namespace jln::mp
 
   /// Removes elements that have a corresponding element in selectors to 0.
   /// \pre `emp::unpack<Selectors, listify> == Selectors`
-  /// \pre all Selectors::value are 1, 0 or a bool type
+  /// \pre all `Selectors::value` are `1`, `0` or a `bool` value
   /// \pre `sizeof...(xs) == emp::size<Selectors>`
   /// \semantics
   ///   \code

@@ -86,9 +86,6 @@ namespace jln::mp
     #undef JLN_MP_RANDOM_SEED_W
     #undef JLN_MP_RANDOM_SEED_TIME
 
-    template<class>
-    struct tagged;
-
     /// \pre id >= 1
     /// \pre random_for_id<id-1>() must have been called
     template <int id>
@@ -102,29 +99,31 @@ namespace jln::mp
       return (z << 16) + w;
     }
 
-    template <class Tag = random_data, auto v = []{}>
+    template <auto v = []{}>
     JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned next_random()
     {
-      return random_for_id<next_id<tagged<Tag>, 1, v>()>();
+      return random_for_id<next_id<random_data, 1, v>()>();
     }
   }
   /// \endcond
 
+  /// Generates a unique id per call for a specified tag.
+  /// Signature: `unsigned next_random<auto = []{}>()`
   using detail::rand::next_random;
 
   namespace emp
   {
     template<auto v = []{}>
-    using random = number<next_random<detail::rand::random_data, v>()>;
+    using random = number<next_random<v>()>;
 
     template<auto v = []{}>
-    static constexpr unsigned random_v = next_random<detail::rand::random_data, v>();
+    static constexpr unsigned random_v = next_random<v>();
   }
 
   /// Generate a random number.
-  /// The seed can be configured with JLN_MP_RANDOM_SEED_TIME
-  /// or JLN_MP_RANDOM_SEED_W and JLN_MP_RANDOM_SEED_Z
-  /// \treturn number
+  /// The seed can be configured with `JLN_MP_RANDOM_SEED_TIME`
+  /// or `JLN_MP_RANDOM_SEED_W` and `JLN_MP_RANDOM_SEED_Z`
+  /// \treturn \number
   template<class C = identity, auto = []{}>
   struct random
   #ifdef JLN_MP_DOXYGENATING
@@ -140,7 +139,7 @@ namespace jln::mp
   namespace detail
   {
     template<std::size_t, auto v = []{}>
-    using random_impl = number<next_random<detail::rand::random_data, v>()>;
+    using random_impl = number<next_random<v>()>;
   }
 
   template<class C, auto>
@@ -161,14 +160,14 @@ namespace jln::mp
   struct random
   {
     template<class...>
-    using f = JLN_MP_CALL_TRACE(C, number<next_random<detail::rand::random_data, []{}>()>);
+    using f = JLN_MP_CALL_TRACE(C, number<next_random<[]{}>()>);
   };
 
   template<auto v>
   struct random<identity, v>
   {
     template<class...>
-    using f = number<next_random<detail::rand::random_data, []{}>()>;
+    using f = number<next_random<[]{}>()>;
   };
 #endif
 /// \endcond

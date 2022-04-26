@@ -98,9 +98,12 @@ namespace jln::mp
   }
   /// \endcond
 
+  /// Generates a unique id per call for a specified tag.
+  /// Signature: `int next_id<class Tag = default_make_id_tag, start_id = 0, auto = []{}>()`
   using detail::mkid::next_id;
 
   /// Generates a unique id per type.
+  /// \treturn int
   template<class T>
   struct id_of
   {
@@ -115,6 +118,7 @@ namespace jln::mp
 
 
   /// Generates a unique id per type for a specified tag.
+  /// \treturn int
   template<class Tag, class T>
   struct tagged_id_of
   {

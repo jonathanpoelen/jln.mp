@@ -11,7 +11,7 @@ namespace jln::mp
   /// Conjunction is short-circuiting: if there is a template type
   /// argument `xs[i]` with `bool(Xi::value) == false`, then instantiating
   /// `conjunction<C>::f<xs[0], ..., xs[n-1]>` does not require the
-  /// instantiation of `xs[j]::value` for j > i
+  /// instantiation of `xs[j]::value` for `j > i`
   /// \treturn \bool
   /// \see disjunction, drop_while, take_while
   template<class C = identity>

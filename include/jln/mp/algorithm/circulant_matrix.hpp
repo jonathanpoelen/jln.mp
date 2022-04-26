@@ -19,7 +19,7 @@ namespace jln::mp
   /// square matrix in which all row vectors are composed of the
   /// same elements and each row vector is rotated one element to
   /// the right relative to the preceding row vector.
-  /// \semcs
+  /// \semantics
   ///   \code
   ///   circulant_matrix_with<>::f<a, b, c, d>
   ///   == list<

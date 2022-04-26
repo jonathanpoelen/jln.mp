@@ -9,6 +9,8 @@
 
 namespace jln::mp
 {
+  /// Value that is not available.
+  /// This value is used in `smp` for a contract that is not respected.
   struct na {};
 
   using is_na = is<na>;
@@ -27,17 +29,11 @@ namespace jln::mp
 
   /// \ingroup functional
 
-  /// Invokes \c TC::f<result> whetehr \c F::f<xs...> is a valid expression
+  /// Invokes \c TC::f<result> whether \c FC::f<xs...> is a valid expression
   /// other than \c na, otherwhise invokes \c FC::f<xs...>.
   /// \pre \c F::f<xs...> must be a SFINAE compatible expression
   /// \treturn \value
   template<class F, class TC = identity, class FC = violation>
-  struct try_;
-
-  template<class F, class FC>
-  using try_or = try_<F, identity, FC>;
-
-  template<class F, class TC, class FC>
   struct try_
   {
     template<class... xs>
@@ -45,6 +41,9 @@ namespace jln::mp
       typename detail::_try_impl<F, list<xs...>>::type
     >::template f<TC, FC, xs...>;
   };
+
+  template<class F, class FC>
+  using try_or = try_<F, identity, FC>;
 
   namespace emp
   {
