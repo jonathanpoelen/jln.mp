@@ -38,6 +38,7 @@ local kw = {
   'namespace',
   'struct',
   'using',
+  'static_constexpr',
   'comment',
 }
 local kwindexes = {}
@@ -298,7 +299,7 @@ local tparam = Ct(
   (C('template' * balancedtag) + Cc(nil)) * ws0
   * C(id * balancedtag^-1 * (ws0 * blockComment)^-1)
   * ws0 * C(P'...'^-1) * ws0 * (cid + Cc(nil)) * ws0
-  * ('=' * ws0 * C(id * ws0 * balancedtag^-1))^-1)
+  * ('=' * ws0 * C('[]{}' + id * ws0 * balancedtag^-1))^-1)
 local tparams = Ct('<' * List(ws0 * tparam, ',') * '>')
 local template = 'template' * ws0 * tparams
 -- local template = C('template' * ws0 * balancedtag)
@@ -350,6 +351,14 @@ local pattern = P{
                 )
             )
         + 'using ' * Cc(kwindexes.using) * cid * ws0 * '='
+          * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
+        -- using name;
+        + 'using ' * Cc(kwindexes.using) * (id / function(name)
+            local i = name:find(':[a-zA-Z0-9_]+$')
+            return i and name:sub(i+1) or name
+          end) * ';'
+          * Cc(nil) * Cc(nil) * Cc(nil) * Cc(nil)
+        + 'static constexpr ' * Cc(kwindexes.static_constexpr) * id * ws * cid * ws0 * '='
           * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
         ) / f_type
     + 'namespace '
@@ -432,7 +441,7 @@ htmlifier_init = function()
         + 'decltype' + 'sizeof' + 'auto' + 'static_assert'
         + 'constexpr' + 'return' + 'namespace'
         ) / mk_tag'k'
-      + ( P'void' + 'int' + 'unsigned' + 'long' + 'char' + 'short'
+      + ( P'void' + 'int' + 'unsigned' + 'long' + 'bool' + 'char' + 'short'
         + 'double' + 'float'
         ) / mk_tag'kt'
       + (P'true' + 'false') / mk_tag'nb'
@@ -669,6 +678,7 @@ end
 
 i_struct = kwindexes.struct
 i_using = kwindexes.using
+i_static_constexpr = kwindexes.static_constexpr
 i_desc = kwindexes.desc
 i_see = kwindexes.see
 i_treturn = kwindexes.treturn
@@ -728,7 +738,7 @@ for name,g in pairs(groups) do
         table.insert(extra_doc[d[1]], htmlify:match(d[2]))
       elseif d.i == i_desc then
         short_desc, long_desc = splitShortAndLongDesc:match(htmlify:match(d[1]))
-      elseif d.i == i_using or d.i == i_struct then
+      elseif d.i == i_using or d.i == i_struct or d.i == i_static_constexpr then
         types[#types+1] = d
         if d.namespace == '' then
           ttypes[#ttypes+1] = d
