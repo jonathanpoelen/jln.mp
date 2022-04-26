@@ -303,7 +303,7 @@ namespace jln::mp
   template<class C, class... xs>
   using memoize_call = typename detail::memoizer_impl<C, list<xs...>>::type;
 
-  /// Memoize a call to C::f<xs...>.
+  /// Memoize a call to \c C::f<xs...>.
   template<class C>
   struct memoize
   {
@@ -1299,7 +1299,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Folds left over a list using a binary predicate.
-  /// fold_left consideres the first element in the input pack as the state,
+  /// The first element in the input pack as the state,
   /// use \c push_front<> to add state if needed.
   /// \semantics
   ///   Equivalent to
@@ -1883,13 +1883,9 @@ namespace jln::mp
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///     n = 0
   ///     len = sizeof...(xs)
-  ///     if (len) {
-  ///       n = N::value
-  ///       if (n < 0) n = len + (n % len)
-  ///       n = n % len
-  ///     }
+  ///     n = len ? (N < 0 ? len + N % len : N) % size : 0
+  ///
   ///     C::f<...xs[n:], ...xs[:n]>
   ///   \endcode
   /// \treturn \sequence
@@ -2232,7 +2228,7 @@ namespace jln::mp
 
   /// Always evaluate at an arbitrary value.
   /// \post result = x
-  /// \treturn value
+  /// \treturn \value
   template<class x, class C = identity>
   struct always
   {
@@ -3517,7 +3513,7 @@ namespace jln::mp
   template<>
   struct wrap_in_list_c<false>
   {
-    template<class>
+    template<class... xs>
     using f = list<>;
   };
 
@@ -6349,7 +6345,7 @@ namespace jln::mp
   /// square matrix in which all row vectors are composed of the
   /// same elements and each row vector is rotated one element to
   /// the right relative to the preceding row vector.
-  /// \semcs
+  /// \semantics
   ///   \code
   ///   circulant_matrix_with<>::f<a, b, c, d>
   ///   == list<
@@ -6401,6 +6397,8 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp
 {
+  /// Value that is not available.
+  /// This value is used in `smp` for a contract that is not respected.
   struct na {};
 
   using is_na = is<na>;
@@ -6419,17 +6417,11 @@ namespace jln::mp
 
   /// \ingroup functional
 
-  /// Invokes \c TC::f<result> whetehr \c F::f<xs...> is a valid expression
+  /// Invokes \c TC::f<result> whether \c FC::f<xs...> is a valid expression
   /// other than \c na, otherwhise invokes \c FC::f<xs...>.
   /// \pre \c F::f<xs...> must be a SFINAE compatible expression
   /// \treturn \value
   template<class F, class TC = identity, class FC = violation>
-  struct try_;
-
-  template<class F, class FC>
-  using try_or = try_<F, identity, FC>;
-
-  template<class F, class TC, class FC>
   struct try_
   {
     template<class... xs>
@@ -6437,6 +6429,9 @@ namespace jln::mp
       typename detail::_try_impl<F, list<xs...>>::type
     >::template f<TC, FC, xs...>;
   };
+
+  template<class F, class FC>
+  using try_or = try_<F, identity, FC>;
 
   namespace emp
   {
@@ -6619,7 +6614,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Folds right over a list using a binary predicate.
-  /// fold_right consideres the first element in the input pack as the state,
+  /// The first element in the input pack as the state,
   /// use \c push_front<> to add state if needed.
   /// \semantics
   ///   Equivalent to
@@ -6882,9 +6877,9 @@ namespace jln::mp
   /// \ingroup group
 
   /// Groups adjacent elements by adjacent keys.
-  /// \semantics
   /// \pre `emp::is_list<Keys>` == `true`
   /// \pre `emp::size<Keys>` == `sizeof...(xs)`
+  /// \semantics
   ///   \code
   ///   collapse<emp::numbers<1, 1, 0, 0, 0, 1, 2, 2>>
   ///   ::f<int, int, int, int, int, int, int, int>
@@ -7076,7 +7071,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Returns a \sequence that contains a \number of copies of the same \sequence.
-  /// \pre N >= 0
+  /// \pre `N >= 0`
   /// \treturn \sequence
   template<unsigned N, class C = listify>
   struct repeat_c
@@ -7258,7 +7253,7 @@ namespace jln::mp
 
   /// Removes elements that have a corresponding element in selectors to 0.
   /// \pre `emp::unpack<Selectors, listify> == Selectors`
-  /// \pre all Selectors::value are 1, 0 or a bool type
+  /// \pre all `Selectors::value` are `1`, `0` or a `bool` value
   /// \pre `sizeof...(xs) == emp::size<Selectors>`
   /// \semantics
   ///   \code
@@ -7306,7 +7301,7 @@ namespace jln::mp
   /// Conjunction is short-circuiting: if there is a template type
   /// argument `xs[i]` with `bool(Xi::value) == false`, then instantiating
   /// `conjunction<C>::f<xs[0], ..., xs[n-1]>` does not require the
-  /// instantiation of `xs[j]::value` for j > i
+  /// instantiation of `xs[j]::value` for `j > i`
   /// \treturn \bool
   /// \see disjunction, drop_while, take_while
   template<class C = identity>
@@ -7955,7 +7950,7 @@ namespace jln::mp
   /// Disjunction is short-circuiting: if there is a template type
   /// argument `xs[i]` with `bool(xs[i]::value) != false`, then instantiating
   /// `disjunction<C>::f<xs[0], ..., xs[n-1]>` does not require the
-  /// instantiation of `xs[j]::value` for j > i
+  /// instantiation of `xs[j]::value` for `j > i`
   /// \treturn \bool
   /// \see conjunction, drop_while, take_while
   template<class C = identity>
@@ -8272,7 +8267,7 @@ namespace jln::mp
     >::template f<F, C>;
   };
 
-  /// Same than \c recursively, but with listify as continuation.
+  /// Same than \c recursively, but with listify as default continuation.
   /// \treturn \sequence
   /// \see recursively
   template<class F, class C = listify>
@@ -8296,7 +8291,7 @@ namespace jln::mp
     >::template f<F, C>;
   };
 
-  /// Same than \c recursively_as_much_as_possible, but with listify as continuation.
+  /// Same than \c recursively_as_much_as_possible, but with listify as default continuation.
   /// \treturn \value
   /// \see recursively_as_much_as_possible
   template<class F, class C = listify>
@@ -8763,16 +8758,7 @@ namespace jln::mp
 
   /// \ingroup algorithm
 
-  /// Folds left over a list using a mulary predicate.
-  /// fold_left_xs consideres the first element in the input pack as the state,
-  /// use \c push_front<> to add state if needed.
-  /// \semantics
-  ///   Equivalent to
-  ///   \code
-  ///   F::f<... F::f<xs[0], xs[1], ..., xs[n-1]>, xs[2], ..., xs[n-1]>, ..., xs[n-1]>, ...>
-  ///   \endcode
-  /// \treturn \value
-  /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
+  /// As \c fold_left_xs, but stop searching at position \c OffsetEnd.
   template<int_ OffsetEnd, class F, class C = identity>
   struct partial_fold_left_xs_c
   {
@@ -8789,6 +8775,16 @@ namespace jln::mp
   template<class OffsetEnd, class F, class C = identity>
   using partial_fold_left_xs = partial_fold_left_xs_c<OffsetEnd::value, F, C>;
 
+  /// Folds left over a list using a mulary predicate.
+  /// The first element in the input pack as the state,
+  /// use \c push_front<> to add state if needed.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   F::f<... F::f<xs[0], xs[1], ..., xs[n-1]>, xs[2], ..., xs[n-1]>, ..., xs[n-1]>, ...>
+  ///   \endcode
+  /// \treturn \value
+  /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
 #ifdef JLN_MP_DOXYGENATING
   template<class F, class C = identity>
   using fold_left_xs = partial_fold_left_xs_c<-1, F, C>;
@@ -9591,7 +9587,7 @@ namespace jln::mp
 
   /// Checks whether \value in `seqs[0]` are disjoint from the \value in `seqs[1:]`.
   /// Returns `mp::true_` when `sizeof...(seqs) < 2`
-  /// \treturn \number
+  /// \treturn \bool
   /// \see is_disjoint, is_subset, is_subset_with
   template<class Equal = lift<std::is_same>, class C = identity>
   struct is_disjoint_with
@@ -9604,7 +9600,7 @@ namespace jln::mp
 
   /// Checks whether \value in `seqs[0]` are disjoint from the \value in `seqs[1:]`.
   /// Returns `mp::true_` when `sizeof...(seqs) < 2`
-  /// \treturn \number
+  /// \treturn \bool
   /// \see is_disjoint_with, is_subset, is_subset_with
   template<class C = identity>
   using is_disjoint = is_disjoint_with<lift<std::is_same>, C>;
@@ -9718,8 +9714,8 @@ namespace jln::mp
 
   /// \ingroup algorithm
 
-  /// Checks wheteher a \sequence is sorted.
-  /// \treturn \number
+  /// Checks whether a \sequence is sorted.
+  /// \treturn \bool
   template<class Cmp = less<>, class C = identity>
   struct is_sorted
   {
@@ -9891,7 +9887,7 @@ namespace jln::mp
 
   /// Checks whether \value in `seqs[0]` are subset from the \value in `seqs[1:]`.
   /// Returns `mp::true_` when `sizeof...(seqs) < 2`
-  /// \treturn \number
+  /// \treturn \bool
   /// \see is_subset
   template<class Equal = lift<std::is_same>, class C = identity>
   struct is_subset_with
@@ -9905,7 +9901,7 @@ namespace jln::mp
 
   /// Checks whether \value in `seqs[0]` are subset from the \value in `seqs[1:]`.
   /// Returns `mp::true_` when `sizeof...(seqs) < 2`
-  /// \treturn \number
+  /// \treturn \bool
   /// \see is_subset_with
   template<class C = identity>
   using is_subset = is_subset_with<lift<std::is_same>, C>;
@@ -9938,7 +9934,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Checks whether a sequence has no elements.
-  /// \treturn \number
+  /// \treturn \bool
   template<class C = identity>
   using is_empty = size<not_<C>>;
 
@@ -10022,13 +10018,13 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks whether no \values are identical.
-  /// \treturn \number
+  /// \treturn \bool
   template<class C = identity>
   using is_unique = typename detail::mk_is_unique<lift<std::is_same>, C>::type;
 
   /// Checks whether no \values are identical.
   /// The search stops at the first value which is not unique.
-  /// \treturn \number
+  /// \treturn \bool
   template<class Cmp = lift<std::is_same>, class C = identity>
   using is_unique_if = typename detail::mk_is_unique<Cmp, C>::type;
 
@@ -10132,25 +10128,25 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Returns mismatching info of elements from two sequences.
-  /// Uses \c C when a element mismatch and \c NC when one of
+  /// Uses \c TC when a element mismatch and \c FC when one of
   /// the sequences equals the start of the other.
   /// \semantics
-  ///   `NC::f<number<-1>, number<emp::size<seq1>>>` if \c seq1 == \c seq2.
-  ///   `NC::f<number<i>, number<-1>>` if \c seq2 starts with \c seq1.
-  ///   `NC::f<number<i>, number<1>>` if \c seq1 starts with \c seq2.
-  ///   otherwise `C::f<number<i>, number<0>>`.
+  ///   `FC::f<number<-1>, number<emp::size<seq1>>>` if \c seq1 == \c seq2.
+  ///   `FC::f<number<i>, number<-1>>` if \c seq2 starts with \c seq1.
+  ///   `FC::f<number<i>, number<1>>` if \c seq1 starts with \c seq2.
+  ///   otherwise `TC::f<number<i>, number<0>>`.
   /// \treturn pair or \number
-  template<class Cmp = equal<>, class C = listify, class NC = C>
+  template<class Cmp = equal<>, class TC = listify, class FC = TC>
   struct mismatch
   {
     template<class seq1, class seq2>
-    using f = typename detail::_mismatch<seq1, seq2>::template f<JLN_MP_TRACE_F(Cmp), C, NC>;
+    using f = typename detail::_mismatch<seq1, seq2>::template f<JLN_MP_TRACE_F(Cmp), TC, FC>;
   };
 
   namespace emp
   {
-    template<class seq1, class seq2, class Cmp = mp::equal<>, class C = mp::listify, class NC = C>
-    using mismatch = typename mismatch<Cmp, C, NC>::template f<seq1, seq2>;
+    template<class seq1, class seq2, class Cmp = mp::equal<>, class TC = mp::listify, class FC = TC>
+    using mismatch = typename mismatch<Cmp, TC, FC>::template f<seq1, seq2>;
   }
 }
 
@@ -10303,32 +10299,32 @@ namespace jln::mp::detail
     template<class i, class n>
     struct apply_index
     {
-      template<class C, class NC, class, class>
+      template<class C, class FC, class, class>
       using f = JLN_MP_CALL_TRACE(C, i, number<0>);
     };
 
     template<class n>
     struct apply_index<n, n>
     {
-      template<class C, class NC, class i, class r>
-      using f = JLN_MP_CALL_TRACE(NC, i, r);
+      template<class C, class FC, class i, class r>
+      using f = JLN_MP_CALL_TRACE(FC, i, r);
     };
 
     template<bool, bool>
     struct impl
     {
-      template<class Cmp, class C, class NC>
+      template<class Cmp, class C, class FC>
       using f = typename apply_index<
         typename _mismatch_tree<Cmp, sizeof...(xs)>::type
         ::template f<xs..., ys...>,
         number<sizeof...(xs)>
-      >::template f<C, NC, number<-1>, number<sizeof...(xs)>>;
+      >::template f<C, FC, number<-1>, number<sizeof...(xs)>>;
     };
 
     template<bool b>
     struct impl<true, b>
     {
-      template<class Cmp, class C, class NC>
+      template<class Cmp, class C, class FC>
       using f = typename apply_index<
         // take_front
         typename detail::rotate_impl<!sizeof(Cmp*) + sizeof...(xs) * 2>
@@ -10339,13 +10335,13 @@ namespace jln::mp::detail
             typename _mismatch_tree<Cmp, sizeof...(xs)>::type>,
           xs..., ys...>,
         number<sizeof...(xs)>
-      >::template f<C, NC, number<sizeof...(xs)>, number<-1>>;
+      >::template f<C, FC, number<sizeof...(xs)>, number<-1>>;
     };
 
     template<bool b>
     struct impl<b, true>
     {
-      template<class Cmp, class C, class NC>
+      template<class Cmp, class C, class FC>
       using f = typename apply_index<
         // take_front
         typename detail::rotate_impl<!sizeof(Cmp*) + sizeof...(ys) * 2>
@@ -10356,14 +10352,14 @@ namespace jln::mp::detail
             typename _mismatch_tree<Cmp, sizeof...(ys)>::type>,
           ys..., xs...>,
         number<sizeof...(ys)>
-      >::template f<C, NC, number<sizeof...(ys)>, number<1>>;
+      >::template f<C, FC, number<sizeof...(ys)>, number<1>>;
     };
 
-    template<class Cmp, class C, class NC>
+    template<class Cmp, class C, class FC>
     using f = typename impl<
       (sizeof...(xs) < sizeof...(ys)),
       (sizeof...(ys) < sizeof...(xs))
-    >::template f<Cmp, C, NC>;
+    >::template f<Cmp, C, FC>;
   };
 
   template<
@@ -10371,8 +10367,8 @@ namespace jln::mp::detail
     template<class...> class Tys, class... ys>
   struct _mismatch<Txs<>, Tys<ys...>>
   {
-    template<class Cmp, class C, class NC>
-    using f = JLN_MP_CALL_TRACE(NC, number<0>, number<-1>);
+    template<class Cmp, class C, class FC>
+    using f = JLN_MP_CALL_TRACE(FC, number<0>, number<-1>);
   };
 
   template<
@@ -10380,15 +10376,15 @@ namespace jln::mp::detail
     template<class...> class Tys>
   struct _mismatch<Txs<xs...>, Tys<>>
   {
-    template<class Cmp, class C, class NC>
-    using f = JLN_MP_CALL_TRACE(NC, number<0>, number<1>);
+    template<class Cmp, class C, class FC>
+    using f = JLN_MP_CALL_TRACE(FC, number<0>, number<1>);
   };
 
   template<template<class...> class Txs, template<class...> class Tys>
   struct _mismatch<Txs<>, Tys<>>
   {
-    template<class Cmp, class C, class NC>
-    using f = JLN_MP_CALL_TRACE(NC, number<-1>, number<0>);
+    template<class Cmp, class C, class FC>
+    using f = JLN_MP_CALL_TRACE(FC, number<-1>, number<0>);
   };
 }
 /// \endcond
@@ -10642,11 +10638,11 @@ namespace jln::mp
   /// \ingroup search
 
   /// Finds first element that is not less than (i.e. greater or equal to) \c x.
-  /// Calls \c FC with all the elements since the one found at the end.
-  /// If no element is found, \c NFC is used.
+  /// Calls \c TC with all the elements since the one found at the end.
+  /// If no element is found, \c FC is used.
   /// \pre \c is_sorted<Cmp>::f<xs...>
   /// \treturn \sequence
-  template<class x, class Cmp = less<>, class C = listify, class NC = C>
+  template<class x, class Cmp = less<>, class TC = listify, class FC = TC>
   struct lower_bound
   {
     template<class... xs>
@@ -10655,31 +10651,31 @@ namespace jln::mp
     >::template f<
       sizeof...(xs),
       push_back<x, JLN_MP_TRACE_F(typename detail::optimize_cmp<Cmp>::type)>,
-      C, NC, xs...>;
+      TC, FC, xs...>;
   };
 
-  template<int_ x, class Cmp = less<>, class C = listify, class NC = C>
-  using lower_bound_c = lower_bound<number<x>, Cmp, C, NC>;
+  template<int_ x, class Cmp = less<>, class TC = listify, class FC = TC>
+  using lower_bound_c = lower_bound<number<x>, Cmp, TC, FC>;
 
-  template<class x, class C = listify, class NC = C>
-  using lower_bound_than = lower_bound<x, less<>, C, NC>;
+  template<class x, class TC = listify, class FC = TC>
+  using lower_bound_than = lower_bound<x, less<>, TC, FC>;
 
-  template<int_ x, class C = listify, class NC = C>
-  using lower_bound_than_c = lower_bound<number<x>, less<>, C, NC>;
+  template<int_ x, class TC = listify, class FC = TC>
+  using lower_bound_than_c = lower_bound<number<x>, less<>, TC, FC>;
 
   namespace emp
   {
-    template<class L, class x, class Cmp = mp::less<>, class C = mp::listify, class NC = C>
-    using lower_bound = unpack<L, mp::lower_bound<x, Cmp, C, NC>>;
+    template<class L, class x, class Cmp = mp::less<>, class TC = mp::listify, class FC = TC>
+    using lower_bound = unpack<L, mp::lower_bound<x, Cmp, TC, FC>>;
 
-    template<class L, int_ x, class Cmp = mp::less<>, class C = mp::listify, class NC = C>
-    using lower_bound_c = unpack<L, mp::lower_bound<mp::number<x>, Cmp, C, NC>>;
+    template<class L, int_ x, class Cmp = mp::less<>, class TC = mp::listify, class FC = TC>
+    using lower_bound_c = unpack<L, mp::lower_bound<mp::number<x>, Cmp, TC, FC>>;
 
-    template<class L, class x, class C = mp::listify, class NC = C>
-    using lower_bound_than = unpack<L, mp::lower_bound<x, mp::less<>, C, NC>>;
+    template<class L, class x, class TC = mp::listify, class FC = TC>
+    using lower_bound_than = unpack<L, mp::lower_bound<x, mp::less<>, TC, FC>>;
 
-    template<class L, int_ x, class C = mp::listify, class NC = C>
-    using lower_bound_than_c = unpack<L, mp::lower_bound<mp::number<x>, mp::less<>, C, NC>>;
+    template<class L, int_ x, class TC = mp::listify, class FC = TC>
+    using lower_bound_than_c = unpack<L, mp::lower_bound<mp::number<x>, mp::less<>, TC, FC>>;
   }
 }
 
@@ -10719,22 +10715,22 @@ namespace jln::mp::detail
   template<>
   struct _smp_conditional<na>
   {
-    template<class C, class NC>
+    template<class C, class FC>
     using f = violation;
   };
 
   template<>
   struct _smp_conditional<true_>
   {
-    template<class C, class NC>
+    template<class C, class FC>
     using f = C;
   };
 
   template<>
   struct _smp_conditional<false_>
   {
-    template<class C, class NC>
-    using f = NC;
+    template<class C, class FC>
+    using f = FC;
   };
 
   struct _lower_bound_violation2
@@ -10749,22 +10745,22 @@ namespace jln::mp::detail
   template<>
   struct _smp_conditional2<na>
   {
-    template<class C, class NC>
+    template<class C, class FC>
     using f = _lower_bound_violation2;
   };
 
   template<>
   struct _smp_conditional2<true_>
   {
-    template<class C, class NC>
+    template<class C, class FC>
     using f = C;
   };
 
   template<>
   struct _smp_conditional2<false_>
   {
-    template<class C, class NC>
-    using f = NC;
+    template<class C, class FC>
+    using f = FC;
   };
 
   constexpr int _lower_bound_select(unsigned n)
@@ -10786,26 +10782,26 @@ namespace jln::mp::detail
   template<>                                            \
   struct prefix##lower_bound<0>                         \
   {                                                     \
-    template<unsigned n, class Pred, class C, class NC, \
+    template<unsigned n, class Pred, class C, class FC, \
       class... xs>                                      \
-    using f = JLN_MP_CALL_TRACE_0_ARG(NC);              \
+    using f = JLN_MP_CALL_TRACE_0_ARG(FC);              \
   };                                                    \
                                                         \
   /* original size == 1 */                              \
   template<>                                            \
   struct prefix##lower_bound<-1>                        \
   {                                                     \
-    template<unsigned n, class Pred, class C, class NC, \
+    template<unsigned n, class Pred, class C, class FC, \
       class x>                                          \
     using f = JLN_MP_CALL_TRACE_T(JLN_MP_IDENT(Cond(x)  \
-      ::template f<clear<NC>, C>),                      \
+      ::template f<clear<FC>, C>),                      \
       x);                                               \
   };                                                    \
                                                         \
   template<>                                            \
   struct prefix##lower_bound<1>                         \
   {                                                     \
-    template<unsigned n, class Pred, class C, class NC, \
+    template<unsigned n, class Pred, class C, class FC, \
       class x, class... xs>                             \
     using f = JLN_MP_CALL_TRACE_T(JLN_MP_IDENT(Cond(x)  \
       ::template f<pop_front<C>, C>),                   \
@@ -10830,24 +10826,24 @@ namespace jln::mp::detail
   template<>                                             \
   struct prefix##lower_bound_drop_front<n>               \
   {                                                      \
-    template<int count, class Pred, class C, class NC,   \
+    template<int count, class Pred, class C, class FC,   \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),            \
       class... xs>                                       \
     using f = typename detail::prefix##lower_bound<      \
       _lower_bound_select(count-n)                       \
-    >::template f<count-n, Pred, C, NC, xs...>;          \
+    >::template f<count-n, Pred, C, FC, xs...>;          \
   };                                                     \
                                                          \
   template<>                                             \
   struct prefix##lower_bound<n>                          \
   {                                                      \
-    template<int count, class Pred, class C, class NC,   \
+    template<int count, class Pred, class C, class FC,   \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),            \
       class... xs>                                       \
     using f = typename Cond(_##n)::template f<           \
       prefix##lower_bound_drop_front<n>,                 \
       prefix##lower_bound<n/2>                           \
-    >::template f<count, Pred, C, NC,                    \
+    >::template f<count, Pred, C, FC,                    \
       mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA),       \
       xs...                                              \
     >;                                                   \
@@ -11416,7 +11412,7 @@ namespace jln::mp
   /// \ingroup group
 
   /// Generates all permutations of \sequence.
-  /// \post sizeof...(result) == sizeof...(xs)!
+  /// \post `sizeof...(result)` == `sizeof...(xs)!`
   /// \treturn \sequence of \list
   template<class C = listify>
   struct permutations
@@ -11770,7 +11766,7 @@ namespace jln::mp
     struct counter_to_repeat;
 
     template<class... xs>
-    struct regroup_if_impl;
+    struct regroup_by_impl;
   }
   /// \endcond
 
@@ -11795,16 +11791,16 @@ namespace jln::mp
   using regroup = regroup_with<listify, C>;
 
   template<class Cmp = lift<std::is_same>, class F = listify, class C = listify>
-  struct regroup_if_with
+  struct regroup_by_with
   {
     template<class... xs>
-    using f = typename unique_if<Cmp, lift<detail::regroup_if_impl>>
+    using f = typename unique_if<Cmp, lift<detail::regroup_by_impl>>
       ::template f<xs...>
       ::template f<C, F, Cmp, xs...>;
   };
 
   template<class Cmp = lift<std::is_same>, class C = listify>
-  using regroup_if = regroup_if_with<Cmp, listify, C>;
+  using regroup_by = regroup_by_with<Cmp, listify, C>;
 
   namespace emp
   {
@@ -11815,15 +11811,15 @@ namespace jln::mp
     using regroup_with = unpack<L, mp::regroup_with<F, C>>;
 
     template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
-    using regroup_if = unpack<L, mp::regroup_if<Cmp, C>>;
+    using regroup_by = unpack<L, mp::regroup_by<Cmp, C>>;
 
     template<class L, class Cmp = lift<std::is_same>, class F = mp::listify, class C = mp::listify>
-    using regroup_if_with = unpack<L, mp::regroup_if_with<Cmp, F, C>>;
+    using regroup_by_with = unpack<L, mp::regroup_by_with<Cmp, F, C>>;
   }
 
   /// \cond
   template<class F, class C>
-  struct regroup_if_with<lift<std::is_same>, F, C> : regroup_with<F, C>
+  struct regroup_by_with<lift<std::is_same>, F, C> : regroup_with<F, C>
   {};
   /// \endcond
 }
@@ -11840,7 +11836,7 @@ namespace jln::mp::detail
   };
 
   template<class... xs>
-  struct regroup_if_impl
+  struct regroup_by_impl
   {
     template<class C, class F, class Cmp, class... ys>
     using f = JLN_MP_CALL_TRACE(C,
@@ -12055,7 +12051,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Folds right over a list using a binary predicate.
-  /// reverse_fold consideres the first element in the input pack as the state,
+  /// The first element in the input pack as the state,
   /// use \c push_front<> to add state if needed.
   /// \semantics
   ///   Equivalent to
@@ -13837,7 +13833,7 @@ namespace jln::mp
   /// \ingroup group
 
   /// Splits a sequence at an arbitrary position.
-  /// \pre i >= 0 && i <= sizeof...(xs)
+  /// \pre `i >= 0 && i <= sizeof...(xs)`
   /// \treturn \sequence of two \values
   template<unsigned i, class SubC1 = listify, class SubC2 = SubC1, class C = listify>
   struct split_at2_with_c
@@ -13856,7 +13852,7 @@ namespace jln::mp
   using split_at_with = split_at2_with_c<i::value, F, F, C>;
 
   /// Splits a sequence at an arbitrary position.
-  /// \pre i >= 0 && i <= sizeof...(xs)
+  /// \pre `i >= 0 && i <= sizeof...(xs)`
   /// \treturn \sequence of two \lists
   template<unsigned i, class C = listify>
   using split_at_c = split_at2_with_c<i, listify, listify, C>;
@@ -14063,35 +14059,35 @@ namespace jln::mp
   /// \ingroup search
 
   /// Finds first element that is greater that \c x.
-  /// Invokes \c FC with all the elements since the one found at the end.
-  /// If no element is found, \c NFC is used.
+  /// Invokes \c TC with all the elements since the one found at the end.
+  /// If no element is found, \c FC is used.
   /// \pre \c is_sorted<Cmp>::f<xs...>
   /// \treturn \sequence
-  template<class x, class Cmp = less<>, class C = listify, class NC = C>
-  using upper_bound = lower_bound<x, flip<tee<Cmp, not_<>>>, C, NC>;
+  template<class x, class Cmp = less<>, class TC = listify, class FC = TC>
+  using upper_bound = lower_bound<x, flip<tee<Cmp, not_<>>>, TC, FC>;
 
-  template<int_ x, class Cmp = less<>, class C = listify, class NC = C>
-  using upper_bound_c = upper_bound<number<x>, Cmp, C, NC>;
+  template<int_ x, class Cmp = less<>, class TC = listify, class FC = TC>
+  using upper_bound_c = upper_bound<number<x>, Cmp, TC, FC>;
 
-  template<class x, class C = listify, class NC = C>
-  using upper_bound_than = upper_bound<x, less<>, C, NC>;
+  template<class x, class TC = listify, class FC = TC>
+  using upper_bound_than = upper_bound<x, less<>, TC, FC>;
 
-  template<int_ x, class C = listify, class NC = C>
-  using upper_bound_than_c = upper_bound<number<x>, less<>, C, NC>;
+  template<int_ x, class TC = listify, class FC = TC>
+  using upper_bound_than_c = upper_bound<number<x>, less<>, TC, FC>;
 
   namespace emp
   {
-    template<class L, class x, class Cmp = mp::less<>, class C = mp::listify, class NC = C>
-    using upper_bound = unpack<L, mp::upper_bound<x, Cmp, C, NC>>;
+    template<class L, class x, class Cmp = mp::less<>, class TC = mp::listify, class FC = TC>
+    using upper_bound = unpack<L, mp::upper_bound<x, Cmp, TC, FC>>;
 
-    template<class L, int_ x, class Cmp = mp::less<>, class C = mp::listify, class NC = C>
-    using upper_bound_c = unpack<L, mp::upper_bound<mp::number<x>, Cmp, C, NC>>;
+    template<class L, int_ x, class Cmp = mp::less<>, class TC = mp::listify, class FC = TC>
+    using upper_bound_c = unpack<L, mp::upper_bound<mp::number<x>, Cmp, TC, FC>>;
 
-    template<class L, class x, class C = mp::listify, class NC = C>
-    using upper_bound_than = unpack<L, mp::upper_bound<x, mp::less<>, C, NC>>;
+    template<class L, class x, class TC = mp::listify, class FC = TC>
+    using upper_bound_than = unpack<L, mp::upper_bound<x, mp::less<>, TC, FC>>;
 
-    template<class L, int_ x, class C = mp::listify, class NC = C>
-    using upper_bound_than_c = unpack<L, mp::upper_bound<mp::number<x>, mp::less<>, C, NC>>;
+    template<class L, int_ x, class TC = mp::listify, class FC = TC>
+    using upper_bound_than_c = unpack<L, mp::upper_bound<mp::number<x>, mp::less<>, TC, FC>>;
   }
 }
 namespace jln::mp
@@ -14479,7 +14475,7 @@ namespace jln::mp
 
   /// Invokes a function computing the fixed point of a function.
   /// \treturn \value
-  /// \see recurse, recurse_fix
+  /// \see recursively
   template<class C>
   struct fix
   {
@@ -14602,9 +14598,12 @@ namespace jln::mp
   }
   /// \endcond
 
+  /// Generates a unique id per call for a specified tag.
+  /// Signature: `int next_id<class Tag = default_make_id_tag, start_id = 0, auto = []{}>()`
   using detail::mkid::next_id;
 
   /// Generates a unique id per type.
+  /// \treturn int
   template<class T>
   struct id_of
   {
@@ -14619,6 +14618,7 @@ namespace jln::mp
 
 
   /// Generates a unique id per type for a specified tag.
+  /// \treturn int
   template<class Tag, class T>
   struct tagged_id_of
   {
@@ -14679,26 +14679,26 @@ namespace jln::mp
 {
   /// \ingroup functional
 
-  /// Invokes \c FC whether `na`, otherwise \c C.
+  /// Invokes \c FC whether `na`, otherwise \c TC.
   /// \treturn \value
-  template<class C, class FC = violation>
-  using monadic = if_<is<na>, FC, C>;
+  template<class TC, class FC = violation>
+  using monadic = if_<is<na>, FC, TC>;
 
-  /// Invokes \c FC whether first value is `na`, otherwise \c C.
+  /// Invokes \c FC whether first value is `na`, otherwise \c TC.
   /// \treturn \value
-  template<class C, class FC = violation>
-  using monadic0 = if_<front<is<na>>, FC, C>;
+  template<class TC, class FC = violation>
+  using monadic0 = if_<front<is<na>>, FC, TC>;
 
-  /// Invokes \c FC whether any value is `na`, otherwise \c C.
+  /// Invokes \c FC whether any value is `na`, otherwise \c TC.
   /// \treturn \value
-  template<class C, class FC = violation>
-  using monadic_xs = if_<none_of<is<na>>, C, FC>;
+  template<class TC, class FC = violation>
+  using monadic_xs = if_<none_of<is<na>>, TC, FC>;
 
   /// Monadify only if \c x is \c na.
   /// \treturn \value
-  template<class x, template<class...> class M, class C, class FC = violation>
+  template<class x, template<class...> class M, class TC, class FC = violation>
   using monadic_if_na = typename conditional_c<std::is_same<na, x>::value>
-    ::template f<M<C, FC>, C>;
+    ::template f<M<TC, FC>, TC>;
 }
 namespace jln::mp
 {
@@ -14899,9 +14899,6 @@ namespace jln::mp
     #undef JLN_MP_RANDOM_SEED_W
     #undef JLN_MP_RANDOM_SEED_TIME
 
-    template<class>
-    struct tagged;
-
     /// \pre id >= 1
     /// \pre random_for_id<id-1>() must have been called
     template <int id>
@@ -14915,29 +14912,31 @@ namespace jln::mp
       return (z << 16) + w;
     }
 
-    template <class Tag = random_data, auto v = []{}>
+    template <auto v = []{}>
     JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned next_random()
     {
-      return random_for_id<next_id<tagged<Tag>, 1, v>()>();
+      return random_for_id<next_id<random_data, 1, v>()>();
     }
   }
   /// \endcond
 
+  /// Generates a unique id per call for a specified tag.
+  /// Signature: `unsigned next_random<auto = []{}>()`
   using detail::rand::next_random;
 
   namespace emp
   {
     template<auto v = []{}>
-    using random = number<next_random<detail::rand::random_data, v>()>;
+    using random = number<next_random<v>()>;
 
     template<auto v = []{}>
-    static constexpr unsigned random_v = next_random<detail::rand::random_data, v>();
+    static constexpr unsigned random_v = next_random<v>();
   }
 
   /// Generate a random number.
-  /// The seed can be configured with JLN_MP_RANDOM_SEED_TIME
-  /// or JLN_MP_RANDOM_SEED_W and JLN_MP_RANDOM_SEED_Z
-  /// \treturn number
+  /// The seed can be configured with `JLN_MP_RANDOM_SEED_TIME`
+  /// or `JLN_MP_RANDOM_SEED_W` and `JLN_MP_RANDOM_SEED_Z`
+  /// \treturn \number
   template<class C = identity, auto = []{}>
   struct random
   #ifdef JLN_MP_DOXYGENATING
@@ -14953,7 +14952,7 @@ namespace jln::mp
   namespace detail
   {
     template<std::size_t, auto v = []{}>
-    using random_impl = number<next_random<detail::rand::random_data, v>()>;
+    using random_impl = number<next_random<v>()>;
   }
 
   template<class C, auto>
@@ -14974,14 +14973,14 @@ namespace jln::mp
   struct random
   {
     template<class...>
-    using f = JLN_MP_CALL_TRACE(C, number<next_random<detail::rand::random_data, []{}>()>);
+    using f = JLN_MP_CALL_TRACE(C, number<next_random<[]{}>()>);
   };
 
   template<auto v>
   struct random<identity, v>
   {
     template<class...>
-    using f = number<next_random<detail::rand::random_data, []{}>()>;
+    using f = number<next_random<[]{}>()>;
   };
 #endif
 /// \endcond
@@ -15026,7 +15025,7 @@ namespace jln::mp
 
   /// Apply a function while some \predicate is satisfied.
   /// \treturn \value
-  /// \see while
+  /// \see while_
   template<class Pred, class F, class C = listify>
   using while_xs = recursively<if_<Pred, F, stop_recursion>, C>;
 
@@ -15384,7 +15383,7 @@ namespace jln::mp
   /// \ingroup list
 
   /// Checks whether \c x is a \list.
-  /// \treturn \number
+  /// \treturn \bool
   template<class C = identity>
   struct is_list
   {
@@ -16104,9 +16103,9 @@ namespace jln::mp
 
   /// \ingroup list
 
-  /// Swap elements at indexes \c I and \c J of a \sequence.
-  /// \pre `0 < I < sizeof...(xs)`
-  /// \pre `0 < J < sizeof...(xs)`
+  /// Swap elements at indexes \c i and \c j of a \sequence.
+  /// \pre `0 < i < sizeof...(xs)`
+  /// \pre `0 < j < sizeof...(xs)`
   /// \treturn \sequence
   /// \note `swap_index<I, J>` == `swap_index<J, I>`
   template<unsigned i, unsigned j, class C = listify>
