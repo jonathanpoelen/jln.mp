@@ -17,6 +17,7 @@
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/list.hpp>
 #include <jln/mp/list/listify.hpp>
+#include <jln/mp/list/lookup.hpp>
 #include <jln/mp/list/offset.hpp>
 #include <jln/mp/list/pop_back.hpp>
 #include <jln/mp/list/pop_front.hpp>

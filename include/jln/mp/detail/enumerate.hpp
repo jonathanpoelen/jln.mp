@@ -53,6 +53,24 @@ namespace jln::mp::detail
   func(128, JLN_MP_XS_128, JLN_MP_RXS_128, JLN_MP_REPEAT_128) \
   func(256, JLN_MP_XS_256, JLN_MP_RXS_256, JLN_MP_REPEAT_256)
 
+#define JLN_MP_GEN_XS_1_TO_16_INCLUDED(func)              \
+  func(1, JLN_MP_XS_1, JLN_MP_RXS_1, JLN_MP_REPEAT_1)     \
+  func(2, JLN_MP_XS_2, JLN_MP_RXS_2, JLN_MP_REPEAT_2)     \
+  func(3, JLN_MP_XS_3, JLN_MP_RXS_3, JLN_MP_REPEAT_3)     \
+  func(4, JLN_MP_XS_4, JLN_MP_RXS_4, JLN_MP_REPEAT_4)     \
+  func(5, JLN_MP_XS_5, JLN_MP_RXS_5, JLN_MP_REPEAT_5)     \
+  func(6, JLN_MP_XS_6, JLN_MP_RXS_6, JLN_MP_REPEAT_6)     \
+  func(7, JLN_MP_XS_7, JLN_MP_RXS_7, JLN_MP_REPEAT_7)     \
+  func(8, JLN_MP_XS_8, JLN_MP_RXS_8, JLN_MP_REPEAT_8)     \
+  func(9, JLN_MP_XS_9, JLN_MP_RXS_9, JLN_MP_REPEAT_9)     \
+  func(10, JLN_MP_XS_10, JLN_MP_RXS_10, JLN_MP_REPEAT_10) \
+  func(11, JLN_MP_XS_11, JLN_MP_RXS_11, JLN_MP_REPEAT_11) \
+  func(12, JLN_MP_XS_12, JLN_MP_RXS_12, JLN_MP_REPEAT_12) \
+  func(13, JLN_MP_XS_13, JLN_MP_RXS_13, JLN_MP_REPEAT_13) \
+  func(14, JLN_MP_XS_14, JLN_MP_RXS_14, JLN_MP_REPEAT_14) \
+  func(15, JLN_MP_XS_15, JLN_MP_RXS_15, JLN_MP_REPEAT_15) \
+  func(16, JLN_MP_XS_16, JLN_MP_RXS_16, JLN_MP_REPEAT_16)
+
 #define JLN_MP_GEN_XS_0_TO_8(func)                    \
   func(0, JLN_MP_XS_0, JLN_MP_RXS_0, JLN_MP_REPEAT_0) \
   func(1, JLN_MP_XS_1, JLN_MP_RXS_1, JLN_MP_REPEAT_1) \
@@ -91,6 +109,20 @@ namespace jln::mp::detail
 #define JLN_MP_REPEAT_6(x, B) x B x B x B x B x B x
 #define JLN_MP_REPEAT_7(x, B) x B x B x B x B x B x B x
 #define JLN_MP_REPEAT_8(x, B) x B x B x B x B x B x B x B x
+#define JLN_MP_REPEAT_9(x, B) x B x B x B x B x B x B x B x B x
+#define JLN_MP_REPEAT_10(x, B) x B x B x B x B x B x B x B x B x B x
+#define JLN_MP_REPEAT_11(x, B) x B x B x B x B x B x B x B x B x B x B x
+#define JLN_MP_REPEAT_12(x, B) \
+  x B x B x B x B x B x B x B x B x B x B x B x
+
+#define JLN_MP_REPEAT_13(x, B) \
+  x B x B x B x B x B x B x B x B x B x B x B x B x
+
+#define JLN_MP_REPEAT_14(x, B) \
+  x B x B x B x B x B x B x B x B x B x B x B x B x B x
+
+#define JLN_MP_REPEAT_15(x, B) \
+  x B x B x B x B x B x B x B x B x B x B x B x B x B x B x
 
 #define JLN_MP_REPEAT_16(x, B) \
   x B x B x B x B x B x B x B x B x B x B x B x B x B x B x B x
@@ -164,9 +196,43 @@ namespace jln::mp::detail
   before _1 after sep before _2 after sep before _3 after sep before _4 after sep \
   before _5 after sep before _6 after sep before _7 after sep before _8 after
 
-#define JLN_MP_XS_2_TO_8(before, after, sep)                                      \
-                      before _2 after sep before _3 after sep before _4 after sep \
-  before _5 after sep before _6 after sep before _7 after sep before _8 after
+#define JLN_MP_XS_9(before, after, sep)                                           \
+  before _1 after sep before _2 after sep before _3 after sep before _4 after sep \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep \
+  before _9 after
+
+#define JLN_MP_XS_10(before, after, sep)                                          \
+  before _1 after sep before _2 after sep before _3 after sep before _4 after sep \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep \
+  before _9 after sep before _10 after
+
+#define JLN_MP_XS_11(before, after, sep)                                          \
+  before _1 after sep before _2 after sep before _3 after sep before _4 after sep \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep \
+  before _9 after sep before _10 after sep before _11 after
+
+#define JLN_MP_XS_12(before, after, sep)                                          \
+  before _1 after sep before _2 after sep before _3 after sep before _4 after sep \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep \
+  before _9 after sep before _10 after sep before _11 after sep before _12 after
+
+#define JLN_MP_XS_13(before, after, sep)                                             \
+  before _1 after sep before _2 after sep before _3 after sep before _4 after sep    \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep    \
+  before _9 after sep before _10 after sep before _11 after sep before _12 after sep \
+  before _13 after
+
+#define JLN_MP_XS_14(before, after, sep)                                             \
+  before _1 after sep before _2 after sep before _3 after sep before _4 after sep    \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep    \
+  before _9 after sep before _10 after sep before _11 after sep before _12 after sep \
+  before _13 after sep before _14 after
+
+#define JLN_MP_XS_15(before, after, sep)                                             \
+  before _1 after sep before _2 after sep before _3 after sep before _4 after sep    \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after sep    \
+  before _9 after sep before _10 after sep before _11 after sep before _12 after sep \
+  before _13 after sep before _14 after sep before _15 after
 
 #define JLN_MP_XS_16(before, after, sep)                                             \
   before _1 after sep before _2 after sep before _3 after sep before _4 after sep    \
@@ -461,6 +527,44 @@ namespace jln::mp::detail
 #define JLN_MP_RXS_8(before, after, sep)                                          \
   before _8 after sep before _7 after sep before _6 after sep before _5 after sep \
   before _4 after sep before _3 after sep before _2 after sep before _1 after
+
+#define JLN_MP_RXS_9(before, after, sep)                                          \
+  before _9 after sep before _8 after sep before _7 after sep before _6 after sep \
+  before _5 after sep before _4 after sep before _3 after sep before _2 after sep \
+  before _1 after
+
+#define JLN_MP_RXS_10(before, after, sep)                                          \
+  before _10 after sep before _9 after sep before _8 after sep before _7 after sep \
+  before _6 after sep before _5 after sep before _4 after sep before _3 after sep  \
+  before _2 after sep before _1 after
+
+#define JLN_MP_RXS_11(before, after, sep)                                           \
+  before _11 after sep before _10 after sep before _9 after sep before _8 after sep \
+  before _7 after sep before _6 after sep before _5 after sep before _4 after sep   \
+  before _3 after sep before _2 after sep before _1 after
+
+#define JLN_MP_RXS_12(before, after, sep)                                             \
+  before _12 after sep before _11 after sep before _10 after sep before _9 after sep  \
+  before _8 after sep before _7 after sep before _6 after sep before _5 after sep     \
+  before _4 after sep before _3 after sep before _2 after sep before _1 after
+
+#define JLN_MP_RXS_13(before, after, sep)                                             \
+  before _13 after sep before _12 after sep before _11 after sep before _10 after sep \
+   before _9 after sep before _8 after sep before _7 after sep before _6 after sep    \
+  before _5 after sep before _4 after sep before _3 after sep before _2 after sep     \
+  before _1 after
+
+#define JLN_MP_RXS_14(before, after, sep)                                             \
+  before _14 after sep before _13 after sep before _12 after sep before _11 after sep \
+  before _10 after sep before _9 after sep before _8 after sep before _7 after sep    \
+  before _6 after sep before _5 after sep before _4 after sep before _3 after sep     \
+  before _2 after sep before _1 after
+
+#define JLN_MP_RXS_15(before, after, sep)                                             \
+  before _15 after sep before _14 after sep before _13 after sep before _12 after sep \
+  before _11 after sep before _10 after sep before _9 after sep before _8 after sep   \
+  before _7 after sep before _6 after sep before _5 after sep before _4 after sep     \
+  before _3 after sep before _2 after sep before _1 after
 
 #define JLN_MP_RXS_16(before, after, sep)                                             \
   before _16 after sep before _15 after sep before _14 after sep before _13 after sep \

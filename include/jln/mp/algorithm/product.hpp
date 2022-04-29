@@ -42,13 +42,14 @@ namespace jln::mp
   {
     template<class seq = list<>, class... seqs>
     using f = typename detail::_unpack<
+      C,
       typename detail::fold_left_impl<sizeof...(seqs)>
       ::template f<
         detail::product_impl_t,
         typename detail::_product<list<>, seq>::type,
         seqs...
       >
-    >::template f<C>;
+    >::type;
   };
 
   namespace emp

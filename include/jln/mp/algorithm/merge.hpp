@@ -27,10 +27,11 @@ namespace jln::mp
   {
     template<class seq1, class seq2>
     using f = typename detail::_unpack<
+      C,
       typename detail::merge_impl<
         list<>, seq1, seq2, JLN_MP_TRACE_F(Cmp)
       >::type
-    >::template f<C>;
+    >::type;
   };
 
   namespace emp

@@ -82,15 +82,14 @@ namespace jln::mp::detail
 
   template<class Equal, class seq0>
   using to_is_subset_impl = is_disjoint_impl<
-    typename _unpack<seq0>::template f<lift<_is_subset_of>, Equal>
+    typename _unpack<lift<_is_subset_of>, seq0, Equal>::type
   >;
 
   template<>
   struct _is_subset<2>
   {
     template<class Equal, class seq0, class seq1>
-    using f = typename _unpack<seq1>
-      ::template f<to_is_subset_impl<Equal, seq0>>;
+    using f = typename _unpack<to_is_subset_impl<Equal, seq0>, seq1>::type;
   };
 
   template<>

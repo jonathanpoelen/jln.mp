@@ -50,7 +50,7 @@ namespace jln::mp::detail
   struct seqs_to_list
   {
     template<class... seqs>
-    using f = typename C::template f<typename _unpack<seqs>::template f<F>...>;
+    using f = typename C::template f<typename _unpack<F, seqs>::type...>;
   };
 
 

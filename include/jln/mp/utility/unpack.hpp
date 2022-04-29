@@ -5,8 +5,8 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template <class L> struct _unpack {};
-    template <class L> struct _unpack_append {};
+    template <class C, class L, class... xs> struct _unpack {};
+    template <class C, class L, class... xs> struct _unpack_append {};
   }
   /// \endcond
 
@@ -22,7 +22,7 @@ namespace jln::mp
   struct unpack
   {
     template<class seq, class... xs>
-    using f = typename detail::_unpack<seq>::template f<C, xs...>;
+    using f = typename detail::_unpack<C, seq, xs...>::type;
   };
 
   /// Turns a \typelist into a \sequence of those types.
@@ -35,16 +35,16 @@ namespace jln::mp
   struct unpack_append
   {
     template<class seq, class... xs>
-    using f = typename detail::_unpack_append<seq>::template f<C, xs...>;
+    using f = typename detail::_unpack_append<C, seq, xs...>::type;
   };
 
   namespace emp
   {
     template<class L, class C, class... xs>
-    using unpack = typename detail::_unpack<L>::template f<C, xs...>;
+    using unpack = typename detail::_unpack<C, L, xs...>::type;
 
     template<class L, class C, class... xs>
-    using unpack_append = typename detail::_unpack_append<L>::template f<C, xs...>;
+    using unpack_append = typename detail::_unpack_append<C, L, xs...>::type;
   }
 } // namespace jln::mp
 
@@ -55,18 +55,16 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class...> class Seq, class... ys>
-  struct _unpack<Seq<ys...>>
+  template<class C, template<class...> class Seq, class... ys, class... xs>
+  struct _unpack<C, Seq<ys...>, xs...>
   {
-    template<class C, class... xs>
-    using f = JLN_MP_CALL_TRACE(C, xs..., ys...);
+    using type = typename C::template f<xs..., ys...>;
   };
 
-  template<template<class...> class Seq, class... xs>
-  struct _unpack_append<Seq<xs...>>
+  template<class C, template<class...> class Seq, class... xs, class... ys>
+  struct _unpack_append<C, Seq<xs...>, ys...>
   {
-    template<class C, class... ys>
-    using f = JLN_MP_CALL_TRACE(C, xs..., ys...);
+    using type = typename C::template f<xs..., ys...>;
   };
 
   template<class C>

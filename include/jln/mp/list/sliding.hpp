@@ -269,7 +269,7 @@ namespace jln::mp::detail
     template<class x, class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C,
       xs...,
-      typename _unpack<x>::template f<rotate_c<-1, pop_front<>>>
+      typename _unpack<rotate_c<-1, pop_front<>>, x>::type
     );
   };
 
@@ -279,7 +279,7 @@ namespace jln::mp::detail
     template<class x, class... xs>
     using f = list<
       xs...,
-      typename _unpack<x>::template f<rotate_c<-1, pop_front<>>>
+      typename _unpack<rotate_c<-1, pop_front<>>, x>::type
     >;
   };
 

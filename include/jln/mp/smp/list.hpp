@@ -16,6 +16,7 @@
 #include <jln/mp/smp/list/is_size_of.hpp>
 #include <jln/mp/smp/list/join.hpp>
 #include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/list/lookup.hpp>
 #include <jln/mp/smp/list/offset.hpp>
 #include <jln/mp/smp/list/pop_back.hpp>
 #include <jln/mp/smp/list/pop_front.hpp>

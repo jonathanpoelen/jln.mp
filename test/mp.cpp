@@ -134,6 +134,7 @@
 #include "src/list/is_size_of.cpp"
 #include "src/list/join.cpp"
 #include "src/list/list.cpp"
+#include "src/list/lookup.cpp"
 #include "src/list/offset.cpp"
 #include "src/list/pop_back.cpp"
 #include "src/list/pop_front.cpp"

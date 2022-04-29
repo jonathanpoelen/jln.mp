@@ -100,15 +100,14 @@ namespace jln::mp::detail
 
   template<class Equal, class seq0>
   using to_is_disjoint_impl = is_disjoint_impl<
-    typename _unpack<seq0>::template f<lift<_is_disjoint_of>, Equal>
+    typename _unpack<lift<_is_disjoint_of>, seq0, Equal>::type
   >;
 
   template<>
   struct _is_disjoint<2>
   {
     template<class Equal, class seq0, class seq1>
-    using f = typename _unpack<seq1>
-      ::template f<to_is_disjoint_impl<Equal, seq0>>;
+    using f = typename _unpack<to_is_disjoint_impl<Equal, seq0>, seq1>::type;
   };
 
   template<>

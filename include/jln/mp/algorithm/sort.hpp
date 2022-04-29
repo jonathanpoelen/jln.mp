@@ -24,9 +24,10 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_unpack<
+      C,
       typename detail::sort_impl<sizeof...(xs)>
       ::template f<Cmp, xs...>
-    >::template f<C>;
+    >::type;
   };
 
   template<class Cmp = less<>, class C = listify>

@@ -63,7 +63,7 @@ namespace jln::mp::detail
   struct is_unique_unpack_impl<false>
   {
     template<class C, class seq, class... xs>
-    using f = typename _unpack<seq>::template f<C, xs...>;
+    using f = typename _unpack<C, seq, xs...>::type;
   };
 
   template<>

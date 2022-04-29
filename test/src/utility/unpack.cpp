@@ -17,6 +17,11 @@ TEST()
   ut::same<_3, emp::unpack<seq_0_0_0, size<>>>();
   ut::same<_3, emp::unpack_append<seq_0_0_0, size<>>>();
 
+  ut::same<seq_0_1, emp::unpack<seq_0_1, ut::binary>>();
+  ut::same<seq_1_0, emp::unpack<seq_0, ut::binary, _1>>();
+  ut::same<seq_0_1, emp::unpack_append<seq_0_1, ut::binary>>();
+  ut::same<seq_0_1, emp::unpack_append<seq_0, ut::binary, _1>>();
+
   test_context<unpack<size<>>, smp::unpack<smp::size<>>>()
     .test<_0, list<>>()
     .test<_1, seq_1>()

@@ -65,7 +65,7 @@ namespace jln::mp::detail
     template<class seq, class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(
       xs, C,
-      typename detail::_unpack<seq>::template f<push_front<x>>,
+      typename detail::_unpack<push_front<x>, seq>::type,
       xs...
     );
   };
@@ -75,7 +75,7 @@ namespace jln::mp::detail
   {
     template<class seq, class... xs>
     using f = list<
-      typename detail::_unpack<seq>::template f<push_front<x>>,
+      typename detail::_unpack<push_front<x>, seq>::type,
       xs...
     >;
   };
@@ -86,8 +86,8 @@ namespace jln::mp::detail
     template<class seq, class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(
       xs, C,
-      typename detail::_unpack<seq>::template f<push_front<x, F>>,
-      typename detail::_unpack<xs>::template f<F>...
+      typename detail::_unpack<push_front<x, F>, seq>::type,
+      typename detail::_unpack<F, xs>::type...
     );
   };
 
