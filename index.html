@@ -802,6 +802,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#mp::drop_front_max_c" class="index_link">drop_front_max_c</a></li>
 <li><a href="#mp::erase" class="index_link">erase</a></li>
 <li><a href="#mp::erase_c" class="index_link">erase_c</a></li>
+<li><a href="#mp::f" class="index_link">f</a></li>
 <li><a href="#mp::front" class="index_link">front</a></li>
 <li><a href="#mp::insert" class="index_link">insert</a></li>
 <li><a href="#mp::insert_c" class="index_link">insert_c</a></li>
@@ -1278,6 +1279,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#mp::erase_c" class="index_link">erase_c</a></li>
 <li><a href="#mp::eval" class="index_link">eval</a></li>
 </ul></li><li id="g4__F" class="index_group"><a class="index_cat" href="#g4__F">F</a><ul class="subindex_list func_sublist">
+<li><a href="#mp::f" class="index_link">f</a></li>
 <li><a href="#mp::false_" class="index_link">false_</a></li>
 <li><a href="#mp::find" class="index_link">find</a></li>
 <li><a href="#mp::find_if" class="index_link">find_if</a></li>
@@ -1985,6 +1987,7 @@ then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the 
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::drop_back">drop_back</a><span class="o">&lt;</span>N<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::drop_back_c">drop_back_c</a><span class="o">&lt;</span>N<span class="p">::</span>value<span class="p">,</span> C<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::drop_back_max">drop_back_max</a><span class="o">&lt;</span>N<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::drop_back_max_c">drop_back_max_c</a><span class="o">&lt;</span>N<span class="p">::</span>value<span class="p">,</span> C<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::drop_front_c">drop_front_c</a><span class="o">&lt;</span><span class="kt">unsigned</span> N<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Removes <code class="inlinecode highlight" data-lang="cpp">N</code> elements from the beginning of a <a href="#d_sequence">sequence</a>.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::f">f</a></code></td><td></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::drop_front_max_c">drop_front_max_c</a><span class="o">&lt;</span><span class="kt">unsigned</span> N<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Removes at most <code class="inlinecode highlight" data-lang="cpp">N</code> elements from the beginning of a <a href="#d_sequence">sequence</a>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::drop_front">drop_front</a><span class="o">&lt;</span>N<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::drop_front_c">drop_front_c</a><span class="o">&lt;</span>N<span class="p">::</span>value<span class="p">,</span> C<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::drop_front_max">drop_front_max</a><span class="o">&lt;</span>N<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::drop_front_max_c">drop_front_max_c</a><span class="o">&lt;</span>N<span class="p">::</span>value<span class="p">,</span> C<span class="o">></span></code></td></tr>
@@ -4085,7 +4088,8 @@ This is similar to transposing a matrix.
 </p><div class="InfoBox"><h4 class="InfoBox-title">Pre-condition</h4>
 <ul><li><code class="inlinecode highlight" data-lang="cpp"><span class="mi">0</span> <span class="o">&lt;</span><span class="o">=</span> N <span class="o">&lt;</span><span class="o">=</span> <span class="k">sizeof</span><span class="p">...(</span>xs<span class="p">)</span></code>
 </li></ul></div><aside>See: <a href="#mp::drop_front_max">drop_front_max</a><span class="p">,</span> <a href="#mp::drop_back">drop_back</a><span class="p">,</span> <a href="#mp::take_front">take_front</a><span class="p">,</span> <a href="#mp::take_back">take_back</a><span class="p">,</span> <a href="#mp::drop_while">drop_while</a>
-</aside><h3 id="mp::drop_front_max_c"><a href="#mp::drop_front_max_c" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">drop_front_max_c<span class="o">&lt;</span><span class="kt">unsigned</span> N<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
+</aside><h3 id="mp::f"><a href="#mp::f" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">f</code></h3>
+<h3 id="mp::drop_front_max_c"><a href="#mp::drop_front_max_c" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">drop_front_max_c<span class="o">&lt;</span><span class="kt">unsigned</span> N<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
 <p>Return: <a href="#d_sequence">sequence</a>
 </p><p>Removes at most <code class="inlinecode highlight" data-lang="cpp">N</code> elements from the beginning of a <a href="#d_sequence">sequence</a>.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Pre-condition</h4>
