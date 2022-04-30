@@ -50,13 +50,13 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/algorithm/make_int_sequence.hpp>
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/clear.hpp>
+#include <utility>
 
 /// \cond
 namespace jln::mp::detail
@@ -82,22 +82,21 @@ namespace jln::mp::detail
   using slice_impl_msvc = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
 #endif
 
-  template<unsigned size, unsigned stride, class C>
-  struct _slice_impl
+  template<unsigned size, unsigned stride, class C, class>
+  struct _slice_impl;
+
+  template<unsigned size, unsigned stride, class C, std::size_t... ints>
+  struct _slice_impl<size, stride, C, std::integer_sequence<std::size_t, ints...>>
   {
-    template<int_... ints>
-    struct impl
-    {
-      template<class... xs>
-      using f = typename join<C>::template f<
+    template<class... xs>
+    using f = typename join<C>::template f<
 #if JLN_MP_MSVC
-        slice_impl_msvc<size, stride, ints, xs>...
+      slice_impl_msvc<size, stride, ints, xs>...
 #else
-        typename wrap_in_list_c<(ints <= size && ints % stride == 0)>
-        ::template f<xs>...
+      typename wrap_in_list_c<(ints <= size && ints % stride == 0)>
+      ::template f<xs>...
 #endif
-      >;
-    };
+    >;
   };
 
   template<>
@@ -106,11 +105,7 @@ namespace jln::mp::detail
     template<unsigned start, unsigned size, unsigned stride, class C, std::size_t len>
     using f = drop_front_c<
       start,
-      typename emp::make_int_sequence_v_c<
-        len - start,
-        lift_c<_slice_impl<size * stride - stride + 1, stride, C>
-               ::template impl>
-      >
+      _slice_impl<size * stride - stride + 1, stride, C, std::make_index_sequence<len - start>>
     >;
   };
 

@@ -105,7 +105,7 @@ namespace jln::mp::detail
   constexpr int_ _mismatch_size(int n)
   {
     // is pow 2
-    if ((-n ^ n) <  -n) {
+    if ((-n ^ n) < -n) {
       return n/2;
     }
 
@@ -200,6 +200,7 @@ namespace jln::mp::detail
       using f = JLN_MP_CALL_TRACE(FC, i, r);
     };
 
+    // sizeof...(xs) == sizeof...(ys)
     template<bool, bool>
     struct impl
     {
@@ -211,6 +212,7 @@ namespace jln::mp::detail
       >::template f<C, FC, number<-1>, number<sizeof...(xs)>>;
     };
 
+    // sizeof...(xs) < sizeof...(ys)
     template<bool b>
     struct impl<true, b>
     {
@@ -228,6 +230,7 @@ namespace jln::mp::detail
       >::template f<C, FC, number<sizeof...(xs)>, number<-1>>;
     };
 
+    // sizeof...(xs) > sizeof...(ys)
     template<bool b>
     struct impl<b, true>
     {

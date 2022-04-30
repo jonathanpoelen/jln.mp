@@ -1,6 +1,7 @@
 #pragma once
 
 #include <jln/mp/list/listify.hpp>
+#include <jln/mp/list/as_list.hpp>
 #include <jln/mp/number/numbers.hpp>
 
 #include <utility>
@@ -62,6 +63,15 @@ namespace jln::mp
       std::make_index_sequence<n::value>>::template f<C>;
 #endif
   };
+
+  /// \cond
+  template<>
+  struct make_int_sequence_v<numbers<>>
+  {
+    template<class n>
+    using f = typename detail::_as_list<std::make_index_sequence<n::value>>::type;
+  };
+  /// \endcond
 
   template<class C = mp::listify>
   using make_int_sequence = make_int_sequence_v<mp::numbers<C>>;

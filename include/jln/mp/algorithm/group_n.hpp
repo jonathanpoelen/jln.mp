@@ -53,16 +53,19 @@ namespace jln::mp
 
 
 #include <jln/mp/algorithm/split.hpp>
-#include <jln/mp/algorithm/make_int_sequence.hpp>
 #include <jln/mp/list/pop_front.hpp>
+#include <utility>
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<int_... i>
-  struct _group_n_impl
+  template<class>
+  struct _group_n_impl;
+
+  template<std::size_t... i>
+  struct _group_n_impl<std::integer_sequence<std::size_t, i...>>
   {
-    template<class C, unsigned long long n, class... xs>
+    template<class C, std::size_t n, class... xs>
     using f = typename fold_right<lift<split_state_t>, unpack<pop_front<C>>>
       ::template f<
         list<list<>>,
@@ -73,16 +76,15 @@ namespace jln::mp::detail
   template<>
   struct _group_n<true>
   {
-    template<class C, unsigned long long n, class... xs>
-    using f = typename emp::make_int_sequence_v_c<
-      sizeof...(xs), lift_c<_group_n_impl>
-    >::template f<C, n, xs...>;
+    template<class C, int_ n, class... xs>
+    using f = typename _group_n_impl<std::make_index_sequence<sizeof...(xs)>>
+      ::template f<C, n, xs...>;
   };
 
   template<>
   struct _group_n<false>
   {
-    template<class C, unsigned long long, class...>
+    template<class C, int_, class...>
     using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 }

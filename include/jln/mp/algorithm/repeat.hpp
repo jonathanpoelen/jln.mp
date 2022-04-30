@@ -2,7 +2,6 @@
 
 #include <jln/mp/algorithm/make_int_sequence.hpp>
 #include <jln/mp/utility/unpack.hpp>
-#include <jln/mp/detail/enumerate.hpp>
 
 namespace jln::mp
 {
@@ -24,7 +23,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = emp::make_int_sequence_v_c<N,
-      typename detail::_repeat<detail::min(sizeof...(xs), 2)>
+      typename detail::_repeat<sizeof...(xs) < 2 ? sizeof...(xs) : 2>
         ::template impl<C, xs...>>;
   };
 

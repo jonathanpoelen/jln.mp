@@ -62,7 +62,6 @@ namespace jln::mp
 
 #include <jln/mp/algorithm/zip.hpp>
 #include <jln/mp/algorithm/pairwise.hpp>
-#include <jln/mp/algorithm/make_int_sequence.hpp>
 #include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/algorithm/transform.hpp>
 #include <jln/mp/algorithm/group_n.hpp>
@@ -207,23 +206,23 @@ namespace jln::mp::detail
     using f = typename pairwise<C>::template f<xs...>;
   };
 
+  template<class>
+  struct _sliding5_impl;
+
+  template<std::size_t... i>
+  struct _sliding5_impl<std::integer_sequence<std::size_t, i...>>
+  {
+    template<class C, int_ size, class drop_front>
+    using f = _tee<zip<C>, rotate_c<int_(i)-size, drop_front>...>;
+  };
+
   // size>2  stride=1
   template<>
   struct _sliding<5>
   {
-    struct impl
-    {
-      template<int_... i>
-      struct f
-      {
-        template<class C, int_ size, class drop_front>
-        using g = _tee<zip<C>, rotate_c<i-size, drop_front>...>;
-      };
-    };
-
     template<class C, int_ size, int_, class... xs>
-    using f = typename emp::make_int_sequence_v_c<size, impl>
-      ::template g<C, size-1, drop_front_c<size-1>>
+    using f = typename _sliding5_impl<std::make_index_sequence<size>>
+      ::template f<C, size-1, drop_front_c<size-1>>
       ::template f<xs...>;
   };
 
@@ -232,28 +231,27 @@ namespace jln::mp::detail
   struct _sliding<6>
   {
     template<class C, int_ size, int_, class... xs>
-    using f = typename emp::make_int_sequence_v_c<
-      sizeof...(xs), lift_c<_group_n_impl>
-    >::template f<C, size, xs...>;
+    using f = typename _group_n_impl<std::make_index_sequence<sizeof...(xs)>>
+      ::template f<C, size, xs...>;
+  };
+
+  template<class>
+  struct _sliding7_impl;
+
+  template<std::size_t... i>
+  struct _sliding7_impl<std::integer_sequence<std::size_t, i...>>
+  {
+    template<class C, int_ size, int_ stride>
+    using f = _tee<zip<C>, slice_c<i, size, stride>...>;
   };
 
   // size>1  stride>1  (all list = size)
   template<>
   struct _sliding<7>
   {
-    struct impl
-    {
-      template<int_... i>
-      struct f
-      {
-        template<class C, int_ size, int_ stride>
-        using g = _tee<zip<C>, slice_c<i, size, stride>...>;
-      };
-    };
-
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename emp::make_int_sequence_v_c<size, impl>
-      ::template g<C, (sizeof...(xs) - size) / stride + 1, stride>
+    using f = typename _sliding7_impl<std::make_index_sequence<size>>
+      ::template f<C, (sizeof...(xs) - size) / stride + 1, stride>
       ::template f<xs...>;
   };
 
@@ -283,28 +281,28 @@ namespace jln::mp::detail
     >;
   };
 
+  template<class>
+  struct _sliding8_impl;
+
+  template<std::size_t... i>
+  struct _sliding8_impl<std::integer_sequence<std::size_t, i...>>
+  {
+    template<class C, int_ size, int_ stride, int_ pivot>
+    using f = _tee<
+      zip<rotate_c<-1, adjust<C>>>,
+      slice_c<i, size - (pivot < i), stride,
+        typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>
+      >...
+    >;
+  };
+
   // size>1  stride>1  (last list < size)
   template<>
   struct _sliding<8>
   {
-    struct impl
-    {
-      template<int_... i>
-      struct f
-      {
-        template<class C, int_ size, int_ stride, int_ pivot>
-        using g = _tee<
-          zip<rotate_c<-1, adjust<C>>>,
-          slice_c<i, size - (pivot < i), stride,
-            typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>
-          >...
-        >;
-      };
-    };
-
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename emp::make_int_sequence_v_c<size, impl>
-      ::template g<
+    using f = typename _sliding8_impl<std::make_index_sequence<size>>
+      ::template f<
         C,
         (sizeof...(xs) - size) / stride + 2,
         stride,

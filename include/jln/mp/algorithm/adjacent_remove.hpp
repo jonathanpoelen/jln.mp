@@ -61,7 +61,7 @@ namespace jln::mp::detail
 {
   template<class BinaryPred, class x, class y>
   using adjacent_remove_transform = typename wrap_in_list_c<
-    !JLN_MP_TRACE_F(BinaryPred)::template f<x, y>::value
+    !BinaryPred::template f<x, y>::value
   >::template f<x>;
 
   template<class y, class... ys>
@@ -72,7 +72,7 @@ namespace jln::mp::detail
       C,
       list<x>,
 #if JLN_MP_GCC
-      adjacent_remove_transform<BinaryPred, xs, ys>...
+      adjacent_remove_transform<JLN_MP_TRACE_F(BinaryPred), xs, ys>...
 #else
       typename wrap_in_list_c<!JLN_MP_TRACE_F(BinaryPred)::template f<xs, ys>::value>
         ::template f<xs>...
