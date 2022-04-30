@@ -14,7 +14,7 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template <class... Fs>
-  using each = typename detail::_smp_each_select<detail::min(5, sizeof...(Fs))>
+  using each = typename detail::_smp_each_select<sizeof...(Fs) < 5 ? sizeof...(Fs) : 5>
     ::template f<Fs...>;
 }
 

@@ -28,7 +28,7 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \function
   template<template<class...> class F, template<class...> class... Fs>
-  using compose_f = typename detail::_compose_f<detail::min(8, sizeof...(Fs))>
+  using compose_f = typename detail::_compose_f<sizeof...(Fs) < 8 ? sizeof...(Fs) : 8>
     ::template f<F, Fs...>;
 
   /// Composition of two \functions or more.

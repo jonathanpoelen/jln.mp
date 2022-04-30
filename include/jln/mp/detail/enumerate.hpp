@@ -1,18 +1,5 @@
 #pragma once
 
-namespace jln::mp::detail
-{
-  constexpr unsigned min(unsigned a, unsigned b)
-  {
-    return a < b ? a : b;
-  }
-
-  constexpr unsigned max(unsigned a, unsigned b)
-  {
-    return a < b ? b : a;
-  }
-}
-
 #define JLN_MP_NIL
 #define JLN_MP_COMMA ,
 #define JLN_MP_PAREN_OPEN (

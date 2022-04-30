@@ -184,7 +184,7 @@ namespace jln::mp
   // optimize index_if_xs with starts_with
   template<class... Ts, class C, class TC, class FC>
   struct index_if_xs<starts_with<list<Ts...>, C>, TC, FC>
-  : detail::optimized_index_if_xs_starts_with<detail::min(sizeof...(Ts), 2)>
+  : detail::optimized_index_if_xs_starts_with<sizeof...(Ts) < 2 ? sizeof...(Ts) : 2>
     ::template f<C, TC, FC, Ts...>
   {};
 }
@@ -221,7 +221,7 @@ namespace jln::mp
 {
   template<class... Ts, class C, class TC, class FC>
   struct drop_while_xs<starts_with<list<Ts...>, C>, TC, FC>
-  : detail::optimized_drop_while_starts_with<detail::min(sizeof...(Ts), 2)>
+  : detail::optimized_drop_while_starts_with<sizeof...(Ts) < 2 ? sizeof...(Ts) : 2>
     ::template f<C, TC, FC, Ts...>
   {};
 }
@@ -258,7 +258,7 @@ namespace jln::mp
 {
   template<class... Ts, class C, class TC, class FC>
   struct take_while_xs<starts_with<list<Ts...>, C>, TC, FC>
-  : detail::optimized_take_while_starts_with<detail::min(sizeof...(Ts), 2)>
+  : detail::optimized_take_while_starts_with<sizeof...(Ts) < 2 ? sizeof...(Ts) : 2>
     ::template f<C, TC, FC, Ts...>
   {};
 }
@@ -296,7 +296,7 @@ namespace jln::mp
 {
   template<std::size_t ExtendedByN, class... Ts, class C, class TC, class FC>
   struct take_while_extended_by_n_xs_c<ExtendedByN, starts_with<list<Ts...>, C>, TC, FC>
-  : detail::optimized_take_while_extended_by_n_starts_with<detail::min(sizeof...(Ts), 2)>
+  : detail::optimized_take_while_extended_by_n_starts_with<sizeof...(Ts) < 2 ? sizeof...(Ts) : 2>
     ::template f<C, TC, FC, Ts...>
   {};
 }

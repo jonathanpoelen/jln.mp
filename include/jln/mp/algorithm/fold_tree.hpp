@@ -33,7 +33,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_fold_tree<
-      detail::min(3, sizeof...(xs))
+      sizeof...(xs) < 3 ? sizeof...(xs) : 3
     >::template f<C, F, xs...>;
   };
 
@@ -51,7 +51,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::_fold_balanced_tree<
-      detail::min(3, sizeof...(xs))
+      sizeof...(xs) < 3 ? sizeof...(xs) : 3
     >::template f<C, F, xs...>;
   };
 

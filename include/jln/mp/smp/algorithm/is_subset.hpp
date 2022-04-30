@@ -89,7 +89,7 @@ namespace jln::mp::detail
   {
     template<class... seqs>
     using f = typename C::template f<
-      typename smp_is_subset_n<min(3, sizeof...(seqs))>
+      typename smp_is_subset_n<sizeof...(seqs) < 3 ? sizeof...(seqs) : 3>
       ::template f<Equal, seqs...>
     >;
   };
