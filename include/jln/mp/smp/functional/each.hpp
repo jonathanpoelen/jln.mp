@@ -14,7 +14,7 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template <class... Fs>
-  using each = typename detail::_smp_each_select<sizeof...(Fs) < 5 ? sizeof...(Fs) : 5>
+  using each = typename detail::_smp_each_select<sizeof...(Fs) < 4 ? sizeof...(Fs) : 4>
     ::template f<Fs...>;
 }
 
@@ -31,39 +31,32 @@ namespace jln::mp::detail
   };
 
   template<>
+  struct _smp_each_select<0>
+  {};
+
+  template<>
   struct _smp_each_select<1>
   {
     template<class C>
-    using f = test_contract<size<not_<>>, subcontract<C>>;
+    using f = test_contract<size<not_<>>, assume_numbers<C>>;
   };
 
   template<>
   struct _smp_each_select<2>
   {
     template<class F, class C>
-    using f = test_contract<size<is<number<1>>>, each<
-      assume_unary<F>, monadic_xs<assume_unary<C>>>>;
+    using f = test_contract<size<is<number<1>>>, _each<
+      monadic_xs<assume_unary<C>>, assume_unary<F>>>;
   };
 
   template<>
   struct _smp_each_select<3>
   {
     template<class F0, class F1, class C>
-    using f = test_contract<size<is<number<2>>>, each<
+    using f = test_contract<size<is<number<2>>>, _each<
+      monadic_xs<assume_binary<C>>,
       assume_unary<F0>,
-      assume_unary<F1>,
-      monadic_xs<assume_binary<C>>>>;
-  };
-
-  template<>
-  struct _smp_each_select<4>
-  {
-    template<class F0, class F1, class F2, class C>
-    using f = test_contract<size<is<number<3>>>, each<
-      assume_unary<F0>,
-      assume_unary<F1>,
-      assume_unary<F2>,
-      monadic_xs<subcontract<C>>>>;
+      assume_unary<F1>>>;
   };
 
   struct _smp_each
@@ -74,7 +67,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _smp_each_select<5>
+  struct _smp_each_select<4>
   : mp::rotate_c<-1, detail::_smp_each>
   {};
 }
