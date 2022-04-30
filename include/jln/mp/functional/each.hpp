@@ -34,24 +34,6 @@ namespace jln::mp
   ::template f<sizeof...(Fs)-1, lift<detail::_each>, Fs...>
   {};
 #endif
-
-  /// \cond
-  template <class C>
-  struct each<C> : detail::_each<C>
-  {};
-
-  template <class F, class C>
-  struct each<F, C> : detail::_each<C, F>
-  {};
-
-  template <class F0, class F1, class C>
-  struct each<F0, F1, C> : detail::_each<C, F0, F1>
-  {};
-
-  template <class F0, class F1, class F2, class C>
-  struct each<F0, F1, F2, C> : detail::_each<C, F0, F1, F2>
-  {};
-  /// \endcond
 }
 
 /// \cond
@@ -61,7 +43,7 @@ namespace jln::mp::detail
   struct _each
   {
     template <class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_DCALL_TRACE_XS(xs, Fs, xs)...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, typename JLN_MP_TRACE_F(Fs)::template f<xs>...);
   };
 } // namespace jln::mp
 /// \endcond
