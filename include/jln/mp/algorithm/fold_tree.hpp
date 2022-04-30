@@ -188,7 +188,8 @@ namespace jln::mp::detail
         (n+1)/2,
         drop_front_c<sizeof...(xs) - (n+1)/2, fold_balanced_tree_impl<F, (n+1)/2>>,
         xs...>,
-      typename drop_front_c<(n+1)/2, fold_balanced_tree_impl<F, n-(n+1)/2>>::template f<xs...>
+      typename drop_front_c<(sizeof...(xs) & 0) + (n+1)/2, fold_balanced_tree_impl<F, n-(n+1)/2>>
+        ::template f<xs...>
     );
   };
 

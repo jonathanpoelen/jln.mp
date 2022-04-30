@@ -23,14 +23,17 @@ namespace jln::mp
   /// \pre `0 <= N <= sizeof...(xs)`
   /// \treturn \sequence
   /// \see drop_front_max, drop_back, take_front, take_back, drop_while
+#ifdef JLN_MP_DOXYGENATING
   template<unsigned N, class C = listify>
   struct drop_front_c
   {
     template<class... xs>
-    using f = typename detail::drop_front_impl<
-      (sizeof...(xs) & 0) + N
-    >::template f<N, JLN_MP_TRACE_F(C)::template f, xs...>;
+    using f;
   };
+#else
+  template<unsigned N, class C = listify>
+  struct drop_front_c;
+#endif
 
   /// Removes at most \c N elements from the beginning of a \sequence.
   /// \pre `0 <= N`
@@ -71,33 +74,15 @@ namespace jln::mp
   }
 
   /// \cond
-  #if ! JLN_MP_ENABLE_DEBUG
-  template<unsigned N, template<class...> class C>
-  struct drop_front_c<N, lift<C>>
+  template<unsigned N, class C>
+  struct drop_front_c
   {
-    template<class... xs>
+    template<class, class, class, class, class, class,
+             class, class, class, class, class... xs>
     using f = typename detail::drop_front_impl<
-      (sizeof...(xs) & 0) + N
-    >::template f<N, C, xs...>;
+      (sizeof...(xs) & 0) + N - 10
+    >::template f<N-10, JLN_MP_TRACE_F(C)::template f, xs...>;
   };
-
-  template<unsigned N, template<class...> class C>
-  struct drop_front_max_c<N, lift<C>>
-  {
-    template<class... xs>
-    using f = typename detail::drop_front_impl<
-      detail::min(N, sizeof...(xs))
-    >::template f<detail::min(N, sizeof...(xs)), C, xs...>;
-  };
-
-  template<template<class...> class C>
-  struct drop_front_c<0, lift<C>> : lift<C>
-  {};
-
-  template<template<class...> class C>
-  struct drop_front_max_c<0, lift<C>> : lift<C>
-  {};
-  #endif
 
   template<class C>
   struct drop_front_c<0, C>
@@ -126,6 +111,60 @@ namespace jln::mp
     template<class... xs>
     using f = list<xs...>;
   };
+
+  #define JLN_MP_DROP_FRONT(n, mp_xs, mp_rxs, mp_dup)    \
+    template<class C>                                    \
+    struct drop_front_c<n, C>                            \
+    {                                                    \
+      template<mp_dup(class, JLN_MP_COMMA), class... xs> \
+      using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);     \
+    };
+
+  JLN_MP_GEN_XS_1_TO_8_INCLUDED(JLN_MP_DROP_FRONT)
+  JLN_MP_DROP_FRONT(9, x, x, JLN_MP_REPEAT_9)
+  #undef JLN_MP_DROP_FRONT
+
+  #if ! JLN_MP_ENABLE_DEBUG
+  template<unsigned N, template<class...> class C>
+  struct drop_front_c<N, lift<C>>
+  {
+    template<class, class, class, class, class, class,
+             class, class, class, class, class... xs>
+    using f = typename detail::drop_front_impl<
+      (sizeof...(xs) & 0) + N-10
+    >::template f<N-10, C, xs...>;
+  };
+
+  template<unsigned N, template<class...> class C>
+  struct drop_front_max_c<N, lift<C>>
+  {
+    template<class... xs>
+    using f = typename detail::drop_front_impl<
+      detail::min(N, sizeof...(xs))
+    >::template f<detail::min(N, sizeof...(xs)), C, xs...>;
+  };
+
+  template<template<class...> class C>
+  struct drop_front_c<0, lift<C>> : lift<C>
+  {};
+
+  template<template<class...> class C>
+  struct drop_front_max_c<0, lift<C>> : lift<C>
+  {};
+
+  #define JLN_MP_DROP_FRONT(n, mp_xs, mp_rxs, mp_dup)    \
+    template<template<class...> class C>                 \
+    struct drop_front_c<n, lift<C>>                      \
+    {                                                    \
+      template<mp_dup(class, JLN_MP_COMMA), class... xs> \
+      using f = C<xs...>;                                \
+    };
+
+  JLN_MP_GEN_XS_1_TO_8_INCLUDED(JLN_MP_DROP_FRONT)
+  JLN_MP_DROP_FRONT(9, x, x, JLN_MP_REPEAT_9)
+  #undef JLN_MP_DROP_FRONT
+
+  #endif
   /// \endcond
 }
 

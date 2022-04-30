@@ -140,16 +140,16 @@ namespace jln::mp::detail
     template<class i, class = void>
     struct dispatch
     {
-      template<class...>
+      template<unsigned, class...>
       using f = i;
     };
 
     template<class v>
     struct dispatch<number<size>, v>
     {
-      template<class... xs>
+      template<unsigned dummy, class... xs>
       using f = number<size +
-        drop_front_c<size,
+        drop_front_c<dummy+size,
           rotate_c<n-size,
             drop_front_c<size,
               typename _mismatch_tree<Cmp, n-size>::type
@@ -172,7 +172,7 @@ namespace jln::mp::detail
         >,
         xs...
       >
-    >::template f<xs...>;
+    >::template f<0u, xs...>;
   };
 
   template<class Cmp, int n>
