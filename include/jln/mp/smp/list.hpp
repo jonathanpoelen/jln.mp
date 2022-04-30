@@ -13,6 +13,7 @@
 #include <jln/mp/smp/list/insert_sequence.hpp>
 #include <jln/mp/smp/list/is_empty.hpp>
 #include <jln/mp/smp/list/is_list.hpp>
+#include <jln/mp/smp/list/is_not_empty.hpp>
 #include <jln/mp/smp/list/is_size_of.hpp>
 #include <jln/mp/smp/list/join.hpp>
 #include <jln/mp/smp/list/listify.hpp>

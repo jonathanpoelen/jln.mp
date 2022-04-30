@@ -131,6 +131,7 @@
 #include "src/list/insert_sequence.cpp"
 #include "src/list/is_empty.cpp"
 #include "src/list/is_list.cpp"
+#include "src/list/is_not_empty.cpp"
 #include "src/list/is_size_of.cpp"
 #include "src/list/join.cpp"
 #include "src/list/list.cpp"
