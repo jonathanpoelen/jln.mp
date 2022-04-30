@@ -250,7 +250,7 @@ namespace jln::mp::detail
         xs...>,
       // drop_front
       typename drop_front_impl<sizeof...(xs) / 2>
-      ::template f<sizeof...(xs) / 2, sort<Cmp>::template f, xs...>,
+      ::template f<sizeof...(xs) / 2, sort<Cmp>, xs...>,
       Cmp
     >::type;
   };

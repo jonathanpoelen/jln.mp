@@ -78,7 +78,7 @@ namespace jln::mp::detail
     using f = number<std::is_same<
       // take_back_c<n>
       typename detail::drop_front_impl<sizeof...(xs) - n>
-      ::template f<sizeof...(xs) - n, list, xs...>,
+      ::template f<sizeof...(xs) - n, listify, xs...>,
       L
     >::value>;
   };

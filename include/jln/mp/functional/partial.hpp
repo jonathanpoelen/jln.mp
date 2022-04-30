@@ -82,12 +82,11 @@ namespace jln::mp::detail
     >::template f<
       sizeof...(Fs),
       // take_front
-      rotate_impl<(sizeof...(xs) & 0) + sizeof...(Fs)+1>
+      typename rotate_impl<(sizeof...(xs) & 0) + sizeof...(Fs)+1>
       ::template f<
         sizeof...(Fs)+1,
         drop_front_c<sizeof...(xs) - sizeof...(Fs), partial_prefix<Fs...>>,
-        C, xs...>
-      ::template f,
+        C, xs...>,
       xs...
     >;
   };
