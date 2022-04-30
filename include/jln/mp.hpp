@@ -2347,7 +2347,7 @@ namespace jln::mp
   struct if_
   {
     template<class... xs>
-    using f = typename mp::conditional_c<bool(call<JLN_MP_TRACE_F(Pred), xs...>::value)>
+    using f = typename mp::conditional_c<bool(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, xs...)::value)>
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
@@ -2360,6 +2360,27 @@ namespace jln::mp
 }
 
 /// \cond
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  /// \treturn \bool
+  template <class T, class C = identity>
+  struct is
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<std::is_same<T, x>::value>);
+  };
+
+  /// \cond
+  template<class T>
+  struct is<T, identity>
+  {
+    template<class x>
+    using f = number<std::is_same<T, x>::value>;
+  };
+  /// \endcond
+} // namespace jln::mp
 namespace jln::mp
 {
   /// \ingroup list
@@ -2386,6 +2407,20 @@ namespace jln::mp
     template<class... xs>
     using f = number<sizeof...(xs)>;
   };
+
+  template<int_ i>
+  struct size<is<number<i>>>
+  {
+    template<class... xs>
+    using f = number<sizeof...(xs) == i>;
+  };
+
+  template<int_ i, class C>
+  struct size<is<number<i>, C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof...(xs) == i>);
+  };
   /// \endcond
 }
 namespace jln::mp
@@ -2396,6 +2431,15 @@ namespace jln::mp
     template<class... xs>
     using f = typename mp::conditional_c<!sizeof...(xs)>
       ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
+      ::template f<xs...>;
+  };
+
+  template<int_ i, class TC, class FC>
+  struct if_<size<is<number<i>>>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<sizeof...(xs) == i>
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
 }
@@ -3339,11 +3383,62 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C, number<!bool(x::value)>);
   };
 
+  template<class T, class C>
+  struct is<T, not_<C>>
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<!std::is_same<T, x>::value>);
+  };
+
+  template<class T>
+  struct is<T, not_<>>
+  {
+    template<class x>
+    using f = number<!std::is_same<T, x>::value>;
+  };
+
+  template<class C>
+  struct size<not_<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<!sizeof...(xs)>);
+  };
+
+  template<>
+  struct size<not_<>>
+  {
+    template<class... xs>
+    using f = number<!sizeof...(xs)>;
+  };
+
+  template<int_ i, class C>
+  struct size<is<number<i>, not_<C>>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof...(xs) != i>);
+  };
+
+  template<int_ i>
+  struct size<is<number<i>, not_<>>>
+  {
+    template<class... xs>
+    using f = number<sizeof...(xs) != i>;
+  };
+
   template<class TC, class FC>
   struct if_<size<not_<>>, TC, FC>
   {
     template<class... xs>
     using f = typename mp::conditional_c<!sizeof...(xs)>
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+      ::template f<xs...>;
+  };
+
+  template<int_ i, class TC, class FC>
+  struct if_<size<is<number<i>, not_<>>>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<sizeof...(xs) != i>
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
@@ -3378,27 +3473,6 @@ namespace jln::mp
 }
 
 
-namespace jln::mp
-{
-  /// \ingroup utility
-
-  /// \treturn \bool
-  template <class T, class C = identity>
-  struct is
-  {
-    template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<std::is_same<T, x>::value>);
-  };
-
-  /// \cond
-  template<class T>
-  struct is<T, identity>
-  {
-    template<class x>
-    using f = number<std::is_same<T, x>::value>;
-  };
-  /// \endcond
-} // namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
@@ -15490,6 +15564,21 @@ namespace jln::mp::detail
   };
 } // namespace jln::mp::detail
 /// \endcond
+namespace jln::mp
+{
+  /// \ingroup list
+
+  /// Checks whether a sequence has elements.
+  /// \treturn \bool
+  template<class C = identity>
+  using is_not_empty = size<is<number<0>, not_<C>>>;
+
+  namespace emp
+  {
+    template<class L, class C = mp::identity>
+    using is_not_empty = unpack<L, mp::is_not_empty<C>>;
+  }
+}
 namespace jln::mp
 {
   /// \ingroup list

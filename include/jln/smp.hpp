@@ -769,7 +769,7 @@ namespace jln::mp
   struct if_
   {
     template<class... xs>
-    using f = typename mp::conditional_c<bool(call<JLN_MP_TRACE_F(Pred), xs...>::value)>
+    using f = typename mp::conditional_c<bool(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, xs...)::value)>
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
@@ -910,6 +910,20 @@ namespace jln::mp
     template<class... xs>
     using f = number<sizeof...(xs)>;
   };
+
+  template<int_ i>
+  struct size<is<number<i>>>
+  {
+    template<class... xs>
+    using f = number<sizeof...(xs) == i>;
+  };
+
+  template<int_ i, class C>
+  struct size<is<number<i>, C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof...(xs) == i>);
+  };
   /// \endcond
 }
 namespace jln::mp
@@ -920,6 +934,15 @@ namespace jln::mp
     template<class... xs>
     using f = typename mp::conditional_c<!sizeof...(xs)>
       ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
+      ::template f<xs...>;
+  };
+
+  template<int_ i, class TC, class FC>
+  struct if_<size<is<number<i>>>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<sizeof...(xs) == i>
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
 }
@@ -3499,11 +3522,62 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C, number<!bool(x::value)>);
   };
 
+  template<class T, class C>
+  struct is<T, not_<C>>
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<!std::is_same<T, x>::value>);
+  };
+
+  template<class T>
+  struct is<T, not_<>>
+  {
+    template<class x>
+    using f = number<!std::is_same<T, x>::value>;
+  };
+
+  template<class C>
+  struct size<not_<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<!sizeof...(xs)>);
+  };
+
+  template<>
+  struct size<not_<>>
+  {
+    template<class... xs>
+    using f = number<!sizeof...(xs)>;
+  };
+
+  template<int_ i, class C>
+  struct size<is<number<i>, not_<C>>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof...(xs) != i>);
+  };
+
+  template<int_ i>
+  struct size<is<number<i>, not_<>>>
+  {
+    template<class... xs>
+    using f = number<sizeof...(xs) != i>;
+  };
+
   template<class TC, class FC>
   struct if_<size<not_<>>, TC, FC>
   {
     template<class... xs>
     using f = typename mp::conditional_c<!sizeof...(xs)>
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+      ::template f<xs...>;
+  };
+
+  template<int_ i, class TC, class FC>
+  struct if_<size<is<number<i>, not_<>>>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<sizeof...(xs) != i>
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
@@ -9291,7 +9365,7 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template <class... Fs>
-  using each = typename detail::_smp_each_select<sizeof...(Fs) < 5 ? sizeof...(Fs) : 5>
+  using each = typename detail::_smp_each_select<sizeof...(Fs) < 4 ? sizeof...(Fs) : 4>
     ::template f<Fs...>;
 }
 
@@ -9306,39 +9380,32 @@ namespace jln::mp::detail
   };
 
   template<>
+  struct _smp_each_select<0>
+  {};
+
+  template<>
   struct _smp_each_select<1>
   {
     template<class C>
-    using f = test_contract<size<not_<>>, subcontract<C>>;
+    using f = test_contract<size<not_<>>, assume_numbers<C>>;
   };
 
   template<>
   struct _smp_each_select<2>
   {
     template<class F, class C>
-    using f = test_contract<size<is<number<1>>>, each<
-      assume_unary<F>, monadic_xs<assume_unary<C>>>>;
+    using f = test_contract<size<is<number<1>>>, _each<
+      monadic_xs<assume_unary<C>>, assume_unary<F>>>;
   };
 
   template<>
   struct _smp_each_select<3>
   {
     template<class F0, class F1, class C>
-    using f = test_contract<size<is<number<2>>>, each<
+    using f = test_contract<size<is<number<2>>>, _each<
+      monadic_xs<assume_binary<C>>,
       assume_unary<F0>,
-      assume_unary<F1>,
-      monadic_xs<assume_binary<C>>>>;
-  };
-
-  template<>
-  struct _smp_each_select<4>
-  {
-    template<class F0, class F1, class F2, class C>
-    using f = test_contract<size<is<number<3>>>, each<
-      assume_unary<F0>,
-      assume_unary<F1>,
-      assume_unary<F2>,
-      monadic_xs<subcontract<C>>>>;
+      assume_unary<F1>>>;
   };
 
   struct _smp_each
@@ -9349,7 +9416,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _smp_each_select<5>
+  struct _smp_each_select<4>
   : mp::rotate_c<-1, detail::_smp_each>
   {};
 }
@@ -15452,7 +15519,7 @@ namespace jln::mp::smp
   using merge = test_contract<
     mp::if_<mp::at0<mp::is_list<>>, mp::at1<mp::is_list<>>>,
     mp::merge<
-      concepts::predicate<assume_binary<Cmp>, mp::identity, mp::always<true_>>,
+      concepts::strong_predicate<assume_binary<Cmp>, mp::identity, mp::always<true_>>,
       mp::if_<
         try_subcontract<is_sorted<Cmp>, mp::always<true_>, mp::always<false_>>,
         subcontract<C>,
@@ -19588,7 +19655,7 @@ namespace jln::mp::smp
 {
   template<class x, class Cmp, class TC = listify, class FC = TC>
   using upper_bound = contract<detail::_smp_lower_bound_impl<
-    x, mp::flip<concepts::predicate<assume_binary<Cmp>, mp::not_<>, violation>>,
+    x, mp::flip<concepts::strong_predicate<assume_binary<Cmp>, mp::not_<>, violation>>,
     subcontract<TC>, subcontract<FC>
   >>;
 
@@ -21127,6 +21194,26 @@ namespace jln::mp::detail
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, is_list);
 }
 /// \endcond
+namespace jln::mp
+{
+  /// \ingroup list
+
+  /// Checks whether a sequence has elements.
+  /// \treturn \bool
+  template<class C = identity>
+  using is_not_empty = size<is<number<0>, not_<C>>>;
+
+  namespace emp
+  {
+    template<class L, class C = mp::identity>
+    using is_not_empty = unpack<L, mp::is_not_empty<C>>;
+  }
+}
+namespace jln::mp::smp
+{
+  template<class C = identity>
+  using is_not_empty = contract<mp::is_not_empty<assume_positive_number<C>>>;
+}
 // This implementation comes from kvasir.mpl
 
 namespace jln::mp
