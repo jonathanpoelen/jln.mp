@@ -46,7 +46,7 @@ namespace jln::mp::detail
   struct substitute_if
   {
     template<class x>
-    using f = typename conditional_c<Pred::template f<x>::value>
+    using f = typename conditional_c<JLN_MP_TRACE_F(Pred)::template f<x>::value>
       ::template f<Replacement, x>;
   };
 
@@ -66,6 +66,7 @@ namespace jln::mp::detail
       ::template f<x, Replacement>;
   };
 
+#if ! JLN_MP_ENABLE_DEBUG
   template<template<class...> class Pred, class Replacement>
   struct substitute_if<lift<Pred>, Replacement>
   {
@@ -81,5 +82,6 @@ namespace jln::mp::detail
     using f = typename conditional_c<Pred<x>::type::value>
       ::template f<Replacement, x>;
   };
+#endif
 }
 /// \endcond
