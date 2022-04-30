@@ -308,6 +308,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#list/insert_sequence.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">insert_sequence</span><span class="ext">.hpp</span></a></li>
 <li><a href="#list/is_empty.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">is_empty</span><span class="ext">.hpp</span></a></li>
 <li><a href="#list/is_list.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">is_list</span><span class="ext">.hpp</span></a></li>
+<li><a href="#list/is_not_empty.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">is_not_empty</span><span class="ext">.hpp</span></a></li>
 <li><a href="#list/is_size_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">is_size_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#list/join.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">join</span><span class="ext">.hpp</span></a></li>
 <li><a href="#list/list.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">list</span><span class="ext">.hpp</span></a></li>
@@ -523,6 +524,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#list/insert_sequence.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">insert_sequence</span><span class="ext">.hpp</span></a></li>
 <li><a href="#list/is_empty.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">is_empty</span><span class="ext">.hpp</span></a></li>
 <li><a href="#list/is_list.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">is_list</span><span class="ext">.hpp</span></a></li>
+<li><a href="#list/is_not_empty.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">is_not_empty</span><span class="ext">.hpp</span></a></li>
 <li><a href="#list/is_size_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">is_size_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#list/join.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">join</span><span class="ext">.hpp</span></a></li>
 <li><a href="#list/list.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">list/</span><span class="basename">list</span><span class="ext">.hpp</span></a></li>
@@ -810,6 +812,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#mp::insert_sequence_c" class="index_link">insert_sequence_c</a></li>
 <li><a href="#mp::is_empty" class="index_link">is_empty</a></li>
 <li><a href="#mp::is_list" class="index_link">is_list</a></li>
+<li><a href="#mp::is_not_empty" class="index_link">is_not_empty</a></li>
 <li><a href="#mp::is_size_of" class="index_link">is_size_of</a></li>
 <li><a href="#mp::is_size_of_c" class="index_link">is_size_of_c</a></li>
 <li><a href="#mp::join" class="index_link">join</a></li>
@@ -1339,6 +1342,7 @@ R foo<span class="p">();</span></code></section>
 <li><a href="#mp::is_list" class="index_link">is_list</a></li>
 <li><a href="#mp::is_na" class="index_link">is_na</a></li>
 <li><a href="#mp::is_not" class="index_link">is_not</a></li>
+<li><a href="#mp::is_not_empty" class="index_link">is_not_empty</a></li>
 <li><a href="#mp::is_number" class="index_link">is_number</a></li>
 <li><a href="#mp::is_size_of" class="index_link">is_size_of</a></li>
 <li><a href="#mp::is_size_of_c" class="index_link">is_size_of_c</a></li>
@@ -2001,6 +2005,7 @@ then calls <code class="inlinecode highlight" data-lang="cpp">C</code> with the 
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::insert_sequence">insert_sequence</a><span class="o">&lt;</span>index<span class="p">,</span> seq<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::insert_sequence_c">insert_sequence_c</a><span class="o">&lt;</span>index<span class="p">::</span>value<span class="p">,</span> seq<span class="p">,</span> C<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_empty">is_empty</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Checks whether a sequence has no elements.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_list">is_list</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Checks whether <code class="inlinecode highlight" data-lang="cpp">x</code> is a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code>.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_not_empty">is_not_empty</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Checks whether a sequence has elements.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_size_of">is_size_of</a><span class="o">&lt;</span>N<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::size">size</a><span class="o">&lt;</span><a href="#mp::is">is</a><span class="o">&lt;</span>N<span class="p">,</span> C<span class="o">></span><span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_size_of_c">is_size_of_c</a><span class="o">&lt;</span><a href="#mp::int_">int_</a> n<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::size">size</a><span class="o">&lt;</span><a href="#mp::is">is</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>n<span class="o">></span><span class="p">,</span> C<span class="o">></span><span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::join">join</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seqs<span class="p">...</span><span class="o">></span></code></td><td>Concatenates <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::list">list</a></code>s.</td></tr>
@@ -3289,7 +3294,7 @@ Signature: <code class="inlinecode highlight" data-lang="cpp"><span class="kt">i
 <p>Return: <a href="#d_value">value</a>
 </p><p>A conditional expression.</p><p>
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
-<code class="blockcode highlight" data-lang="cpp"><a href="#mp::conditional_c">mp<span class="p">::</span>conditional_c</a><span class="o">&lt;</span><span class="kt">bool</span><span class="p">(</span><a href="#mp::call">call</a><span class="o">&lt;</span>Pred<span class="p">,</span> xs<span class="p">...</span><span class="o">></span><span class="p">::</span>value<span class="p">)</span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>TC<span class="p">,</span> FC<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></div><div class="group__emp">
+<code class="blockcode highlight" data-lang="cpp"><a href="#mp::conditional_c">mp<span class="p">::</span>conditional_c</a><span class="o">&lt;</span><span class="kt">bool</span><span class="p">(</span>Pred<span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span><span class="p">::</span>value<span class="p">)</span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>TC<span class="p">,</span> FC<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></div><div class="group__emp">
 <h3 class="emp" id="emp::if_"><a href="#emp::if_" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>if_<span class="o">&lt;</span>Pred<span class="p">,</span> TC<span class="p">,</span> FC<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::if_">mp<span class="p">::</span>if_</a><span class="o">&lt;</span>Pred<span class="p">,</span> TC<span class="p">,</span> FC<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h3>
 </div>
 </div>
@@ -4168,6 +4173,15 @@ A negative value represents an index starting from the end.
 </p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
 <code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><span class="c1">/* implementation defined */</span><span class="o">></span></code></div><div class="group__emp">
 <h3 class="emp" id="emp::is_list"><a href="#emp::is_list" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>is_list<span class="o">&lt;</span>x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">mp<span class="p">::</span>identity</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><span class="c1">/* implementation defined */</span><span class="o">></span></code></h3>
+</div>
+</div>
+<h2 class="file" id="list/is_not_empty.hpp"><a href="#list/is_not_empty.hpp" class="ref">¶</a>&lt;jln/mp/list/is_not_empty.hpp></h2><div class="group__file">
+<h3 id="mp::is_not_empty"><a href="#mp::is_not_empty" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">is_not_empty<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h3>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
+</p><p>Checks whether a sequence has elements.</p><p>
+</p><div class="InfoBox"><h4 class="InfoBox-title">Implementation</h4>
+<code class="blockcode highlight" data-lang="cpp"><a href="#mp::size">size</a><span class="o">&lt;</span><a href="#mp::is">is</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">0</span><span class="o">></span><span class="p">,</span> <a href="#mp::not_">not_</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span><span class="o">></span></code></div><div class="group__emp">
+<h3 class="emp" id="emp::is_not_empty"><a href="#emp::is_not_empty" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>is_not_empty<span class="o">&lt;</span>L<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">mp<span class="p">::</span>identity</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::is_not_empty">mp<span class="p">::</span>is_not_empty</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span></code></h3>
 </div>
 </div>
 <h2 class="file" id="list/is_size_of.hpp"><a href="#list/is_size_of.hpp" class="ref">¶</a>&lt;jln/mp/list/is_size_of.hpp></h2><div class="group__file">
