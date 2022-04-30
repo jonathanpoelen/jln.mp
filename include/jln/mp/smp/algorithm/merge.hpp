@@ -15,7 +15,7 @@ namespace jln::mp::smp
   using merge = test_contract<
     mp::if_<mp::at0<mp::is_list<>>, mp::at1<mp::is_list<>>>,
     mp::merge<
-      concepts::predicate<assume_binary<Cmp>, mp::identity, mp::always<true_>>,
+      concepts::strong_predicate<assume_binary<Cmp>, mp::identity, mp::always<true_>>,
       mp::if_<
         try_subcontract<is_sorted<Cmp>, mp::always<true_>, mp::always<false_>>,
         subcontract<C>,
