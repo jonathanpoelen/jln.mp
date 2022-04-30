@@ -871,11 +871,62 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C, number<!bool(x::value)>);
   };
 
+  template<class T, class C>
+  struct is<T, not_<C>>
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<!std::is_same<T, x>::value>);
+  };
+
+  template<class T>
+  struct is<T, not_<>>
+  {
+    template<class x>
+    using f = number<!std::is_same<T, x>::value>;
+  };
+
+  template<class C>
+  struct size<not_<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<!sizeof...(xs)>);
+  };
+
+  template<>
+  struct size<not_<>>
+  {
+    template<class... xs>
+    using f = number<!sizeof...(xs)>;
+  };
+
+  template<int_ i, class C>
+  struct size<is<number<i>, not_<C>>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof...(xs) != i>);
+  };
+
+  template<int_ i>
+  struct size<is<number<i>, not_<>>>
+  {
+    template<class... xs>
+    using f = number<sizeof...(xs) != i>;
+  };
+
   template<class TC, class FC>
   struct if_<size<not_<>>, TC, FC>
   {
     template<class... xs>
     using f = typename mp::conditional_c<!sizeof...(xs)>
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+      ::template f<xs...>;
+  };
+
+  template<int_ i, class TC, class FC>
+  struct if_<size<is<number<i>, not_<>>>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<sizeof...(xs) != i>
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };

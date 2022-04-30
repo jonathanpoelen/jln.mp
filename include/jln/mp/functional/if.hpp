@@ -40,5 +40,14 @@ namespace jln::mp
       ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
       ::template f<xs...>;
   };
+
+  template<int_ i, class TC, class FC>
+  struct if_<size<is<number<i>>>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<sizeof...(xs) == i>
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+      ::template f<xs...>;
+  };
 }
 /// \endcond
