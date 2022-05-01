@@ -92,8 +92,7 @@ TEST()
 
   test_context<
     skip_inclusive_while_xs<size<greater_than_c<3>>>,
-    smp::skip_inclusive_while_xs<smp::size<smp::greater_than_c<3>>>,
-    0
+    smp::skip_inclusive_while_xs<smp::size<smp::greater_than_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
@@ -131,8 +130,7 @@ TEST()
 
   test_context<
     skip_inclusive_while_xs<front<equal_to_c<3>>>,
-    smp::skip_inclusive_while_xs<smp::front<smp::equal_to_c<3>>>,
-    0
+    smp::skip_inclusive_while_xs<smp::front<smp::equal_to_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _1>()
@@ -239,8 +237,7 @@ TEST()
 
   test_context<
     partial_skip_inclusive_while_xs_c<65, size<greater_than_c<3>>>,
-    smp::partial_skip_inclusive_while_xs_c<65, smp::size<smp::greater_than_c<3>>>,
-    0
+    smp::partial_skip_inclusive_while_xs_c<65, smp::size<smp::greater_than_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
@@ -279,8 +276,7 @@ TEST()
 
   test_context<
     partial_skip_inclusive_while_xs_c<66, front<equal_to_c<3>>>,
-    smp::partial_skip_inclusive_while_xs_c<66, smp::front<smp::equal_to_c<3>>>,
-    0
+    smp::partial_skip_inclusive_while_xs_c<66, smp::front<smp::equal_to_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _1>()

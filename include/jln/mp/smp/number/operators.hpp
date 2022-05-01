@@ -61,16 +61,16 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using or_ = try_contract<mp::or_<assume_number<C>>>;
+  using or_ = try_contract<mp::or_<assume_positive_number<C>>>;
 
   template<class C = identity>
-  using and_ = try_contract<mp::and_<assume_number<C>>>;
+  using and_ = try_contract<mp::and_<assume_positive_number<C>>>;
 
   template<class C = identity>
-  using left_or = try_contract<mp::left_or<assume_number<C>>>;
+  using left_or = try_contract<mp::left_or<assume_positive_number<C>>>;
 
   template<class C = identity>
-  using left_and = try_contract<mp::left_and<assume_number<C>>>;
+  using left_and = try_contract<mp::left_and<assume_positive_number<C>>>;
 
   template<class C = identity>
   using add = try_contract<mp::add<assume_number<C>>>;
@@ -181,7 +181,7 @@ namespace jln::mp::smp
   using unary_plus = try_contract<mp::unary_plus<assume_number<C>>>;
 
   template<class C = identity>
-  using not_ = try_contract<mp::not_<assume_number<C>>>;
+  using not_ = try_contract<mp::not_<assume_positive_number<C>>>;
 
   template<class C = identity>
   using bit_not = try_contract<mp::bit_not<assume_number<C>>>;
@@ -193,53 +193,53 @@ namespace jln::mp::smp
   using dec = try_contract<mp::dec<assume_number<C>>>;
 
   template<class C = identity>
-  using equal = try_contract<mp::equal<assume_number<C>>>;
+  using equal = try_contract<mp::equal<assume_positive_number<C>>>;
 
   template<class C = identity>
-  using not_equal = try_contract<mp::not_equal<assume_number<C>>>;
+  using not_equal = try_contract<mp::not_equal<assume_positive_number<C>>>;
 
   template<class C = identity>
-  using less = try_contract<mp::less<assume_number<C>>>;
+  using less = try_contract<mp::less<assume_positive_number<C>>>;
 
   template<class C = identity>
-  using less_equal = try_contract<mp::less_equal<assume_number<C>>>;
+  using less_equal = try_contract<mp::less_equal<assume_positive_number<C>>>;
 
   template<class C = identity>
-  using greater = try_contract<mp::greater<assume_number<C>>>;
+  using greater = try_contract<mp::greater<assume_positive_number<C>>>;
 
   template<class C = identity>
-  using greater_equal = try_contract<mp::greater_equal<assume_number<C>>>;
+  using greater_equal = try_contract<mp::greater_equal<assume_positive_number<C>>>;
 
 
   template<class N, class C = identity>
   using equal_to = contract<
     mp::push_front<N,
-      mp::try_<mp::equal<assume_number<C>>>>>;
+      mp::try_<mp::equal<assume_positive_number<C>>>>>;
 
   template<class N, class C = identity>
   using not_equal_to = contract<
     mp::push_front<N,
-      mp::try_<mp::not_equal<assume_number<C>>>>>;
+      mp::try_<mp::not_equal<assume_positive_number<C>>>>>;
 
   template<class N, class C = identity>
   using less_than = contract<
     mp::push_back<N,
-      mp::try_<mp::less<assume_number<C>>>>>;
+      mp::try_<mp::less<assume_positive_number<C>>>>>;
 
   template<class N, class C = identity>
   using less_equal_than = contract<
     mp::push_back<N,
-      mp::try_<mp::less_equal<assume_number<C>>>>>;
+      mp::try_<mp::less_equal<assume_positive_number<C>>>>>;
 
   template<class N, class C = identity>
   using greater_than = contract<
     mp::push_back<N,
-      mp::try_<mp::greater<assume_number<C>>>>>;
+      mp::try_<mp::greater<assume_positive_number<C>>>>>;
 
   template<class N, class C = identity>
   using greater_equal_than = contract<
     mp::push_back<N,
-      mp::try_<mp::greater_equal<assume_number<C>>>>>;
+      mp::try_<mp::greater_equal<assume_positive_number<C>>>>>;
 
 
   template<int_ n, class C = identity>

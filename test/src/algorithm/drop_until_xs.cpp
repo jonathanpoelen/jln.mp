@@ -102,8 +102,7 @@ TEST()
 
   test_context<
     drop_inclusive_until_xs<size<less_equal_than_c<3>>>,
-    smp::drop_inclusive_until_xs<smp::size<smp::less_equal_than_c<3>>>,
-    0
+    smp::drop_inclusive_until_xs<smp::size<smp::less_equal_than_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
@@ -141,8 +140,7 @@ TEST()
 
   test_context<
     drop_inclusive_until_xs<size<greater_equal_than_c<3>>, mp::listify, mp::always<void>>,
-    smp::drop_inclusive_until_xs<smp::size<smp::greater_equal_than_c<3>>, smp::listify, smp::always<void>>,
-    0
+    smp::drop_inclusive_until_xs<smp::size<smp::greater_equal_than_c<3>>, smp::listify, smp::always<void>>
   >()
     .test<void>()
     .test<void, _0>()
@@ -152,8 +150,7 @@ TEST()
 
   test_context<
     drop_inclusive_until_xs<front<not_equal_to_c<3>>>,
-    smp::drop_inclusive_until_xs<smp::front<smp::not_equal_to_c<3>>>,
-    0
+    smp::drop_inclusive_until_xs<smp::front<smp::not_equal_to_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _1>()
@@ -287,8 +284,7 @@ TEST()
 
   test_context<
     partial_drop_inclusive_until_xs_c<65, size<less_equal_than_c<3>>>,
-    smp::partial_drop_inclusive_until_xs_c<65, smp::size<smp::less_equal_than_c<3>>>,
-    0
+    smp::partial_drop_inclusive_until_xs_c<65, smp::size<smp::less_equal_than_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
@@ -327,8 +323,7 @@ TEST()
 
   test_context<
     partial_drop_inclusive_until_xs_c<4, size<greater_equal_than_c<3>>, mp::listify, mp::always<void>>,
-    smp::partial_drop_inclusive_until_xs_c<4, smp::size<smp::greater_equal_than_c<3>>, smp::listify, smp::always<void>>,
-    0
+    smp::partial_drop_inclusive_until_xs_c<4, smp::size<smp::greater_equal_than_c<3>>, smp::listify, smp::always<void>>
   >()
     .test<void>()
     .test<void, _0>()
@@ -338,8 +333,7 @@ TEST()
 
   test_context<
     partial_drop_inclusive_until_xs_c<66, front<not_equal_to_c<3>>>,
-    smp::partial_drop_inclusive_until_xs_c<66, smp::front<smp::not_equal_to_c<3>>>,
-    0
+    smp::partial_drop_inclusive_until_xs_c<66, smp::front<smp::not_equal_to_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _1>()

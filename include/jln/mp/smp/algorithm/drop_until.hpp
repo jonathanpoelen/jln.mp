@@ -3,6 +3,7 @@
 #include <jln/mp/smp/concepts.hpp>
 #include <jln/mp/smp/list/clear.hpp>
 #include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/algorithm/drop_while.hpp>
 #include <jln/mp/algorithm/drop_until.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/functional/if.hpp>
@@ -26,7 +27,7 @@ namespace jln::mp::smp
 
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
   using drop_until_extended_by_n_c = drop_until<
-    Pred, contract<mp::drop_front_max_c<ExtendedByN, subcontract<TC>>>, FC>;
+    Pred, contract<detail::smp_drop_front_or_drop_front_max_t<ExtendedByN, subcontract<TC>>>, FC>;
 }
 
 JLN_MP_MAKE_REGULAR_SMP4_P(drop_until_extended_by_n,

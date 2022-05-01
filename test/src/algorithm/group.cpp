@@ -47,7 +47,7 @@ TEST()
     .not_invocable<_0, _0>()
     ;
 
-  test_context<group<>, smp::group<>, 0>()
+  test_context<group<>, smp::group<>>()
     .test<list<>>()
     .test<list<seq_0_0_0, list<_1, _1>, seq_0, seq_2>,
       _0, _0, _0, _1, _1, _0, _2>()
@@ -57,8 +57,7 @@ TEST()
 
   test_context<
     group<transform<unpack<size<>>>>,
-    smp::group<smp::transform<smp::unpack<smp::size<>>>>,
-    0
+    smp::group<smp::transform<smp::unpack<smp::size<>>>>
   >()
     .test<list<>>()
     .test<list<_3, _2, _1, _1>,

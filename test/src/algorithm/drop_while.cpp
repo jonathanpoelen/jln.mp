@@ -86,8 +86,7 @@ TEST()
 
   test_context<
     drop_inclusive_while<is_not<_3>>,
-    smp::drop_inclusive_while<smp::is_not<_3>>,
-    0
+    smp::drop_inclusive_while<smp::is_not<_3>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
@@ -120,8 +119,7 @@ TEST()
 
   test_context<
     drop_inclusive_while<is_not<_3>, mp::listify, mp::always<void>>,
-    smp::drop_inclusive_while<smp::is_not<_3>, smp::listify, smp::always<void>>,
-    0
+    smp::drop_inclusive_while<smp::is_not<_3>, smp::listify, smp::always<void>>
   >()
     .test<void>()
     .test<void, _0>()
@@ -132,8 +130,7 @@ TEST()
 
   test_context<
     drop_inclusive_while<equal_to_c<3>>,
-    smp::drop_inclusive_while<smp::equal_to_c<3>>,
-    0
+    smp::drop_inclusive_while<smp::equal_to_c<3>>
   >()
     .test<list<>>()
     .test<list<>, _1>()

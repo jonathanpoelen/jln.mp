@@ -3,31 +3,10 @@
 #include <jln/mp/smp/concepts.hpp>
 #include <jln/mp/smp/list/clear.hpp>
 #include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/algorithm/drop_while.hpp>
 #include <jln/mp/algorithm/drop_while_xs.hpp>
 #include <jln/mp/list/size.hpp>
 #include <jln/mp/functional/if.hpp>
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<bool IsZero>
-  struct smp_drop_while_for_size;
-
-  template<>
-  struct smp_drop_while_for_size<true>
-  {
-    template<std::size_t ExtendedByN, class C>
-    using f = C;
-  };
-
-  template<>
-  struct smp_drop_while_for_size<false>
-  {
-    template<std::size_t ExtendedByN, class C>
-    using f = contract<mp::drop_front_max_c<ExtendedByN, subcontract<C>>>;
-  };
-}
-/// \endcond
 
 namespace jln::mp::smp
 {
@@ -65,14 +44,14 @@ namespace jln::mp::smp
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
   using drop_while_extended_by_n_xs_c = drop_while_xs<
     Pred,
-    typename detail::smp_drop_while_for_size<ExtendedByN == 0>::template f<ExtendedByN, TC>,
+    contract<detail::smp_drop_front_or_drop_front_max_t<ExtendedByN, TC>>,
     FC>;
 
   template<int_ OffsetEnd, std::size_t ExtendedByN,
            class Pred, class TC = listify, class FC = clear<TC>>
   using partial_drop_while_extended_by_n_xs_c = partial_drop_while_xs_c<
     OffsetEnd, Pred,
-    typename detail::smp_drop_while_for_size<ExtendedByN == 0>::template f<ExtendedByN, TC>,
+    contract<detail::smp_drop_front_or_drop_front_max_t<ExtendedByN, TC>>,
     FC>;
 }
 

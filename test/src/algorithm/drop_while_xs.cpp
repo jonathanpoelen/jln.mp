@@ -102,8 +102,7 @@ TEST()
 
   test_context<
     drop_inclusive_while_xs<size<greater_than_c<3>>>,
-    smp::drop_inclusive_while_xs<smp::size<smp::greater_than_c<3>>>,
-    0
+    smp::drop_inclusive_while_xs<smp::size<smp::greater_than_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
@@ -141,8 +140,7 @@ TEST()
 
   test_context<
     drop_inclusive_while_xs<size<less_than_c<3>>, mp::listify, mp::always<void>>,
-    smp::drop_inclusive_while_xs<smp::size<smp::less_than_c<3>>, smp::listify, smp::always<void>>,
-    0
+    smp::drop_inclusive_while_xs<smp::size<smp::less_than_c<3>>, smp::listify, smp::always<void>>
   >()
     .test<void>()
     .test<void, _0>()
@@ -152,8 +150,7 @@ TEST()
 
   test_context<
     drop_inclusive_while_xs<front<equal_to_c<3>>>,
-    smp::drop_inclusive_while_xs<smp::front<smp::equal_to_c<3>>>,
-    0
+    smp::drop_inclusive_while_xs<smp::front<smp::equal_to_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _1>()
@@ -286,8 +283,7 @@ TEST()
 
   test_context<
     partial_drop_inclusive_while_xs_c<65, size<greater_than_c<3>>>,
-    smp::partial_drop_inclusive_while_xs_c<65, smp::size<smp::greater_than_c<3>>>,
-    0
+    smp::partial_drop_inclusive_while_xs_c<65, smp::size<smp::greater_than_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _0>()
@@ -326,8 +322,7 @@ TEST()
 
   test_context<
     partial_drop_inclusive_while_xs_c<4, size<less_than_c<3>>, mp::listify, mp::always<void>>,
-    smp::partial_drop_inclusive_while_xs_c<4, smp::size<smp::less_than_c<3>>, smp::listify, smp::always<void>>,
-    0
+    smp::partial_drop_inclusive_while_xs_c<4, smp::size<smp::less_than_c<3>>, smp::listify, smp::always<void>>
   >()
     .test<void>()
     .test<void, _0>()
@@ -337,8 +332,7 @@ TEST()
 
   test_context<
     partial_drop_inclusive_while_xs_c<66, front<equal_to_c<3>>>,
-    smp::partial_drop_inclusive_while_xs_c<66, smp::front<smp::equal_to_c<3>>>,
-    0
+    smp::partial_drop_inclusive_while_xs_c<66, smp::front<smp::equal_to_c<3>>>
   >()
     .test<list<>>()
     .test<list<>, _1>()

@@ -22,5 +22,11 @@ namespace jln::mp::detail
   {
     using type = smp::unique_justseen_by<sfinae<Cmp>, sfinae<C>>;
   };
+
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, unique_justseen_by<same<>, C>>
+  {
+    using type = smp::unique_justseen<sfinae<C>>;
+  };
 }
 /// \endcond

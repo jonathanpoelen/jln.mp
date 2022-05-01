@@ -44,14 +44,14 @@ namespace jln::mp::smp
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
   using drop_until_extended_by_n_xs_c = drop_until_xs<
     Pred,
-    typename detail::smp_drop_while_for_size<ExtendedByN == 0>::template f<ExtendedByN, TC>,
+    contract<detail::smp_drop_front_or_drop_front_max_t<ExtendedByN, TC>>,
     FC>;
 
   template<int_ OffsetEnd, std::size_t ExtendedByN,
            class Pred, class TC = listify, class FC = clear<TC>>
   using partial_drop_until_extended_by_n_xs_c = partial_drop_until_xs_c<
     OffsetEnd, Pred,
-    typename detail::smp_drop_while_for_size<ExtendedByN == 0>::template f<ExtendedByN, TC>,
+    contract<detail::smp_drop_front_or_drop_front_max_t<ExtendedByN, TC>>,
     FC>;
 }
 

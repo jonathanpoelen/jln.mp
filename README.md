@@ -20,7 +20,7 @@ Functions of jln.mp are used in 2 stages:
 For example, suppose we want to remove `void` from a sequence. The function to use is `jln::mp::remove`:
 
 ```cpp
-using remove_void = jln:mp::remove<void>;
+using remove_void = jln::mp::remove<void>;
 ```
 
 We can then apply it to our data:

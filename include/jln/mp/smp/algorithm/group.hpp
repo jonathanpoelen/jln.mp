@@ -23,5 +23,11 @@ namespace jln::mp::detail
   {
     using type = smp::group_by<sfinae<Cmp>, sfinae<C>>;
   };
+
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, group_by<same<>, C>>
+  {
+    using type = smp::group<sfinae<C>>;
+  };
 }
 /// \endcond
