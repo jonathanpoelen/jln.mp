@@ -18,11 +18,13 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Returns a list of the same form as L with the duplicate elements removed.
+  /// Only the first element found is kept.
   /// \treturn \sequence
   template<class C = listify>
   using unique = typename detail::mk_unique<lift<std::is_same>, C>::type;
 
   /// Returns a list of the same form as L with the duplicate elements removed.
+  /// Only the first element found is kept.
   /// \treturn \sequence
   template<class Cmp = lift<std::is_same>, class C = listify>
   using unique_if = typename detail::mk_unique<Cmp, C>::type;
