@@ -2,6 +2,7 @@
 
 #include <jln/mp/detail/enumerate.hpp>
 #include <jln/mp/list/listify.hpp>
+#include <jln/mp/list/front.hpp>
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/utility/unpack.hpp>
 
@@ -99,19 +100,47 @@ namespace jln::mp
   struct drop_front_max_c<0, listify> : listify
   {};
 
-  #define JLN_MP_DROP_FRONT(n, mp_xs, mp_rxs, mp_dup)    \
-    template<class C>                                    \
-    struct drop_front_c<n, C>                            \
-    {                                                    \
-      template<mp_dup(class, JLN_MP_COMMA), class... xs> \
-      using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);     \
-    };                                                   \
-                                                         \
-    template<>                                           \
-    struct drop_front_c<n, listify>                      \
-    {                                                    \
-      template<mp_dup(class, JLN_MP_COMMA), class... xs> \
-      using f = list<xs...>;                             \
+  template<class C>
+  struct drop_front_c<0, front<C>> : listify
+  {
+    template<class x, class...>
+    using f = JLN_MP_CALL_TRACE(C, x);
+  };
+
+  template<>
+  struct drop_front_c<0, front<identity>> : listify
+  {
+    template<class x, class...>
+    using f = x;
+  };
+
+  #define JLN_MP_DROP_FRONT(n, mp_xs, mp_rxs, mp_dup)             \
+    template<class C>                                             \
+    struct drop_front_c<n, C>                                     \
+    {                                                             \
+      template<mp_dup(class, JLN_MP_COMMA), class... xs>          \
+      using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);              \
+    };                                                            \
+                                                                  \
+    template<>                                                    \
+    struct drop_front_c<n, listify>                               \
+    {                                                             \
+      template<mp_dup(class, JLN_MP_COMMA), class... xs>          \
+      using f = list<xs...>;                                      \
+    };                                                            \
+                                                                  \
+    template<class C>                                             \
+    struct drop_front_c<n, front<C>>                              \
+    {                                                             \
+      template<mp_dup(class, JLN_MP_COMMA), class x, class... xs> \
+      using f = JLN_MP_CALL_TRACE(C, x);                          \
+    };                                                            \
+                                                                  \
+    template<>                                                    \
+    struct drop_front_c<n, front<identity>>                       \
+    {                                                             \
+      template<mp_dup(class, JLN_MP_COMMA), class x, class... xs> \
+      using f = x;                                                \
     };
 
   JLN_MP_GEN_XS_1_TO_8_INCLUDED(JLN_MP_DROP_FRONT)
