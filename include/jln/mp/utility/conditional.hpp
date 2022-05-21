@@ -10,28 +10,28 @@ namespace jln::mp
   template<>
   struct conditional_c<true>
   {
-    template<class x, class y>
-    using f = x;
+    template<class true_value, class false_value>
+    using f = true_value;
   };
 
   template<>
   struct conditional_c<false>
   {
-    template<class x, class y>
-    using f = y;
+    template<class true_value, class false_value>
+    using f = false_value;
   };
 
-  template<class v>
-  using conditional = conditional_c<bool(v::value)>;
+  template<class bool_>
+  using conditional = conditional_c<bool(bool_::value)>;
 
   namespace emp
   {
-    template<class v, class x, class y>
-    using conditional = typename mp::conditional_c<bool(v::value)>
-      ::template f<x, y>;
+    template<class bool_, class true_value, class false_value>
+    using conditional = typename mp::conditional_c<bool(bool_::value)>
+      ::template f<true_value, false_value>;
 
-    template<bool cond, class x, class y>
-    using conditional_c = typename mp::conditional_c<cond>
-      ::template f<x, y>;
+    template<bool bool_, class true_value, class false_value>
+    using conditional_c = typename mp::conditional_c<bool_>
+      ::template f<true_value, false_value>;
   }
 } // namespace jln::mp
