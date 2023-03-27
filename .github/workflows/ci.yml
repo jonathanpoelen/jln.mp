@@ -110,6 +110,25 @@ jobs:
       fail-fast: false
       matrix:
         debug: ['false', 'true']
+        # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
+        cxx: ['g++-12', 'clang++-13', 'clang++-14']
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - run: |
+        python -m pip install ninja meson
+        CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
+        CLICOLOR_FORCE= ninja -C build -k10
+
+  linux-old:
+    name: Ubuntu ${{ matrix.cxx }} dbg=${{ matrix.debug }}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        debug: ['false', 'true']
         cxx: ['g++-9', 'g++-10', 'clang++-10', 'clang++-11', 'clang++-12']
 
     steps:
@@ -122,7 +141,7 @@ jobs:
 
   auto-gen:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: [linux, macos, windows-cl, windows-clang, windows-gcc]
+    needs: [linux, linux-old, macos, windows-cl, windows-clang, windows-gcc]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -160,7 +179,7 @@ jobs:
           ./tools/amalgamated.lua include/jln/mp.hpp > standalone/include/jln/mp.hpp
           ./tools/amalgamated.lua include/jln/mp/smp.hpp > standalone/include/jln/smp.hpp
 
-          for comp in g++-9 g++-10 clang++-10 clang++-11 clang++-12 ; do
+          for comp in g++-9 g++-10 g++-11 g++-12 clang++-12 clang++-13 clang++-14 ; do
             for basename in mp smp ; do
               $comp -std=c++17 -fsyntax-only -x c++ - <<<'#include "standalone/include/jln/'$basename'.hpp"'
             done
