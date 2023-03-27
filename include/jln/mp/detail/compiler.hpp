@@ -3,25 +3,25 @@
 // Compiler type
 //@{
 #if defined(_MSC_VER) && defined(__clang__)
-#  define JLN_MP_CLANG_LIKE 1
-#  define JLN_MP_MSVC_LIKE 1
-#  define JLN_MP_CLANG_CL 1
+#  define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
+#  define JLN_MP_MSVC_LIKE _MSC_VER
+#  define JLN_MP_CLANG_CL (__clang_major__ * 100 + __clang_minor__)
 #  define JLN_MP_CLANG 0
 #  define JLN_MP_MSVC 0
 #  define JLN_MP_GCC 0
 #elif defined(__clang__)
-#  define JLN_MP_CLANG_LIKE 1
+#  define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
 #  define JLN_MP_MSVC_LIKE 0
 #  define JLN_MP_CLANG_CL 0
-#  define JLN_MP_CLANG 1
+#  define JLN_MP_CLANG (__clang_major__ * 100 + __clang_minor__)
 #  define JLN_MP_MSVC 0
 #  define JLN_MP_GCC 0
 #elif defined(_MSC_VER)
 #  define JLN_MP_CLANG_LIKE 0
-#  define JLN_MP_MSVC_LIKE 1
+#  define JLN_MP_MSVC_LIKE _MSC_VER
 #  define JLN_MP_CLANG_CL 0
 #  define JLN_MP_CLANG 0
-#  define JLN_MP_MSVC 1
+#  define JLN_MP_MSVC _MSC_VER
 #  define JLN_MP_GCC 0
 #elif defined(__GNUC__)
 #  define JLN_MP_CLANG_LIKE 0
@@ -29,7 +29,7 @@
 #  define JLN_MP_CLANG_CL 0
 #  define JLN_MP_CLANG 0
 #  define JLN_MP_MSVC 0
-#  define JLN_MP_GCC 1
+#  define JLN_MP_GCC (__GNUC__ * 100 + __GNUC_MINOR__)
 #else
 #  define JLN_MP_CLANG_LIKE 0
 #  define JLN_MP_MSVC_LIKE 0
@@ -39,6 +39,8 @@
 #  define JLN_MP_GCC 0
 #endif
 //@}
+
+#define JLN_MP_WORKAROUND(symbol, test) ((symbol) != 0 && ((symbol) test))
 
 #define JLN_MP_PRAGMA(x) JLN_MP_PRAGMA_I(x)
 

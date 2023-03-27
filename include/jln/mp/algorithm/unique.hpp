@@ -68,10 +68,10 @@ namespace jln::mp::detail
 
   template<class... xs, class x>
   struct _set_push_back<list<xs...>, x,
-#if JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC_LIKE
-      __is_base_of(inherit_item<x>, inherit<xs...>)
+#if JLN_MP_WORKAROUND(JLN_MP_CLANG_LIKE, >= 1200) || JLN_MP_WORKAROUND(JLN_MP_GCC, >= 1200)
+    __is_base_of(inherit_item<x>, inherit<xs...>)
 #else
-      std::is_base_of<inherit_item<x>, inherit<xs...>>::value
+    std::is_base_of<inherit_item<x>, inherit<xs...>>::value
 #endif
   >
   {
