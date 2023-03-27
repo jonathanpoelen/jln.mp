@@ -128,8 +128,8 @@ namespace jln::mp::traits
   template<class C = identity>
   struct extent
   {
-    template<class x, class... i>
-    using f = JLN_MP_CALL_TRACE(C, typename std::extent<x, i::value...>::type);
+    template<class x, class i>
+    using f = JLN_MP_CALL_TRACE(C, typename std::extent<x, i::value>::type);
   };
 
   namespace emp
@@ -261,4 +261,6 @@ namespace jln::mp::traits
     using f = typename std::aligned_union<len::value, xs...>::type;
   };
   /// \endcond
+
+#undef JLN_MP_MAKE_TRAIT
 }
