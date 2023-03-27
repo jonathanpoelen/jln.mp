@@ -66,6 +66,10 @@ namespace jln::mp::detail
     : inherit_impl<ints, xs>...
   {};
 
+  template<class... xs>
+  struct inherit2 : inherit_item<xs>...
+  {};
+
 #if JLN_MP_MSVC_LIKE
   template<class... xs>
   struct _is_set
@@ -83,7 +87,7 @@ namespace jln::mp::detail
   };
 #endif
 
-  template<class L, class x, class = void>
+  template<class L, class x, bool = false>
   struct _set_push_back
   {
     using type = L;
@@ -91,14 +95,12 @@ namespace jln::mp::detail
 
   template<class... xs, class x>
   struct _set_push_back<list<xs...>, x,
-    std::enable_if_t<
-#if JLN_MP_MSVC_LIKE
-      // workaround for MSVC which has a broken EBO
-      _is_set<xs..., x>::type::value
+#if JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC_LIKE
+      __is_base_of(inherit_item<x>, inherit2<xs...>)
 #else
-      sizeof(inherit<std::make_index_sequence<sizeof...(xs)+1>, xs..., x>) == 1
+      std::is_base_of<inherit_item<x>, inherit2<xs...>>::value
 #endif
-  >>
+  >
   {
     using type = list<xs..., x>;
   };
