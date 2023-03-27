@@ -79,16 +79,15 @@ namespace jln::mp
 
 
 #include <jln/mp/algorithm/rotate.hpp>
-#include <jln/mp/algorithm/unique.hpp> // inherit / inherit_item
+#include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
 
-#include <jln/mp/utility/is_not.hpp>
-
 /// \cond
 namespace jln::mp::detail
 {
+#if !JLN_MP_FEATURE_CONCEPTS
   template<class From, class To>
   constexpr auto is_convertible_to(From, To)
     -> decltype(To(From()), true)
@@ -100,14 +99,20 @@ namespace jln::mp::detail
   {
     return false;
   }
-
+#endif
 
   template<class C, class Inherit, class... xs>
   using remove_unique_impl = typename join<C>::template f<
-    typename wrap_in_list_c<!is_convertible_to(
-      static_cast<Inherit*>(nullptr),
-      static_cast<detail::inherit_item<xs>*>(nullptr)
-    )>
+    typename wrap_in_list_c<
+#if JLN_MP_FEATURE_CONCEPTS
+      !requires{ static_cast<inherit_item<xs>*>(static_cast<Inherit*>(nullptr)); }
+#else
+      !is_convertible_to(
+        static_cast<Inherit*>(nullptr),
+        static_cast<inherit_item<xs>*>(nullptr)
+      )
+#endif
+    >
     ::template f<xs>
   ...>;
 
@@ -116,7 +121,7 @@ namespace jln::mp::detail
   {
     template<class C, class... xs>
     using f = remove_unique_impl<
-      C, detail::inherit<std::make_index_sequence<sizeof...(xs)>, xs...>, xs...
+      C, indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>, xs...
     >;
   };
 
@@ -130,10 +135,16 @@ namespace jln::mp::detail
 
   template<class C, class Inherit, class... xs>
   using copy_unique_impl = typename join<C>::template f<
-    typename wrap_in_list_c<is_convertible_to(
-      static_cast<Inherit*>(nullptr),
-      static_cast<detail::inherit_item<xs>*>(nullptr)
-    )>
+    typename wrap_in_list_c<
+#if JLN_MP_FEATURE_CONCEPTS
+      requires{ static_cast<inherit_item<xs>*>(static_cast<Inherit*>(nullptr)); }
+#else
+      is_convertible_to(
+        static_cast<Inherit*>(nullptr),
+        static_cast<inherit_item<xs>*>(nullptr)
+      )
+#endif
+    >
     ::template f<xs>
   ...>;
 
@@ -142,7 +153,7 @@ namespace jln::mp::detail
   {
     template<class C, class... xs>
     using f = copy_unique_impl<
-      C, detail::inherit<std::make_index_sequence<sizeof...(xs)>, xs...>, xs...
+      C, indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>, xs...
     >;
   };
 

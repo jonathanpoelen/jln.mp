@@ -55,37 +55,10 @@ namespace jln::mp::detail
 {
   template<class x>
   struct inherit_item {};
-  template<std::size_t i, class x>
-  struct inherit_impl : inherit_item<x> {};
-
-  template<class, class...>
-  struct inherit;
-
-  template<std::size_t... ints, class... xs>
-  struct inherit<std::integer_sequence<std::size_t, ints...>, xs...>
-    : inherit_impl<ints, xs>...
-  {};
 
   template<class... xs>
-  struct inherit2 : inherit_item<xs>...
+  struct inherit : inherit_item<xs>...
   {};
-
-#if JLN_MP_MSVC_LIKE
-  template<class... xs>
-  struct _is_set
-  {
-      template <class Pack>
-      static auto is_set(Pack pack) -> decltype((
-          static_cast<inherit_item<xs>*>(pack),...
-      ), number<1>());
-
-      static number<0> is_set(...);
-
-      using type = decltype(is_set(static_cast<
-        inherit<std::make_index_sequence<sizeof...(xs)>, xs...>*
-      >(nullptr)));
-  };
-#endif
 
   template<class L, class x, bool = false>
   struct _set_push_back
@@ -96,9 +69,9 @@ namespace jln::mp::detail
   template<class... xs, class x>
   struct _set_push_back<list<xs...>, x,
 #if JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC_LIKE
-      __is_base_of(inherit_item<x>, inherit2<xs...>)
+      __is_base_of(inherit_item<x>, inherit<xs...>)
 #else
-      std::is_base_of<inherit_item<x>, inherit2<xs...>>::value
+      std::is_base_of<inherit_item<x>, inherit<xs...>>::value
 #endif
   >
   {

@@ -43,6 +43,34 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
+  template<std::size_t i, class x>
+  struct indexed_item : inherit_item<x> {};
+
+  template<class, class...>
+  struct indexed_inherit;
+
+  template<std::size_t... ints, class... xs>
+  struct indexed_inherit<std::integer_sequence<std::size_t, ints...>, xs...>
+    : indexed_item<ints, xs>...
+  {};
+
+#if JLN_MP_MSVC_LIKE
+  template<class... xs>
+  struct _is_set
+  {
+    template <class Pack>
+    static auto is_set(Pack pack) -> decltype((
+        static_cast<inherit_item<xs>*>(pack),...
+    ), number<1>());
+
+    static number<0> is_set(...);
+
+    using type = decltype(is_set(static_cast<
+      indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>*
+    >(nullptr)));
+  };
+#endif
+
   template<class C>
   struct is_unique_impl
   {
@@ -52,7 +80,7 @@ namespace jln::mp::detail
     using f = JLN_MP_CALL_TRACE(C, typename _is_set<xs...>::type);
 #else
     using f = JLN_MP_CALL_TRACE(C,
-      mp::number<sizeof(inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>);
+      mp::number<sizeof(indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>);
 #endif
   };
 
