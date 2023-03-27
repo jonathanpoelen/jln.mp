@@ -19,8 +19,8 @@ jobs:
         debug: ['false', 'true']
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
     - shell: cmd
       env:
         CXX: ${{ matrix.compiler }}
@@ -42,7 +42,7 @@ jobs:
         debug: ['false', 'true']
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
@@ -73,8 +73,8 @@ jobs:
         debug: ['false']
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
     - shell: cmd
       env:
         CC: ${{ matrix.compiler }}
@@ -95,8 +95,8 @@ jobs:
         debug: ['false', 'true']
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
     - run: |
         python -m pip install ninja meson
         meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
@@ -114,8 +114,8 @@ jobs:
         cxx: ['g++-12', 'clang++-13', 'clang++-14']
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
     - run: |
         python -m pip install ninja meson
         CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
@@ -132,8 +132,8 @@ jobs:
         cxx: ['g++-9', 'g++-10', 'clang++-10', 'clang++-11', 'clang++-12']
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
     - run: |
         python -m pip install ninja meson
         CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
@@ -144,7 +144,7 @@ jobs:
     needs: [linux, linux-old, macos, windows-cl, windows-clang, windows-gcc]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: leafo/gh-actions-lua@v8
       - uses: leafo/gh-actions-luarocks@v4
 
@@ -185,12 +185,12 @@ jobs:
             done
           done
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: standalone
           path: standalone_repo
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: gh-pages
           path: doc_repo
