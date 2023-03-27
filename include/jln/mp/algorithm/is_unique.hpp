@@ -44,7 +44,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<std::size_t i, class x>
-  struct indexed_item : inherit_item<x> {};
+  struct indexed_item : base_item<x> {};
 
   template<class, class...>
   struct indexed_inherit;
@@ -60,7 +60,7 @@ namespace jln::mp::detail
   {
     template <class Pack>
     static auto is_set(Pack pack) -> decltype((
-        static_cast<inherit_item<xs>*>(pack),...
+        static_cast<base_item<xs>*>(pack),...
     ), number<1>());
 
     static number<0> is_set(...);

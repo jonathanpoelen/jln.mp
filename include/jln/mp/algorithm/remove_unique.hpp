@@ -105,11 +105,11 @@ namespace jln::mp::detail
   using remove_unique_impl = typename join<C>::template f<
     typename wrap_in_list_c<
 #if JLN_MP_FEATURE_CONCEPTS
-      !requires{ static_cast<inherit_item<xs>*>(static_cast<Inherit*>(nullptr)); }
+      !requires{ static_cast<base_item<xs>*>(static_cast<Inherit*>(nullptr)); }
 #else
       !is_convertible_to(
         static_cast<Inherit*>(nullptr),
-        static_cast<inherit_item<xs>*>(nullptr)
+        static_cast<base_item<xs>*>(nullptr)
       )
 #endif
     >
@@ -137,11 +137,11 @@ namespace jln::mp::detail
   using copy_unique_impl = typename join<C>::template f<
     typename wrap_in_list_c<
 #if JLN_MP_FEATURE_CONCEPTS
-      requires{ static_cast<inherit_item<xs>*>(static_cast<Inherit*>(nullptr)); }
+      requires{ static_cast<base_item<xs>*>(static_cast<Inherit*>(nullptr)); }
 #else
       is_convertible_to(
         static_cast<Inherit*>(nullptr),
-        static_cast<inherit_item<xs>*>(nullptr)
+        static_cast<base_item<xs>*>(nullptr)
       )
 #endif
     >

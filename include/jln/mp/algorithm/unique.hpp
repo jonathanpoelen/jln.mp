@@ -54,10 +54,10 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<class x>
-  struct inherit_item {};
+  struct base_item {};
 
   template<class... xs>
-  struct inherit : inherit_item<xs>...
+  struct inherit : base_item<xs>...
   {};
 
   template<class L, class x, class = number<0>>
@@ -69,9 +69,9 @@ namespace jln::mp::detail
   template<class... xs, class x>
   struct _set_push_back<list<xs...>, x,
 #if JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC
-    number<__is_base_of(inherit_item<x>, inherit<xs...>)>
+    number<__is_base_of(base_item<x>, inherit<xs...>)>
 #else
-    number<std::is_base_of<inherit_item<x>, inherit<xs...>>::value>
+    number<std::is_base_of<base_item<x>, inherit<xs...>>::value>
 #endif
   >
   {
