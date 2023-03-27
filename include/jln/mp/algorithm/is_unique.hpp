@@ -55,6 +55,14 @@ namespace jln::mp::detail
   {};
 
 #if JLN_MP_MSVC_LIKE
+# if JLN_MP_FEATURE_CONCEPTS
+  template<class... xs>
+  struct _is_set
+  {
+    using P = indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>*;
+    using type = number<(requires{ (static_cast<P>(static_cast<inherit_item<xs>*>(nullptr)), ...); })>;
+  };
+# else
   template<class... xs>
   struct _is_set
   {
@@ -69,6 +77,7 @@ namespace jln::mp::detail
       indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>*
     >(nullptr)));
   };
+# endif
 #endif
 
   template<class C>
