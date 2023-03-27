@@ -70,6 +70,7 @@
 #include <jln/mp/algorithm/scan_left.hpp>
 #include <jln/mp/algorithm/scan_right.hpp>
 #include <jln/mp/algorithm/search.hpp>
+#include <jln/mp/algorithm/similar.hpp>
 #include <jln/mp/algorithm/skip_until.hpp>
 #include <jln/mp/algorithm/skip_until_xs.hpp>
 #include <jln/mp/algorithm/skip_while.hpp>

@@ -68,6 +68,7 @@
 #include "src/algorithm/scan_left.cpp"
 #include "src/algorithm/scan_right.cpp"
 #include "src/algorithm/search.cpp"
+#include "src/algorithm/similar.cpp"
 #include "src/algorithm/skip_until.cpp"
 #include "src/algorithm/skip_until_xs.cpp"
 #include "src/algorithm/skip_while.cpp"
