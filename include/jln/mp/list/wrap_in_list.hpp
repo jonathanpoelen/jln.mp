@@ -39,16 +39,22 @@ namespace jln::mp
 
   template<>
   struct wrap_in_list_c<true>
+  : listify
   {
+#ifdef JLN_MP_DOXYGENATING
     template<class... xs>
     using f = list<xs...>;
+#endif
   };
 
   template<>
   struct wrap_in_list_c<false>
+  : always<list<>>
   {
+#ifdef JLN_MP_DOXYGENATING
     template<class... xs>
     using f = list<>;
+#endif
   };
 
   template<class b>
