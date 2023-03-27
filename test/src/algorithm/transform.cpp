@@ -7,7 +7,7 @@
 TEST_SUITE_BEGIN()
 
 template<class x, class y>
-using to = list<x, y, void>;
+using to = mp::list<x, y, void>;
 
 TEST()
 {

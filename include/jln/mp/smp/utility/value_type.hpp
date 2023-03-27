@@ -19,4 +19,8 @@ namespace jln::mp::detail
     using type = smp::value_type<sfinae<C>>;
   };
 }
+
+#include <jln/mp/smp/optimizer/optimizer.hpp>
+
+JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_0(mp::value_type, 1, types::any);
 /// \endcond

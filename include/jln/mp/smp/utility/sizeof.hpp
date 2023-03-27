@@ -18,4 +18,8 @@ namespace jln::mp::detail
     using type = smp::sizeof_<sfinae<C>>;
   };
 }
+
+#include <jln/mp/smp/optimizer/optimizer.hpp>
+
+JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_0(mp::sizeof_, 1, types::number);
 /// \endcond

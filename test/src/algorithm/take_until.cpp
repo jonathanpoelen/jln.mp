@@ -38,7 +38,7 @@ TEST()
     ;
 
   test_context<
-    take_until<is<_3>, mp::listify, mp::always<void>>,
+    take_until<is<_3>, listify, always<void>>,
     smp::take_until<smp::is<_3>, smp::listify, smp::always<void>>
   >()
     .test<void>()
@@ -131,7 +131,7 @@ TEST()
     ;
 
   test_context<
-    take_inclusive_until<is<_3>, mp::listify, mp::always<void>>,
+    take_inclusive_until<is<_3>, listify, always<void>>,
     smp::take_inclusive_until<smp::is<_3>, smp::listify, smp::always<void>>
   >()
     .test<void>()

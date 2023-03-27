@@ -2,13 +2,20 @@
 
 #include <jln/mp/list/list.hpp>
 #include <jln/mp/config/debug.hpp>
+#include <jln/mp/utility/conditional.hpp>
 
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-    class uncallable_function {};
+    class uncallable_function
+    {
+      template<class... xs>
+      using f = typename conditional_c<!sizeof...(xs)>
+        ::template f<uncallable_function, uncallable_function>
+        ::template g<xs...>;
+    };
 
     template<class Function, class Params, class Error = uncallable_function>
     struct memoizer_impl

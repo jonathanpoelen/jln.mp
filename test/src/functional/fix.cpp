@@ -10,9 +10,9 @@ TEST_SUITE_BEGIN()
 struct foo
 {
   template<class F, class x, class... xs>
-  using f = typename jln::mp::conditional_c<1 < x::value>
-    ::template f<F, jln::mp::listify>
-    ::template f<number<x::value - 1>, x, xs...>;
+  using f = typename mp::conditional_c<1 < x::value>
+    ::template f<F, mp::listify>
+    ::template f<mp::number<x::value - 1>, x, xs...>;
 };
 
 TEST()

@@ -21,4 +21,24 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, is_list);
 }
+
+#include <jln/mp/smp/optimizer/optimizer.hpp>
+
+namespace jln::mp::optimizer
+{
+  template<class C, class params>
+  struct optimizer_impl<is_list<C>, params>
+  {
+    using type = typename count_param_always_maybe_never_selector<params, 1>
+      ::template f<
+        typename dispatch_list<params>
+          ::template f<
+            always<wrap_optimize_with_params<true_>>,
+            always<wrap_optimize_with_function<lift<is_list>, types::boolean>>,
+            always<wrap_optimize_with_params<false_>>
+          >
+      >
+      ::template f<C>;
+  };
+}
 /// \endcond

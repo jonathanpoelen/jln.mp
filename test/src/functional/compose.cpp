@@ -13,6 +13,7 @@ template<class... xs> using h = jln::mp::number<sizeof...(xs)>;
 // compose_f
 TEST()
 {
+  using namespace jln::mp;
   using namespace ut::ints;
 
   ut::same<call<compose_f<h>, int>, h<int>>();
@@ -42,6 +43,7 @@ TEST()
 // compose
 TEST()
 {
+  using namespace jln::mp;
   using namespace ut::ints;
 
   test_unary_pack<compose>();

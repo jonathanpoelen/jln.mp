@@ -3,11 +3,23 @@
 #include <jln/mp/smp/assume.hpp>
 #include <jln/mp/utility/stl_traits.hpp>
 #include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/smp/optimizer/optimizer.hpp>
 
 namespace jln::mp
 {
 
-#define JLN_MP_SMP_MAKE_TRAIT(Name)                 \
+#define JLN_MP_SMP_MAKE_OPTIMIZER_TRAIT(Name, arity, output) \
+  namespace optimizer                                        \
+  {                                                          \
+    template<class C, class params>                          \
+    struct optimizer_impl<traits::Name<C>, params>           \
+    {                                                        \
+      using type = optimized_for_regular<arity, output>      \
+        ::f<params, traits::Name, C>;                        \
+    };                                                       \
+  }
+
+#define JLN_MP_SMP_MAKE_BASIC_TRAIT(Name)           \
   namespace smp::traits                             \
   {                                                 \
     template <class C = identity>                   \
@@ -24,176 +36,187 @@ namespace jln::mp
     };                                              \
   }
 
-#define JLN_MP_SMP_MAKE_TRAIT2(Name)         \
-  JLN_MP_SMP_MAKE_TRAIT(Name)                \
-  namespace detail                           \
-  {                                          \
-    JLN_MP_MAKE_EXPECTED_ARGUMENT1(          \
-      argument_category::unary, traits::Name \
-    );                                       \
-  }
+#define JLN_MP_SMP_MAKE_TRAIT(Name, arity, output)     \
+  JLN_MP_SMP_MAKE_OPTIMIZER_TRAIT(Name, arity, output) \
+  JLN_MP_SMP_MAKE_BASIC_TRAIT(Name)
 
 
   // primary type categories:
 #if __cplusplus >= 201703L
-  JLN_MP_SMP_MAKE_TRAIT2(is_void)
+  JLN_MP_SMP_MAKE_TRAIT(is_void, 1, types::boolean)
 #endif
 #if __cplusplus >= 201402L
-  JLN_MP_SMP_MAKE_TRAIT2(is_null_pointer)
+  JLN_MP_SMP_MAKE_TRAIT(is_null_pointer, 1, types::boolean)
 #endif
-  JLN_MP_SMP_MAKE_TRAIT2(is_integral)
-  JLN_MP_SMP_MAKE_TRAIT2(is_floating_point)
-  JLN_MP_SMP_MAKE_TRAIT2(is_array)
-  JLN_MP_SMP_MAKE_TRAIT2(is_pointer)
-  JLN_MP_SMP_MAKE_TRAIT2(is_lvalue_reference)
-  JLN_MP_SMP_MAKE_TRAIT2(is_rvalue_reference)
-  JLN_MP_SMP_MAKE_TRAIT2(is_member_object_pointer)
-  JLN_MP_SMP_MAKE_TRAIT2(is_member_function_pointer)
-  JLN_MP_SMP_MAKE_TRAIT2(is_enum)
-  JLN_MP_SMP_MAKE_TRAIT2(is_union)
-  JLN_MP_SMP_MAKE_TRAIT2(is_class)
-  JLN_MP_SMP_MAKE_TRAIT2(is_function)
+  JLN_MP_SMP_MAKE_TRAIT(is_integral, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_floating_point, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_array, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_pointer, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_lvalue_reference, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_rvalue_reference, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_member_object_pointer, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_member_function_pointer, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_enum, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_union, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_class, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_function, 1, types::boolean)
 
   // composite type categories:
-  JLN_MP_SMP_MAKE_TRAIT2(is_reference)
-  JLN_MP_SMP_MAKE_TRAIT2(is_arithmetic)
-  JLN_MP_SMP_MAKE_TRAIT2(is_fundamental)
-  JLN_MP_SMP_MAKE_TRAIT2(is_object)
-  JLN_MP_SMP_MAKE_TRAIT2(is_scalar)
-  JLN_MP_SMP_MAKE_TRAIT2(is_compound)
-  JLN_MP_SMP_MAKE_TRAIT2(is_member_pointer)
+  JLN_MP_SMP_MAKE_TRAIT(is_reference, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_arithmetic, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_fundamental, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_object, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_scalar, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_compound, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_member_pointer, 1, types::boolean)
 
   // type properties:
-  JLN_MP_SMP_MAKE_TRAIT2(is_const)
-  JLN_MP_SMP_MAKE_TRAIT2(is_volatile)
-  JLN_MP_SMP_MAKE_TRAIT(is_trivial)
-  JLN_MP_SMP_MAKE_TRAIT(is_trivially_copyable)
-  JLN_MP_SMP_MAKE_TRAIT(is_standard_layout)
+  JLN_MP_SMP_MAKE_TRAIT(is_const, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_volatile, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_trivial, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_trivially_copyable, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_standard_layout, 1, types::boolean)
 #if __cplusplus <= 201703L
-  JLN_MP_SMP_MAKE_TRAIT(is_pod)
+  JLN_MP_SMP_MAKE_TRAIT(is_pod, 1, types::boolean)
 #endif
-  JLN_MP_SMP_MAKE_TRAIT(is_empty)
-  JLN_MP_SMP_MAKE_TRAIT(is_polymorphic)
-  JLN_MP_SMP_MAKE_TRAIT(is_abstract)
+  JLN_MP_SMP_MAKE_TRAIT(is_empty, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_polymorphic, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_abstract, 1, types::boolean)
 #if __cplusplus >= 201402L
-  JLN_MP_SMP_MAKE_TRAIT(is_final)
+  JLN_MP_SMP_MAKE_TRAIT(is_final, 1, types::boolean)
 #endif
 #if __cplusplus >= 201703L
-  JLN_MP_SMP_MAKE_TRAIT(is_aggregate)
+  JLN_MP_SMP_MAKE_TRAIT(is_aggregate, 1, types::boolean)
 #endif
-  JLN_MP_SMP_MAKE_TRAIT2(is_signed)
-  JLN_MP_SMP_MAKE_TRAIT2(is_unsigned)
+  JLN_MP_SMP_MAKE_TRAIT(is_signed, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_unsigned, 1, types::boolean)
 #if defined(__cpp_lib_bounded_array_traits) && __cpp_lib_bounded_array_traits
-  JLN_MP_SMP_MAKE_TRAIT2(is_bounded_array)
-  JLN_MP_SMP_MAKE_TRAIT2(is_unbounded_array)
+  JLN_MP_SMP_MAKE_TRAIT(is_bounded_array, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_unbounded_array, 1, types::boolean)
 #endif
-  JLN_MP_SMP_MAKE_TRAIT(is_constructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_default_constructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_copy_constructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_move_constructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_assignable)
-  JLN_MP_SMP_MAKE_TRAIT(is_copy_assignable)
-  JLN_MP_SMP_MAKE_TRAIT(is_move_assignable)
+  JLN_MP_SMP_MAKE_TRAIT(is_constructible, -1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_default_constructible, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_copy_constructible, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_move_constructible, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_assignable, 2, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_copy_assignable, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_move_assignable, 1, types::boolean)
 #if __cplusplus >= 201703L
-  JLN_MP_SMP_MAKE_TRAIT(is_swappable_with)
-  JLN_MP_SMP_MAKE_TRAIT(is_swappable)
-  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_swappable_with)
-  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_swappable)
+  JLN_MP_SMP_MAKE_TRAIT(is_swappable_with, 2, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_swappable, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_swappable_with, 2, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_swappable, 1, types::boolean)
 #endif
-  JLN_MP_SMP_MAKE_TRAIT(is_destructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_trivially_constructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_trivially_default_constructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_trivially_copy_constructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_trivially_move_constructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_trivially_assignable)
-  JLN_MP_SMP_MAKE_TRAIT(is_trivially_copy_assignable)
-  JLN_MP_SMP_MAKE_TRAIT(is_trivially_move_assignable)
-  JLN_MP_SMP_MAKE_TRAIT(is_trivially_destructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_constructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_default_constructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_copy_constructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_move_constructible)
-  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_assignable)
-  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_copy_assignable)
-  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_move_assignable)
-  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_destructible)
-  JLN_MP_SMP_MAKE_TRAIT(has_virtual_destructor)
+  JLN_MP_SMP_MAKE_TRAIT(is_destructible, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_trivially_constructible, -1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_trivially_default_constructible, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_trivially_copy_constructible, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_trivially_move_constructible, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_trivially_assignable, 2, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_trivially_copy_assignable, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_trivially_move_assignable, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_trivially_destructible, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_constructible, -1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_default_constructible, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_copy_constructible, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_move_constructible, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_assignable, 2, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_copy_assignable, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_move_assignable, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_destructible, 1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(has_virtual_destructor, 1, types::boolean)
 #if __cplusplus >= 201703L
-  JLN_MP_SMP_MAKE_TRAIT(has_unique_object_representations)
+  JLN_MP_SMP_MAKE_TRAIT(has_unique_object_representations, 1, types::boolean)
 #endif
 
   // type property queries:
-  JLN_MP_SMP_MAKE_TRAIT(alignment_of)
-  JLN_MP_SMP_MAKE_TRAIT2(rank)
+  JLN_MP_SMP_MAKE_TRAIT(alignment_of, 1, types::number)
+  JLN_MP_SMP_MAKE_TRAIT(rank, 1, types::number)
 
-  JLN_MP_SMP_MAKE_TRAIT2(extent)
+  JLN_MP_SMP_MAKE_BASIC_TRAIT(extent)
+  namespace optimizer
+  {
+    template<class C, class params>
+    struct optimizer_impl<traits::extent<C>, params>
+    {
+      using type = typename count_param_always_maybe_never_selector<params, 2>
+        ::template f<
+          add_uncallable_output<dispatch_optimizer<optimized_for_regular_optimizer>>,
+          add_uncallable_output<dispatch_optimizer<optimized_for_regular_optimizer>>>
+        ::template f<C, types::any, lift<traits::extent>>;
+    };
+  }
 
   // type relations:
-  JLN_MP_SMP_MAKE_TRAIT2(is_same)
-  JLN_MP_SMP_MAKE_TRAIT(is_base_of)
-  JLN_MP_SMP_MAKE_TRAIT(is_convertible)
+  JLN_MP_SMP_MAKE_TRAIT(is_same, 2, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_base_of, 2, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_convertible, 2, types::boolean)
 #if defined(__cpp_lib_is_nothrow_convertible) && __cpp_lib_is_nothrow_convertible
-  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_convertible)
+  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_convertible, 2, types::boolean)
 #endif
 #if defined(__cpp_lib_is_layout_compatible) && __cpp_lib_is_layout_compatible
-  JLN_MP_SMP_MAKE_TRAIT(is_layout_compatible)
+  JLN_MP_SMP_MAKE_TRAIT(is_layout_compatible, 2, types::boolean)
 #endif
 #if defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible
-  JLN_MP_SMP_MAKE_TRAIT(is_pointer_interconvertible_base_of)
+  JLN_MP_SMP_MAKE_TRAIT(is_pointer_interconvertible_base_of, 2, types::boolean)
 #endif
 #if __cplusplus >= 201703L
-  JLN_MP_SMP_MAKE_TRAIT(is_invocable)
-  JLN_MP_SMP_MAKE_TRAIT(is_invocable_r)
-  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_invocable)
-  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_invocable_r)
+  JLN_MP_SMP_MAKE_TRAIT(is_invocable, -1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_invocable_r, -1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_invocable, -1, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(is_nothrow_invocable_r, -1, types::boolean)
 #endif
 
   // const-volatile modifications:
-  JLN_MP_SMP_MAKE_TRAIT2(remove_const)
-  JLN_MP_SMP_MAKE_TRAIT2(remove_volatile)
-  JLN_MP_SMP_MAKE_TRAIT2(remove_cv)
-  JLN_MP_SMP_MAKE_TRAIT2(add_const)
-  JLN_MP_SMP_MAKE_TRAIT2(add_volatile)
-  JLN_MP_SMP_MAKE_TRAIT2(add_cv)
+  JLN_MP_SMP_MAKE_TRAIT(remove_const, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(remove_volatile, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(remove_cv, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(add_const, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(add_volatile, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(add_cv, 1, types::any)
 
   // reference modifications:
-  JLN_MP_SMP_MAKE_TRAIT2(remove_reference)
-  JLN_MP_SMP_MAKE_TRAIT2(add_lvalue_reference)
-  JLN_MP_SMP_MAKE_TRAIT2(add_rvalue_reference)
+  JLN_MP_SMP_MAKE_TRAIT(remove_reference, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(add_lvalue_reference, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(add_rvalue_reference, 1, types::any)
 
   // sign modifications:
-  JLN_MP_SMP_MAKE_TRAIT(make_signed)
-  JLN_MP_SMP_MAKE_TRAIT(make_unsigned)
+  JLN_MP_SMP_MAKE_TRAIT(make_signed, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(make_unsigned, 1, types::any)
 
   // array modifications:
-  JLN_MP_SMP_MAKE_TRAIT2(remove_extent)
-  JLN_MP_SMP_MAKE_TRAIT2(remove_all_extents)
+  JLN_MP_SMP_MAKE_TRAIT(remove_extent, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(remove_all_extents, 1, types::any)
 
   // pointer modifications:
-  JLN_MP_SMP_MAKE_TRAIT(remove_pointer)
-  JLN_MP_SMP_MAKE_TRAIT(add_pointer)
+  JLN_MP_SMP_MAKE_TRAIT(remove_pointer, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(add_pointer, 1, types::any)
 
   // other transformations:
-  JLN_MP_SMP_MAKE_TRAIT2(decay)
+  JLN_MP_SMP_MAKE_TRAIT(decay, 1, types::any)
 #if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref
-  JLN_MP_SMP_MAKE_TRAIT2(unwrap_ref_decay)
-  JLN_MP_SMP_MAKE_TRAIT2(unwrap_reference)
+  JLN_MP_SMP_MAKE_TRAIT(unwrap_ref_decay, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(unwrap_reference, 1, types::any)
 #endif
 #if defined(__cpp_lib_remove_cvref) && __cpp_lib_remove_cvref
-  JLN_MP_SMP_MAKE_TRAIT2(remove_cvref)
+  JLN_MP_SMP_MAKE_TRAIT(remove_cvref, 1, types::any)
 #endif
 #if __cplusplus >= 202002L
-  JLN_MP_SMP_MAKE_TRAIT(common_reference)
-  JLN_MP_SMP_MAKE_TRAIT(basic_common_reference)
+  JLN_MP_SMP_MAKE_TRAIT(common_reference, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(basic_common_reference, 1, types::any)
 #else
-  JLN_MP_SMP_MAKE_TRAIT(result_of)
+  JLN_MP_SMP_MAKE_TRAIT(result_of, 1, types::any)
 #endif
-  JLN_MP_SMP_MAKE_TRAIT(underlying_type)
-  JLN_MP_SMP_MAKE_TRAIT(common_type)
+  JLN_MP_SMP_MAKE_TRAIT(underlying_type, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(common_type, 1, types::any)
 #if __cplusplus >= 201703L
-  JLN_MP_SMP_MAKE_TRAIT(invoke_result)
+  JLN_MP_SMP_MAKE_TRAIT(invoke_result, 1, types::any)
 #endif
 
-  JLN_MP_SMP_MAKE_TRAIT(aligned_storage)
-  JLN_MP_SMP_MAKE_TRAIT(aligned_union)
+  JLN_MP_SMP_MAKE_TRAIT(aligned_storage, 1, types::any)
+  JLN_MP_SMP_MAKE_TRAIT(aligned_union, 1, types::any)
+
+#undef JLN_MP_SMP_MAKE_OPTIMIZER_TRAIT
+#undef JLN_MP_SMP_MAKE_BASIC_TRAIT
+#undef JLN_MP_SMP_MAKE_TRAIT
 }

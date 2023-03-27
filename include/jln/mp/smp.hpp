@@ -7,6 +7,7 @@
 #include <jln/mp/smp/functional.hpp>
 #include <jln/mp/smp/list.hpp>
 #include <jln/mp/smp/number.hpp>
+#include <jln/mp/smp/optimizer.hpp>
 #include <jln/mp/smp/sfinae.hpp>
 #include <jln/mp/smp/utility.hpp>
 #include <jln/mp/smp/value.hpp>

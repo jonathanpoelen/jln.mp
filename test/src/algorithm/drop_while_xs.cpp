@@ -321,7 +321,7 @@ TEST()
     ;
 
   test_context<
-    partial_drop_inclusive_while_xs_c<4, size<less_than_c<3>>, mp::listify, mp::always<void>>,
+    partial_drop_inclusive_while_xs_c<4, size<less_than_c<3>>, listify, always<void>>,
     smp::partial_drop_inclusive_while_xs_c<4, smp::size<smp::less_than_c<3>>, smp::listify, smp::always<void>>
   >()
     .test<void>()

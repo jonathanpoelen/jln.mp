@@ -14,6 +14,15 @@ TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
+  namespace z = optimizer;
+  namespace t = optimizer::types;
+
+  test_context<lift<z::optimize>, void>()
+    .test<t::uncallable::f<>, value_type<>, t::uncallable>()
+    .test<t::uncallable::f<>, value_type<>, z::seq<int, int>>()
+    .test<z::optimized_result_t<int, always<int>>, value_type<>, dummy>()
+    .test<z::optimized_result_t<t::any, value_type<>>, value_type<>, t::any>()
+    ;
 
   test_unary_pack<value_type>();
 

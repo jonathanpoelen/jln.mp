@@ -78,7 +78,7 @@ TEST()
     ;
 
   test_context<
-    take_while_xs<size<less_than_c<3>>, mp::listify, mp::always<void>>,
+    take_while_xs<size<less_than_c<3>>, listify, always<void>>,
     smp::take_while_xs<smp::size<smp::less_than_c<3>>, smp::listify, smp::always<void>>
   >()
     .test<void>()
@@ -180,7 +180,7 @@ TEST()
     ;
 
   test_context<
-    take_inclusive_while_xs<size<less_than_c<3>>, mp::listify, mp::always<void>>,
+    take_inclusive_while_xs<size<less_than_c<3>>, listify, always<void>>,
     smp::take_inclusive_while_xs<smp::size<smp::less_than_c<3>>, smp::listify, smp::always<void>>
   >()
     .test<void>()
@@ -284,7 +284,7 @@ TEST()
     ;
 
   test_context<
-    partial_take_while_xs_c<4, size<less_than_c<3>>, mp::listify, mp::always<void>>,
+    partial_take_while_xs_c<4, size<less_than_c<3>>, listify, always<void>>,
     smp::partial_take_while_xs_c<4, smp::size<smp::less_than_c<3>>, smp::listify, smp::always<void>>
   >()
     .test<void>()
@@ -407,7 +407,7 @@ TEST()
     ;
 
   test_context<
-    partial_take_inclusive_while_xs_c<4, size<less_than_c<3>>, mp::listify, mp::always<void>>,
+    partial_take_inclusive_while_xs_c<4, size<less_than_c<3>>, listify, always<void>>,
     smp::partial_take_inclusive_while_xs_c<4, smp::size<smp::less_than_c<3>>, smp::listify, smp::always<void>>
   >()
     .test<void>()

@@ -168,31 +168,37 @@ namespace jln::mp::detail
 #undef JLN_MP_MK_ASSUME
 
   template<class TC>
-  struct _assume_lists<if_<mp::all_of<mp::is_list<>>, TC, violation>>
+  struct _assume_lists<if_<all_of<is_list<>>, TC, violation>>
   {
     using type = TC;
   };
 
   template<class TC>
-  struct _assume_unary_or_more<if_<mp::size<>, TC, violation>>
+  struct _assume_unary_or_more<if_<size<>, TC, violation>>
   {
     using type = TC;
   };
 
   template<class TC>
-  struct _assume_unary<if_<mp::size<mp::is<number<1>>>, TC, violation>>
+  struct _assume_unary_or_more<if_<is<number<0>, not_<>>, TC, violation>>
   {
     using type = TC;
   };
 
   template<class TC>
-  struct _assume_binary<if_<mp::size<mp::is<number<2>>>, TC, violation>>
+  struct _assume_unary<if_<size<is<number<1>>>, TC, violation>>
   {
     using type = TC;
   };
 
   template<class TC>
-  struct _assume_binary_or_more<if_<mp::size<mp::is<number<2>>>, TC, violation>>
+  struct _assume_binary<if_<size<is<number<2>>>, TC, violation>>
+  {
+    using type = TC;
+  };
+
+  template<class TC>
+  struct _assume_binary_or_more<if_<size<is<number<2>>>, TC, violation>>
   {
     using type = TC;
   };

@@ -157,6 +157,8 @@
 #include "src/number/numbers.cpp"
 #include "src/number/operators.cpp"
 #include "src/number/to_bool.cpp"
+#include "src/optimizer/optimizer.cpp"
+#include "src/optimizer/types.cpp"
 #include "src/utility/alignof.cpp"
 #include "src/utility/always.cpp"
 #include "src/utility/conditional.cpp"

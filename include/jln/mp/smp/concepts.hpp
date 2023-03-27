@@ -12,14 +12,14 @@ namespace jln::mp::smp::concepts
   // TODO optimize when FC = always
   // {unary, binary, mulary}_predicate
   template<class Pred, class TC = mp::identity, class FC = mp::always<false_>>
-  using predicate = mp::try_<Pred, mp::try_or<mp::to_bool<TC>, FC>, FC>;
+  using predicate = mp::try_<mp::tee<mp::try_<Pred>, mp::try_<mp::to_bool<>>>, TC, FC>;
 
   template<class Pred, class TC = mp::identity, class FC = mp::always<false_>>
-  using strong_predicate = mp::try_<Pred, mp::try_or<mp::as_bool<TC>, FC>, FC>;
+  using strong_predicate = mp::try_<mp::tee<mp::try_<Pred>, mp::try_<mp::as_bool<>>>, TC, FC>;
 
-  template<class Pred, class FC = mp::always<false_>>
+  template<class Pred, class FC>
   using predicate_or = predicate<Pred, mp::identity, FC>;
 
-  template<class Pred, class FC = mp::always<false_>>
+  template<class Pred, class FC>
   using strong_predicate_or = strong_predicate<Pred, mp::identity, FC>;
 }

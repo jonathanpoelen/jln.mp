@@ -18,4 +18,14 @@ namespace jln::mp::detail
     using type = smp::clear<sfinae<C>>;
   };
 }
+
+#include <jln/mp/smp/optimizer/optimizer.hpp>
+
+namespace jln::mp::optimizer
+{
+  template<class C, class params>
+  struct optimizer_impl<clear<C>, params>
+  : optimizer_impl<C, types::basic_seq<>>
+  {};
+}
 /// \endcond

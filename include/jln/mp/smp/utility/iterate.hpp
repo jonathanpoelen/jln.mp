@@ -28,4 +28,42 @@ namespace jln::mp::detail
     using type = smp::iterate_c<n, sfinae<F>, sfinae<C>>;
   };
 }
+
+#include <jln/mp/smp/optimizer/optimizer.hpp>
+#include <jln/mp/functional/tee.hpp>
+
+namespace jln::mp::optimizer
+{
+  template<class F, class C, class params>
+  struct optimizer_impl<iterate_c<0, F, C>, params>
+  {
+    using type = typename count_param_always_maybe_never_selector<params, 1>
+      ::template f<lift<optimize>>
+      ::template f<C, params>;
+  };
+
+  template<class F, class C, class params>
+  struct optimizer_impl<iterate_c<1, F, C>, params>
+  {
+    using type = typename count_param_always_maybe_never_selector<params, 1>
+      ::template f<lift<optimize>>
+      ::template f<tee<F, C>, params>;
+  };
+
+  struct optimized_for_iterate2
+  {
+    template<class params, class n, class F, class C>
+    using f = typename callable_selector<output_result<F, params>>
+      ::template f<dispatch_optimizer<optimized_for_regular_optimizer>>
+      ::template f<C, types::any, lift<iterate>, n, F>;
+  };
+
+  template<uint_ n, class F, class C, class params>
+  struct optimizer_impl<iterate_c<n, F, C>, params>
+  {
+    using type = typename count_param_always_maybe_never_selector<params, 1>
+      ::template f<optimized_for_iterate2>
+      ::template f<params, number<n>, F, C>;
+  };
+}
 /// \endcond

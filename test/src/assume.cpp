@@ -28,6 +28,8 @@ TEST_SUITE_BEGIN()
 
 TEST()
 {
+  using namespace jln::mp;
+
   ut::same<assume_test::lists, assume_lists<assume_test::lists>>();
   ut::same<try_<assume_test::lists>, assume_numbers<assume_test::lists>>();
   ut::same<try_<assume_test::lists>, assume_number<assume_test::lists>>();

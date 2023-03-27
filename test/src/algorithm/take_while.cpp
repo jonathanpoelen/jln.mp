@@ -39,7 +39,7 @@ TEST()
     ;
 
   test_context<
-    take_while<is_not<_3>, mp::listify, mp::always<void>>,
+    take_while<is_not<_3>, listify, always<void>>,
     smp::take_while<smp::is_not<_3>, smp::listify, smp::always<void>>
   >()
     .test<void>()
@@ -130,7 +130,7 @@ TEST()
     ;
 
   test_context<
-    take_inclusive_while<is_not<_3>, mp::listify, mp::always<void>>,
+    take_inclusive_while<is_not<_3>, listify, always<void>>,
     smp::take_inclusive_while<smp::is_not<_3>, smp::listify, smp::always<void>>
   >()
     .test<void>()

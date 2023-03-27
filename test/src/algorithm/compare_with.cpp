@@ -16,7 +16,7 @@ TEST()
   ut::same<true_, emp::compare_with<sizeof_<>, char[1], char[2]>>();
   ut::same<false_, emp::compare_with<sizeof_<>, char[2], char[1]>>();
 
-  test_context<compare_with<mp::sizeof_<>>, smp::compare_with<smp::sizeof_<>>>()
+  test_context<compare_with<sizeof_<>>, smp::compare_with<smp::sizeof_<>>>()
     .test<true_, char[1], char[2]>()
     .test<false_, char[2], char[1]>()
     .not_invocable<>()
