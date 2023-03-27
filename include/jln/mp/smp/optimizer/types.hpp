@@ -157,7 +157,7 @@ namespace jln::mp::optimizer::opti_detail
   {                                                    \
     template<class F>                                  \
     using f = optimized_result_t<t_param, F>;          \
-  };
+  }
 
   JLN_MP_OPTIMIZER_TYPE_IMPL(types::any, JLN_MP_NIL);
   JLN_MP_OPTIMIZER_TYPE_IMPL(types::number, JLN_MP_NIL);

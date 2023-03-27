@@ -22,5 +22,5 @@ namespace jln::mp::detail
 
 #include <jln/mp/smp/optimizer/optimizer.hpp>
 
-JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_0(mp::value_type, 1, types::any);
+JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_0(mp::value_type, 1, types::any)
 /// \endcond
