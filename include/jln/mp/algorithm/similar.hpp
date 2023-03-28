@@ -19,8 +19,10 @@ namespace jln::mp
   ///   - `template<class...>`
   ///   - `template<class T, T...>`
   ///   - `template<class, std::size_t>`
-  ///   - `template<class, auto...>` (if supported)
-  ///   - `template<auto...>` (if supported)
+  ///   - `template<std::size_t, class...>`
+  ///   - `template<class, auto...>` (when supported)
+  ///   - `template<auto, class...>` (when supported)
+  ///   - `template<auto...>` (when supported)
   /// \treturn \bool
   template<class C = identity>
   struct similar
@@ -100,17 +102,34 @@ namespace jln::mp::detail
   template<template<auto...> class Tpl>
   struct tpl_type3 {};
 
+  // fix ambiguous
+  template<template<auto> class Tpl, auto x>
+  struct normalize_similar<Tpl<x>>
+  {
+    using type = tpl_type3<Tpl>;
+  };
+
   template<template<auto...> class Tpl, auto... xs>
   struct normalize_similar<Tpl<xs...>>
 #else
-  template<template<class, std::size_t> class Tpl>
+  template<template<class, std::size_t...> class Tpl>
   struct tpl_type3;
 
-  template<template<class, std::size_t> class Tpl, class T, std::size_t N>
+  template<template<class, std::size_t...> class Tpl, class T, std::size_t... N>
   struct normalize_similar<Tpl<T, N>>
 #endif
   {
     using type = tpl_type3<Tpl>;
+  };
+
+  template<template<JLN_MP_TPL_AUTO_OR(std::size_t), class...> class Tpl>
+  struct tpl_type4;
+
+  template<template<JLN_MP_TPL_AUTO_OR(std::size_t), class...> class Tpl,
+    JLN_MP_TPL_AUTO_OR(std::size_t) N, class... T>
+  struct normalize_similar<Tpl<N, T...>>
+  {
+    using type = tpl_type4<Tpl>;
   };
 }
 /// \endcond
