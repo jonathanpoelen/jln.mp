@@ -39,6 +39,7 @@ namespace jln::mp
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/number/to_bool.hpp>
 #include <jln/mp/utility/is_not.hpp>
+#include <utility> // std::integer_sequence
 
 /// \cond
 namespace jln::mp::detail

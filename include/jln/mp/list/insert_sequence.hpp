@@ -25,7 +25,7 @@ namespace jln::mp
   struct insert_sequence_c
   {};
 
-  template<int_ index, class... xs, template<class...> class List, class C>
+  template<int_ index, template<class...> class List, class... xs, class C>
   struct insert_sequence_c<index, List<xs...>, C>
   {
     template<class... ys>

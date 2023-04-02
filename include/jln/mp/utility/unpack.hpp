@@ -50,7 +50,6 @@ namespace jln::mp
 
 
 #include <jln/mp/list/listify.hpp>
-#include <jln/mp/functional/call.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -65,6 +64,30 @@ namespace jln::mp::detail
   struct _unpack_append<C, Seq<xs...>, ys...>
   {
     using type = typename C::template f<xs..., ys...>;
+  };
+
+  template<template<class...> class F, template<class...> class Seq, class... ys, class... xs>
+  struct _unpack<lift<F>, Seq<ys...>, xs...>
+  {
+    using type = F<xs..., ys...>;
+  };
+
+  template<template<class...> class F, template<class...> class Seq, class... xs, class... ys>
+  struct _unpack_append<lift<F>, Seq<xs...>, ys...>
+  {
+    using type = F<xs..., ys...>;
+  };
+
+  template<template<class...> class F, template<class...> class Seq, class... ys, class... xs>
+  struct _unpack<lift_t<F>, Seq<ys...>, xs...>
+  {
+    using type = typename F<xs..., ys...>::type;
+  };
+
+  template<template<class...> class F, template<class...> class Seq, class... xs, class... ys>
+  struct _unpack_append<lift_t<F>, Seq<xs...>, ys...>
+  {
+    using type = typename F<xs..., ys...>::type;
   };
 
   template<class C>

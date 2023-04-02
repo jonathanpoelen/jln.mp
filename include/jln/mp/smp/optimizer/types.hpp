@@ -462,7 +462,7 @@ namespace jln::mp::optimizer::opti_detail
     >::type;
   };
 
-  using unique_union_impl = fold_left<lift<detail::set_push_back_t>>;
+  using unique_union_impl = fold_left<lift<emp::set_push_back>>;
 
   template<>
   struct normalize_union_has_pack_any<false>

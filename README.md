@@ -80,6 +80,7 @@ jln::mp::call<to_tuple<>, int, double> == std::tuple<int, double>
 # Glossary
 
 - Sequence: a value sequence or a type sequence.
+- Set: a sequence of unique elements.
 - Value: a type with a `value` member.
 - Typelist: an instance compatible with `template<class...> class T`, such as `list<>`.
 - Function: a type with a `f` template member. The number and the nature of the parameters depend on the context of use.

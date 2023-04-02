@@ -42,7 +42,7 @@ namespace jln::mp
     >::template f<TC, FC, xs...>;
   };
 
-  template<class F, class FC>
+  template<class F, class FC = always<false_>>
   using try_or = try_<F, identity, FC>;
 
   namespace emp

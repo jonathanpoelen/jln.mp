@@ -51,6 +51,13 @@ namespace jln::mp
     >::type
 #endif
 
+#if JLN_MP_CLANG_LIKE
+# define JLN_MEMOIZE_CALL(C, ...) ::jln::mp::memoize_call<C, __VA_ARGS__>
+# define JLN_MEMOIZE_CALL_F(C, ...) ::jln::mp::memoize_call<C, __VA_ARGS__>
+#else
+# define JLN_MEMOIZE_CALL(C, ...) typename JLN_MP_TRACE_F(C)::template f<__VA_ARGS__>
+# define JLN_MEMOIZE_CALL_F(C, ...) JLN_MP_TRACE_F(C)::template f<__VA_ARGS__>
+#endif
 
 #ifdef JLN_MP_DOXYGENATING
 

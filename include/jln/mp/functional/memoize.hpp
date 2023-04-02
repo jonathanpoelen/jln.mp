@@ -1,7 +1,7 @@
 #pragma once
 
 #include <jln/mp/list/list.hpp>
-#include <jln/mp/config/debug.hpp>
+#include <jln/mp/detail/compiler.hpp>
 #include <jln/mp/utility/conditional.hpp>
 
 namespace jln::mp
@@ -48,6 +48,12 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::memoizer_impl<C, list<xs...>>::type;
   };
+
+#if JLN_MP_CLANG_LIKE
+# define JLN_MEMOIZE(...) ::jln::mp::memoize<__VA_ARGS__>
+#else
+# define JLN_MEMOIZE(...) __VA_ARGS__
+#endif
 }
 
 /// \cond

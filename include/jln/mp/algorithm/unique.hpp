@@ -19,7 +19,7 @@ namespace jln::mp
 
   /// Returns a list of the same form as L with the duplicate elements removed.
   /// Only the first element found is kept.
-  /// \treturn \sequence
+  /// \treturn \set
   template<class C = listify>
   using unique = typename detail::mk_unique<lift<std::is_same>, C>::type;
 
@@ -46,38 +46,11 @@ namespace jln::mp
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/list/push_back.hpp>
-#include <jln/mp/list/size.hpp>
-
-#include <utility> // std::integer_sequence
+#include <jln/mp/set/set_push_back.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<class x>
-  struct base_item {};
-
-  template<class... xs>
-  struct inherit : base_item<xs>...
-  {};
-
-  template<class L, class x, class = number<0>>
-  struct _set_push_back
-  {
-    using type = L;
-  };
-
-  template<class... xs, class x>
-  struct _set_push_back<list<xs...>, x,
-#if JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC
-    number<__is_base_of(base_item<x>, inherit<xs...>)>
-#else
-    number<std::is_base_of<base_item<x>, inherit<xs...>>::value>
-#endif
-  >
-  {
-    using type = list<xs..., x>;
-  };
-
   template<class Cmp>
   struct _set_cmp_push_back
   {
@@ -96,14 +69,11 @@ namespace jln::mp::detail
     >>;
   };
 
-  template<class x, class y>
-  using set_push_back_t = typename _set_push_back<x, y>::type;
-
   template<class C>
   struct mk_unique<lift<std::is_same>, C>
   {
     using type = push_front<list<>, fold_left<
-      lift<set_push_back_t>,
+      lift<emp::set_push_back>,
       optimize_useless_unpack_t<unpack<C>>
     >>;
   };
