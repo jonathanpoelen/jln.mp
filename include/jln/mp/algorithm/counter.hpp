@@ -101,6 +101,8 @@ namespace jln::mp::detail
     : array<1>
   {};
 
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wunused-but-set-variable")
   template<class Indexed, std::size_t N, class... xs>
   constexpr array<N> count_elems()
   {
@@ -113,6 +115,7 @@ namespace jln::mp::detail
 
     return counter;
   }
+  JLN_MP_DIAGNOSTIC_POP()
 
   template<std::size_t... i, class... ys>
   struct counter_impl<detail::indexed_inherit<std::index_sequence<i...>, ys...>>
