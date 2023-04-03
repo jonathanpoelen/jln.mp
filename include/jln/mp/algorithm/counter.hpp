@@ -115,7 +115,6 @@ namespace jln::mp::detail
 
     return counter;
   }
-  JLN_MP_DIAGNOSTIC_POP()
 
   template<std::size_t... i, class... ys>
   struct counter_impl<detail::indexed_inherit<std::index_sequence<i...>, ys...>>
@@ -133,5 +132,6 @@ namespace jln::mp::detail
       >>();
     }
   };
+  JLN_MP_DIAGNOSTIC_POP()
 }
 /// \endcond
