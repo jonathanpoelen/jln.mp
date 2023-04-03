@@ -1,14 +1,19 @@
 #pragma once
 
+#include <jln/mp/functional/lift.hpp>
 #include <jln/mp/algorithm/unique.hpp>
+#include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
 
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-    template<class... xs>
+    template<class>
     struct counter_impl;
+
+    template<class... xs>
+    using mk_indexed = indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>;
   }
   /// \endcond
 
@@ -31,9 +36,10 @@ namespace jln::mp
   struct counter_wrapped_with
   {
     template<class... xs>
-    using f = typename unique<lift<detail::counter_impl>>
-      ::f<xs...>
-      ::template f<C, F, xs...>;
+    using f = typename decltype(
+      detail::counter_impl<unique<lift<detail::mk_indexed>>::f<xs...>>
+      ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F)::template f, xs...>()
+    )::template f<>;
   };
 
   /// Counts all distinct elements and returns a list of pairs containing
@@ -63,39 +69,66 @@ namespace jln::mp
 }
 
 /// \cond
-#include <jln/mp/algorithm/fold_left.hpp>
-#include <jln/mp/detail/compiler.hpp>
+namespace jln::mp
+{
+  template<class C>
+  struct counter_wrapped_with<listify, C>
+  {
+    template<class... xs>
+    using f = typename decltype(
+      detail::counter_impl<unique<lift<detail::mk_indexed>>::f<xs...>>
+      ::template f<JLN_MP_TRACE_F(C), list, xs...>()
+    )::template f<>;
+  };
+}
 
 namespace jln::mp::detail
 {
-#if JLN_MP_GCC || defined(JLN_MP_COUNTER_NO_FOLD)
-  template<class T>
-  struct inc_if
+  template<class T, std::size_t i>
+  constexpr std::size_t index_base(indexed_item<i, T>*)
   {
-    template<class state, class x>
-    using f = number<state::value + std::is_same<T, x>::value>;
+    return i;
+  }
+
+  template<std::size_t N>
+  struct array
+  {
+    int elems[N];
   };
 
-  template<class... xs>
-  struct counter_impl
-  {
-    template<class C, class F, class... ys>
-    using f = JLN_MP_CALL_TRACE(C,
-      JLN_MP_CALL_TRACE(F, xs, typename fold_left<inc_if<xs>>::template f<number<0>, ys...>)...
-    );
-  };
-#else
-  template<class x, class... xs>
-  inline constexpr auto count_unique_v = (... + std::is_same<xs, x>::value);
+  template<>
+  struct array<0>
+    : array<1>
+  {};
 
-  template<class... xs>
-  struct counter_impl
+  template<class Indexed, std::size_t N, class... xs>
+  constexpr array<N> count_elems()
   {
-    template<class C, class F, class... ys>
-    using f = JLN_MP_CALL_TRACE(C,
-      JLN_MP_CALL_TRACE(F, xs, mp::number<count_unique_v<xs, ys...>>)...
-    );
+    array<N> counter{};
+
+    Indexed* indexed = nullptr;
+    for (auto i : std::initializer_list<std::size_t>{index_base<xs>(indexed)...}) {
+      ++counter.elems[i];
+    }
+
+    return counter;
+  }
+
+  template<std::size_t... i, class... ys>
+  struct counter_impl<detail::indexed_inherit<std::index_sequence<i...>, ys...>>
+  {
+    template<class C, template<class...> class F, class... xs>
+    static auto f()
+    {
+      constexpr auto counters = count_elems<
+        detail::indexed_inherit<std::index_sequence<i...>, ys...>,
+        sizeof...(i), xs...
+      >();
+
+      return always<typename C::template f<
+        F<ys, number<counters.elems[i]>>...
+      >>();
+    }
   };
-#endif
 }
 /// \endcond
