@@ -210,14 +210,14 @@ local sanitize_space = Cs(ws0 / '' * (
 local sanitize_struct_impl_patt = Cs((
   (P'typename ' + 'template ') / ''
 + 'detail::' * (id * ws0)^1 * (balancedtag * (ws0 * id)^0 * ws0)^0 * balancedparent^0 * ws0
-    / '/* implementation defined */'
+    / '/*...*/'
 + 1
 )^0)
 
 sanitize_struct_impl = function(s)
   if s then
     s = sanitize_struct_impl_patt:match(s)
-    if s == '/* implementation defined */' then
+    if s == '/*...*/' then
       return nil
     end
     s = sanitize_space:match(s)
@@ -1021,7 +1021,7 @@ for _,g in ipairs(tgroups) do
             .. '><a href="#' .. d.refid .. '" class="ref">¶</a>'
             .. inlinecode_begin .. d.fullname:gsub('::', '<span class="p">::</span>')
             .. d.mem_html .. inlinecode_end .. ' = '
-            .. (d.inline_impl_html or '/* implementation defined */')
+            .. (d.inline_impl_html or '/*...*/')
             .. '</h3>\n'
       else
         push('<h3' .. (refcache[d.refid] and '' or ' id="' .. d.refid .. '"') .. '><a href="#'
