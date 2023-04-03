@@ -100,12 +100,14 @@ namespace jln::mp
 # if  __cpp_nontype_template_parameter_auto >= 201606L
 #  define JLN_MP_ENABLE_TPL_AUTO 1
 #  define JLN_MP_TPL_AUTO_OR_INT auto
+#  define JLN_MP_TPL_AUTO_OR(T) auto
 # endif
 #endif
 
 #ifndef JLN_MP_TPL_AUTO_OR_INT
 # define JLN_MP_TPL_AUTO_OR_INT ::jln::mp::int_
 # define JLN_MP_ENABLE_TPL_AUTO 0
+# define JLN_MP_TPL_AUTO_OR(T) T
 #endif
 }
 // Compiler type
@@ -351,6 +353,12 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::memoizer_impl<C, list<xs...>>::type;
   };
+
+#if JLN_MP_CLANG_LIKE
+# define JLN_MEMOIZE(...) ::jln::mp::memoize<__VA_ARGS__>
+#else
+# define JLN_MEMOIZE(...) __VA_ARGS__
+#endif
 }
 
 /// \cond
@@ -418,6 +426,13 @@ namespace jln::mp
     >::type
 #endif
 
+#if JLN_MP_CLANG_LIKE
+# define JLN_MEMOIZE_CALL(C, ...) ::jln::mp::memoize_call<C, __VA_ARGS__>
+# define JLN_MEMOIZE_CALL_F(C, ...) ::jln::mp::memoize_call<C, __VA_ARGS__>
+#else
+# define JLN_MEMOIZE_CALL(C, ...) typename JLN_MP_TRACE_F(C)::template f<__VA_ARGS__>
+# define JLN_MEMOIZE_CALL_F(C, ...) JLN_MP_TRACE_F(C)::template f<__VA_ARGS__>
+#endif
 
 #ifdef JLN_MP_DOXYGENATING
 
@@ -618,7 +633,7 @@ namespace jln::mp
     >::template f<TC, FC, xs...>;
   };
 
-  template<class F, class FC>
+  template<class F, class FC = always<false_>>
   using try_or = try_<F, identity, FC>;
 
   namespace emp
@@ -868,6 +883,30 @@ namespace jln::mp::detail
   struct _unpack_append<C, Seq<xs...>, ys...>
   {
     using type = typename C::template f<xs..., ys...>;
+  };
+
+  template<template<class...> class F, template<class...> class Seq, class... ys, class... xs>
+  struct _unpack<lift<F>, Seq<ys...>, xs...>
+  {
+    using type = F<xs..., ys...>;
+  };
+
+  template<template<class...> class F, template<class...> class Seq, class... xs, class... ys>
+  struct _unpack_append<lift<F>, Seq<xs...>, ys...>
+  {
+    using type = F<xs..., ys...>;
+  };
+
+  template<template<class...> class F, template<class...> class Seq, class... ys, class... xs>
+  struct _unpack<lift_t<F>, Seq<ys...>, xs...>
+  {
+    using type = typename F<xs..., ys...>::type;
+  };
+
+  template<template<class...> class F, template<class...> class Seq, class... xs, class... ys>
+  struct _unpack_append<lift_t<F>, Seq<xs...>, ys...>
+  {
+    using type = typename F<xs..., ys...>::type;
   };
 
   template<class C>
@@ -4184,7 +4223,7 @@ namespace jln::mp
   namespace detail
   {
     template<int>
-    struct _same;
+    struct same_impl;
   }
   /// \endcond
 
@@ -4197,7 +4236,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      typename detail::_same<sizeof...(xs) < 3 ? sizeof...(xs) : 3>
+      typename detail::same_impl<sizeof...(xs) < 3 ? sizeof...(xs) : 3>
       ::template f<xs...>
     );
   };
@@ -4217,7 +4256,7 @@ namespace jln::mp
   struct same<identity>
   {
     template<class... xs>
-    using f = typename detail::_same<sizeof...(xs) < 3 ? sizeof...(xs) : 3>
+    using f = typename detail::same_impl<sizeof...(xs) < 3 ? sizeof...(xs) : 3>
       ::template f<xs...>;
   };
 }
@@ -4225,31 +4264,25 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<>
-  struct _same<0>
-  {
-    template<class...>
-    using f = mp::true_;
-  };
+  struct same_impl<0> : always<true_>
+  {};
 
   template<>
-  struct _same<1>
-  {
-    template<class>
-    using f = mp::true_;
-  };
+  struct same_impl<1> : always<true_>
+  {};
 
   template<>
-  struct _same<2>
+  struct same_impl<2>
   {
     template<class x, class y>
-    using f = mp::number<std::is_same<x, y>::value>;
+    using f = number<std::is_same<x, y>::value>;
   };
 
   template<>
-  struct _same<3>
+  struct same_impl<3>
   {
     template<class x, class... xs>
-    using f = mp::number<std::is_same<list<x, xs...>, list<xs..., x>>::value>;
+    using f = number<std::is_same<list<x, xs...>, list<xs..., x>>::value>;
   };
 }
 /// \endcond
@@ -5026,7 +5059,7 @@ namespace jln::mp
 
   /// Returns a list of the same form as L with the duplicate elements removed.
   /// Only the first element found is kept.
-  /// \treturn \sequence
+  /// \treturn \set
   template<class C = listify>
   using unique = typename detail::mk_unique<lift<std::is_same>, C>::type;
 
@@ -5665,36 +5698,215 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-// std::integer_sequence
+#if !(JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC)
+#endif
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class x>
+    struct base_item
+    {};
+
+    template<class... xs>
+    struct inherit : base_item<xs>...
+    {};
+  }
+#if JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC
+# define JLN_MP_SET_CONTAINS_BASE(x, ...) __is_base_of(detail::base_item<x>, __VA_ARGS__)
+#else
+# define JLN_MP_SET_CONTAINS_BASE(x, ...) std::is_base_of<detail::base_item<x>, __VA_ARGS__>::value
+#endif
+#define JLN_MP_SET_CONTAINS(x, ...) JLN_MP_SET_CONTAINS_BASE(x, detail::inherit<__VA_ARGS__>)
+  /// \endcond
+
+  /// \ingroup set
+
+  /// Checks if \c x is an element of the \set whose elements are \c xs.
+  /// \treturn \bool
+  /// \pre `emp::unique<xs...> == list<xs...>`
+  template<class x, class C = identity>
+  struct set_contains
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_SET_CONTAINS(x, xs...)>);
+  };
+
+  namespace emp
+  {
+    /// \c true if \c x is an element of the set \c Set, \c false otherwise.
+    template<class Set, class x>
+    inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
+      x, typename detail::_unpack<mp::lift<detail::inherit>, Set>::type
+    );
+
+    /// \c true if \c x is an element of all \set \c Sets, \c false otherwise.
+    template<class x, class... Sets>
+    constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
+      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
+    ) && ...);
+
+    /// \c true if \c x is an element of any \set \c Sets, \c false otherwise.
+    template<class x, class... Sets>
+    constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
+      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
+    ) || ...);
+
+    /// \c true if \c x is an element of none \set \c Sets, \c false otherwise.
+    template<class x, class... Sets>
+    constexpr bool set_none_contains_v = !set_any_contains_v<x, Sets...>;
+
+    /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
+    template<class Set, class x>
+    using set_contains = number<set_contains_v<Set, x>>;
+
+    /// \c true_ if \c x is an element of all \set \c Sets, \c false_ otherwise.
+    template<class x, class... Sets>
+    using set_all_contains = number<set_all_contains_v<x, Sets...>>;
+
+    /// \c true_ if \c x is an element of any \set \c Sets, \c false_ otherwise.
+    template<class x, class... Sets>
+    using set_any_contains = number<set_any_contains_v<x, Sets...>>;
+
+    /// \c true_ if \c x is an element of none \set \c Sets, \c false_ otherwise.
+    template<class x, class... Sets>
+    using set_none_contains = number<!set_any_contains_v<x, Sets...>>;
+  }
+
+  /// Checks if \c x is an element of all \set \c Sets.
+  /// \treturn \bool
+  /// \pre `emp::unique<Sets> && ...`
+  template<class x, class C = identity>
+  struct set_all_contains
+  {
+    template<class... Sets>
+    using f = JLN_MP_CALL_TRACE(C, number<emp::set_all_contains_v<x, Sets...>>);
+  };
+
+  /// Checks if \c x is an element of any \set \c Sets.
+  /// \treturn \bool
+  /// \pre `emp::unique<Sets> && ...`
+  template<class x, class C = identity>
+  struct set_any_contains
+  {
+    template<class... Sets>
+    using f = JLN_MP_CALL_TRACE(C, number<emp::set_any_contains_v<x, Sets...>>);
+  };
+
+  /// Checks if \c x is an element of none \set \c Sets.
+  /// \treturn \bool
+  /// \pre `emp::unique<Sets> && ...`
+  template<class x, class C = identity>
+  struct set_none_contains
+  {
+    template<class... Sets>
+    using f = JLN_MP_CALL_TRACE(C, number<!emp::set_any_contains_v<x, Sets...>>);
+  };
+}
+
+/// \cond
+namespace jln::mp
+{
+  template<class x>
+  struct set_contains<x, identity>
+  {
+    template<class... xs>
+    using f = number<JLN_MP_SET_CONTAINS(x, xs...)>;
+  };
+
+  template<class x>
+  struct set_all_contains<x, identity>
+  {
+    template<class... Sets>
+    using f = number<emp::set_all_contains_v<x, Sets...>>;
+  };
+
+  template<class x>
+  struct set_any_contains<x, identity>
+  {
+    template<class... Sets>
+    using f = number<emp::set_any_contains_v<x, Sets...>>;
+  };
+
+  template<class x>
+  struct set_none_contains<x, identity>
+  {
+    template<class... Sets>
+    using f = number<!emp::set_any_contains_v<x, Sets...>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<bool>
+    struct set_push_back_select;
+
+    template<class Set, class x, class = number<0>>
+    struct set_push_back_impl;
+  }
+  /// \endcond
+
+  /// \ingroup set
+
+  /// Appends \c x to the end of the \set whose elements are \c xs if not already in \c xs.
+  /// \treturn \set
+  /// \pre `emp::unique<xs...> == list<xs...>`
+  /// \post \c emp::is_unique<result>
+  /// \see set_push_front, set_push_back_elements
+  template<class x, class C = listify>
+  struct set_push_back
+  {
+    template<class... xs>
+    using f = typename detail::set_push_back_select<JLN_MP_SET_CONTAINS(x, xs...)>
+      ::template f<JLN_MP_TRACE_F(C), x, xs...>;
+  };
+
+  namespace emp
+  {
+    template<class Set, class x>
+    using set_push_back = typename detail::set_push_back_impl<Set, x>::type;
+  }
+}
+
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<class x>
-  struct inherit_item {};
+  template<>
+  struct set_push_back_select<false>
+  {
+    template<class C, class x, class... xs>
+    using f = typename C::template f<xs..., x>;
+  };
 
-  template<class... xs>
-  struct inherit : inherit_item<xs>...
-  {};
+  template<>
+  struct set_push_back_select<true>
+  {
+    template<class C, class, class... xs>
+    using f = typename C::template f<xs...>;
+  };
 
-  template<class L, class x, class = number<0>>
-  struct _set_push_back
+  template<class L, class x, class>
+  struct set_push_back_impl
   {
     using type = L;
   };
 
   template<class... xs, class x>
-  struct _set_push_back<list<xs...>, x,
-#if JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC
-    number<__is_base_of(inherit_item<x>, inherit<xs...>)>
-#else
-    number<std::is_base_of<inherit_item<x>, inherit<xs...>>::value>
-#endif
-  >
+  struct set_push_back_impl<list<xs...>, x, number<JLN_MP_SET_CONTAINS(x, xs...)>>
   {
     using type = list<xs..., x>;
   };
-
+}
+/// \endcond
+/// \cond
+namespace jln::mp::detail
+{
   template<class Cmp>
   struct _set_cmp_push_back
   {
@@ -5713,14 +5925,11 @@ namespace jln::mp::detail
     >>;
   };
 
-  template<class x, class y>
-  using set_push_back_t = typename _set_push_back<x, y>::type;
-
   template<class C>
   struct mk_unique<lift<std::is_same>, C>
   {
     using type = push_front<list<>, fold_left<
-      lift<set_push_back_t>,
+      lift<emp::set_push_back>,
       optimize_useless_unpack_t<unpack<C>>
     >>;
   };
@@ -6861,7 +7070,7 @@ namespace jln::mp::optimizer::opti_detail
     >::type;
   };
 
-  using unique_union_impl = fold_left<lift<detail::set_push_back_t>>;
+  using unique_union_impl = fold_left<lift<emp::set_push_back>>;
 
   template<>
   struct normalize_union_has_pack_any<false>
@@ -14234,11 +14443,13 @@ namespace jln::mp
 }
 
 
+// std::integer_sequence
+
 /// \cond
 namespace jln::mp::detail
 {
   template<std::size_t i, class x>
-  struct indexed_item : inherit_item<x> {};
+  struct indexed_item : base_item<x> {};
 
   template<class, class...>
   struct indexed_inherit;
@@ -14254,7 +14465,7 @@ namespace jln::mp::detail
   {
     template <class Pack>
     static auto is_set(Pack pack) -> decltype((
-        static_cast<inherit_item<xs>*>(pack),...
+        static_cast<base_item<xs>*>(pack),...
     ), number<1>());
 
     static number<0> is_set(...);
@@ -14360,11 +14571,11 @@ namespace jln::mp::detail
   using remove_unique_impl = typename join<C>::template f<
     typename wrap_in_list_c<
 #if JLN_MP_FEATURE_CONCEPTS
-      !requires{ static_cast<inherit_item<xs>*>(static_cast<Inherit*>(nullptr)); }
+      !requires{ static_cast<base_item<xs>*>(static_cast<Inherit*>(nullptr)); }
 #else
       !is_convertible_to(
         static_cast<Inherit*>(nullptr),
-        static_cast<inherit_item<xs>*>(nullptr)
+        static_cast<base_item<xs>*>(nullptr)
       )
 #endif
     >
@@ -14392,11 +14603,11 @@ namespace jln::mp::detail
   using copy_unique_impl = typename join<C>::template f<
     typename wrap_in_list_c<
 #if JLN_MP_FEATURE_CONCEPTS
-      requires{ static_cast<inherit_item<xs>*>(static_cast<Inherit*>(nullptr)); }
+      requires{ static_cast<base_item<xs>*>(static_cast<Inherit*>(nullptr)); }
 #else
       is_convertible_to(
         static_cast<Inherit*>(nullptr),
-        static_cast<inherit_item<xs>*>(nullptr)
+        static_cast<base_item<xs>*>(nullptr)
       )
 #endif
     >
@@ -15000,13 +15211,18 @@ namespace jln::mp::smp
   template<class x, class C = identity>
   using count = contract<mp::count<x, assume_positive_number<C>>>;
 }
+// indexed_inherit
+
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-    template<class... xs>
+    template<class>
     struct counter_impl;
+
+    template<class... xs>
+    using mk_indexed = indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>;
   }
   /// \endcond
 
@@ -15029,9 +15245,10 @@ namespace jln::mp
   struct counter_wrapped_with
   {
     template<class... xs>
-    using f = typename unique<lift<detail::counter_impl>>
-      ::f<xs...>
-      ::template f<C, F, xs...>;
+    using f = typename decltype(
+      detail::counter_impl<unique<lift<detail::mk_indexed>>::f<xs...>>
+      ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F)::template f, xs...>()
+    )::template f<>;
   };
 
   /// Counts all distinct elements and returns a list of pairs containing
@@ -15061,37 +15278,70 @@ namespace jln::mp
 }
 
 /// \cond
+namespace jln::mp
+{
+  template<class C>
+  struct counter_wrapped_with<listify, C>
+  {
+    template<class... xs>
+    using f = typename decltype(
+      detail::counter_impl<unique<lift<detail::mk_indexed>>::f<xs...>>
+      ::template f<JLN_MP_TRACE_F(C), list, xs...>()
+    )::template f<>;
+  };
+}
+
 namespace jln::mp::detail
 {
-#if JLN_MP_GCC || defined(JLN_MP_COUNTER_NO_FOLD)
-  template<class T>
-  struct inc_if
+  template<class T, std::size_t i>
+  constexpr std::size_t index_base(indexed_item<i, T>*)
   {
-    template<class state, class x>
-    using f = number<state::value + std::is_same<T, x>::value>;
+    return i;
+  }
+
+  template<std::size_t N>
+  struct array
+  {
+    int elems[N];
   };
 
-  template<class... xs>
-  struct counter_impl
-  {
-    template<class C, class F, class... ys>
-    using f = JLN_MP_CALL_TRACE(C,
-      JLN_MP_CALL_TRACE(F, xs, typename fold_left<inc_if<xs>>::template f<number<0>, ys...>)...
-    );
-  };
-#else
-  template<class x, class... xs>
-  inline constexpr auto count_unique_v = (... + std::is_same<xs, x>::value);
+  template<>
+  struct array<0>
+    : array<1>
+  {};
 
-  template<class... xs>
-  struct counter_impl
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wunused-but-set-variable")
+  template<class Indexed, std::size_t N, class... xs>
+  constexpr array<N> count_elems()
   {
-    template<class C, class F, class... ys>
-    using f = JLN_MP_CALL_TRACE(C,
-      JLN_MP_CALL_TRACE(F, xs, mp::number<count_unique_v<xs, ys...>>)...
-    );
+    array<N> counter{};
+
+    Indexed* indexed = nullptr;
+    for (auto i : std::initializer_list<std::size_t>{index_base<xs>(indexed)...}) {
+      ++counter.elems[i];
+    }
+
+    return counter;
+  }
+
+  template<std::size_t... i, class... ys>
+  struct counter_impl<detail::indexed_inherit<std::index_sequence<i...>, ys...>>
+  {
+    template<class C, template<class...> class F, class... xs>
+    static auto f()
+    {
+      constexpr auto counters = count_elems<
+        detail::indexed_inherit<std::index_sequence<i...>, ys...>,
+        sizeof...(i), xs...
+      >();
+
+      return always<typename C::template f<
+        F<ys, number<counters.elems[i]>>...
+      >>();
+    }
   };
-#endif
+  JLN_MP_DIAGNOSTIC_POP()
 }
 /// \endcond
 namespace jln::mp::smp
@@ -17646,10 +17896,10 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold_left<lift<set_push_back_t>, C>>>
+  struct _sfinae<sfinae, push_front<list<>, fold_left<lift<emp::set_push_back>, C>>>
   {
     using type = contract<push_front<list<>, fold_left<
-      lift<set_push_back_t>, typename smp_unique_continuation<
+      lift<emp::set_push_back>, typename smp_unique_continuation<
         assume_unary<sfinae<C>>
       >::type
     >>>;
@@ -17661,7 +17911,7 @@ namespace jln::mp::detail
   >>>
   {
     using type = contract<push_front<list<>, fold_left<
-      lift<set_push_back_t>, typename smp_unique_continuation<
+      lift<emp::set_push_back>, typename smp_unique_continuation<
         assume_unary<optimize_useless_unpack_t<sfinae<C>>>
       >::type
     >>>;
@@ -21724,6 +21974,168 @@ JLN_MP_MAKE_REGULAR_SMP5_P(partial_search_before_extended_by_n,
     StopWhenAtLeast::value, ExtendedByN::value, Pred, TC, FC>)
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+#if JLN_MP_CLANG
+# define JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(...)
+#else
+# define JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(...) , __VA_ARGS__
+#endif
+    template<class JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(class = void)>
+    struct normalize_similar;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Checks whether all types are the same or instantiations of the same class template.
+  /// The list of supported class templates are:
+  ///   - `template<class...>`
+  ///   - `template<class T, T...>`
+  ///   - `template<class, std::size_t>`
+  ///   - `template<std::size_t, class...>`
+  ///   - `template<class, auto...>` (when supported)
+  ///   - `template<auto, class...>` (when supported)
+  ///   - `template<auto...>` (when supported)
+  /// \treturn \bool
+  template<class C = identity>
+  struct similar
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename detail::same_impl<sizeof...(xs) < 3 ? sizeof...(xs) : 3>
+        ::template f<typename detail::normalize_similar<xs>::type...>
+    );
+  };
+
+  namespace emp
+  {
+    template<class L, class C = mp::identity>
+    using similar = unpack<L, mp::similar<C>>;
+
+#ifdef JLN_MP_DOXYGENATING
+    template<class x, class y>
+    using is_similar = similar<>::f<x, y>;
+#else
+    template<class x, class y>
+    using is_similar = detail::same_impl<2>::f<
+      typename detail::normalize_similar<x>::type,
+      typename detail::normalize_similar<y>::type
+    >;
+#endif
+  }
+}
+
+
+/// \cond
+namespace jln::mp
+{
+  template<>
+  struct similar<identity>
+  {
+    template<class... xs>
+    using f = typename detail::same_impl<sizeof...(xs) < 3 ? sizeof...(xs) : 3>
+      ::template f<typename detail::normalize_similar<xs>::type...>;
+  };
+}
+
+namespace jln::mp::detail
+{
+  template<class T JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(class)>
+  struct normalize_similar
+  {
+    using type = T;
+  };
+
+  template<template<class...> class Tpl>
+  struct tpl_type1 {};
+
+  template<template<class...> class Tpl, class... xs>
+  struct normalize_similar<Tpl<xs...>>
+  {
+    using type = tpl_type1<Tpl>;
+  };
+
+  // fix ambiguous
+  template<template<class> class Tpl, class x>
+  struct normalize_similar<Tpl<x> JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(std::void_t<tpl_type1<Tpl>>)>
+  {
+    using type = tpl_type1<Tpl>;
+  };
+
+  template<template<class T, JLN_MP_TPL_AUTO_OR(T)...> class Tpl>
+  struct tpl_type2 {};
+
+  template<class T, template<class, JLN_MP_TPL_AUTO_OR(T)...> class Tpl, JLN_MP_TPL_AUTO_OR(T)... xs>
+  struct normalize_similar<Tpl<T, xs...>>
+  {
+    using type = tpl_type2<Tpl>;
+  };
+
+#if JLN_MP_ENABLE_TPL_AUTO
+  template<template<auto...> class Tpl>
+  struct tpl_type3 {};
+
+  // fix ambiguous
+  template<template<auto> class Tpl, auto x>
+  struct normalize_similar<Tpl<x> JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(std::void_t<tpl_type3<Tpl>>)>
+  {
+    using type = tpl_type3<Tpl>;
+  };
+
+  template<template<auto...> class Tpl, auto... xs>
+  struct normalize_similar<Tpl<xs...>>
+#else
+  template<template<class, std::size_t...> class Tpl>
+  struct tpl_type3;
+
+  // fix ambiguous
+  template<template<auto> class Tpl, std::size_t x>
+  struct normalize_similar<Tpl<x> JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(std::void_t<tpl_type3<Tpl>>)>
+  {
+    using type = tpl_type3<Tpl>;
+  };
+
+  template<template<class, std::size_t...> class Tpl, class T, std::size_t... N>
+  struct normalize_similar<Tpl<T, N>>
+#endif
+  {
+    using type = tpl_type3<Tpl>;
+  };
+
+  template<template<JLN_MP_TPL_AUTO_OR(std::size_t), class...> class Tpl>
+  struct tpl_type4;
+
+  template<template<JLN_MP_TPL_AUTO_OR(std::size_t), class...> class Tpl,
+    JLN_MP_TPL_AUTO_OR(std::size_t) N, class... T>
+  struct normalize_similar<Tpl<N, T...>>
+  {
+    using type = tpl_type4<Tpl>;
+  };
+
+}
+
+#undef JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM
+/// \endcond
+namespace jln::mp::smp
+{
+  template<class C = identity>
+  using similar = contract<mp::similar<assume_positive_number<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, similar<C>>
+  {
+    using type = smp::similar<sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
   /// \ingroup search
 
   /// Remove the first elements of a \sequence that does not satisfy a \predicate.
@@ -24661,7 +25073,7 @@ namespace jln::mp
   struct insert_sequence_c
   {};
 
-  template<int_ index, class... xs, template<class...> class List, class C>
+  template<int_ index, template<class...> class List, class... xs, class C>
   struct insert_sequence_c<index, List<xs...>, C>
   {
     template<class... ys>
@@ -26467,6 +26879,482 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, lift<_pow>>
   {
     using type = try_contract<lift<_pow>>;
+  };
+}
+/// \endcond
+namespace jln::mp::smp
+{
+  template<class x, class C = identity>
+  using set_contains = test_contract<
+    mp::is_unique<>,
+    mp::set_contains<x, subcontract<C>>
+  >;
+
+  template<class x, class C = identity>
+  using set_all_contains = test_contract<
+    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>>>,
+    mp::set_all_contains<x, subcontract<C>>
+  >;
+
+  template<class x, class C = identity>
+  using set_any_contains = test_contract<
+    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>>>,
+    mp::set_any_contains<x, subcontract<C>>
+  >;
+
+  template<class x, class C = identity>
+  using set_none_contains = test_contract<
+    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>>>,
+    mp::set_none_contains<x, subcontract<C>>
+  >;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class x, class C>
+  struct _sfinae<sfinae, set_contains<x, C>>
+  {
+    using type = smp::set_contains<x, sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class x, class C>
+  struct _sfinae<sfinae, set_all_contains<x, C>>
+  {
+    using type = smp::set_all_contains<x, sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class x, class C>
+  struct _sfinae<sfinae, set_any_contains<x, C>>
+  {
+    using type = smp::set_any_contains<x, sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class x, class C>
+  struct _sfinae<sfinae, set_none_contains<x, C>>
+  {
+    using type = smp::set_none_contains<x, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cont
+  namespace detail
+  {
+    template<class L, class C = listify>
+    struct set_difference_impl
+    {};
+  }
+  /// \endcont
+
+  /// \ingroup set
+
+  /// Removes the elements of the list \c L that appear in any of the sets \c Sets.
+  /// \treturn \set
+  /// \pre `emp::is_unique<Sets> && ...`
+  /// \post \c emp::is_unique<result>
+  template<class C = listify>
+  struct set_difference
+  {
+    template<class L, class... Sets>
+    using f = typename detail::set_difference_impl<L>::template f<C, Sets...>;
+  };
+
+  namespace emp
+  {
+    template<class L, class... Sets>
+    using set_difference = typename detail::set_difference_impl<L>::template f<listify, Sets...>;
+  }
+}
+
+/// \cont
+namespace jln::mp::detail
+{
+  template<template<class...> class List, class... xs>
+  struct set_difference_impl<List<xs...>>
+  {
+    template<class C, class... Sets>
+    using f = typename join<C>::template f<
+      typename wrap_in_list_c<!emp::set_any_contains_v<xs, Sets...>>
+      ::template f<xs>...
+    >;
+  };
+}
+/// \endcont
+namespace jln::mp::smp
+{
+  template<class C = listify>
+  using set_difference = test_contract<
+    mp::size<>,
+    mp::if_<
+      mp::pop_front<
+        mp::if_<
+          mp::all_of<mp::is_list<>>,
+          mp::all_of<mp::unpack<mp::is_unique<>>>
+        >
+      >,
+      try_<mp::set_difference<subcontract<C>>>,
+      violation
+    >
+  >;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, set_difference<C>>
+  {
+    using type = smp::set_difference<sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cont
+  namespace detail
+  {
+    template<class L, class C = listify>
+    struct set_intersection_impl
+    {};
+  }
+  /// \endcont
+
+  /// \ingroup set
+
+  /// Returns a \set that contains the elements that occur in all of the sets \c Sets.
+  /// \pre `emp::is_unique<Sets> && ...`
+  /// \post \c emp::is_unique<result>
+  /// \treturn \set
+  template<class C = listify>
+  struct set_intersection
+  {
+    template<class L, class... Sets>
+    using f = typename detail::set_intersection_impl<L>::template f<C, Sets...>;
+  };
+
+  namespace emp
+  {
+    template<class L, class... Sets>
+    using set_intersection = typename detail::set_intersection_impl<L>::template f<listify, Sets...>;
+  }
+}
+
+/// \cont
+namespace jln::mp::detail
+{
+  template<template<class...> class List, class... xs>
+  struct set_intersection_impl<List<xs...>>
+  {
+    template<class C, class... Sets>
+    using f = typename join<C>::template f<
+      typename wrap_in_list_c<emp::set_all_contains_v<xs, Sets...>>
+      ::template f<xs>...
+    >;
+  };
+}
+/// \endcont
+namespace jln::mp::smp
+{
+  template<class C = listify>
+  using set_intersection = test_contract<
+    mp::size<>,
+    mp::if_<
+      mp::pop_front<
+        mp::if_<
+          mp::all_of<mp::is_list<>>,
+          mp::all_of<mp::unpack<mp::is_unique<>>>
+        >
+      >,
+      try_<mp::set_intersection<subcontract<C>>>,
+      violation
+    >
+  >;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, set_intersection<C>>
+  {
+    using type = smp::set_intersection<sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp::smp
+{
+  template<class x, class C = listify>
+  using set_push_back = test_contract<mp::is_unique<>, mp::set_push_back<x, subcontract<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class x, class C>
+  struct _sfinae<sfinae, set_push_back<x, C>>
+  {
+    using type = smp::set_push_back<x, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup set
+
+  /// Appends to the end of the \set \c Set the elements of \c xs which are not already in \c Set.
+  /// \treturn \set
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   fold_left<lift<emp::set_push_back>>::<xs...>
+  ///   \endcode
+  /// \pre \c emp::is_unique<Set>
+  /// \post \c emp::is_unique<result>
+  /// \see set_push_back, set_push_front_elements
+#ifdef JLN_MP_DOXYGENATING
+  template<class C = listify>
+  struct set_push_back_elements
+  {
+    template<class Set, class... xs>
+    using f;
+  };
+#else
+  template<class C = listify>
+  using set_push_back_elements = fold_left<
+    lift<emp::set_push_back>,
+    detail::optimize_useless_unpack_t<unpack<C>>
+  >;
+#endif
+
+  namespace emp
+  {
+    template<class Set, class... xs>
+    using set_push_back_elements = typename mp::set_push_back_elements<>::template f<Set, xs...>;
+  }
+}
+namespace jln::mp::smp
+{
+  template<class C = listify>
+  using set_push_back_elements = test_contract<
+    mp::size<>,
+    mp::if_<
+      mp::front<
+        mp::if_<
+          mp::is_list<>,
+          mp::unpack<mp::is_unique<>>
+        >
+      >,
+      mp::set_push_back_elements<subcontract<C>>,
+      violation
+    >
+  >;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, fold_left<lift<emp::set_push_back>, C>>
+  {
+    using type = smp::set_push_back_elements<
+      typename conditional_c<std::is_same<C, identity>::value>
+      ::template f<smp::listify, sfinae<C>>
+    >;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<bool>
+    struct set_push_front_select;
+
+    template<class S, class x, class = number<0>>
+    struct set_push_front_impl;
+  }
+  /// \endcond
+
+  /// \ingroup set
+
+  /// Appends \c x to the beginning of the \set whose elements are \c xs if not already in \c xs.
+  /// \treturn \set
+  /// \pre `emp::unique<xs...> == list<xs...>`
+  /// \post \c emp::is_unique<result>
+  /// \see set_push_back, set_push_front_elements
+  template<class x, class C = listify>
+  struct set_push_front
+  {
+    template<class... xs>
+    using f = typename detail::set_push_front_select<JLN_MP_SET_CONTAINS(x, xs...)>
+      ::template f<JLN_MP_TRACE_F(C), x, xs...>;
+  };
+
+  namespace emp
+  {
+    template<class Set, class x>
+    using set_push_front = typename detail::set_push_front_impl<Set, x>::type;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct set_push_front_select<false>
+  {
+    template<class C, class... xs>
+    using f = typename C::template f<xs...>;
+  };
+
+  template<>
+  struct set_push_front_select<true> : set_push_back_select<true>
+  {};
+
+  template<class L, class x, class>
+  struct set_push_front_impl
+  {
+    using type = L;
+  };
+
+  template<class... xs, class x>
+  struct set_push_front_impl<list<xs...>, x, number<JLN_MP_SET_CONTAINS(x, xs...)>>
+  {
+    using type = list<x, xs...>;
+  };
+}
+/// \endcond
+namespace jln::mp::smp
+{
+  template<class x, class C = listify>
+  using set_push_front = test_contract<mp::is_unique<>, mp::set_push_front<x, subcontract<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class x, class C>
+  struct _sfinae<sfinae, set_push_front<x, C>>
+  {
+    using type = smp::set_push_front<x, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup set
+
+  /// Appends to the beginning of the \set \c Set the elements of \c xs which are not already in \c Set.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   fold_left<lift<emp::set_push_front>>::<xs...>
+  ///   \endcode
+  /// \treturn \set
+  /// \pre \c emp::is_unique<Set>
+  /// \post \c emp::is_unique<result>
+  /// \see set_push_front, set_push_back_elements
+#ifdef JLN_MP_DOXYGENATING
+  template<class C = listify>
+  struct set_push_front_elements
+  {
+    template<class Set, class... xs>
+    using f;
+  };
+#else
+  template<class C = listify>
+  using set_push_front_elements = fold_left<
+    lift<emp::set_push_front>,
+    detail::optimize_useless_unpack_t<unpack<C>>
+  >;
+#endif
+
+  namespace emp
+  {
+    template<class Set, class... xs>
+    using set_push_front_elements = typename mp::set_push_front_elements<>::template f<Set, xs...>;
+  }
+}
+namespace jln::mp::smp
+{
+  template<class C = listify>
+  using set_push_front_elements = test_contract<
+    mp::size<>,
+    mp::if_<
+      mp::front<
+        mp::if_<
+          mp::is_list<>,
+          mp::unpack<mp::is_unique<>>
+        >
+      >,
+      mp::set_push_front_elements<subcontract<C>>,
+      violation
+    >
+  >;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, fold_left<lift<emp::set_push_front>, C>>
+  {
+    using type = smp::set_push_front_elements<
+      typename conditional_c<std::is_same<C, identity>::value>
+      ::template f<smp::listify, sfinae<C>>
+    >;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup set
+
+  /// Appends to the end of the \set \c Set the elements of \c Ls which are not already in \c Set.
+  /// \treturn \set
+  /// \pre \c emp::is_unique<Set>
+  /// \post \c emp::is_unique<result>
+  template<class C = listify>
+  struct set_union
+  {
+    template<class Set, class... Ls>
+    using f = typename unpack<set_push_back_elements<C>>::template f<emp::join<Ls...>, Set>;
+  };
+
+  namespace emp
+  {
+    template<class Set, class... Ls>
+    using set_union = mp::set_union<>::f<Set, Ls...>;
+  }
+}
+namespace jln::mp::smp
+{
+  template<class C = listify>
+  using set_union = test_contract<
+    mp::size<>,
+    mp::if_<
+      mp::front<mp::try_or<mp::unpack<mp::is_unique<>>>>,
+      mp::if_<
+        mp::pop_front<mp::all_of<mp::is_list<>>>,
+        mp::set_union<subcontract<C>>,
+        violation
+      >,
+      violation
+    >
+  >;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, set_union<C>>
+  {
+    using type = smp::set_union<sfinae<C>>;
   };
 }
 /// \endcond
