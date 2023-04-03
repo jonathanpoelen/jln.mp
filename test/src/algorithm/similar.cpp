@@ -46,6 +46,10 @@ TEST()
     .test<false_, int, int, void>()
     .test<false_, int, int, list<int>>()
     .test<false_, similar<>, list<>>()
+    .test<true_
+      , tx<>, tx<int>, tx<int, int>, tx<int, int, int>
+    >()
+    // check ambiguity
     .test<false_
       , t1<int>, t2<int, int>, tx<>, tx<int>, tx<int, int>, tx<int, int, int>
       , a1<1>, a2<1, 1>, ax<>, ax<1>, ax<1, 1>, ax<1, 1, 1>

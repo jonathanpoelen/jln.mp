@@ -1,13 +1,19 @@
 #pragma once
 
 #include <jln/mp/algorithm/same.hpp>
+#include <jln/mp/detail/compiler.hpp>
 
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-    template<class>
+#if JLN_MP_CLANG
+# define JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(...)
+#else
+# define JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(...) , __VA_ARGS__
+#endif
+    template<class JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(class = void)>
     struct normalize_similar;
   }
   /// \endcond
@@ -67,7 +73,7 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  template<class T>
+  template<class T JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(class)>
   struct normalize_similar
   {
     using type = T;
@@ -84,7 +90,7 @@ namespace jln::mp::detail
 
   // fix ambiguous
   template<template<class> class Tpl, class x>
-  struct normalize_similar<Tpl<x>>
+  struct normalize_similar<Tpl<x> JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(std::void_t<tpl_type1<Tpl>>)>
   {
     using type = tpl_type1<Tpl>;
   };
@@ -104,7 +110,7 @@ namespace jln::mp::detail
 
   // fix ambiguous
   template<template<auto> class Tpl, auto x>
-  struct normalize_similar<Tpl<x>>
+  struct normalize_similar<Tpl<x> JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(std::void_t<tpl_type3<Tpl>>)>
   {
     using type = tpl_type3<Tpl>;
   };
@@ -114,6 +120,13 @@ namespace jln::mp::detail
 #else
   template<template<class, std::size_t...> class Tpl>
   struct tpl_type3;
+
+  // fix ambiguous
+  template<template<auto> class Tpl, std::size_t x>
+  struct normalize_similar<Tpl<x> JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(std::void_t<tpl_type3<Tpl>>)>
+  {
+    using type = tpl_type3<Tpl>;
+  };
 
   template<template<class, std::size_t...> class Tpl, class T, std::size_t... N>
   struct normalize_similar<Tpl<T, N>>
@@ -131,5 +144,8 @@ namespace jln::mp::detail
   {
     using type = tpl_type4<Tpl>;
   };
+
 }
+
+#undef JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM
 /// \endcond
