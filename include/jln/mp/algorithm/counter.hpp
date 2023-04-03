@@ -71,13 +71,13 @@ namespace jln::mp
 /// \cond
 namespace jln::mp
 {
-  template<class C>
-  struct counter_wrapped_with<listify, C>
+  template<template<class...> class F, class C>
+  struct counter_wrapped_with<lift<F>, C>
   {
     template<class... xs>
     using f = typename decltype(
       detail::counter_impl<unique<lift<detail::mk_indexed>>::f<xs...>>
-      ::template f<JLN_MP_TRACE_F(C), list, xs...>()
+      ::template f<JLN_MP_TRACE_F(C), F, xs...>()
     )::template f<>;
   };
 }
