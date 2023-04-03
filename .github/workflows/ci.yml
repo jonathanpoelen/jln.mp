@@ -172,6 +172,7 @@ jobs:
             include/jln/mp/number/* \
             include/jln/mp/utility/* \
             include/jln/mp/value/* \
+            include/jln/mp/set/* \
             > index.html
 
       - name: Build standalone header files
