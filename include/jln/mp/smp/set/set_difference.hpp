@@ -1,6 +1,7 @@
 #pragma once
 
 #include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/list/is_list.hpp>
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/algorithm/all_of.hpp>
 #include <jln/mp/algorithm/is_unique.hpp>
@@ -10,8 +11,17 @@ namespace jln::mp::smp
 {
   template<class C = listify>
   using set_difference = test_contract<
-    try_or<mp::pop_front<mp::all_of<mp::unpack<mp::is_unique<>>>>>,
-    try_<mp::set_difference<subcontract<C>>>
+    mp::size<>,
+    mp::if_<
+      mp::pop_front<
+        mp::if_<
+          mp::all_of<mp::is_list<>>,
+          mp::all_of<mp::unpack<mp::is_unique<>>>
+        >
+      >,
+      try_<mp::set_difference<subcontract<C>>>,
+      violation
+    >
   >;
 }
 

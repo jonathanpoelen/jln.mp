@@ -11,8 +11,17 @@ namespace jln::mp::smp
 {
   template<class C = listify>
   using set_push_back_elements = test_contract<
-    mp::try_or<mp::front<mp::unpack<mp::is_unique<>>>>,
-    mp::set_push_back_elements<subcontract<C>>
+    mp::size<>,
+    mp::if_<
+      mp::front<
+        mp::if_<
+          mp::is_list<>,
+          mp::unpack<mp::is_unique<>>
+        >
+      >,
+      mp::set_push_back_elements<subcontract<C>>,
+      violation
+    >
   >;
 }
 
