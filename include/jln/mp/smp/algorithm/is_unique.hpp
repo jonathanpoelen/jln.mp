@@ -42,11 +42,8 @@ namespace jln::mp::detail
   {
     template<class x, class... xs>
     using f = typename conditional_c<
-      smp::index_if<
-        contract<push_back<x, Cmp>>,
-        contract<identity>,
-        contract<always<number<-1>>>
-      >::template f<xs...>::value == -1
+      smp::none_of<contract<push_back<x, Cmp>>>
+      ::template f<xs...>::value
     >::template f<list<xs..., x>, void>;
   };
 

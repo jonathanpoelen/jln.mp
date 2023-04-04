@@ -79,6 +79,7 @@ namespace jln::mp
 
 
 #include <jln/mp/algorithm/rotate.hpp>
+#include <jln/mp/algorithm/any_of.hpp>
 #include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/pop_front.hpp>
@@ -176,10 +177,9 @@ namespace jln::mp::detail
       JLN_MP_MSVC_FIX_CALL((
         rotate_impl<ints>::template f<
           ints,
-          pop_front<index_if<
+          pop_front<any_of<
             push_back<xs, Cmp>,
-            always<wrap_in_list_c<true>>,
-            always<wrap_in_list_c<false>>
+            lift<wrap_in_list>
           >>,
           xs...
         >
@@ -225,10 +225,9 @@ namespace jln::mp::detail
       JLN_MP_MSVC_FIX_CALL((
         rotate_impl<ints>::template f<
           ints,
-          pop_front<index_if<
+          pop_front<none_of<
             push_back<xs, Cmp>,
-            always<wrap_in_list_c<false>>,
-            always<wrap_in_list_c<true>>
+            lift<wrap_in_list>
           >>,
           xs...
         >

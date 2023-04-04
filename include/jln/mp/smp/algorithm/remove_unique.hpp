@@ -31,7 +31,7 @@ namespace jln::mp::smp
 }
 
 
-#include <jln/mp/smp/algorithm/index.hpp>
+#include <jln/mp/smp/algorithm/any_of.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -70,10 +70,9 @@ namespace jln::mp::detail
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
       JLN_MP_MSVC_FIX_CALL((
-        rotate_c<ints, pop_front<smp::index_if<
+        rotate_c<ints, pop_front<smp::any_of<
           contract<push_back<xs, Cmp>>,
-          contract<always<wrap_in_list_c<true>>>,
-          contract<always<wrap_in_list_c<false>>>
+          contract<lift<wrap_in_list>>
         >>>
         ::template f<xs...>
       ), xs)...
@@ -123,10 +122,9 @@ namespace jln::mp::detail
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
       JLN_MP_MSVC_FIX_CALL((
-        rotate_c<ints, pop_front<smp::index_if<
+        rotate_c<ints, pop_front<smp::none_of<
           contract<push_back<xs, Cmp>>,
-          contract<always<wrap_in_list_c<false>>>,
-          contract<always<wrap_in_list_c<true>>>
+          contract<lift<wrap_in_list>>
         >>>
         ::template f<xs...>
       ), xs)...
