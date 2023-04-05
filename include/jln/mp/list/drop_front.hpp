@@ -30,9 +30,6 @@ namespace jln::mp
   {
     template<class... xs>
     using f;
-    using f = typename detail::drop_front_impl<
-      (sizeof...(xs) & 0) + N
-    >::template f<N, JLN_MP_TRACE_F(C), xs...>;
   };
 #else
   template<unsigned N, class C = listify>
