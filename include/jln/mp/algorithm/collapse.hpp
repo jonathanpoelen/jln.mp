@@ -12,13 +12,13 @@ namespace jln::mp
   /// \semantics
   ///   \code
   ///   collapse<emp::numbers<1, 1, 0, 0, 0, 1, 2, 2>>
-  ///   ::f<int, int, int, int, int, int, int, int>
+  ///   ::f<_0, _1, 2, _3, _4, _5, _6, _7>
   ///   ==
   ///   list<
-  ///     list<int, int>,
-  ///     list<int, int, int>,
-  ///     list<int>,
-  ///     list<int, int>
+  ///     list<_0, _1>,
+  ///     list<_2, _3, _4>,
+  ///     list<_5>,
+  ///     list<_6, _7>
   ///   >
   ///   \endcode
   /// \note \c collapse<list<xs...>>::f<xs...> == \c group<>::f<xs...>
