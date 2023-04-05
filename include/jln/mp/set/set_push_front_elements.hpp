@@ -13,7 +13,7 @@ namespace jln::mp
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///   fold_left<lift<emp::set_push_front>>::<xs...>
+  ///   fold_left<lift<emp::set_push_front>>::f<xs...>
   ///   \endcode
   /// \treturn \set
   /// \pre \c emp::is_unique<Set>
