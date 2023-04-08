@@ -7,12 +7,6 @@
 
 TEST_SUITE_BEGIN()
 
-struct foo
-{
-  template<class, class>
-  using f = int;
-};
-
 TEST()
 {
   using namespace jln::mp;
@@ -23,10 +17,10 @@ TEST()
   test_mulary_pack<partial, identity, identity>();
   test_mulary_pack<partial, identity, identity, identity>();
 
-  ut::same<list<list<void>, list<void>, void, void>, partial<listify, listify, listify>
-    ::template f<void, void, void, void>>();
+  ut::same<list<seq_0, seq_1, _2, _3>, partial<listify, listify, listify>
+    ::f<_0, _1, _2, _3>>();
 
-  ut::same<int, partial<identity, identity, foo>::template f<void, void>>();
+  ut::same<seq_0_1, partial<identity, identity, ut::binary>::f<_0, _1>>();
 
   test_context<partial<listify>, smp::partial<smp::listify>>()
     .test<list<>>()
@@ -52,6 +46,23 @@ TEST()
     .not_invocable<>()
     .not_invocable<_0, _0>()
     .not_invocable<_0, _0, _0>()
+    ;
+
+  test_context<
+    partial<inc<>, inc<>, inc<>, inc<>, inc<>, inc<>, inc<>, inc<>, inc<>, inc<>, listify>,
+    smp::partial<smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::listify>
+  >()
+    .test<list<_2, _2, _2, _2, _2, _2, _2, _2, _2, _2>, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>()
+    .test<list<_2, _2, _2, _2, _2, _2, _2, _2, _2, _2, _1, _3>, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _3>()
+    .not_invocable<>()
+    .not_invocable<_0, _0>()
+    .not_invocable<_0, _0, _0>()
+    .not_invocable<_0, _0, _0, _0>()
+    .not_invocable<_0, _0, _0, _0, _0>()
+    .not_invocable<_0, _0, _0, _0, _0, _0>()
+    .not_invocable<_0, _0, _0, _0, _0, _0, _0>()
+    .not_invocable<_0, _0, _0, _0, _0, _0, _0, _0>()
+    .not_invocable<_0, _0, _0, _0, _0, _0, _0, _0, _0>()
     ;
 
   test_context<partial<listify>, smp::partial<smp::listify>>()

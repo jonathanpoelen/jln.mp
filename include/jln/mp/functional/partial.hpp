@@ -1,9 +1,7 @@
 #pragma once
 
 #include <jln/mp/algorithm/rotate.hpp>
-#include <jln/mp/number/number.hpp>
 #include <jln/mp/functional/lift.hpp>
-#include <jln/mp/functional/call.hpp>
 
 namespace jln::mp
 {
@@ -18,7 +16,7 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invokes multiple functions each taking the parameter corresponding to its position
-  /// (or without parameter whether it does not exist)
+  /// (or without parameter whether it does not exist),
   /// then calls \c C with the results and the rest of the parameters.
   /// \semantics
   ///   \code
@@ -26,7 +24,7 @@ namespace jln::mp
   ///   partial<F,G,C>::f<a,b,c,d> == C::f<F::f<a>, G::f<b>, c, d>
   ///   \endcode
   /// \treturn \value
-  /// \see each, tee, partial
+  /// \see partial_each, partial_tee, each, tee
 #ifdef JLN_MP_DOXYGENATING
   template<class... Fs, class C>
   struct partial
@@ -43,7 +41,6 @@ namespace jln::mp
 #endif
 }
 
-#include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/functional/each.hpp>
 #include <jln/mp/functional/bind_front.hpp>
@@ -89,6 +86,65 @@ namespace jln::mp::detail
         C, xs...>,
       xs...
     >;
+  };
+
+  // sizeof...(Fs) < sizeof...(xs)
+  template<class C, class F0, class F1, class F2, class F3>
+  struct _partial_select<1, C, F0, F1, F2, F3>
+  {
+    template<class x0, class x1, class x2, class x3,
+             class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C,
+      JLN_MP_DCALL_TRACE_XS(xs, F0, x0),
+      JLN_MP_DCALL_TRACE_XS(xs, F1, x1),
+      JLN_MP_DCALL_TRACE_XS(xs, F2, x2),
+      JLN_MP_DCALL_TRACE_XS(xs, F3, x3),
+      xs...
+    );
+  };
+
+  // sizeof...(Fs) < sizeof...(xs)
+  template<class C, class F0, class F1, class F2>
+  struct _partial_select<1, C, F0, F1, F2>
+  {
+    template<class x0, class x1, class x2, class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C,
+      JLN_MP_DCALL_TRACE_XS(xs, F0, x0),
+      JLN_MP_DCALL_TRACE_XS(xs, F1, x1),
+      JLN_MP_DCALL_TRACE_XS(xs, F2, x2),
+      xs...
+    );
+  };
+
+  // sizeof...(Fs) < sizeof...(xs)
+  template<class C, class F0, class F1>
+  struct _partial_select<1, C, F0, F1>
+  {
+    template<class x0, class x1, class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C,
+      JLN_MP_DCALL_TRACE_XS(xs, F0, x0),
+      JLN_MP_DCALL_TRACE_XS(xs, F1, x1),
+      xs...
+    );
+  };
+
+  // sizeof...(Fs) < sizeof...(xs)
+  template<class C, class F0>
+  struct _partial_select<1, C, F0>
+  {
+    template<class x0, class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C,
+      JLN_MP_DCALL_TRACE_XS(xs, F0, x0),
+      xs...
+    );
+  };
+
+  // sizeof...(Fs) < sizeof...(xs)
+  template<class C>
+  struct _partial_select<1, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
 
   template<class... Fs>

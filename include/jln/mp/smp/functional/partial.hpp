@@ -2,7 +2,6 @@
 
 #include <jln/mp/smp/contract.hpp>
 #include <jln/mp/functional/partial.hpp>
-#include <jln/mp/functional/monadic.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -21,6 +20,7 @@ namespace jln::mp::smp
     ::template f<subcontract<Fs>...>;
 }
 
+#include <jln/mp/functional/monadic.hpp>
 
 /// \cond
 namespace jln::mp::detail
