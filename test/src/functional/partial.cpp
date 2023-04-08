@@ -53,6 +53,7 @@ TEST()
     smp::partial<smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::inc<>, smp::listify>
   >()
     .test<list<_2, _2, _2, _2, _2, _2, _2, _2, _2, _2>, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>()
+    .test<list<_2, _2, _2, _2, _2, _2, _2, _2, _2, _2, _1>, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>()
     .test<list<_2, _2, _2, _2, _2, _2, _2, _2, _2, _2, _1, _3>, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _3>()
     .not_invocable<>()
     .not_invocable<_0, _0>()
@@ -71,12 +72,13 @@ TEST()
     ;
 
   test_context<
-    partial<listify, listify, listify>,
-    smp::partial<smp::listify, smp::listify, smp::listify>
+    partial<listify, listify, listify, listify>,
+    smp::partial<smp::listify, smp::listify, smp::listify, smp::listify>
   >()
-    .test<list<seq_0, list<>>, _0>()
-    .test<list<seq_0, seq_0>, _0, _0>()
-    .test<list<seq_0, seq_0, _0>, _0, _0, _0>()
+    .test<list<seq_0, list<>, list<>>, _0>()
+    .test<list<seq_0, seq_1, list<>>, _0, _1>()
+    .test<list<seq_0, seq_1, seq_2>, _0, _1, _2>()
+    .test<list<seq_0, seq_1, seq_2, _3>, _0, _1, _2, _3>()
     ;
 
   test_context<

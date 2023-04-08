@@ -9,154 +9,133 @@ namespace jln::mp
   namespace detail
   {
     template<class C, class... Fs>
-    struct _partial;
+    struct partial_xs_impl;
   }
   /// \endcond
 
   /// \ingroup functional
 
-  /// Invokes multiple functions each taking the parameter corresponding to its position
+  /// Invokes multiple functions passing all parameters to each
   /// (or without parameter whether it does not exist),
   /// then calls \c C with the results and the rest of the parameters.
   /// \semantics
   ///   \code
-  ///   partial<F,G,C>::f<a> == C::f<F::f<a>, G::f<>>
-  ///   partial<F,G,C>::f<a,b,c,d> == C::f<F::f<a>, G::f<b>, c, d>
+  ///   partial_xs<F,G,C>::f<a> == C::f<F::f<a>, G::f<>>
+  ///   partial_xs<F,G,C>::f<a,b,c,d> == C::f<F::f<a,b,c,d>, G::f<a,b,c,d>, c, d>
   ///   \endcode
   /// \treturn \value
-  /// \see partial_each, partial_tee, partial_xs, each, tee
+  /// \see partial_each, partial_tee, each, tee
 #ifdef JLN_MP_DOXYGENATING
   template<class... Fs, class C>
-  struct partial
+  struct partial_xs
   {
     template<class... xs>
     using f;
   };
 #else
   template<class... Fs>
-  struct partial
+  struct partial_xs
   : detail::rotate_impl<sizeof...(Fs)-1>
-  ::template f<sizeof...(Fs)-1, lift<detail::_partial>, Fs...>
+  ::template f<sizeof...(Fs)-1, lift<detail::partial_xs_impl>, Fs...>
   {};
 #endif
 }
 
 #include <jln/mp/list/drop_front.hpp>
-#include <jln/mp/functional/each.hpp>
+#include <jln/mp/functional/tee.hpp>
+#include <jln/mp/functional/partial.hpp>
 #include <jln/mp/functional/bind_front.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
-  constexpr int on_select(std::size_t nf, std::size_t nx)
-  {
-    return nf < nx ? 1 : nf > nx ? 2 : 0;
-  }
-
   template<int, class C, class... Fs>
-  struct _partial_select;
+  struct partial_xs_select;
 
-  // each (sizeof...(Fs) == sizeof...(xs))
+  // tee (sizeof...(Fs) == sizeof...(xs))
   template<class C, class... Fs>
-  struct _partial_select<0, C, Fs...>
-  : _each<C, Fs...>
+  struct partial_xs_select<0, C, Fs...>
+  : _tee<C, Fs...>
   {};
-
-  template<class... Fs>
-  struct partial_prefix
-  {
-    template<class C, class... xs>
-    using f = bind_front<C, typename JLN_MP_TRACE_F(Fs)::template f<xs>...>;
-  };
 
   // sizeof...(Fs) < sizeof...(xs)
   template<class C, class... Fs>
-  struct _partial_select<1, C, Fs...>
+  struct partial_xs_select<1, C, Fs...>
   {
     template<class... xs>
     using f = typename drop_front_impl<
       (sizeof...(xs) & 0) + sizeof...(Fs)
     >::template f<
       sizeof...(Fs),
-      // take_front
-      typename rotate_impl<(sizeof...(xs) & 0) + sizeof...(Fs)+1>
-      ::template f<
-        sizeof...(Fs)+1,
-        drop_front_c<sizeof...(xs) - sizeof...(Fs), partial_prefix<Fs...>>,
-        C, xs...>,
+      bind_front<C, JLN_MP_DCALL_TRACE_XS(xs, Fs, xs...)...>,
       xs...
     >;
   };
 
-  // sizeof...(Fs) < sizeof...(xs)
   template<class C, class F0, class F1, class F2, class F3>
-  struct _partial_select<1, C, F0, F1, F2, F3>
+  struct partial_xs_select<1, C, F0, F1, F2, F3>
   {
     template<class x0, class x1, class x2, class x3,
              class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C,
-      JLN_MP_DCALL_TRACE_XS(xs, F0, x0),
-      JLN_MP_DCALL_TRACE_XS(xs, F1, x1),
-      JLN_MP_DCALL_TRACE_XS(xs, F2, x2),
-      JLN_MP_DCALL_TRACE_XS(xs, F3, x3),
+      JLN_MP_DCALL_TRACE_XS(xs, F0, x0, x1, x2, x3, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F1, x0, x1, x2, x3, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F2, x0, x1, x2, x3, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F3, x0, x1, x2, x3, xs...),
       xs...
     );
   };
 
-  // sizeof...(Fs) < sizeof...(xs)
   template<class C, class F0, class F1, class F2>
-  struct _partial_select<1, C, F0, F1, F2>
+  struct partial_xs_select<1, C, F0, F1, F2>
   {
     template<class x0, class x1, class x2, class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C,
-      JLN_MP_DCALL_TRACE_XS(xs, F0, x0),
-      JLN_MP_DCALL_TRACE_XS(xs, F1, x1),
-      JLN_MP_DCALL_TRACE_XS(xs, F2, x2),
+      JLN_MP_DCALL_TRACE_XS(xs, F0, x0, x1, x2, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F1, x0, x1, x2, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F2, x0, x1, x2, xs...),
       xs...
     );
   };
 
-  // sizeof...(Fs) < sizeof...(xs)
   template<class C, class F0, class F1>
-  struct _partial_select<1, C, F0, F1>
+  struct partial_xs_select<1, C, F0, F1>
   {
     template<class x0, class x1, class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C,
-      JLN_MP_DCALL_TRACE_XS(xs, F0, x0),
-      JLN_MP_DCALL_TRACE_XS(xs, F1, x1),
+      JLN_MP_DCALL_TRACE_XS(xs, F0, x0, x1, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F1, x0, x1, xs...),
       xs...
     );
   };
 
-  // sizeof...(Fs) < sizeof...(xs)
   template<class C, class F0>
-  struct _partial_select<1, C, F0>
+  struct partial_xs_select<1, C, F0>
   {
     template<class x0, class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C,
-      JLN_MP_DCALL_TRACE_XS(xs, F0, x0),
+      JLN_MP_DCALL_TRACE_XS(xs, F0, x0, xs...),
       xs...
     );
   };
 
-  // sizeof...(Fs) < sizeof...(xs)
   template<class C>
-  struct _partial_select<1, C>
+  struct partial_xs_select<1, C>
   {
     template<class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
 
   template<class... Fs>
-  struct partial_suffix
+  struct partial_xs_prefix
   {
-    template<class C>
-    using f = typename C::template f<typename JLN_MP_TRACE_F(Fs)::template f<>...>;
+    template<class C, class... xs>
+    using f = bind_front<C, JLN_MP_DCALL_TRACE_XS(xs, Fs, xs...)...>;
   };
 
   // sizeof...(Fs) > sizeof...(xs)
   template<class C, class... Fs>
-  struct _partial_select<2, C, Fs...>
+  struct partial_xs_select<2, C, Fs...>
   {
     template<class... xs>
     using f = typename drop_front_c<sizeof...(xs), lift<partial_suffix>>
@@ -166,17 +145,17 @@ namespace jln::mp::detail
         typename rotate_impl<sizeof...(xs)>
         ::template f<
           sizeof...(xs),
-          drop_front_c<sizeof...(Fs) - sizeof...(xs), lift<partial_prefix>>,
+          drop_front_c<sizeof...(Fs) - sizeof...(xs), lift<partial_xs_prefix>>,
           Fs...>
         ::template f<C, xs...>
       >;
   };
 
   template<class C, class... Fs>
-  struct _partial
+  struct partial_xs_impl
   {
     template<class... xs>
-    using f = typename _partial_select<on_select(sizeof...(Fs), sizeof...(xs)), C, Fs...>
+    using f = typename partial_xs_select<on_select(sizeof...(Fs), sizeof...(xs)), C, Fs...>
       ::template f<xs...>;
   };
 } // namespace jln::mp
