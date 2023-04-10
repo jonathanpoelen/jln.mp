@@ -159,6 +159,7 @@
 #include "src/map/map_erase.cpp"
 #include "src/map/map_find.cpp"
 #include "src/map/map_insert.cpp"
+#include "src/map/map_keys.cpp"
 #include "src/map/map_replace.cpp"
 #include "src/map/map_update.cpp"
 #include "src/number/as_bool.cpp"

@@ -18,6 +18,7 @@ namespace jln::mp::smp
 /// \cond
 namespace jln::mp::detail
 {
+  // _unpack<front<C>> is already sfinae compliant, so unpack<try_<front<>>> -> unpack<front<>>
   template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, unpack<front<C>>>
   {

@@ -18,18 +18,21 @@ namespace ut
 {
   using jln::mp::detail::sfinae;
 
+  class SmpValue;
+  class MpToSmpValue;
+
   namespace detail
   {
     template<bool, class SfinaeMp, class Smp>
     struct same_smp : jln::mp::true_
     {
-      static_assert((same<Smp, SfinaeMp>(), 1));
+      static_assert((same<Smp, SfinaeMp, SmpValue, MpToSmpValue>(), 1));
     };
 
     template<class SfinaeMp, class Smp>
     struct same_smp<false, SfinaeMp, Smp> : jln::mp::true_
     {
-      static_assert((not_same<Smp, SfinaeMp>(), 1));
+      static_assert((not_same<Smp, SfinaeMp, SmpValue, MpToSmpValue>(), 1));
     };
 
     template<bool, class Mp>
