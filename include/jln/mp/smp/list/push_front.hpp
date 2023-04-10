@@ -1,12 +1,13 @@
 #pragma once
 
+#include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/list/push_front.hpp>
 
 namespace jln::mp::smp
 {
   template<class x, class C = listify>
-  using push_front = contract<mp::push_front<x, subcontract<C>>>;
+  using push_front = contract<mp::push_front<x, assume_unary_or_more<C>>>;
 }
 
 /// \cond

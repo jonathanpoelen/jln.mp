@@ -123,6 +123,8 @@ namespace jln::mp::detail
     return counter;
   }
 
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wunused-but-set-variable")
   template<std::size_t... ints, class... unique_xs>
   struct counter_impl<std::index_sequence<ints...>, unique_xs...>
   {
@@ -141,11 +143,12 @@ namespace jln::mp::detail
       >>();
     }
   };
+  JLN_MP_DIAGNOSTIC_POP()
 
 #else
 
   template<class T, class i>
-  constexpr int_ index_base(base_item<list<i, T>>*)
+  constexpr int_ index_base(basic_item<list<i, T>>*)
   {
     return i::value;
   }

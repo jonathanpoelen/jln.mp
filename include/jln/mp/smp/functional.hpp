@@ -19,6 +19,9 @@
 #include <jln/mp/smp/functional/memoize.hpp>
 #include <jln/mp/smp/functional/not_fn.hpp>
 #include <jln/mp/smp/functional/partial.hpp>
+#include <jln/mp/smp/functional/partial_each.hpp>
+#include <jln/mp/smp/functional/partial_tee.hpp>
+#include <jln/mp/smp/functional/partial_xs.hpp>
 #include <jln/mp/smp/functional/random.hpp>
 #include <jln/mp/smp/functional/recursively.hpp>
 #include <jln/mp/smp/functional/sfinaefwd.hpp>

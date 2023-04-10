@@ -50,7 +50,8 @@ TEST()
   using smp_first = smp::unpack<smp::at0<>>;
   test_context<
     remove_unique_if<each<first, first, lift<std::is_same>>>,
-    smp::remove_unique_if<smp::each<smp_first, smp_first, smp::lift<std::is_same>>>
+    smp::remove_unique_if<smp::each<smp_first, smp_first, smp::lift<std::is_same>>>,
+    0 /* unpack<front<>> / unpack<at0<>> is optimized */
   >()
     .test<list<>>()
     .test<list<>, _0>()

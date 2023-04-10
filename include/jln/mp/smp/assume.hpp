@@ -71,6 +71,15 @@ namespace jln::mp
 
   template<class F>
   using assume_binary_list_barrier = contract<assume_binary_list<F>>;
+
+  template<class F>
+  using assume_lists_barrier = contract<assume_lists<F>>;
+
+  template<class F>
+  using assume_binary_or_more_barrier = contract<assume_binary_or_more<F>>;
+
+  template<class F>
+  using assume_unary_or_more_barrier = contract<assume_unary_or_more<F>>;
 }
 
 

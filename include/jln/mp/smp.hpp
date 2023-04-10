@@ -6,6 +6,7 @@
 #include <jln/mp/smp/contract.hpp>
 #include <jln/mp/smp/functional.hpp>
 #include <jln/mp/smp/list.hpp>
+#include <jln/mp/smp/map.hpp>
 #include <jln/mp/smp/number.hpp>
 #include <jln/mp/smp/optimizer.hpp>
 #include <jln/mp/smp/set.hpp>

@@ -47,7 +47,8 @@ TEST()
   using smp_first = smp::unpack<smp::at0<>>;
   test_context<
     unique_if<each<first, first, lift<std::is_same>>>,
-    smp::unique_if<smp::each<smp_first, smp_first, smp::lift<std::is_same>>>
+    smp::unique_if<smp::each<smp_first, smp_first, smp::lift<std::is_same>>>,
+    0 /* unpack<front<>> / unpack<at0<>> is optimized */
   >()
     .test<list<>>()
     .test<seq_0, _0>()

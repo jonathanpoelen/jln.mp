@@ -21,7 +21,7 @@ namespace jln::mp
   template<class F, class C = listify>
   struct transform
   {
-#if defined(JLN_MP_DOXYGENATING)
+#ifdef JLN_MP_DOXYGENATING
     template<class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_DCALL_TRACE_XS(xs, F, xs)...);
 #else

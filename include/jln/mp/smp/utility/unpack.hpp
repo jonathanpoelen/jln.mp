@@ -13,10 +13,18 @@ namespace jln::mp::smp
 }
 
 #include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/list/front.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, unpack<front<C>>>
+  {
+    using type = smp::unpack<contract<front<assume_unary<sfinae<C>>>>>;
+  };
+
+
   template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, unpack<C>>
   {

@@ -23,14 +23,22 @@ namespace jln::mp
   }
 }
 
+/// \cond
 namespace jln::mp
 {
-  /// \cond
   template<>
   struct front<identity>
   {
     template<class x, class...>
     using f = x;
   };
-  /// \endcond
 }
+
+// facilitates sfinae version for is_map_impl
+namespace jln::mp::detail
+{
+  template<class C, template<class...> class Seq>
+  struct _unpack<front<C>, Seq<>>
+  {};
+}
+/// \endcond

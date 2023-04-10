@@ -5,44 +5,74 @@ namespace ut
 namespace
 {
   template<class T>
+  struct MustBeSame
+  {};
+
+  template<class T>
+  struct MustBeDifferent
+  {
+    constexpr MustBeDifferent() = default;
+    MustBeDifferent(MustBeDifferent const&) = delete;
+
+    template<class U>
+    constexpr MustBeDifferent(MustBeDifferent<U> const&)
+    {}
+  };
+
+  template<class T>
   struct Result
   {};
 
   template<class T>
   struct Expected
-  {
-    constexpr Expected(Result<T>){}
-  };
-
-  // template<class T>
-  // using Expected = Result<T>;
+  {};
 
   template<class T>
-  struct Differ
+  struct NotExpected
+  {};
+
+  template<class expected, class result>
+  struct Same;
+
+  template<class notExpected, class result>
+  struct Different;
+
+  template<class expected, class result>
+  struct Same<Expected<expected>, Result<result>>
   {
-    Differ(Result<T>) = delete;
-    template<class U> constexpr Differ(Result<U>) {}
+    static constexpr void test()
+    {
+      MustBeSame<expected> _ = MustBeSame<result>();
+      (void)_;
+    }
   };
 
-  template<class T, class U>
+  template<class notExpected, class result>
+  struct Different<NotExpected<notExpected>, Result<result>>
+  {
+    static constexpr void test()
+    {
+      MustBeDifferent<notExpected> _ = MustBeDifferent<result>();
+      (void)_;
+    }
+  };
+
+  template<class expected, class result>
   constexpr void same()
   {
-    Expected<T> should_be_same = Result<U>();
-    (void)should_be_same;
+    Same<Expected<expected>, Result<result>>::test();
   }
 
-  template<class T, class U>
+  template<class notExpected, class result>
   constexpr void not_same()
   {
-    Differ<T> should_not_be_same = Result<U>();
-    (void)should_not_be_same;
+    Different<NotExpected<notExpected>, Result<result>>::test();
   }
 
   template<class R, class C, class... xs>
   constexpr void invoke_r()
   {
-    Expected<R> should_be_same = Result<typename C::template f<xs...>>();
-    (void)should_be_same;
+    Same<Expected<R>, Result<typename C::template f<xs...>>>::test();
   }
 }
 }

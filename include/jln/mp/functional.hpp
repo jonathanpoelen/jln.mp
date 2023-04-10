@@ -21,6 +21,9 @@
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/functional/not_fn.hpp>
 #include <jln/mp/functional/partial.hpp>
+#include <jln/mp/functional/partial_each.hpp>
+#include <jln/mp/functional/partial_tee.hpp>
+#include <jln/mp/functional/partial_xs.hpp>
 #include <jln/mp/functional/random.hpp>
 #include <jln/mp/functional/recursively.hpp>
 #include <jln/mp/functional/tee.hpp>

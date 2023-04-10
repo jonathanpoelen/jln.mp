@@ -81,6 +81,7 @@ jln::mp::call<to_tuple<>, int, double> == std::tuple<int, double>
 
 - Sequence: a value sequence or a type sequence.
 - Set: a sequence of unique elements.
+- Map: a sequence of lists having at least one element (the key). The keys of the map must be unique.
 - Value: a type with a `value` member.
 - Typelist: an instance compatible with `template<class...> class T`, such as `list<>`.
 - Function: a type with a `f` template member. The number and the nature of the parameters depend on the context of use.
