@@ -1,18 +1,19 @@
 #pragma once
 
-#include <jln/mp/smp/algorithm/same.hpp>
-#include <jln/mp/smp/list/listify.hpp>
-#include <jln/mp/functional/monadic.hpp>
+#include <jln/mp/smp/algorithm/pairwise_fold.hpp>
 #include <jln/mp/algorithm/remove_adjacent.hpp>
 
 namespace jln::mp::smp
 {
   template<class BinaryPred, class C = listify>
-  using remove_adjacent_if = try_contract<mp::remove_adjacent_if<
-    assume_binary<BinaryPred>, subcontract<C>>>;
+  using remove_adjacent_if = contract<mp::pairwise_fold_and_transform_front<
+    if_<assume_binary<BinaryPred>, contract<mp::always<mp::list<>>>, contract<mp::pop_front<>>>,
+    mp::listify,
+    mp::monadic_xs<mp::join<subcontract<C>>>
+  >>;
 
   template<class C = listify>
-  using remove_adjacent = contract<mp::remove_adjacent<subcontract<C>>>;
+  using remove_adjacent = remove_adjacent_if<contract<mp::same<>>, C>;
 }
 
 /// \cond

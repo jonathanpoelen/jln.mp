@@ -29,7 +29,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename detail::pairwise_fold_impl<
       rotate_c<-1>::template f<xs...>
-    >::template f<C, Front, JLN_MP_TRACE_F(F)::template f, xs...>;
+    >::template f<C, Front, JLN_MEMOIZE(F)::template f, xs...>;
   };
 
   /// Computes the differences between adjacent pair of elements.

@@ -1,7 +1,10 @@
 #pragma once
 
 #include <jln/mp/smp/assume.hpp>
-#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/list/join.hpp> // for remove_adjacent
+#include <jln/mp/smp/list/pop_front.hpp> // for remove_adjacent
+#include <jln/mp/smp/functional/if.hpp> // for remove_adjacent
+#include <jln/mp/smp/utility/always.hpp> // for remove_adjacent
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/algorithm/pairwise_fold.hpp>
 
