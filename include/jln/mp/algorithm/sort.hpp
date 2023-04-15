@@ -17,6 +17,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Sorts the elements of a \sequence according to an ordering relation.
+  /// Sorting is stable.
   /// \post \c is_sorted<result...>
   /// \treturn \sequence
   template<class Cmp = less<>, class C = listify>
@@ -26,7 +27,7 @@ namespace jln::mp
     using f = typename detail::_unpack<
       C,
       typename detail::sort_impl<sizeof...(xs)>
-      ::template f<Cmp, xs...>
+      ::template f<JLN_MP_TRACE_F(Cmp), xs...>
     >::type;
   };
 
@@ -103,7 +104,7 @@ namespace jln::mp::detail
   };
 
   template<class Cmp, class x, class y>
-  using sort_pair = typename mk_list2<JLN_MP_TRACE_F(Cmp)::template f<y, x>::value>
+  using sort_pair = typename mk_list2<Cmp::template f<y, x>::value>
     ::template f<x, y>;
 
   template<>
