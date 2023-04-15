@@ -21,9 +21,8 @@ namespace jln::mp
   /// The first element in the input pack as the state,
   /// use \c push_front<> to add state if needed.
   /// \semantics
-  ///   Equivalent to
   ///   \code
-  ///   F::f<... F::f<F::f<state, xs[n-1]>, x[n-2]>, ..., x[0]>
+  ///   F::f<F::f<F::f<F::f<xs[0], xs[n-1]>, x[n-2]>, ...>, x[1]>
   ///   \endcode
   /// \treturn \value
   /// \see fold_left, fold_right, fold_tree, fold_balanced_tree

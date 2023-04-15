@@ -21,7 +21,7 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Remove 1 dimension level from a sequence.
-  /// \semantic
+  /// \semantics
   ///   \code
   ///   call<flatten_once<>, list<a, b>, c, list<list<d, e>, f>
   ///   ==
