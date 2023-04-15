@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/algorithm/fold_left.hpp>
+#include <jln/mp/algorithm/fold.hpp>
 #include <jln/mp/algorithm/zip.hpp>
 #include <jln/mp/list/push_front.hpp>
 #include <jln/mp/functional/flip.hpp>
@@ -17,9 +17,9 @@ namespace jln::mp
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///   C::f<fold_left<F>::f<
+  ///   C::f<fold<F>::f<
   ///     ...
-  ///     fold_left<F>::f<fold_left<F>::f<state, ...seqs[:][0]>, ...seqs[:][1]>
+  ///     fold<F>::f<fold<F>::f<state, ...seqs[:][0]>, ...seqs[:][1]>
   ///     ...,
   ///     ...seqs[:][n-1]>
   ///   >>
@@ -29,7 +29,7 @@ namespace jln::mp
   struct accumulate
   {
     template<class state, class... seqs>
-    using f = typename zip<push_front<state, fold_left<flip<unpack<F>>, C>>>
+    using f = typename zip<push_front<state, fold<flip<unpack<F>>, C>>>
       ::template f<seqs...>;
   };
 
@@ -37,6 +37,6 @@ namespace jln::mp
   {
     template<class L, class state, class F, class C = mp::identity>
     using accumulate = unpack<L,
-      mp::zip<mp::push_front<state, mp::fold_left<mp::flip<mp::unpack<F>>, C>>>>;
+      mp::zip<mp::push_front<state, mp::fold<mp::flip<mp::unpack<F>>, C>>>>;
   }
 }

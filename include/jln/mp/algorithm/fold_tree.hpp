@@ -27,7 +27,7 @@ namespace jln::mp
   ///   F::f<fold_tree::f<...xs[0..n/2]>, fold_tree::f<...xs[n/2..n]>>
   ///   \endcode
   /// \treturn \value
-  /// \see fold_left, fold_right, fold_balanced_tree
+  /// \see fold, fold_right, fold_balanced_tree
   template<class F, class C = identity>
   struct fold_tree
   {
@@ -45,7 +45,7 @@ namespace jln::mp
   ///   F::f<fold_tree::f<...xs[0..(n+1)/2]>, fold_tree::f<...xs[n-(n+1)/2..n]>>
   ///   \endcode
   /// \treturn \value
-  /// \see fold_left, fold_right, fold_tree
+  /// \see fold, fold_right, fold_tree
   template<class F, class C = identity>
   struct fold_balanced_tree
   {

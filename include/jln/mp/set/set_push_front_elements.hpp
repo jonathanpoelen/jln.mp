@@ -1,6 +1,6 @@
 #pragma once
 
-#include <jln/mp/algorithm/fold_left.hpp>
+#include <jln/mp/algorithm/fold.hpp>
 #include <jln/mp/set/set_push_front.hpp>
 #include <jln/mp/functional/lift.hpp>
 
@@ -13,7 +13,7 @@ namespace jln::mp
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///   fold_left<lift<emp::set_push_front>>::f<xs...>
+  ///   fold<lift<emp::set_push_front>>::f<xs...>
   ///   \endcode
   /// \treturn \set
   /// \pre \c emp::is_unique<Set>
@@ -28,7 +28,7 @@ namespace jln::mp
   };
 #else
   template<class C = listify>
-  using set_push_front_elements = fold_left<
+  using set_push_front_elements = fold<
     lift<emp::set_push_front>,
     detail::optimize_useless_unpack_t<unpack<C>>
   >;

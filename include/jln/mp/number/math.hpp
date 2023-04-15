@@ -4,7 +4,7 @@
 #include <jln/mp/list/at.hpp>
 #include <jln/mp/functional/flip.hpp>
 #include <jln/mp/functional/tee.hpp>
-#include <jln/mp/algorithm/fold_left.hpp>
+#include <jln/mp/algorithm/fold.hpp>
 #include <jln/mp/algorithm/replace.hpp>
 
 namespace jln::mp
@@ -23,14 +23,14 @@ namespace jln::mp
   /// \ingroup number
 
   template<class Cmp = less<>, class C = identity>
-  using min = fold_left<if_<flip<Cmp>, at1<>, at0<>>, C>;
+  using min = fold<if_<flip<Cmp>, at1<>, at0<>>, C>;
 
   template<class Cmp = less<>, class C = identity>
   using min0 = if_<size<>, min<Cmp, C>, always<number<0>, C>>;
 
 
   template<class Cmp = less<>, class C = identity>
-  using max = fold_left<if_<Cmp, at1<>, at0<>>, C>;
+  using max = fold<if_<Cmp, at1<>, at0<>>, C>;
 
   template<class Cmp = less<>, class C = identity>
   using max0 = if_<size<>, max<Cmp, C>, always<number<0>, C>>;
@@ -49,7 +49,7 @@ namespace jln::mp
 
 
   template<class C = identity>
-  using pow = fold_left<lift<detail::_pow>, C>;
+  using pow = fold<lift<detail::_pow>, C>;
 
   template<class C = identity>
   using pow0 = if_<size<>, pow<C>, always<number<0>, C>>;

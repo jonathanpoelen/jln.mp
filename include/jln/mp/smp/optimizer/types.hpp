@@ -379,7 +379,7 @@ namespace jln::mp::optimizer::opti_detail
   };
 
 
-  using unpack_for_pre_normalize_union = unpack<fold_left<lift<pre_normalize_union>>>;
+  using unpack_for_pre_normalize_union = unpack<fold<lift<pre_normalize_union>>>;
 
 
   template<bool>
@@ -462,7 +462,7 @@ namespace jln::mp::optimizer::opti_detail
     >::type;
   };
 
-  using unique_union_impl = fold_left<lift<emp::set_push_back>>;
+  using unique_union_impl = fold<lift<emp::set_push_back>>;
 
   template<>
   struct normalize_union_has_pack_any<false>
@@ -817,7 +817,7 @@ namespace jln::mp::optimizer::opti_detail
   template<class... xs>
   struct pre_seq_impl
   {
-    using type = typename detail::fold_left_impl<sizeof...(xs)>
+    using type = typename detail::fold_impl<sizeof...(xs)>
       ::template f<pre_normalize_seq, seq_state, xs...>;
   };
 

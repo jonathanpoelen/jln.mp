@@ -2,7 +2,7 @@
 
 #include <jln/mp/number/math.hpp>
 #include <jln/mp/smp/number/operators.hpp>
-#include <jln/mp/smp/algorithm/fold_left.hpp>
+#include <jln/mp/smp/algorithm/fold.hpp>
 #include <jln/mp/smp/algorithm/replace.hpp>
 #include <jln/mp/smp/functional/tee.hpp>
 #include <jln/mp/smp/functional/flip.hpp>
@@ -17,7 +17,7 @@
 namespace jln::mp::smp
 {
   template<class Cmp = less<>, class C = identity>
-  using min = fold_left<if_<
+  using min = fold<if_<
     contract<mp::flip<concepts::predicate<assume_binary<Cmp>>>>,
     contract<mp::at1<>>,
     contract<mp::at0<>>
@@ -28,7 +28,7 @@ namespace jln::mp::smp
 
 
   template<class Cmp = less<>, class C = identity>
-  using max = fold_left<if_<
+  using max = fold<if_<
     contract<concepts::predicate<assume_binary<Cmp>>>,
     contract<mp::at1<>>,
     contract<mp::at0<>>

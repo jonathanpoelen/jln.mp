@@ -29,7 +29,7 @@ namespace jln::mp::smp
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, fold_left<lift<emp::set_push_back>, C>>
+  struct _sfinae<sfinae, fold<lift<emp::set_push_back>, C>>
   {
     using type = smp::set_push_back_elements<
       typename conditional_c<std::is_same<C, identity>::value>

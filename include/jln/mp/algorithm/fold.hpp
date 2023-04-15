@@ -11,7 +11,7 @@ namespace jln::mp
   namespace detail
   {
     template<int>
-    struct fold_left_impl;
+    struct fold_impl;
   }
   /// \endcond
 
@@ -27,11 +27,11 @@ namespace jln::mp
   /// \treturn \value
   /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
   template<class F, class C = identity>
-  struct fold_left
+  struct fold
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      typename detail::fold_left_impl<
+      typename detail::fold_impl<
         int(sizeof...(xs)) - 1
       >::template f<JLN_MP_TRACE_F(F)::template f, xs...>
     );
@@ -40,37 +40,37 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class state, class F, class C = mp::identity>
-    using fold_left = unpack<L,
-      mp::push_front<state, mp::fold_left<F, C>>>;
+    using fold = unpack<L,
+      mp::push_front<state, mp::fold<F, C>>>;
   }
 
   /// \cond
   template<class F>
-  struct fold_left<F, identity>
+  struct fold<F, identity>
   {
     template<class... xs>
-    using f = typename detail::fold_left_impl<
+    using f = typename detail::fold_impl<
       int(sizeof...(xs)) - 1
     >::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
   #if ! JLN_MP_ENABLE_DEBUG
   template<template<class...> class F, class C>
-  struct fold_left<lift<F>, C>
+  struct fold<lift<F>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      typename detail::fold_left_impl<
+      typename detail::fold_impl<
         int(sizeof...(xs)) - 1
       >::template f<F, xs...>
     );
   };
 
   template<template<class...> class F>
-  struct fold_left<lift<F>, identity>
+  struct fold<lift<F>, identity>
   {
     template<class... xs>
-    using f = typename detail::fold_left_impl<
+    using f = typename detail::fold_impl<
       int(sizeof...(xs)) - 1
     >::template f<F, xs...>;
   };
@@ -83,7 +83,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<int n>
-  struct fold_left_impl : fold_left_impl<
+  struct fold_impl : fold_impl<
       n < 8 ? 4
     : n < 16 ? 8
     : n < 64 ? 16
@@ -94,12 +94,12 @@ namespace jln::mp::detail
 
 #define JLN_MP_FOLD_LEFT_SELECT(n, mp_xs, _, mp_dup)  \
   template<>                                          \
-  struct fold_left_impl<n>                            \
+  struct fold_impl<n>                                 \
   {                                                   \
     template<template<class...> class F, class state, \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),         \
       class... xs>                                    \
-    using f = typename fold_left_impl<                \
+    using f = typename fold_impl<                     \
       sizeof...(xs)                                   \
     >::template f<F,                                  \
       mp_dup(F<, JLN_MP_NIL) state,                   \
@@ -113,7 +113,7 @@ namespace jln::mp::detail
 
 #define JLN_MP_FOLD_LEFT_SELECT(n, mp_xs, _, mp_dup)  \
   template<>                                          \
-  struct fold_left_impl<n>                            \
+  struct fold_impl<n>                                 \
   {                                                   \
     template<template<class...> class F, class state, \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA)>         \
@@ -126,14 +126,14 @@ namespace jln::mp::detail
 #undef JLN_MP_FOLD_LEFT_SELECT
 
   template<>
-  struct fold_left_impl<0>
+  struct fold_impl<0>
   {
     template<template<class...> class, class state>
     using f = state;
   };
 
   template<>
-  struct fold_left_impl<-1>
+  struct fold_impl<-1>
   {};
 }
 /// \endcond

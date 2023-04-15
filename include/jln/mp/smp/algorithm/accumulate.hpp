@@ -7,7 +7,7 @@
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/algorithm/same.hpp>
-#include <jln/mp/algorithm/fold_left.hpp>
+#include <jln/mp/algorithm/fold.hpp>
 #include <jln/mp/algorithm/transform.hpp>
 #include <jln/mp/algorithm/accumulate.hpp>
 
@@ -52,7 +52,7 @@ namespace jln::mp::detail
   struct _smp_accumulate
   {
     template<class state, class... seqs>
-    using f = typename zip<push_front<state, fold_left<
+    using f = typename zip<push_front<state, fold<
       monadic0<flip<unpack<F>>>, monadic<C>
     >>>::template f<seqs...>;
   };

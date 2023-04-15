@@ -28,7 +28,7 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold_left<
+  struct _sfinae<sfinae, push_front<list<>, fold<
     is_unique_unpack<is_unique_set_cmp_push_back_or_void<
       JLN_MP_TRACE_F(contract<mp::lift<std::is_same>>)
     >>, C
@@ -48,12 +48,12 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class Cmp, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold_left<
+  struct _sfinae<sfinae, push_front<list<>, fold<
     is_unique_unpack<is_unique_set_cmp_push_back_or_void<JLN_MP_TRACE_F(Cmp)>>,
     is_not<void, C>
   >>>
   {
-    using type = contract<push_front<list<>, smp::fold_left<
+    using type = contract<push_front<list<>, smp::fold<
       contract<is_unique_unpack<try_<smp_is_unique_set_cmp_push_back_or_void<
         JLN_MP_TRACE_F(assume_binary<sfinae<Cmp>>)
       >>>>,

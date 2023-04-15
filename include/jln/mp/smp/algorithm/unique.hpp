@@ -1,7 +1,7 @@
 #pragma once
 
 #include <jln/mp/smp/list/listify.hpp>
-#include <jln/mp/smp/algorithm/fold_left.hpp>
+#include <jln/mp/smp/algorithm/fold.hpp>
 #include <jln/mp/smp/utility/unpack.hpp>
 #include <jln/mp/smp/functional/lift.hpp>
 #include <jln/mp/smp/list/push_front.hpp>
@@ -38,9 +38,9 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold_left<lift<emp::set_push_back>, C>>>
+  struct _sfinae<sfinae, push_front<list<>, fold<lift<emp::set_push_back>, C>>>
   {
-    using type = contract<push_front<list<>, fold_left<
+    using type = contract<push_front<list<>, fold<
       lift<emp::set_push_back>, typename smp_unique_continuation<
         assume_unary<sfinae<C>>
       >::type
@@ -48,11 +48,11 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold_left<
+  struct _sfinae<sfinae, push_front<list<>, fold<
     unpack<_set_cmp_push_back<JLN_MP_TRACE_F(contract<mp::lift<std::is_same>>)>>, C
   >>>
   {
-    using type = contract<push_front<list<>, fold_left<
+    using type = contract<push_front<list<>, fold<
       lift<emp::set_push_back>, typename smp_unique_continuation<
         assume_unary<optimize_useless_unpack_t<sfinae<C>>>
       >::type
@@ -82,11 +82,11 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class Cmp, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold_left<
+  struct _sfinae<sfinae, push_front<list<>, fold<
     unpack<_set_cmp_push_back<JLN_MP_TRACE_F(Cmp)>>, C
   >>>
   {
-    using type = contract<push_front<list<>, smp::fold_left<
+    using type = contract<push_front<list<>, smp::fold<
       contract<unpack<try_<_smp_set_cmp_push_back<
         JLN_MP_TRACE_F(assume_binary<sfinae<Cmp>>)
       >>>>,

@@ -25,10 +25,10 @@ namespace jln::mp
   ///   F::f<F::f<F::f<F::f<xs[0], xs[n-1]>, x[n-2]>, ...>, x[1]>
   ///   \endcode
   /// \treturn \value
-  /// \see fold_left, fold_right, fold_tree, fold_balanced_tree
+  /// \see fold, fold_right, fold_tree, fold_balanced_tree
 #ifdef JLN_MP_DOXYGENATING
   template<class F, class C = identity>
-  using reverse_fold = reverse<fold_left<F, C>>;
+  using reverse_fold = reverse<fold<F, C>>;
 #else
   template<class F, class C = identity>
   struct reverse_fold

@@ -40,7 +40,7 @@ namespace jln::mp
 
 
 #include <jln/mp/algorithm/same.hpp>
-#include <jln/mp/algorithm/fold_left.hpp>
+#include <jln/mp/algorithm/fold.hpp>
 #include <jln/mp/algorithm/none_of.hpp>
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/conditional.hpp>
@@ -62,7 +62,7 @@ namespace jln::mp::detail
   template<class Cmp, class C>
   struct mk_unique
   {
-    using type = push_front<list<>, fold_left<
+    using type = push_front<list<>, fold<
       unpack<_set_cmp_push_back<JLN_MP_TRACE_F(Cmp)>>,
       optimize_useless_unpack_t<unpack<C>>
     >>;
@@ -71,7 +71,7 @@ namespace jln::mp::detail
   template<class C>
   struct mk_unique<lift<std::is_same>, C>
   {
-    using type = push_front<list<>, fold_left<
+    using type = push_front<list<>, fold<
       lift<emp::set_push_back>,
       optimize_useless_unpack_t<unpack<C>>
     >>;

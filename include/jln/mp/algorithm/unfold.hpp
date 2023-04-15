@@ -41,7 +41,7 @@ namespace jln::mp
   ///   == list<number<1>, number<2>, number<3>, number<4>, number<5>>
   ///   \endcode
   /// \treturn \list
-  /// \see fold_left, fold_right, recursively
+  /// \see fold, fold_right, recursively
   template<class F, class C = listify>
   using unfold = mp::recursively<detail::unfold_impl<F>, mp::pop_front<C>>;
 

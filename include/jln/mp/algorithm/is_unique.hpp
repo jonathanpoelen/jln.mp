@@ -133,7 +133,7 @@ namespace jln::mp::detail
   template<class Cmp, class C>
   struct mk_is_unique
   {
-    using type = push_front<list<>, fold_left<
+    using type = push_front<list<>, fold<
       is_unique_unpack<is_unique_set_cmp_push_back_or_void<JLN_MP_TRACE_F(Cmp)>>,
       is_not<void, C>
     >>;

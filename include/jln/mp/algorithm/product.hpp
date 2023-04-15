@@ -1,7 +1,7 @@
 #pragma once
 
 #include <jln/mp/list/listify.hpp>
-#include <jln/mp/algorithm/fold_left.hpp>
+#include <jln/mp/algorithm/fold.hpp>
 
 namespace jln::mp
 {
@@ -43,7 +43,7 @@ namespace jln::mp
     template<class seq = list<>, class... seqs>
     using f = typename detail::_unpack<
       C,
-      typename detail::fold_left_impl<sizeof...(seqs)>
+      typename detail::fold_impl<sizeof...(seqs)>
       ::template f<
         detail::product_impl_t,
         typename detail::_product<list<>, seq>::type,
@@ -63,7 +63,7 @@ namespace jln::mp
   struct product<listify>
   {
     template<class seq = list<>, class... seqs>
-    using f = typename detail::fold_left_impl<sizeof...(seqs)>
+    using f = typename detail::fold_impl<sizeof...(seqs)>
       ::template f<
         detail::product_impl_t,
         typename detail::_product<list<>, seq>::type,

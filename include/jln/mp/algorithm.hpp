@@ -27,10 +27,10 @@
 #include <jln/mp/algorithm/find.hpp>
 #include <jln/mp/algorithm/find_last.hpp>
 #include <jln/mp/algorithm/flatten.hpp>
-#include <jln/mp/algorithm/fold_left.hpp>
-#include <jln/mp/algorithm/fold_left_xs.hpp>
+#include <jln/mp/algorithm/fold.hpp>
 #include <jln/mp/algorithm/fold_right.hpp>
 #include <jln/mp/algorithm/fold_tree.hpp>
+#include <jln/mp/algorithm/fold_xs.hpp>
 #include <jln/mp/algorithm/group.hpp>
 #include <jln/mp/algorithm/group_n.hpp>
 #include <jln/mp/algorithm/index.hpp>

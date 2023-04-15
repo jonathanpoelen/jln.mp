@@ -1,7 +1,7 @@
 #pragma once
 
 #include <jln/mp/smp/optimizer/types.hpp>
-#include <jln/mp/algorithm/fold_left_xs.hpp>
+#include <jln/mp/algorithm/fold_xs.hpp>
 #include <jln/mp/algorithm/replace.hpp>
 #include <jln/mp/list/at.hpp>
 
@@ -807,7 +807,7 @@ namespace jln::mp::optimizer
              class all_values,
              class params_without_out_of_range = void,
              class out_of_range_for_all = uncallable>
-    using f = typename detail::fold_left_xs_impl<sizeof...(xs)>
+    using f = typename detail::fold_xs_impl<sizeof...(xs)>
       ::template f<
         opti_detail::dispatch_split_param_at_1_from_seq_pack,
         sizeof...(xs),
