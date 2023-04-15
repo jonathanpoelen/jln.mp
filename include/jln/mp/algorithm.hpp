@@ -53,6 +53,7 @@
 #include <jln/mp/algorithm/mismatch_index.hpp>
 #include <jln/mp/algorithm/none_of.hpp>
 #include <jln/mp/algorithm/pairwise.hpp>
+#include <jln/mp/algorithm/pairwise_fold.hpp>
 #include <jln/mp/algorithm/partition.hpp>
 #include <jln/mp/algorithm/permutations.hpp>
 #include <jln/mp/algorithm/powerset.hpp>
