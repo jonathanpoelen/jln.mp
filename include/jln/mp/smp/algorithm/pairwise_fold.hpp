@@ -5,6 +5,7 @@
 #include <jln/mp/smp/list/pop_front.hpp> // for remove_adjacent
 #include <jln/mp/smp/functional/if.hpp> // for remove_adjacent
 #include <jln/mp/smp/utility/always.hpp> // for remove_adjacent
+#include <jln/mp/smp/functional/memoize.hpp> // for remove_adjacent
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/algorithm/pairwise_fold.hpp>
 

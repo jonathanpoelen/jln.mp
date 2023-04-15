@@ -7,6 +7,7 @@
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/functional/if.hpp>
+#include <jln/mp/functional/memoize.hpp>
 
 
 namespace jln::mp

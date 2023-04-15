@@ -50,9 +50,9 @@ namespace jln::mp
   };
 
 #if JLN_MP_CLANG_LIKE
-# define JLN_MEMOIZE(...) ::jln::mp::memoize<__VA_ARGS__>
+# define JLN_MP_MEMOIZE(...) ::jln::mp::memoize<__VA_ARGS__>
 #else
-# define JLN_MEMOIZE(...) __VA_ARGS__
+# define JLN_MP_MEMOIZE(...) __VA_ARGS__
 #endif
 }
 
