@@ -1,7 +1,6 @@
 #pragma once
 
 #include <jln/mp/smp/algorithm/accumulate.hpp>
-#include <jln/mp/smp/algorithm/adjacent_difference.hpp>
 #include <jln/mp/smp/algorithm/adjacent_remove.hpp>
 #include <jln/mp/smp/algorithm/after.hpp>
 #include <jln/mp/smp/algorithm/all_of.hpp>

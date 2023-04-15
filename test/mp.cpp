@@ -1,5 +1,4 @@
 #include "src/algorithm/accumulate.cpp"
-#include "src/algorithm/adjacent_difference.cpp"
 #include "src/algorithm/adjacent_remove.cpp"
 #include "src/algorithm/after.cpp"
 #include "src/algorithm/all_of.cpp"
