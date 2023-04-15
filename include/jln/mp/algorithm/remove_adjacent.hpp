@@ -10,7 +10,7 @@ namespace jln::mp
   namespace detail
   {
     template<class>
-    struct adjacent_remove_impl;
+    struct remove_adjacent_impl;
   }
   /// \endcond
 
@@ -19,33 +19,33 @@ namespace jln::mp
   /// Removes each element in a \sequence which respect a predicate with privious element.
   /// \treturn \sequence
   template<class BinaryPred, class C = listify>
-  struct adjacent_remove_if
+  struct remove_adjacent_if
   {
     template<class... xs>
-    using f = typename detail::adjacent_remove_impl<rotate_c<-1>::f<xs...>>
+    using f = typename detail::remove_adjacent_impl<rotate_c<-1>::f<xs...>>
       ::template f<JLN_MP_TRACE_F(C)::template f, BinaryPred, xs...>;
   };
 
   /// Removes each element in a \sequence which is the same type as the privious element.
   /// \treturn \sequence
   template<class C = listify>
-  using adjacent_remove = adjacent_remove_if<same<>, C>;
+  using remove_adjacent = remove_adjacent_if<same<>, C>;
 
   namespace emp
   {
     template<class L, class BinaryPred, class C = mp::listify>
-    using adjacent_remove_if = unpack<L, mp::adjacent_remove_if<BinaryPred, C>>;
+    using remove_adjacent_if = unpack<L, mp::remove_adjacent_if<BinaryPred, C>>;
 
     template<class L, class C = mp::listify>
-    using adjacent_remove = unpack<L, mp::adjacent_remove<C>>;
+    using remove_adjacent = unpack<L, mp::remove_adjacent<C>>;
   }
 
   /// \cond
   template<class BinaryPred, template<class...> class C>
-  struct adjacent_remove_if<BinaryPred, lift<C>>
+  struct remove_adjacent_if<BinaryPred, lift<C>>
   {
     template<class... xs>
-    using f = typename detail::adjacent_remove_impl<rotate_c<-1>::f<xs...>>
+    using f = typename detail::remove_adjacent_impl<rotate_c<-1>::f<xs...>>
       ::template f<C, BinaryPred, xs...>;
   };
   /// \endcond
@@ -60,19 +60,19 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<class BinaryPred, class x, class y>
-  using adjacent_remove_transform = typename wrap_in_list_c<
+  using remove_adjacent_transform = typename wrap_in_list_c<
     !BinaryPred::template f<x, y>::value
   >::template f<x>;
 
   template<class y, class... ys>
-  struct adjacent_remove_impl<list<y, ys...>>
+  struct remove_adjacent_impl<list<y, ys...>>
   {
     template<template<class...> class C, class BinaryPred, class x, class... xs>
     using f = typename detail::_join_select<sizeof...(ys)+1>::template f<
       C,
       list<x>,
 #if JLN_MP_GCC
-      adjacent_remove_transform<JLN_MP_TRACE_F(BinaryPred), xs, ys>...
+      remove_adjacent_transform<JLN_MP_TRACE_F(BinaryPred), xs, ys>...
 #else
       typename wrap_in_list_c<!JLN_MP_TRACE_F(BinaryPred)::template f<xs, ys>::value>
         ::template f<xs>...
@@ -81,14 +81,14 @@ namespace jln::mp::detail
   };
 
   template<class x>
-  struct adjacent_remove_impl<list<x>>
+  struct remove_adjacent_impl<list<x>>
   {
     template<template<class...> class C, class BinaryPred, class y>
     using f = C<y>;
   };
 
   template<>
-  struct adjacent_remove_impl<list<>>
+  struct remove_adjacent_impl<list<>>
   {
     template<template<class...> class C, class BinaryPred, class... ys>
     using f = C<>;

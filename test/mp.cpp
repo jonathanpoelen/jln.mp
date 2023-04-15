@@ -1,5 +1,4 @@
 #include "src/algorithm/accumulate.cpp"
-#include "src/algorithm/adjacent_remove.cpp"
 #include "src/algorithm/after.cpp"
 #include "src/algorithm/all_of.cpp"
 #include "src/algorithm/anticirculant_matrix.cpp"
@@ -58,6 +57,7 @@
 #include "src/algorithm/product.cpp"
 #include "src/algorithm/regroup.cpp"
 #include "src/algorithm/remove.cpp"
+#include "src/algorithm/remove_adjacent.cpp"
 #include "src/algorithm/remove_unique.cpp"
 #include "src/algorithm/repeat.cpp"
 #include "src/algorithm/replace.cpp"

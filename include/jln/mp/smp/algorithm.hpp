@@ -1,7 +1,6 @@
 #pragma once
 
 #include <jln/mp/smp/algorithm/accumulate.hpp>
-#include <jln/mp/smp/algorithm/adjacent_remove.hpp>
 #include <jln/mp/smp/algorithm/after.hpp>
 #include <jln/mp/smp/algorithm/all_of.hpp>
 #include <jln/mp/smp/algorithm/anticirculant_matrix.hpp>
@@ -60,6 +59,7 @@
 #include <jln/mp/smp/algorithm/product.hpp>
 #include <jln/mp/smp/algorithm/regroup.hpp>
 #include <jln/mp/smp/algorithm/remove.hpp>
+#include <jln/mp/smp/algorithm/remove_adjacent.hpp>
 #include <jln/mp/smp/algorithm/remove_unique.hpp>
 #include <jln/mp/smp/algorithm/repeat.hpp>
 #include <jln/mp/smp/algorithm/replace.hpp>
