@@ -13,12 +13,12 @@ namespace jln::mp::smp
 {
   template<class F, class Front = identity, class C = listify>
   using pairwise_fold_and_transform_front = try_contract<mp::pairwise_fold_and_transform_front<
-    assume_binary<F>, assume_unary<Front>, mp::monadic_xs<C>
+    assume_binary<F>, assume_unary<Front>, mp::monadic_xs<subcontract<C>>
   >>;
 
   template<class F, class C = listify>
   using pairwise_fold = try_contract<mp::pairwise_fold_and_transform_front<
-    assume_binary<F>, mp::identity, mp::monadic_xs<C>
+    assume_binary<F>, mp::identity, mp::monadic_xs<subcontract<C>>
   >>;
 }
 
