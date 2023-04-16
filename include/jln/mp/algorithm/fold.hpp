@@ -15,7 +15,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup reduce
 
   /// Folds left over a list using a binary predicate.
   /// The first element in the input pack as the state,

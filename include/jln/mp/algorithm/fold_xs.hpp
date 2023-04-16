@@ -20,7 +20,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup reduce
 
   /// As \c fold_xs, but stop searching at position \c OffsetEnd.
   template<int_ OffsetEnd, class F, class C = identity>

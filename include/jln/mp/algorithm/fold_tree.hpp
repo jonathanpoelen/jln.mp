@@ -17,7 +17,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup reduce
 
   /// Folds tree over a list using a binary predicate.
   /// recursively fold n/2 value to the left and the rest to the right.

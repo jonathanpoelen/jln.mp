@@ -15,7 +15,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup reduce
 
   /// Folds right over a list using a binary predicate.
   /// This is equivalent to `reverse<fold<flip<F>, C>>`.

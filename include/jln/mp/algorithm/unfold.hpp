@@ -27,7 +27,6 @@ namespace jln::mp
   /// When \c F returns `Some<value,next>`, \c value is added to the
   /// results list and \c next is used for the next iteration.
   /// \semantics
-  ///   Equivalent to
   ///   \code
   ///   unfold<
   ///     if_<
