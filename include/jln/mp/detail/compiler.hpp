@@ -71,7 +71,7 @@
 
 // Diagnostic
 //@{
-#if JLN_MP_CLANG || JLN_MP_GCC
+#if JLN_MP_CLANG_LIKE || JLN_MP_GCC
 
 #  define JLN_MP_DIAGNOSTIC_PUSH() _Pragma("GCC diagnostic push")
 #  define JLN_MP_DIAGNOSTIC_POP() _Pragma("GCC diagnostic pop")
