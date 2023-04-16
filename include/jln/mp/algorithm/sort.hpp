@@ -49,7 +49,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::sort_impl<sizeof...(xs)>
-      ::template f<Cmp, xs...>;
+      ::template f<JLN_MP_TRACE_F(Cmp), xs...>;
   };
   /// \endcond
 }
