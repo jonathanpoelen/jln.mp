@@ -28,6 +28,7 @@ namespace jln::mp
   };
 
   /// \cond
+  #if ! JLN_MP_OPTIMIZED_ALIAS
   template<template<class...> class C>
   struct join<lift<C>>
   {
@@ -35,6 +36,7 @@ namespace jln::mp
     using f = typename detail::_join_select<sizeof...(seqs)>
       ::template f<C, seqs...>::type;
   };
+  #endif
   /// \endcond
 
   namespace emp

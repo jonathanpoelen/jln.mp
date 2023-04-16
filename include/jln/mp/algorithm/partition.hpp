@@ -47,9 +47,16 @@ namespace jln::mp
     template<class L, class Pred, class C = mp::listify>
     using partition = unpack<L, mp::partition<Pred, C>>;
   }
+}
+
+
+#include <jln/mp/list/wrap_in_list.hpp>
+#include <jln/mp/list/join.hpp>
 
 /// \cond
-#if ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+namespace jln::mp
+{
   template<class Pred, class F, template<class...> class C>
   struct partition_with<Pred, F, lift<C>>
   {
@@ -58,15 +65,9 @@ namespace jln::mp
       ::template f<xs...>
       ::template f<C, F, xs...>;
   };
-#endif
-/// \endcond
 }
+#endif
 
-
-#include <jln/mp/list/wrap_in_list.hpp>
-#include <jln/mp/list/join.hpp>
-
-/// \cond
 namespace jln::mp::detail
 {
   template<bool... bs>

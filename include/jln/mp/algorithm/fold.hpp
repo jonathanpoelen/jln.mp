@@ -47,8 +47,12 @@ namespace jln::mp
     template<class L, class F, class C = mp::identity>
     using reduce = unpack<L, mp::fold<F, C>>;
   }
+}
 
-  /// \cond
+
+/// \cond
+namespace jln::mp
+{
   template<class F>
   struct fold<F, identity>
   {
@@ -58,7 +62,7 @@ namespace jln::mp
     >::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
-  #if ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
   template<template<class...> class F, class C>
   struct fold<lift<F>, C>
   {
@@ -78,12 +82,9 @@ namespace jln::mp
       int(sizeof...(xs)) - 1
     >::template f<F, xs...>;
   };
-  #endif
-  /// \endcond
+#endif
 }
 
-
-/// \cond
 namespace jln::mp::detail
 {
   template<int n>

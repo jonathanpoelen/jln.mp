@@ -26,7 +26,7 @@ namespace jln::mp
   ///   \endcode
   /// \pre `sizeof...(xs) >= 1`
   /// \treturn \value
-  /// \see fold, fold_right, fold_tree, fold_balanced_tree
+  /// \see fold, reverse_fold, fold_tree, fold_balanced_tree
   template<class F, class C = identity>
   struct reverse_fold
   {
@@ -58,6 +58,28 @@ namespace jln::mp
       int(sizeof...(xs)) - 1
     >::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
   };
+
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  template<template<class...> class F, class C>
+  struct reverse_fold<lift<F>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename detail::reverse_fold_impl<
+        int(sizeof...(xs)) - 1
+      >::template f<F, xs...>
+    );
+  };
+
+  template<template<class...> class F>
+  struct reverse_fold<lift<F>, identity>
+  {
+    template<class... xs>
+    using f = typename detail::reverse_fold_impl<
+      int(sizeof...(xs)) - 1
+    >::template f<F, xs...>;
+  };
+#endif
 }
 
 namespace jln::mp::detail

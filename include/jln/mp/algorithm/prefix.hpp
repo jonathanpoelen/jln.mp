@@ -24,8 +24,12 @@ namespace jln::mp
     template<class L, class x, class C = mp::listify>
     using prefix = unpack<L, mp::prefix<x, C>>;
   }
+}
 
-  /// \cond
+/// \cond
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+namespace jln::mp
+{
   template<class x, template<class...> class C>
   struct prefix<x, lift<C>>
   {
@@ -33,5 +37,6 @@ namespace jln::mp
     using f = typename detail::_join_select<sizeof...(xs)>
       ::template f<C, list<x, xs>...>::type;
   };
-  /// \endcond
 }
+#endif
+/// \endcond

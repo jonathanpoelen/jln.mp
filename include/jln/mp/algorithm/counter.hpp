@@ -64,6 +64,7 @@ namespace jln::mp
 }
 
 /// \cond
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
 namespace jln::mp
 {
   template<template<class...> class F, class C>
@@ -76,7 +77,7 @@ namespace jln::mp
     )::template f<>;
   };
 }
-
+#endif
 
 #if JLN_MP_GCC
 # include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit

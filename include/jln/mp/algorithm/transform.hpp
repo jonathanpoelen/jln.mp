@@ -38,7 +38,7 @@ namespace jln::mp
   }
 
 /// \cond
-#if ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
   template<class F, template<class...> class C>
   struct transform<F, lift<C>>
   {
@@ -62,7 +62,9 @@ namespace jln::mp
     using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
       ::template f<C, F, xs...>;
   };
+#endif
 
+#if ! JLN_MP_ENABLE_DEBUG
   namespace detail
   {
     template<bool>

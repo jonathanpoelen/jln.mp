@@ -58,6 +58,20 @@ namespace jln::mp
 }
 
 /// \cond
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+namespace jln::mp
+{
+  template<template<class...> class F, class Front, class C>
+  struct pairwise_fold_and_transform_front<lift<F>, Front, C>
+  {
+    template<class... xs>
+    using f = typename detail::pairwise_fold_impl<
+      rotate_c<-1>::template f<xs...>
+    >::template f<C, Front, F, xs...>;
+  };
+}
+#endif
+
 namespace jln::mp::detail
 {
   template<class y, class... ys>

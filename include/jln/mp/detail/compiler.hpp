@@ -9,6 +9,7 @@
 #  define JLN_MP_CLANG 0
 #  define JLN_MP_MSVC 0
 #  define JLN_MP_GCC 0
+#  define JLN_MP_OPTIMIZED_ALIAS 0
 #elif defined(__clang__)
 #  define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
 #  define JLN_MP_MSVC_LIKE 0
@@ -16,6 +17,7 @@
 #  define JLN_MP_CLANG (__clang_major__ * 100 + __clang_minor__)
 #  define JLN_MP_MSVC 0
 #  define JLN_MP_GCC 0
+#  define JLN_MP_OPTIMIZED_ALIAS 0
 #elif defined(_MSC_VER)
 #  define JLN_MP_CLANG_LIKE 0
 #  define JLN_MP_MSVC_LIKE _MSC_VER
@@ -23,6 +25,7 @@
 #  define JLN_MP_CLANG 0
 #  define JLN_MP_MSVC _MSC_VER
 #  define JLN_MP_GCC 0
+#  define JLN_MP_OPTIMIZED_ALIAS 0
 #elif defined(__GNUC__)
 #  define JLN_MP_CLANG_LIKE 0
 #  define JLN_MP_MSVC_LIKE 0
@@ -30,6 +33,7 @@
 #  define JLN_MP_CLANG 0
 #  define JLN_MP_MSVC 0
 #  define JLN_MP_GCC (__GNUC__ * 100 + __GNUC_MINOR__)
+#  define JLN_MP_OPTIMIZED_ALIAS 1
 #else
 #  define JLN_MP_CLANG_LIKE 0
 #  define JLN_MP_MSVC_LIKE 0
@@ -37,6 +41,7 @@
 #  define JLN_MP_CLANG 0
 #  define JLN_MP_MSVC 0
 #  define JLN_MP_GCC 0
+#  define JLN_MP_OPTIMIZED_ALIAS 0
 #endif
 //@}
 

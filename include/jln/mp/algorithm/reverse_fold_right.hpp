@@ -58,6 +58,26 @@ namespace jln::mp
     using f = typename detail::reverse_fold_right_impl<int(sizeof...(xs)) - 1>
       ::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
   };
+
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  template<template<class...> class F, class C>
+  struct reverse_fold_right<lift<F>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename detail::reverse_fold_right_impl<int(sizeof...(xs)) - 1>
+      ::template f<F, xs...>
+    );
+  };
+
+  template<template<class...> class F>
+  struct reverse_fold_right<lift<F>, identity>
+  {
+    template<class... xs>
+    using f = typename detail::reverse_fold_right_impl<int(sizeof...(xs)) - 1>
+      ::template f<F, xs...>;
+  };
+#endif
 }
 
 namespace jln::mp::detail
