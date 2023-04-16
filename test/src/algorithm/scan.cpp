@@ -1,7 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/algorithm/scan_left.hpp"
+#include "jln/mp/smp/algorithm/scan.hpp"
 #include "jln/mp/smp/list/pop_front.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
@@ -18,13 +18,13 @@ TEST()
       list<_0, _1>,
       list<list<_0, _1>, _2>
     >,
-    emp::scan_left<seq_0_1_2, listify>
+    emp::scan<seq_0_1_2, listify>
   >();
 
-  test_mulary_pack<scan_left>();
-  test_mulary_pack<scan_left, listify>();
+  test_mulary_pack<scan>();
+  test_mulary_pack<scan, listify>();
 
-  test_context<scan_left<listify>, smp::scan_left<smp::listify>>()
+  test_context<scan<listify>, smp::scan<smp::listify>>()
     .test<list<>>()
     .test<list<_0>, _0>()
     .test<list<_0, list<_0, _1>>, _0, _1>()
@@ -54,8 +54,8 @@ TEST()
     ;
 
   test_context<
-    scan_left<pop_front<identity>>,
-    smp::scan_left<smp::pop_front<smp::identity>>
+    scan<pop_front<identity>>,
+    smp::scan<smp::pop_front<smp::identity>>
   >()
     .test<list<>>()
     .test<list<_0>, _0>()
@@ -66,17 +66,17 @@ TEST()
     .not_invocable<_0, _1, na>()
     ;
 
-  ut::not_invocable<smp::scan_left<smp::always<na>>, _1, _1, _1>();
-  ut::not_invocable<smp::scan_left<listify, bad_function>, _1>();
-  ut::not_invocable<smp::scan_left<listify, bad_function>, _1, _1, _1>();
-  ut::not_invocable<smp::scan_left<bad_function, bad_function>, _1>();
-  ut::not_invocable<smp::scan_left<bad_function, bad_function>, _1, _1, _1>();
-  ut::not_invocable<smp::scan_left<bad_function, bad_function>, _1, _1, _1, _1, _1>();
-  ut::not_invocable<smp::scan_left<smp::add<>>, _1, _1, _1, _1, _1, void>();
-  ut::not_invocable<smp::scan_left<smp::add<>>, void, _1, _1, _1, _1, _1>();
-  ut::not_invocable<smp::scan_left<smp::add<>>,
+  ut::not_invocable<smp::scan<smp::always<na>>, _1, _1, _1>();
+  ut::not_invocable<smp::scan<listify, bad_function>, _1>();
+  ut::not_invocable<smp::scan<listify, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::scan<bad_function, bad_function>, _1>();
+  ut::not_invocable<smp::scan<bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::scan<bad_function, bad_function>, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::scan<smp::add<>>, _1, _1, _1, _1, _1, void>();
+  ut::not_invocable<smp::scan<smp::add<>>, void, _1, _1, _1, _1, _1>();
+  ut::not_invocable<smp::scan<smp::add<>>,
     _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, void>();
-  ut::not_invocable<smp::scan_left<smp::add<>>,
+  ut::not_invocable<smp::scan<smp::add<>>,
     void, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>();
 }
 

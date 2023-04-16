@@ -8,7 +8,7 @@ namespace jln::mp
   namespace detail
   {
     template<unsigned>
-    struct _scan_left;
+    struct _scan;
   }
   /// \endcond
 
@@ -27,17 +27,17 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence
   template<class F, class C = listify>
-  struct scan_left
+  struct scan
   {
     template<class... xs>
-    using f = typename detail::_scan_left<sizeof...(xs)>
+    using f = typename detail::_scan<sizeof...(xs)>
       ::template f<sizeof...(xs), C, JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
   namespace emp
   {
     template<class L, class F, class C = mp::listify>
-    using scan_left = unpack<L, mp::scan_left<F, C>>;
+    using scan = unpack<L, mp::scan<F, C>>;
   }
 }
 
@@ -48,7 +48,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<unsigned n>
-  struct _scan_left : _scan_left<
+  struct _scan : _scan<
       n <= 16 ? 16
     : n <= 32 ? 32
     : n <= 64 ? 64
@@ -58,7 +58,7 @@ namespace jln::mp::detail
   {};
 
   template<>
-  struct _scan_left<0>
+  struct _scan<0>
   {
     template<unsigned remaining, class C, template<class...> class F,
       class... xs>
@@ -66,7 +66,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _scan_left<1>
+  struct _scan<1>
   {
     template<unsigned remaining, class C, template<class...> class F,
       class _0, class... xs>
@@ -74,7 +74,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _scan_left<2>
+  struct _scan<2>
   {
     template<unsigned remaining, class C, template<class...> class F,
       class _0, class _1, class... xs>
@@ -89,7 +89,7 @@ namespace jln::mp::detail
   //   sep=', ' if n > 2 else ''
   //   print(f'''
   //   template<>
-  //   struct _scan_left<{n}>
+  //   struct _scan<{n}>
   //   {{
   //     template<template<class...> class F,
   //       class r0, {args}{sep}{rs}>
@@ -101,7 +101,7 @@ namespace jln::mp::detail
   //   }};''')
 
   template<>
-  struct _scan_left<3>
+  struct _scan<3>
   {
     template<template<class...> class F,
       class r0, class _1, class _2, class r1 = F<r0, _1>>
@@ -113,7 +113,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _scan_left<4>
+  struct _scan<4>
   {
     template<template<class...> class F,
       class r0, class _1, class _2, class _3,
@@ -126,7 +126,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _scan_left<5>
+  struct _scan<5>
   {
     template<template<class...> class F,
       class r0, class _1, class _2, class _3, class _4,
@@ -139,7 +139,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _scan_left<6>
+  struct _scan<6>
   {
     template<template<class...> class F,
       class r0, class _1, class _2, class _3, class _4, class _5,
@@ -155,7 +155,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _scan_left<7>
+  struct _scan<7>
   {
     template<template<class...> class F,
       class r0, class _1, class _2, class _3, class _4, class _5, class _6,
@@ -171,7 +171,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _scan_left<8>
+  struct _scan<8>
   {
     template<template<class...> class F,
       class r0, class _1, class _2, class _3, class _4, class _5, class _6,
@@ -202,7 +202,7 @@ namespace jln::mp::detail
   //   l=', '.join(f'r{i}' for i in range(n-1))
   //   print(f'''
   //   template<>
-  //   struct _scan_left<{n*2}>
+  //   struct _scan<{n*2}>
   //   {{
   //     template<template<class...> class F,
   //       class r0, {args},
@@ -213,11 +213,11 @@ namespace jln::mp::detail
   //       class _0, {args},
   //       class... xs>
   //     using f = typename g<F, {ps}>
-  //       ::template f<remaining-{n-1}, _scan_left<remaining-{n-1}>, C, F, xs...>;
+  //       ::template f<remaining-{n-1}, _scan<remaining-{n-1}>, C, F, xs...>;
   //   }};''')
 
   template<>
-  struct _scan_left<16>
+  struct _scan<16>
   {
     template<
       template<class...> class F, class r0, class _1, class _2, class _3,
@@ -231,11 +231,11 @@ namespace jln::mp::detail
       class _1, class _2, class _3, class _4, class _5, class _6, class _7,
       class... xs>
     using f = typename g<F, _0, _1, _2, _3, _4, _5, _6, _7>::template f<
-      remaining - 7, _scan_left<remaining - 7>, C, F, xs...>;
+      remaining - 7, _scan<remaining - 7>, C, F, xs...>;
   };
 
   template<>
-  struct _scan_left<32>
+  struct _scan<32>
   {
     template<
       template<class...> class F, class r0, class _1, class _2, class _3,
@@ -258,11 +258,11 @@ namespace jln::mp::detail
       class... xs>
     using f = typename g<
       F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15
-    >::template f<remaining - 15, _scan_left<remaining - 15>, C, F, xs...>;
+    >::template f<remaining - 15, _scan<remaining - 15>, C, F, xs...>;
   };
 
   template<>
-  struct _scan_left<64>
+  struct _scan<64>
   {
     template<
       template<class...> class F, class r0, class _1, class _2, class _3,
@@ -298,11 +298,11 @@ namespace jln::mp::detail
       F, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15,
       _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30,
       _31
-    >::template f<remaining - 31, _scan_left<remaining - 31>, C, F, xs...>;
+    >::template f<remaining - 31, _scan<remaining - 31>, C, F, xs...>;
   };
 
   template<>
-  struct _scan_left<128>
+  struct _scan<128>
   {
     template<
       template<class...> class F, class r0, class _1, class _2, class _3,
@@ -363,11 +363,11 @@ namespace jln::mp::detail
       _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45,
       _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
       _61, _62,
-      _63>::template f<remaining - 63, _scan_left<remaining - 63>, C, F, xs...>;
+      _63>::template f<remaining - 63, _scan<remaining - 63>, C, F, xs...>;
   };
 
   template<>
-  struct _scan_left<256>
+  struct _scan<256>
   {
     template<
       template<class...> class F, class r0, class _1, class _2, class _3,
@@ -485,7 +485,7 @@ namespace jln::mp::detail
       _91, _92, _93, _94, _95, _96, _97, _98, _99, _100, _101, _102, _103, _104,
       _105, _106, _107, _108, _109, _110, _111, _112, _113, _114, _115, _116,
       _117, _118, _119, _120, _121, _122, _123, _124, _125, _126, _127>::
-      template f<remaining - 127, _scan_left<remaining - 127>, C, F, xs...>;
+      template f<remaining - 127, _scan<remaining - 127>, C, F, xs...>;
   };
 }
 /// \endcond

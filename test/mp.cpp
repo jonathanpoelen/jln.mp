@@ -66,7 +66,7 @@
 #include "src/algorithm/reverse_fold_right.cpp"
 #include "src/algorithm/rotate.cpp"
 #include "src/algorithm/same.cpp"
-#include "src/algorithm/scan_left.cpp"
+#include "src/algorithm/scan.cpp"
 #include "src/algorithm/scan_right.cpp"
 #include "src/algorithm/search.cpp"
 #include "src/algorithm/similar.cpp"

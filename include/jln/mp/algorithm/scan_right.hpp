@@ -37,7 +37,7 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/algorithm/scan_left.hpp> // scan_continuation
+#include <jln/mp/algorithm/scan.hpp> // scan_continuation
 
 /// \cond
 namespace jln::mp::detail

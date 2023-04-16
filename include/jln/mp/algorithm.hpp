@@ -68,7 +68,7 @@
 #include <jln/mp/algorithm/reverse_fold_right.hpp>
 #include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/algorithm/same.hpp>
-#include <jln/mp/algorithm/scan_left.hpp>
+#include <jln/mp/algorithm/scan.hpp>
 #include <jln/mp/algorithm/scan_right.hpp>
 #include <jln/mp/algorithm/search.hpp>
 #include <jln/mp/algorithm/similar.hpp>
