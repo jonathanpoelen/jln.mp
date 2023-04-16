@@ -17,15 +17,6 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_XS(xs, F, xs...)::type);
   };
 
-  /// \cond
-  template<template<class...> class F>
-  struct lift_t<F, identity>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALLF_XS(xs, F, xs...)::type;
-  };
-  /// \endcond
-
   /// Makes a \function from a \metafunction.
   /// \treturn \value
   /// \see lift_t
@@ -38,6 +29,13 @@ namespace jln::mp
 
   /// \cond
   template<template<class...> class F>
+  struct lift_t<F, identity>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALLF_XS(xs, F, xs...)::type;
+  };
+
+  template<template<class...> class F>
   struct lift<F, identity>
   {
     template<class... xs>
@@ -45,8 +43,16 @@ namespace jln::mp
   };
   /// \endcond
 
+
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
-  struct lift_c
+  struct lift_v_t
+  {
+    template<JLN_MP_TPL_AUTO_OR_INT... xs>
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs...)::type);
+  };
+
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
+  struct lift_v
   {
     template<JLN_MP_TPL_AUTO_OR_INT... xs>
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs...));
@@ -54,15 +60,30 @@ namespace jln::mp
 
   /// \cond
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct lift_c<F, identity>
+  struct lift_v_t<F, identity>
+  {
+    template<JLN_MP_TPL_AUTO_OR_INT... xs>
+    using f = JLN_MP_DCALLF_C_XS(xs, F, xs...)::type;
+  };
+
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  struct lift_v<F, identity>
   {
     template<JLN_MP_TPL_AUTO_OR_INT... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs...);
   };
   /// \endcond
 
+
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
-  struct lift_v
+  struct lift_a2v_t
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs::value...)::type);
+  };
+
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
+  struct lift_a2v
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs::value...));
@@ -70,7 +91,14 @@ namespace jln::mp
 
   /// \cond
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct lift_v<F, identity>
+  struct lift_a2v_t<F, identity>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...)::type;
+  };
+
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  struct lift_a2v<F, identity>
   {
     template<class... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...);

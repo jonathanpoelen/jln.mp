@@ -7,6 +7,12 @@
 
 TEST_SUITE_BEGIN()
 
+struct i1
+{
+  template<jln::mp::int_ a>
+  using f = jln::mp::number<a>;
+};
+
 TEST()
 {
   using namespace jln::mp;
@@ -16,6 +22,7 @@ TEST()
   ut::same<emp::make_int_sequence<_1>, seq_0>();
   ut::same<emp::make_int_sequence<_2>, seq_0_1>();
   ut::same<emp::make_int_sequence<_3>, seq_0_1_2>();
+  ut::same<emp::make_int_sequence_v_c<1, i1>, _0>();
 
   test_mulary_pack<make_int_sequence>();
 
@@ -46,6 +53,7 @@ TEST()
 
   ut::not_invocable<smp::make_int_sequence<bad_function>>();
   ut::not_invocable<smp::make_int_sequence<bad_function>, _1>();
+  ut::not_invocable<smp::make_int_sequence<bad_function>, void>();
 }
 
 TEST_SUITE_END()
