@@ -24,6 +24,7 @@ namespace jln::mp
   ///   \code
   ///   F::f<xs[1], F::f<..., F::f<xs[n-2], F::f<xs[n-1], xs[0]>>>>
   ///   \endcode
+  /// \pre `sizeof...(xs) >= 1`
   /// \treturn \value
   /// \see fold, fold_tree, reverse_fold_right, fold_balanced_tree
   template<class F, class C = identity>
@@ -100,9 +101,8 @@ namespace jln::mp::detail
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),              \
       class... xs>                                         \
     using f = mp_xs(F<, JLN_MP_COMMA, JLN_MP_NIL)          \
-      typename fold_right_impl<                            \
-        sizeof...(xs)                                      \
-      >::template f<F, state, xs...>                       \
+      typename fold_right_impl<sizeof...(xs)>              \
+      ::template f<F, state, xs...>                        \
     mp_dup(>, JLN_MP_NIL);                                 \
   };
 

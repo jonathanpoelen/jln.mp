@@ -15,6 +15,9 @@ TEST()
   ut::same<list<list<list<_0, _1>, _2>, _3>,
     emp::fold<seq_1_2_3, _0, listify>>();
 
+  ut::same<list<list<_1, _2>, _3>,
+    emp::reduce<seq_1_2_3, listify>>();
+
   test_binary_pack<fold>();
   test_unary_pack<fold, listify>();
 

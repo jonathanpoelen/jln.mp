@@ -24,12 +24,9 @@ namespace jln::mp
   ///   \code
   ///   F::f<F::f<F::f<F::f<xs[0], xs[n-1]>, x[n-2]>, ...>, x[1]>
   ///   \endcode
+  /// \pre `sizeof...(xs) >= 1`
   /// \treturn \value
   /// \see fold, fold_right, fold_tree, fold_balanced_tree
-#ifdef JLN_MP_DOXYGENATING
-  template<class F, class C = identity>
-  using reverse_fold = reverse<fold<F, C>>;
-#else
   template<class F, class C = identity>
   struct reverse_fold
   {
@@ -41,16 +38,6 @@ namespace jln::mp
     );
   };
 
-  template<class F>
-  struct reverse_fold<F, identity>
-  {
-    template<class... xs>
-    using f = typename detail::reverse_fold_impl<
-      int(sizeof...(xs)) - 1
-    >::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
-  };
-#endif
-
   namespace emp
   {
     template<class L, class state, class F, class C = mp::identity>
@@ -61,6 +48,18 @@ namespace jln::mp
 
 
 /// \cond
+namespace jln::mp
+{
+  template<class F>
+  struct reverse_fold<F, identity>
+  {
+    template<class... xs>
+    using f = typename detail::reverse_fold_impl<
+      int(sizeof...(xs)) - 1
+    >::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
+  };
+}
+
 namespace jln::mp::detail
 {
   template<int n>

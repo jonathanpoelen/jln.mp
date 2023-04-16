@@ -24,6 +24,7 @@ namespace jln::mp
   ///   \code
   ///   F::f<F::f<F::f<F::f<xs[0], xs[1]>, xs[2]>, ...>, xs[n-1]>
   ///   \endcode
+  /// \pre `sizeof...(xs) >= 1`
   /// \treturn \value
   /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
   template<class F, class C = identity>
@@ -42,6 +43,9 @@ namespace jln::mp
     template<class L, class state, class F, class C = mp::identity>
     using fold = unpack<L,
       mp::push_front<state, mp::fold<F, C>>>;
+
+    template<class L, class F, class C = mp::identity>
+    using reduce = unpack<L, mp::fold<F, C>>;
   }
 
   /// \cond
