@@ -9,7 +9,7 @@ namespace jln::mp
   namespace detail
   {
     template<int_ n>
-    struct _repeat;
+    struct repat_impl;
   }
   /// \endcond
 
@@ -22,9 +22,10 @@ namespace jln::mp
   struct repeat_c
   {
     template<class... xs>
-    using f = emp::make_int_sequence_v_c<N,
-      typename detail::_repeat<sizeof...(xs) < 2 ? sizeof...(xs) : 2>
-        ::template impl<C, xs...>>;
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(
+      N,
+      detail::repat_impl<sizeof...(xs) < 2 ? sizeof...(xs) : 2>::template impl
+    )::template f<C, xs...>;
   };
 
   template<class N, class C = listify>
@@ -48,48 +49,34 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<>
-  struct _repeat<0>
+  struct repat_impl<0>
   {
-    template<class C, class V = void>
+    template<class, int_...>
     struct impl
     {
-      template<int_...>
+      template<class C>
       using f = JLN_MP_CALL_TRACE_0_ARG(C);
     };
+  };
 
-    template<class V>
-    struct impl<listify, V>
+  template<>
+  struct repat_impl<1>
+  {
+    template<class, int_... ns>
+    struct impl
     {
-      template<int_...>
-      using f = list<>;
+      template<class C, class x>
+      using f = JLN_MP_CALL_TRACE(C, _first<x, decltype(ns)>...);
     };
   };
 
   template<>
-  struct _repeat<1>
+  struct repat_impl<2>
   {
-    template<class C, class x>
+    template<class, int_... ns>
     struct impl
     {
-      template<int_... ns>
-      using f = JLN_MP_DCALL_TRACE_XS(ns, C, _first<x, decltype(ns)>...);
-    };
-
-    template<class x>
-    struct impl<listify, x>
-    {
-      template<int_... ns>
-      using f = list<_first<x, decltype(ns)>...>;
-    };
-  };
-
-  template<>
-  struct _repeat<2>
-  {
-    template<class C, class... xs>
-    struct impl
-    {
-      template<int_... ns>
+      template<class C, class... xs>
       using f = typename join<C>::template f<_first<list<xs...>, decltype(ns)>...>;
     };
   };
