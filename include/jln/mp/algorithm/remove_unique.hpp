@@ -78,6 +78,7 @@ namespace jln::mp
 }
 
 
+#include <jln/mp/algorithm/make_int_sequence.hpp>
 #include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/algorithm/any_of.hpp>
 #include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
@@ -166,11 +167,8 @@ namespace jln::mp::detail
   };
 
 
-  template<class Indexes>
-  struct remove_unique_if_impl;
-
-  template<std::size_t... ints>
-  struct remove_unique_if_impl<std::integer_sequence<std::size_t, ints...>>
+  template<class, int_... ints>
+  struct remove_unique_if_impl
   {
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
@@ -188,22 +186,22 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct remove_unique_if_impl<std::integer_sequence<std::size_t>>
+  struct remove_unique_if_impl<int_>
   {
     template<class C, class Cmp, class... xs>
     using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
-  template<std::size_t i>
-  struct remove_unique_if_impl<std::integer_sequence<std::size_t, i>>
-  : remove_unique_if_impl<std::integer_sequence<std::size_t>>
+  template<int_ i>
+  struct remove_unique_if_impl<int_, i>
+  : remove_unique_if_impl<int_>
   {};
 
   template<class Cmp, class C>
   struct _remove_unique_if
   {
     template<class... xs>
-    using f = typename detail::remove_unique_if_impl<std::make_index_sequence<sizeof...(xs)>>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), remove_unique_if_impl)
       ::template f<C, Cmp, xs...>;
   };
 
@@ -214,11 +212,8 @@ namespace jln::mp::detail
   };
 
 
-  template<class Indexes>
-  struct copy_unique_if_impl;
-
-  template<std::size_t... ints>
-  struct copy_unique_if_impl<std::integer_sequence<std::size_t, ints...>>
+  template<class, int_... ints>
+  struct copy_unique_if_impl
   {
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
@@ -236,12 +231,12 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct copy_unique_if_impl<std::integer_sequence<std::size_t>>
-  : remove_unique_if_impl<std::integer_sequence<std::size_t>>
+  struct copy_unique_if_impl<int_>
+  : remove_unique_if_impl<int_>
   {};
 
-  template<std::size_t i>
-  struct copy_unique_if_impl<std::integer_sequence<std::size_t, i>>
+  template<int_ i>
+  struct copy_unique_if_impl<int_, i>
   {
     template<class C, class Cmp, class... xs>
     using f = JLN_MP_CALL_TRACE(C, xs...);
@@ -251,7 +246,7 @@ namespace jln::mp::detail
   struct _copy_unique_if
   {
     template<class... xs>
-    using f = typename detail::copy_unique_if_impl<std::make_index_sequence<sizeof...(xs)>>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), copy_unique_if_impl)
       ::template f<C, Cmp, xs...>;
   };
 

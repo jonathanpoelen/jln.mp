@@ -1,15 +1,14 @@
 #pragma once
 
 #include <jln/mp/utility/unpack.hpp>
-#include <jln/mp/list/list.hpp>
-#include <utility>
+#include <jln/mp/algorithm/make_int_sequence.hpp>
 
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-    template<class F, class Ints>
+    template<class C, class F>
     struct anticirculant_matrix_impl;
   }
   /// \endcond
@@ -35,9 +34,9 @@ namespace jln::mp
   struct anticirculant_matrix_with
   {
     template<class... xs>
-    using f = typename detail::anticirculant_matrix_impl<F, std::make_index_sequence<sizeof...(xs)>>
-      ::template f<C>
-      ::template f<xs...>;
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(
+      sizeof...(xs), detail::anticirculant_matrix_impl<C, F>::template f
+    )::template f<xs...>;
   };
 
   template<class C = listify>
@@ -59,10 +58,10 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<class F, std::size_t... i>
-  struct anticirculant_matrix_impl<F, std::integer_sequence<std::size_t, i...>>
+  template<class C, class F>
+  struct anticirculant_matrix_impl
   {
-    template<class C>
+    template<class, int_... i>
     using f = _tee<C, rotate_c<i, F>...>;
   };
 }

@@ -56,6 +56,7 @@ namespace jln::mp
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/clear.hpp>
+#include <jln/mp/algorithm/make_int_sequence.hpp>
 #include <utility>
 
 /// \cond
@@ -82,11 +83,16 @@ namespace jln::mp::detail
   using slice_impl_msvc = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
 #endif
 
+#if JLN_MP_USE_INTEGER_PACK
+  template<unsigned size, unsigned stride, class C, unsigned... ints>
+  struct _slice_impl
+#else
   template<unsigned size, unsigned stride, class C, class>
   struct _slice_impl;
 
   template<unsigned size, unsigned stride, class C, std::size_t... ints>
   struct _slice_impl<size, stride, C, std::integer_sequence<std::size_t, ints...>>
+#endif
   {
     template<class... xs>
     using f = typename join<C>::template f<
@@ -105,7 +111,9 @@ namespace jln::mp::detail
     template<unsigned start, unsigned size, unsigned stride, class C, std::size_t len>
     using f = drop_front_c<
       start,
-      _slice_impl<size * stride - stride + 1, stride, C, std::make_index_sequence<len - start>>
+      _slice_impl<size * stride - stride + 1, stride, C,
+        JLN_MP_INTEGER_PACK_OR_STD_MAKE_INDEX_SEQUENCE(len - start)
+      >
     >;
   };
 

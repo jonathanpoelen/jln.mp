@@ -270,6 +270,13 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
+
+#if JLN_MP_USE_INTEGER_PACK
+#  define JLN_MP_INTEGER_PACK_OR_STD_MAKE_INDEX_SEQUENCE(n) __integer_pack(n)...
+#else
+#  define JLN_MP_INTEGER_PACK_OR_STD_MAKE_INDEX_SEQUENCE(n) std::make_index_sequence<n>
+#endif
+
 #if JLN_MP_USE_MAKE_INTEGER_SEQ
   template<class C>
   struct make_int_sequence_impl
@@ -294,6 +301,3 @@ namespace jln::mp::detail
 #endif
 }
 /// \endcond
-
-#undef JLN_MP_USE_INTEGER_PACK
-#undef JLN_MP_USE_MAKE_INTEGER_SEQ

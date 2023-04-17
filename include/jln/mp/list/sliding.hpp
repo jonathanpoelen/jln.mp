@@ -206,11 +206,8 @@ namespace jln::mp::detail
     using f = typename pairwise<C>::template f<xs...>;
   };
 
-  template<class>
-  struct _sliding5_impl;
-
-  template<std::size_t... i>
-  struct _sliding5_impl<std::integer_sequence<std::size_t, i...>>
+  template<class, int_... i>
+  struct _sliding5_impl
   {
     template<class C, int_ size, class drop_front>
     using f = _tee<zip<C>, rotate_c<int_(i)-size, drop_front>...>;
@@ -221,7 +218,7 @@ namespace jln::mp::detail
   struct _sliding<5>
   {
     template<class C, int_ size, int_, class... xs>
-    using f = typename _sliding5_impl<std::make_index_sequence<size>>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(size, _sliding5_impl)
       ::template f<C, size-1, drop_front_c<size-1>>
       ::template f<xs...>;
   };
@@ -231,15 +228,12 @@ namespace jln::mp::detail
   struct _sliding<6>
   {
     template<class C, int_ size, int_, class... xs>
-    using f = typename _group_n_impl<std::make_index_sequence<sizeof...(xs)>>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), _group_n_impl)
       ::template f<C, size, xs...>;
   };
 
-  template<class>
-  struct _sliding7_impl;
-
-  template<std::size_t... i>
-  struct _sliding7_impl<std::integer_sequence<std::size_t, i...>>
+  template<class, int_... i>
+  struct _sliding7_impl
   {
     template<class C, int_ size, int_ stride>
     using f = _tee<zip<C>, slice_c<i, size, stride>...>;
@@ -250,7 +244,7 @@ namespace jln::mp::detail
   struct _sliding<7>
   {
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename _sliding7_impl<std::make_index_sequence<size>>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(size, _sliding7_impl)
       ::template f<C, (sizeof...(xs) - size) / stride + 1, stride>
       ::template f<xs...>;
   };
@@ -281,11 +275,8 @@ namespace jln::mp::detail
     >;
   };
 
-  template<class>
-  struct _sliding8_impl;
-
-  template<std::size_t... i>
-  struct _sliding8_impl<std::integer_sequence<std::size_t, i...>>
+  template<class, int_... i>
+  struct _sliding8_impl
   {
     template<class C, int_ size, int_ stride, int_ pivot>
     using f = _tee<
@@ -301,7 +292,7 @@ namespace jln::mp::detail
   struct _sliding<8>
   {
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename _sliding8_impl<std::make_index_sequence<size>>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(size, _sliding8_impl)
       ::template f<
         C,
         (sizeof...(xs) - size) / stride + 2,
