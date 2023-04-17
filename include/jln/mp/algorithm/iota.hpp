@@ -9,7 +9,7 @@ namespace jln::mp
   namespace detail
   {
     template<int_ start, int_ stride, bool inc>
-    struct _iota_v_c;
+    struct iota_v_c;
   }
   /// \endcond
 
@@ -22,7 +22,7 @@ namespace jln::mp
   struct iota_v
   {
     template<class start, class count, class stride = number<1>>
-    using f = typename detail::_iota_v_c<start::value, stride::value, (count::value >= 0)>
+    using f = typename detail::iota_v_c<start::value, stride::value, (count::value >= 0)>
       ::template f<C, count::value>;
   };
 
@@ -36,7 +36,7 @@ namespace jln::mp
   namespace emp
   {
     template<int_ start, int_ count, int_ stride = 1, class C = mp::numbers<>>
-    using iota_v_c = typename detail::_iota_v_c<start, stride, (count >= 0)>
+    using iota_v_c = typename detail::iota_v_c<start, stride, (count >= 0)>
       ::template f<C, count>;
 
     template<class start, class count, class stride = number<1>, class C = mp::numbers<>>
@@ -56,35 +56,36 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<int_ start, int_ stride, class C>
-  struct _iota
+  struct iota_impl
   {
-    template<int_... ns>
+    template<class, int_... ns>
     using f = typename conditional_c<sizeof...(ns) < JLN_MP_MAX_CALL_ELEMENT>
       ::template f<JLN_MP_TRACE_F(C), detail::too_many_arguments_error>
       ::template f<(start + ns * stride)...>;
   };
 
   template<int_ start, int_ stride>
-  struct _iota<start, stride, numbers<>>
+  struct iota_impl<start, stride, numbers<>>
   {
-    template<int_... ns>
+    template<class, int_... ns>
     using f = list<number<(start + ns * stride)>...>;
   };
 
   template<>
-  struct _iota_v_c<0, 1, true>
+  struct iota_v_c<0, 1, true>
   {
     template<class C, int_ count>
     using f = emp::make_int_sequence_v_c<count, C>;
   };
 
   template<int_ start, int_ stride, bool>
-  struct _iota_v_c
+  struct iota_v_c
   {
     template<class C, int_ count>
-    using f = emp::make_int_sequence_v_c<
-      (count < 0 ? -count : count),
-      detail::_iota<start, (count < 0 ? -stride : stride), C>>;
+    using f = JLN_MP_D_MAKE_INTEGER_SEQUENCE(
+      count < 0 ? -count : count,
+      detail::iota_impl<start, count < 0 ? -stride : stride, C>::template f
+    );
   };
 }
 /// \endcond
