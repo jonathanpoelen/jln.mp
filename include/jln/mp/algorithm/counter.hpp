@@ -110,16 +110,17 @@ namespace jln::mp::detail
 #if JLN_MP_GCC
 
   template<class T, std::size_t i>
-  number<i> index_base(indexed_item<i, T>*);
+  constexpr std::size_t index_base(indexed_item<i, T>*)
+  {
+    return i;
+  }
 
-  template<std::size_t N, class... ints>
+  template<std::size_t N, std::size_t... ints>
   constexpr array<N> count_elems()
   {
     array<N> counter{};
 
-    for (auto i : std::initializer_list<std::size_t>{ints::value...}) {
-      ++counter.elems[i];
-    }
+    (..., ++counter.elems[ints]);
 
     return counter;
   }
@@ -136,7 +137,7 @@ namespace jln::mp::detail
 
       constexpr auto counters = count_elems<
         sizeof...(ints),
-        decltype(index_base<xs>(indexed))...
+        index_base<xs>(indexed)...
       >();
 
       return always<typename C::template f<
