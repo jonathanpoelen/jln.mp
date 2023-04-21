@@ -15,7 +15,8 @@ namespace jln::mp
   /// Recursively invokes \functions to nested \typelist of \typelists.
   /// \semantics
   ///   \code
-  ///     cascade<F0,F1,F2> = transform<unpack<transform<unpack<F2>, F1>>, F0>
+  ///     cascade<F0> = transform<F0>
+  ///     cascade<F0,F1,F2> = transform<unpack<transform<unpack<F0>, F1>>, F2>
   ///   \endcode
   template<class F, class... Fs>
   using cascade = typename detail::_cascade<F, Fs...>::type;
@@ -28,16 +29,15 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<class F, class... Fs>
-  struct _cascade
-  {
-    using type = transform<unpack<typename _cascade<Fs...>::type>, F>;
-  };
+  template<class F0, class F1, class... Fs>
+  struct _cascade<F0, F1, Fs...>
+    : _cascade<transform<unpack<F0>, F1>, Fs...>
+  {};
 
   template<class F0, class F1>
   struct _cascade<F0, F1>
   {
-    using type = transform<unpack<F1>, F0>;
+    using type = transform<unpack<F0>, F1>;
   };
 
   template<class F>

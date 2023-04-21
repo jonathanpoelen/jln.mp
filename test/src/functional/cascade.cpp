@@ -29,11 +29,11 @@ TEST()
   test_mulary_pack<cascade, listify, listify, listify>();
 
   test_context<make_cascade<cascade>, make_cascade<smp::cascade>>()
-    .test<list1<>>()
-    .test<list1<list2<>>, list<>>()
-    .test<list1<list2<list3<>>>, list<list<>>>()
-    .test<list1<list2<list3<_1, _2>>>, list<list<_1, _2>>>()
-    .test<list1<list2<list3<>, list3<_0>>, list2<list3<_1, _2>>>,
+    .test<list3<>>()
+    .test<list3<list2<>>, list<>>()
+    .test<list3<list2<list1<>>>, list<list<>>>()
+    .test<list3<list2<list1<_1, _2>>>, list<list<_1, _2>>>()
+    .test<list3<list2<list1<>, list1<_0>>, list2<list1<_1, _2>>>,
       list<list<>, list<_0>>, list<list<_1, _2>>>()
     .not_invocable<int>()
     .not_invocable<list<int>>()
