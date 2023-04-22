@@ -1,3 +1,6 @@
+// Create a mathematical expression with named variables and function evaluator.
+// See the main at the end of the file for an example of use.
+
 #include <jln/mp/algorithm/contains.hpp>
 #include <jln/mp/algorithm/count.hpp>
 #include <jln/mp/algorithm/repeat.hpp>
@@ -10,10 +13,12 @@
 #include <jln/mp/list/size.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
 
-#include <functional>
+#include <functional> // std::plus, std::multiplies, etc
+#include <type_traits>
 
 namespace mp = jln::mp;
 
+// value associated with a variable
 template<class T, class Var = void>
 struct Value
 {
@@ -32,9 +37,11 @@ T to_value(Value<T, Var> value)
   return value.value;
 }
 
+// named variable (without value)
 template<char... c>
 struct Var
 {
+  // returns the value associated with the variable
   template<class Values>
   static auto eval(Values values)
   {
@@ -82,6 +89,10 @@ template<class... Ts>
 struct is_expression<Expression<Ts...>> : std::true_type
 {};
 
+// convert type to Expression, Var or Value
+// Expression => Expression
+// Var => Var
+// other => Value
 template<class T>
 using to_expr_type = mp::if_<
   mp::lift<is_expression>,
@@ -165,15 +176,14 @@ namespace error
 template<template<class...> class Error, class L, class... Ts>
 using extract_unknown_variables = mp::call<
   mp::join<mp::lift<Error>>,
-  mp::call<
-    mp::conditional<
-      mp::emp::contains<L, Ts>
-    >,
-    mp::list<>,
-    mp::list<Ts>
+  mp::emp::wrap_in_list_c<
+    !mp::emp::contains<L, Ts>::value,
+    Ts
   >...
 >;
 
+// expression or value contains an error
+// constructs objects of error::* to have a more explicit error message by the compiler.
 template<class... ExprVariable, class... ValueVariable, class... SingleValueVariable, class AllVariables>
 struct values_factory<
   mp::list<ExprVariable...>,
@@ -207,6 +217,8 @@ auto eval(Expr expr, Values... values)
 
 int main()
 {
+  // in C++20, this could be replaced by a UDL
+  // "a"_v for Var<'a'>()
   Var<'a'> a;
   Var<'b'> b;
   auto expr = (a + b) * (2 + a);
@@ -215,5 +227,5 @@ int main()
   // Var<'c'> c;
   // std::printf("%d\n", eval(expr, b=4)); // error::missing_variables<Var<'a'>>
   // std::printf("%d\n", eval(expr, c=2, a=3, b=4)); // error::too_many_variables<Var<'c'>>
-  //std::printf("%d\n", eval(expr, a=3, b=4, b=2)); // error::duplicate_variables<Var<'b'>>
+  // std::printf("%d\n", eval(expr, a=3, a=3, b=4, b=2, b=2)); // error::duplicate_variables<Var<'b'>>
 }

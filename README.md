@@ -105,10 +105,9 @@ Implementation of `std::tuple_cat` that works with tuple like.
 #include "jln/mp/algorithm/repeat.hpp"
 #include "jln/mp/functional/each.hpp"
 #include "jln/mp/functional/lift.hpp"
-#include "jln/mp/list/as_list.hpp"
 #include "jln/mp/list/join.hpp"
-#include "jln/mp/list/at.hpp"
 
+#include <array>
 #include <tuple>
 
 namespace mp = jln::mp;
@@ -123,25 +122,25 @@ struct my_tuple_element
 
 template<class... Tuples>
 using my_tuple_cat_result_type = mp::call<
-    // convert a sequence of mp::list to std::tuple
+    // Convert a sequence of mp::list to std::tuple
     mp::join<mp::lift<std::tuple>>,
-    // convert a tuple like to mp::list
+    // Convert a tuple like to mp::list of tuple element.
+    // To support tuple-likes, it is necessary to use std::tuple_size and std::tuple_element.
+    // Otherwise, emp::unpack<Tuples> is sufficient.
     emp::make_int_sequence<
         std::tuple_size<std::decay_t<Tuples>>,
-        // convert a sequence of tuple index to a mp::list of tuple element
+        // Convert a sequence of tuple index to a mp::list of tuple element.
         mp::transform<my_tuple_element<std::decay_t<Tuples>>>
     >...
 >;
 
-template<mp::int_... ituples, mp::int_... ivalues, class... Tuples>
-constexpr auto my_tuple_cat_impl(
-    emp::numbers<ituples...>, emp::numbers<ivalues...>, std::tuple<Tuples...> t)
+template<class R, mp::int_... ituples, mp::int_... ivalues, class Tuple>
+constexpr R my_tuple_cat_impl(
+    emp::numbers<ituples...>, emp::numbers<ivalues...>, Tuple t)
 {
     // get is looked up by argument-dependent lookup
     using std::get;
-    return my_tuple_cat_result_type<Tuples...>{
-        get<ivalues>(get<ituples>(t))...
-    };
+    return R{ get<ivalues>(get<ituples>(std::move(t)))... };
 }
 
 template<class... Tuples, class R = my_tuple_cat_result_type<Tuples...>>
@@ -163,7 +162,8 @@ constexpr R my_tuple_cat(Tuples&&... args)
         emp::make_int_sequence<std::tuple_size<std::decay_t<Tuples>>>...
     >;
 
-    return my_tuple_cat_impl(index_by_tuple{}, index_by_value{}, std::tuple<Tuples&&...>(args...));
+    return my_tuple_cat_impl<R>(index_by_tuple{}, index_by_value{},
+        std::tuple<Tuples&&...>(std::forward<Tuples>(args)...));
 }
 
 // defines a tuple like
