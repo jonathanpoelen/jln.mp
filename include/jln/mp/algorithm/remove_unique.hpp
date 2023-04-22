@@ -3,6 +3,10 @@
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/utility/unpack.hpp>
 
+#if ! JLN_MP_GCC
+# include <jln/mp/algorithm/make_int_sequence.hpp>
+#endif
+
 #include <type_traits>
 
 namespace jln::mp
@@ -10,11 +14,19 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
+#if JLN_MP_GCC
     template<bool>
     struct _remove_unique;
 
     template<bool>
     struct _copy_unique;
+#else
+    template<class, int_... i>
+    struct _remove_unique;
+
+    template<class, int_... i>
+    struct _copy_unique;
+#endif
 
     template<class Cmp, class C>
     struct mk_remove_unique;
@@ -33,7 +45,12 @@ namespace jln::mp
   struct remove_unique
   {
     template<class... xs>
-    using f = typename detail::_remove_unique<sizeof...(xs) < 2>::template f<C, xs...>;
+#if JLN_MP_GCC
+    using f = typename detail::_remove_unique<sizeof...(xs) < 2>
+#else
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::_remove_unique)
+#endif
+      ::template f<C, xs...>;
   };
 
   /// Remove unique elements from a \sequence.
@@ -58,7 +75,12 @@ namespace jln::mp
   struct copy_unique
   {
     template<class... xs>
-    using f = typename detail::_copy_unique<sizeof...(xs) < 2>::template f<C, xs...>;
+#if JLN_MP_GCC
+    using f = typename detail::_copy_unique<sizeof...(xs) < 2>
+#else
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::_copy_unique)
+#endif
+      ::template f<C, xs...>;
   };
 
   /// Copy unique elements from a \sequence.
@@ -81,18 +103,23 @@ namespace jln::mp
 #include <jln/mp/algorithm/make_int_sequence.hpp>
 #include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/algorithm/any_of.hpp>
-#include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
 
+#if JLN_MP_GCC
+# include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
+#else
+# include <jln/mp/set/set_contains.hpp> // inherit
+#endif
+
 /// \cond
 namespace jln::mp::detail
 {
+#if JLN_MP_GCC
 #if !JLN_MP_FEATURE_CONCEPTS
-  template<class From, class To>
-  constexpr auto is_convertible_to(From, To)
-    -> decltype(To(From()), true)
+  template<class From, class To, class = decltype(To(From()))>
+  constexpr bool is_convertible_to(From, To)
   {
     return true;
   }
@@ -103,20 +130,23 @@ namespace jln::mp::detail
   }
 #endif
 
-  template<class C, class Inherit, class... xs>
-  using remove_unique_impl = typename join<C>::template f<
+  template<class Inherit, class x>
+  using remove_unique_elem_impl =
     typename wrap_in_list_c<
 #if JLN_MP_FEATURE_CONCEPTS
-      !requires{ static_cast<basic_item<xs>*>(static_cast<Inherit*>(nullptr)); }
+      !requires{ static_cast<basic_item<x>*>(static_cast<Inherit*>(nullptr)); }
 #else
       !is_convertible_to(
         static_cast<Inherit*>(nullptr),
-        static_cast<basic_item<xs>*>(nullptr)
+        static_cast<basic_item<x>*>(nullptr)
       )
 #endif
     >
-    ::template f<xs>
-  ...>;
+    ::template f<x>;
+
+  template<class C, class Inherit, class... xs>
+  using remove_unique_impl = typename join<C>
+    ::template f<remove_unique_elem_impl<Inherit, xs>...>;
 
   template<>
   struct _remove_unique<false>
@@ -135,20 +165,23 @@ namespace jln::mp::detail
   };
 
 
-  template<class C, class Inherit, class... xs>
-  using copy_unique_impl = typename join<C>::template f<
+  template<class Inherit, class x>
+  using copy_unique_elem_impl =
     typename wrap_in_list_c<
 #if JLN_MP_FEATURE_CONCEPTS
-      requires{ static_cast<basic_item<xs>*>(static_cast<Inherit*>(nullptr)); }
+      requires{ static_cast<basic_item<x>*>(static_cast<Inherit*>(nullptr)); }
 #else
       is_convertible_to(
         static_cast<Inherit*>(nullptr),
-        static_cast<basic_item<xs>*>(nullptr)
+        static_cast<basic_item<x>*>(nullptr)
       )
 #endif
     >
-    ::template f<xs>
-  ...>;
+    ::template f<x>;
+
+  template<class C, class Inherit, class... xs>
+  using copy_unique_impl = typename join<C>
+    ::template f<copy_unique_elem_impl<Inherit, xs>...>;
 
   template<>
   struct _copy_unique<false>
@@ -165,6 +198,49 @@ namespace jln::mp::detail
     template<class C, class... xs>
     using f = JLN_MP_CALL_TRACE(C, xs...);
   };
+#else
+  template<class C, class Inherit, Inherit* ptr, class... S>
+  using remove_copy_unique_filter = typename join<C>
+    ::template f<decltype(S::f(ptr))...>;
+
+
+  template<class x>
+  struct remove_unique_elem_impl
+  {
+    template<class i>
+    static list<> f(basic_item<list<x, i>>*);
+
+    static list<x> f(...);
+  };
+
+  template<class, int_... i>
+  struct _remove_unique
+  {
+    template<class C, class... xs>
+    using f = remove_copy_unique_filter<
+      C, inherit<list<xs, number<i>>...>, nullptr, remove_unique_elem_impl<xs>...
+    >;
+  };
+
+
+  template<class x>
+  struct copy_unique_elem_impl
+  {
+    template<class i>
+    static list<x> f(basic_item<list<x, i>>*);
+
+    static list<> f(...);
+  };
+
+  template<class, int_... i>
+  struct _copy_unique
+  {
+    template<class C, class... xs>
+    using f = remove_copy_unique_filter<
+      C, inherit<list<xs, number<i>>...>, nullptr, copy_unique_elem_impl<xs>...
+    >;
+  };
+#endif
 
 
   template<class, int_... ints>
