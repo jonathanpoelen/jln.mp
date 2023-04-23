@@ -75,12 +75,12 @@ namespace jln::mp::detail
   struct is_unique_impl
   {
     template<class... xs>
-#if JLN_MP_MSVC_LIKE
+#if JLN_MP_WORKAROUND(JLN_MP_MSVC_LIKE, < 1914)
     // workaround for MSVC which has a broken EBO
     using f = JLN_MP_CALL_TRACE(C, typename _is_set<xs...>::type);
 #else
     using f = JLN_MP_CALL_TRACE(C,
-      mp::number<sizeof(indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>);
+      number<sizeof(indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>);
 #endif
   };
 
