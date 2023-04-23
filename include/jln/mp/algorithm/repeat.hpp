@@ -81,4 +81,21 @@ namespace jln::mp::detail
     };
   };
 }
+
+namespace jln::mp
+{
+  template<class C>
+  struct repeat_c<0, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
+  };
+
+  template<class C>
+  struct repeat_c<1, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
+  };
+}
 /// \endcond
