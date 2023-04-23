@@ -8,20 +8,17 @@
 #  endif
 #endif
 
+namespace jln::mp::detail
+{
 #ifdef JLN_MP_USE_STD_TYPE_IDENTITY
-namespace jln::mp::detail
-{
   using std::type_identity;
-}
 #else
-namespace jln::mp::detail
-{
   template<class T>
   struct type_identity
   {
     using type = T;
   };
-}
 #endif
+}
 
 #undef JLN_MP_USE_TYPE_IDENTITY
