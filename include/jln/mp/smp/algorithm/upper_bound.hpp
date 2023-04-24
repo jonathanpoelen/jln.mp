@@ -9,7 +9,7 @@ namespace jln::mp::smp
 {
   template<class x, class Cmp, class TC = listify, class FC = TC>
   using upper_bound = contract<detail::_smp_lower_bound_impl<
-    x, mp::flip<concepts::strong_predicate<assume_binary<Cmp>, mp::not_<>, violation>>,
+    x, mp::flip<concepts::predicate<assume_binary<Cmp>, mp::not_<>, violation>>,
     subcontract<TC>, subcontract<FC>
   >>;
 

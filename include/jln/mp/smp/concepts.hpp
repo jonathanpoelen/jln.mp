@@ -12,12 +12,6 @@ namespace jln::mp::smp::concepts
   template<class Pred, class TC = mp::identity, class FC = mp::always<false_>>
   using predicate = mp::try_<Pred, mp::try_<mp::to_bool<>, TC, FC>, FC>;
 
-  template<class Pred, class TC = mp::identity, class FC = mp::always<false_>>
-  using strong_predicate = mp::try_<Pred, mp::try_<mp::as_bool<>, TC, FC>, FC>;
-
   template<class Pred, class FC>
   using predicate_or = predicate<Pred, mp::identity, FC>;
-
-  template<class Pred, class FC>
-  using strong_predicate_or = strong_predicate<Pred, mp::identity, FC>;
 }

@@ -104,7 +104,7 @@ namespace jln::mp::detail
   };
 
   template<class Cmp, class x, class y>
-  using sort_pair = typename mk_list2<Cmp::template f<y, x>::value>
+  using sort_pair = typename mk_list2<bool(Cmp::template f<y, x>::value)>
     ::template f<x, y>;
 
   template<>

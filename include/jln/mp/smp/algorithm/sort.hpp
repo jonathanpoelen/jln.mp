@@ -10,7 +10,7 @@ namespace jln::mp::smp
 {
   template<class Cmp = less<>, class C = listify>
   using sort = contract<mp::sort<
-    concepts::strong_predicate_or<assume_binary<Cmp>, mp::always<true_>>,
+    concepts::predicate_or<assume_binary<Cmp>, mp::always<true_>>,
     mp::if_<
       mp::try_or<is_sorted<Cmp>, mp::always<false_>>,
       subcontract<C>,

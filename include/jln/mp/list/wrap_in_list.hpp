@@ -91,7 +91,7 @@ namespace jln::mp::detail
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)::value
+      bool(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)::value)
     >, x);
   };
 
@@ -100,7 +100,7 @@ namespace jln::mp::detail
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      !JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)::value
+      !bool(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)::value)
     >, x);
   };
 
@@ -110,7 +110,7 @@ namespace jln::mp::detail
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::value
+      bool(JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::value)
     >, x);
   };
 
@@ -119,7 +119,7 @@ namespace jln::mp::detail
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      !JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::value
+      !bool(JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::value)
     >, x);
   };
 
@@ -128,7 +128,7 @@ namespace jln::mp::detail
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::type::value
+      bool(JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::type::value)
     >, x);
   };
 
@@ -137,7 +137,7 @@ namespace jln::mp::detail
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      !JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::type::value
+      !bool(JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::type::value)
     >, x);
   };
 #endif

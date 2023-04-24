@@ -82,6 +82,15 @@ TEST()
     .not_invocable<int, int, int>()
     ;
 
+  test_context<
+    wrap_in_list_if<mp::always<number<2>>>,
+    smp::wrap_in_list_if<smp::always<number<2>>>
+  >()
+    .test<list<int>, int>()
+    .test<list<int>, int, char>()
+    .not_invocable<>()
+    ;
+
   test_context<wrap_in_list_if_not<pred1>, smp::wrap_in_list_if_not<pred1>>()
     .test<list<>, int>()
     .test<list<char>, char>()
@@ -97,7 +106,15 @@ TEST()
     .not_invocable<int, int, int>()
     ;
 
-  ut::not_invocable<smp::wrap_in_list_if<smp::always<number<2>>>, int>();
+  test_context<
+    wrap_in_list_if_not<mp::always<number<2>>>,
+    smp::wrap_in_list_if_not<smp::always<number<2>>>
+  >()
+    .test<list<>, int>()
+    .test<list<>, int, char>()
+    .not_invocable<>()
+    ;
+
   ut::not_invocable<smp::wrap_in_list_if<smp::always<na>>, int>();
   ut::not_invocable<smp::wrap_in_list_if<bad_function>>();
   ut::not_invocable<smp::wrap_in_list_if<bad_function>, int, int>();

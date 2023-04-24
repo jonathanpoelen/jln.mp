@@ -167,7 +167,7 @@ namespace jln::mp::detail
   template<>                                            \
   struct prefix##lower_bound<0>                         \
   {                                                     \
-    template<unsigned n, class Pred, class C, class FC, \
+    template<unsigned n, class Cmp, class C, class FC, \
       class... xs>                                      \
     using f = JLN_MP_CALL_TRACE_0_ARG(FC);              \
   };                                                    \
@@ -176,7 +176,7 @@ namespace jln::mp::detail
   template<>                                            \
   struct prefix##lower_bound<-1>                        \
   {                                                     \
-    template<unsigned n, class Pred, class C, class FC, \
+    template<unsigned n, class Cmp, class C, class FC, \
       class x>                                          \
     using f = JLN_MP_CALL_TRACE_T(JLN_MP_IDENT(Cond(x)  \
       ::template f<clear<FC>, C>),                      \
@@ -186,7 +186,7 @@ namespace jln::mp::detail
   template<>                                            \
   struct prefix##lower_bound<1>                         \
   {                                                     \
-    template<unsigned n, class Pred, class C, class FC, \
+    template<unsigned n, class Cmp, class C, class FC, \
       class x, class... xs>                             \
     using f = JLN_MP_CALL_TRACE_T(JLN_MP_IDENT(Cond(x)  \
       ::template f<pop_front<C>, C>),                   \
@@ -194,10 +194,10 @@ namespace jln::mp::detail
   };
 
 #define JLN_MP_LOWER_BOUND_PRED_CALL(x) \
-  conditional_c<Pred::template f<x>::value>
+  conditional_c<bool(Cmp::template f<x>::value)>
 
 #define JLN_MP_LOWER_BOUND_SMP_PRED_CALL(x) \
-  _smp_conditional<typename Pred::template f<x>>
+  _smp_conditional<typename Cmp::template f<x>>
 
   JLN_MP_LOWER_BOUND_IMPL(_, JLN_MP_LOWER_BOUND_PRED_CALL)
   JLN_MP_LOWER_BOUND_IMPL(_smp_, JLN_MP_LOWER_BOUND_SMP_PRED_CALL)
@@ -211,24 +211,24 @@ namespace jln::mp::detail
   template<>                                             \
   struct prefix##lower_bound_drop_front<n>               \
   {                                                      \
-    template<int count, class Pred, class C, class FC,   \
+    template<int count, class Cmp, class C, class FC,   \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),            \
       class... xs>                                       \
     using f = typename detail::prefix##lower_bound<      \
       _lower_bound_select(count-n)                       \
-    >::template f<count-n, Pred, C, FC, xs...>;          \
+    >::template f<count-n, Cmp, C, FC, xs...>;          \
   };                                                     \
                                                          \
   template<>                                             \
   struct prefix##lower_bound<n>                          \
   {                                                      \
-    template<int count, class Pred, class C, class FC,   \
+    template<int count, class Cmp, class C, class FC,   \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),            \
       class... xs>                                       \
     using f = typename Cond(_##n)::template f<           \
       prefix##lower_bound_drop_front<n>,                 \
       prefix##lower_bound<n/2>                           \
-    >::template f<count, Pred, C, FC,                    \
+    >::template f<count, Cmp, C, FC,                    \
       mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA),       \
       xs...                                              \
     >;                                                   \
@@ -236,7 +236,7 @@ namespace jln::mp::detail
 
 #undef JLN_MP_LOWER_BOUND_SMP_PRED_CALL
 #define JLN_MP_LOWER_BOUND_SMP_PRED_CALL(x) \
-  _smp_conditional2<typename Pred::template f<x>>
+  _smp_conditional2<typename Cmp::template f<x>>
 
 #define JLN_MP_LOWER_BOUND_IMPL(n, mp_xs, mp_rxs, mp_rep)             \
   JLN_MP_LOWER_BOUND_IMPL2(_, JLN_MP_LOWER_BOUND_PRED_CALL, n, mp_xs) \
