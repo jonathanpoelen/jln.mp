@@ -80,12 +80,6 @@ namespace jln::mp::detail
     using type = Cmp;
   };
 
-  template<class Cmp>
-  struct optimize_cmp<flip<tee<less<Cmp>, not_<>>>>
-  {
-    using type = flip<less<not_<Cmp>>>;
-  };
-
   template<class Cmp, class C>
   struct optimize_cmp<flip<tee<flip<Cmp>, C>>>
   : optimize_cmp<tee<Cmp, C>>
