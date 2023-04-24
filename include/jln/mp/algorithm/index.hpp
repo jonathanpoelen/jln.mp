@@ -90,6 +90,7 @@ namespace jln::mp
 
 
 #include <jln/mp/number/number.hpp>
+#include <jln/mp/utility/always.hpp>
 
 /// \cond
 namespace jln::mp::detail
