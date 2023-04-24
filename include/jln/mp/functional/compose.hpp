@@ -121,22 +121,24 @@ namespace jln::mp::detail
     using type = lift_t<F, x>;
   };
 
+  template<class F>
+  struct _compose<F, identity>
+  {
+    using type = F;
+  };
+
+  // fix ambiguity
   template<template<class...> class F>
   struct _compose<lift<F>, identity>
   {
     using type = lift<F>;
   };
 
+  // fix ambiguity
   template<template<class...> class F>
   struct _compose<lift_t<F>, identity>
   {
     using type = lift_t<F>;
-  };
-
-  template<class F>
-  struct _compose<F, identity>
-  {
-    using type = F;
   };
 }
 /// \endcond
