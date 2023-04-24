@@ -77,5 +77,19 @@ namespace jln::mp::detail
     template<class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_DCALL_TRACE_XS(xs, Fs, xs...)...);
   };
+
+  template<class C>
+  struct optimize_tee
+  {
+    using type = C;
+  };
+
+  template<class C>
+  struct optimize_tee<tee<C, identity>>
+    : optimize_tee<C>
+  {};
+
+  template<class C>
+  using optimize_tee_t = typename optimize_tee<C>::type;
 } // namespace jln::mp
 /// \endcond
