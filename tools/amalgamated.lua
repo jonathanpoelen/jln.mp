@@ -97,7 +97,18 @@ embed = {
 }
 
 print(tconcat(embed, ''))
-print(tconcat(sources, ''))
+
+-- remove #if ... \n (empty) #else (empty) #endif
+patt = Cs(
+  ( P'#' * ws * 'if' * (1 - P'\n')^0 * '\n'
+  * (ws * '#' * ws * 'el' * (1 - P'\n')^0 * '\n')^0
+  * ws * '#' * ws * 'endif\n'
+  / ''
+  + 1
+  )^0
+)
+
+print(patt:match(tconcat(sources, '')))
 
 for path,info in pairs(files) do
   if #info[1] ~= 0 then
