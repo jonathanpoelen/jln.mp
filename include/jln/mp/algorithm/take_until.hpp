@@ -23,7 +23,8 @@ namespace jln::mp
     using f = typename detail::take_while_impl<
       typename detail::_drop_until<sizeof...(xs)>
       ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
-    >::template f<TC, FC, xs...>;
+    >::template f<TC, FC, sizeof...(xs)>
+    ::template f<xs...>;
   };
 
   /// Extract the first elements of a \sequence that does not satisfy a \predicate.
@@ -38,7 +39,8 @@ namespace jln::mp
     using f = typename detail::take_while_extended_by_n_impl<
       typename detail::_drop_until<sizeof...(xs)>
       ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
-    >::template f<ExtendedByN, TC, FC, xs...>;
+    >::template f<ExtendedByN, TC, FC, sizeof...(xs)>
+    ::template f<xs...>;
   };
 
   template<class ExtendedByN, class Pred, class TC = listify, class FC = TC>

@@ -32,7 +32,8 @@ namespace jln::mp
     using f = typename detail::drop_while_impl<
       typename detail::_drop_until<sizeof...(xs)>
       ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
-    >::template f<TC, FC, xs...>;
+    >::template f<TC, FC, sizeof...(xs)>
+    ::template f<xs...>;
   };
 
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
@@ -42,7 +43,8 @@ namespace jln::mp
     using f = typename detail::drop_while_extended_by_n_impl<
       typename detail::_drop_until<sizeof...(xs)>
       ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
-    >::template f<ExtendedByN, TC, FC, xs...>;
+    >::template f<ExtendedByN, TC, FC, sizeof...(xs)>
+    ::template f<xs...>;
   };
 
   template<class ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>

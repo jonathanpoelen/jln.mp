@@ -41,7 +41,8 @@ namespace jln::mp
     using f = typename detail::drop_while_impl<
       typename detail::_drop_while<sizeof...(xs)>
       ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
-    >::template f<TC, FC, xs...>;
+    >::template f<TC, FC, sizeof...(xs)>
+    ::template f<xs...>;
   };
 
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
@@ -51,7 +52,8 @@ namespace jln::mp
     using f = typename detail::drop_while_extended_by_n_impl<
       typename detail::_drop_while<sizeof...(xs)>
       ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
-    >::template f<ExtendedByN, TC, FC, xs...>;
+    >::template f<ExtendedByN, TC, FC, sizeof...(xs)>
+    ::template f<xs...>;
   };
 
   template<class ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
@@ -122,33 +124,33 @@ namespace jln::mp::detail
   template<>
   struct drop_while_impl<_drop_while_continue>
   {
-    template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE(FC, xs...);
+    template<class TC, class FC, std::size_t m>
+    using f = JLN_MP_TRACE_F(FC);
   };
 
   template<std::size_t n>
   struct drop_while_impl<_drop_while_result<n>>
   {
-    template<class TC, class FC, class... xs>
-    using f = typename drop_front_c<sizeof...(xs)-n-1, TC>::template f<xs...>;
+    template<class TC, class FC, std::size_t m>
+    using f = drop_front_c<m-n-1, TC>;
   };
 
 
   template<>
   struct drop_while_extended_by_n_impl<_drop_while_continue>
   {
-    template<std::size_t ExtendedByN, class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE(FC, xs...);
+    template<std::size_t ExtendedByN, class TC, class FC, std::size_t m>
+    using f = JLN_MP_TRACE_F(FC);
   };
 
   template<std::size_t n>
   struct drop_while_extended_by_n_impl<_drop_while_result<n>>
   {
-    template<std::size_t ExtendedByN, class TC, class FC, class... xs>
-    using f = typename drop_front_c<
-      sizeof...(xs) - (n >= ExtendedByN ? n - ExtendedByN + 1 : 0),
+    template<std::size_t ExtendedByN, class TC, class FC, std::size_t m>
+    using f = drop_front_c<
+      m - (n >= ExtendedByN ? n - ExtendedByN + 1 : 0),
       TC
-    >::template f<xs...>;
+    >;
   };
 
 

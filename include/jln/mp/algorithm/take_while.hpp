@@ -33,7 +33,8 @@ namespace jln::mp
     using f = typename detail::take_while_impl<
       typename detail::_drop_while<sizeof...(xs)>
       ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
-    >::template f<TC, FC, xs...>;
+    >::template f<TC, FC, sizeof...(xs)>
+    ::template f<xs...>;
   };
 
   /// Extract the first elements of a \sequence that satisfy a \predicate.
@@ -48,7 +49,8 @@ namespace jln::mp
     using f = typename detail::take_while_extended_by_n_impl<
       typename detail::_drop_while<sizeof...(xs)>
       ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
-    >::template f<ExtendedByN, TC, FC, xs...>;
+    >::template f<ExtendedByN, TC, FC, sizeof...(xs)>
+    ::template f<xs...>;
   };
 
   template<class ExtendedByN, class Pred, class TC = listify, class FC = TC>
@@ -84,40 +86,27 @@ namespace jln::mp::detail
 {
   template<>
   struct take_while_impl<_drop_while_continue>
-  {
-    template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE(FC, xs...);
-  };
+    : drop_while_impl<_drop_while_continue>
+  {};
 
   template<std::size_t n>
   struct take_while_impl<_drop_while_result<n>>
   {
-    template<class TC, class FC, class... xs>
-    // take_front
-    using f = typename detail::rotate_impl<sizeof...(xs)-n-1>
-      ::template f<sizeof...(xs)-n-1, drop_front_c<n+1, TC>, xs...>;
+    template<class TC, class FC, std::size_t m>
+    using f = take_front_c<m-n-1, TC>;
   };
 
 
   template<>
   struct take_while_extended_by_n_impl<_drop_while_continue>
-  {
-    template<std::size_t ExtendedByN, class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE(FC, xs...);
-  };
+    : drop_while_extended_by_n_impl<_drop_while_continue>
+  {};
 
   template<std::size_t n>
   struct take_while_extended_by_n_impl<_drop_while_result<n>>
   {
-    template<std::size_t ExtendedByN, class TC, class FC, class... xs>
-    // take_front
-    using f = typename detail::rotate_impl<
-      sizeof...(xs) - (n >= ExtendedByN ? n - ExtendedByN + 1 : 0)
-    >::template f<
-      sizeof...(xs) - (n >= ExtendedByN ? n - ExtendedByN + 1 : 0),
-      drop_front_c<(n >= ExtendedByN ? n - ExtendedByN + 1 : 0),
-      TC
-    >, xs...>;
+    template<std::size_t ExtendedByN, class TC, class FC, std::size_t m>
+    using f = take_front_c<m - (n >= ExtendedByN ? n - ExtendedByN + 1 : 0), TC>;
   };
 }
 /// \encond

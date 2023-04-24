@@ -28,7 +28,8 @@ namespace jln::mp
     using f = typename detail::index_if_impl<
       typename detail::_drop_until<sizeof...(xs)>
       ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
-    >::template f<TC, FC, xs...>;
+    >::template f<TC, FC, sizeof...(xs)>
+    ::template f<xs...>;
   };
 
   /// Finds the index of the first element of \sequence that is a type \c T.
@@ -46,7 +47,8 @@ namespace jln::mp
     using f = typename detail::index_if_impl<
       typename detail::_drop_until_xs<sizeof...(xs)>
       ::template f<sizeof...(xs), JLN_MP_TRACE_F(Pred), xs...>
-    >::template f<TC, FC, xs...>;
+    >::template f<TC, FC, sizeof...(xs)>
+    ::template f<xs...>;
   };
 
   /// Same as \c index_if_xs, but stop searching at position \c OffsetEnd.
@@ -60,7 +62,8 @@ namespace jln::mp
         detail::partial_drop_while_xs_size(OffsetEnd, sizeof...(xs)),
         JLN_MP_TRACE_F(Pred), xs...
       >
-    >::template f<TC, FC, xs...>;
+    >::template f<TC, FC, sizeof...(xs)>
+    ::template f<xs...>;
   };
 
   template<class OffsetEnd, class Pred, class TC = identity, class FC = size<>>
@@ -93,16 +96,14 @@ namespace jln::mp::detail
 {
   template<>
   struct index_if_impl<_drop_while_continue>
-  {
-    template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE(FC, xs...);
-  };
+    : drop_while_impl<_drop_while_continue>
+  {};
 
   template<std::size_t n>
   struct index_if_impl<_drop_while_result<n>>
   {
-    template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE(TC, number<sizeof...(xs)-n-1>);
+    template<class TC, class FC, std::size_t m>
+    using f = always<JLN_MP_CALL_TRACE(TC, number<m-n-1>)>;
   };
 }
 /// \endcond
