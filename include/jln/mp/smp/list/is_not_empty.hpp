@@ -1,6 +1,7 @@
 #pragma once
 
-#include <jln/mp/smp/number/operators.hpp>
+#include <jln/mp/smp/list/size.hpp>
+#include <jln/mp/smp/number/not.hpp>
 #include <jln/mp/smp/utility/is.hpp>
 #include <jln/mp/list/is_not_empty.hpp>
 

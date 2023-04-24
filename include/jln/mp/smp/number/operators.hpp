@@ -2,6 +2,7 @@
 
 #include <jln/mp/smp/assume.hpp>
 #include <jln/mp/number/operators.hpp>
+#include <jln/mp/smp/number/not.hpp>
 #include <jln/mp/smp/functional/identity.hpp>
 #include <jln/mp/smp/functional/if.hpp>
 #include <jln/mp/smp/list/size.hpp>
@@ -179,9 +180,6 @@ namespace jln::mp::smp
 
   template<class C = identity>
   using unary_plus = try_contract<mp::unary_plus<assume_number<C>>>;
-
-  template<class C = identity>
-  using not_ = try_contract<mp::not_<assume_positive_number<C>>>;
 
   template<class C = identity>
   using bit_not = try_contract<mp::bit_not<assume_number<C>>>;
@@ -391,12 +389,6 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, not_<C>>
-  {
-    using type = smp::not_<sfinae<C>>;
-  };
-
-  template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, bit_not<C>>
   {
     using type = smp::bit_not<sfinae<C>>;
@@ -474,7 +466,6 @@ namespace jln::mp::detail
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, left_bit_and0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, bit_or0);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::numbers, left_bit_or0);
-  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, not_);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, inc);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, dec);
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::number, neg);

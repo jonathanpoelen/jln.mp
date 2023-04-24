@@ -63,8 +63,6 @@ namespace jln::mp
 
 #include <jln/mp/algorithm/drop_until.hpp>
 #include <jln/mp/list/push_back.hpp>
-#include <jln/mp/utility/always.hpp>
-#include <jln/mp/number/operators.hpp>
 
 /// \cond
 namespace jln::mp::detail

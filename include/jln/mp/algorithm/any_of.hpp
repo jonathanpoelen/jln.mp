@@ -1,7 +1,7 @@
 #pragma once
 
 #include <jln/mp/algorithm/none_of.hpp>
-#include <jln/mp/number/operators.hpp>
+#include <jln/mp/number/not.hpp>
 
 namespace jln::mp
 {

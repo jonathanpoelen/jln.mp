@@ -2,6 +2,7 @@
 
 #include "jln/mp/smp/list/wrap_in_list.hpp"
 #include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/utility/is_not.hpp"
 
 #include <type_traits>

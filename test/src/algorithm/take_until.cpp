@@ -2,6 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/algorithm/take_until.hpp"
+#include "jln/mp/smp/number/operators.hpp"
 #include "jln/mp/smp/utility/is_not.hpp"
 
 TEST_SUITE_BEGIN()

@@ -1,6 +1,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/number/operators.hpp"
 #include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/list/sliding.hpp"
 

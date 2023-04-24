@@ -29,7 +29,7 @@ namespace jln::mp
   }
 } // namespace jln::mp
 
-#include <jln/mp/number/operators.hpp>
+#include <jln/mp/number/not.hpp>
 #include <jln/mp/functional/if.hpp>
 
 /// \cond

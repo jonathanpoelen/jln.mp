@@ -2,6 +2,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/functional/not_fn.hpp"
+#include "jln/mp/smp/utility/always.hpp"
 
 TEST_SUITE_BEGIN()
 

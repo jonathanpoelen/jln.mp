@@ -81,7 +81,7 @@ namespace jln::mp
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/functional/lift.hpp>
-#include <jln/mp/number/operators.hpp>
+#include <jln/mp/number/not.hpp>
 
 /// \cond
 namespace jln::mp::detail

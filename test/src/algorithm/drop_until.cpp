@@ -3,6 +3,7 @@
 
 #include "jln/mp/smp/algorithm/drop_until.hpp"
 #include "jln/mp/smp/utility/is_not.hpp"
+#include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
 

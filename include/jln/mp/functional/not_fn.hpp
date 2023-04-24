@@ -2,7 +2,6 @@
 
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/functional/call.hpp>
-#include <jln/mp/number/operators.hpp>
 
 namespace jln::mp
 {
@@ -38,6 +37,7 @@ namespace jln::mp
 #include <jln/mp/utility/is.hpp>
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/number/to_bool.hpp>
+#include <jln/mp/number/not.hpp>
 
 /// \cond
 namespace jln::mp::detail
