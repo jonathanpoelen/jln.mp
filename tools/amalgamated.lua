@@ -22,6 +22,7 @@ tinsert = table.insert
 tconcat = table.concat
 
 system_includes = {}
+sources = {}
 
 function process_include(jln_prefix, incpath)
   if jln_prefix ~= '' then
@@ -33,9 +34,8 @@ function process_include(jln_prefix, incpath)
     end
     if info[2] then
       info[2] = false
-      local content = patt:match(info[1])
+      tinsert(sources, patt:match(info[1]))
       info[1] = ''
-      return content
     end
   else
     eprint('syspath: ', incpath)
@@ -96,12 +96,13 @@ embed = {
   '>\n\n',
 }
 
+print(tconcat(embed, ''))
+print(tconcat(sources, ''))
+
 for path,info in pairs(files) do
   if #info[1] ~= 0 then
-    tinsert(embed, info[1])
-    tinsert(embed, '\n')
+    print(info[1])
   end
 end
 
-print(tconcat(embed, ''))
 print('#endif')
