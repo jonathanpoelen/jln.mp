@@ -100,7 +100,16 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::take_while_xs<smp::always<_3>>, _1, _1, _1>();
+  test_context<
+    take_while_xs<identity, mp::listify, mp::always<void>>,
+    smp::take_while_xs<smp::identity, smp::listify, smp::always<void>>
+  >()
+    .test<void>()
+    .test<void, _3>()
+    .test<list<>, _0>()
+    .not_invocable<_3, _0>()
+    ;
+
   ut::not_invocable<smp::take_while_xs<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::take_while_xs<is<_3>, bad_function>>();
   ut::not_invocable<smp::take_while_xs<is<_3>, bad_function>, void>();
@@ -202,7 +211,16 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::take_inclusive_while_xs<smp::always<_3>>, _1, _1, _1>();
+  test_context<
+    take_inclusive_while_xs<identity, mp::listify, mp::always<void>>,
+    smp::take_inclusive_while_xs<smp::identity, smp::listify, smp::always<void>>
+  >()
+    .test<void>()
+    .test<void, _3>()
+    .test<seq_0, _0>()
+    .not_invocable<_3, _0>()
+    ;
+
   ut::not_invocable<smp::take_inclusive_while_xs<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::take_inclusive_while_xs<is<_3>, bad_function>>();
   ut::not_invocable<smp::take_inclusive_while_xs<is<_3>, bad_function>, void>();
@@ -324,7 +342,16 @@ TEST()
     .not_invocable<void, void>()
     ;
 
-  ut::not_invocable<smp::partial_take_while_xs_c<1, smp::always<_3>>, _1, _1, _1>();
+  test_context<
+    partial_take_while_xs_c<2, identity, mp::listify, mp::always<void>>,
+    smp::partial_take_while_xs_c<2, smp::identity, smp::listify, smp::always<void>>
+  >()
+    .test<void>()
+    .test<void, _3>()
+    .test<list<>, _0>()
+    .not_invocable<_3, _0>()
+    ;
+
   ut::not_invocable<smp::partial_take_while_xs<_1, smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::partial_take_while_xs<is<_3>, bad_function>>();
   ut::not_invocable<smp::partial_take_while_xs<is<_3>, bad_function>, void>();
@@ -431,7 +458,16 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::partial_take_inclusive_while_xs_c<1, smp::always<_3>>, _1, _1, _1>();
+  test_context<
+    partial_take_inclusive_while_xs_c<2, identity, mp::listify, mp::always<void>>,
+    smp::partial_take_inclusive_while_xs_c<2, smp::identity, smp::listify, smp::always<void>>
+  >()
+    .test<void>()
+    .test<void, _3>()
+    .test<seq_0, _0>()
+    .not_invocable<_3, _0>()
+    ;
+
   ut::not_invocable<smp::partial_take_inclusive_while_xs<_1, smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::partial_take_inclusive_while_xs<is<_3>, bad_function>>();
   ut::not_invocable<smp::partial_take_inclusive_while_xs<is<_3>, bad_function>, void>();

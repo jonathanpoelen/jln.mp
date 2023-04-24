@@ -171,17 +171,17 @@ namespace jln::mp::detail
     using f = _drop_while_result<consumed+sizeof...(xs)>;
   };
 
-#define JLN_DROP_WHILE_IMPL(n, m)                                    \
-  template<>                                                         \
-  struct _drop_while<n, true>                                        \
-  {                                                                  \
-    template<std::size_t consumed, class Pred, class x, class... xs> \
-    using f = typename _drop_while<m, Pred::template f<x>::value>    \
-            ::template f<consumed, Pred, xs...>;                     \
-  };                                                                 \
-                                                                     \
-  template<>                                                         \
-  struct _drop_while<n, false> : drop_while_impl_false               \
+#define JLN_DROP_WHILE_IMPL(n, m)                                       \
+  template<>                                                            \
+  struct _drop_while<n, true>                                           \
+  {                                                                     \
+    template<std::size_t consumed, class Pred, class x, class... xs>    \
+    using f = typename _drop_while<m, bool(Pred::template f<x>::value)> \
+            ::template f<consumed, Pred, xs...>;                        \
+  };                                                                    \
+                                                                        \
+  template<>                                                            \
+  struct _drop_while<n, false> : drop_while_impl_false                  \
   {}
 
   JLN_DROP_WHILE_IMPL(7, 6);
@@ -217,7 +217,7 @@ namespace jln::mp::detail
       class _1, class _2, class _3, class _4,
       class _5, class _6, class _7, class _8,
       class... xs>
-    using f = typename _drop_while<7, Pred::template f<_1>::value>
+    using f = typename _drop_while<7, bool(Pred::template f<_1>::value)>
       ::template f<
           consumed+sizeof...(xs), Pred,
           _2, _3, _4, _5, _6, _7, _8>;
@@ -232,7 +232,7 @@ namespace jln::mp::detail
       class _1, class _2, class _3, class _4,
       class _5, class _6, class _7, class _8,
       class... xs>
-    using f = typename _drop_while<7, Pred::template f<_1>::value>
+    using f = typename _drop_while<7, bool(Pred::template f<_1>::value)>
       ::template f<
           consumed+sizeof...(xs), Pred,
           _2, _3, _4, _5, _6, _7, _8>

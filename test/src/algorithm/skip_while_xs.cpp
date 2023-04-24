@@ -71,7 +71,13 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::skip_while_xs<smp::always<_3>>, _1, _1, _1>();
+  test_context<skip_while_xs<identity>, smp::skip_while_xs<smp::identity>>()
+    .test<list<>>()
+    .test<list<>, _3>()
+    .test<seq_0, _0>()
+    .not_invocable<_0, _3>()
+    ;
+
   ut::not_invocable<smp::skip_while_xs<is<_3>, bad_function>>();
   ut::not_invocable<smp::skip_while_xs<is<_3>, bad_function>, void>();
   ut::not_invocable<smp::skip_while_xs<is<_3>, void>>();
@@ -141,7 +147,16 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::skip_inclusive_while_xs<smp::always<_3>>, _1, _1, _1>();
+  test_context<
+    skip_inclusive_while_xs<identity>,
+    smp::skip_inclusive_while_xs<smp::identity>
+  >()
+    .test<list<>>()
+    .test<list<>, _3>()
+    .test<list<>, _0>()
+    .not_invocable<_0, _3>()
+    ;
+
   ut::not_invocable<smp::skip_inclusive_while_xs<is<_3>, bad_function>>();
   ut::not_invocable<smp::skip_inclusive_while_xs<is<_3>, bad_function>, void>();
   ut::not_invocable<smp::skip_inclusive_while_xs<is<_3>, void>>();
@@ -213,7 +228,16 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::partial_skip_while_xs_c<1, smp::always<_3>>, _1, _1, _1>();
+  test_context<
+    partial_skip_while_xs_c<2, identity>,
+    smp::partial_skip_while_xs_c<2, smp::identity>
+  >()
+    .test<list<>>()
+    .test<list<>, _3>()
+    .not_invocable<_0, _3>()
+    .test<seq_0, _0>()
+    ;
+
   ut::not_invocable<smp::partial_skip_while_xs<_2, smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::partial_skip_while_xs<smp::always<na>, smp::always<na>>>();
   ut::not_invocable<smp::partial_skip_while_xs<is<_3>, bad_function>>();
@@ -288,7 +312,16 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::partial_skip_inclusive_while_xs_c<1, smp::always<_3>>, _1, _1, _1>();
+  test_context<
+    partial_skip_inclusive_while_xs_c<2, identity>,
+    smp::partial_skip_inclusive_while_xs_c<2, smp::identity>
+  >()
+    .test<list<>>()
+    .test<list<>, _3>()
+    .test<list<>, _0>()
+    .not_invocable<_0, _3>()
+    ;
+
   ut::not_invocable<smp::partial_skip_inclusive_while_xs<_2, smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::partial_skip_inclusive_while_xs<smp::always<na>, smp::always<na>>>();
   ut::not_invocable<smp::partial_skip_inclusive_while_xs<is<_3>, bad_function>>();

@@ -32,9 +32,9 @@ namespace jln::mp::smp
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
   using take_while_extended_by_n_c = contract<mp::invoke_twice<
     mp::drop_while<
-      concepts::strong_predicate<assume_unary<Pred>, mp::identity, mp::always<false_>>,
+      concepts::predicate<assume_unary<Pred>, mp::identity, mp::always<false_>>,
       mp::if_<
-        mp::front<concepts::strong_predicate<assume_unary<Pred>, mp::always<true_>>>,
+        mp::front<concepts::predicate<assume_unary<Pred>, mp::always<true_>>>,
         detail::smp_take_drop_for_size<ExtendedByN, TC>,
         mp::always<violation>
       >,

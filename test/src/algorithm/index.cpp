@@ -34,6 +34,13 @@ TEST()
     .not_invocable<void>()
     ;
 
+  test_context<index_if<identity>, smp::index_if<smp::identity>>()
+    .test<_0>()
+    .test<_1, _0, _2, _3>()
+    .not_invocable<void, void>()
+    .not_invocable<void>()
+    ;
+
   test_context<
     index_if_xs<size<is<_2>>>,
     smp::index_if_xs<smp::size<smp::is<_2>>>
@@ -78,8 +85,17 @@ TEST()
     .test<void, _1, _0, _2, _3>()
     ;
 
+  test_context<
+    index_if_xs<identity, identity, always<void>>,
+    smp::index_if_xs<smp::identity, smp::identity, smp::always<void>>
+  >()
+    .test<void>()
+    .test<void, _0>()
+    .test<_0, _2>()
+    .not_invocable<_0, _2, _3>()
+    ;
+
   ut::not_invocable<smp::index_of<void, bad_function, bad_function>, _1, _1, _1, _1>();
-  ut::not_invocable<smp::index_if<smp::always<_3>>, _1, _1, _1>();
   ut::not_invocable<smp::index_if<smp::always<na>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::index_if<void>, _1, _1, _1, _1>();
   ut::not_invocable<smp::index_if<always<void>>, _1, _1, _1, _1>();

@@ -66,7 +66,18 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::drop_while<smp::always<_3>>, _1, _1, _1>();
+  test_context<
+    drop_while<identity, mp::listify, mp::always<void>>,
+    smp::drop_while<smp::identity, smp::listify, smp::always<void>>
+  >()
+    .test<void>()
+    .test<void, _3>()
+    .test<seq_0, _0>()
+    .test<seq_0_3, _0, _3>()
+    .test<seq_0_3, _3, _0, _3>()
+    .not_invocable<_1, list<>, _0, _3>()
+    ;
+
   ut::not_invocable<smp::drop_while<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::drop_while<is<_3>, smp::listify, bad_function>>();
   ut::not_invocable<smp::drop_while<is<_3>, bad_function>, void>();
@@ -141,7 +152,18 @@ TEST()
     .not_invocable<_3, JLN_MP_REPEAT_64(_3, JLN_MP_COMMA), void>()
     ;
 
-  ut::not_invocable<smp::drop_inclusive_while<smp::always<_3>>, _1, _1, _1>();
+  test_context<
+    drop_inclusive_while<identity, mp::listify, mp::always<void>>,
+    smp::drop_inclusive_while<smp::identity, smp::listify, smp::always<void>>
+  >()
+    .test<void>()
+    .test<void, _3>()
+    .test<list<>, _0>()
+    .test<seq_3, _0, _3>()
+    .test<seq_3, _3, _0, _3>()
+    .not_invocable<_1, list<>, _0, _3>()
+    ;
+
   ut::not_invocable<smp::drop_inclusive_while<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::drop_inclusive_while<is<_3>, smp::listify, bad_function>>();
   ut::not_invocable<smp::drop_inclusive_while<is<_3>, bad_function>, void>();

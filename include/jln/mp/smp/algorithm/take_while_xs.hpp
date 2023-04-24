@@ -16,9 +16,9 @@ namespace jln::mp::smp
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
   using take_while_extended_by_n_xs_c = contract<mp::invoke_twice<
     mp::drop_while_xs<
-      concepts::strong_predicate<assume_unary_or_more<Pred>, mp::identity, mp::always<false_>>,
+      concepts::predicate<assume_unary_or_more<Pred>, mp::identity, mp::always<false_>>,
       mp::if_<
-        concepts::strong_predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
+        concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
         detail::smp_take_drop_for_size<ExtendedByN, TC>,
         mp::always<violation>
       >,
@@ -33,9 +33,9 @@ namespace jln::mp::smp
   using partial_take_while_extended_by_n_xs_c = contract<mp::invoke_twice<
     mp::partial_drop_while_xs_c<
       OffsetEnd,
-      concepts::strong_predicate<assume_unary_or_more<Pred>, mp::identity, mp::always<false_>>,
+      concepts::predicate<assume_unary_or_more<Pred>, mp::identity, mp::always<false_>>,
       mp::if_<
-        concepts::strong_predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
+        concepts::predicate<assume_unary_or_more<Pred>, mp::always<true_>>,
         detail::smp_take_drop_for_size<ExtendedByN, TC>,
         mp::always<violation>
       >,
