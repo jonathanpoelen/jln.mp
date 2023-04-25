@@ -153,7 +153,9 @@ namespace jln::mp::detail
   {
     template<class C, class... xs>
     using f = remove_unique_impl<
-      C, indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>, xs...
+      C,
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>,
+      xs...
     >;
   };
 
@@ -188,7 +190,9 @@ namespace jln::mp::detail
   {
     template<class C, class... xs>
     using f = copy_unique_impl<
-      C, indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>, xs...
+      C,
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>,
+      xs...
     >;
   };
 

@@ -38,21 +38,21 @@ namespace jln::mp
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/number/to_bool.hpp>
 #include <jln/mp/utility/is_not.hpp>
-#include <utility> // std::integer_sequence
+#include <jln/mp/algorithm/make_int_sequence.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<std::size_t i, class x>
+  template<int_ i, class x>
   struct indexed_item : basic_item<x> {};
 
-  template<class, class...>
-  struct indexed_inherit;
-
-  template<std::size_t... ints, class... xs>
-  struct indexed_inherit<std::integer_sequence<std::size_t, ints...>, xs...>
-    : indexed_item<ints, xs>...
-  {};
+  template<class, int_... ints>
+  struct indexed_inherit
+  {
+    template<class... xs>
+    struct f : indexed_item<ints, xs>...
+    {};
+  };
 
 #if JLN_MP_MSVC_LIKE
   template<class... xs>
@@ -66,7 +66,7 @@ namespace jln::mp::detail
     static number<0> is_set(...);
 
     using type = decltype(is_set(static_cast<
-      indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>*
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>*
     >(nullptr)));
   };
 #endif
@@ -79,8 +79,9 @@ namespace jln::mp::detail
     // workaround for MSVC which has a broken EBO
     using f = JLN_MP_CALL_TRACE(C, typename _is_set<xs...>::type);
 #else
-    using f = JLN_MP_CALL_TRACE(C,
-      number<sizeof(indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>);
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof(
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>
+    ) == 1>);
 #endif
   };
 
@@ -92,7 +93,9 @@ namespace jln::mp::detail
     // workaround for MSVC which has a broken EBO
     using f = typename _is_set<xs...>::type;
 #else
-    using f = mp::number<sizeof(indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>;
+    using f = number<sizeof(
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>
+    ) == 1>;
 #endif
   };
 
