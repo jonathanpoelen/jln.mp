@@ -18,7 +18,6 @@ namespace jln::mp
   /// \ingroup search
 
   /// Extract the first elements of a \sequence that satisfy a \predicate.
-  /// \pre \c Pred::f<x> must return a boolean, 1 or 0
   /// When an element does not satisfy the predicate,
   /// call \c TC with it and those before it.
   /// Otherwise \c FC is called on the whole sequence.
@@ -37,10 +36,24 @@ namespace jln::mp
     ::template f<xs...>;
   };
 
-  /// Extract the first elements of a \sequence that satisfy a \predicate.
+  /// Extract the first plus at most \c ExtendedByN elements of a \sequence that satisfy a \predicate.
   /// When an element satisfy the predicate,
-  /// call \c TC with it and those before it + \c ExtendedByN.
+  /// call \c TC with it and those before it plus at most \c ExtendedByN.
   /// Otherwise \c FC is called on the whole sequence.
+  /// \semantics
+  ///   \code
+  ///   call<take_while_extended_by_n_c<2, is_not<number<2>>>,
+  ///     number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   //  predicate not satisfied ^ (+1)   ^ +2
+  ///   ==
+  ///   list<number<0>, number<1>, number<2>, number<3>>
+  ///
+  ///   call<take_while_extended_by_n_c<2, is_not<number<5>>>,
+  ///     number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   //                                   predicate not satisfied ^ (+1)
+  ///   ==
+  ///   list<number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   \endcode
   /// \treturn \sequence
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
   struct take_while_extended_by_n_c

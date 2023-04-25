@@ -17,9 +17,8 @@ namespace jln::mp
   /// \ingroup search
 
   /// Remove the first elements of a \sequence that does not satisfy a \predicate.
-  /// \pre \c Pred::f<x> must return a boolean, 1 or 0
   /// When an element satisfy the predicate,
-  /// call \c TC with it and those that follow it..
+  /// call \c TC with it and those that follow it.
   /// Otherwise \c FC is called on the whole sequence.
   /// \treturn \sequence
   /// \see drop_front, drop_back, drop_until_xs
@@ -36,6 +35,25 @@ namespace jln::mp
     ::template f<xs...>;
   };
 
+  /// Remove the first minus at most \c ExtendedByN elements of a \sequence that does not satisfy a \predicate.
+  /// When an element satisfy the predicate,
+  /// call \c TC with it and those that follow it plus at most \c ExtendedByN.
+  /// Otherwise \c FC is called on the whole sequence.
+  /// \semantics
+  ///   \code
+  ///   call<drop_while_extended_by_n_c<2, is<number<4>>>,
+  ///     number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   //                        ^ -2       ^ -1       ^ found elem
+  ///   ==
+  ///   list<number<2>, number<3>, number<4>, number<5>>
+  ///
+  ///   call<drop_while_extended_by_n_c<2, is<number<1>>>,
+  ///     number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   //  ^ -1       ^ found elem
+  ///   ==
+  ///   list<number<0>, number<1>>
+  ///   \endcode
+  /// \treturn \sequence
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
   struct drop_until_extended_by_n_c
   {

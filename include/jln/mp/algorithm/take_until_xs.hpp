@@ -8,7 +8,6 @@ namespace jln::mp
   /// \ingroup search
 
   /// Extracts the first elements of a \sequence that does not satisfy a \predicate.
-  /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
   /// \treturn \sequence
   /// \see take_front, take_back, take_until, partial_take_until_xs
   /// \see drop_until, drop_until_xs
@@ -24,7 +23,7 @@ namespace jln::mp
     ::template f<xs...>;
   };
 
-  /// Extracts the first elements of a \sequence that does not satisfy a \predicate.
+  /// Same as \c take_until_extended_by_n_c, but for \c take_until_xs.
   /// \treturn \sequence
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
   struct take_until_extended_by_n_xs_c

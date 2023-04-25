@@ -37,7 +37,7 @@ namespace jln::mp
     ::template f<xs...>;
   };
 
-  /// Remove the first elements of a \sequence that does not satisfy a \predicate.
+  /// Same as \c drop_until_extended_by_n_c, but for \c drop_until_xs.
   /// \treturn \sequence
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
   struct drop_until_extended_by_n_xs_c
