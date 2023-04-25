@@ -50,14 +50,13 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/algorithm/make_int_sequence.hpp>
+#include <jln/mp/functional/each.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/list/clear.hpp>
-#include <jln/mp/algorithm/make_int_sequence.hpp>
-#include <utility>
 
 /// \cond
 namespace jln::mp::detail
@@ -78,31 +77,12 @@ namespace jln::mp::detail
     using f = rotate_c<start + size, drop_front_c<len - size, C>>;
   };
 
-#if JLN_MP_MSVC
-  template<unsigned size, unsigned stride, unsigned i, class x>
-  using slice_impl_msvc = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
-#endif
-
-#if JLN_MP_USE_INTEGER_PACK
-  template<unsigned size, unsigned stride, class C, unsigned... ints>
-  struct _slice_impl
-#else
-  template<unsigned size, unsigned stride, class C, class>
-  struct _slice_impl;
-
-  template<unsigned size, unsigned stride, class C, std::size_t... ints>
-  struct _slice_impl<size, stride, C, std::integer_sequence<std::size_t, ints...>>
-#endif
+  template<class, unsigned... ints>
+  struct slice_impl
   {
-    template<class... xs>
-    using f = typename join<C>::template f<
-#if JLN_MP_MSVC
-      slice_impl_msvc<size, stride, ints, xs>...
-#else
-      typename wrap_in_list_c<(ints <= size && ints % stride == 0)>
-      ::template f<xs>...
-#endif
-    >;
+    template<class C, unsigned size, unsigned stride>
+    struct impl : _each<join<C>, wrap_in_list_c<(ints <= size && ints % stride == 0)>...>
+    {};
   };
 
   template<>
@@ -111,9 +91,8 @@ namespace jln::mp::detail
     template<unsigned start, unsigned size, unsigned stride, class C, std::size_t len>
     using f = drop_front_c<
       start,
-      _slice_impl<size * stride - stride + 1, stride, C,
-        JLN_MP_INTEGER_PACK_OR_STD_MAKE_INDEX_SEQUENCE(len - start)
-      >
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE_T(unsigned, len - start, slice_impl)
+        ::template impl<C, size * stride - stride + 1, stride>
     >;
   };
 
