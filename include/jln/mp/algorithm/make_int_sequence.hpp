@@ -23,6 +23,11 @@
 #  endif
 #endif
 
+#ifdef JLN_MP_DO_NOT_USE_BUILTIN
+#  undef JLN_MP_USE_INTEGER_PACK
+#  undef JLN_MP_USE_MAKE_INTEGER_SEQ
+#endif
+
 #ifndef JLN_MP_USE_INTEGER_PACK
 #  define JLN_MP_USE_INTEGER_PACK 0
 #  define JLN_MP_USE_MAKE_INTEGER_SEQ 0
@@ -31,7 +36,7 @@
 
 #if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
 #  include <cstddef>
-#else
+#elif ! defined(JLN_MP_DO_NOT_USE_STD_SEQUENCE)
 #  include <utility>
 #endif
 
@@ -44,6 +49,18 @@ namespace jln::mp
 #if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
     template<class>
     struct make_int_sequence_impl;
+#elif defined(JLN_MP_DO_NOT_USE_STD_SEQUENCE)
+    template<unsigned n>
+    struct mk_int_seq;
+
+    template<class C, class Ints>
+    struct make_int_sequence_impl;
+
+    template<template<class T, T...> class C, class Int, class Ints>
+    struct make_int_pack_impl;
+
+    template<template<class T, T...> class C, class Int, unsigned n>
+    using make_int_pack_t = typename make_int_pack_impl<C, Int, typename mk_int_seq<n>::type>::type;
 #else
     template<class C, class Ints>
     struct make_int_sequence_impl;
@@ -56,7 +73,6 @@ namespace jln::mp
 #endif
   }
   /// \endcond
-
 
   /// \ingroup number
 
@@ -73,6 +89,9 @@ namespace jln::mp
 #elif JLN_MP_USE_INTEGER_PACK
     using f = typename detail::make_int_sequence_impl<C>
       ::template f<int_, __integer_pack(n::value)...>::type;
+#elif defined(JLN_MP_DO_NOT_USE_STD_SEQUENCE)
+    using f = typename detail::make_int_sequence_impl<
+      C, typename detail::mk_int_seq<n::value>::type>::type;
 #else
     using f = typename detail::make_int_sequence_impl<
       C, std::make_integer_sequence<int_, n::value>>::type;
@@ -117,21 +136,29 @@ namespace jln::mp
     using make_int_sequence = typename __make_integer_seq<
       detail::make_int_sequence_impl<mp::numbers<C>>::template f, int_, n::value>::type;
 #else
+# ifdef JLN_MP_DO_NOT_USE_STD_SEQUENCE
+#   define JLN_MK_INT_SEQ(n) typename detail::mk_int_seq<n>::type
+# else
+#   define JLN_MK_INT_SEQ(n) std::make_integer_sequence<int_, n>
+# endif
+
     template<unsigned n, class C = mp::numbers<>>
-    using make_int_sequence_v_c = typename detail::make_int_sequence_impl<C,
-      std::make_integer_sequence<int_, n>>::type;
+    using make_int_sequence_v_c = typename detail::make_int_sequence_impl<
+      C, JLN_MK_INT_SEQ(n)>::type;
 
     template<unsigned n, class C = mp::listify>
-    using make_int_sequence_c = typename detail::make_int_sequence_impl<mp::numbers<C>,
-      std::make_integer_sequence<int_, n>>::type;
+    using make_int_sequence_c = typename detail::make_int_sequence_impl<
+      mp::numbers<C>, JLN_MK_INT_SEQ(n)>::type;
 
     template<class n, class C = mp::numbers<>>
-    using make_int_sequence_v = typename detail::make_int_sequence_impl<C,
-      std::make_integer_sequence<int_, n::value>>::type;
+    using make_int_sequence_v = typename detail::make_int_sequence_impl<
+      C, JLN_MK_INT_SEQ(n::value)>::type;
 
     template<class n, class C = mp::listify>
-    using make_int_sequence = typename detail::make_int_sequence_impl<mp::numbers<C>,
-      std::make_integer_sequence<int_, n::value>>::type;
+    using make_int_sequence = typename detail::make_int_sequence_impl<
+      mp::numbers<C>, JLN_MK_INT_SEQ(n::value)>::type;
+
+# undef JLN_MK_INT_SEQ
 #endif
   }
 
@@ -307,6 +334,59 @@ namespace jln::mp::detail
     };
   };
 }
+#elif defined(JLN_MP_DO_NOT_USE_STD_SEQUENCE)
+namespace jln::mp::detail
+{
+  template<int_... i>
+  struct int_seq;
+
+  template<bool, int_ n, class ns>
+  struct int_seq_expand;
+
+  template<int_ n, int_... ns>
+  struct int_seq_expand<false, n, int_seq<ns...>>
+  {
+    using type = int_seq<ns..., (n+ns)...>;
+  };
+
+  template<int_ n, int_... ns>
+  struct int_seq_expand<true, n, int_seq<ns...>>
+  {
+    using type = int_seq<ns..., (n+ns)..., n * 2>;
+  };
+
+  template<unsigned n>
+  struct mk_int_seq
+  : int_seq_expand<n & 1, n / 2, typename mk_int_seq<n / 2>::type>
+  {};
+
+  template<> struct mk_int_seq<0> { using type = int_seq<>; };
+  template<> struct mk_int_seq<1> { using type = int_seq<0>; };
+
+  template<class Int, Int... ns>
+  struct make_int_sequence_impl<numbers<>, int_seq<ns...>>
+  {
+    using type = list<number<ns>...>;
+  };
+
+  template<class C, int_... ns>
+  struct make_int_sequence_impl<C, int_seq<ns...>>
+  {
+    using type = typename C::template f<ns...>;
+  };
+
+  template<class C, int_... ns>
+  struct make_int_sequence_impl<numbers<C>, int_seq<ns...>>
+  {
+    using type = typename C::template f<number<ns>...>;
+  };
+
+  template<template<class T, T...> class C, class Int, int_... ns>
+  struct make_int_pack_impl<C, Int, int_seq<ns...>>
+  {
+    using type = C<Int, ns...>;
+  };
+}
 #else
 namespace jln::mp::detail
 {
@@ -314,6 +394,12 @@ namespace jln::mp::detail
   struct make_int_sequence_impl<C, std::integer_sequence<int_, ns...>>
   {
     using type = typename C::template f<ns...>;
+  };
+
+  template<class C, int_... ns>
+  struct make_int_sequence_impl<numbers<C>, std::integer_sequence<int_, ns...>>
+  {
+    using type = typename C::template f<number<ns>...>;
   };
 
   template<template<class T, T...> class C, class Int, Int... ns>
