@@ -3,6 +3,7 @@
 #include "src/algorithm/all_of.cpp"
 #include "src/algorithm/anticirculant_matrix.cpp"
 #include "src/algorithm/any_of.cpp"
+#include "src/algorithm/arrange.cpp"
 #include "src/algorithm/before.cpp"
 #include "src/algorithm/before_after.cpp"
 #include "src/algorithm/circulant_matrix.cpp"

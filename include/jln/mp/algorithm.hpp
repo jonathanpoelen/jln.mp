@@ -5,6 +5,7 @@
 #include <jln/mp/algorithm/all_of.hpp>
 #include <jln/mp/algorithm/anticirculant_matrix.hpp>
 #include <jln/mp/algorithm/any_of.hpp>
+#include <jln/mp/algorithm/arrange.hpp>
 #include <jln/mp/algorithm/before.hpp>
 #include <jln/mp/algorithm/before_after.hpp>
 #include <jln/mp/algorithm/circulant_matrix.hpp>

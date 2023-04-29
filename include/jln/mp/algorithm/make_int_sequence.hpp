@@ -217,6 +217,9 @@ namespace jln::mp
   #define JLN_MP_D_MAKE_INTEGER_SEQUENCE(n, ...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME JLN_MP_MAKE_INTEGER_SEQUENCE(n, __VA_ARGS__)
 
+  // single list of int_
+  template<int_... i>
+  struct int_seq_v;
 } // namespace jln::mp
 
 
@@ -337,22 +340,19 @@ namespace jln::mp::detail
 #elif defined(JLN_MP_DO_NOT_USE_STD_SEQUENCE)
 namespace jln::mp::detail
 {
-  template<int_... i>
-  struct int_seq;
-
   template<bool, int_ n, class ns>
   struct int_seq_expand;
 
   template<int_ n, int_... ns>
-  struct int_seq_expand<false, n, int_seq<ns...>>
+  struct int_seq_expand<false, n, int_seq_v<ns...>>
   {
-    using type = int_seq<ns..., (n+ns)...>;
+    using type = int_seq_v<ns..., (n+ns)...>;
   };
 
   template<int_ n, int_... ns>
-  struct int_seq_expand<true, n, int_seq<ns...>>
+  struct int_seq_expand<true, n, int_seq_v<ns...>>
   {
-    using type = int_seq<ns..., (n+ns)..., n * 2>;
+    using type = int_seq_v<ns..., (n+ns)..., n * 2>;
   };
 
   template<unsigned n>
@@ -360,29 +360,29 @@ namespace jln::mp::detail
   : int_seq_expand<n & 1, n / 2, typename mk_int_seq<n / 2>::type>
   {};
 
-  template<> struct mk_int_seq<0> { using type = int_seq<>; };
-  template<> struct mk_int_seq<1> { using type = int_seq<0>; };
+  template<> struct mk_int_seq<0> { using type = int_seq_v<>; };
+  template<> struct mk_int_seq<1> { using type = int_seq_v<0>; };
 
   template<class Int, Int... ns>
-  struct make_int_sequence_impl<numbers<>, int_seq<ns...>>
+  struct make_int_sequence_impl<numbers<>, int_seq_v<ns...>>
   {
     using type = list<number<ns>...>;
   };
 
   template<class C, int_... ns>
-  struct make_int_sequence_impl<C, int_seq<ns...>>
+  struct make_int_sequence_impl<C, int_seq_v<ns...>>
   {
     using type = typename C::template f<ns...>;
   };
 
   template<class C, int_... ns>
-  struct make_int_sequence_impl<numbers<C>, int_seq<ns...>>
+  struct make_int_sequence_impl<numbers<C>, int_seq_v<ns...>>
   {
     using type = typename C::template f<number<ns>...>;
   };
 
   template<template<class T, T...> class C, class Int, int_... ns>
-  struct make_int_pack_impl<C, Int, int_seq<ns...>>
+  struct make_int_pack_impl<C, Int, int_seq_v<ns...>>
   {
     using type = C<Int, ns...>;
   };
