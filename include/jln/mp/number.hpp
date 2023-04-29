@@ -4,6 +4,7 @@
 #include <jln/mp/number/as_number.hpp>
 #include <jln/mp/number/is_number.hpp>
 #include <jln/mp/number/math.hpp>
+#include <jln/mp/number/not.hpp>
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/number/numbers.hpp>
 #include <jln/mp/number/operators.hpp>
