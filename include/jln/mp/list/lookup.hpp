@@ -16,7 +16,7 @@ namespace jln::mp
     template<class...>
     struct indexed;
 
-    template<int>
+    template<bool>
     struct indexed_builder;
   }
   /// \endcond
@@ -28,7 +28,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, detail::indexed<
-      typename detail::indexed_builder<16 < sizeof...(xs) ? 3 : 1>
+      typename detail::indexed_builder<16 < sizeof...(xs)>
       ::template f<xs...>
     >);
   };
@@ -39,7 +39,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = detail::indexed<
-      typename detail::indexed_builder<16 < sizeof...(xs) ? 3 : 1>
+      typename detail::indexed_builder<16 < sizeof...(xs)>
       ::template f<xs...>
     >;
   };
@@ -52,10 +52,12 @@ namespace jln::mp
   template<template<class...> class Seq, class... xs, class C>
   struct lookup<Seq<xs...>, C>
   {
+    using precomputed = build_indexed<>::f<xs...>;
+
     template<class i>
-    using f = JLN_MP_CALL_TRACE(C, typename build_indexed<>::f<xs...>
+    using f = JLN_MP_CALL_TRACE(C, typename precomputed
       ::template f<detail::index<(i::value >> 8)>>
-      ::template f<detail::index<((i::value >> 4) & 0xF)>>
+      ::template f<detail::index<(i::value >> 4) & 0xF>>
       ::template f<detail::index<(i::value & 0xF)>>
     );
   };
@@ -64,10 +66,12 @@ namespace jln::mp
   template<template<class...> class Seq, class... xs>
   struct lookup<Seq<xs...>, identity>
   {
+    using precomputed = build_indexed<>::f<xs...>;
+
     template<class i>
-    using f = typename build_indexed<>::f<xs...>
+    using f = typename precomputed
       ::template f<detail::index<(i::value >> 8)>>
-      ::template f<detail::index<((i::value >> 4) & 0xF)>>
+      ::template f<detail::index<(i::value >> 4) & 0xF>>
       ::template f<detail::index<(i::value & 0xF)>>;
   };
   /// \endcond
@@ -78,7 +82,7 @@ namespace jln::mp
     template<class PrecomputedIndexes>
     using f = typename C::template f<typename PrecomputedIndexes
       ::template f<detail::index<(i >> 8)>>
-      ::template f<detail::index<((i >> 4) & 0xF)>>
+      ::template f<detail::index<(i >> 4) & 0xF>>
       ::template f<detail::index<(i & 0xF)>>
     >;
   };
@@ -90,7 +94,7 @@ namespace jln::mp
     template<class PrecomputedIndexes>
     using f = typename PrecomputedIndexes
       ::template f<detail::index<(i >> 8)>>
-      ::template f<detail::index<((i >> 4) & 0xF)>>
+      ::template f<detail::index<(i >> 4) & 0xF>>
       ::template f<detail::index<(i & 0xF)>>;
   };
   /// \endcond
@@ -109,7 +113,7 @@ namespace jln::mp
     template<class PrecomputedIndexes, unsigned i>
     using precomputed_indexes_at_c = typename PrecomputedIndexes
       ::template f<detail::index<(i >> 8)>>
-      ::template f<detail::index<((i >> 4) & 0xF)>>
+      ::template f<detail::index<(i >> 4) & 0xF>>
       ::template f<detail::index<(i & 0xF)>>;
 
     template<class PrecomputedIndexes, class I>
@@ -164,8 +168,6 @@ namespace jln::mp::detail
                               rlist<list<>,
                                 rlist<list<>, unindexed>>>>>>>>>>>>>>>;
 
-  using rlist_tail_of16 = rlist<list<>, rlist_tail_of15>;
-
   template<class... xs>
   struct indexed
   {
@@ -202,14 +204,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct indexed_builder<0>
-  {
-    template<class...>
-    using f = rlist_tail_of16;
-  };
-
-  template<>
-  struct indexed_builder<1>
+  struct indexed_builder<false>
   {
     template<
       class x0 = unindexed, class x1 = unindexed, class x2 = unindexed, class x3 = unindexed,
@@ -224,7 +219,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct indexed_builder<3>
+  struct indexed_builder<true>
   {
     template<JLN_MP_XS_256(class, = unindexed, JLN_MP_COMMA), class... xs>
     using f = rlist<
@@ -263,7 +258,7 @@ namespace jln::mp::detail
                       _234, _235, _236, _237, _238, _239, _240>,
               indexed<_241, _242, _243, _244, _245, _246, _247, _248, _249,
                       _250, _251, _252, _253, _254, _255, _256>>,
-      typename indexed_builder<16 < sizeof...(xs) ? 3 : 1>::template f<xs...>
+      typename indexed_builder<16 < sizeof...(xs)>::template f<xs...>
     >;
   };
 }
