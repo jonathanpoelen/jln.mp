@@ -2362,7 +2362,6 @@ namespace jln::mp
   /// \ingroup search
 
   /// Remove the first elements of a \sequence that satisfy a \predicate.
-  /// \pre \c Pred::f<x> must return a boolean, 1 or 0
   /// When an element does not satisfy the predicate,
   /// call \c TC with it and all those that follow it.
   /// Otherwise \c FC is called on the whole sequence.
@@ -2381,6 +2380,25 @@ namespace jln::mp
     ::template f<xs...>;
   };
 
+  /// Remove the first minus at most \c ExtendedByN elements of a \sequence that satisfy a \predicate.
+  /// When an element does not satisfy the predicate,
+  /// call \c TC with it and all those that follow it plus at most \c ExtendedByN.
+  /// Otherwise \c FC is called on the whole sequence.
+  /// \semantics
+  ///   \code
+  ///   call<drop_while_extended_by_n_c<2, is_not<number<4>>>,
+  ///     number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   //                         ^ 2        ^ 1       ^ found elem
+  ///   ==
+  ///   list<number<2>, number<3>, number<4>, number<5>>
+  ///
+  ///   call<drop_while_extended_by_n_c<2, is_not<number<1>>>,
+  ///     number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   //   ^ 1       ^ found elem
+  ///   ==
+  ///   list<number<0>, number<1>>
+  ///   \endcode
+  /// \treturn \sequence
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
   struct drop_while_extended_by_n_c
   {
@@ -3109,9 +3127,8 @@ namespace jln::mp
   /// \ingroup search
 
   /// Remove the first elements of a \sequence that does not satisfy a \predicate.
-  /// \pre \c Pred::f<x> must return a boolean, 1 or 0
   /// When an element satisfy the predicate,
-  /// call \c TC with it and those that follow it..
+  /// call \c TC with it and those that follow it.
   /// Otherwise \c FC is called on the whole sequence.
   /// \treturn \sequence
   /// \see drop_front, drop_back, drop_until_xs
@@ -3128,6 +3145,25 @@ namespace jln::mp
     ::template f<xs...>;
   };
 
+  /// Remove the first minus at most \c ExtendedByN elements of a \sequence that does not satisfy a \predicate.
+  /// When an element satisfy the predicate,
+  /// call \c TC with it and those that follow it plus at most \c ExtendedByN.
+  /// Otherwise \c FC is called on the whole sequence.
+  /// \semantics
+  ///   \code
+  ///   call<drop_while_extended_by_n_c<2, is<number<4>>>,
+  ///     number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   //                        ^ -2       ^ -1       ^ found elem
+  ///   ==
+  ///   list<number<2>, number<3>, number<4>, number<5>>
+  ///
+  ///   call<drop_while_extended_by_n_c<2, is<number<1>>>,
+  ///     number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   //  ^ -1       ^ found elem
+  ///   ==
+  ///   list<number<0>, number<1>>
+  ///   \endcode
+  /// \treturn \sequence
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
   struct drop_until_extended_by_n_c
   {
@@ -4528,6 +4564,9 @@ namespace jln::mp
       ::type;
   };
 
+  template<template<class...> class S, class C = listify>
+  using flatten_once_f = flatten_once<lift<S>, C>;
+
   /// Recursive version of \c flatten_once.
   ///   \code
   ///   call<flatten<>, list<a, b>, c, list<list<d, e>, f>
@@ -4549,6 +4588,9 @@ namespace jln::mp
       ::type;
   };
 
+  template<template<class...> class S, class C = listify>
+  using flatten_f = flatten<lift<S>, C>;
+
   namespace emp
   {
     template<class L, class S = wrapper<L>, class C = mp::listify>
@@ -4556,6 +4598,12 @@ namespace jln::mp
 
     template<class L, class S = wrapper<L>, class C = mp::listify>
     using flatten = unpack<L, mp::flatten<S, C>>;
+
+    template<class L, template<class...> class S, class C = mp::listify>
+    using flatten_once_f = unpack<L, mp::flatten_once_f<S, C>>;
+
+    template<class L, template<class...> class S, class C = mp::listify>
+    using flatten_f = unpack<L, mp::flatten_f<S, C>>;
   }
 
 /// \cond
@@ -9131,7 +9179,6 @@ namespace jln::mp
   /// \ingroup search
 
   /// Remove the first elements of a \sequence that satisfy a \predicate.
-  /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
   /// Same as \c drop_while, but the \predicate takes all the elements of
   /// the current position until the end of the list.
   /// \treturn \sequence
@@ -9149,7 +9196,7 @@ namespace jln::mp
     ::template f<xs...>;
   };
 
-  /// Remove the first elements of a \sequence that satisfy a \predicate.
+  /// Same as \c drop_while_extended_by_n_c, but for \c drop_while_xs.
   /// \treturn \sequence
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
   struct drop_while_extended_by_n_xs_c
@@ -9415,7 +9462,7 @@ namespace jln::mp
     ::template f<xs...>;
   };
 
-  /// Remove the first elements of a \sequence that does not satisfy a \predicate.
+  /// Same as \c drop_until_extended_by_n_c, but for \c drop_until_xs.
   /// \treturn \sequence
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
   struct drop_until_extended_by_n_xs_c
@@ -9743,7 +9790,6 @@ namespace jln::mp
   /// \ingroup search
 
   /// Extract the first elements of a \sequence that satisfy a \predicate.
-  /// \pre \c Pred::f<x> must return a boolean, 1 or 0
   /// When an element does not satisfy the predicate,
   /// call \c TC with it and those before it.
   /// Otherwise \c FC is called on the whole sequence.
@@ -9762,10 +9808,24 @@ namespace jln::mp
     ::template f<xs...>;
   };
 
-  /// Extract the first elements of a \sequence that satisfy a \predicate.
+  /// Extract the first plus at most \c ExtendedByN elements of a \sequence that satisfy a \predicate.
   /// When an element satisfy the predicate,
-  /// call \c TC with it and those before it + \c ExtendedByN.
+  /// call \c TC with it and those before it plus at most \c ExtendedByN.
   /// Otherwise \c FC is called on the whole sequence.
+  /// \semantics
+  ///   \code
+  ///   call<take_while_extended_by_n_c<2, is_not<number<2>>>,
+  ///     number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   //  predicate not satisfied ^ (+1)   ^ +2
+  ///   ==
+  ///   list<number<0>, number<1>, number<2>, number<3>>
+  ///
+  ///   call<take_while_extended_by_n_c<2, is_not<number<5>>>,
+  ///     number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   //                                   predicate not satisfied ^ (+1)
+  ///   ==
+  ///   list<number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   \endcode
   /// \treturn \sequence
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
   struct take_while_extended_by_n_c
@@ -9838,7 +9898,6 @@ namespace jln::mp
   /// \ingroup search
 
   /// Extracts the first elements of a \sequence that satisfy a \predicate.
-  /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
   /// \treturn \sequence
   /// \see take_front, take_back, take_while, partial_take_while_xs
   /// \see drop_while, drop_while_xs
@@ -9854,7 +9913,7 @@ namespace jln::mp
     ::template f<xs...>;
   };
 
-  /// Extracts the first elements of a \sequence that satisfy a \predicate.
+  /// Same as \c take_while_extended_by_n_c, but for \c take_while_xs.
   /// \treturn \sequence
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
   struct take_while_extended_by_n_xs_c
@@ -10580,6 +10639,11 @@ namespace jln::mp
 #  endif
 #endif
 
+#ifdef JLN_MP_DO_NOT_USE_BUILTIN
+#  undef JLN_MP_USE_INTEGER_PACK
+#  undef JLN_MP_USE_MAKE_INTEGER_SEQ
+#endif
+
 #ifndef JLN_MP_USE_INTEGER_PACK
 #  define JLN_MP_USE_INTEGER_PACK 0
 #  define JLN_MP_USE_MAKE_INTEGER_SEQ 0
@@ -10593,12 +10657,21 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-#if JLN_MP_USE_MAKE_INTEGER_SEQ
+#if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
     template<class>
     struct make_int_sequence_impl;
-#elif JLN_MP_USE_INTEGER_PACK
-    template<class C, int_... ns>
-    using make_int_sequence_impl = typename C::template f<ns...>;
+#elif defined(JLN_MP_DO_NOT_USE_STD_SEQUENCE)
+    template<unsigned n>
+    struct mk_int_seq;
+
+    template<class C, class Ints>
+    struct make_int_sequence_impl;
+
+    template<template<class T, T...> class C, class Int, class Ints>
+    struct make_int_pack_impl;
+
+    template<template<class T, T...> class C, class Int, unsigned n>
+    using make_int_pack_t = typename make_int_pack_impl<C, Int, typename mk_int_seq<n>::type>::type;
 #else
     template<class C, class Ints>
     struct make_int_sequence_impl;
@@ -10612,7 +10685,6 @@ namespace jln::mp
   }
   /// \endcond
 
-
   /// \ingroup number
 
   /// Generates an incremental sequence of \c n \c int_.
@@ -10623,10 +10695,14 @@ namespace jln::mp
   {
     template<class n>
 #if JLN_MP_USE_MAKE_INTEGER_SEQ
-    using f = __make_integer_seq<detail::make_int_sequence_impl<C>
-      ::template f, int_, n::value>;
+    using f = typename __make_integer_seq<detail::make_int_sequence_impl<C>
+      ::template f, int_, n::value>::type;
 #elif JLN_MP_USE_INTEGER_PACK
-    using f = detail::make_int_sequence_impl<C, __integer_pack(n::value)...>;
+    using f = typename detail::make_int_sequence_impl<C>
+      ::template f<int_, __integer_pack(n::value)...>::type;
+#elif defined(JLN_MP_DO_NOT_USE_STD_SEQUENCE)
+    using f = typename detail::make_int_sequence_impl<
+      C, typename detail::mk_int_seq<n::value>::type>::type;
 #else
     using f = typename detail::make_int_sequence_impl<
       C, std::make_integer_sequence<int_, n::value>>::type;
@@ -10635,6 +10711,67 @@ namespace jln::mp
 
   template<class C = mp::listify>
   using make_int_sequence = make_int_sequence_v<mp::numbers<C>>;
+
+  namespace emp
+  {
+#if JLN_MP_USE_INTEGER_PACK
+    template<unsigned n, class C = mp::numbers<>>
+    using make_int_sequence_v_c = typename mp::make_int_sequence_v<C>
+      ::template f<number<n>>;
+
+    template<unsigned n, class C = mp::listify>
+    using make_int_sequence_c = typename mp::make_int_sequence_v<mp::numbers<C>>
+      ::template f<number<n>>;
+
+    template<class n, class C = mp::numbers<>>
+    using make_int_sequence_v = typename mp::make_int_sequence_v<C>
+      ::template f<n>;
+
+    template<class n, class C = mp::listify>
+    using make_int_sequence = typename mp::make_int_sequence_v<mp::numbers<C>>
+      ::template f<n>;
+#elif JLN_MP_USE_MAKE_INTEGER_SEQ
+    template<unsigned n, class C = mp::numbers<>>
+    using make_int_sequence_v_c = typename __make_integer_seq<
+      detail::make_int_sequence_impl<C>::template f, int_, n>::type;
+
+    template<unsigned n, class C = mp::listify>
+    using make_int_sequence_c = typename __make_integer_seq<
+      detail::make_int_sequence_impl<mp::numbers<C>>::template f, int_, n>::type;
+
+    template<class n, class C = mp::numbers<>>
+    using make_int_sequence_v = typename __make_integer_seq<
+      detail::make_int_sequence_impl<C>::template f, int_, n::value>::type;
+
+    template<class n, class C = mp::listify>
+    using make_int_sequence = typename __make_integer_seq<
+      detail::make_int_sequence_impl<mp::numbers<C>>::template f, int_, n::value>::type;
+#else
+# ifdef JLN_MP_DO_NOT_USE_STD_SEQUENCE
+#   define JLN_MK_INT_SEQ(n) typename detail::mk_int_seq<n>::type
+# else
+#   define JLN_MK_INT_SEQ(n) std::make_integer_sequence<int_, n>
+# endif
+
+    template<unsigned n, class C = mp::numbers<>>
+    using make_int_sequence_v_c = typename detail::make_int_sequence_impl<
+      C, JLN_MK_INT_SEQ(n)>::type;
+
+    template<unsigned n, class C = mp::listify>
+    using make_int_sequence_c = typename detail::make_int_sequence_impl<
+      mp::numbers<C>, JLN_MK_INT_SEQ(n)>::type;
+
+    template<class n, class C = mp::numbers<>>
+    using make_int_sequence_v = typename detail::make_int_sequence_impl<
+      C, JLN_MK_INT_SEQ(n::value)>::type;
+
+    template<class n, class C = mp::listify>
+    using make_int_sequence = typename detail::make_int_sequence_impl<
+      mp::numbers<C>, JLN_MK_INT_SEQ(n::value)>::type;
+
+# undef JLN_MK_INT_SEQ
+#endif
+  }
 
   /// Fast initialization of template of the shape `name<class T, T... ints>`.
   /// `n` should be a template parameter.
@@ -10691,185 +10828,189 @@ namespace jln::mp
   #define JLN_MP_D_MAKE_INTEGER_SEQUENCE(n, ...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME JLN_MP_MAKE_INTEGER_SEQUENCE(n, __VA_ARGS__)
 
-
-  namespace emp
-  {
-#if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
-    template<unsigned n, class C = mp::numbers<>>
-    using make_int_sequence_v_c = typename mp::make_int_sequence_v<C>
-      ::template f<number<n>>;
-
-    template<unsigned n, class C = mp::listify>
-    using make_int_sequence_c = typename mp::make_int_sequence_v<mp::numbers<C>>
-      ::template f<number<n>>;
-
-    template<class n, class C = mp::numbers<>>
-    using make_int_sequence_v = typename mp::make_int_sequence_v<C>
-      ::template f<n>;
-
-    template<class n, class C = mp::listify>
-    using make_int_sequence = typename mp::make_int_sequence_v<mp::numbers<C>>
-      ::template f<n>;
-#else
-    template<unsigned n, class C = mp::numbers<>>
-    using make_int_sequence_v_c = typename detail::make_int_sequence_impl<C,
-      std::make_integer_sequence<int_, n>>::type;
-
-    template<unsigned n, class C = mp::listify>
-    using make_int_sequence_c = typename detail::make_int_sequence_impl<mp::numbers<C>,
-      std::make_integer_sequence<int_, n>>::type;
-
-    template<class n, class C = mp::numbers<>>
-    using make_int_sequence_v = typename detail::make_int_sequence_impl<C,
-      std::make_integer_sequence<int_, n::value>>::type;
-
-    template<class n, class C = mp::listify>
-    using make_int_sequence = typename detail::make_int_sequence_impl<mp::numbers<C>,
-      std::make_integer_sequence<int_, n::value>>::type;
-#endif
-  }
+  // single list of int_
+  template<int_... i>
+  struct int_seq_v;
 } // namespace jln::mp
 
 
 /// \cond
-#if JLN_MP_USE_MAKE_INTEGER_SEQ
-namespace jln::mp
-{
-  namespace detail
-  {
-    template<class, int_... ns>
-    using make_numbers_sequence = list<number<ns>...>;
-
-    template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-    struct make_numbers_sequence_fc
-    {
-      template<class, int_... ns>
-      struct f
-      {
-        using type = F<ns...>;
-      };
-    };
-  }
-
-  template<>
-  struct make_int_sequence_v<numbers<>>
-  {
-    template<class n>
-    using f = __make_integer_seq<detail::make_numbers_sequence, int_, n::value>;
-  };
-
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
-  struct make_int_sequence_v<lift_v<F, C>>
-  {
-    template<class n>
-    using f = typename C::template f<typename __make_integer_seq<
-      detail::make_numbers_sequence_fc<F>::template f, int_, n::value
-    >::type>;
-  };
-
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
-  struct make_int_sequence_v<lift_v_t<F, C>>
-  {
-    template<class n>
-    using f = typename C::template f<typename __make_integer_seq<
-      detail::make_numbers_sequence_fc<F>::template f, int_, n::value
-    >::type::type>;
-  };
-
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct make_int_sequence_v<lift_v<F>>
-  {
-    template<class n>
-    using f = typename __make_integer_seq<
-      detail::make_numbers_sequence_fc<F>::template f, int_, n::value
-    >::type;
-  };
-
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct make_int_sequence_v<lift_v_t<F>>
-  {
-    template<class n>
-    using f = typename __make_integer_seq<
-      detail::make_numbers_sequence_fc<F>::template f, int_, n::value
-    >::type::type;
-  };
-}
-#elif JLN_MP_USE_INTEGER_PACK
-namespace jln::mp
-{
-  template<>
-  struct make_int_sequence_v<numbers<>>
-  {
-    template<class n>
-    using f = emp::numbers<__integer_pack(n::value)...>;
-  };
-
-  namespace detail
-  {
-    template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class n>
-    struct make_numbers_sequence_fc_t
-    {
-      using type = F<__integer_pack(n::value)...>;
-    };
-  }
-
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
-  struct make_int_sequence_v<lift_v<F, C>>
-  {
-    template<class n>
-    using f = typename C::template f<
-      typename detail::make_numbers_sequence_fc_t<F, n>::type
-    >;
-  };
-
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
-  struct make_int_sequence_v<lift_v_t<F, C>>
-  {
-    template<class n>
-    using f = typename C::template f<
-      typename detail::make_numbers_sequence_fc_t<F, n>::type::type
-    >;
-  };
-
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct make_int_sequence_v<lift_v<F>>
-  {
-    template<class n>
-    using f = typename detail::make_numbers_sequence_fc_t<F, n>::type;
-  };
-
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct make_int_sequence_v<lift_v_t<F>>
-  {
-    template<class n>
-    using f = typename detail::make_numbers_sequence_fc_t<F, n>::type::type;
-  };
-}
-#endif
-
+#if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
 namespace jln::mp::detail
 {
-
-#if JLN_MP_USE_INTEGER_PACK
-#  define JLN_MP_INTEGER_PACK_OR_STD_MAKE_INDEX_SEQUENCE(n) __integer_pack(n)...
-#else
-#  define JLN_MP_INTEGER_PACK_OR_STD_MAKE_INDEX_SEQUENCE(n) std::make_index_sequence<n>
-#endif
-
-#if JLN_MP_USE_MAKE_INTEGER_SEQ
   template<class C>
   struct make_int_sequence_impl
   {
     template<class, int_... ns>
-    using f = typename conditional_c<!sizeof...(ns)>
-      ::template f<C, C>
-      ::template f<ns...>;
+    struct f
+    {
+      using type = typename C::template f<ns...>;
+    };
   };
-#elif ! JLN_MP_USE_INTEGER_PACK
+
+  template<>
+  struct make_int_sequence_impl<numbers<>>
+  {
+    template<class, int_... ns>
+    struct f
+    {
+      using type = list<number<ns>...>;
+    };
+  };
+
+  template<class C>
+  struct make_int_sequence_impl<numbers<C>>
+  {
+    template<class, int_... ns>
+    struct f
+    {
+      using type = typename C::template f<number<ns>...>;
+    };
+  };
+
+  template<template<class...> class F>
+  struct make_int_sequence_impl<numbers<lift<F>>>
+  {
+    template<class, int_... ns>
+    struct f
+    {
+      using type = F<number<ns>...>;
+    };
+  };
+
+  template<template<class...> class F, class C>
+  struct make_int_sequence_impl<numbers<lift<F, C>>>
+  {
+    template<class, int_... ns>
+    struct f
+    {
+      using type = typename C::template f<F<number<ns>...>>;
+    };
+  };
+
+  template<template<class...> class F>
+  struct make_int_sequence_impl<numbers<lift_t<F>>>
+  {
+    template<class, int_... ns>
+    struct f
+    {
+      using type = typename F<number<ns>...>::type;
+    };
+  };
+
+  template<template<class...> class F, class C>
+  struct make_int_sequence_impl<numbers<lift_t<F, C>>>
+  {
+    template<class, int_... ns>
+    struct f
+    {
+      using type = typename C::template f<F<number<ns>...>>::type;
+    };
+  };
+
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  struct make_int_sequence_impl<lift_v<F>>
+  {
+    template<class, int_... ns>
+    struct f
+    {
+      using type = F<ns...>;
+    };
+  };
+
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
+  struct make_int_sequence_impl<lift_v<F, C>>
+  {
+    template<class, int_... ns>
+    struct f
+    {
+      using type = typename C::template f<F<ns...>>;
+    };
+  };
+
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  struct make_int_sequence_impl<lift_v_t<F>>
+  {
+    template<class, int_... ns>
+    struct f
+    {
+      using type = typename F<ns...>::type;
+    };
+  };
+
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
+  struct make_int_sequence_impl<lift_v_t<F, C>>
+  {
+    template<class, int_... ns>
+    struct f
+    {
+      using type = typename C::template f<F<ns...>>::type;
+    };
+  };
+}
+#elif defined(JLN_MP_DO_NOT_USE_STD_SEQUENCE)
+namespace jln::mp::detail
+{
+  template<bool, int_ n, class ns>
+  struct int_seq_expand;
+
+  template<int_ n, int_... ns>
+  struct int_seq_expand<false, n, int_seq_v<ns...>>
+  {
+    using type = int_seq_v<ns..., (n+ns)...>;
+  };
+
+  template<int_ n, int_... ns>
+  struct int_seq_expand<true, n, int_seq_v<ns...>>
+  {
+    using type = int_seq_v<ns..., (n+ns)..., n * 2>;
+  };
+
+  template<unsigned n>
+  struct mk_int_seq
+  : int_seq_expand<n & 1, n / 2, typename mk_int_seq<n / 2>::type>
+  {};
+
+  template<> struct mk_int_seq<0> { using type = int_seq_v<>; };
+  template<> struct mk_int_seq<1> { using type = int_seq_v<0>; };
+
+  template<class Int, Int... ns>
+  struct make_int_sequence_impl<numbers<>, int_seq_v<ns...>>
+  {
+    using type = list<number<ns>...>;
+  };
+
+  template<class C, int_... ns>
+  struct make_int_sequence_impl<C, int_seq_v<ns...>>
+  {
+    using type = typename C::template f<ns...>;
+  };
+
+  template<class C, int_... ns>
+  struct make_int_sequence_impl<numbers<C>, int_seq_v<ns...>>
+  {
+    using type = typename C::template f<number<ns>...>;
+  };
+
+  template<template<class T, T...> class C, class Int, int_... ns>
+  struct make_int_pack_impl<C, Int, int_seq_v<ns...>>
+  {
+    using type = C<Int, ns...>;
+  };
+}
+#else
+namespace jln::mp::detail
+{
   template<class C, int_... ns>
   struct make_int_sequence_impl<C, std::integer_sequence<int_, ns...>>
   {
     using type = typename C::template f<ns...>;
+  };
+
+  template<class C, int_... ns>
+  struct make_int_sequence_impl<numbers<C>, std::integer_sequence<int_, ns...>>
+  {
+    using type = typename C::template f<number<ns>...>;
   };
 
   template<template<class T, T...> class C, class Int, Int... ns>
@@ -10877,8 +11018,8 @@ namespace jln::mp::detail
   {
     using type = C<Int, ns...>;
   };
-#endif
 }
+#endif
 /// \endcond
 namespace jln::mp
 {
@@ -12746,12 +12887,408 @@ namespace jln::mp::smp
   template<class Pred, class C = identity>
   using any_of = none_of<Pred, not_<C>>;
 }
+// This implementation comes from kvasir.mpl
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<unsigned>
+    struct index;
+
+    template<class...>
+    struct indexed;
+
+    template<bool>
+    struct indexed_builder;
+  }
+  /// \endcond
+
+  /// \ingroup list
+
+  template<class C = identity>
+  struct build_indexed
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, detail::indexed<
+      typename detail::indexed_builder<16 < sizeof...(xs)>
+      ::template f<xs...>
+    >);
+  };
+
+  /// \cond
+  template<>
+  struct build_indexed<identity>
+  {
+    template<class... xs>
+    using f = detail::indexed<
+      typename detail::indexed_builder<16 < sizeof...(xs)>
+      ::template f<xs...>
+    >;
+  };
+  /// \endcond
+
+  template<class L, class C = identity>
+  struct lookup
+  {};
+
+  template<template<class...> class Seq, class... xs, class C>
+  struct lookup<Seq<xs...>, C>
+  {
+    using precomputed = build_indexed<>::f<xs...>;
+
+    template<class i>
+    using f = JLN_MP_CALL_TRACE(C, typename precomputed
+      ::template f<detail::index<(i::value >> 8)>>
+      ::template f<detail::index<(i::value >> 4) & 0xF>>
+      ::template f<detail::index<(i::value & 0xF)>>
+    );
+  };
+
+  /// \cond
+  template<template<class...> class Seq, class... xs>
+  struct lookup<Seq<xs...>, identity>
+  {
+    using precomputed = build_indexed<>::f<xs...>;
+
+    template<class i>
+    using f = typename precomputed
+      ::template f<detail::index<(i::value >> 8)>>
+      ::template f<detail::index<(i::value >> 4) & 0xF>>
+      ::template f<detail::index<(i::value & 0xF)>>;
+  };
+  /// \endcond
+
+  template<unsigned i, class C = identity>
+  struct precomputed_indexes_at_c
+  {
+    template<class PrecomputedIndexes>
+    using f = typename C::template f<typename PrecomputedIndexes
+      ::template f<detail::index<(i >> 8)>>
+      ::template f<detail::index<(i >> 4) & 0xF>>
+      ::template f<detail::index<(i & 0xF)>>
+    >;
+  };
+
+  /// \cond
+  template<unsigned i>
+  struct precomputed_indexes_at_c<i, identity>
+  {
+    template<class PrecomputedIndexes>
+    using f = typename PrecomputedIndexes
+      ::template f<detail::index<(i >> 8)>>
+      ::template f<detail::index<(i >> 4) & 0xF>>
+      ::template f<detail::index<(i & 0xF)>>;
+  };
+  /// \endcond
+
+  template<class I, class C = identity>
+  using precomputed_indexes_at = precomputed_indexes_at_c<I::value, C>;
+
+  namespace emp
+  {
+    template<class... xs>
+    using build_indexed_for = mp::build_indexed<>::f<xs...>;
+
+    template<class L, class C = mp::identity>
+    using build_indexed = unpack<L, mp::build_indexed<C>>;
+
+    template<class PrecomputedIndexes, unsigned i>
+    using precomputed_indexes_at_c = typename PrecomputedIndexes
+      ::template f<detail::index<(i >> 8)>>
+      ::template f<detail::index<(i >> 4) & 0xF>>
+      ::template f<detail::index<(i & 0xF)>>;
+
+    template<class PrecomputedIndexes, class I>
+    using precomputed_indexes_at = precomputed_indexes_at_c<PrecomputedIndexes, I::value>;
+
+    template<class L, unsigned i>
+    using lookup_c = precomputed_indexes_at_c<unpack<L, mp::build_indexed<>>, i>;
+
+    template<class L, class I>
+    using lookup = precomputed_indexes_at_c<unpack<L, mp::build_indexed<>>, I::value>;
+  }
+}
+
+
+namespace jln::mp::detail
+{
+#define JLN_MP_INDEX(n, mp_xs, mp_rxs, mp_dup)      \
+  template<>                                        \
+  struct index<n-1>                                 \
+  {                                                 \
+    template<mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL) \
+             class... xs>                           \
+    using f = _##n;                                 \
+  };
+
+  JLN_MP_GEN_XS_1_TO_16_INCLUDED(JLN_MP_INDEX)
+
+#undef JLN_MP_INDEX
+
+  template<class Head, class Tail>
+  struct rlist;
+
+  class unindexed;
+
+  using rlist_tail_of15 =
+    rlist<list<>,
+      rlist<list<>,
+        rlist<list<>,
+          rlist<list<>,
+            rlist<list<>,
+              rlist<list<>,
+                rlist<list<>,
+                  rlist<list<>,
+                    rlist<list<>,
+                      rlist<list<>,
+                        rlist<list<>,
+                          rlist<list<>,
+                            rlist<list<>,
+                              rlist<list<>,
+                                rlist<list<>, unindexed>>>>>>>>>>>>>>>;
+
+  template<class... xs>
+  struct indexed
+  {
+    template<class F>
+    using f = typename F::template f<xs...>;
+  };
+
+  template<
+    class x0, class x1, class x2, class x3, class x4, class x5,
+    class x6, class x7, class x8, class x9, class x10, class x11,
+    class x12, class x13, class x14, class x15, class Tail>
+  struct indexed<
+    rlist<x0,
+      rlist<x1,
+        rlist<x2,
+          rlist<x3,
+            rlist<x4,
+              rlist<x5,
+                rlist<x6,
+                  rlist<x7,
+                    rlist<x8,
+                      rlist<x9,
+                        rlist<x10,
+                          rlist<x11,
+                            rlist<x12,
+                              rlist<x13,
+                                rlist<x14,
+                                  rlist<x15, Tail>>>>>>>>>>>>>>>>>
+  {
+    template<class F>
+    using f = typename F::template f<
+      x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15
+    >;
+  };
+
+  template<>
+  struct indexed_builder<false>
+  {
+    template<
+      class x0 = unindexed, class x1 = unindexed, class x2 = unindexed, class x3 = unindexed,
+      class x4 = unindexed, class x5 = unindexed, class x6 = unindexed, class x7 = unindexed,
+      class x8 = unindexed, class x9 = unindexed, class x10 = unindexed, class x11 = unindexed,
+      class x12 = unindexed, class x13 = unindexed, class x14 = unindexed, class x15 = unindexed,
+      class...>
+    using f = rlist<
+      indexed<indexed<x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15>>,
+      rlist_tail_of15
+    >;
+  };
+
+  template<>
+  struct indexed_builder<true>
+  {
+    template<JLN_MP_XS_256(class, = unindexed, JLN_MP_COMMA), class... xs>
+    using f = rlist<
+      indexed<indexed<_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12,
+                      _13, _14, _15, _16>,
+              indexed<_17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27,
+                      _28, _29, _30, _31, _32>,
+              indexed<_33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43,
+                      _44, _45, _46, _47, _48>,
+              indexed<_49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59,
+                      _60, _61, _62, _63, _64>,
+
+              indexed<_65, _66, _67, _68, _69, _70, _71, _72, _73, _74, _75,
+                      _76, _77, _78, _79, _80>,
+              indexed<_81, _82, _83, _84, _85, _86, _87, _88, _89, _90, _91,
+                      _92, _93, _94, _95, _96>,
+              indexed<_97, _98, _99, _100, _101, _102, _103, _104, _105,
+                      _106, _107, _108, _109, _110, _111, _112>,
+              indexed<_113, _114, _115, _116, _117, _118, _119, _120, _121,
+                      _122, _123, _124, _125, _126, _127, _128>,
+
+              indexed<_129, _130, _131, _132, _133, _134, _135, _136, _137,
+                      _138, _139, _140, _141, _142, _143, _144>,
+              indexed<_145, _146, _147, _148, _149, _150, _151, _152, _153,
+                      _154, _155, _156, _157, _158, _159, _160>,
+              indexed<_161, _162, _163, _164, _165, _166, _167, _168, _169,
+                      _170, _171, _172, _173, _174, _175, _176>,
+              indexed<_177, _178, _179, _180, _181, _182, _183, _184, _185,
+                      _186, _187, _188, _189, _190, _191, _192>,
+
+              indexed<_193, _194, _195, _196, _197, _198, _199, _200, _201,
+                      _202, _203, _204, _205, _206, _207, _208>,
+              indexed<_209, _210, _211, _212, _213, _214, _215, _216, _217,
+                      _218, _219, _220, _221, _222, _223, _224>,
+              indexed<_225, _226, _227, _228, _229, _230, _231, _232, _233,
+                      _234, _235, _236, _237, _238, _239, _240>,
+              indexed<_241, _242, _243, _244, _245, _246, _247, _248, _249,
+                      _250, _251, _252, _253, _254, _255, _256>>,
+      typename indexed_builder<16 < sizeof...(xs)>::template f<xs...>
+    >;
+  };
+}
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<bool>
+    struct arrange_impl;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Uses a list of indexes to reorder a sequence.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   arrange<numbers<0, 2, 0>>::f<a, b, c, d> == list<a, c, a>
+  ///   \endcode
+  /// \treturn \list
+  template<class Ints, class C = listify>
+  struct arrange
+  {};
+
+  template<unsigned... ints>
+  using arrange_c = arrange<int_seq_v<ints...>>;
+
+  template<int_... ints, class C>
+  struct arrange<int_seq_v<ints...>, C>
+  {
+    template<class... xs>
+    using f = typename detail::arrange_impl<sizeof...(xs) < 4096>
+      ::template f<C, build_indexed<>::f<xs...>, ints...>;
+  };
+
+  template<template<class...> class Tpl, class... ints, class C>
+  struct arrange<Tpl<ints...>, C>
+    : arrange<int_seq_v<ints::value...>, C>
+  {};
+
+  template<template<class T, T...> class Tpl, class T, T... ints, class C>
+  struct arrange<Tpl<T, ints...>, C>
+    : arrange<int_seq_v<ints...>, C>
+  {};
+
+  namespace emp
+  {
+    template<class L, class Ints, class C = listify>
+    using arrange = unpack<L, mp::arrange<Ints, C>>;
+
+    template<class L, unsigned... ints>
+    using arrange_c = unpack<L, mp::arrange<int_seq_v<ints...>>>;
+  }
+}
+
+namespace jln::mp::detail
+{
+  template<class Indexed>
+  struct indexed_tail;
+
+  template<
+    class x0, class x1, class x2, class x3, class x4, class x5,
+    class x6, class x7, class x8, class x9, class x10, class x11,
+    class x12, class x13, class x14, class x15, class Tail>
+  struct indexed_tail<indexed<
+    rlist<x0,
+      rlist<x1,
+        rlist<x2,
+          rlist<x3,
+            rlist<x4,
+              rlist<x5,
+                rlist<x6,
+                  rlist<x7,
+                    rlist<x8,
+                      rlist<x9,
+                        rlist<x10,
+                          rlist<x11,
+                            rlist<x12,
+                              rlist<x13,
+                                rlist<x14,
+                                  rlist<x15, Tail>>>>>>>>>>>>>>>>>>
+  {
+    using type = indexed<Tail>;
+  };
+
+  template<bool>
+  struct arrange_select;
+
+  template<>
+  struct arrange_select<true>
+  {
+    template<class PrecomputedIndexes, unsigned i>
+    using f = emp::precomputed_indexes_at_c<PrecomputedIndexes, i>;
+  };
+
+  template<>
+  struct arrange_select<false>
+  {
+    template<class PrecomputedIndexes, unsigned i>
+    using f = typename arrange_select<i < 8192>
+      ::template f<typename indexed_tail<PrecomputedIndexes>::type, i - 4096>;
+  };
+
+  template<>
+  struct arrange_impl<false>
+  {
+    template<class C, class PrecomputedIndexes, unsigned... ints>
+    using f = JLN_MP_DCALL_TRACE_XS(ints, C,
+      typename arrange_select<ints < 4096>::template f<PrecomputedIndexes, ints>
+    ...);
+  };
+
+  template<>
+  struct arrange_impl<true>
+  {
+    template<class C, class PrecomputedIndexes, unsigned... ints>
+    using f = JLN_MP_DCALL_TRACE_XS(ints, C, emp::precomputed_indexes_at_c<
+      PrecomputedIndexes, ints
+    >...);
+  };
+}
+namespace jln::mp::smp
+{
+  template<class Ints, class C = listify>
+  using arrange = try_contract<
+    mp::arrange<Ints, if_<none_of<is<detail::unindexed>>, subcontract<C>, violation>>
+  >;
+
+  template<unsigned... ints>
+  using arrange_c = arrange<int_seq_v<ints...>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class Ints, class C>
+  struct _sfinae<sfinae, arrange<Ints, C>>
+  {
+    using type = smp::arrange<Ints, sfinae<C>>;
+  };
+}
+/// \endcond
 namespace jln::mp
 {
   /// \ingroup search
 
   /// Extract the first elements of a \sequence that does not satisfy a \predicate.
-  /// \pre \c Pred::f<x> must return a boolean, 1 or 0
   /// When an element satisfy the predicate,
   /// call \c TC with it and those before it.
   /// Otherwise \c FC is called on the whole sequence.
@@ -12770,10 +13307,24 @@ namespace jln::mp
     ::template f<xs...>;
   };
 
-  /// Extract the first elements of a \sequence that does not satisfy a \predicate.
+  /// Extract the first plus at most \c ExtendedByN elements of a \sequence that does not satisfy a \predicate.
   /// When an element satisfy the predicate,
-  /// call \c TC with it and those before it + \c ExtendedByN.
+  /// call \c TC with it and those before it plus at most \c ExtendedByN.
   /// Otherwise \c FC is called on the whole sequence.
+  /// \semantics
+  ///   \code
+  ///   call<take_until_extended_by_n_c<2, is<number<2>>>,
+  ///     number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   //  predicate not satisfied ^ (+1)   ^ +2
+  ///   ==
+  ///   list<number<0>, number<1>, number<2>, number<3>>
+  ///
+  ///   call<take_until_extended_by_n_c<2, is<number<5>>>,
+  ///     number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   //                                   predicate not satisfied ^ (+1)
+  ///   ==
+  ///   list<number<0>, number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   \endcode
   /// \treturn \sequence
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
   struct take_until_extended_by_n_c
@@ -12815,7 +13366,6 @@ namespace jln::mp
   /// \ingroup search
 
   /// Extracts the first elements of a \sequence that does not satisfy a \predicate.
-  /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
   /// \treturn \sequence
   /// \see take_front, take_back, take_until, partial_take_until_xs
   /// \see drop_until, drop_until_xs
@@ -12831,7 +13381,7 @@ namespace jln::mp
     ::template f<xs...>;
   };
 
-  /// Extracts the first elements of a \sequence that does not satisfy a \predicate.
+  /// Same as \c take_until_extended_by_n_c, but for \c take_until_xs.
   /// \treturn \sequence
   template<std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
   struct take_until_extended_by_n_xs_c
@@ -14548,21 +15098,19 @@ namespace jln::mp
 }
 
 
-// std::integer_sequence
-
 /// \cond
 namespace jln::mp::detail
 {
-  template<std::size_t i, class x>
+  template<int_ i, class x>
   struct indexed_item : basic_item<x> {};
 
-  template<class, class...>
-  struct indexed_inherit;
-
-  template<std::size_t... ints, class... xs>
-  struct indexed_inherit<std::integer_sequence<std::size_t, ints...>, xs...>
-    : indexed_item<ints, xs>...
-  {};
+  template<class, int_... ints>
+  struct indexed_inherit
+  {
+    template<class... xs>
+    struct f : indexed_item<ints, xs>...
+    {};
+  };
 
 #if JLN_MP_MSVC_LIKE
   template<class... xs>
@@ -14576,7 +15124,7 @@ namespace jln::mp::detail
     static number<0> is_set(...);
 
     using type = decltype(is_set(static_cast<
-      indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>*
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>*
     >(nullptr)));
   };
 #endif
@@ -14589,8 +15137,9 @@ namespace jln::mp::detail
     // workaround for MSVC which has a broken EBO
     using f = JLN_MP_CALL_TRACE(C, typename _is_set<xs...>::type);
 #else
-    using f = JLN_MP_CALL_TRACE(C,
-      number<sizeof(indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>);
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof(
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>
+    ) == 1>);
 #endif
   };
 
@@ -14602,7 +15151,9 @@ namespace jln::mp::detail
     // workaround for MSVC which has a broken EBO
     using f = typename _is_set<xs...>::type;
 #else
-    using f = mp::number<sizeof(indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>) == 1>;
+    using f = number<sizeof(
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>
+    ) == 1>;
 #endif
   };
 
@@ -14804,7 +15355,9 @@ namespace jln::mp::detail
   {
     template<class C, class... xs>
     using f = remove_unique_impl<
-      C, indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>, xs...
+      C,
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>,
+      xs...
     >;
   };
 
@@ -14839,7 +15392,9 @@ namespace jln::mp::detail
   {
     template<class C, class... xs>
     using f = copy_unique_impl<
-      C, indexed_inherit<std::make_index_sequence<sizeof...(xs)>, xs...>, xs...
+      C,
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>,
+      xs...
     >;
   };
 
@@ -15327,9 +15882,8 @@ namespace jln::mp
 
 #if JLN_MP_GCC
 // indexed_inherit
+#else
 #endif
-
-// std::make_index_sequence
 
 namespace jln::mp::detail
 {
@@ -15344,24 +15898,15 @@ namespace jln::mp::detail
     : array<1>
   {};
 
-  template<class, class...>
-  struct counter_impl;
-
-  struct mk_counter
-  {
-    template<class... xs>
-    using f = counter_impl<std::make_index_sequence<sizeof...(xs)>, xs...>;
-  };
-
 #if JLN_MP_GCC
 
-  template<class T, std::size_t i>
-  constexpr std::size_t index_base(indexed_item<i, T>*)
+  template<class T, int_ i>
+  constexpr int_ index_base(indexed_item<i, T>*)
   {
     return i;
   }
 
-  template<std::size_t N, std::size_t... ints>
+  template<std::size_t N, int_... ints>
   constexpr array<N> count_elems()
   {
     array<N> counter{};
@@ -15373,23 +15918,28 @@ namespace jln::mp::detail
 
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wunused-but-set-variable")
-  template<std::size_t... ints, class... unique_xs>
-  struct counter_impl<std::index_sequence<ints...>, unique_xs...>
+  template<class, int_... ints>
+  struct counter_impl
   {
-    template<class C, template<class...> class F, class... xs>
-    static auto f()
+    template<class... unique_xs>
+    struct impl
     {
-      constexpr indexed_inherit<std::index_sequence<ints...>, unique_xs...>* indexed = nullptr;
+      template<class C, template<class...> class F, class... xs>
+      static auto f()
+      {
+        constexpr typename indexed_inherit<int_, ints...>::template f<unique_xs...>*
+          indexed = nullptr;
 
-      constexpr auto counters = count_elems<
-        sizeof...(ints),
-        index_base<xs>(indexed)...
-      >();
+        constexpr auto counters = count_elems<
+          sizeof...(ints),
+          index_base<xs>(indexed)...
+        >();
 
-      return always<typename C::template f<
-        F<unique_xs, number<counters.elems[ints]>>...
-      >>();
-    }
+        return always<typename C::template f<
+          F<unique_xs, number<counters.elems[ints]>>...
+        >>();
+      }
+    };
   };
   JLN_MP_DIAGNOSTIC_POP()
 
@@ -15413,25 +15963,36 @@ namespace jln::mp::detail
     return counter;
   }
 
-  template<std::size_t... ints, class... unique_xs>
-  struct counter_impl<std::integer_sequence<std::size_t, ints...>, unique_xs...>
+  template<class, int_... ints>
+  struct counter_impl
   {
-    template<class C, template<class...> class F, class... xs>
-    static auto f()
+    template<class... unique_xs>
+    struct impl
     {
-      constexpr inherit<list<number<ints>, unique_xs>...>* indexed = nullptr;
+      template<class C, template<class...> class F, class... xs>
+      static auto f()
+      {
+        constexpr inherit<list<number<ints>, unique_xs>...>* indexed = nullptr;
 
-      constexpr auto counters = count_elems<
-        sizeof...(ints)
-      >(std::initializer_list<int_>{index_base<xs>(indexed)...});
+        constexpr auto counters = count_elems<
+          sizeof...(ints)
+        >(std::initializer_list<int_>{index_base<xs>(indexed)...});
 
-      return always<typename C::template f<
-        F<unique_xs, number<counters.elems[ints]>>...
-      >>();
-    }
+        return always<typename C::template f<
+          F<unique_xs, number<counters.elems[ints]>>...
+        >>();
+      }
+    };
   };
 
 #endif
+
+  struct mk_counter
+  {
+    template<class... xs>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), counter_impl)
+      ::template impl<xs...>;
+  };
 }
 /// \endcond
 namespace jln::mp::smp
@@ -24742,10 +25303,10 @@ namespace jln::mp::smp
     mp::compose<subcontract_barrier<F>, subcontract_barrier<Fs>...>
   >;
 }
-namespace jln::mp
-{
 #ifdef __cpp_nontype_template_parameter_class
 #if __cpp_nontype_template_parameter_class >= 201806L
+namespace jln::mp
+{
   /// \ingroup functional
 
   /// Invokes a lambda function.
@@ -24765,15 +25326,15 @@ namespace jln::mp
 
   /// \cond
   template<auto F>
-  struct eval<identity>
+  struct eval<F, identity>
   {
     template<class... xs>
     using f = decltype(F.template operator()<xs...>());
   };
   /// \endcond
-#endif
-#endif
 }
+#endif
+#endif
 #ifdef __cpp_nontype_template_parameter_class
 #if __cpp_nontype_template_parameter_class >= 201806L
 
@@ -25756,8 +26317,8 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C, detail::random_impl<sizeof...(xs)>);
   };
 
-  template<>
-  struct random<identity>
+  template<auto v>
+  struct random<identity, v>
   {
     template<class... xs>
     using f = detail::random_impl<sizeof...(xs)>;
@@ -26363,267 +26924,6 @@ namespace jln::mp::smp
   template<class C = identity>
   using is_not_empty = contract<mp::is_not_empty<assume_positive_number<C>>>;
 }
-// This implementation comes from kvasir.mpl
-
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<unsigned>
-    struct index;
-
-    template<class...>
-    struct indexed;
-
-    template<int>
-    struct indexed_builder;
-  }
-  /// \endcond
-
-  /// \ingroup list
-
-  template<class C = identity>
-  struct build_indexed
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, detail::indexed<
-      typename detail::indexed_builder<16 < sizeof...(xs) ? 3 : 1>
-      ::template f<xs...>
-    >);
-  };
-
-  /// \cond
-  template<>
-  struct build_indexed<identity>
-  {
-    template<class... xs>
-    using f = detail::indexed<
-      typename detail::indexed_builder<16 < sizeof...(xs) ? 3 : 1>
-      ::template f<xs...>
-    >;
-  };
-  /// \endcond
-
-  template<class L, class C = identity>
-  struct lookup
-  {};
-
-  template<template<class...> class Seq, class... xs, class C>
-  struct lookup<Seq<xs...>, C>
-  {
-    template<class i>
-    using f = JLN_MP_CALL_TRACE(C, typename build_indexed<>::f<xs...>
-      ::template f<detail::index<(i::value >> 8)>>
-      ::template f<detail::index<((i::value >> 4) & 0xF)>>
-      ::template f<detail::index<(i::value & 0xF)>>
-    );
-  };
-
-  /// \cond
-  template<template<class...> class Seq, class... xs>
-  struct lookup<Seq<xs...>, identity>
-  {
-    template<class i>
-    using f = typename build_indexed<>::f<xs...>
-      ::template f<detail::index<(i::value >> 8)>>
-      ::template f<detail::index<((i::value >> 4) & 0xF)>>
-      ::template f<detail::index<(i::value & 0xF)>>;
-  };
-  /// \endcond
-
-  template<unsigned i, class C = identity>
-  struct precomputed_indexes_at_c
-  {
-    template<class PrecomputedIndexes>
-    using f = typename C::template f<typename PrecomputedIndexes
-      ::template f<detail::index<(i >> 8)>>
-      ::template f<detail::index<((i >> 4) & 0xF)>>
-      ::template f<detail::index<(i & 0xF)>>
-    >;
-  };
-
-  /// \cond
-  template<unsigned i>
-  struct precomputed_indexes_at_c<i, identity>
-  {
-    template<class PrecomputedIndexes>
-    using f = typename PrecomputedIndexes
-      ::template f<detail::index<(i >> 8)>>
-      ::template f<detail::index<((i >> 4) & 0xF)>>
-      ::template f<detail::index<(i & 0xF)>>;
-  };
-  /// \endcond
-
-  template<class I, class C = identity>
-  using precomputed_indexes_at = precomputed_indexes_at_c<I::value, C>;
-
-  namespace emp
-  {
-    template<class... xs>
-    using build_indexed_for = mp::build_indexed<>::f<xs...>;
-
-    template<class L, class C = mp::identity>
-    using build_indexed = unpack<L, mp::build_indexed<C>>;
-
-    template<class PrecomputedIndexes, unsigned i>
-    using precomputed_indexes_at_c = typename PrecomputedIndexes
-      ::template f<detail::index<(i >> 8)>>
-      ::template f<detail::index<((i >> 4) & 0xF)>>
-      ::template f<detail::index<(i & 0xF)>>;
-
-    template<class PrecomputedIndexes, class I>
-    using precomputed_indexes_at = precomputed_indexes_at_c<PrecomputedIndexes, I::value>;
-
-    template<class L, unsigned i>
-    using lookup_c = precomputed_indexes_at_c<unpack<L, mp::build_indexed<>>, i>;
-
-    template<class L, class I>
-    using lookup = precomputed_indexes_at_c<unpack<L, mp::build_indexed<>>, I::value>;
-  }
-}
-
-
-namespace jln::mp::detail
-{
-#define JLN_MP_INDEX(n, mp_xs, mp_rxs, mp_dup)      \
-  template<>                                        \
-  struct index<n-1>                                 \
-  {                                                 \
-    template<mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL) \
-             class... xs>                           \
-    using f = _##n;                                 \
-  };
-
-  JLN_MP_GEN_XS_1_TO_16_INCLUDED(JLN_MP_INDEX)
-
-#undef JLN_MP_INDEX
-
-  template<class Head, class Tail>
-  struct rlist;
-
-  class unindexed;
-
-  using rlist_tail_of15 =
-    rlist<list<>,
-      rlist<list<>,
-        rlist<list<>,
-          rlist<list<>,
-            rlist<list<>,
-              rlist<list<>,
-                rlist<list<>,
-                  rlist<list<>,
-                    rlist<list<>,
-                      rlist<list<>,
-                        rlist<list<>,
-                          rlist<list<>,
-                            rlist<list<>,
-                              rlist<list<>,
-                                rlist<list<>, unindexed>>>>>>>>>>>>>>>;
-
-  using rlist_tail_of16 = rlist<list<>, rlist_tail_of15>;
-
-  template<class... xs>
-  struct indexed
-  {
-    template<class F>
-    using f = typename F::template f<xs...>;
-  };
-
-  template<
-    class x0, class x1, class x2, class x3, class x4, class x5,
-    class x6, class x7, class x8, class x9, class x10, class x11,
-    class x12, class x13, class x14, class x15, class Tail>
-  struct indexed<
-    rlist<x0,
-      rlist<x1,
-        rlist<x2,
-          rlist<x3,
-            rlist<x4,
-              rlist<x5,
-                rlist<x6,
-                  rlist<x7,
-                    rlist<x8,
-                      rlist<x9,
-                        rlist<x10,
-                          rlist<x11,
-                            rlist<x12,
-                              rlist<x13,
-                                rlist<x14,
-                                  rlist<x15, Tail>>>>>>>>>>>>>>>>>
-  {
-    template<class F>
-    using f = typename F::template f<
-      x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15
-    >;
-  };
-
-  template<>
-  struct indexed_builder<0>
-  {
-    template<class...>
-    using f = rlist_tail_of16;
-  };
-
-  template<>
-  struct indexed_builder<1>
-  {
-    template<
-      class x0 = unindexed, class x1 = unindexed, class x2 = unindexed, class x3 = unindexed,
-      class x4 = unindexed, class x5 = unindexed, class x6 = unindexed, class x7 = unindexed,
-      class x8 = unindexed, class x9 = unindexed, class x10 = unindexed, class x11 = unindexed,
-      class x12 = unindexed, class x13 = unindexed, class x14 = unindexed, class x15 = unindexed,
-      class...>
-    using f = rlist<
-      indexed<indexed<x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15>>,
-      rlist_tail_of15
-    >;
-  };
-
-  template<>
-  struct indexed_builder<3>
-  {
-    template<JLN_MP_XS_256(class, = unindexed, JLN_MP_COMMA), class... xs>
-    using f = rlist<
-      indexed<indexed<_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12,
-                      _13, _14, _15, _16>,
-              indexed<_17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27,
-                      _28, _29, _30, _31, _32>,
-              indexed<_33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43,
-                      _44, _45, _46, _47, _48>,
-              indexed<_49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59,
-                      _60, _61, _62, _63, _64>,
-
-              indexed<_65, _66, _67, _68, _69, _70, _71, _72, _73, _74, _75,
-                      _76, _77, _78, _79, _80>,
-              indexed<_81, _82, _83, _84, _85, _86, _87, _88, _89, _90, _91,
-                      _92, _93, _94, _95, _96>,
-              indexed<_97, _98, _99, _100, _101, _102, _103, _104, _105,
-                      _106, _107, _108, _109, _110, _111, _112>,
-              indexed<_113, _114, _115, _116, _117, _118, _119, _120, _121,
-                      _122, _123, _124, _125, _126, _127, _128>,
-
-              indexed<_129, _130, _131, _132, _133, _134, _135, _136, _137,
-                      _138, _139, _140, _141, _142, _143, _144>,
-              indexed<_145, _146, _147, _148, _149, _150, _151, _152, _153,
-                      _154, _155, _156, _157, _158, _159, _160>,
-              indexed<_161, _162, _163, _164, _165, _166, _167, _168, _169,
-                      _170, _171, _172, _173, _174, _175, _176>,
-              indexed<_177, _178, _179, _180, _181, _182, _183, _184, _185,
-                      _186, _187, _188, _189, _190, _191, _192>,
-
-              indexed<_193, _194, _195, _196, _197, _198, _199, _200, _201,
-                      _202, _203, _204, _205, _206, _207, _208>,
-              indexed<_209, _210, _211, _212, _213, _214, _215, _216, _217,
-                      _218, _219, _220, _221, _222, _223, _224>,
-              indexed<_225, _226, _227, _228, _229, _230, _231, _232, _233,
-                      _234, _235, _236, _237, _238, _239, _240>,
-              indexed<_241, _242, _243, _244, _245, _246, _247, _248, _249,
-                      _250, _251, _252, _253, _254, _255, _256>>,
-      typename indexed_builder<16 < sizeof...(xs) ? 3 : 1>::template f<xs...>
-    >;
-  };
-}
 /// \cond
 namespace jln::mp::detail
 {
@@ -27037,31 +27337,12 @@ namespace jln::mp::detail
     using f = rotate_c<start + size, drop_front_c<len - size, C>>;
   };
 
-#if JLN_MP_MSVC
-  template<unsigned size, unsigned stride, unsigned i, class x>
-  using slice_impl_msvc = typename wrap_in_list_c<(i <= size && i % stride == 0)>::template f<x>;
-#endif
-
-#if JLN_MP_USE_INTEGER_PACK
-  template<unsigned size, unsigned stride, class C, unsigned... ints>
-  struct _slice_impl
-#else
-  template<unsigned size, unsigned stride, class C, class>
-  struct _slice_impl;
-
-  template<unsigned size, unsigned stride, class C, std::size_t... ints>
-  struct _slice_impl<size, stride, C, std::integer_sequence<std::size_t, ints...>>
-#endif
+  template<class, unsigned... ints>
+  struct slice_impl
   {
-    template<class... xs>
-    using f = typename join<C>::template f<
-#if JLN_MP_MSVC
-      slice_impl_msvc<size, stride, ints, xs>...
-#else
-      typename wrap_in_list_c<(ints <= size && ints % stride == 0)>
-      ::template f<xs>...
-#endif
-    >;
+    template<class C, unsigned size, unsigned stride>
+    struct impl : _each<join<C>, wrap_in_list_c<(ints <= size && ints % stride == 0)>...>
+    {};
   };
 
   template<>
@@ -27070,9 +27351,8 @@ namespace jln::mp::detail
     template<unsigned start, unsigned size, unsigned stride, class C, std::size_t len>
     using f = drop_front_c<
       start,
-      _slice_impl<size * stride - stride + 1, stride, C,
-        JLN_MP_INTEGER_PACK_OR_STD_MAKE_INDEX_SEQUENCE(len - start)
-      >
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE_T(unsigned, len - start, slice_impl)
+        ::template impl<C, size * stride - stride + 1, stride>
     >;
   };
 
