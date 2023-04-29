@@ -169,6 +169,7 @@ local f_restore_namespace = function()
 end
 
 local Until = function(p) return (1 - P(p))^0 end
+local After = function(p) return Until(p) * p end
 local List = function(p, sep) p = P(p) return p * (sep * p)^0 end
 local Balanced = function(open, close)
   return P{ open * (1 - S(open..close) + V(1))^0 * close, }
@@ -209,7 +210,7 @@ local sanitize_space = Cs(ws0 / '' * (
 
 local sanitize_struct_impl_patt = Cs((
   (P'typename ' + 'template ') / ''
-+ 'detail::' * (id * ws0)^1 * (balancedtag * (ws0 * id)^0 * ws0)^0 * balancedparent^0 * ws0
++ (P'detail::' + '__') * (id * ws0)^1 * (balancedtag * (ws0 * id)^0 * ws0)^0 * balancedparent^0 * ws0
     / '/*...*/'
 + 1
 )^0)
@@ -275,23 +276,37 @@ preproc = P{
   + (P'JLN_MP_TRACE_TYPENAME' / '')
 
 , p='#' * sp0 / '' *
-    ( 'ifdef JLN_MP_DOXYGENATING'
-      * Cs((1 - ('#' * sp0 * (P'else' + P'endif')) + V'c')^0)
-      * Until('#' * sp0 * 'endif') * 7 / f_ident
-    + 'if 0' * Until'#endif' * 7 / ''
-    + 'if' * unl * Cs(( V'p'
-                      + V'c'
-                      + (1 - P'#')
-                      + '#' * sp0 * -#(P'end' + 'el') * unl / ''
-                      )^1)
-      * '#' * sp0 * ('el' * unl * V'endif' + unl) / f_ident
-    + 'define ' * List(Until(S'\n\\'), P'\\' * 1) * 1 / ''
+    ( P'ifdef JLN_MP_DOXYGENATING' / ''
+      * Cs((1 - P'#' + V'#preproc' / '' + V'c')^0)
+      * V'rm#endif'
+    + 'if 0' * After(V'#endif') / ''
+    + 'if' * unl / '' * Cs(( V'c'
+                           + V'\\cond'
+                           + (1 - P'#')
+                           + V'p'
+                           + V'#preproc' / ''
+                           )^1)
+      * V'rm#endif'
+    + (V'#def' + V'#undef') / ''
     )
-  + '/// \\cond' * Until'\\endcond' * 9 / ''
-  + blockComment / ''
+  + V'\\cond'
 
-, ['endif']=Until('#' * sp0 * (P'endif' + 'if'))
-    * ('#' * sp0 * ('if' * unl * V'endif' + 'endif'))
+, ['#preproc']='#' * sp0 * (
+    'if' * unl * ( (1 - P'#')
+                 + V'#preproc'
+                 )^1
+    * V'#endif'
+  + P'el' * unl * ((1 - P'#') + V'#preproc')^0
+  + V'#def'
+  + V'#undef'
+  )
+
+, ['#def']='define ' * List(Until(S'\n\\'), P'\\' * 1) * 1
+, ['#undef']='undef ' * unl
+, ['#endif']='#' * sp0 * 'endif'
+, ['rm#endif']=V'#endif' / ''
+
+, ['\\cond']=('/// \\cond' * Until'\\endcond' * 9 + blockComment) / ''
 }
 
 local lines = Ct(List(C(unl) * sp0, '///' * P' '^-1 * -P'\\'))

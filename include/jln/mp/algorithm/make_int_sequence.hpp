@@ -217,7 +217,7 @@ namespace jln::mp
   #define JLN_MP_D_MAKE_INTEGER_SEQUENCE(n, ...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME JLN_MP_MAKE_INTEGER_SEQUENCE(n, __VA_ARGS__)
 
-  // single list of int_
+  /// single list of int_
   template<int_... i>
   struct int_seq_v;
 } // namespace jln::mp
