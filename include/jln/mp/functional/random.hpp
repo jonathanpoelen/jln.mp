@@ -149,8 +149,8 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C, detail::random_impl<sizeof...(xs)>);
   };
 
-  template<>
-  struct random<identity>
+  template<auto v>
+  struct random<identity, v>
   {
     template<class... xs>
     using f = detail::random_impl<sizeof...(xs)>;
