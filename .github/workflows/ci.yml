@@ -63,7 +63,7 @@ jobs:
         ninja -C build -k10
 
   windows-cl:
-    name: Windows ${{ matrix.compiler }} dbg=${{ matrix.debug }}
+    name: Windows ${{ matrix.compiler }} dbg=${{ matrix.debug }} std=${{ matrix.std }}
     runs-on: windows-latest
     timeout-minutes: 8
     strategy:
@@ -106,7 +106,7 @@ jobs:
         CLICOLOR_FORCE= ninja -C build -k10
 
   linux:
-    name: Ubuntu ${{ matrix.cxx }} dbg=${{ matrix.debug }}
+    name: Ubuntu ${{ matrix.cxx }} dbg=${{ matrix.debug }} std=${{ matrix.std }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
