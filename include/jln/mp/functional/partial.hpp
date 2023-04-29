@@ -104,6 +104,21 @@ namespace jln::mp::detail
   };
 
   // sizeof...(Fs) < sizeof...(xs)
+  template<class C, class F3>
+  struct _partial_select<1, C, identity, identity, identity, F3>
+  {
+    template<class x0, class x1, class x2, class x3,
+             class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C,
+      x0,
+      x1,
+      x2,
+      JLN_MP_DCALL_TRACE_XS(xs, F3, x3),
+      xs...
+    );
+  };
+
+  // sizeof...(Fs) < sizeof...(xs)
   template<class C, class F0, class F1, class F2>
   struct _partial_select<1, C, F0, F1, F2>
   {
@@ -117,12 +132,37 @@ namespace jln::mp::detail
   };
 
   // sizeof...(Fs) < sizeof...(xs)
+  template<class C, class F2>
+  struct _partial_select<1, C, identity, identity, F2>
+  {
+    template<class x0, class x1, class x2, class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C,
+      x0,
+      x1,
+      JLN_MP_DCALL_TRACE_XS(xs, F2, x2),
+      xs...
+    );
+  };
+
+  // sizeof...(Fs) < sizeof...(xs)
   template<class C, class F0, class F1>
   struct _partial_select<1, C, F0, F1>
   {
     template<class x0, class x1, class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C,
       JLN_MP_DCALL_TRACE_XS(xs, F0, x0),
+      JLN_MP_DCALL_TRACE_XS(xs, F1, x1),
+      xs...
+    );
+  };
+
+  // sizeof...(Fs) < sizeof...(xs)
+  template<class C, class F1>
+  struct _partial_select<1, C, identity, F1>
+  {
+    template<class x0, class x1, class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C,
+      x0,
       JLN_MP_DCALL_TRACE_XS(xs, F1, x1),
       xs...
     );

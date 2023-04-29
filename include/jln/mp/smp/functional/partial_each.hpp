@@ -17,9 +17,10 @@ namespace jln::mp::smp
     ::template f<
       na,
       rotate_c<-1, detail::_smp_partial_each>>
-    ::template f<subcontract<Fs>...>;
+    ::template f<Fs...>;
 }
 
+#include <jln/mp/smp/assume.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/number/operators.hpp>
 #include <jln/mp/list/size.hpp>
@@ -38,7 +39,7 @@ namespace jln::mp::detail
     template<class C, class... Fs>
     using f = test_contract<
       size<greater_equal_than_c<sizeof...(Fs)>>,
-      partial_each<Fs..., monadic_xs<C>>
+      partial_each<assume_unary<Fs>..., monadic_xs<subcontract<C>>>
     >;
   };
 }

@@ -90,6 +90,9 @@
 #include <jln/mp/algorithm/take_while.hpp>
 #include <jln/mp/algorithm/take_while_xs.hpp>
 #include <jln/mp/algorithm/transform.hpp>
+#include <jln/mp/algorithm/transform_first.hpp>
+#include <jln/mp/algorithm/transform_second.hpp>
+#include <jln/mp/algorithm/transform_third.hpp>
 #include <jln/mp/algorithm/unfold.hpp>
 #include <jln/mp/algorithm/unique.hpp>
 #include <jln/mp/algorithm/upper_bound.hpp>
