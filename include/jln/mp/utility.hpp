@@ -9,6 +9,7 @@
 #include <jln/mp/utility/is_not.hpp>
 #include <jln/mp/utility/is_specialization_of.hpp>
 #include <jln/mp/utility/iterate.hpp>
+#include <jln/mp/utility/rewrap_unpack.hpp>
 #include <jln/mp/utility/sizeof.hpp>
 #include <jln/mp/utility/stl_traits.hpp>
 #include <jln/mp/utility/type.hpp>

@@ -192,6 +192,7 @@
 #include "src/utility/is_not.cpp"
 #include "src/utility/is_specialization_of.cpp"
 #include "src/utility/iterate.cpp"
+#include "src/utility/rewrap_unpack.cpp"
 #include "src/utility/sizeof.cpp"
 #include "src/utility/stl_traits.cpp"
 #include "src/utility/type.cpp"
