@@ -1,38 +1,21 @@
 #pragma once
 
 #include <jln/mp/number/numbers.hpp>
+#include <jln/mp/detail/compiler.hpp>
 
 #ifdef JLN_MP_DISABLE_INTEGER_SEQUENCE_OPTIMIZATION
 #  define JLN_MP_USE_INTEGER_PACK 0
 #  define JLN_MP_USE_MAKE_INTEGER_SEQ 0
-#elif defined(__has_builtin)
-#  if __has_builtin(__make_integer_seq)
-#    define JLN_MP_USE_INTEGER_PACK 0
-#    define JLN_MP_USE_MAKE_INTEGER_SEQ 1
-#  elif __has_builtin(__integer_pack)
-#    define JLN_MP_USE_INTEGER_PACK 1
-#    define JLN_MP_USE_MAKE_INTEGER_SEQ 0
-#  endif
-#elif defined(_MSC_VER)
+#elif JLN_MP_HAS_BUILTIN(__make_integer_seq) || defined(_MSC_VER)
 #  define JLN_MP_USE_INTEGER_PACK 0
 #  define JLN_MP_USE_MAKE_INTEGER_SEQ 1
-#elif defined(__GNUC__)
-#  if __GNUC__ >= 8
-#    define JLN_MP_USE_INTEGER_PACK 1
-#    define JLN_MP_USE_MAKE_INTEGER_SEQ 0
-#  endif
-#endif
-
-#ifdef JLN_MP_DO_NOT_USE_BUILTIN
-#  undef JLN_MP_USE_INTEGER_PACK
-#  undef JLN_MP_USE_MAKE_INTEGER_SEQ
-#endif
-
-#ifndef JLN_MP_USE_INTEGER_PACK
+#elif JLN_MP_HAS_BUILTIN(__integer_pack) || JLN_MP_GCC >= 800
+#  define JLN_MP_USE_INTEGER_PACK 1
+#  define JLN_MP_USE_MAKE_INTEGER_SEQ 0
+#else
 #  define JLN_MP_USE_INTEGER_PACK 0
 #  define JLN_MP_USE_MAKE_INTEGER_SEQ 0
 #endif
-
 
 #if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
 #  include <cstddef>

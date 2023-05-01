@@ -47,6 +47,14 @@
 
 #define JLN_MP_WORKAROUND(symbol, test) ((symbol) != 0 && ((symbol) test))
 
+#if defined(__has_builtin)
+#  define JLN_MP_HAS_BUILTIN(name) __has_builtin(name)
+#else
+#  define JLN_MP_HAS_BUILTIN(name) 0
+#endif
+
+// Pragma
+//@{
 #define JLN_MP_PRAGMA(x) JLN_MP_PRAGMA_I(x)
 
 #ifdef _MSC_VER
@@ -54,6 +62,7 @@
 #else
 #  define JLN_MP_PRAGMA_I(x) _Pragma(#x)
 #endif
+//@}
 
 // Features
 //@{
