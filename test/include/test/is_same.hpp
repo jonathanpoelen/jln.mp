@@ -15,7 +15,7 @@ namespace
   };
 
   class ExpectedValue;
-  class ResulValue;
+  class ResultValue;
 
   template<class Tag, class T>
   struct MustBeDifferent
@@ -70,14 +70,14 @@ namespace
   };
 
   template<class expected, class result,
-    class expectedName = ExpectedValue, class resultName = ResulValue>
+    class expectedName = ExpectedValue, class resultName = ResultValue>
   constexpr void same()
   {
     Same<Expected<expected>, Result<result>, expectedName, resultName>::test();
   }
 
   template<class notExpected, class result,
-    class expectedName = ExpectedValue, class resultName = ResulValue>
+    class expectedName = ExpectedValue, class resultName = ResultValue>
   constexpr void not_same()
   {
     Different<NotExpected<notExpected>, Result<result>, expectedName, resultName>::test();
@@ -86,7 +86,7 @@ namespace
   template<class R, class C, class... xs>
   constexpr void invoke_r()
   {
-    Same<Expected<R>, Result<typename C::template f<xs...>>, ExpectedValue, ResulValue>::test();
+    Same<Expected<R>, Result<typename C::template f<xs...>>, ExpectedValue, ResultValue>::test();
   }
 }
 }

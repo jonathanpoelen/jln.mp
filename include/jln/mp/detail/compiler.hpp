@@ -53,6 +53,14 @@
 #  define JLN_MP_HAS_BUILTIN(name) 0
 #endif
 
+#if defined(__cpp_inline_variables) && __cpp_inline_variables >= 201606L
+#  define JLN_MP_INLINE_VAR inline
+#  define JLN_MP_CONSTEXPR_VAR inline constexpr
+#else
+#  define JLN_MP_INLINE_VAR
+#  define JLN_MP_CONSTEXPR_VAR constexpr
+#endif
+
 // Pragma
 //@{
 #define JLN_MP_PRAGMA(x) JLN_MP_PRAGMA_I(x)

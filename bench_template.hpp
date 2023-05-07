@@ -21,21 +21,27 @@
 # define ALGO listify
 #endif
 
+#if NREPEAT == 1
+# define REPETABLE_ALGO ALGO
+#else
+# define REPETABLE_ALGO repeat_c<NREPEAT, ALGO>
+#endif
+
 namespace n
 {
   using namespace jln::mp;
 
 #if IMPL == 0
-  using l = emp::make_int_sequence_c<NELEM, repeat_c<NREPEAT, ALGO>>;
+  using l = emp::make_int_sequence_c<NELEM, REPETABLE_ALGO>;
 #elif IMPL == 1
   using l = emp::make_int_sequence_c<NELEM, transform<
-    make_int_sequence<repeat_c<NREPEAT, ALGO>>
+    make_int_sequence<REPETABLE_ALGO>
   >>;
 #else
   struct test
   {
     template<class n>
-    using f = emp::iota_c<n::value, NELEM, 1, repeat_c<NREPEAT, ALGO>>;
+    using f = emp::iota_c<n::value, NELEM, 1, REPETABLE_ALGO>;
   };
 
   using l = emp::make_int_sequence_c<NELEM, transform<test>>;

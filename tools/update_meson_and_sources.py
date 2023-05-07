@@ -90,7 +90,9 @@ if os.path.isdir('test/autogen/'):
   shutil.rmtree('test/autogen/')
 os.mkdir('test/autogen')
 
-new_alias('mp', make_targets('test/src', 'mp'))
+mp_all = make_targets('test/src', 'mp')
+mp_all.append('t_utility_stl_traits_no_std')
+new_alias('mp', mp_all)
 genfiles('mp')
 genfiles('mp/smp')
 with open(f'test/autogen/main.cpp', 'w') as f:
