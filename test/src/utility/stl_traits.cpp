@@ -4,6 +4,30 @@
 
 TEST_SUITE_BEGIN()
 
+class no_type { using type = no_type;  };
+
+template<class>
+struct result { using type = result; };
+
+template<class, class = void>
+struct maybe_uncallable_impl
+{
+  using type = no_type;
+};
+
+template<class T>
+struct maybe_uncallable_impl<T, std::void_t<typename T::type>>
+{
+  using type = result<typename T::type>;
+};
+
+template<template<class...> class Jln>
+struct maybe_uncallable
+{
+  template<class... xs>
+  using f = maybe_uncallable_impl<Jln<xs...>>;
+};
+
 JLN_MP_DIAGNOSTIC_PUSH()
 JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunneeded-member-function")
 JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunused-member-function")
@@ -111,7 +135,7 @@ struct Class
 };
 
 enum class ScopedSEnum : int {};
-enum class ScopedUEnum : unsigned {};
+enum class ScopedUEnum : unsigned long {};
 
 enum SEnum : int {};
 enum UEnum : unsigned {};
@@ -140,6 +164,19 @@ struct Virtual
 struct Final final
 {
   int i;
+};
+
+struct ConvertibleToScopedEnum
+{
+  operator ScopedUEnum() const noexcept;
+
+  explicit operator ScopedSEnum() const noexcept;
+};
+
+struct AutoConvert
+{
+  template<class T>
+  operator T() const noexcept;
 };
 
 struct NoCopyable
@@ -374,23 +411,30 @@ template<class x, class y>
 struct test_xs_impl
 {
   template<class... xs>
-  static constexpr void(*f)() = &ut::same<x, y, Params<xs...>>;
+  using f = ut::Same<ut::Expected<x>, ut::Result<y>, Params<xs...>, ut::ResultValue>;
+};
+
+struct Ok
+{
+  static void test()
+  {}
+
+  template<class... xs>
+  using f = Ok;
 };
 
 template<class x>
-struct test_xs_impl<x, x>
-{
-  template<class... xs>
-  static constexpr void(*f)() = nullptr;
-};
+struct test_xs_impl<x, x> : Ok
+{};
 
-#define CHECK_IMPL(Std, Jln, ...) test_xs_impl<     \
-  typename Std<__VA_ARGS__>::type, Jln<__VA_ARGS__> \
->::template f<__VA_ARGS__>()
+#define CHECK_IMPL(Std, Jln, ...) test_xs_impl< \
+  typename Std<__VA_ARGS__>::type,              \
+  typename Jln<__VA_ARGS__>::type               \
+>::template f<__VA_ARGS__>::test()
 
 #define CHECK_T_V_IMPL(Std, Jln, t, v) test_xs_impl< \
   typename Std<t, v>::type, Jln<t, number<v>>        \
->::template f<t, number<v>>()
+>::template f<t, number<v>>::test()
 
 template<template<class...> class Std, template<class...> class Jln, class x>
 void test_x1_cv()
@@ -421,16 +465,14 @@ void test_x1_cv_ref()
 template<template<class...> class Std, template<class...> class Jln>
 void test_x1()
 {
-  CHECK_IMPL(Std, Jln, void);
-  CHECK_IMPL(Std, Jln, const void);
-  CHECK_IMPL(Std, Jln, volatile void);
-  CHECK_IMPL(Std, Jln, volatile const void);
+  test_x1_cv<Std, Jln, void>();
   test_x1_cv_ref<Std, Jln, decltype(nullptr)>();
   test_x1_cv_ref<Std, Jln, Empty>();
   test_x1_cv_ref<Std, Jln, SEnum>();
   test_x1_cv_ref<Std, Jln, UEnum>();
   test_x1_cv_ref<Std, Jln, ScopedSEnum>();
   test_x1_cv_ref<Std, Jln, ScopedUEnum>();
+  test_x1_cv_ref<Std, Jln, ConvertibleToScopedEnum>();
   test_x1_cv_ref<Std, Jln, Union>();
   test_x1_cv_ref<Std, Jln, Class>();
   test_x1_cv_ref<Std, Jln, Parent>();
@@ -453,6 +495,7 @@ void test_x1()
   test_x1_cv_ref<Std, Jln, const int[]>();
   test_x1_cv_ref<Std, Jln, volatile int[]>();
   test_x1_cv_ref<Std, Jln, volatile const int[]>();
+  // TODO only when no pedantic
   // JLN_MP_DIAGNOSTIC_PUSH()
   // JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wzero-length-array")
   // test_x1_cv_ref<Std, Jln, int[0]>();
@@ -485,6 +528,7 @@ void test_x1()
 
   test_x1_cv_ref<Std, Jln, void(int)>();
   test_x1_cv_ref<Std, Jln, void(*)(int)>();
+  test_x1_cv_ref<Std, Jln, void(&)(int)>();
   test_x1_cv<Std, Jln, void(int) const>();
   test_x1_cv<Std, Jln, void(int) volatile>();
   test_x1_cv<Std, Jln, void(int) const&>();
@@ -615,6 +659,10 @@ void test_func_and_mem()
   test_x1_cv_ref<Std, Jln, void(*)(...)>();
   test_x1_cv_ref<Std, Jln, void(*)(int)>();
   test_x1_cv_ref<Std, Jln, void(*)(int, ...)>();
+  test_x1_cv_ref<Std, Jln, void(&)()>();
+  test_x1_cv_ref<Std, Jln, void(&)(...)>();
+  test_x1_cv_ref<Std, Jln, void(&)(int)>();
+  test_x1_cv_ref<Std, Jln, void(&)(int, ...)>();
   test_x1_cv_ref<Std, Jln, void() noexcept>();
   test_x1_cv_ref<Std, Jln, void(...) noexcept>();
   test_x1_cv_ref<Std, Jln, void(int) noexcept>();
@@ -623,6 +671,10 @@ void test_func_and_mem()
   test_x1_cv_ref<Std, Jln, void(*)(...) noexcept>();
   test_x1_cv_ref<Std, Jln, void(*)(int) noexcept>();
   test_x1_cv_ref<Std, Jln, void(*)(int, ...) noexcept>();
+  test_x1_cv_ref<Std, Jln, void(&)() noexcept>();
+  test_x1_cv_ref<Std, Jln, void(&)(...) noexcept>();
+  test_x1_cv_ref<Std, Jln, void(&)(int) noexcept>();
+  test_x1_cv_ref<Std, Jln, void(&)(int, ...) noexcept>();
   test_x1_cv<Std, Jln, void() const>();
   test_x1_cv<Std, Jln, void() const&>();
   test_x1_cv<Std, Jln, void() const&&>();
@@ -812,8 +864,11 @@ TEST()
   using jln::mp::number;
 
   #define SINGLE_CHECK(name, ...) CHECK_IMPL(std::name, name, __VA_ARGS__)
+  #define SINGLE_CHECK_M(name, ...) CHECK_IMPL( \
+    maybe_uncallable<std::name>::f, maybe_uncallable<name>::f, __VA_ARGS__)
   #define SINGLE_CHECK_T_V(name, ...) CHECK_T_V_IMPL(std::name, name, __VA_ARGS__)
   #define CHECK_X1(name) test_x1<std::name, name>()
+  #define CHECK_X1_M(name) test_x1<maybe_uncallable<std::name>::f, maybe_uncallable<name>::f>()
   #define CHECK_X1_T(name) test_x1<std::name, name##_t>()
   #define CHECK_X1_ARITHMETIC(name) test_arithmetic<std::name, name>()
   #define CHECK_F(f, name) f<std::name, name>()
@@ -859,7 +914,7 @@ TEST()
 //   CHECK_X1(is_lvalue_reference);
 //   CHECK_X1(is_rvalue_reference);
 //   CHECK_X1(is_reference);
-//   CHECK_X1(is_function);
+  CHECK_X1(is_function);
 //   CHECK_X1(is_member_object_pointer);
 //   CHECK_X1(is_member_function_pointer);
 //   CHECK_X1(is_enum);
@@ -872,28 +927,28 @@ TEST()
 //   CHECK_X1(is_null_pointer);
 //   CHECK_X1_ARITHMETIC(is_scalar);
 //   CHECK_X1(is_compound);
-  // CHECK_XS(is_constructible);
+  // // CHECK_XS(is_constructible);
   // CHECK_F(test_constructible, is_constructible);
   // CHECK_F(test_constructible, is_default_constructible);
   // CHECK_F(test_constructible, is_copy_constructible);
   // CHECK_F(test_constructible, is_move_constructible);
-  // CHECK_XS(is_trivially_constructible);
+  // // CHECK_XS(is_trivially_constructible);
   // CHECK_F(test_constructible, is_trivially_constructible);
   // CHECK_F(test_constructible, is_trivially_default_constructible);
   // CHECK_F(test_constructible, is_trivially_copy_constructible);
   // CHECK_F(test_constructible, is_trivially_move_constructible);
-  // CHECK_XS(is_nothrow_constructible);
+  // // CHECK_XS(is_nothrow_constructible);
   // CHECK_F(test_constructible, is_nothrow_constructible);
   // CHECK_F(test_constructible, is_nothrow_default_constructible);
   // CHECK_F(test_constructible, is_nothrow_copy_constructible);
   // CHECK_F(test_constructible, is_nothrow_move_constructible);
-  // CHECK_X2(is_assignable);
+  // // CHECK_X2(is_assignable);
   // CHECK_F(test_assignable, is_copy_assignable);
   // CHECK_F(test_assignable, is_move_assignable);
-  // CHECK_X2(is_trivially_assignable);
+  // // CHECK_X2(is_trivially_assignable);
   // CHECK_F(test_assignable, is_trivially_copy_assignable);
   // CHECK_F(test_assignable, is_trivially_move_assignable);
-  // CHECK_X2(is_nothrow_assignable);
+  // // CHECK_X2(is_nothrow_assignable);
   // CHECK_F(test_assignable, is_nothrow_copy_assignable);
   // CHECK_F(test_assignable, is_nothrow_move_assignable);
   // CHECK_X1(is_destructible);
@@ -941,15 +996,15 @@ TEST()
   // CHECK_X1(add_volatile);
   // CHECK_X1(add_cv);
   // CHECK_X1(remove_reference);
-  // CHECK_X1_T(add_lvalue_reference);
-  // CHECK_X1(add_rvalue_reference);
+  CHECK_X1(add_lvalue_reference);
+  CHECK_X1(add_rvalue_reference);
   // CHECK_F_T(test_x1_make_unsigned_signed, make_signed);
   // CHECK_F_T(test_x1_make_unsigned_signed, make_unsigned);
   // CHECK_X1_T(remove_extent);
   // CHECK_X1_T(remove_all_extents);
   // CHECK_X1_T(remove_pointer);
   // CHECK_X1_T(add_pointer);
-  CHECK_X1_T(decay);
+  // CHECK_X1_T(decay);
 //   // CHECK_XS(aligned_storage);
 //   // CHECK_XS(aligned_union);
 // #if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref >= 201811L
@@ -964,7 +1019,25 @@ TEST()
 //   // CHECK_XS(basic_common_reference);
 // #endif
   // CHECK_X1(underlying_type);
-  // CHECK_XS(common_type);
+  CHECK_X1_M(common_type);
+  SINGLE_CHECK_M(common_type, int, float);
+  SINGLE_CHECK_M(common_type, int, float, long long);
+  SINGLE_CHECK_M(common_type, void, void, void);
+  SINGLE_CHECK_M(common_type, int, float, void);
+  SINGLE_CHECK_M(common_type, int, float, long long, void);
+  SINGLE_CHECK_M(common_type, void, int, float, long long);
+  SINGLE_CHECK_M(common_type, int, int*);
+  SINGLE_CHECK_M(common_type, int, int, int, int*);
+  SINGLE_CHECK_M(common_type, int*, int, int, int);
+  SINGLE_CHECK_M(common_type, int, long const&);
+  SINGLE_CHECK_M(common_type, ScopedSEnum, ConvertibleToScopedEnum);
+  SINGLE_CHECK_M(common_type, ScopedUEnum, ConvertibleToScopedEnum);
+  SINGLE_CHECK_M(common_type, AutoConvert, int);
+  SINGLE_CHECK_M(common_type, int, long, AutoConvert, int);
+  SINGLE_CHECK_M(common_type, Parent, Class);
+  SINGLE_CHECK_M(common_type, Parent*, Class*);
+  SINGLE_CHECK_M(common_type, std::true_type, std::false_type);
+  // SINGLE_CHECK(extent, int[][3]);
 }
 
 // TODO

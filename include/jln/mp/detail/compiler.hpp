@@ -61,6 +61,23 @@
 #  define JLN_MP_CONSTEXPR_VAR constexpr
 #endif
 
+// https://en.cppreference.com/w/cpp/preprocessor/replace#Predefined_macros
+#ifndef JLN_MP_CXX_VERSION
+#  if __cplusplus < 201103L
+#    define JLN_MP_CXX_VERSION 3
+#  elif __cplusplus < 201402L
+#    define JLN_MP_CXX_VERSION 11
+#  elif __cplusplus < 201703L
+#    define JLN_MP_CXX_VERSION 14
+#  elif __cplusplus < 202002L
+#    define JLN_MP_CXX_VERSION 17
+#  elif __cplusplus == 202002L
+#    define JLN_MP_CXX_VERSION 20
+#  else
+#    define JLN_MP_CXX_VERSION 23
+#  endif
+#endif
+
 // Pragma
 //@{
 #define JLN_MP_PRAGMA(x) JLN_MP_PRAGMA_I(x)
