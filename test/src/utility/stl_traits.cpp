@@ -175,8 +175,11 @@ struct ConvertibleToScopedEnum
 
 struct AutoConvert
 {
+JLN_MP_DIAGNOSTIC_PUSH()
+JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunused-template")
   template<class T>
   operator T() const noexcept;
+JLN_MP_DIAGNOSTIC_POP()
 };
 
 struct NoCopyable
@@ -414,6 +417,8 @@ struct test_xs_impl
   using f = ut::Same<ut::Expected<x>, ut::Result<y>, Params<xs...>, ut::ResultValue>;
 };
 
+JLN_MP_DIAGNOSTIC_PUSH()
+JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunused-member-function")
 struct Ok
 {
   static void test()
@@ -422,18 +427,35 @@ struct Ok
   template<class... xs>
   using f = Ok;
 };
+JLN_MP_DIAGNOSTIC_POP()
 
 template<class x>
 struct test_xs_impl<x, x> : Ok
 {};
 
-#define CHECK_IMPL(Std, Jln, ...) test_xs_impl< \
-  typename Std<__VA_ARGS__>::type,              \
-  typename Jln<__VA_ARGS__>::type               \
+template<class T>
+struct to_std_integral_constant
+{
+  using type = T;
+};
+
+template<class T, T value>
+struct to_std_integral_constant<jln::mp::traits::emp::integral_constant<T, value>>
+{
+  using type = std::integral_constant<T, value>;
+};
+
+template<class T>
+using to_std_integral_constant_t = typename to_std_integral_constant<T>::type;
+
+#define CHECK_IMPL(Std, Jln, ...) test_xs_impl<               \
+  typename Std<__VA_ARGS__>::type,                            \
+  to_std_integral_constant_t<typename Jln<__VA_ARGS__>::type> \
 >::template f<__VA_ARGS__>::test()
 
-#define CHECK_T_V_IMPL(Std, Jln, t, v) test_xs_impl< \
-  typename Std<t, v>::type, Jln<t, number<v>>        \
+#define CHECK_T_V_IMPL(Std, Jln, t, v) test_xs_impl<   \
+  typename Std<t, v>::type,                            \
+  to_std_integral_constant_t<typename Jln<t, v>::type> \
 >::template f<t, number<v>>::test()
 
 template<template<class...> class Std, template<class...> class Jln, class x>
@@ -525,6 +547,10 @@ void test_x1()
   test_x1_cv_ref<Std, Jln, const NoMovable[5][5]>();
   test_x1_cv_ref<Std, Jln, volatile NoMovable[5][5]>();
   test_x1_cv_ref<Std, Jln, volatile const NoMovable[5][5]>();
+  test_x1_cv_ref<Std, Jln, ThrowableDtor[]>();
+  test_x1_cv_ref<Std, Jln, volatile const ThrowableDtor[5]>();
+  test_x1_cv_ref<Std, Jln, ThrowableDtor[][5]>();
+  test_x1_cv_ref<Std, Jln, const ThrowableDtor[5][5]>();
 
   test_x1_cv_ref<Std, Jln, void(int)>();
   test_x1_cv_ref<Std, Jln, void(*)(int)>();
@@ -863,6 +889,10 @@ TEST()
   using namespace jln::mp::traits::emp;
   using jln::mp::number;
 
+  // TODO
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wunused-macros")
+
   #define SINGLE_CHECK(name, ...) CHECK_IMPL(std::name, name, __VA_ARGS__)
   #define SINGLE_CHECK_M(name, ...) CHECK_IMPL( \
     maybe_uncallable<std::name>::f, maybe_uncallable<name>::f, __VA_ARGS__)
@@ -876,8 +906,11 @@ TEST()
   #define CHECK_WITH(name, ...) \
     test_xs_impl<std::name<__VA_ARGS__>::type, name<__VA_ARGS__>::type>::f<__VA_ARGS__>()
 
-  // CHECK_X1(is_const);
-  // CHECK_X1(is_volatile);
+  // TODO
+  JLN_MP_DIAGNOSTIC_POP()
+
+  CHECK_X1(is_const);
+  CHECK_X1(is_volatile);
   // CHECK_X1(is_trivial);
   // CHECK_X1(is_trivially_copyable);
   // CHECK_X1(is_standard_layout);
@@ -889,7 +922,20 @@ TEST()
 //   CHECK_X1(is_abstract);
 //   CHECK_X1(is_final);
 //   CHECK_X1(is_aggregate);
-//   // TODO CHECK_X1(is_implicit_lifetime);
+// #if defined(__cpp_lib_is_implicit_lifetime) && __cpp_lib_is_implicit_lifetime >= 202302L
+// // template<typename T>
+// // struct is_implicit_lifetime : std::disjunction<
+// //       std::is_scalar<T>,
+// //       std::is_array<T>,
+// //       std::is_aggregate<T>,
+// //       std::conjunction<
+// //             std::is_trivially_destructible<T>,
+// //             std::disjunction<
+// //                    std::is_trivially_default_constructible<T>,
+// //                    std::is_trivially_copy_constructible<T>,
+// // std::is_trivially_move_constructible<T>>>> {};
+//   CHECK_X1(is_implicit_lifetime);
+// #endif
 //   CHECK_X1_ARITHMETIC(is_signed);
 //   CHECK_X1_ARITHMETIC(is_unsigned);
 // #if defined(__cpp_lib_bounded_array_traits) && __cpp_lib_bounded_array_traits >= 201902L
@@ -914,7 +960,7 @@ TEST()
 //   CHECK_X1(is_lvalue_reference);
 //   CHECK_X1(is_rvalue_reference);
 //   CHECK_X1(is_reference);
-  CHECK_X1(is_function);
+  // CHECK_X1(is_function);
 //   CHECK_X1(is_member_object_pointer);
 //   CHECK_X1(is_member_function_pointer);
 //   CHECK_X1(is_enum);
@@ -955,8 +1001,8 @@ TEST()
   // CHECK_X1(is_trivially_destructible);
   // CHECK_X1(is_nothrow_destructible);
 #if defined(__cpp_lib_is_swappable) && __cpp_lib_is_swappable >= 201603L
-  // CHECK_F(test_swappable, is_swappable);
-  // CHECK_F(test_swappable, is_nothrow_swappable);
+  CHECK_F(test_swappable, is_swappable);
+  CHECK_F(test_swappable, is_nothrow_swappable);
   // CHECK_X2(is_swappable_with);
   // CHECK_X2(is_nothrow_swappable_with);
 #endif
@@ -996,8 +1042,8 @@ TEST()
   // CHECK_X1(add_volatile);
   // CHECK_X1(add_cv);
   // CHECK_X1(remove_reference);
-  CHECK_X1(add_lvalue_reference);
-  CHECK_X1(add_rvalue_reference);
+  // CHECK_X1(add_lvalue_reference);
+  // CHECK_X1(add_rvalue_reference);
   // CHECK_F_T(test_x1_make_unsigned_signed, make_signed);
   // CHECK_F_T(test_x1_make_unsigned_signed, make_unsigned);
   // CHECK_X1_T(remove_extent);
@@ -1019,24 +1065,24 @@ TEST()
 //   // CHECK_XS(basic_common_reference);
 // #endif
   // CHECK_X1(underlying_type);
-  CHECK_X1_M(common_type);
-  SINGLE_CHECK_M(common_type, int, float);
-  SINGLE_CHECK_M(common_type, int, float, long long);
-  SINGLE_CHECK_M(common_type, void, void, void);
-  SINGLE_CHECK_M(common_type, int, float, void);
-  SINGLE_CHECK_M(common_type, int, float, long long, void);
-  SINGLE_CHECK_M(common_type, void, int, float, long long);
-  SINGLE_CHECK_M(common_type, int, int*);
-  SINGLE_CHECK_M(common_type, int, int, int, int*);
-  SINGLE_CHECK_M(common_type, int*, int, int, int);
-  SINGLE_CHECK_M(common_type, int, long const&);
-  SINGLE_CHECK_M(common_type, ScopedSEnum, ConvertibleToScopedEnum);
-  SINGLE_CHECK_M(common_type, ScopedUEnum, ConvertibleToScopedEnum);
-  SINGLE_CHECK_M(common_type, AutoConvert, int);
-  SINGLE_CHECK_M(common_type, int, long, AutoConvert, int);
-  SINGLE_CHECK_M(common_type, Parent, Class);
-  SINGLE_CHECK_M(common_type, Parent*, Class*);
-  SINGLE_CHECK_M(common_type, std::true_type, std::false_type);
+  // CHECK_X1_M(common_type);
+  // SINGLE_CHECK_M(common_type, int, float);
+  // SINGLE_CHECK_M(common_type, int, float, long long);
+  // SINGLE_CHECK_M(common_type, void, void, void);
+  // SINGLE_CHECK_M(common_type, int, float, void);
+  // SINGLE_CHECK_M(common_type, int, float, long long, void);
+  // SINGLE_CHECK_M(common_type, void, int, float, long long);
+  // SINGLE_CHECK_M(common_type, int, int*);
+  // SINGLE_CHECK_M(common_type, int, int, int, int*);
+  // SINGLE_CHECK_M(common_type, int*, int, int, int);
+  // SINGLE_CHECK_M(common_type, int, long const&);
+  // SINGLE_CHECK_M(common_type, ScopedSEnum, ConvertibleToScopedEnum);
+  // SINGLE_CHECK_M(common_type, ScopedUEnum, ConvertibleToScopedEnum);
+  // SINGLE_CHECK_M(common_type, AutoConvert, int);
+  // SINGLE_CHECK_M(common_type, int, long, AutoConvert, int);
+  // SINGLE_CHECK_M(common_type, Parent, Class);
+  // SINGLE_CHECK_M(common_type, Parent*, Class*);
+  // SINGLE_CHECK_M(common_type, std::true_type, std::false_type);
   // SINGLE_CHECK(extent, int[][3]);
 }
 

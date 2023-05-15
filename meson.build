@@ -36,7 +36,7 @@ test_dep = declare_dependency(include_directories: include_directories('test/inc
 executable('mp_test', 'test/mp.cpp', dependencies: test_dep)
 
 t_utility_stl_traits_no_std = executable('stl_traits_no_stl', 'test/src/utility/stl_traits.cpp',
-  dependencies: test_dep, cpp_args: '-DJLN_MP_USE_OPTIONAL_BUILTIN=0')
+  dependencies: test_dep, cpp_args: ['-DJLN_MP_USE_OPTIONAL_BUILTIN=0', '-DJLN_MP_NO_STL=1'])
 
 # start tests
 t_algorithm_accumulate = executable('accumulate', 'test/src/algorithm/accumulate.cpp', dependencies: test_dep)
