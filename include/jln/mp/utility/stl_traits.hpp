@@ -12,13 +12,15 @@
 #  define JLN_MP_NO_STL 0
 #endif
 
+// TODO /!\ __cpp_* defined in type_traits or functional
+
 // TODO mp::* use detail::*_v instead of emp::*_v
 
 // TODO remove
 #  include <type_traits>
 
 // TODO add EASTL (https://github.com/electronicarts/EASTL/blob/master/include/EASTL/type_traits.h)
-#if !JLN_MP_NO_STL
+#if ! JLN_MP_NO_STL
 #  include <type_traits>
 #  if defined(_GLIBCXX_RELEASE)
 #    define JLN_MP_USE_LIBSTDCXX 1
@@ -179,7 +181,7 @@ namespace jln::mp::traits
 //      ^ use value alias (using std::name_v)
 //       ^ use type alias (using std::name_t)
 // STD_SVAT
-//       ^ alias for T on V (using std::name_t = std::integral_constant<Type, std::name_v<...>)
+//       ^ alias for T based on V (using std::name_t = std::integral_constant<Type, std::name_v<...>)
 
 #define JLN_MP_MAKE_TRAIT_FROM_STD_SVAT_IMPL( \
     Name, Params, ...)                        \
@@ -191,6 +193,15 @@ namespace jln::mp::traits
     using Name##_t = __VA_ARGS__;             \
   }                                           \
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, __VA_ARGS__)
+
+#define JLN_MP_MAKE_TRAIT_FROM_STD_ST( \
+    Name, Params, Values)              \
+  namespace emp                        \
+  {                                    \
+    using std::Name;                   \
+    using std::Name##_t;               \
+  }                                    \
+  JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, std::Name##_t<JLN_MP_UNPACK Values>)
 
 #define JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(Name, Params, Type, Values) \
   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT_IMPL(                             \
@@ -621,7 +632,7 @@ namespace jln::mp::traits
   // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
     is_trivial, (class T), bool, __is_trivially_constructible(T) && __is_trivially_copyable(T));
-#elif !JLN_MP_NO_STL
+#elif ! JLN_MP_NO_STL
   // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_trivial, (class T), bool, (T))
 #endif
@@ -730,7 +741,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if !JLN_MP_NO_STL && JLN_MP_USE_LIBMS
+#if ! JLN_MP_NO_STL && JLN_MP_USE_LIBMS
   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_bounded_array, (class T), bool, (T));
   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_unbounded_array, (class T), bool, (T));
 #else
@@ -1527,17 +1538,17 @@ namespace jln::mp::traits
   namespace detail
   {
     template<bool>
-    struct is_implicit_lifetime2_impl;
+    struct is_implicit_lifetime_impl;
 
     template<>
-    struct is_implicit_lifetime2_impl<true>
+    struct is_implicit_lifetime_impl<true>
     {
       template<class T>
       static constexpr bool v = true;
     };
 
     template<>
-    struct is_implicit_lifetime2_impl<false>
+    struct is_implicit_lifetime_impl<false>
     {
       template<class T>
       static constexpr bool v = JLN_MP_IS_TRIVIALLY_DESTRUCTIBLE_V(T)
@@ -1550,7 +1561,7 @@ namespace jln::mp::traits
   namespace emp
   {
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_implicit_lifetime_v
-      = detail::is_implicit_lifetime2_impl<
+      = detail::is_implicit_lifetime_impl<
         JLN_MP_IS_SCALAR_V(T)
       || JLN_MP_IS_ARRAY_V(T)
 #if JLN_MP_HAS_BUILTIN(__is_aggregate)
@@ -1564,7 +1575,6 @@ namespace jln::mp::traits
 
   namespace detail
   {
-    // TODO MACRO_V
     template<class T>
     emp::enable_if_t<__is_constructible(T, T) && JLN_MP_IS_MOVE_ASSIGNABLE_V(T)>
     swap(T&, T&) noexcept(__is_nothrow_constructible(T, T)
@@ -1603,6 +1613,7 @@ namespace jln::mp::traits
     JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wcomma")
     template<class T, class U>
     JLN_MP_CONSTEXPR_VAR bool is_swappable_with_impl_v<
+      // TODO decltype((....)) <- no Wcomma ?
       T, U, decltype(
         void(swap(JLN_MP_DECLVAL(T&&), JLN_MP_DECLVAL(U&&))),
         void(swap(JLN_MP_DECLVAL(T&&), JLN_MP_DECLVAL(U&&)))
@@ -1611,6 +1622,7 @@ namespace jln::mp::traits
     JLN_MP_DIAGNOSTIC_POP()
 #endif
 
+    // TODO enable_if_t -> int[noexcept(...)] ? /!\ gcc
     template<class T>
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_swappable_impl_v<
       T, emp::enable_if_t<noexcept(swap(JLN_MP_DECLVAL_NOTHROW(T&), JLN_MP_DECLVAL_NOTHROW(T&)))>
@@ -1619,6 +1631,7 @@ namespace jln::mp::traits
     template<class T, class U, class = void>
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_swappable_with_impl_v = false;
 
+    // TODO enable_if_t -> int[noexcept(...)] ? /!\ gcc
     template<class T, class U>
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_swappable_with_impl_v<
       T, U, emp::enable_if_t<noexcept(
@@ -1657,8 +1670,10 @@ namespace jln::mp::traits
 
 #if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__has_virtual_destructor)
   JLN_MP_MAKE_TRAIT_FROM_F(has_virtual_destructor, (class T), bool, __has_virtual_destructor(T));
+#elif ! JLN_MP_NO_STL
+  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(has_virtual_destructor, (class T), bool, (T));
 #else
-  // TODO use STL /!\ no stl
+  // this implementation is not compliant and fails with classes and unions
   namespace emp
   {
     template<class T> JLN_MP_CONSTEXPR_VAR bool has_virtual_destructor = false;
@@ -1677,11 +1692,12 @@ namespace jln::mp::traits
 #endif
 
 
+// TODO no stl
 #if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_layout_compatible)
   JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV(
-    is_layout_compatible, (class T), bool, __is_layout_compatible(T));
-#elif !JLN_MP_NO_STL && defined(__cpp_lib_is_layout_compatible) && __cpp_lib_is_layout_compatible >= 201907L
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_layout_compatible, (class T), bool, (T));
+    is_layout_compatible, (class T, class U), bool, __is_layout_compatible(T, U));
+#elif ! JLN_MP_NO_STL && defined(__cpp_lib_is_layout_compatible) && __cpp_lib_is_layout_compatible >= 201907L
+  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_layout_compatible, (class T, class U), bool, (T, U));
 #endif
 
 
@@ -1694,7 +1710,11 @@ namespace jln::mp::traits
 
   // TODO LIBMS || LIBCPP -> use std::
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_V_T(alignment_of, (class T), std::size_t, alignof(T));
+#if ! JLN_MP_NO_STL && JLN_MP_USE_LIBMS
+  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(alignment_of, (class T), std::size_t, (T));
+#else
+  JLN_MP_MAKE_TRAIT_FROM_F(alignment_of, (class T), std::size_t, alignof(T));
+#endif
 
 
 #if JLN_MP_USE_LIBMS
@@ -1715,7 +1735,9 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__array_extent)
+#if ! JLN_MP_NO_STL && JLN_MP_USE_LIBCXX && JLN_MP_HAS_BUILTIN(__array_extent)
+  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(extent, (class T), std::size_t, (T));
+#elif JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__array_extent)
   JLN_MP_MAKE_TRAIT_V_T(extent, (class T, class Dim = number<0>),
     std::size_t, __array_extent(T, Dim::value));
   namespace emp
@@ -1744,6 +1766,7 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT(extent, (class T, class Dim = number<0>),
     std::integral_constant<std::size_t, emp::extent_c_v<T, Dim::value>>);
 #endif
+
 
   namespace detail
   {
@@ -1813,6 +1836,7 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_WRAP_T(invoke_result, (class F, class... Args),
     detail::invoke_result<void, F, Args...>);
 
+
 #if defined(__cpp_lib_is_invocable) && __cpp_lib_is_invocable >= 201703L
   // TODO
   JLN_MP_MAKE_STD_TRAIT_XS(is_invocable);
@@ -1822,37 +1846,133 @@ namespace jln::mp::traits
   // TODO https://en.cppreference.com/w/cpp/utility/functional (C++23)
   JLN_MP_MAKE_STD_TRAIT_XS(is_nothrow_invocable_r);
 #endif
+
+
 #if defined(__cpp_lib_reference_from_temporary) && __cpp_lib_reference_from_temporary >= 202202L
   JLN_MP_MAKE_STD_TRAIT_P2(reference_constructs_from_temporary);
   JLN_MP_MAKE_STD_TRAIT_P2(reference_converts_from_temporary);
 #endif
 
-  // TODO no stl (good gcc / clang / msvc)
-  JLN_MP_MAKE_TRAIT_WRAP_T(remove_const, (class T), std::remove_const<T>);
-  // TODO no stl (good gcc / clang / msvc)
-  JLN_MP_MAKE_TRAIT_WRAP_T(remove_volatile, (class T), std::remove_const<T>);
-  // TODO no stl (good gcc / ~clang)
-  JLN_MP_MAKE_TRAIT_WRAP_T(remove_cv, (class T), std::remove_cv<T>);
+
+#if ! JLN_MP_NO_STL
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_const, (class T), (T));
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_volatile, (class T), (T));
+#elif JLN_MP_GCC
+  namespace detail
+  {
+    template<class T> struct remove_const_impl { using type = T; };
+    template<class T> struct remove_const_impl<T const> { using type = T; };
+
+    template<class T> struct remove_volatile_impl { using type = T; };
+    template<class T> struct remove_volatile_impl<T volatile> { using type = T; };
+  }
+  namespace emp
+  {
+    template<class T> using remove_const = detail::remove_const_impl<T const>;
+    template<class T> using remove_volatile = detail::remove_volatile_impl<T volatile>;
+  }
+  JLN_MP_MAKE_TRAIT_T(remove_const, (class T), detail::remove_const_impl<T const>);
+  JLN_MP_MAKE_TRAIT_T(remove_volatile, (class T), detail::remove_volatile_impl<T volatile>);
+#else
+  namespace emp
+  {
+    template<class T> struct remove_const { using type = T; };
+    template<class T> struct remove_const<T const> { using type = T; };
+
+    template<class T> struct remove_volatile { using type = T; };
+    template<class T> struct remove_volatile<T volatile> { using type = T; };
+  }
+  JLN_MP_MAKE_TRAIT_T(remove_const, (class T), emp::remove_const<T>);
+  JLN_MP_MAKE_TRAIT_T(remove_volatile, (class T), emp::remove_volatile<T>);
+#endif
+
+#if ! JLN_MP_NO_STL && JLN_MP_USE_LIBSTDCXX
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_cv, (class T), (T));
+#elif JLN_MP_GCC
+  namespace detail
+  {
+    template<class T> struct remove_cv_impl { using type = T; };
+    template<class T> struct remove_cv_impl<T volatile const> { using type = T; };
+  }
+  namespace emp
+  {
+    template<class T> struct remove_cv : detail::remove_cv_impl<T volatile const> {};
+    template<class T> using remove_cv_t = typename detail::remove_cv_impl<T volatile const>::type;
+  }
+  JLN_MP_MAKE_TRAIT_NO_EMP(remove_cv, (class T),
+    typename detail::remove_cv_impl<T volatile const>::type);
+#else
+  namespace emp
+  {
+    template<class T> struct remove_cv { using type = T; };
+    template<class T> struct remove_cv<T const> { using type = T; };
+    template<class T> struct remove_cv<T volatile> { using type = T; };
+    template<class T> struct remove_cv<T volatile const> { using type = T; };
+  }
+  JLN_MP_MAKE_TRAIT_T(remove_cv, (class T), emp::remove_cv<T>);
+#endif
+
+#if ! JLN_MP_NO_STL
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_extent, (class T), (T));
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_all_extents, (class T), (T));
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_pointer, (class T), (T));
+#else
+  namespace emp
+  {
+    template<class T> struct remove_extent { using type = T; };
+    template<class T> struct remove_extent<T[]> { using type = T; };
+    template<class T, std::size_t N> struct remove_extent<T[N]> { using type = T; };
+
+    template<class T> struct remove_all_extents { using type = T; };
+    template<class T> struct remove_all_extents<T[]> : remove_all_extents<T> {};
+    template<class T, std::size_t N> struct remove_all_extents<T[N]> : remove_all_extents<T> {};
+
+    template<class T> struct remove_pointer { using type = T; };
+    template<class T> struct remove_pointer<T*> { using type = T; };
+    template<class T> struct remove_pointer<T* const> { using type = T; };
+    template<class T> struct remove_pointer<T* volatile> { using type = T; };
+    template<class T> struct remove_pointer<T* volatile const> { using type = T; };
+  }
+  JLN_MP_MAKE_TRAIT_T(remove_extent, (class T), emp::remove_extent<T>);
+  JLN_MP_MAKE_TRAIT_T(remove_all_extents, (class T), emp::remove_all_extents<T>);
+  JLN_MP_MAKE_TRAIT_T(remove_pointer, (class T), emp::remove_pointer<T>);
+#endif
+
 
   namespace emp
   {
+    template<class T> using add_cv_t = T volatile const;
     template<class T> using add_const_t = T const;
     template<class T> using add_volatile_t = T volatile;
-    template<class T> using add_cv_t = T volatile const;
 
-  // TODO no stl
-    using std::add_const;
-  // TODO no stl
-    using std::add_volatile;
-  // TODO no stl
+    #if ! JLN_MP_NO_STL
     using std::add_cv;
+    using std::add_const;
+    using std::add_volatile;
+    #else
+    template<class T> struct add_cv { using type = T volatile const; };
+    template<class T> struct add_const { using type = T const; };
+    template<class T> struct add_volatile { using type = T volatile; };
+    #endif
   }
   JLN_MP_MAKE_TRAIT_NO_EMP(add_const, (class T), T const);
   JLN_MP_MAKE_TRAIT_NO_EMP(add_volatile, (class T), T volatile);
   JLN_MP_MAKE_TRAIT_NO_EMP(add_cv, (class T), T volatile const);
 
-  // TODO no stl (good gcc / clang / ~msvc)
+
+#if ! JLN_MP_NO_STL
   JLN_MP_MAKE_TRAIT_WRAP_T(remove_reference, (class T), std::remove_reference<T>);
+#else
+  namespace emp
+  {
+    template<class T> struct remove_reference { using type = T; };
+    template<class T> struct remove_reference<T&> { using type = T; };
+    template<class T> struct remove_reference<T&&> { using type = T; };
+
+    template<class T> using remove_reference_t = typename remove_reference<T>::type;
+  }
+  JLN_MP_MAKE_TRAIT_NO_EMP(remove_reference, (class T), typename emp::remove_reference<T>::type);
+#endif
 
 
   namespace detail
@@ -1908,7 +2028,7 @@ namespace jln::mp::traits
     {};
 
     template<class T>
-    struct mk_signed
+    struct make_signed
     {
       // If T is an integral (except bool) or enumeration type, provides the
       // member typedef type which is the signed integer type corresponding to
@@ -1924,23 +2044,32 @@ namespace jln::mp::traits
       using type = typename select_min_rank<sizeof(T)>::signed_type;
     };
 
+#if JLN_MP_CLANG || JLN_MP_MSVC
+    template<class T> struct make_signed<T const>
+    { using type = typename make_signed<T>::type const; };
+    template<class T> struct make_signed<T volatile>
+    { using type = typename make_signed<T>::type volatile; };
+    template<class T> struct make_signed<T volatile const>
+    { using type = typename make_signed<T>::type volatile const; };
+#endif
+
     // If T is signed or unsigned char, short, int, long, long long,
     // the signed type from this list corresponding to T is provided.
-    template<> struct mk_signed<volatile const char>          { using type = signed char; };
-    template<> struct mk_signed<volatile const unsigned char> { using type = signed char; };
-    template<> struct mk_signed<volatile const   signed char> { using type = signed char; };
-    template<> struct mk_signed<volatile const unsigned short> { using type = signed short; };
-    template<> struct mk_signed<volatile const   signed short> { using type = signed short; };
-    template<> struct mk_signed<volatile const unsigned int> { using type = signed int; };
-    template<> struct mk_signed<volatile const   signed int> { using type = signed int; };
-    template<> struct mk_signed<volatile const unsigned long> { using type = signed long; };
-    template<> struct mk_signed<volatile const   signed long> { using type = signed long; };
-    template<> struct mk_signed<volatile const unsigned long long> { using type = signed long long; };
-    template<> struct mk_signed<volatile const   signed long long> { using type = signed long long; };
+    template<> struct make_signed<volatile const char>          { using type = signed char; };
+    template<> struct make_signed<volatile const unsigned char> { using type = signed char; };
+    template<> struct make_signed<volatile const   signed char> { using type = signed char; };
+    template<> struct make_signed<volatile const unsigned short> { using type = signed short; };
+    template<> struct make_signed<volatile const   signed short> { using type = signed short; };
+    template<> struct make_signed<volatile const unsigned int> { using type = signed int; };
+    template<> struct make_signed<volatile const   signed int> { using type = signed int; };
+    template<> struct make_signed<volatile const unsigned long> { using type = signed long; };
+    template<> struct make_signed<volatile const   signed long> { using type = signed long; };
+    template<> struct make_signed<volatile const unsigned long long> { using type = signed long long; };
+    template<> struct make_signed<volatile const   signed long long> { using type = signed long long; };
     // TODO support of __uint128_t, __int128_t, etc
 
     template<class T>
-    struct mk_unsigned
+    struct make_unsigned
     {
       // If T is an integral (except bool) or enumeration type, provides the
       // member typedef type which is the unsigned integer type corresponding to
@@ -1956,110 +2085,139 @@ namespace jln::mp::traits
       using type = typename select_min_rank<sizeof(T)>::unsigned_type;
     };
 
+#if JLN_MP_CLANG || JLN_MP_MSVC
+    template<class T> struct make_unsigned<T const>
+    { using type = typename make_unsigned<T>::type const; };
+    template<class T> struct make_unsigned<T volatile>
+    { using type = typename make_unsigned<T>::type volatile; };
+    template<class T> struct make_unsigned<T volatile const>
+    { using type = typename make_unsigned<T>::type volatile const; };
+#endif
+
     // If T is unsigned or signed char, short, int, long, long long,
     // the unsigned type from this list corresponding to T is provided.
-    template<> struct mk_unsigned<volatile const char>          { using type = unsigned char; };
-    template<> struct mk_unsigned<volatile const unsigned char> { using type = unsigned char; };
-    template<> struct mk_unsigned<volatile const   signed char> { using type = unsigned char; };
-    template<> struct mk_unsigned<volatile const unsigned short> { using type = unsigned short; };
-    template<> struct mk_unsigned<volatile const   signed short> { using type = unsigned short; };
-    template<> struct mk_unsigned<volatile const unsigned int> { using type = unsigned int; };
-    template<> struct mk_unsigned<volatile const   signed int> { using type = unsigned int; };
-    template<> struct mk_unsigned<volatile const unsigned long> { using type = unsigned long; };
-    template<> struct mk_unsigned<volatile const   signed long> { using type = unsigned long; };
-    template<> struct mk_unsigned<volatile const unsigned long long> { using type = unsigned long long; };
-    template<> struct mk_unsigned<volatile const   signed long long> { using type = unsigned long long; };
+    template<> struct make_unsigned<volatile const char>          { using type = unsigned char; };
+    template<> struct make_unsigned<volatile const unsigned char> { using type = unsigned char; };
+    template<> struct make_unsigned<volatile const   signed char> { using type = unsigned char; };
+    template<> struct make_unsigned<volatile const unsigned short> { using type = unsigned short; };
+    template<> struct make_unsigned<volatile const   signed short> { using type = unsigned short; };
+    template<> struct make_unsigned<volatile const unsigned int> { using type = unsigned int; };
+    template<> struct make_unsigned<volatile const   signed int> { using type = unsigned int; };
+    template<> struct make_unsigned<volatile const unsigned long> { using type = unsigned long; };
+    template<> struct make_unsigned<volatile const   signed long> { using type = unsigned long; };
+    template<> struct make_unsigned<volatile const unsigned long long> { using type = unsigned long long; };
+    template<> struct make_unsigned<volatile const   signed long long> { using type = unsigned long long; };
     // TODO support of __uint128_t, __int128_t, etc
 
-    // TODO copy_cv / copy_cvref / copy_reference
+    // TODO copy_const / copy_volatile / copy_cv / copy_reference / copy_cvref
 
     // TODO
-    // template<bool IsConst, bool IsVolatile>
-    // struct match_cv_select
-    // {
-    //   template<class T> using f = T;
-    // };
+    // template<bool IsConst, bool IsVolatile, bool IsLRef, bool isRRef>
+    // struct copy_cvref_select;
     //
-    // template<bool IsVolatile>
-    // struct match_cv_select<true, IsVolatile>
-    // {
-    //   template<class T> using f = T const;
-    // };
+    // template<> struct copy_cvref_select<false, false, false, false> : identity {};
+    // template<> struct copy_cvref_select<true, false, false, false> : add_const<> {};
+    // template<> struct copy_cvref_select<false, true, false, false> : add_volatile<> {};
+    // template<> struct copy_cvref_select<true, true, false, false> : add_cv<> {};
     //
-    // template<bool IsConst>
-    // struct match_cv_select<IsConst, true>
-    // {
-    //   template<class T> using f = T volatile;
-    // };
+    // template<> struct copy_cvref_select<false, false, true, false> : add_lvalue_reference<> {};
+    // template<> struct copy_cvref_select<true, false, true, false> : add_const<> {};
+    // template<> struct copy_cvref_select<false, true, true, false> : add_volatile<> {};
+    // template<> struct copy_cvref_select<true, true, true, false> : add_cv<> {};
     //
-    // template<>
-    // struct match_cv_select<true, true>
-    // {
-    //   template<class T> using f = T volatile const;
-    // };
+    // template<> struct copy_cvref_select<false, false, false, true> : add_rvalue_reference<> {};
+    // template<> struct copy_cvref_select<true, false, false, true> : add_const<> {};
+    // template<> struct copy_cvref_select<false, true, false, true> : add_volatile<> {};
+    // template<> struct copy_cvref_select<true, true, false, true> : add_cv<> {};
+    //
+    // template<class Qualified, class UnQualified>
+    // struct match_cv { using type = UnQualified; };
+    //
+    // template<class Qualified, class UnQualified>
+    // struct match_cv<Qualified const, UnQualified> { using type = UnQualified const; };
+    //
+    // template<class Qualified, class UnQualified>
+    // struct match_cv<Qualified volatile, UnQualified> { using type = UnQualified volatile; };
+    //
+    // template<class Qualified, class UnQualified>
+    // struct match_cv<Qualified volatile const, UnQualified> { using type = UnQualified volatile const; };
 
-    template<class Qualified, class UnQualified>
-    struct match_cv { using type = UnQualified; };
+    template<int>
+    struct copy_cvref_impl;
 
-    template<class Qualified, class UnQualified>
-    struct match_cv<Qualified const, UnQualified> { using type = UnQualified const; };
+    template<> struct copy_cvref_impl<0> : identity {};
+    template<> struct copy_cvref_impl<1> : add_const<> {};
+    template<> struct copy_cvref_impl<2> : add_volatile<> {};
+    template<> struct copy_cvref_impl<3> : add_cv<> {};
 
-    template<class Qualified, class UnQualified>
-    struct match_cv<Qualified volatile, UnQualified> { using type = UnQualified volatile; };
+    // TODO unimplemented
+    template<> struct copy_cvref_impl<10> : add_lvalue_reference<> {};
+    template<> struct copy_cvref_impl<11> { template<class T> using f = void; };
+    template<> struct copy_cvref_impl<12> : add_volatile<> {};
+    template<> struct copy_cvref_impl<13> : add_cv<> {};
 
-    template<class Qualified, class UnQualified>
-    struct match_cv<Qualified volatile const, UnQualified> { using type = UnQualified volatile const; };
+    // TODO unimplemented
+    template<> struct copy_cvref_impl<20> : add_rvalue_reference<> {};
+    template<> struct copy_cvref_impl<21> : add_const<> {};
+    template<> struct copy_cvref_impl<22> : add_volatile<> {};
+    template<> struct copy_cvref_impl<23> : add_cv<> {};
+
+    template<class T> JLN_MP_CONSTEXPR_VAR bool cv_select = 0;
+    template<class T> JLN_MP_CONSTEXPR_VAR bool cv_select<T const> = 1;
+    template<class T> JLN_MP_CONSTEXPR_VAR bool cv_select<T volatile> = 2;
+    template<class T> JLN_MP_CONSTEXPR_VAR bool cv_select<T volatile const> = 3;
   }
 
-  JLN_MP_MAKE_TRAIT_WRAP_T(make_signed, (class T),
-    detail::match_cv<T, typename detail::mk_signed<T volatile const>::type>);
-  JLN_MP_MAKE_TRAIT_WRAP_T(make_unsigned, (class T),
-    detail::match_cv<T, typename detail::mk_unsigned<T volatile const>::type>);
-
+#if JLN_MP_CLANG || JLN_MP_MSVC
   namespace emp
   {
-    // TODO no stl
-    using std::remove_extent;
-    // TODO no stl
-    using std::remove_all_extents;
-    // TODO no stl (good clang, msvc)
-    using std::remove_pointer;
+    using detail::make_signed;
+    using detail::make_unsigned;
   }
-  JLN_MP_MAKE_TRAIT_T(remove_extent, (class T), emp::remove_extent<T>);
-  JLN_MP_MAKE_TRAIT_T(remove_all_extents, (class T), emp::remove_all_extents<T>);
-  JLN_MP_MAKE_TRAIT_T(remove_pointer, (class T), emp::remove_pointer<T>);
+  JLN_MP_MAKE_TRAIT_T(make_signed, (class T), detail::make_signed<T>);
+  JLN_MP_MAKE_TRAIT_T(make_unsigned, (class T), detail::make_unsigned<T>);
+#else
+  namespace emp
+  {
+    template<class T> using make_signed_t
+      = typename detail::copy_cvref_impl<detail::cv_select<T>>
+      ::template f<typename detail::make_signed<T volatile const>::type>;
+
+    template<class T> using make_unsigned_t
+      = typename detail::copy_cvref_impl<detail::cv_select<T>>
+      ::template f<typename detail::make_unsigned<T volatile const>::type>;
+
+    template<class T> struct make_signed { using type = make_signed_t<T>; };
+    template<class T> struct make_unsigned { using type = make_unsigned_t<T>; };
+  }
+  JLN_MP_MAKE_TRAIT_NO_EMP(make_signed, (class T), emp::make_signed_t<T>);
+  JLN_MP_MAKE_TRAIT_NO_EMP(make_unsigned, (class T), emp::make_unsigned_t<T>);
+#endif
+
+
+  // TODO
+  // namespace emp
+  // {
+  //   template<class Qualified, class UnQualified>
+  //   using copy_cv = typename detail::copy_cvref_impl<detail::cv_select<Qualified>>
+  //     ::template f<UnQualified>;
+  // }
+
 
   namespace detail
   {
-    // TODO replace with std::add_pointer ?
-
-    template<class T, class = void>
-    struct add_pointer_impl
-    {
-      using type = T;
-    };
-
-    // TODO replace remove_reference_t with specialization of T& and T&& ?
-
-    template<class T>
-    struct add_pointer_impl<T, emp::void_t<emp::remove_reference_t<T>*>>
-    {
-      using type = emp::remove_reference_t<T>*;
-    };
+    template<class T, class = void> struct add_pointer_impl { using type = T; };
+    template<class T> struct add_pointer_impl<T, emp::void_t<T*>> { using type = T*; };
+    template<class T> struct add_pointer_impl<T&, emp::void_t<T*>> { using type = T*; };
+    template<class T> struct add_pointer_impl<T&&, emp::void_t<T*>> { using type = T*; };
   }
   JLN_MP_MAKE_TRAIT_WRAP_T(add_pointer, (class T), detail::add_pointer_impl<T>);
 
-  // TODO remove that
-  JLN_MP_MAKE_TRAIT(aligned_storage, (class Len, class... Alignment),
-    typename std::aligned_storage<Len::value, Alignment::value...>::type);
-  // TODO remove that
-  JLN_MP_MAKE_TRAIT(aligned_union, (class Len, class... xs),
-    typename std::aligned_union<Len::value, xs...>::type);
 
   namespace detail
   {
     /* decay:
-     * remove_reference -> decay_impl{
+     * remove_reference -> {
      *  is_array
      *    ? remove_extent -> add_pointer
      *    : is_function
@@ -2068,49 +2226,25 @@ namespace jln::mp::traits
      * }
      */
 
-    // TODO faster with __is_function and __is_array ?
-
     // is_function
-    template<class T, class = void>
-    struct decay_maybe_func
-    {
-      using type = T;
-    };
-
-    // TODO replace with : add_pointer<T>
-    // is_function
-    template<class T>
-    struct decay_maybe_func<T, emp::void_t<T*>>
-    {
-      using type = T*;
-    };
-
+    template<class T, class = void> struct decay_maybe_func : add_pointer_impl<T> {};
     // not is_function
-    template<class T>
-    struct decay_maybe_func<T volatile const>
-    {
-      using type = T;
-    };
-
-    // not is_array
-    template<class T>
-    struct decay_impl
-      : decay_maybe_func<T volatile const> // a function is always cv unqualified
-    {};
-
-    template<class T>
-    struct decay_impl<T[]>
-    {
-      using type = T*;
-    };
-
-    template<class T, std::size_t n>
-    struct decay_impl<T[n]>
-    {
-      using type = T*;
-    };
+    template<class T> struct decay_maybe_func<T volatile const> { using type = T; };
   }
-  JLN_MP_MAKE_TRAIT_WRAP_T(decay, (class T), detail::decay_impl<emp::remove_reference_t<T>>);
+  namespace emp
+  {
+    template<class T> struct decay : detail::decay_maybe_func<T volatile const> {};
+    template<class T> struct decay<T&> : detail::decay_maybe_func<T volatile const> {};
+    template<class T> struct decay<T&&> : detail::decay_maybe_func<T volatile const> {};
+    template<class T> struct decay<T[]> { using type = T*; };
+    template<class T> struct decay<T(&)[]> { using type = T*; };
+    template<class T> struct decay<T(&&)[]> { using type = T*; };
+    template<class T, std::size_t N> struct decay<T[N]> { using type = T*; };
+    template<class T, std::size_t N> struct decay<T(&)[N]> { using type = T*; };
+    template<class T, std::size_t N> struct decay<T(&&)[N]> { using type = T*; };
+  }
+  JLN_MP_MAKE_TRAIT_T(decay, (class T), emp::decay<T>);
+
 
   namespace emp
   {

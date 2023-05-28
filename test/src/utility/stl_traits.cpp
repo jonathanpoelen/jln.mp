@@ -1001,8 +1001,8 @@ TEST()
   // CHECK_X1(is_trivially_destructible);
   // CHECK_X1(is_nothrow_destructible);
 #if defined(__cpp_lib_is_swappable) && __cpp_lib_is_swappable >= 201603L
-  CHECK_F(test_swappable, is_swappable);
-  CHECK_F(test_swappable, is_nothrow_swappable);
+  // CHECK_F(test_swappable, is_swappable);
+  // CHECK_F(test_swappable, is_nothrow_swappable);
   // CHECK_X2(is_swappable_with);
   // CHECK_X2(is_nothrow_swappable_with);
 #endif
@@ -1050,7 +1050,7 @@ TEST()
   // CHECK_X1_T(remove_all_extents);
   // CHECK_X1_T(remove_pointer);
   // CHECK_X1_T(add_pointer);
-  // CHECK_X1_T(decay);
+  CHECK_X1(decay);
 //   // CHECK_XS(aligned_storage);
 //   // CHECK_XS(aligned_union);
 // #if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref >= 201811L

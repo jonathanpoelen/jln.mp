@@ -213,9 +213,6 @@ namespace jln::mp
   JLN_MP_SMP_MAKE_TRAIT(invoke_result, 1, types::any)
 #endif
 
-  JLN_MP_SMP_MAKE_TRAIT(aligned_storage, 1, types::any)
-  JLN_MP_SMP_MAKE_TRAIT(aligned_union, 1, types::any)
-
 #undef JLN_MP_SMP_MAKE_OPTIMIZER_TRAIT
 #undef JLN_MP_SMP_MAKE_BASIC_TRAIT
 #undef JLN_MP_SMP_MAKE_TRAIT

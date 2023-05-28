@@ -31,6 +31,10 @@ namespace n
 {
   using namespace jln::mp;
 
+#ifdef EXTRA
+  EXTRA
+#endif
+
 #if IMPL == 0
   using l = emp::make_int_sequence_c<NELEM, REPETABLE_ALGO>;
 #elif IMPL == 1
