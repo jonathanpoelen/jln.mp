@@ -562,6 +562,14 @@ void test_x1()
 
   test_x1_cv_ref<Std, Jln, decltype(&Class::i)>();
   test_x1_cv_ref<Std, Jln, decltype(&Class::f1)>();
+  test_x1_cv_ref<Std, Jln, decltype(&Class::f6)>();
+  test_x1_cv_ref<Std, Jln, decltype(&Class::f11)>();
+  test_x1_cv_ref<Std, Jln, decltype(&Class::f16)>();
+  test_x1_cv_ref<Std, Jln, decltype(&Class::f17)>();
+  test_x1_cv_ref<Std, Jln, decltype(&Class::f37)>();
+  test_x1_cv_ref<Std, Jln, decltype(&Class::f65)>();
+  test_x1_cv_ref<Std, Jln, decltype(&Class::f81)>();
+  test_x1_cv_ref<Std, Jln, decltype(&Class::f96)>();
 }
 
 template<template<class...> class Std, template<class...> class Jln>
