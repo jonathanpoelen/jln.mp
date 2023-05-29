@@ -12,6 +12,16 @@
 #  define JLN_MP_NO_STL 0
 #endif
 
+#ifndef JLN_MP_USE_OPTIONAL_BUILTIN
+#  define JLN_MP_USE_OPTIONAL_BUILTIN 1
+#endif
+
+#if JLN_MP_USE_OPTIONAL_BUILTIN
+#  define JLN_MP_HAS_OPTIONAL_BUILTIN JLN_MP_HAS_BUILTIN
+#else
+#  define JLN_MP_HAS_OPTIONAL_BUILTIN(Name) 0
+#endif
+
 // TODO MSVC: #pragma warning(disable: 4180)  // qualifier applied to function type has no meaning; ignored
 
 // TODO defined(__cpp_*) && __cpp_* >= XXX -> __cpp_* >= XXX + disable warn
@@ -246,11 +256,6 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT_IMPL(                             \
     Name, Params, emp::integral_constant<Type, std::Name##_v<JLN_MP_UNPACK Values>>)
 
-    // TODO remove
-#define JLN_MP_MAKE_TRAIT_FROM_STD_SATV(Name, Params, Values) \
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT_IMPL(                       \
-    Name, Params, typename std::Name<JLN_MP_UNPACK Values>::type)
-
 #define JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV( \
     Name, Params, Type, ...)                     \
   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT_IMPL(          \
@@ -284,21 +289,6 @@ namespace jln::mp::traits
   }                                                \
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, emp::integral_constant<Type, __VA_ARGS__>)
 
-#define JLN_MP_MAKE_TRAIT_FROM_BUILTIN_V_AND_STD( \
-    Name, Params, Type, ...)                      \
-  namespace emp                                   \
-  {                                               \
-    using std::Name;                              \
-    template<JLN_MP_UNPACK Params>                \
-    JLN_MP_CONSTEXPR_VAR Type Name##_v            \
-      = __VA_ARGS__;                              \
-    template<JLN_MP_UNPACK Params>                \
-    using Name##_t = emp::integral_constant<Type, \
-      __VA_ARGS__>;                               \
-  }                                               \
-  JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params,          \
-    emp::integral_constant<Type, __VA_ARGS__>)
-
 #define JLN_MP_MAKE_TRAIT_FROM_ST(             \
   Name, Params, ...)                           \
   namespace emp                                \
@@ -309,29 +299,6 @@ namespace jln::mp::traits
     using Name##_t = __VA_ARGS__;              \
   }                                            \
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, __VA_ARGS__)
-
-
-#define JLN_MP_COND(Cond, If, Else) JLN_MP_COND_I(Cond, If, Else)
-#define JLN_MP_COND_I(Cond, If, Else) JLN_MP_PP_CALL_I(JLN_MP_COND##Cond, If, Else)
-#define JLN_MP_COND0(If, Else) Else
-#define JLN_MP_COND1(If, Else) If
-
-#define JLN_MP_PP_CALL(F, ...) JLN_MP_PP_CALL_I(F, __VA_ARGS__)
-#define JLN_MP_PP_CALL_I(F, ...) F(__VA_ARGS__)
-
-#define JLN_MP_COND_OR(Cond1, Cond2) JLN_MP_COND_OR_I(Cond1, Cond2)
-#define JLN_MP_COND_OR_I(Cond1, Cond2) JLN_MP_COND_OR##Cond1##Cond2
-#define JLN_MP_COND_OR00 0
-#define JLN_MP_COND_OR01 1
-#define JLN_MP_COND_OR10 1
-#define JLN_MP_COND_OR11 1
-
-#define JLN_MP_COND_AND(Cond1, Cond2) JLN_MP_COND_AND_I(Cond1, Cond2)
-#define JLN_MP_COND_AND_I(Cond1, Cond2) JLN_MP_COND_AND##Cond1##Cond2
-#define JLN_MP_COND_AND00 0
-#define JLN_MP_COND_AND01 0
-#define JLN_MP_COND_AND10 0
-#define JLN_MP_COND_AND11 1
 
 
 #if JLN_MP_USE_LIBMS
@@ -399,26 +366,10 @@ namespace jln::mp::traits
 #endif
 
 
-#define JLN_MP_MAKE_TRAIT_V_T(Name, Params, Type, ...) \
-  JLN_MP_MAKE_TRAIT_V(Name, Params, Type, __VA_ARGS__) \
-  JLN_MP_MAKE_TRAIT(Name, Params, std::integral_constant<Type, __VA_ARGS__>)
-
-
-#ifndef JLN_MP_USE_OPTIONAL_BUILTIN
-#  define JLN_MP_USE_OPTIONAL_BUILTIN 1
-#endif
-
-
-#if JLN_MP_USE_OPTIONAL_BUILTIN
-#  define JLN_MP_HAS_OPTIONAL_BUILTIN JLN_MP_HAS_BUILTIN
-#else
-#  define JLN_MP_HAS_OPTIONAL_BUILTIN(Name) 0
-#endif
-
-
 #define JLN_MP_FN_PTR(...) static_cast<__VA_ARGS__>(nullptr)
 #define JLN_MP_DECLVAL(T) static_cast<T(*)()>(nullptr)()
 #define JLN_MP_DECLVAL_NOTHROW(T) static_cast<T(*)() noexcept>(nullptr)()
+
 
 #define JLN_MP_TRAIT_BUILTIN_IMPL_IS(Name, Params) \
   std::integral_constant<bool, Name(JLN_MP_UNPACK Params)>
@@ -638,12 +589,7 @@ namespace jln::mp::traits
   // https://en.cppreference.com/w/cpp/feature_test
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_const)
-  JLN_MP_PP_CALL(
-    JLN_MP_COND(JLN_MP_COND_OR(JLN_MP_USE_LIBMS, JLN_MP_USE_LIBCXX),
-      JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV,
-      JLN_MP_MAKE_TRAIT_FROM_F
-    ),
-    is_const, (class T), bool, __is_const(T));
+  JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(is_const, (class T), bool, __is_const(T));
 #elif JLN_MP_USE_LIBMS
   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_const, (class T), bool, (T));
 #else
@@ -662,12 +608,7 @@ namespace jln::mp::traits
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_volatile)
-  JLN_MP_PP_CALL(
-    JLN_MP_COND(JLN_MP_COND_OR(JLN_MP_USE_LIBMS, JLN_MP_USE_LIBCXX),
-      JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV,
-      JLN_MP_MAKE_TRAIT_FROM_F
-    ),
-    is_volatile, (class T), bool, __is_volatile(T));
+  JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(is_volatile, (class T), bool, __is_volatile(T));
 #elif JLN_MP_USE_LIBMS
   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_volatile, (class T), bool, (T));
 #else
@@ -1818,14 +1759,7 @@ namespace jln::mp::traits
 
     template<class T, class Dim = number<0>>
     using extent_t = emp::integral_constant<T, __array_extent(T, Dim::value)>;
-
-    template<class T, unsigned Dim = 0>
-    struct extent_c : extent_c_t<T, Dim> {};
-
-    template<class T, class Dim = number<0>>
-    using extent = extent_c<T, Dim::value>;
   }
-  JLN_MP_MAKE_TRAIT_NO_EMP(extent, (class T, class Dim = number<0>), emp::extent_c_t<T, Dim::value>);
 #else
   namespace emp
   {
@@ -1841,12 +1775,26 @@ namespace jln::mp::traits
     template<class T, unsigned Dim, std::size_t n>
     JLN_MP_CONSTEXPR_VAR std::size_t extent_c_v<T[n], Dim> = extent_c_v<T, Dim - 1>;
 
+
     template<class T, class Dim = number<0>>
     JLN_MP_CONSTEXPR_VAR std::size_t extent_v = extent_c_v<T, Dim::value>;
+
+    template<class T, unsigned Dim = 0>
+    using extent_c_t = emp::integral_constant<T, extent_c_v<T, Dim>>;
+
+    template<class T, class Dim = number<0>>
+    using extent_t = emp::integral_constant<T, extent_c_v<T, Dim::value>>;
   }
-  JLN_MP_MAKE_TRAIT_FROM_BUILTIN_TS_STD_V(
-    extent, (class T, class Dim = number<0>), std::size_t, emp::extent_c_v<T, Dim::value>);
 #endif
+  namespace emp
+  {
+    template<class T, unsigned Dim = 0>
+    struct extent_c : extent_c_t<T, Dim> {};
+
+    template<class T, class Dim = number<0>>
+    using extent = extent_c<T, Dim::value>;
+  }
+  JLN_MP_MAKE_TRAIT_NO_EMP(extent, (class T, class Dim = number<0>), emp::extent_c_t<T, Dim::value>);
 
 
   namespace detail
