@@ -13,25 +13,31 @@
 #endif
 
 // TODO /!\ __cpp_* defined in type_traits or functional
+// TODO defined(__cpp_*) && __cpp_* >= XXX -> __cpp_* >= XXX + disable warn
+
+// TODO _LIBCPP_TEMPLATE_VIS ?
 
 // TODO mp::* use detail::*_v instead of emp::*_v
 
 // TODO remove
 #  include <type_traits>
 
-// TODO add EASTL (https://github.com/electronicarts/EASTL/blob/master/include/EASTL/type_traits.h)
 #if ! JLN_MP_NO_STL
 #  include <type_traits>
+
+// TODO add EASTL (https://github.com/electronicarts/EASTL/blob/master/include/EASTL/type_traits.h)
 #  if defined(_GLIBCXX_RELEASE)
 #    define JLN_MP_USE_LIBSTDCXX 1
 #  else
 #    define JLN_MP_USE_LIBSTDCXX 0
 #  endif
+
 #  if defined(_LIBCPP_VERSION)
 #    define JLN_MP_USE_LIBCXX 1
 #  else
 #    define JLN_MP_USE_LIBCXX 0
 #  endif
+
 #  if JLN_MP_MSVC_LIKE
 #    define JLN_MP_USE_LIBMS 1
 #  else
@@ -42,6 +48,16 @@
 #  define JLN_MP_USE_LIBCXX 0
 #  define JLN_MP_USE_LIBMS 0
 #endif
+
+
+// note some builtin are hidden by libstdc++ with clang
+// namespace xxx { using __is_signed = ...; } // __is_signed builtin is now hidden
+#if defined(_GLIBCXX_RELEASE)
+#  define JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX 1
+#else
+#  define JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX 0
+#endif
+
 
 namespace jln::mp::traits
 {
@@ -260,6 +276,17 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params,          \
     emp::integral_constant<Type, __VA_ARGS__>)
 
+#define JLN_MP_MAKE_TRAIT_FROM_ST(             \
+  Name, Params, ...)                           \
+  namespace emp                                \
+  {                                            \
+    template<JLN_MP_UNPACK Params>             \
+    struct Name { using type = __VA_ARGS__; }; \
+    template<JLN_MP_UNPACK Params>             \
+    using Name##_t = __VA_ARGS__;              \
+  }                                            \
+  JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, __VA_ARGS__)
+
 
 #define JLN_MP_COND(Cond, If, Else) JLN_MP_COND_I(Cond, If, Else)
 #define JLN_MP_COND_I(Cond, If, Else) JLN_MP_PP_CALL_I(JLN_MP_COND##Cond, If, Else)
@@ -300,11 +327,14 @@ namespace jln::mp::traits
     JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV
 # define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_VT_STD_S_OTHER_F \
     JLN_MP_MAKE_TRAIT_FROM_BUILTIN_VT_STD_S
+# define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST JLN_MP_MAKE_TRAIT_FROM_STD_ST
 #else
 # define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
     JLN_MP_MAKE_TRAIT_FROM_F
 # define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_VT_STD_S_OTHER_F \
     JLN_MP_MAKE_TRAIT_FROM_F
+# define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(Name, Params, Values) \
+    JLN_MP_MAKE_TRAIT_FROM_ST(Name, Params, __##Name Values)
 #endif
 
 #if JLN_MP_USE_LIBCXX
@@ -354,6 +384,14 @@ namespace jln::mp::traits
 #ifndef JLN_MP_USE_OPTIONAL_BUILTIN
 #  define JLN_MP_USE_OPTIONAL_BUILTIN 1
 #endif
+
+
+#if JLN_MP_USE_OPTIONAL_BUILTIN
+#  define JLN_MP_HAS_OPTIONAL_BUILTIN JLN_MP_HAS_BUILTIN
+#else
+#  define JLN_MP_HAS_OPTIONAL_BUILTIN(Name) 0
+#endif
+
 
 #define JLN_MP_FN_PTR(...) static_cast<__VA_ARGS__>(nullptr)
 #define JLN_MP_DECLVAL(T) static_cast<T(*)()>(nullptr)()
@@ -581,7 +619,7 @@ namespace jln::mp::traits
 
   // https://en.cppreference.com/w/cpp/feature_test
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_const)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_const)
   JLN_MP_PP_CALL(
     JLN_MP_COND(JLN_MP_COND_OR(JLN_MP_USE_LIBMS, JLN_MP_USE_LIBCXX),
       JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV,
@@ -598,14 +636,14 @@ namespace jln::mp::traits
   }
   JLN_MP_MAKE_TRAIT_FROM_EMP_P1_IS(is_const);
 #endif
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_const)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_const)
 # define JLN_MP_IS_CONST_V(...) __is_const(__VA_ARGS__)
 #else
 # define JLN_MP_IS_CONST_V(...) /*emp::*/is_const_v<__VA_ARGS__>
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_volatile)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_volatile)
   JLN_MP_PP_CALL(
     JLN_MP_COND(JLN_MP_COND_OR(JLN_MP_USE_LIBMS, JLN_MP_USE_LIBCXX),
       JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV,
@@ -652,7 +690,7 @@ namespace jln::mp::traits
   namespace emp
   {
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_standard_layout_v
-      = JLN_MP_IS_SCALAR_V(typename remove_all_extents<_Tp>::type>);
+      = JLN_MP_IS_SCALAR_V(typename remove_all_extents<T>::type>);
   }
 #endif
 
@@ -684,7 +722,7 @@ namespace jln::mp::traits
 #undef JLN_MP_MAKE_TRAIT_D
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_signed)
+#if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_signed)
   JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV(is_signed, (class T), bool, __is_signed(T));
 #else
   namespace detail
@@ -711,7 +749,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_unsigned)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_unsigned)
   JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV(is_unsigned, (class T), bool, __is_unsigned(T));
 #else
   namespace detail
@@ -741,7 +779,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if ! JLN_MP_NO_STL && JLN_MP_USE_LIBMS
+#if JLN_MP_USE_LIBMS
   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_bounded_array, (class T), bool, (T));
   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_unbounded_array, (class T), bool, (T));
 #else
@@ -758,7 +796,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_convertible_to)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_convertible_to)
   #define JLN_MP_IS_CONVERTIBLE_V(...) __is_convertible_to(__VA_ARGS__)
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
     is_convertible, (class From, class To), bool, __is_convertible_to(From, To));
@@ -792,7 +830,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_scoped_enum)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_scoped_enum)
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
     is_scoped_enum, (class T), bool, __is_scoped_enum(T));
 #else
@@ -818,10 +856,10 @@ namespace jln::mp::traits
     has_unique_object_representations, (class T), bool, __has_unique_object_representations(T));
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && (JLN_MP_CLANG || JLN_MP_HAS_BUILTIN(__is_void))
+#if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_void)
   #define JLN_MP_IS_VOID_V(...) __is_void(__VA_ARGS__)
   JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV(is_void, (class T), bool, __is_void(T));
-#elif JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_same)
+#elif JLN_MP_HAS_OPTIONAL_BUILTIN(__is_same)
   #define JLN_MP_IS_VOID_V(...) \
     __is_same(volatile const __VA_ARGS__, volatile const void)
   JLN_MP_MAKE_TRAIT_FROM_F(is_void, (class T), bool, JLN_MP_IS_VOID_V(T));
@@ -839,7 +877,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && (JLN_MP_CLANG || JLN_MP_HAS_BUILTIN(__is_same))
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_same)
   #define JLN_MP_IS_NULL_POINTER_V(...) \
     __is_same(volatile const __VA_ARGS__, volatile const decltype(nullptr))
   JLN_MP_MAKE_TRAIT_FROM_F(is_null_pointer, (class x), bool, JLN_MP_IS_NULL_POINTER_V(x));
@@ -857,7 +895,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_integral)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_integral)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_integral, (class T), bool, __is_integral(T));
 #else
@@ -894,7 +932,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_floating_point)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_floating_point)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_floating_point, (class T), bool, __is_floating_point(T));
 #else
@@ -914,7 +952,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_array)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_array)
   #define JLN_MP_IS_ARRAY_V(...) __is_array(__VA_ARGS__)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_array, (class T), bool, __is_array(T));
@@ -932,7 +970,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_pointer)
+#if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_pointer)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_pointer, (class T), bool, __is_pointer(T));
 #elif JLN_MP_USE_LIBMS
@@ -950,7 +988,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_lvalue_reference)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_lvalue_reference)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_lvalue_reference, (class T), bool, __is_lvalue_reference(T));
 #elif JLN_MP_USE_LIBMS
@@ -965,7 +1003,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_rvalue_reference)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_rvalue_reference)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_rvalue_reference, (class T), bool, __is_rvalue_reference(T));
 #elif JLN_MP_USE_LIBMS
@@ -980,7 +1018,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_reference)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_reference)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_reference, (class T), bool, __is_reference(T));
 #elif JLN_MP_USE_LIBMS
@@ -996,7 +1034,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_function)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_function)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
     is_function, (class T), bool, __is_function(T));
 #else
@@ -1010,7 +1048,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_member_object_pointer)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_member_object_pointer)
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_TS_STD_V_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_member_object_pointer, (class T), bool, __is_member_object_pointer(T));
 #else
@@ -1034,7 +1072,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_member_function_pointer)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_member_function_pointer)
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_member_function_pointer, (class T), bool, __is_member_function_pointer(T));
 #else
@@ -1059,7 +1097,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_arithmetic)
+#if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_arithmetic)
   JLN_MP_MAKE_TRAIT_FROM_F(is_arithmetic, (class T), bool, __is_arithmetic(T));
 #elif JLN_MP_USE_LIBMS
   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_arithmetic, (class T), bool, (T));
@@ -1073,7 +1111,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_fundamental)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_fundamental)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_fundamental, (class T), bool, __is_fundamental(T));
 #elif JLN_MP_USE_LIBMS
@@ -1088,7 +1126,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_object)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_object)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_object, (class T), bool, __is_object(T));
 #else
@@ -1101,7 +1139,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_member_pointer)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_member_pointer)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_member_pointer, (class T), bool, __is_member_pointer(T));
 #else
@@ -1126,7 +1164,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && (JLN_MP_CLANG || JLN_MP_HAS_BUILTIN(__is_scalar))
+#if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_scalar)
   #define JLN_MP_IS_SCALAR_V(...) __is_scalar(__VA_ARGS__)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_scalar, (class T), bool, __is_scalar(T));
@@ -1143,7 +1181,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && (JLN_MP_CLANG || JLN_MP_HAS_BUILTIN(__is_compound))
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_compound)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_compound, (class T), bool, __is_compound(T));
 #else
@@ -1157,6 +1195,7 @@ namespace jln::mp::traits
 
   namespace detail
   {
+    // TODO requires { ... } ?
     template<class T, class = void>
     static constexpr bool is_referenceable_impl_v = false;
 
@@ -1171,34 +1210,36 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_FROM_EMP_P1_IS(is_referenceable);
 
 
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_lvalue_reference)
+  // TODO use builtin / std::... with macro
+  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(add_lvalue_reference, (class T), (T));
+#else
   namespace detail
   {
     template<class T, bool = is_referenceable_impl_v<T volatile const>>
-    struct add_lvalue_reference_impl
-    {
-      using type = T;
-    };
+    struct add_lvalue_reference_impl { using type = T; };
 
     template<class T>
-    struct add_lvalue_reference_impl<T, true>
-    {
-      using type = T&;
-    };
-
-    template<class T, bool = is_referenceable_impl_v<T volatile const>>
-    struct add_rvalue_reference_impl
-    {
-      using type = T;
-    };
-
-    template<class T>
-    struct add_rvalue_reference_impl<T, true>
-    {
-      using type = T&&;
-    };
+    struct add_lvalue_reference_impl<T, true> { using type = T&; };
   }
   JLN_MP_MAKE_TRAIT_WRAP_T(add_lvalue_reference, (class T), detail::add_lvalue_reference_impl<T>);
+#endif
+
+
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_rvalue_reference)
+  // TODO use builtin / std::... with macro
+  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(add_rvalue_reference, (class T), (T));
+#else
+  namespace detail
+  {
+    template<class T, bool = is_referenceable_impl_v<T volatile const>>
+    struct add_rvalue_reference_impl { using type = T; };
+
+    template<class T>
+    struct add_rvalue_reference_impl<T, true> { using type = T&&; };
+  }
   JLN_MP_MAKE_TRAIT_WRAP_T(add_rvalue_reference, (class T), detail::add_rvalue_reference_impl<T>);
+#endif
 
 
   // TODO is_complete_or_unbounded
@@ -1531,7 +1572,7 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_FROM_EMP_P1_IS(is_nothrow_destructible);
 #endif
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__is_implicit_lifetime)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_implicit_lifetime)
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_implicit_lifetime, (class T), bool, __is_implicit_lifetime(T));
 #else
@@ -1710,7 +1751,7 @@ namespace jln::mp::traits
 
   // TODO LIBMS || LIBCPP -> use std::
   // TODO is_complete_or_unbounded
-#if ! JLN_MP_NO_STL && JLN_MP_USE_LIBMS
+#if JLN_MP_USE_LIBMS
   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(alignment_of, (class T), std::size_t, (T));
 #else
   JLN_MP_MAKE_TRAIT_FROM_F(alignment_of, (class T), std::size_t, alignof(T));
@@ -1735,9 +1776,9 @@ namespace jln::mp::traits
 #endif
 
 
-#if ! JLN_MP_NO_STL && JLN_MP_USE_LIBCXX && JLN_MP_HAS_BUILTIN(__array_extent)
+#if JLN_MP_USE_LIBCXX && JLN_MP_HAS_BUILTIN(__array_extent)
   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(extent, (class T), std::size_t, (T));
-#elif JLN_MP_USE_OPTIONAL_BUILTIN && JLN_MP_HAS_BUILTIN(__array_extent)
+#elif JLN_MP_HAS_OPTIONAL_BUILTIN(__array_extent)
   JLN_MP_MAKE_TRAIT_V_T(extent, (class T, class Dim = number<0>),
     std::size_t, __array_extent(T, Dim::value));
   namespace emp
@@ -1854,39 +1895,136 @@ namespace jln::mp::traits
 #endif
 
 
-#if ! JLN_MP_NO_STL
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_const)
+  // TODO use builtin / std::... with macro
+  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_const, (class T), (T));
+#elif ! JLN_MP_NO_STL
   JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_const, (class T), (T));
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_volatile, (class T), (T));
 #elif JLN_MP_GCC
   namespace detail
   {
     template<class T> struct remove_const_impl { using type = T; };
     template<class T> struct remove_const_impl<T const> { using type = T; };
-
-    template<class T> struct remove_volatile_impl { using type = T; };
-    template<class T> struct remove_volatile_impl<T volatile> { using type = T; };
   }
   namespace emp
   {
     template<class T> using remove_const = detail::remove_const_impl<T const>;
-    template<class T> using remove_volatile = detail::remove_volatile_impl<T volatile>;
   }
   JLN_MP_MAKE_TRAIT_T(remove_const, (class T), detail::remove_const_impl<T const>);
-  JLN_MP_MAKE_TRAIT_T(remove_volatile, (class T), detail::remove_volatile_impl<T volatile>);
 #else
   namespace emp
   {
     template<class T> struct remove_const { using type = T; };
     template<class T> struct remove_const<T const> { using type = T; };
+  }
+  JLN_MP_MAKE_TRAIT_T(remove_const, (class T), emp::remove_const<T>);
+#endif
 
+
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_volatile)
+  // TODO use builtin / std::... with macro
+  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_volatile, (class T), (T));
+#elif ! JLN_MP_NO_STL
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_volatile, (class T), (T));
+#elif JLN_MP_GCC
+  namespace detail
+  {
+    template<class T> struct remove_volatile_impl { using type = T; };
+    template<class T> struct remove_volatile_impl<T volatile> { using type = T; };
+  }
+  namespace emp
+  {
+    template<class T> using remove_volatile = detail::remove_volatile_impl<T volatile>;
+  }
+  JLN_MP_MAKE_TRAIT_T(remove_volatile, (class T), detail::remove_volatile_impl<T volatile>);
+#else
+  namespace emp
+  {
     template<class T> struct remove_volatile { using type = T; };
     template<class T> struct remove_volatile<T volatile> { using type = T; };
   }
-  JLN_MP_MAKE_TRAIT_T(remove_const, (class T), emp::remove_const<T>);
   JLN_MP_MAKE_TRAIT_T(remove_volatile, (class T), emp::remove_volatile<T>);
 #endif
 
-#if ! JLN_MP_NO_STL && JLN_MP_USE_LIBSTDCXX
+
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_extents)
+  // TODO use builtin / std::... with macro
+  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_extents, (class T), (T));
+#elif ! JLN_MP_NO_STL
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_extent, (class T), (T));
+#else
+  namespace emp
+  {
+    template<class T> struct remove_extent { using type = T; };
+    template<class T> struct remove_extent<T[]> { using type = T; };
+    template<class T, std::size_t N> struct remove_extent<T[N]> { using type = T; };
+  }
+  JLN_MP_MAKE_TRAIT_T(remove_extent, (class T), emp::remove_extent<T>);
+#endif
+
+
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_all_extents)
+  // TODO use builtin / std::... with macro
+  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_all_extents, (class T), (T));
+#elif ! JLN_MP_NO_STL
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_all_extents, (class T), (T));
+#else
+  namespace emp
+  {
+    template<class T> struct remove_all_extents { using type = T; };
+    template<class T> struct remove_all_extents<T[]> : remove_all_extents<T> {};
+    template<class T, std::size_t N> struct remove_all_extents<T[N]> : remove_all_extents<T> {};
+  }
+  JLN_MP_MAKE_TRAIT_T(remove_all_extents, (class T), emp::remove_all_extents<T>);
+#endif
+
+
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_pointer)
+  // TODO use builtin / std::... with macro
+  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_pointer, (class T), (T));
+#elif ! JLN_MP_NO_STL
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_pointer, (class T), (T));
+#else
+  namespace emp
+  {
+    template<class T> struct remove_pointer { using type = T; };
+    template<class T> struct remove_pointer<T*> { using type = T; };
+    template<class T> struct remove_pointer<T* const> { using type = T; };
+    template<class T> struct remove_pointer<T* volatile> { using type = T; };
+    template<class T> struct remove_pointer<T* volatile const> { using type = T; };
+  }
+  JLN_MP_MAKE_TRAIT_T(remove_pointer, (class T), emp::remove_pointer<T>);
+#endif
+
+
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_reference_t)
+  // TODO use builtin / std::... with macro
+# if JLN_MP_USE_LIBCXX
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_reference, (class T), (T));
+# else
+  JLN_MP_MAKE_TRAIT_FROM_ST(remove_reference, (class T), __remove_reference_t(T))
+# endif
+#elif ! JLN_MP_NO_STL
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_reference, (class T), (T));
+#else
+  namespace emp
+  {
+    template<class T> struct remove_reference { using type = T; };
+    template<class T> struct remove_reference<T&> { using type = T; };
+    template<class T> struct remove_reference<T&&> { using type = T; };
+  }
+  JLN_MP_MAKE_TRAIT_T(remove_reference, (class T), emp::remove_reference<T>);
+#endif
+
+
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_cv)
+  // TODO use builtin / std::... with macro
+# if JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_BUILTIN(__remove_const) && JLN_MP_HAS_BUILTIN(__remove_volatile)
+  JLN_MP_MAKE_TRAIT_FROM_ST(remove_cv, (class T), __remove_const(__remove_volatile(T)));
+# else
+  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_cv, (class T), (T));
+# endif
+#elif JLN_MP_USE_LIBSTDCXX
   JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_cv, (class T), (T));
 #elif JLN_MP_GCC
   namespace detail
@@ -1912,30 +2050,42 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_T(remove_cv, (class T), emp::remove_cv<T>);
 #endif
 
-#if ! JLN_MP_NO_STL
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_extent, (class T), (T));
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_all_extents, (class T), (T));
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_pointer, (class T), (T));
+
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_cvref)
+  // TODO use builtin / std::... with macro
+  JLN_MP_MAKE_TRAIT_FROM_ST(remove_cvref, (class T), __remove_cvref(T));
+#elif JLN_MP_USE_LIBSTDCXX && defined(__cpp_lib_remove_cvref) && __cpp_lib_remove_cvref >= 201711L
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_cvref, (class T), (T));
 #else
   namespace emp
   {
-    template<class T> struct remove_extent { using type = T; };
-    template<class T> struct remove_extent<T[]> { using type = T; };
-    template<class T, std::size_t N> struct remove_extent<T[N]> { using type = T; };
-
-    template<class T> struct remove_all_extents { using type = T; };
-    template<class T> struct remove_all_extents<T[]> : remove_all_extents<T> {};
-    template<class T, std::size_t N> struct remove_all_extents<T[N]> : remove_all_extents<T> {};
-
-    template<class T> struct remove_pointer { using type = T; };
-    template<class T> struct remove_pointer<T*> { using type = T; };
-    template<class T> struct remove_pointer<T* const> { using type = T; };
-    template<class T> struct remove_pointer<T* volatile> { using type = T; };
-    template<class T> struct remove_pointer<T* volatile const> { using type = T; };
+    // TODO remove_cv_impl may not exist
+    #if ! JLN_MP_USE_LIBSTDCXX && JLN_MP_GCC
+    template<typename T> struct remove_cvref : detail::remove_cv_impl<T volatile const> {};
+    template<typename T> struct remove_cvref<T&> : detail::remove_cv_impl<T volatile const> {};
+    template<typename T> struct remove_cvref<T&&> : detail::remove_cv_impl<T volatile const> {};
+    #else
+    template<typename T> struct remove_cvref : remove_cv<T> {};
+    template<typename T> struct remove_cvref<T&> : remove_cv<T> {};
+    template<typename T> struct remove_cvref<T&&> : remove_cv<T> {};
+    #endif
   }
-  JLN_MP_MAKE_TRAIT_T(remove_extent, (class T), emp::remove_extent<T>);
-  JLN_MP_MAKE_TRAIT_T(remove_all_extents, (class T), emp::remove_all_extents<T>);
-  JLN_MP_MAKE_TRAIT_T(remove_pointer, (class T), emp::remove_pointer<T>);
+  JLN_MP_MAKE_TRAIT_T(remove_cvref, (class T), emp::remove_cvref<T>);
+#endif
+
+
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_pointer)
+  // TODO use builtin / std::... with macro
+  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(add_pointer, (class T), (T));
+#else
+namespace detail
+  {
+    template<class T, class = void> struct add_pointer_impl { using type = T; };
+    template<class T> struct add_pointer_impl<T, emp::void_t<T*>> { using type = T*; };
+    template<class T> struct add_pointer_impl<T&, emp::void_t<T*>> { using type = T*; };
+    template<class T> struct add_pointer_impl<T&&, emp::void_t<T*>> { using type = T*; };
+  }
+  JLN_MP_MAKE_TRAIT_WRAP_T(add_pointer, (class T), detail::add_pointer_impl<T>);
 #endif
 
 
@@ -1958,21 +2108,6 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_NO_EMP(add_const, (class T), T const);
   JLN_MP_MAKE_TRAIT_NO_EMP(add_volatile, (class T), T volatile);
   JLN_MP_MAKE_TRAIT_NO_EMP(add_cv, (class T), T volatile const);
-
-
-#if ! JLN_MP_NO_STL
-  JLN_MP_MAKE_TRAIT_WRAP_T(remove_reference, (class T), std::remove_reference<T>);
-#else
-  namespace emp
-  {
-    template<class T> struct remove_reference { using type = T; };
-    template<class T> struct remove_reference<T&> { using type = T; };
-    template<class T> struct remove_reference<T&&> { using type = T; };
-
-    template<class T> using remove_reference_t = typename remove_reference<T>::type;
-  }
-  JLN_MP_MAKE_TRAIT_NO_EMP(remove_reference, (class T), typename emp::remove_reference<T>::type);
-#endif
 
 
   namespace detail
@@ -2206,16 +2341,6 @@ namespace jln::mp::traits
 
   namespace detail
   {
-    template<class T, class = void> struct add_pointer_impl { using type = T; };
-    template<class T> struct add_pointer_impl<T, emp::void_t<T*>> { using type = T*; };
-    template<class T> struct add_pointer_impl<T&, emp::void_t<T*>> { using type = T*; };
-    template<class T> struct add_pointer_impl<T&&, emp::void_t<T*>> { using type = T*; };
-  }
-  JLN_MP_MAKE_TRAIT_WRAP_T(add_pointer, (class T), detail::add_pointer_impl<T>);
-
-
-  namespace detail
-  {
     /* decay:
      * remove_reference -> {
      *  is_array
@@ -2227,12 +2352,14 @@ namespace jln::mp::traits
      */
 
     // is_function
+    // TODO add_pointer_impl may not exist
     template<class T, class = void> struct decay_maybe_func : add_pointer_impl<T> {};
     // not is_function
     template<class T> struct decay_maybe_func<T volatile const> { using type = T; };
   }
   namespace emp
   {
+    // TODO __remove_reference_t
     template<class T> struct decay : detail::decay_maybe_func<T volatile const> {};
     template<class T> struct decay<T&> : detail::decay_maybe_func<T volatile const> {};
     template<class T> struct decay<T&&> : detail::decay_maybe_func<T volatile const> {};
@@ -2246,29 +2373,27 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_T(decay, (class T), emp::decay<T>);
 
 
+#if ! JLN_MP_NO_STL && defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref >= 201811L
+  JLN_MP_MAKE_TRAIT_FROM_STD_ST(unwrap_reference, (class T), (T));
+#else
   namespace emp
   {
-    template<class T>
-    struct unwrap_reference
-    {
-      using type = T;
-    };
-
-    template<class T>
-    struct unwrap_reference<std::reference_wrapper<T>>
-    {
-      using type = T&;
-    };
-
-    template<class T>
-    struct unwrap_ref_decay
-      : unwrap_reference<decay_t<T>>
-    {};
+    template<class T> struct unwrap_reference { using type = T; };
+    #if ! JLN_MP_NO_STL
+    template<class T> struct unwrap_reference<std::reference_wrapper<T>> { using type = T&; };
+    #endif
   }
   JLN_MP_MAKE_TRAIT_T(unwrap_reference, (class T), emp::unwrap_reference<T>);
-  JLN_MP_MAKE_TRAIT_T(unwrap_ref_decay, (class T), emp::unwrap_ref_decay<T>);
+#endif
 
-  JLN_MP_MAKE_TRAIT_WRAP_T(remove_cvref, (class T), emp::remove_cv<emp::remove_reference_t<T>>);
+
+  namespace emp
+  {
+    template<class T> struct unwrap_ref_decay : unwrap_reference<decay_t<T>> {};
+    template<class T> using unwrap_ref_decay_t = unwrap_reference_t<decay_t<T>>;
+  }
+  JLN_MP_MAKE_TRAIT_NO_EMP(unwrap_ref_decay, (class T), emp::unwrap_ref_decay_t<T>);
+
 
 #if __cplusplus >= 202002L
 // TODO __cpp_lib_common_reference 	Make std::common_reference_t of std::reference_wrapper a reference type 	202302L 	<type_traits> 	(C++23) 	P2655R3
@@ -2279,6 +2404,7 @@ namespace jln::mp::traits
   // TODO remove that or alias on invoke_result
   JLN_MP_MAKE_STD_TRAIT_P1(result_of);
 #endif
+
 
   namespace detail
   {
@@ -2293,6 +2419,7 @@ namespace jln::mp::traits
     {};
   }
   JLN_MP_MAKE_TRAIT_WRAP_T(underlying_type, (class T), detail::underlying_type_impl<T>);
+
 
   namespace emp
   {
