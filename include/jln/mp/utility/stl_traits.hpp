@@ -371,25 +371,11 @@ namespace jln::mp::traits
 #define JLN_MP_DECLVAL_NOTHROW(T) static_cast<T(*)() noexcept>(nullptr)()
 
 
-#define JLN_MP_TRAIT_BUILTIN_IMPL_IS(Name, Params) \
-  std::integral_constant<bool, Name(JLN_MP_UNPACK Params)>
-
-#define JLN_MP_TRAIT_BUILTIN_IMPL_SIZE(Name, Params) \
-  std::integral_constant<std::size_t, Name(JLN_MP_UNPACK Params)>
-
-#define JLN_MP_TRAIT_BUILTIN_IMPL_T(Name, Params) \
-  Name(JLN_MP_UNPACK Params)
-
 #define JLN_MP_TRAIT_STD_IMPL(Name, Params) \
   typename std::Name<JLN_MP_UNPACK Params>::type
 
-#define JLN_MP_TRAIT_STD_IMPL_V(Name, Params) \
-  std::Name<JLN_MP_UNPACK Params>::value
-
-
 #define JLN_MP_MAKE_TRAIT_DISPATCH_I(Name, ToImpl, ImplName, Params, Values) \
   JLN_MP_MAKE_TRAIT(Name, Params, ToImpl(ImplName, Values))
-#define JLN_MP_MAKE_TRAIT_DISPATCH(...) JLN_MP_MAKE_TRAIT_DISPATCH_I(__VA_ARGS__)
 
 #define JLN_MP_MAKE_TRAIT_P1(...) JLN_MP_MAKE_TRAIT_DISPATCH_I(__VA_ARGS__, (class T), (T))
 #define JLN_MP_MAKE_TRAIT_P2(...) JLN_MP_MAKE_TRAIT_DISPATCH_I(__VA_ARGS__, (class T, class U), (T, U))
@@ -403,15 +389,6 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_V(Name, Params, bool, __VA_ARGS__)             \
   JLN_MP_MAKE_TRAIT(Name, Params, std::integral_constant<bool, __VA_ARGS__>);
 
-#define JLN_MP_MAKE_TRAIT_DISPATCH_BUILTIN_P1_V_IS(Name) \
-  JLN_MP_MAKE_TRAIT_DISPATCH_BUILTIN_V_IS(Name, (class T), __##Name(T))
-
-#define JLN_MP_MAKE_TRAIT_DISPATCH_BUILTIN_P2_V_IS(Name) \
-  JLN_MP_MAKE_TRAIT_DISPATCH_BUILTIN_V_IS(Name, (class T, class U), __##Name(T, U))
-
-#define JLN_MP_MAKE_TRAIT_DISPATCH_BUILTIN_X_XS_V_IS(Name) \
-  JLN_MP_MAKE_TRAIT_DISPATCH_BUILTIN_V_IS(Name, (class T, class... Args), __##Name(T, Args...))
-
 #define JLN_MP_MAKE_TRAIT_FROM_EMP_P1_IS(Name) \
     JLN_MP_MAKE_TRAIT(Name, (class T), emp::integral_constant<bool, emp::Name##_v<T>>)
 
@@ -420,69 +397,6 @@ namespace jln::mp::traits
 
 #define JLN_MP_MAKE_TRAIT_FROM_EMP_PTXS_IS(Name) \
     JLN_MP_MAKE_TRAIT(Name, (class T, class... Args), emp::integral_constant<bool, emp::Name##_v<T, Args...>>)
-
-
-#define JLN_MP_TRAIT_COND_00 0
-#define JLN_MP_TRAIT_COND_01 1
-#define JLN_MP_TRAIT_COND_10 1
-#define JLN_MP_TRAIT_COND_11 1
-
-#if JLN_MP_GCC || JLN_MP_CLANG || JLN_MP_MSVC
-#  define JLN_MP_TRAIT_COND_BUILTIN0 1
-#else
-#  define JLN_MP_TRAIT_COND_BUILTIN0 0
-#endif
-
-#if JLN_MP_GCC
-#  define JLN_MP_TRAIT_COND_GCC0 1
-#  if JLN_MP_GCC >= 800
-#    define JLN_MP_TRAIT_COND_GCC90 1
-#  else
-#    define JLN_MP_TRAIT_COND_GCC90 1
-#  endif
-#else
-#  define JLN_MP_TRAIT_COND_GCC0 0
-#  define JLN_MP_TRAIT_COND_GCC90 0
-#endif
-
-#if JLN_MP_MSVC
-#  define JLN_MP_TRAIT_COND_MSVC0 1
-#  if JLN_MP_MSVC >= 2000
-#    define JLN_MP_TRAIT_COND_MSVC_200 1
-#  else
-#    define JLN_MP_TRAIT_COND_MSVC_200 0
-#  endif
-#else
-#  define JLN_MP_TRAIT_COND_MSVC0 0
-#  define JLN_MP_TRAIT_COND_MSVC_200 0
-#endif
-
-#if JLN_MP_CLANG
-#  define JLN_MP_TRAIT_COND_CLANG0 1
-#else
-#  define JLN_MP_TRAIT_COND_CLANG0 0
-#endif
-
-#define JLN_MP_TRAIT_COND_EVAL_I(a, b) JLN_MP_TRAIT_COND_##a##b
-#define JLN_MP_TRAIT_COND_EVAL(a, b) JLN_MP_TRAIT_COND_EVAL_I(a, b)
-#define JLN_MP_TRAIT_COND_SELECT_0(yes, no) JLN_MP_UNPACK no
-#define JLN_MP_TRAIT_COND_SELECT_1(yes, no) JLN_MP_UNPACK yes
-#define JLN_MP_TRAIT_COND_SELECT_II(cond, yes, no) cond(yes, no)
-#define JLN_MP_TRAIT_COND_SELECT_I(cond, yes, no) \
-  JLN_MP_TRAIT_COND_SELECT_II(JLN_MP_TRAIT_COND_SELECT_##cond, yes, no)
-#define JLN_MP_TRAIT_COND_SELECT(cond, yes, no) JLN_MP_TRAIT_COND_SELECT_I(cond, yes, no)
-
-#define JLN_MP_TRAIT_BUILTIN_IMPL(stl_name, builtin_name, builtin_impl, cond1, cond2, cond3) \
-  JLN_MP_TRAIT_COND_SELECT(                                                                  \
-    JLN_MP_TRAIT_COND_EVAL(JLN_MP_TRAIT_COND_EVAL(cond1, 0),                                 \
-      JLN_MP_TRAIT_COND_EVAL(JLN_MP_TRAIT_COND_EVAL(cond2, 0),                               \
-        JLN_MP_TRAIT_COND_EVAL(JLN_MP_TRAIT_COND_EVAL(cond3, 0),                             \
-          JLN_MP_HAS_BUILTIN(builtin_name)))),                                               \
-    (builtin_impl, builtin_name), (JLN_MP_TRAIT_STD_IMPL, stl_name))
-
-#define JLN_MP_TRAIT_BUILTIN_IS(stl_name, cond1, cond2, cond3) \
-  stl_name, JLN_MP_TRAIT_BUILTIN_IMPL(                         \
-    stl_name, __##stl_name, JLN_MP_TRAIT_BUILTIN_IMPL_IS, cond1, cond2, cond3)
 
 
 #ifdef __cpp_noexcept_function_type
@@ -2626,18 +2540,6 @@ namespace detail
 #undef JLN_MP_MAKE_STD_TRAIT_P1
 #undef JLN_MP_MAKE_STD_TRAIT_P2
 #undef JLN_MP_MAKE_STD_TRAIT_XS
-#undef JLN_MP_TRAIT_COND_CLANG
-#undef JLN_MP_TRAIT_COND_MSVC
-#undef JLN_MP_TRAIT_COND_GCC
-#undef JLN_MP_TRAIT_COND_EVAL_I
-#undef JLN_MP_TRAIT_COND_EVAL
-#undef JLN_MP_TRAIT_COND_SELECT_0
-#undef JLN_MP_TRAIT_COND_SELECT_1
-#undef JLN_MP_TRAIT_COND_SELECT_II
-#undef JLN_MP_TRAIT_COND_SELECT_I
-#undef JLN_MP_TRAIT_COND_SELECT
-#undef JLN_MP_TRAIT_BUILTIN2_IS
-#undef JLN_MP_TRAIT_BUILTIN
 #undef JLN_MP_CONSTEXPR_VAR
 
 #undef JLN_MP_IS_VOID_V
