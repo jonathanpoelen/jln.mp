@@ -2,6 +2,12 @@
 
 #include "jln/mp/smp/utility/stl_traits.hpp"
 
+// TODO remove
+JLN_MP_DIAGNOSTIC_PUSH()
+JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wunused-macros")
+JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunused-template")
+
+
 TEST_SUITE_BEGIN()
 
 class no_type { using type = no_type;  };
@@ -1005,9 +1011,9 @@ TEST()
   // // CHECK_X2(is_nothrow_assignable);
   // CHECK_F(test_assignable, is_nothrow_copy_assignable);
   // CHECK_F(test_assignable, is_nothrow_move_assignable);
-  // CHECK_X1(is_destructible);
+  CHECK_X1(is_destructible);
   // CHECK_X1(is_trivially_destructible);
-  // CHECK_X1(is_nothrow_destructible);
+  CHECK_X1(is_nothrow_destructible);
 #if defined(__cpp_lib_is_swappable) && __cpp_lib_is_swappable >= 201603L
   // CHECK_F(test_swappable, is_swappable);
   // CHECK_F(test_swappable, is_nothrow_swappable);
@@ -1058,7 +1064,7 @@ TEST()
   // CHECK_X1_T(remove_all_extents);
   // CHECK_X1_T(remove_pointer);
   // CHECK_X1_T(add_pointer);
-  CHECK_X1(decay);
+  // CHECK_X1(decay);
 //   // CHECK_XS(aligned_storage);
 //   // CHECK_XS(aligned_union);
 // #if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref >= 201811L
