@@ -612,11 +612,14 @@ namespace jln::mp::traits
 #undef JLN_MP_MAKE_TRAIT_D
 
 
-#if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_signed)
+#if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_signed) && (!JLN_MP_INT128_AS_INTEGRAL || JLN_MP_CLANG_LIKE)
   JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV(is_signed, (class T), bool, __is_signed(T));
 #else
   namespace detail
   {
+# if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_signed)
+    template<class T> JLN_MP_CONSTEXPR_VAR bool is_signed_impl_v = __is_signed(T);
+# else
     JLN_MP_DIAGNOSTIC_PUSH()
     JLN_MP_DIAGNOSTIC_MSVC_IGNORE(4296) // '<': expression is always false
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_signed_impl_v = false;
@@ -632,16 +635,24 @@ namespace jln::mp::traits
     template<> JLN_MP_CONSTEXPR_VAR bool is_signed_impl_v<volatile const long double> = true;
     // TODO __uint128_t, __int128_t
     JLN_MP_DIAGNOSTIC_POP()
+# endif // __is_signed
+
+# if JLN_MP_INT128_AS_INTEGRAL
+    template<> JLN_MP_CONSTEXPR_VAR bool is_signed_impl_v<volatile const JLN_MP_INT128_T> = true;
+# endif
   }
   JLN_MP_MAKE_TRAIT_IS(is_signed, (class T), bool, detail::is_signed_impl_v<T volatile const>);
 #endif
 
 
-#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_unsigned)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_unsigned) && (!JLN_MP_INT128_AS_INTEGRAL || JLN_MP_CLANG_LIKE)
   JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV(is_unsigned, (class T), bool, __is_unsigned(T));
 #else
   namespace detail
   {
+# if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_unsigned)
+    template<class T> JLN_MP_CONSTEXPR_VAR bool is_unsigned_impl_v = __is_unsigned(T);
+# else
     JLN_MP_DIAGNOSTIC_PUSH()
     JLN_MP_DIAGNOSTIC_MSVC_IGNORE(4296) // '<': expression is always false
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_unsigned_impl_v = false;
@@ -659,7 +670,11 @@ namespace jln::mp::traits
     template<> JLN_MP_CONSTEXPR_VAR bool is_unsigned_impl_v<volatile const unsigned long> = true;
     template<> JLN_MP_CONSTEXPR_VAR bool is_unsigned_impl_v<volatile const unsigned long long> = true;
     JLN_MP_DIAGNOSTIC_POP()
-    // TODO uint128_t
+# endif // __is_unsigned
+
+# if JLN_MP_INT128_AS_INTEGRAL
+    template<> JLN_MP_CONSTEXPR_VAR bool is_signed_impl_v<volatile const JLN_MP_UINT128_T> = true;
+# endif
   }
   JLN_MP_MAKE_TRAIT_IS(is_unsigned, (class T), bool, detail::is_unsigned_impl_v<T volatile const>);
 #endif
@@ -778,12 +793,15 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_integral)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_integral) && (!JLN_MP_INT128_AS_INTEGRAL || JLN_MP_CLANG_LIKE)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_integral, (class T), bool, __is_integral(T));
 #else
   namespace detail
   {
+# if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_integral)
+    template<class T> JLN_MP_CONSTEXPR_VAR bool is_integral_impl_v = __is_integral(T);
+# else
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_integral_impl_v = false;
     template<> JLN_MP_CONSTEXPR_VAR bool is_integral_impl_v<volatile const bool> = true;
     template<> JLN_MP_CONSTEXPR_VAR bool is_integral_impl_v<volatile const char> = true;
@@ -803,8 +821,12 @@ namespace jln::mp::traits
     template<> JLN_MP_CONSTEXPR_VAR bool is_integral_impl_v<volatile const unsigned long> = true;
     template<> JLN_MP_CONSTEXPR_VAR bool is_integral_impl_v<volatile const   signed long long> = true;
     template<> JLN_MP_CONSTEXPR_VAR bool is_integral_impl_v<volatile const unsigned long long> = true;
+# endif // __is_integral
 
-    // TODO int128 ?
+# if JLN_MP_INT128_AS_INTEGRAL
+    template<> JLN_MP_CONSTEXPR_VAR bool is_integral_impl_v<volatile const JLN_MP_INT128_T> = true;
+    template<> JLN_MP_CONSTEXPR_VAR bool is_integral_impl_v<volatile const JLN_MP_UINT128_T> = true;
+# endif
   }
   JLN_MP_MAKE_TRAIT_IS(is_integral, (class T), bool, detail::is_integral_impl_v<T volatile const>);
 #endif
