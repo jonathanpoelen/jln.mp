@@ -121,112 +121,6 @@ namespace jln::mp::traits
   // TODO remove duplicates in JLN_MP_MAKE_TRAIT*
 
 
-#define JLN_MP_MAKE_TRAIT_FROM_F(Name, Params, Type, ...) \
-  template<class C = identity>                            \
-  struct Name                                             \
-  {                                                       \
-    template<JLN_MP_UNPACK Params>                        \
-    using f = JLN_MP_CALL_TRACE(C,                        \
-      std::integral_constant<Type, __VA_ARGS__>);         \
-  };                                                      \
-                                                          \
-  namespace emp                                           \
-  {                                                       \
-    template<JLN_MP_UNPACK Params>                        \
-    using Name##_t                                        \
-      = std::integral_constant<Type, __VA_ARGS__>;        \
-                                                          \
-    template<JLN_MP_UNPACK Params>                        \
-    JLN_MP_CONSTEXPR_VAR Type Name##_v = __VA_ARGS__;     \
-                                                          \
-    template<JLN_MP_UNPACK Params>                        \
-    struct Name                                           \
-      : std::integral_constant<Type, __VA_ARGS__> {};     \
-  }                                                       \
-                                                          \
-  template<>                                              \
-  struct Name<identity>                                   \
-  {                                                       \
-    template<JLN_MP_UNPACK Params>                        \
-    using f = std::integral_constant<Type, __VA_ARGS__>;  \
-  }
-
-
-#define JLN_MP_MAKE_TRAIT_V(Name, Params, Type, ...)  \
-  namespace emp                                       \
-  {                                                   \
-    template<JLN_MP_UNPACK Params>                    \
-    JLN_MP_CONSTEXPR_VAR Type Name##_v = __VA_ARGS__; \
-  }
-
-#define JLN_MP_MAKE_TRAIT_WRAP_T(Name, Params, ...) \
-  template<class C = identity>                      \
-  struct Name                                       \
-  {                                                 \
-    template<JLN_MP_UNPACK Params>                  \
-    using f = JLN_MP_CALL_TRACE(C,                  \
-      typename __VA_ARGS__::type);                  \
-  };                                                \
-                                                    \
-  namespace emp                                     \
-  {                                                 \
-    template<JLN_MP_UNPACK Params>                  \
-    using Name##_t = typename __VA_ARGS__::type;    \
-                                                    \
-    template<JLN_MP_UNPACK Params>                  \
-    struct Name : __VA_ARGS__ {};                   \
-  }                                                 \
-                                                    \
-  template<>                                        \
-  struct Name<identity>                             \
-  {                                                 \
-    template<JLN_MP_UNPACK Params>                  \
-    using f = typename __VA_ARGS__::type;           \
-  }
-
-#define JLN_MP_MAKE_TRAIT_T(Name, Params, ...)   \
-  template<class C = identity>                   \
-  struct Name                                    \
-  {                                              \
-    template<JLN_MP_UNPACK Params>               \
-    using f = JLN_MP_CALL_TRACE(C,               \
-      typename __VA_ARGS__::type);               \
-  };                                             \
-                                                 \
-  namespace emp                                  \
-  {                                              \
-    template<JLN_MP_UNPACK Params>               \
-    using Name##_t = typename __VA_ARGS__::type; \
-  }                                              \
-                                                 \
-  template<>                                     \
-  struct Name<identity>                          \
-  {                                              \
-    template<JLN_MP_UNPACK Params>               \
-    using f = typename __VA_ARGS__::type;        \
-  }
-
-#define JLN_MP_MAKE_TRAIT(Name, Params, ...)     \
-  template<class C = identity>                   \
-  struct Name                                    \
-  {                                              \
-    template<JLN_MP_UNPACK Params>               \
-    using f = JLN_MP_CALL_TRACE(C, __VA_ARGS__); \
-  };                                             \
-                                                 \
-  namespace emp                                  \
-  {                                              \
-    template<JLN_MP_UNPACK Params>               \
-    using Name = __VA_ARGS__;                    \
-  }                                              \
-                                                 \
-  template<>                                     \
-  struct Name<identity>                          \
-  {                                              \
-    template<JLN_MP_UNPACK Params>               \
-    using f = __VA_ARGS__;                       \
-  }
-
 #define JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, ...) \
   template<class C = identity>                      \
   struct Name                                       \
@@ -242,172 +136,187 @@ namespace jln::mp::traits
     using f = __VA_ARGS__;                          \
   }
 
-// STD_SVT
-//  ^ implementation
-//     ^ use struct (using std::name)
-//      ^ use value alias (using std::name_v)
-//       ^ use type alias (using std::name_t)
-// STD_SVAT
-//       ^ alias for T based on V (using std::name_t = std::integral_constant<Type, std::name_v<...>)
+// MAKE_TRAIT_SVT_*
+//            ^ implements struct (struct Name : ... {})
+//             ^ implements value (Name_v = ...)
+//              ^ implements alias (Name_t = ...)
 
-#define JLN_MP_MAKE_TRAIT_FROM_STD_SVAT_IMPL( \
-    Name, Params, ...)                        \
-  namespace emp                               \
-  {                                           \
-    using std::Name;                          \
-    using std::Name##_v;                      \
-    template<JLN_MP_UNPACK Params>            \
-    using Name##_t = __VA_ARGS__;             \
-  }                                           \
-  JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, __VA_ARGS__)
+#define JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(Name, Params, Type, ...) \
+  namespace emp                                                    \
+  {                                                                \
+    template<JLN_MP_UNPACK Params>                                 \
+    JLN_MP_CONSTEXPR_VAR Type Name##_v = __VA_ARGS__;              \
+                                                                   \
+    template<JLN_MP_UNPACK Params>                                 \
+    struct Name : integral_constant<Type, __VA_ARGS__> {};         \
+                                                                   \
+    template<JLN_MP_UNPACK Params>                                 \
+    using Name##_t = integral_constant<Type, __VA_ARGS__>;         \
+  }                                                                \
+  JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, emp::integral_constant<Type, __VA_ARGS__>)
 
-#define JLN_MP_MAKE_TRAIT_FROM_STD_ST( \
-    Name, Params, Values)              \
-  namespace emp                        \
-  {                                    \
-    using std::Name;                   \
-    using std::Name##_t;               \
-  }                                    \
-  JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, std::Name##_t<JLN_MP_UNPACK Values>)
 
-#define JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(Name, Params, Type, Values) \
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT_IMPL(                             \
-    Name, Params, emp::integral_constant<Type, std::Name##_v<JLN_MP_UNPACK Values>>)
+#define JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(Name, Params, Type, Values)           \
+  namespace emp                                                               \
+  {                                                                           \
+    template<JLN_MP_UNPACK Params>                                            \
+    struct Name : integral_constant<Type, Name##_v<JLN_MP_UNPACK Values>> {}; \
+                                                                              \
+    template<JLN_MP_UNPACK Params>                                            \
+    using Name##_t = integral_constant<Type, Name##_v<JLN_MP_UNPACK Values>>; \
+  }                                                                           \
+  JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, emp::integral_constant<Type, emp::Name##_v<JLN_MP_UNPACK Values>>)
 
-#define JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV( \
-    Name, Params, Type, ...)                     \
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT_IMPL(          \
-    Name, Params, emp::integral_constant<Type, __VA_ARGS__>)
 
-#define JLN_MP_MAKE_TRAIT_FROM_BUILTIN_VT_STD_S(      \
-  Name, Params, Type, ...)                            \
+#define JLN_MP_MAKE_TRAIT_ST_FROM_S(Name, Params, ...) \
+  namespace emp                                        \
+  {                                                    \
+    template<JLN_MP_UNPACK Params>                     \
+    struct Name : __VA_ARGS__ {};                      \
+                                                       \
+    template<JLN_MP_UNPACK Params>                     \
+    using Name##_t = typename __VA_ARGS__::type;       \
+  }                                                    \
+  JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, typename __VA_ARGS__::type)
+
+
+#define JLN_MP_MAKE_TRAIT_T_FROM_S(Name, Params, ...) \
   namespace emp                                       \
   {                                                   \
-    using std::Name;                                  \
     template<JLN_MP_UNPACK Params>                    \
-    JLN_MP_CONSTEXPR_VAR Type Name##_v = __VA_ARGS__; \
-    template<JLN_MP_UNPACK Params>                    \
-    using Name##_t                                    \
-      = emp::integral_constant<Type, __VA_ARGS__>;    \
+    using Name##_t = typename __VA_ARGS__::type;      \
   }                                                   \
+  JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, typename __VA_ARGS__::type)
+
+
+#define JLN_MP_MAKE_TRAIT_ST_FROM_STD(Name, Params, Values) \
+  namespace emp                                             \
+  {                                                         \
+    using std::Name;                                        \
+    using std::Name##_t;                                    \
+  }                                                         \
+  JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, std::Name##_t<JLN_MP_UNPACK Values>)
+
+
+#define JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(Name, Params, Type, ...) \
+  namespace emp                                                                \
+  {                                                                            \
+    using std::Name;                                                           \
+    using std::Name##_v;                                                       \
+                                                                               \
+    template<JLN_MP_UNPACK Params>                                             \
+    using Name##_t = emp::integral_constant<Type, __VA_ARGS__>;                \
+  }                                                                            \
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, emp::integral_constant<Type, __VA_ARGS__>)
 
-#define JLN_MP_MAKE_TRAIT_IS_ST(Name, Params, Type, ...)        \
-  namespace emp                                                 \
-  {                                                             \
-    template<JLN_MP_UNPACK Params>                              \
-    struct Name : emp::integral_constant<Type, __VA_ARGS__> {}; \
-    template<JLN_MP_UNPACK Params>                              \
-    using Name##_t = emp::integral_constant<Type, __VA_ARGS__>; \
-  }                                                             \
+
+#define JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(Name, Params, Type, Values) \
+  JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(                                 \
+    Name, Params, Type, std::Name##_v<JLN_MP_UNPACK Values>)
+
+
+#define JLN_MP_MAKE_TRAIT_VT_FROM_EXPR_V_x_S_FROM_STD(Name, Params, Type, ...) \
+  namespace emp                                                                \
+  {                                                                            \
+    using std::Name;                                                           \
+                                                                               \
+    template<JLN_MP_UNPACK Params>                                             \
+    JLN_MP_CONSTEXPR_VAR Type Name##_v = __VA_ARGS__;                          \
+                                                                               \
+    template<JLN_MP_UNPACK Params>                                             \
+    using Name##_t = integral_constant<Type, __VA_ARGS__>;                     \
+  }                                                                            \
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, emp::integral_constant<Type, __VA_ARGS__>)
 
-#define JLN_MP_MAKE_TRAIT_FROM_EMP_V(Name, Params, Type, Values) \
-  JLN_MP_MAKE_TRAIT_IS_ST(Name, Params, Type, emp::Name##_v<JLN_MP_UNPACK Values>)
 
-#define JLN_MP_MAKE_TRAIT_IS(Name, Params, Type, ...)           \
-  namespace emp                                                 \
-  {                                                             \
-    template<JLN_MP_UNPACK Params>                              \
-    JLN_MP_CONSTEXPR_VAR Type Name##_v = __VA_ARGS__;           \
-                                                                \
-    template<JLN_MP_UNPACK Params>                              \
-    struct Name : emp::integral_constant<Type, __VA_ARGS__> {}; \
-                                                                \
-    template<JLN_MP_UNPACK Params>                              \
-    using Name##_t = emp::integral_constant<Type, __VA_ARGS__>; \
-  }                                                             \
+#define JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_V_x_V_FROM_STD(Name, Params, Type, ...) \
+  namespace emp                                                                \
+  {                                                                            \
+    using std::Name##_v;                                                       \
+                                                                               \
+    template<JLN_MP_UNPACK Params>                                             \
+    struct Name : emp::integral_constant<Type, __VA_ARGS__> {};                \
+                                                                               \
+    template<JLN_MP_UNPACK Params>                                             \
+    using Name##_t = emp::integral_constant<Type, __VA_ARGS__>;                \
+  }                                                                            \
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, emp::integral_constant<Type, __VA_ARGS__>)
 
-#define JLN_MP_MAKE_TRAIT_FROM_BUILTIN_TS_STD_V(   \
-  Name, Params, Type, ...)                         \
-  namespace emp                                    \
-  {                                                \
-    using std::Name##_v;                           \
-    template<JLN_MP_UNPACK Params>                 \
-    struct Name                                    \
-      : emp::integral_constant<Type, __VA_ARGS__>  \
-    {};                                            \
-    template<JLN_MP_UNPACK Params>                 \
-    using Name##_t                                 \
-      = emp::integral_constant<Type, __VA_ARGS__>; \
-  }                                                \
-  JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, emp::integral_constant<Type, __VA_ARGS__>)
 
-#define JLN_MP_MAKE_TRAIT_FROM_ST(             \
-  Name, Params, ...)                           \
-  namespace emp                                \
-  {                                            \
-    template<JLN_MP_UNPACK Params>             \
-    struct Name { using type = __VA_ARGS__; }; \
-    template<JLN_MP_UNPACK Params>             \
-    using Name##_t = __VA_ARGS__;              \
-  }                                            \
+#define JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(Name, Params, ...) \
+  namespace emp                                             \
+  {                                                         \
+    template<JLN_MP_UNPACK Params>                          \
+    struct Name { using type = __VA_ARGS__; };              \
+                                                            \
+    template<JLN_MP_UNPACK Params>                          \
+    using Name##_t = __VA_ARGS__;                           \
+  }                                                         \
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, __VA_ARGS__)
 
 
 #if JLN_MP_USE_LIBMS
 # define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV
+    JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD
 #elif JLN_MP_USE_LIBCXX
 # define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_BUILTIN_VT_STD_S
+    JLN_MP_MAKE_TRAIT_VT_FROM_EXPR_V_x_S_FROM_STD
 #else
 # define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_F
+    JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
 #endif
 
 #if JLN_MP_USE_LIBCXX
 # define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV
+    JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD
 # define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_VT_STD_S_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_BUILTIN_VT_STD_S
-# define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST JLN_MP_MAKE_TRAIT_FROM_STD_ST
+    JLN_MP_MAKE_TRAIT_VT_FROM_EXPR_V_x_S_FROM_STD
+# define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST JLN_MP_MAKE_TRAIT_ST_FROM_STD
 #else
 # define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_F
+    JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
 # define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_VT_STD_S_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_F
+    JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
 # define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(Name, Params, Values) \
-    JLN_MP_MAKE_TRAIT_FROM_ST(Name, Params, __##Name Values)
+    JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(Name, Params, __##Name Values)
 #endif
 
 #if JLN_MP_USE_LIBCXX
 # define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_TS_STD_V_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV
+    JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD
 #elif JLN_MP_USE_LIBMS
 # define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_TS_STD_V_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_BUILTIN_TS_STD_V
+    JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_V_x_V_FROM_STD
 #else
 # define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_TS_STD_V_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_F
+    JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
 #endif
 
 #if JLN_MP_USE_LIBCXX || JLN_MP_USE_LIBMS
 # define JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV
+    JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD
 #else
 # define JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_F
+    JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
 #endif
 
 #if JLN_MP_USE_LIBCXX || JLN_MP_USE_LIBMS
 # define JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_LIBSTDCXX_BUILTIN_VT_STD_S_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV
+    JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD
 #elif JLN_MP_USE_LIBSTDCXX
 # define JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_LIBSTDCXX_BUILTIN_VT_STD_S_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_BUILTIN_VT_STD_S
+    JLN_MP_MAKE_TRAIT_VT_FROM_EXPR_V_x_S_FROM_STD
 #else
 # define JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_LIBSTDCXX_BUILTIN_VT_STD_S_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_F
+    JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
 #endif
 
 #if JLN_MP_USE_LIBMS
 # define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV
+    JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD
 #else
 # define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F \
-    JLN_MP_MAKE_TRAIT_FROM_F
+    JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
 #endif
 
 
@@ -522,14 +431,14 @@ namespace jln::mp::traits
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_const)
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(is_const, (class T), bool, __is_const(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_const, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_const, (class T), bool, (T));
 #else
   namespace emp
   {
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_const_v = false;
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_const_v<T const> = true;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_const, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_const, (class T), bool, (T));
 #endif
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_const)
 # define JLN_MP_IS_CONST_V(...) __is_const(__VA_ARGS__)
@@ -541,14 +450,14 @@ namespace jln::mp::traits
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_volatile)
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(is_volatile, (class T), bool, __is_volatile(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_volatile, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_volatile, (class T), bool, (T));
 #else
   namespace emp
   {
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_volatile_v = false;
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_volatile_v<T volatile> = true;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_volatile, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_volatile, (class T), bool, (T));
 #endif
 
 
@@ -562,7 +471,7 @@ namespace jln::mp::traits
     is_trivial, (class T), bool, __is_trivially_constructible(T) && __is_trivially_copyable(T));
 #elif ! JLN_MP_NO_STL
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_trivial, (class T), bool, (T))
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_trivial, (class T), bool, (T))
 #endif
 
 
@@ -587,13 +496,13 @@ namespace jln::mp::traits
 
 #if JLN_MP_USE_LIBMS || JLN_MP_USE_LIBCXX
 # define JLN_MP_MAKE_TRAIT_D(Name, Params, Values) \
-    JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV(Name, Params, bool, __##Name Values)
+    JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(Name, Params, bool, __##Name Values)
 #elif JLN_MP_USE_LIBSTDCXX
 # define JLN_MP_MAKE_TRAIT_D(Name, Params, Values) \
-    JLN_MP_MAKE_TRAIT_FROM_BUILTIN_VT_STD_S(Name, Params, bool, __##Name Values)
+    JLN_MP_MAKE_TRAIT_VT_FROM_EXPR_V_x_S_FROM_STD(Name, Params, bool, __##Name Values)
 #else
 # define JLN_MP_MAKE_TRAIT_D(Name, Params, Values) \
-    JLN_MP_MAKE_TRAIT_FROM_F(Name, Params, bool, __##Name Values)
+    JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(Name, Params, bool, __##Name Values)
 #endif
 
 #if __cplusplus <= 201703L
@@ -613,7 +522,7 @@ namespace jln::mp::traits
 
 
 #if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_signed) && (!JLN_MP_INT128_AS_INTEGRAL || JLN_MP_CLANG_LIKE)
-  JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV(is_signed, (class T), bool, __is_signed(T));
+  JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(is_signed, (class T), bool, __is_signed(T));
 #else
   namespace detail
   {
@@ -641,12 +550,12 @@ namespace jln::mp::traits
     template<> JLN_MP_CONSTEXPR_VAR bool is_signed_impl_v<volatile const JLN_MP_INT128_T> = true;
 # endif
   }
-  JLN_MP_MAKE_TRAIT_IS(is_signed, (class T), bool, detail::is_signed_impl_v<T volatile const>);
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_signed, (class T), bool, detail::is_signed_impl_v<T volatile const>);
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_unsigned) && (!JLN_MP_INT128_AS_INTEGRAL || JLN_MP_CLANG_LIKE)
-  JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV(is_unsigned, (class T), bool, __is_unsigned(T));
+  JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(is_unsigned, (class T), bool, __is_unsigned(T));
 #else
   namespace detail
   {
@@ -676,13 +585,13 @@ namespace jln::mp::traits
     template<> JLN_MP_CONSTEXPR_VAR bool is_signed_impl_v<volatile const JLN_MP_UINT128_T> = true;
 # endif
   }
-  JLN_MP_MAKE_TRAIT_IS(is_unsigned, (class T), bool, detail::is_unsigned_impl_v<T volatile const>);
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_unsigned, (class T), bool, detail::is_unsigned_impl_v<T volatile const>);
 #endif
 
 
 #if JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_bounded_array, (class T), bool, (T));
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_unbounded_array, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_bounded_array, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_unbounded_array, (class T), bool, (T));
 #else
   namespace emp
   {
@@ -692,8 +601,8 @@ namespace jln::mp::traits
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_unbounded_array_v = false;
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_unbounded_array_v<T[]> = true;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_bounded_array, (class T), bool, (T));
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_unbounded_array, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_bounded_array, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_unbounded_array, (class T), bool, (T));
 #endif
 
 
@@ -712,7 +621,7 @@ namespace jln::mp::traits
   // TODO void -> void = ok
   // TODO JLN_MP_DECLVAL(PtrFunc&&) -> error
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_convertible);
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_convertible);
 #else
   #define JLN_MP_IS_CONVERTIBLE_V(...) detail::is_convertible_impl_v<__VA_ARGS__>
   namespace detail
@@ -727,7 +636,7 @@ namespace jln::mp::traits
     JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<
       From, To, decltype(JLN_MP_FN_PTR(void(*)(From))(JLN_MP_DECLVAL(To)))> = true;
   }
-  JLN_MP_MAKE_TRAIT_IS(is_convertible, (class From, class To), bool,
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_convertible, (class From, class To), bool,
     detail::is_convertible_impl_v<From, To>);
 #endif
 
@@ -743,7 +652,7 @@ namespace jln::mp::traits
     is_scoped_enum, (class T), bool, __is_scoped_enum(T));
 #else
   // TODO or *_FROM_EMP_V
-  JLN_MP_MAKE_TRAIT_IS(is_scoped_enum, (class T), bool,
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_scoped_enum, (class T), bool,
       // TODO requires { int(*static_cast<T*>(nullptr)); }
     __is_enum(T) && !JLN_MP_IS_CONVERTIBLE_V(T, int));
 #endif
@@ -756,11 +665,11 @@ namespace jln::mp::traits
 
 #if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_void)
   #define JLN_MP_IS_VOID_V(...) __is_void(__VA_ARGS__)
-  JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV(is_void, (class T), bool, __is_void(T));
+  JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(is_void, (class T), bool, __is_void(T));
 #elif JLN_MP_HAS_OPTIONAL_BUILTIN(__is_same)
   #define JLN_MP_IS_VOID_V(...) \
     __is_same(volatile const __VA_ARGS__, volatile const void)
-  JLN_MP_MAKE_TRAIT_FROM_F(is_void, (class T), bool, JLN_MP_IS_VOID_V(T));
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_void, (class T), bool, JLN_MP_IS_VOID_V(T));
 #else
   #define JLN_MP_IS_VOID_V(...) emp::is_void_v<__VA_ARGS__>
   namespace emp
@@ -771,14 +680,14 @@ namespace jln::mp::traits
     template<> JLN_MP_CONSTEXPR_VAR bool is_void_v<void volatile> = true;
     template<> JLN_MP_CONSTEXPR_VAR bool is_void_v<void volatile const> = true;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_void, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_void, (class T), bool, (T));
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_same)
   #define JLN_MP_IS_NULL_POINTER_V(...) \
     __is_same(__VA_ARGS__ volatile const, decltype(nullptr) volatile const)
-  JLN_MP_MAKE_TRAIT_FROM_F(is_null_pointer, (class T), bool, JLN_MP_IS_NULL_POINTER_V(T));
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_null_pointer, (class T), bool, JLN_MP_IS_NULL_POINTER_V(T));
 #else
   #define JLN_MP_IS_NULL_POINTER_V(...) emp::is_null_pointer_v<__VA_ARGS__>
   namespace emp
@@ -789,7 +698,7 @@ namespace jln::mp::traits
     template<> JLN_MP_CONSTEXPR_VAR bool is_null_pointer_v<decltype(nullptr) volatile> = true;
     template<> JLN_MP_CONSTEXPR_VAR bool is_null_pointer_v<decltype(nullptr) volatile const> = true;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_null_pointer, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_null_pointer, (class T), bool, (T));
 #endif
 
 
@@ -828,7 +737,7 @@ namespace jln::mp::traits
     template<> JLN_MP_CONSTEXPR_VAR bool is_integral_impl_v<volatile const JLN_MP_UINT128_T> = true;
 # endif
   }
-  JLN_MP_MAKE_TRAIT_IS(is_integral, (class T), bool, detail::is_integral_impl_v<T volatile const>);
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_integral, (class T), bool, detail::is_integral_impl_v<T volatile const>);
 #endif
 
 
@@ -843,7 +752,7 @@ namespace jln::mp::traits
     template<> JLN_MP_CONSTEXPR_VAR bool is_floating_point_impl_v<volatile const double> = true;
     template<> JLN_MP_CONSTEXPR_VAR bool is_floating_point_impl_v<volatile const long double> = true;
   }
-  JLN_MP_MAKE_TRAIT_IS(is_floating_point, (class T), bool, detail::is_floating_point_impl_v<T volatile const>);
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_floating_point, (class T), bool, detail::is_floating_point_impl_v<T volatile const>);
 #endif
 
 
@@ -852,7 +761,7 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_array, (class T), bool, __is_array(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_array, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_array, (class T), bool, (T));
 #else
   #define JLN_MP_IS_ARRAY_V(...) /*emp::*/is_array_v<__VA_ARGS__>
   namespace emp
@@ -861,7 +770,7 @@ namespace jln::mp::traits
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_array_v<T[]> = true;
     template<class T, std::size_t N> JLN_MP_CONSTEXPR_VAR bool is_array_v<T[N]> = true;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_array, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_array, (class T), bool, (T));
 #endif
 
 
@@ -869,7 +778,7 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_pointer, (class T), bool, __is_pointer(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_pointer, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_pointer, (class T), bool, (T));
 #else
   namespace emp
   {
@@ -879,7 +788,7 @@ namespace jln::mp::traits
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_pointer_v<T* volatile> = true;
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_pointer_v<T* volatile const> = true;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_pointer, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_pointer, (class T), bool, (T));
 #endif
 
 
@@ -887,14 +796,14 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_lvalue_reference, (class T), bool, __is_lvalue_reference(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_lvalue_reference, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_lvalue_reference, (class T), bool, (T));
 #else
   namespace emp
   {
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_lvalue_reference_v = false;
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_lvalue_reference_v<T&> = true;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_lvalue_reference, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_lvalue_reference, (class T), bool, (T));
 #endif
 
 
@@ -902,14 +811,14 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_rvalue_reference, (class T), bool, __is_rvalue_reference(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_rvalue_reference, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_rvalue_reference, (class T), bool, (T));
 #else
   namespace emp
   {
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_rvalue_reference_v = false;
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_rvalue_reference_v<T&&> = true;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_rvalue_reference, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_rvalue_reference, (class T), bool, (T));
 #endif
 
 
@@ -917,7 +826,7 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_reference, (class T), bool, __is_reference(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_reference, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_reference, (class T), bool, (T));
 #else
   namespace emp
   {
@@ -925,7 +834,7 @@ namespace jln::mp::traits
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_reference_v<T&> = true;
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_reference_v<T&&> = true;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_reference, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_reference, (class T), bool, (T));
 #endif
 
 
@@ -939,7 +848,7 @@ namespace jln::mp::traits
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_function_v<T&> = false;
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_function_v<T&&> = false;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_function, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_function, (class T), bool, (T));
 #endif
 
 
@@ -963,7 +872,7 @@ namespace jln::mp::traits
     template<class T, class C> JLN_MP_CONSTEXPR_VAR
     bool is_member_object_pointer_v<T C::* volatile const> = !is_function_v<T>;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_member_object_pointer, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_member_object_pointer, (class T), bool, (T));
 #endif
 
 
@@ -988,17 +897,17 @@ namespace jln::mp::traits
     template<class T, class C> JLN_MP_CONSTEXPR_VAR
     bool is_member_function_pointer_v<T C::* volatile const> = is_function_v<T>;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_member_function_pointer, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_member_function_pointer, (class T), bool, (T));
 #endif
 
 
 #if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_arithmetic)
-  JLN_MP_MAKE_TRAIT_FROM_F(is_arithmetic, (class T), bool, __is_arithmetic(T));
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_arithmetic, (class T), bool, __is_arithmetic(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_arithmetic, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_arithmetic, (class T), bool, (T));
 #else
   // TODO or *_FROM_EMP_V
-  JLN_MP_MAKE_TRAIT_IS(is_arithmetic, (class T), bool,
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_arithmetic, (class T), bool,
     emp::is_integral_v<T> || emp::is_floating_point_v<T>);
 #endif
 
@@ -1007,10 +916,10 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_fundamental, (class T), bool, __is_fundamental(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_fundamental, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_fundamental, (class T), bool, (T));
 #else
   // TODO or *_FROM_EMP_V
-  JLN_MP_MAKE_TRAIT_IS(is_fundamental, (class T), bool,
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_fundamental, (class T), bool,
     emp::is_arithmetic_v<T> || JLN_MP_IS_VOID_V(T) || JLN_MP_IS_NULL_POINTER_V(T));
 #endif
 
@@ -1020,7 +929,7 @@ namespace jln::mp::traits
     is_object, (class T), bool, __is_object(T));
 #else
   // TODO or *_FROM_EMP_V
-  JLN_MP_MAKE_TRAIT_IS(is_object, (class T), bool,
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_object, (class T), bool,
     JLN_MP_IS_CONST_V(T const) && !JLN_MP_IS_VOID_V(T));
 #endif
 
@@ -1046,7 +955,7 @@ namespace jln::mp::traits
     template<class T, class C>
     JLN_MP_CONSTEXPR_VAR bool is_member_pointer_v<T C::* volatile const> = true;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_member_pointer, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_member_pointer, (class T), bool, (T));
 #endif
 
 
@@ -1057,7 +966,7 @@ namespace jln::mp::traits
 #else
   #define JLN_MP_IS_SCALAR_V(...) /*emp::*/is_scalar_v<__VA_ARGS__>
   // TODO or *_FROM_EMP_V
-  JLN_MP_MAKE_TRAIT_IS(is_scalar, (class T), bool,
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_scalar, (class T), bool,
     emp::is_arithmetic_v<T> || __is_enum(T) || emp::is_pointer_v<T>
     || emp::is_member_pointer_v<T> || JLN_MP_IS_NULL_POINTER_V(T));
 #endif
@@ -1067,7 +976,7 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_compound, (class T), bool, __is_compound(T));
 #else
-  JLN_MP_MAKE_TRAIT_IS(is_compound, (class T), bool, !emp::is_fundamental_v<T>);
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_compound, (class T), bool, !emp::is_fundamental_v<T>);
 #endif
 
 
@@ -1080,7 +989,7 @@ namespace jln::mp::traits
     template<class T>
     static constexpr bool is_referenceable_impl_v<T, emp::void_t<T&>> = true;
   }
-  JLN_MP_MAKE_TRAIT_IS(is_referenceable, (class T), bool,
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_referenceable, (class T), bool,
     detail::is_referenceable_impl_v<T volatile const>);
 
 
@@ -1096,7 +1005,7 @@ namespace jln::mp::traits
     template<class T>
     struct add_lvalue_reference_impl<T, true> { using type = T&; };
   }
-  JLN_MP_MAKE_TRAIT_WRAP_T(add_lvalue_reference, (class T), detail::add_lvalue_reference_impl<T>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_S(add_lvalue_reference, (class T), detail::add_lvalue_reference_impl<T>);
 #endif
 
 
@@ -1112,7 +1021,7 @@ namespace jln::mp::traits
     template<class T>
     struct add_rvalue_reference_impl<T, true> { using type = T&&; };
   }
-  JLN_MP_MAKE_TRAIT_WRAP_T(add_rvalue_reference, (class T), detail::add_rvalue_reference_impl<T>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_S(add_rvalue_reference, (class T), detail::add_rvalue_reference_impl<T>);
 #endif
 
 
@@ -1124,7 +1033,7 @@ namespace jln::mp::traits
   // TODO is_complete_or_unbounded
 #if JLN_MP_FEATURE_CONCEPTS
   // T() does not work with when T = U[n]
-  JLN_MP_MAKE_TRAIT_FROM_F(is_default_constructible, (class T), bool, requires { T{}; });
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_default_constructible, (class T), bool, requires { T{}; });
 #else
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
     is_default_constructible, (class T), bool, __is_constructible(T));
@@ -1228,11 +1137,11 @@ namespace jln::mp::traits
   // TODO or *_FROM_EMP_V xxxxxx
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_IS(is_assignable, (class T, class U), bool, JLN_MP_IS_ASSIGNABLE_V(T, U));
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_assignable, (class T, class U), bool, JLN_MP_IS_ASSIGNABLE_V(T, U));
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_IS(is_copy_assignable, (class T), bool, JLN_MP_IS_COPY_ASSIGNABLE_V(T));
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_copy_assignable, (class T), bool, JLN_MP_IS_COPY_ASSIGNABLE_V(T));
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_IS(is_move_assignable, (class T), bool, JLN_MP_IS_MOVE_ASSIGNABLE_V(T));
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_move_assignable, (class T), bool, JLN_MP_IS_MOVE_ASSIGNABLE_V(T));
 #endif
 
 
@@ -1295,14 +1204,14 @@ namespace jln::mp::traits
       = JLN_MP_IS_NOTHROW_MOVE_ASSIGNABLE_V(T);
   }
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_IS(is_nothrow_assignable, (class T, class U), bool,
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_nothrow_assignable, (class T, class U), bool,
     detail::is_nothrow_assignable_impl_v<T, U>);
   // TODO is_complete_or_unbounded
-  // TODO use JLN_MP_MAKE_TRAIT_IS ?
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_nothrow_copy_assignable, (class T), bool, (T));
+  // TODO use JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V ?
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_nothrow_copy_assignable, (class T), bool, (T));
   // TODO is_complete_or_unbounded
-  // TODO use JLN_MP_MAKE_TRAIT_IS ?
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_nothrow_move_assignable, (class T), bool, (T));
+  // TODO use JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V ?
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_nothrow_move_assignable, (class T), bool, (T));
 #endif
 
 
@@ -1335,7 +1244,7 @@ namespace jln::mp::traits
     JLN_MP_CONSTEXPR_VAR bool is_destructible_impl_v<T[n]> = is_destructible_impl_v<T>;
   }
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_IS(is_destructible, (class T), bool,
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_destructible, (class T), bool,
     detail::is_destructible_impl_v<T volatile const>);
 #endif
 
@@ -1350,7 +1259,7 @@ namespace jln::mp::traits
   #define JLN_MP_IS_TRIVIALLY_DESTRUCTIBLE_V(...) \
     emp::is_destructible_v<T> && __has_trivial_destructor(T)
   // TODO or *_FROM_EMP_V
-  JLN_MP_MAKE_TRAIT_IS(is_trivially_destructible, (class T), bool,
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_trivially_destructible, (class T), bool,
     JLN_MP_IS_TRIVIALLY_DESTRUCTIBLE_V(T));
 # else
   // this implementation is not compliant and fails with classes and unions
@@ -1373,7 +1282,7 @@ namespace jln::mp::traits
     template<class T, std::size_t n>
     JLN_MP_CONSTEXPR_VAR bool is_trivially_destructible_v<T[n]> = is_trivially_destructible_v<T>;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_trivially_destructible, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_trivially_destructible, (class T), bool, (T));
   #define JLN_MP_IS_TRIVIALLY_DESTRUCTIBLE_V(...) emp::is_trivially_destructible_v<__VA_ARGS__>
 # endif
 #endif
@@ -1412,7 +1321,7 @@ namespace jln::mp::traits
       = is_nothrow_destructible_impl_v<T>;
   }
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_IS(is_nothrow_destructible, (class T), bool,
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_nothrow_destructible, (class T), bool,
     detail::is_nothrow_destructible_impl_v<T volatile const>);
 #endif
 
@@ -1455,7 +1364,7 @@ namespace jln::mp::traits
 #endif
       >::template v<T volatile const>;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_implicit_lifetime, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_implicit_lifetime, (class T), bool, (T));
 #endif
 
 
@@ -1547,19 +1456,19 @@ namespace jln::mp::traits
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_swappable_with_v
       = detail::is_nothrow_swappable_with_impl_v<add_rvalue_reference_t<T>, add_rvalue_reference_t<U>>;
   }
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_swappable, (class T), bool, (T));
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_nothrow_swappable, (class T), bool, (T));
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_swappable_with, (class T, class U), bool, (T, U));
-  JLN_MP_MAKE_TRAIT_FROM_EMP_V(is_nothrow_swappable_with, (class T, class U), bool, (T, U));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_swappable, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_nothrow_swappable, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_swappable_with, (class T, class U), bool, (T, U));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_nothrow_swappable_with, (class T, class U), bool, (T, U));
 
 
 #if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__has_virtual_destructor)
-  JLN_MP_MAKE_TRAIT_FROM_F(has_virtual_destructor, (class T), bool, __has_virtual_destructor(T));
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(has_virtual_destructor, (class T), bool, __has_virtual_destructor(T));
 #elif ! JLN_MP_NO_STL
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(has_virtual_destructor, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(has_virtual_destructor, (class T), bool, (T));
 #else
   // this implementation is not compliant and fails with classes and unions
-  JLN_MP_MAKE_TRAIT_IS(has_virtual_destructor, (class T), bool, false);
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(has_virtual_destructor, (class T), bool, false);
 #endif
 
 
@@ -1569,10 +1478,10 @@ namespace jln::mp::traits
 
 // TODO no stl
 // #if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_layout_compatible)
-//   JLN_MP_MAKE_TRAIT_FROM_BUILTIN_T_STD_SV(
+//   JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(
 //     is_layout_compatible, (class T, class U), bool, __is_layout_compatible(T, U));
 // #elif ! JLN_MP_NO_STL && defined(__cpp_lib_is_layout_compatible) && __cpp_lib_is_layout_compatible >= 201907L
-//   JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_layout_compatible, (class T, class U), bool, (T, U));
+//   JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_layout_compatible, (class T, class U), bool, (T, U));
 // #else
 //   // TODO
 // #endif
@@ -1590,14 +1499,14 @@ namespace jln::mp::traits
   // TODO LIBMS || LIBCPP -> use std::
   // TODO is_complete_or_unbounded
 #if JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(alignment_of, (class T), std::size_t, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(alignment_of, (class T), std::size_t, (T));
 #else
-  JLN_MP_MAKE_TRAIT_FROM_F(alignment_of, (class T), std::size_t, alignof(T));
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(alignment_of, (class T), std::size_t, alignof(T));
 #endif
 
 
 #if JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(rank, (class T), std::size_t, (T));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(rank, (class T), std::size_t, (T));
 #else
   namespace emp
   {
@@ -1610,7 +1519,7 @@ namespace jln::mp::traits
     template<class T, std::size_t n>
     JLN_MP_CONSTEXPR_VAR std::size_t rank_v<T[n]> = rank_v<T> + 1;
   }
-  JLN_MP_MAKE_TRAIT(rank, (class T), std::integral_constant<std::size_t, emp::rank_v<T>>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(rank, (class T), std::size_t, (T));
 #endif
 
 
@@ -1731,26 +1640,26 @@ namespace jln::mp::traits
     };
   } // namespace detail
 
-  JLN_MP_MAKE_TRAIT_WRAP_T(invoke_result, (class F, class... Args),
+  JLN_MP_MAKE_TRAIT_ST_FROM_S(invoke_result, (class F, class... Args),
     detail::invoke_result<void, F, Args...>);
 
 
 #if defined(__cpp_lib_is_invocable) && __cpp_lib_is_invocable >= 201703L
   // TODO https://en.cppreference.com/w/cpp/utility/functional (C++23)
   // TODO
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_invocable, (class Fn, class... Args), bool, (Fn, Args...));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_invocable, (class Fn, class... Args), bool, (Fn, Args...));
   // TODO
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
   // TODO
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_nothrow_invocable, (class Fn, class... Args), bool, (Fn, Args...));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_nothrow_invocable, (class Fn, class... Args), bool, (Fn, Args...));
   // TODO
-  JLN_MP_MAKE_TRAIT_FROM_STD_SVAT(is_nothrow_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_nothrow_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
 #endif
 
 
 #if defined(__cpp_lib_reference_from_temporary) && __cpp_lib_reference_from_temporary >= 202202L
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(reference_constructs_from_temporary, (class T, class U), (T, U));
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(reference_converts_from_temporary, (class T, class U), (T, U));
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(reference_constructs_from_temporary, (class T, class U), (T, U));
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(reference_converts_from_temporary, (class T, class U), (T, U));
 #else
   // TODO
 #endif
@@ -1760,25 +1669,14 @@ namespace jln::mp::traits
   // TODO use builtin / std::... with macro
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_const, (class T), (T));
 #elif ! JLN_MP_NO_STL
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_const, (class T), (T));
-#elif JLN_MP_GCC
-  namespace detail
-  {
-    template<class T> struct remove_const_impl { using type = T; };
-    template<class T> struct remove_const_impl<T const> { using type = T; };
-  }
-  namespace emp
-  {
-    template<class T> using remove_const = detail::remove_const_impl<T const>;
-  }
-  JLN_MP_MAKE_TRAIT_T(remove_const, (class T), detail::remove_const_impl<T const>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_const, (class T), (T));
 #else
   namespace emp
   {
     template<class T> struct remove_const { using type = T; };
     template<class T> struct remove_const<T const> { using type = T; };
   }
-  JLN_MP_MAKE_TRAIT_T(remove_const, (class T), emp::remove_const<T>);
+  JLN_MP_MAKE_TRAIT_T_FROM_S(remove_const, (class T), emp::remove_const<T const>);
 #endif
 
 
@@ -1786,25 +1684,33 @@ namespace jln::mp::traits
   // TODO use builtin / std::... with macro
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_volatile, (class T), (T));
 #elif ! JLN_MP_NO_STL
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_volatile, (class T), (T));
-#elif JLN_MP_GCC
-  namespace detail
-  {
-    template<class T> struct remove_volatile_impl { using type = T; };
-    template<class T> struct remove_volatile_impl<T volatile> { using type = T; };
-  }
-  namespace emp
-  {
-    template<class T> using remove_volatile = detail::remove_volatile_impl<T volatile>;
-  }
-  JLN_MP_MAKE_TRAIT_T(remove_volatile, (class T), detail::remove_volatile_impl<T volatile>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_volatile, (class T), (T));
 #else
   namespace emp
   {
     template<class T> struct remove_volatile { using type = T; };
     template<class T> struct remove_volatile<T volatile> { using type = T; };
   }
-  JLN_MP_MAKE_TRAIT_T(remove_volatile, (class T), emp::remove_volatile<T>);
+  JLN_MP_MAKE_TRAIT_T_FROM_S(remove_volatile, (class T), emp::remove_volatile<T volatile>);
+#endif
+
+
+#if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_cv)
+  // TODO use builtin / std::... with macro
+  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_cv, (class T), (T));
+#elif JLN_MP_HAS_BUILTIN(__remove_const) && JLN_MP_HAS_BUILTIN(__remove_volatile)
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(remove_cv, (class T), __remove_const(__remove_volatile(T)));
+#elif JLN_MP_USE_LIBSTDCXX
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_cv, (class T), (T));
+#else
+  namespace emp
+  {
+    template<class T> struct remove_cv { using type = T; };
+    template<class T> struct remove_cv<T const> { using type = T; };
+    template<class T> struct remove_cv<T volatile> { using type = T; };
+    template<class T> struct remove_cv<T volatile const> { using type = T; };
+  }
+  JLN_MP_MAKE_TRAIT_T_FROM_S(remove_cv, (class T), emp::remove_cv<T volatile const>);
 #endif
 
 
@@ -1812,7 +1718,7 @@ namespace jln::mp::traits
   // TODO use builtin / std::... with macro
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_extents, (class T), (T));
 #elif ! JLN_MP_NO_STL
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_extent, (class T), (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_extent, (class T), (T));
 #else
   namespace emp
   {
@@ -1820,7 +1726,7 @@ namespace jln::mp::traits
     template<class T> struct remove_extent<T[]> { using type = T; };
     template<class T, std::size_t N> struct remove_extent<T[N]> { using type = T; };
   }
-  JLN_MP_MAKE_TRAIT_T(remove_extent, (class T), emp::remove_extent<T>);
+  JLN_MP_MAKE_TRAIT_T_FROM_S(remove_extent, (class T), emp::remove_extent<T>);
 #endif
 
 
@@ -1828,7 +1734,7 @@ namespace jln::mp::traits
   // TODO use builtin / std::... with macro
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_all_extents, (class T), (T));
 #elif ! JLN_MP_NO_STL
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_all_extents, (class T), (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_all_extents, (class T), (T));
 #else
   namespace emp
   {
@@ -1836,7 +1742,7 @@ namespace jln::mp::traits
     template<class T> struct remove_all_extents<T[]> : remove_all_extents<T> {};
     template<class T, std::size_t N> struct remove_all_extents<T[N]> : remove_all_extents<T> {};
   }
-  JLN_MP_MAKE_TRAIT_T(remove_all_extents, (class T), emp::remove_all_extents<T>);
+  JLN_MP_MAKE_TRAIT_T_FROM_S(remove_all_extents, (class T), emp::remove_all_extents<T>);
 #endif
 
 
@@ -1844,7 +1750,7 @@ namespace jln::mp::traits
   // TODO use builtin / std::... with macro
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_pointer, (class T), (T));
 #elif ! JLN_MP_NO_STL
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_pointer, (class T), (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_pointer, (class T), (T));
 #else
   namespace emp
   {
@@ -1854,19 +1760,19 @@ namespace jln::mp::traits
     template<class T> struct remove_pointer<T* volatile> { using type = T; };
     template<class T> struct remove_pointer<T* volatile const> { using type = T; };
   }
-  JLN_MP_MAKE_TRAIT_T(remove_pointer, (class T), emp::remove_pointer<T>);
+  JLN_MP_MAKE_TRAIT_T_FROM_S(remove_pointer, (class T), emp::remove_pointer<T>);
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_reference_t)
   // TODO use builtin / std::... with macro
 # if JLN_MP_USE_LIBCXX
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_reference, (class T), (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_reference, (class T), (T));
 # else
-  JLN_MP_MAKE_TRAIT_FROM_ST(remove_reference, (class T), __remove_reference_t(T))
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(remove_reference, (class T), __remove_reference_t(T))
 # endif
 #elif ! JLN_MP_NO_STL
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_reference, (class T), (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_reference, (class T), (T));
 #else
   namespace emp
   {
@@ -1874,64 +1780,23 @@ namespace jln::mp::traits
     template<class T> struct remove_reference<T&> { using type = T; };
     template<class T> struct remove_reference<T&&> { using type = T; };
   }
-  JLN_MP_MAKE_TRAIT_T(remove_reference, (class T), emp::remove_reference<T>);
-#endif
-
-
-#if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_cv)
-  // TODO use builtin / std::... with macro
-# if JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_BUILTIN(__remove_const) && JLN_MP_HAS_BUILTIN(__remove_volatile)
-  JLN_MP_MAKE_TRAIT_FROM_ST(remove_cv, (class T), __remove_const(__remove_volatile(T)));
-# else
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_cv, (class T), (T));
-# endif
-#elif JLN_MP_USE_LIBSTDCXX
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_cv, (class T), (T));
-#elif JLN_MP_GCC
-  namespace detail
-  {
-    template<class T> struct remove_cv_impl { using type = T; };
-    template<class T> struct remove_cv_impl<T volatile const> { using type = T; };
-  }
-  namespace emp
-  {
-    template<class T> struct remove_cv : detail::remove_cv_impl<T volatile const> {};
-    template<class T> using remove_cv_t = typename detail::remove_cv_impl<T volatile const>::type;
-  }
-  JLN_MP_MAKE_TRAIT_NO_EMP(remove_cv, (class T),
-    typename detail::remove_cv_impl<T volatile const>::type);
-#else
-  namespace emp
-  {
-    template<class T> struct remove_cv { using type = T; };
-    template<class T> struct remove_cv<T const> { using type = T; };
-    template<class T> struct remove_cv<T volatile> { using type = T; };
-    template<class T> struct remove_cv<T volatile const> { using type = T; };
-  }
-  JLN_MP_MAKE_TRAIT_T(remove_cv, (class T), emp::remove_cv<T>);
+  JLN_MP_MAKE_TRAIT_T_FROM_S(remove_reference, (class T), emp::remove_reference<T>);
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_cvref)
   // TODO use builtin / std::... with macro
-  JLN_MP_MAKE_TRAIT_FROM_ST(remove_cvref, (class T), __remove_cvref(T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(remove_cvref, (class T), __remove_cvref(T));
 #elif JLN_MP_USE_LIBSTDCXX && defined(__cpp_lib_remove_cvref) && __cpp_lib_remove_cvref >= 201711L
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(remove_cvref, (class T), (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_cvref, (class T), (T));
 #else
   namespace emp
   {
-    // TODO remove_cv_impl may not exist
-    #if ! JLN_MP_USE_LIBSTDCXX && JLN_MP_GCC
-    template<typename T> struct remove_cvref : detail::remove_cv_impl<T volatile const> {};
-    template<typename T> struct remove_cvref<T&> : detail::remove_cv_impl<T volatile const> {};
-    template<typename T> struct remove_cvref<T&&> : detail::remove_cv_impl<T volatile const> {};
-    #else
     template<typename T> struct remove_cvref : remove_cv<T> {};
     template<typename T> struct remove_cvref<T&> : remove_cv<T> {};
     template<typename T> struct remove_cvref<T&&> : remove_cv<T> {};
-    #endif
   }
-  JLN_MP_MAKE_TRAIT_T(remove_cvref, (class T), emp::remove_cvref<T>);
+  JLN_MP_MAKE_TRAIT_T_FROM_S(remove_cvref, (class T), emp::remove_cvref<T>);
 #endif
 
 
@@ -1939,14 +1804,14 @@ namespace jln::mp::traits
   // TODO use builtin / std::... with macro
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(add_pointer, (class T), (T));
 #else
-namespace detail
+  namespace detail
   {
     template<class T, class = void> struct add_pointer_impl { using type = T; };
     template<class T> struct add_pointer_impl<T, emp::void_t<T*>> { using type = T*; };
     template<class T> struct add_pointer_impl<T&, emp::void_t<T*>> { using type = T*; };
     template<class T> struct add_pointer_impl<T&&, emp::void_t<T*>> { using type = T*; };
   }
-  JLN_MP_MAKE_TRAIT_WRAP_T(add_pointer, (class T), detail::add_pointer_impl<T>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_S(add_pointer, (class T), detail::add_pointer_impl<T>);
 #endif
 
 
@@ -2170,8 +2035,8 @@ namespace detail
     using detail::make_signed;
     using detail::make_unsigned;
   }
-  JLN_MP_MAKE_TRAIT_T(make_signed, (class T), detail::make_signed<T>);
-  JLN_MP_MAKE_TRAIT_T(make_unsigned, (class T), detail::make_unsigned<T>);
+  JLN_MP_MAKE_TRAIT_T_FROM_S(make_signed, (class T), detail::make_signed<T>);
+  JLN_MP_MAKE_TRAIT_T_FROM_S(make_unsigned, (class T), detail::make_unsigned<T>);
 #else
   namespace emp
   {
@@ -2231,11 +2096,11 @@ namespace detail
     template<class T, std::size_t N> struct decay<T(&)[N]> { using type = T*; };
     template<class T, std::size_t N> struct decay<T(&&)[N]> { using type = T*; };
   }
-  JLN_MP_MAKE_TRAIT_T(decay, (class T), emp::decay<T>);
+  JLN_MP_MAKE_TRAIT_T_FROM_S(decay, (class T), emp::decay<T>);
 
 
 #if ! JLN_MP_NO_STL && defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref >= 201811L
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(unwrap_reference, (class T), (T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(unwrap_reference, (class T), (T));
 #else
   namespace emp
   {
@@ -2244,7 +2109,7 @@ namespace detail
     template<class T> struct unwrap_reference<std::reference_wrapper<T>> { using type = T&; };
     #endif
   }
-  JLN_MP_MAKE_TRAIT_T(unwrap_reference, (class T), emp::unwrap_reference<T>);
+  JLN_MP_MAKE_TRAIT_T_FROM_S(unwrap_reference, (class T), emp::unwrap_reference<T>);
 #endif
 
 
@@ -2259,16 +2124,16 @@ namespace detail
 #if __cplusplus >= 202002L
 // TODO __cpp_lib_common_reference 	Make std::common_reference_t of std::reference_wrapper a reference type 	202302L 	<type_traits> 	(C++23) 	P2655R3
 // TODO __cpp_lib_common_reference_wrapper 	Make std::common_reference_t of std::reference_wrapper a reference type 	202302L 	<functional> 	(C++23) 	P2655R3
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(common_reference, (class... Ts), (Ts...));
-  // TODO JLN_MP_MAKE_TRAIT_FROM_STD_ST(basic_common_reference, (class T, class U, template<class> class TQual, template<class> class UQual), (T, U, TQual, UQual));
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(common_reference, (class... Ts), (Ts...));
+  // TODO JLN_MP_MAKE_TRAIT_ST_FROM_STD(basic_common_reference, (class T, class U, template<class> class TQual, template<class> class UQual), (T, U, TQual, UQual));
 #else
   // TODO remove that or alias on invoke_result
-  JLN_MP_MAKE_TRAIT_FROM_STD_ST(result_of, (class Sig), (Sig));
+  JLN_MP_MAKE_TRAIT_ST_FROM_STD(result_of, (class Sig), (Sig));
 #endif
 
 
 #if 1
-  JLN_MP_MAKE_TRAIT_FROM_ST(underlying_type, (class T), __underlying_type(T));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(underlying_type, (class T), __underlying_type(T));
 #else
   namespace detail
   {
@@ -2277,7 +2142,7 @@ namespace detail
 
     template<class T> struct underlying_type_impl<T, false> {};
   }
-  JLN_MP_MAKE_TRAIT_WRAP_T(underlying_type, (class T), detail::underlying_type_impl<T>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_S(underlying_type, (class T), detail::underlying_type_impl<T>);
 #endif
 
 
@@ -2424,7 +2289,7 @@ namespace detail
 #endif
     {};
   }
-  JLN_MP_MAKE_TRAIT_T(common_type, (class... Ts), emp::common_type<Ts...>);
+  JLN_MP_MAKE_TRAIT_T_FROM_S(common_type, (class... Ts), emp::common_type<Ts...>);
 
 
   // https://en.cppreference.com/w/cpp/experimental/is_detected
