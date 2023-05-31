@@ -40,6 +40,8 @@
 # endif
 #endif
 
+// TODO add_const_lvalue_reference ?
+
 // TODO MSVC: #pragma warning(disable: 4180)  // qualifier applied to function type has no meaning; ignored
 
 // TODO defined(__cpp_*) && __cpp_* >= XXX -> __cpp_* >= XXX + disable warn
@@ -205,7 +207,7 @@ namespace jln::mp::traits
     using std::Name##_v;                                                       \
                                                                                \
     template<JLN_MP_UNPACK Params>                                             \
-    using Name##_t = emp::integral_constant<Type, __VA_ARGS__>;                \
+    using Name##_t = integral_constant<Type, __VA_ARGS__>;                     \
   }                                                                            \
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, emp::integral_constant<Type, __VA_ARGS__>)
 
@@ -235,10 +237,10 @@ namespace jln::mp::traits
     using std::Name##_v;                                                       \
                                                                                \
     template<JLN_MP_UNPACK Params>                                             \
-    struct Name : emp::integral_constant<Type, __VA_ARGS__> {};                \
+    struct Name : integral_constant<Type, __VA_ARGS__> {};                     \
                                                                                \
     template<JLN_MP_UNPACK Params>                                             \
-    using Name##_t = emp::integral_constant<Type, __VA_ARGS__>;                \
+    using Name##_t = integral_constant<Type, __VA_ARGS__>;                     \
   }                                                                            \
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, emp::integral_constant<Type, __VA_ARGS__>)
 
@@ -325,6 +327,7 @@ namespace jln::mp::traits
 #define JLN_MP_DECLVAL_NOTHROW(T) static_cast<T(*)() noexcept>(nullptr)()
 
 
+// TODO remove
 #ifdef __cpp_noexcept_function_type
 # define JLN_MP_DEFINE_CV_REF_NOEXCEPT(F) \
     F(JLN_MP_NIL)                         \
@@ -542,7 +545,6 @@ namespace jln::mp::traits
     template<> JLN_MP_CONSTEXPR_VAR bool is_signed_impl_v<volatile const float> = true;
     template<> JLN_MP_CONSTEXPR_VAR bool is_signed_impl_v<volatile const double> = true;
     template<> JLN_MP_CONSTEXPR_VAR bool is_signed_impl_v<volatile const long double> = true;
-    // TODO __uint128_t, __int128_t
     JLN_MP_DIAGNOSTIC_POP()
 # endif // __is_signed
 
@@ -1831,9 +1833,9 @@ namespace jln::mp::traits
     template<class T> struct add_volatile { using type = T volatile; };
     #endif
   }
+  JLN_MP_MAKE_TRAIT_NO_EMP(add_cv, (class T), T volatile const);
   JLN_MP_MAKE_TRAIT_NO_EMP(add_const, (class T), T const);
   JLN_MP_MAKE_TRAIT_NO_EMP(add_volatile, (class T), T volatile);
-  JLN_MP_MAKE_TRAIT_NO_EMP(add_cv, (class T), T volatile const);
 
 
   namespace detail
@@ -1877,6 +1879,15 @@ namespace jln::mp::traits
       using unsigned_type = unsigned long long;
     };
 
+#if JLN_MP_INT128_AS_INTEGRAL
+    template<>
+    struct mk_min_rank<-6>
+    {
+      using signed_type = JLN_MP_INT128_T;
+      using unsigned_type = JLN_MP_UINT128_T;
+    };
+#endif
+
     template<std::size_t n>
     struct select_min_rank : mk_min_rank<
       n <= 1 ? -1 :
@@ -1884,6 +1895,9 @@ namespace jln::mp::traits
       n <= sizeof(int) ? -3 :
       n <= sizeof(long) ? -4 :
       n <= sizeof(long long) ? -5 :
+#if JLN_MP_INT128_AS_INTEGRAL
+      n <= sizeof(JLN_MP_INT128_T) ? -6 :
+#endif
       int(n)
     >
     {};
@@ -1912,22 +1926,30 @@ namespace jln::mp::traits
     { using type = typename make_signed<T>::type volatile; };
     template<class T> struct make_signed<T volatile const>
     { using type = typename make_signed<T>::type volatile const; };
+
+# define JLN_MP_MK_SIGNED_CV
+#else
+# define JLN_MP_MK_SIGNED_CV const volatile
 #endif
 
     // If T is signed or unsigned char, short, int, long, long long,
     // the signed type from this list corresponding to T is provided.
-    template<> struct make_signed<volatile const char>          { using type = signed char; };
-    template<> struct make_signed<volatile const unsigned char> { using type = signed char; };
-    template<> struct make_signed<volatile const   signed char> { using type = signed char; };
-    template<> struct make_signed<volatile const unsigned short> { using type = signed short; };
-    template<> struct make_signed<volatile const   signed short> { using type = signed short; };
-    template<> struct make_signed<volatile const unsigned int> { using type = signed int; };
-    template<> struct make_signed<volatile const   signed int> { using type = signed int; };
-    template<> struct make_signed<volatile const unsigned long> { using type = signed long; };
-    template<> struct make_signed<volatile const   signed long> { using type = signed long; };
-    template<> struct make_signed<volatile const unsigned long long> { using type = signed long long; };
-    template<> struct make_signed<volatile const   signed long long> { using type = signed long long; };
-    // TODO support of __uint128_t, __int128_t, etc
+    template<> struct make_signed<JLN_MP_MK_SIGNED_CV char>          { using type = signed char; };
+    template<> struct make_signed<JLN_MP_MK_SIGNED_CV unsigned char> { using type = signed char; };
+    template<> struct make_signed<JLN_MP_MK_SIGNED_CV   signed char> { using type = signed char; };
+    template<> struct make_signed<JLN_MP_MK_SIGNED_CV unsigned short> { using type = signed short; };
+    template<> struct make_signed<JLN_MP_MK_SIGNED_CV   signed short> { using type = signed short; };
+    template<> struct make_signed<JLN_MP_MK_SIGNED_CV unsigned int> { using type = signed int; };
+    template<> struct make_signed<JLN_MP_MK_SIGNED_CV   signed int> { using type = signed int; };
+    template<> struct make_signed<JLN_MP_MK_SIGNED_CV unsigned long> { using type = signed long; };
+    template<> struct make_signed<JLN_MP_MK_SIGNED_CV   signed long> { using type = signed long; };
+    template<> struct make_signed<JLN_MP_MK_SIGNED_CV unsigned long long> { using type = signed long long; };
+    template<> struct make_signed<JLN_MP_MK_SIGNED_CV   signed long long> { using type = signed long long; };
+
+#if JLN_MP_INT128_AS_INTEGRAL
+    template<> struct make_signed<JLN_MP_MK_SIGNED_CV JLN_MP_INT128_T> { using type = JLN_MP_INT128_T; };
+    template<> struct make_signed<JLN_MP_MK_SIGNED_CV JLN_MP_UINT128_T> { using type = JLN_MP_INT128_T; };
+#endif
 
     template<class T>
     struct make_unsigned
@@ -1957,18 +1979,24 @@ namespace jln::mp::traits
 
     // If T is unsigned or signed char, short, int, long, long long,
     // the unsigned type from this list corresponding to T is provided.
-    template<> struct make_unsigned<volatile const char>          { using type = unsigned char; };
-    template<> struct make_unsigned<volatile const unsigned char> { using type = unsigned char; };
-    template<> struct make_unsigned<volatile const   signed char> { using type = unsigned char; };
-    template<> struct make_unsigned<volatile const unsigned short> { using type = unsigned short; };
-    template<> struct make_unsigned<volatile const   signed short> { using type = unsigned short; };
-    template<> struct make_unsigned<volatile const unsigned int> { using type = unsigned int; };
-    template<> struct make_unsigned<volatile const   signed int> { using type = unsigned int; };
-    template<> struct make_unsigned<volatile const unsigned long> { using type = unsigned long; };
-    template<> struct make_unsigned<volatile const   signed long> { using type = unsigned long; };
-    template<> struct make_unsigned<volatile const unsigned long long> { using type = unsigned long long; };
-    template<> struct make_unsigned<volatile const   signed long long> { using type = unsigned long long; };
-    // TODO support of __uint128_t, __int128_t, etc
+    template<> struct make_unsigned<JLN_MP_MK_SIGNED_CV char>          { using type = unsigned char; };
+    template<> struct make_unsigned<JLN_MP_MK_SIGNED_CV unsigned char> { using type = unsigned char; };
+    template<> struct make_unsigned<JLN_MP_MK_SIGNED_CV   signed char> { using type = unsigned char; };
+    template<> struct make_unsigned<JLN_MP_MK_SIGNED_CV unsigned short> { using type = unsigned short; };
+    template<> struct make_unsigned<JLN_MP_MK_SIGNED_CV   signed short> { using type = unsigned short; };
+    template<> struct make_unsigned<JLN_MP_MK_SIGNED_CV unsigned int> { using type = unsigned int; };
+    template<> struct make_unsigned<JLN_MP_MK_SIGNED_CV   signed int> { using type = unsigned int; };
+    template<> struct make_unsigned<JLN_MP_MK_SIGNED_CV unsigned long> { using type = unsigned long; };
+    template<> struct make_unsigned<JLN_MP_MK_SIGNED_CV   signed long> { using type = unsigned long; };
+    template<> struct make_unsigned<JLN_MP_MK_SIGNED_CV unsigned long long> { using type = unsigned long long; };
+    template<> struct make_unsigned<JLN_MP_MK_SIGNED_CV   signed long long> { using type = unsigned long long; };
+
+#if JLN_MP_INT128_AS_INTEGRAL
+    template<> struct make_unsigned<JLN_MP_MK_SIGNED_CV JLN_MP_INT128_T> { using type = JLN_MP_UINT128_T; };
+    template<> struct make_unsigned<JLN_MP_MK_SIGNED_CV JLN_MP_UINT128_T> { using type = JLN_MP_UINT128_T; };
+#endif
+
+#undef JLN_MP_MK_SIGNED_CV
 
     // TODO copy_const / copy_volatile / copy_cv / copy_reference / copy_cvref
 
@@ -2023,10 +2051,10 @@ namespace jln::mp::traits
     template<> struct copy_cvref_impl<22> : add_volatile<> {};
     template<> struct copy_cvref_impl<23> : add_cv<> {};
 
-    template<class T> JLN_MP_CONSTEXPR_VAR bool cv_select = 0;
-    template<class T> JLN_MP_CONSTEXPR_VAR bool cv_select<T const> = 1;
-    template<class T> JLN_MP_CONSTEXPR_VAR bool cv_select<T volatile> = 2;
-    template<class T> JLN_MP_CONSTEXPR_VAR bool cv_select<T volatile const> = 3;
+    template<class T> JLN_MP_CONSTEXPR_VAR int cv_select = 0;
+    template<class T> JLN_MP_CONSTEXPR_VAR int cv_select<T const> = 1;
+    template<class T> JLN_MP_CONSTEXPR_VAR int cv_select<T volatile> = 2;
+    template<class T> JLN_MP_CONSTEXPR_VAR int cv_select<T volatile const> = 3;
   }
 
 #if JLN_MP_CLANG || JLN_MP_MSVC
@@ -2132,9 +2160,12 @@ namespace jln::mp::traits
 #endif
 
 
-#if 1
+// If T is a complete enumeration (enum) type, provides a member typedef type that names the underlying type of T.
+#if 0
+  // Otherwise, the behavior is undefined. (until C++20)
   JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(underlying_type, (class T), __underlying_type(T));
 #else
+  // Otherwise, if T is not an enumeration type, there is no member type. (since C++20)
   namespace detail
   {
     template<class T, bool = __is_enum(T)>

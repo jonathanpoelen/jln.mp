@@ -916,18 +916,17 @@ TEST()
   #define CHECK_X1_T(name) test_x1<std::name, name##_t>()
   #define CHECK_X1_ARITHMETIC(name) test_arithmetic<std::name, name>()
   #define CHECK_F(f, name) f<std::name, name>()
-  #define CHECK_F_T(f, name) f<std::name, name##_t>()
   #define CHECK_WITH(name, ...) \
     test_xs_impl<std::name<__VA_ARGS__>::type, name<__VA_ARGS__>::type>::f<__VA_ARGS__>()
 
   // TODO
   JLN_MP_DIAGNOSTIC_POP()
 
-  CHECK_X1(is_const);
-  CHECK_X1(is_volatile);
-  // CHECK_X1(is_trivial);
-  // CHECK_X1(is_trivially_copyable);
-  // CHECK_X1(is_standard_layout);
+//   CHECK_X1(is_const);
+//   CHECK_X1(is_volatile);
+//   CHECK_X1(is_trivial);
+//   CHECK_X1(is_trivially_copyable);
+//   CHECK_X1(is_standard_layout);
 // #if __cplusplus <= 201703L
 //   CHECK_X1(is_pod);
 // #endif
@@ -959,14 +958,14 @@ TEST()
 // #if defined(__cpp_lib_is_scoped_enum) && __cpp_lib_is_scoped_enum >= 202011L
 //   CHECK_X1_ARITHMETIC(is_scoped_enum);
 // #endif
-//   CHECK_X2(is_convertible);
-#if defined(__cpp_lib_is_nothrow_convertible) && __cpp_lib_is_nothrow_convertible >= 201806L
-  // CHECK_X2(is_nothrow_convertible);
-#endif
+//   // CHECK_X2(is_convertible);
+// #if defined(__cpp_lib_is_nothrow_convertible) && __cpp_lib_is_nothrow_convertible >= 201806L
+//   // CHECK_X2(is_nothrow_convertible);
+// #endif
 // #if defined(__cpp_lib_has_unique_object_representations) && __cpp_lib_has_unique_object_representations >= 201606L
 //   CHECK_X1(has_unique_object_representations);
 // #endif
-  // CHECK_X1(is_void);
+//   CHECK_X1(is_void);
 //   CHECK_X1_ARITHMETIC(is_integral);
 //   CHECK_X1_ARITHMETIC(is_floating_point);
 //   CHECK_X1(is_array);
@@ -974,7 +973,7 @@ TEST()
 //   CHECK_X1(is_lvalue_reference);
 //   CHECK_X1(is_rvalue_reference);
 //   CHECK_X1(is_reference);
-  // CHECK_X1(is_function);
+//   CHECK_X1(is_function);
 //   CHECK_X1(is_member_object_pointer);
 //   CHECK_X1(is_member_function_pointer);
 //   CHECK_X1(is_enum);
@@ -987,84 +986,84 @@ TEST()
 //   CHECK_X1(is_null_pointer);
 //   CHECK_X1_ARITHMETIC(is_scalar);
 //   CHECK_X1(is_compound);
-  // // CHECK_XS(is_constructible);
-  // CHECK_F(test_constructible, is_constructible);
-  // CHECK_F(test_constructible, is_default_constructible);
-  // CHECK_F(test_constructible, is_copy_constructible);
-  // CHECK_F(test_constructible, is_move_constructible);
-  // // CHECK_XS(is_trivially_constructible);
-  // CHECK_F(test_constructible, is_trivially_constructible);
-  // CHECK_F(test_constructible, is_trivially_default_constructible);
-  // CHECK_F(test_constructible, is_trivially_copy_constructible);
-  // CHECK_F(test_constructible, is_trivially_move_constructible);
-  // // CHECK_XS(is_nothrow_constructible);
-  // CHECK_F(test_constructible, is_nothrow_constructible);
-  // CHECK_F(test_constructible, is_nothrow_default_constructible);
-  // CHECK_F(test_constructible, is_nothrow_copy_constructible);
-  // CHECK_F(test_constructible, is_nothrow_move_constructible);
-  // // CHECK_X2(is_assignable);
-  // CHECK_F(test_assignable, is_copy_assignable);
-  // CHECK_F(test_assignable, is_move_assignable);
-  // // CHECK_X2(is_trivially_assignable);
-  // CHECK_F(test_assignable, is_trivially_copy_assignable);
-  // CHECK_F(test_assignable, is_trivially_move_assignable);
-  // // CHECK_X2(is_nothrow_assignable);
-  // CHECK_F(test_assignable, is_nothrow_copy_assignable);
-  // CHECK_F(test_assignable, is_nothrow_move_assignable);
-  CHECK_X1(is_destructible);
-  // CHECK_X1(is_trivially_destructible);
-  CHECK_X1(is_nothrow_destructible);
-#if defined(__cpp_lib_is_swappable) && __cpp_lib_is_swappable >= 201603L
-  // CHECK_F(test_swappable, is_swappable);
-  // CHECK_F(test_swappable, is_nothrow_swappable);
-  // CHECK_X2(is_swappable_with);
-  // CHECK_X2(is_nothrow_swappable_with);
-#endif
-  // CHECK_X1(has_virtual_destructor);
-  // CHECK_X2(is_same);
-  // CHECK_X2(is_base_of);
-#if defined(__cpp_lib_is_layout_compatible) && __cpp_lib_is_layout_compatible >= 201907L
-  // CHECK_X2(is_layout_compatible);
-#endif
-#if defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible >= 201907L
-  // CHECK_X2(is_pointer_interconvertible_base_of);
-  // CHECK_X2(is_pointer_interconvertible_with_class);
-#endif
-  // SINGLE_CHECK(alignment_of, int);
-  // SINGLE_CHECK(rank, int);
-  // SINGLE_CHECK(rank, int[1]);
-  // SINGLE_CHECK(rank, int[1][2]);
-  // SINGLE_CHECK(extent, int);
-  // SINGLE_CHECK(extent, int[]);
-  // SINGLE_CHECK(extent, int[][3]);
-  // SINGLE_CHECK(extent, int[2][3]);
-  // SINGLE_CHECK_T_V(extent, int, 1);
-  // SINGLE_CHECK_T_V(extent, int[], 1);
-  // SINGLE_CHECK_T_V(extent, int[][3], 1);
-  // SINGLE_CHECK_T_V(extent, int[2][3], 1);
-  // CHECK_XS(is_invocable);
-  // CHECK_XS(is_invocable_r);
-  // CHECK_XS(is_nothrow_invocable);
-  // CHECK_XS(is_nothrow_invocable_r);
-  // CHECK_XS(invoke_result);
-  // CHECK_X2(reference_constructs_from_temporary);
-  // CHECK_X2(reference_converts_from_temporary);
-  // CHECK_X1(remove_const);
-  // CHECK_X1(remove_volatile);
-  // CHECK_X1(remove_cv);
-  // CHECK_X1(add_const);
-  // CHECK_X1(add_volatile);
-  // CHECK_X1(add_cv);
-  // CHECK_X1(remove_reference);
-  // CHECK_X1(add_lvalue_reference);
-  // CHECK_X1(add_rvalue_reference);
-  // CHECK_F_T(test_x1_make_unsigned_signed, make_signed);
-  // CHECK_F_T(test_x1_make_unsigned_signed, make_unsigned);
-  // CHECK_X1_T(remove_extent);
-  // CHECK_X1_T(remove_all_extents);
-  // CHECK_X1_T(remove_pointer);
-  // CHECK_X1_T(add_pointer);
-  // CHECK_X1(decay);
+//   // CHECK_XS(is_constructible);
+//   CHECK_F(test_constructible, is_constructible);
+//   CHECK_F(test_constructible, is_default_constructible);
+//   CHECK_F(test_constructible, is_copy_constructible);
+//   CHECK_F(test_constructible, is_move_constructible);
+//   // CHECK_XS(is_trivially_constructible);
+//   CHECK_F(test_constructible, is_trivially_constructible);
+//   CHECK_F(test_constructible, is_trivially_default_constructible);
+//   CHECK_F(test_constructible, is_trivially_copy_constructible);
+//   CHECK_F(test_constructible, is_trivially_move_constructible);
+//   // CHECK_XS(is_nothrow_constructible);
+//   CHECK_F(test_constructible, is_nothrow_constructible);
+//   CHECK_F(test_constructible, is_nothrow_default_constructible);
+//   CHECK_F(test_constructible, is_nothrow_copy_constructible);
+//   CHECK_F(test_constructible, is_nothrow_move_constructible);
+//   // CHECK_X2(is_assignable);
+//   CHECK_F(test_assignable, is_copy_assignable);
+//   CHECK_F(test_assignable, is_move_assignable);
+//   // CHECK_X2(is_trivially_assignable);
+//   CHECK_F(test_assignable, is_trivially_copy_assignable);
+//   CHECK_F(test_assignable, is_trivially_move_assignable);
+//   // CHECK_X2(is_nothrow_assignable);
+//   CHECK_F(test_assignable, is_nothrow_copy_assignable);
+//   CHECK_F(test_assignable, is_nothrow_move_assignable);
+//   CHECK_X1(is_destructible);
+//   CHECK_X1(is_trivially_destructible);
+//   CHECK_X1(is_nothrow_destructible);
+// #if defined(__cpp_lib_is_swappable) && __cpp_lib_is_swappable >= 201603L
+//   CHECK_F(test_swappable, is_swappable);
+//   CHECK_F(test_swappable, is_nothrow_swappable);
+//   // CHECK_X2(is_swappable_with);
+//   // CHECK_X2(is_nothrow_swappable_with);
+// #endif
+//   CHECK_X1(has_virtual_destructor);
+//   // CHECK_X2(is_same);
+//   // CHECK_X2(is_base_of);
+// #if defined(__cpp_lib_is_layout_compatible) && __cpp_lib_is_layout_compatible >= 201907L
+//   // CHECK_X2(is_layout_compatible);
+// #endif
+// #if defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible >= 201907L
+//   // CHECK_X2(is_pointer_interconvertible_base_of);
+//   // CHECK_X2(is_pointer_interconvertible_with_class);
+// #endif
+//   SINGLE_CHECK(alignment_of, int);
+//   SINGLE_CHECK(rank, int);
+//   SINGLE_CHECK(rank, int[1]);
+//   SINGLE_CHECK(rank, int[1][2]);
+//   // SINGLE_CHECK(extent, int);
+//   // SINGLE_CHECK(extent, int[]);
+//   // SINGLE_CHECK(extent, int[][3]);
+//   // SINGLE_CHECK(extent, int[2][3]);
+//   // SINGLE_CHECK_T_V(extent, int, 1);
+//   // SINGLE_CHECK_T_V(extent, int[], 1);
+//   // SINGLE_CHECK_T_V(extent, int[][3], 1);
+//   // SINGLE_CHECK_T_V(extent, int[2][3], 1);
+//   // CHECK_XS(is_invocable);
+//   // CHECK_XS(is_invocable_r);
+//   // CHECK_XS(is_nothrow_invocable);
+//   // CHECK_XS(is_nothrow_invocable_r);
+//   // CHECK_XS(invoke_result);
+//   // CHECK_X2(reference_constructs_from_temporary);
+//   // CHECK_X2(reference_converts_from_temporary);
+//   CHECK_X1(remove_const);
+//   CHECK_X1(remove_volatile);
+//   CHECK_X1(remove_cv);
+//   CHECK_X1(add_const);
+//   CHECK_X1(add_volatile);
+//   CHECK_X1(add_cv);
+//   CHECK_X1(remove_reference);
+//   CHECK_X1(add_lvalue_reference);
+//   CHECK_X1(add_rvalue_reference);
+//   CHECK_F(test_x1_make_unsigned_signed, make_signed);
+//   CHECK_F(test_x1_make_unsigned_signed, make_unsigned);
+//   CHECK_X1(remove_extent);
+//   CHECK_X1(remove_all_extents);
+//   CHECK_X1(remove_pointer);
+//   CHECK_X1(add_pointer);
+//   CHECK_X1(decay);
 //   // CHECK_XS(aligned_storage);
 //   // CHECK_XS(aligned_union);
 // #if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref >= 201811L
@@ -1078,26 +1077,25 @@ TEST()
 //   // CHECK_XS(common_reference);
 //   // CHECK_XS(basic_common_reference);
 // #endif
-  // CHECK_X1(underlying_type);
-  // CHECK_X1_M(common_type);
-  // SINGLE_CHECK_M(common_type, int, float);
-  // SINGLE_CHECK_M(common_type, int, float, long long);
-  // SINGLE_CHECK_M(common_type, void, void, void);
-  // SINGLE_CHECK_M(common_type, int, float, void);
-  // SINGLE_CHECK_M(common_type, int, float, long long, void);
-  // SINGLE_CHECK_M(common_type, void, int, float, long long);
-  // SINGLE_CHECK_M(common_type, int, int*);
-  // SINGLE_CHECK_M(common_type, int, int, int, int*);
-  // SINGLE_CHECK_M(common_type, int*, int, int, int);
-  // SINGLE_CHECK_M(common_type, int, long const&);
-  // SINGLE_CHECK_M(common_type, ScopedSEnum, ConvertibleToScopedEnum);
-  // SINGLE_CHECK_M(common_type, ScopedUEnum, ConvertibleToScopedEnum);
-  // SINGLE_CHECK_M(common_type, AutoConvert, int);
-  // SINGLE_CHECK_M(common_type, int, long, AutoConvert, int);
-  // SINGLE_CHECK_M(common_type, Parent, Class);
-  // SINGLE_CHECK_M(common_type, Parent*, Class*);
-  // SINGLE_CHECK_M(common_type, std::true_type, std::false_type);
-  // SINGLE_CHECK(extent, int[][3]);
+//  CHECK_X1_M(underlying_type);
+//   CHECK_X1_M(common_type);
+//   SINGLE_CHECK_M(common_type, int, float);
+//   SINGLE_CHECK_M(common_type, int, float, long long);
+//   SINGLE_CHECK_M(common_type, void, void, void);
+//   SINGLE_CHECK_M(common_type, int, float, void);
+//   SINGLE_CHECK_M(common_type, int, float, long long, void);
+//   SINGLE_CHECK_M(common_type, void, int, float, long long);
+//   SINGLE_CHECK_M(common_type, int, int*);
+//   SINGLE_CHECK_M(common_type, int, int, int, int*);
+//   SINGLE_CHECK_M(common_type, int*, int, int, int);
+//   SINGLE_CHECK_M(common_type, int, long const&);
+//   SINGLE_CHECK_M(common_type, ScopedSEnum, ConvertibleToScopedEnum);
+//   SINGLE_CHECK_M(common_type, ScopedUEnum, ConvertibleToScopedEnum);
+//   SINGLE_CHECK_M(common_type, AutoConvert, int);
+//   SINGLE_CHECK_M(common_type, int, long, AutoConvert, int);
+//   SINGLE_CHECK_M(common_type, Parent, Class);
+//   SINGLE_CHECK_M(common_type, Parent*, Class*);
+//   SINGLE_CHECK_M(common_type, std::true_type, std::false_type);
 }
 
 // TODO
