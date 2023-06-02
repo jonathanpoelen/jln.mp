@@ -40,40 +40,14 @@
 # endif
 #endif
 
-// TODO add_const_lvalue_reference ?
+// TODO type_identity ?
 
 // TODO MSVC: #pragma warning(disable: 4180)  // qualifier applied to function type has no meaning; ignored
 
 // TODO defined(__cpp_*) && __cpp_* >= XXX -> __cpp_* >= XXX + disable warn
 
-// TODO mp::* use detail::*_v instead of emp::*_v
-
 // TODO macro that forces use of std::
 
-// TODO is_trivially_relocatable
-
-// TODO is_complete
-// template<typename T, typename = void>
-// struct is_complete_type : public false_type {};
-//
-// template<typename T>
-// struct is_complete_type<T, void_t<decltype(sizeof(T) != 0)>> : public true_type {};
-//
-// template<>
-// struct is_complete_type<const volatile void> : public false_type {};
-// template<>
-// struct is_complete_type<const void> : public false_type {};
-// template<>
-// struct is_complete_type<volatile void> : public false_type {};
-// template<>
-// struct is_complete_type<void> : public false_type {};
-//
-// template<typename T>
-// struct is_complete_type<T, enable_if_t<is_function_v<T>>> : public true_type {};
-
-
-// TODO is_array_of_known_bounds = extent_v<T> != 0
-// TODO is_array_of_unknown_bounds = is_array_v<T> && extent_v<T> == 0
 
 
 
@@ -429,10 +403,31 @@ namespace jln::mp::traits
   }
 
 
+  // not standard
+  //@{
+  namespace detail
+  {
+    // TODO requires { ... } ?
+    template<class T, class = void>
+    JLN_MP_CONSTEXPR_VAR bool is_referenceable_impl_v = false;
+
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_referenceable_impl_v<T, emp::void_t<T&>> = true;
+  }
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_referenceable, (class T), bool,
+    detail::is_referenceable_impl_v<T volatile const>);
+
+  // TODO add_const_lvalue_reference ?
+  // TODO is_trivially_relocatable
+  //@}
+
+
   // https://en.cppreference.com/w/cpp/feature_test
 
+
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_const)
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(is_const, (class T), bool, __is_const(T));
+  JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+    is_const, (class T), bool, __is_const(T));
 #elif JLN_MP_USE_LIBMS
   JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_const, (class T), bool, (T));
 #else
@@ -451,7 +446,8 @@ namespace jln::mp::traits
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_volatile)
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(is_volatile, (class T), bool, __is_volatile(T));
+  JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+    is_volatile, (class T), bool, __is_volatile(T));
 #elif JLN_MP_USE_LIBMS
   JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_volatile, (class T), bool, (T));
 #else
@@ -462,6 +458,41 @@ namespace jln::mp::traits
   }
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_volatile, (class T), bool, (T));
 #endif
+
+
+  // not standard
+  //@{
+  namespace detail
+  {
+    template<class T, bool = false>
+    JLN_MP_CONSTEXPR_VAR bool is_complete_type_impl_v = !JLN_MP_IS_CONST_V(T);
+
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_complete_type_impl_v<T, !sizeof(T)> = true;
+  }
+  // is_complete_type = !is_unbounded_array && (is_function || when the expression sizeof(T) is valid)
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_complete_type, (class T), bool,
+    detail::is_complete_type_impl_v<T volatile const>);
+
+
+  namespace detail
+  {
+    template<class T, bool = false>
+    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_impl_v = !JLN_MP_IS_CONST_V(T);
+
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_impl_v<T, !sizeof(T)> = true;
+
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_impl_v<T[]> = true;
+
+    template<>
+    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_impl_v<void volatile const> = true;
+  }
+  // is_complete_type = is_function || is_void || when the expression sizeof(T) is valid
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_complete_or_unbounded_type, (class T), bool,
+    detail::is_complete_or_unbounded_type_impl_v<T volatile const>);
+  //@}
 
 
 #if JLN_MP_MSVC >= 2000 || JLN_MP_HAS_BUILTIN(__is_trivial)
@@ -479,8 +510,11 @@ namespace jln::mp::traits
 
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(is_trivially_copyable, (class T), bool, __is_trivially_copyable(T));
+  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+    is_trivially_copyable, (class T), bool, __is_trivially_copyable(T));
 
+
+  // is_standard_layout
 
 #if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_standard_layout)
   // TODO is_complete_or_unbounded
@@ -511,15 +545,15 @@ namespace jln::mp::traits
 #if __cplusplus <= 201703L
   JLN_MP_MAKE_TRAIT_D(is_pod, (class T), (T));
 #endif
-  JLN_MP_MAKE_TRAIT_D(is_empty, (class T), (T));
-  JLN_MP_MAKE_TRAIT_D(is_polymorphic, (class T), (T));
   JLN_MP_MAKE_TRAIT_D(is_abstract, (class T), (T));
-  JLN_MP_MAKE_TRAIT_D(is_final, (class T), (T));
   JLN_MP_MAKE_TRAIT_D(is_aggregate, (class T), (T));
-  JLN_MP_MAKE_TRAIT_D(is_enum, (class T), (T));
-  JLN_MP_MAKE_TRAIT_D(is_union, (class T), (T));
-  JLN_MP_MAKE_TRAIT_D(is_class, (class T), (T));
   JLN_MP_MAKE_TRAIT_D(is_base_of, (class T, class U), (T, U));
+  JLN_MP_MAKE_TRAIT_D(is_class, (class T), (T));
+  JLN_MP_MAKE_TRAIT_D(is_empty, (class T), (T));
+  JLN_MP_MAKE_TRAIT_D(is_enum, (class T), (T));
+  JLN_MP_MAKE_TRAIT_D(is_final, (class T), (T));
+  JLN_MP_MAKE_TRAIT_D(is_polymorphic, (class T), (T));
+  JLN_MP_MAKE_TRAIT_D(is_union, (class T), (T));
 
 #undef JLN_MP_MAKE_TRAIT_D
 
@@ -608,55 +642,35 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_convertible_to)
-  #define JLN_MP_IS_CONVERTIBLE_V(...) __is_convertible_to(__VA_ARGS__)
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
-    is_convertible, (class From, class To), bool, __is_convertible_to(From, To));
-#elif JLN_MP_FEATURE_CONCEPTS
-  #define JLN_MP_IS_CONVERTIBLE_V(...) emp::is_convertible_v<__VA_ARGS__>
-  namespace emp
-  {
-    template<class From, class To>
-    JLN_MP_CONSTEXPR_VAR bool is_convertible_v
-      = requires{ JLN_MP_FN_PTR(void(*)(From))(JLN_MP_DECLVAL(To&&)); };
-  }
-  // TODO void -> void = ok
-  // TODO JLN_MP_DECLVAL(PtrFunc&&) -> error
-  // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_convertible);
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_lvalue_reference)
+  // TODO use builtin / std::... with macro
+  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(add_lvalue_reference, (class T), (T));
 #else
-  #define JLN_MP_IS_CONVERTIBLE_V(...) detail::is_convertible_impl_v<__VA_ARGS__>
   namespace detail
   {
-    template<class From, class To, class = void>
-    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v = false;
+    template<class T, bool = is_referenceable_impl_v<T volatile const>>
+    struct add_lvalue_reference_impl { using type = T; };
 
-    // TODO void -> void = ok
-    // TODO JLN_MP_DECLVAL(PtrFunc&&) -> error
-    // TODO is_complete_or_unbounded
-    template<class From, class To>
-    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<
-      From, To, decltype(JLN_MP_FN_PTR(void(*)(From))(JLN_MP_DECLVAL(To)))> = true;
+    template<class T>
+    struct add_lvalue_reference_impl<T, true> { using type = T&; };
   }
-  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_convertible, (class From, class To), bool,
-    detail::is_convertible_impl_v<From, To>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_S(add_lvalue_reference, (class T), detail::add_lvalue_reference_impl<T>);
 #endif
 
 
-#if defined(__cpp_lib_is_nothrow_convertible) && __cpp_lib_is_nothrow_convertible >= 201806L
-  // TODO
-  // JLN_MP_MAKE_TRAIT_P2(JLN_MP_TRAIT_BUILTIN_IS(is_nothrow_convertible, CLANG, 0, 0));
-#endif
-
-
-#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_scoped_enum)
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
-    is_scoped_enum, (class T), bool, __is_scoped_enum(T));
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_rvalue_reference)
+  // TODO use builtin / std::... with macro
+  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(add_rvalue_reference, (class T), (T));
 #else
-  // TODO or *_FROM_EMP_V
-  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_scoped_enum, (class T), bool,
-      // TODO requires { int(*static_cast<T*>(nullptr)); }
-    __is_enum(T) && !JLN_MP_IS_CONVERTIBLE_V(T, int));
+  namespace detail
+  {
+    template<class T, bool = is_referenceable_impl_v<T volatile const>>
+    struct add_rvalue_reference_impl { using type = T; };
+
+    template<class T>
+    struct add_rvalue_reference_impl<T, true> { using type = T&&; };
+  }
+  JLN_MP_MAKE_TRAIT_ST_FROM_S(add_rvalue_reference, (class T), detail::add_rvalue_reference_impl<T>);
 #endif
 
 
@@ -763,9 +777,10 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_array, (class T), bool, __is_array(T));
 #elif JLN_MP_USE_LIBMS
+  #define JLN_MP_IS_ARRAY_V(...) emp::is_array_v<__VA_ARGS__>
   JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_array, (class T), bool, (T));
 #else
-  #define JLN_MP_IS_ARRAY_V(...) /*emp::*/is_array_v<__VA_ARGS__>
+  #define JLN_MP_IS_ARRAY_V(...) emp::is_array_v<__VA_ARGS__>
   namespace emp
   {
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_array_v = false;
@@ -841,9 +856,11 @@ namespace jln::mp::traits
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_function)
+  #define JLN_MP_IS_FUNCTION_V(...) __is_function(__VA_ARGS__)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
     is_function, (class T), bool, __is_function(T));
 #else
+  #define JLN_MP_IS_FUNCTION_V(...) emp::is_function_v<__VA_ARGS__>
   namespace emp
   {
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_function_v = !JLN_MP_IS_CONST_V(T const);
@@ -982,48 +999,113 @@ namespace jln::mp::traits
 #endif
 
 
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_convertible_to)
+  #define JLN_MP_IS_CONVERTIBLE_V(...) __is_convertible_to(__VA_ARGS__)
+  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+    is_convertible, (class From, class To), bool, __is_convertible_to(From, To));
+#elif JLN_MP_FEATURE_CONCEPTS
+  #define JLN_MP_IS_CONVERTIBLE_V(...) emp::is_convertible_v<__VA_ARGS__>
   namespace detail
   {
-    // TODO requires { ... } ?
-    template<class T, class = void>
-    static constexpr bool is_referenceable_impl_v = false;
+    template<class To, bool v>
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v = v;
 
-    template<class T>
-    static constexpr bool is_referenceable_impl_v<T, emp::void_t<T&>> = true;
+    // template<class To>
+    // JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<To, true>
+    //   = !JLN_MP_IS_ARRAY_V(To) && !JLN_MP_IS_FUNCTION_V(To);
+
+    // !is_array
+
+    template<class To>
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<To[], true> = false;
+
+    template<class To, std::size_t N>
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<To[N], true> = false;
+
+    // !is_function
+
+    template<class To>
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<To, true> = JLN_MP_IS_CONST_V(To const);
+
+    template<class To>
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<To&, true> = false;
+
+    template<class To>
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<To&&, true> = false;
   }
-  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_referenceable, (class T), bool,
-    detail::is_referenceable_impl_v<T volatile const>);
+  namespace emp
+  {
+    template<class From, class To>
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_v = detail::is_convertible_impl_v<
+      To, requires{ JLN_MP_FN_PTR(void(*)(To))(JLN_MP_DECLVAL(From&&)); }
+    >;
 
-
-#if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_lvalue_reference)
-  // TODO use builtin / std::... with macro
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(add_lvalue_reference, (class T), (T));
+    template<>
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_v<void, void> = true;
+  }
+  // TODO is_complete_or_unbounded
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_convertible, (class From, class To), bool, (From, To));
 #else
+  #define JLN_MP_IS_CONVERTIBLE_V(...) detail::is_convertible_impl_v<__VA_ARGS__>
   namespace detail
   {
-    template<class T, bool = is_referenceable_impl_v<T volatile const>>
-    struct add_lvalue_reference_impl { using type = T; };
+    template<class From, class To, class = void>
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v = false;
 
-    template<class T>
-    struct add_lvalue_reference_impl<T, true> { using type = T&; };
+    template<>
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<void, void> = true;
+
+    // TODO is_complete_or_unbounded
+    template<class From, class To>
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<
+      From, To,
+      decltype(JLN_MP_FN_PTR(void(*)(To))(JLN_MP_DECLVAL(From&&)))
+    > = !JLN_MP_IS_ARRAY_V(To) && !JLN_MP_IS_FUNCTION_V(To);
   }
-  JLN_MP_MAKE_TRAIT_ST_FROM_S(add_lvalue_reference, (class T), detail::add_lvalue_reference_impl<T>);
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_convertible, (class From, class To), bool,
+    detail::is_convertible_impl_v<From, To>);
 #endif
 
 
-#if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_rvalue_reference)
-  // TODO use builtin / std::... with macro
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(add_rvalue_reference, (class T), (T));
-#else
   namespace detail
   {
-    template<class T, bool = is_referenceable_impl_v<T volatile const>>
-    struct add_rvalue_reference_impl { using type = T; };
+    template<bool>
+    struct is_nothrow_convertible_impl
+    {
+      template<class From, class To>
+      static constexpr bool v
+        = noexcept(JLN_MP_FN_PTR(void(*)(To)noexcept)(JLN_MP_DECLVAL_NOTHROW(From&&)));
+    };
 
-    template<class T>
-    struct add_rvalue_reference_impl<T, true> { using type = T&&; };
+    template<>
+    struct is_nothrow_convertible_impl<false>
+    {
+      // TODO sharing alias
+      template<class From, class To>
+      static constexpr bool v = false;
+    };
   }
-  JLN_MP_MAKE_TRAIT_ST_FROM_S(add_rvalue_reference, (class T), detail::add_rvalue_reference_impl<T>);
+  namespace emp
+  {
+    template<class From, class To>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_convertible_v
+      = detail::is_nothrow_convertible_impl<JLN_MP_IS_CONVERTIBLE_V(From, To)>
+        ::template v<From, To>;
+
+    template<class From>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_convertible_v<From, void> = true;
+  }
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_nothrow_convertible, (class From, class To), bool, (From, To));
+
+
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_scoped_enum)
+  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+    is_scoped_enum, (class T), bool, __is_scoped_enum(T));
+#else
+  // TODO or *_FROM_EMP_V
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_scoped_enum, (class T), bool,
+      // TODO requires { int(*static_cast<T*>(nullptr)); }
+    __is_enum(T) && !JLN_MP_IS_CONVERTIBLE_V(T, int));
 #endif
 
 
@@ -1535,10 +1617,10 @@ namespace jln::mp::traits
     JLN_MP_CONSTEXPR_VAR std::size_t extent_v = __array_extent(T, Dim::value);
 
     template<class T, unsigned Dim = 0>
-    using extent_c_t = emp::integral_constant<T, __array_extent(T, Dim)>;
+    using extent_c_t = emp::integral_constant<std::size_t, __array_extent(T, Dim)>;
 
     template<class T, class Dim = number<0>>
-    using extent_t = emp::integral_constant<T, __array_extent(T, Dim::value)>;
+    using extent_t = emp::integral_constant<std::size_t, __array_extent(T, Dim::value)>;
   }
 #else
   namespace emp
@@ -1560,10 +1642,10 @@ namespace jln::mp::traits
     JLN_MP_CONSTEXPR_VAR std::size_t extent_v = extent_c_v<T, Dim::value>;
 
     template<class T, unsigned Dim = 0>
-    using extent_c_t = emp::integral_constant<T, extent_c_v<T, Dim>>;
+    using extent_c_t = emp::integral_constant<std::size_t, extent_c_v<T, Dim>>;
 
     template<class T, class Dim = number<0>>
-    using extent_t = emp::integral_constant<T, extent_c_v<T, Dim::value>>;
+    using extent_t = emp::integral_constant<std::size_t, extent_c_v<T, Dim::value>>;
   }
 #endif
   namespace emp
@@ -2324,6 +2406,7 @@ namespace jln::mp::traits
 
 
   // https://en.cppreference.com/w/cpp/experimental/is_detected
+  // TODO move in not standard block
 
   namespace detail
   {
