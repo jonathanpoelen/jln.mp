@@ -22,6 +22,14 @@
 # define JLN_MP_HAS_OPTIONAL_BUILTIN(Name) 0
 #endif
 
+#if JLN_MP_MSVC
+# define JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(Name) JLN_MP_USE_OPTIONAL_BUILTIN
+#else
+# define JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(Name) JLN_MP_HAS_OPTIONAL_BUILTIN(Name)
+#endif
+
+// TODO replace some call to JLN_MP_USE_OPTIONAL_BUILTIN with JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC
+
 #ifndef JLN_MP_INT128_AS_INTEGRAL
 # define JLN_MP_INT128_AS_INTEGRAL 0
 #endif
@@ -514,23 +522,6 @@ namespace jln::mp::traits
     is_trivially_copyable, (class T), bool, __is_trivially_copyable(T));
 
 
-  // is_standard_layout
-
-#if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_standard_layout)
-  // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
-    is_standard_layout, (class T), bool, __is_standard_layout(T));
-#else
-  // TODO is_complete_or_unbounded
-  // this implementation is not compliant
-  namespace emp
-  {
-    template<class T> JLN_MP_CONSTEXPR_VAR bool is_standard_layout_v
-      = JLN_MP_IS_SCALAR_V(typename remove_all_extents<T>::type>);
-  }
-#endif
-
-
 #if JLN_MP_USE_LIBMS || JLN_MP_USE_LIBCXX
 # define JLN_MP_MAKE_TRAIT_D(Name, Params, Values) \
     JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(Name, Params, bool, __##Name Values)
@@ -991,6 +982,21 @@ namespace jln::mp::traits
 #endif
 
 
+#if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_standard_layout)
+  // TODO is_complete_or_unbounded
+  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+    is_standard_layout, (class T), bool, __is_standard_layout(T));
+#else
+  // TODO is_complete_or_unbounded
+  // this implementation is not compliant
+  namespace emp
+  {
+    template<class T> JLN_MP_CONSTEXPR_VAR bool is_standard_layout_v
+      = JLN_MP_IS_SCALAR_V(typename remove_all_extents<T>::type>);
+  }
+#endif
+
+
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_compound)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_compound, (class T), bool, __is_compound(T));
@@ -999,11 +1005,12 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_convertible_to)
+#if JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_convertible_to)
   #define JLN_MP_IS_CONVERTIBLE_V(...) __is_convertible_to(__VA_ARGS__)
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
     is_convertible, (class From, class To), bool, __is_convertible_to(From, To));
 #elif JLN_MP_FEATURE_CONCEPTS
+  // TODO slow with clang ?
   #define JLN_MP_IS_CONVERTIBLE_V(...) emp::is_convertible_v<__VA_ARGS__>
   namespace detail
   {
@@ -1028,10 +1035,10 @@ namespace jln::mp::traits
     JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<To, true> = JLN_MP_IS_CONST_V(To const);
 
     template<class To>
-    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<To&, true> = false;
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<To&, true> = true;
 
     template<class To>
-    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<To&&, true> = false;
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<To&&, true> = true;
   }
   namespace emp
   {
@@ -1080,7 +1087,7 @@ namespace jln::mp::traits
     template<>
     struct is_nothrow_convertible_impl<false>
     {
-      // TODO sharing alias
+      // TODO sharing alias or simple is_nothrow_convertible_impl_v<bool, From, To>
       template<class From, class To>
       static constexpr bool v = false;
     };
@@ -1172,7 +1179,7 @@ namespace jln::mp::traits
       __is_nothrow_constructible(T, T /*emp::add_rvalue_reference_t<T>*/));
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && (JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_assignable))
+#if JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_assignable)
   // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_assignable, (class T, class U), bool, __is_assignable(T, U));
@@ -1213,13 +1220,11 @@ namespace jln::mp::traits
 
   #define JLN_MP_IS_COPY_ASSIGNABLE_V(...)                                 \
     detail::is_assignable_impl_v<emp::add_lvalue_reference_t<__VA_ARGS__>, \
-                                  emp::add_lvalue_reference_t<__VA_ARGS__ const>>
+                                 emp::add_lvalue_reference_t<__VA_ARGS__ const>>
 
   #define JLN_MP_IS_MOVE_ASSIGNABLE_V(...) \
     detail::is_assignable_impl_v<emp::add_lvalue_reference_t<__VA_ARGS__>, __VA_ARGS__>
 # endif
-  // TODO or *_FROM_EMP_V xxxxxx
-
   // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_assignable, (class T, class U), bool, JLN_MP_IS_ASSIGNABLE_V(T, U));
   // TODO is_complete_or_unbounded
@@ -1229,22 +1234,7 @@ namespace jln::mp::traits
 #endif
 
 
-  // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
-    is_trivially_assignable, (class T, class U), bool, __is_trivially_assignable(T, U));
-
-  // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
-    is_trivially_copy_assignable, (class T), bool,
-      __is_trivially_assignable(emp::add_lvalue_reference_t<T>, emp::add_lvalue_reference_t<T const>));
-
-  // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
-    is_trivially_move_assignable, (class T), bool,
-      __is_trivially_assignable(emp::add_lvalue_reference_t<T>, T /*emp::add_rvalue_reference_t<T>*/));
-
-
-#if JLN_MP_USE_OPTIONAL_BUILTIN && (JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_nothrow_assignable))
+#if JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_nothrow_assignable)
   // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
     is_nothrow_assignable, (class T, class U), bool, __is_nothrow_assignable(T, U));
@@ -1299,7 +1289,22 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && (JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_destructible))
+  // TODO is_complete_or_unbounded
+  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+    is_trivially_assignable, (class T, class U), bool, __is_trivially_assignable(T, U));
+
+  // TODO is_complete_or_unbounded
+  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+    is_trivially_copy_assignable, (class T), bool,
+      __is_trivially_assignable(emp::add_lvalue_reference_t<T>, emp::add_lvalue_reference_t<T const>));
+
+  // TODO is_complete_or_unbounded
+  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+    is_trivially_move_assignable, (class T), bool,
+      __is_trivially_assignable(emp::add_lvalue_reference_t<T>, T /*emp::add_rvalue_reference_t<T>*/));
+
+
+#if JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_destructible)
   // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_destructible, (class T), bool, __is_destructible(T));
@@ -1372,7 +1377,7 @@ namespace jln::mp::traits
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN && (JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_nothrow_destructible))
+#if JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_nothrow_destructible)
   // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
     is_nothrow_destructible, (class T), bool, __is_nothrow_destructible(T));
@@ -1561,23 +1566,52 @@ namespace jln::mp::traits
 
 
 // TODO no stl
-// #if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_layout_compatible)
-//   JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(
-//     is_layout_compatible, (class T, class U), bool, __is_layout_compatible(T, U));
-// #elif ! JLN_MP_NO_STL && defined(__cpp_lib_is_layout_compatible) && __cpp_lib_is_layout_compatible >= 201907L
-//   JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_layout_compatible, (class T, class U), bool, (T, U));
-// #else
-//   // TODO
-// #endif
-
-
-#if defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible >= 201907L
-  // TODO
-  // JLN_MP_MAKE_TRAIT_P2(JLN_MP_TRAIT_BUILTIN_IS(is_pointer_interconvertible_base_of, MSVC, 0, 0));
-  // JLN_MP_MAKE_TRAIT_P2(JLN_MP_TRAIT_BUILTIN_IS(is_pointer_interconvertible_with_class, MSVC, 0, 0));
+#if ! JLN_MP_NO_STL && defined(__cpp_lib_is_layout_compatible) && __cpp_lib_is_layout_compatible >= 201907L
+  // TODO is_complete_or_unbounded
+  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_layout_compatible, (class T, class U), bool, (T, U));
+#elif JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_layout_compatible)
+  // TODO is_complete_or_unbounded
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(
+    is_layout_compatible, (class T, class U), bool, __is_layout_compatible(T, U));
 #else
-  // TODO
+  // TODO is_complete_or_unbounded
+  // TODO https://en.cppreference.com/w/cpp/language/data_members#Standard-layout
+  // TODO https://en.cppreference.com/w/cpp/language/classes#Standard-layout_class
+  // A signed integer type and its unsigned counterpart are not layout-compatible. char is layout-compatible with neither signed char nor unsigned char.
+  // Similar types are not layout-compatible if they are not the same type after ignoring top-level cv-qualification.
+  // An enumeration type and its underlying type are not layout-compatible.
+  // Array types of layout-compatible but different element types (ignoring cv-qualification) are not layout-compatible, even if they are of equal length.
 #endif
+
+
+#if JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_pointer_interconvertible_base_of)
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_pointer_interconvertible_base_of,
+    (class Base, class Derived), bool, __is_pointer_interconvertible_base_of(_Base, _Derived));
+#elif !JLN_MP_NO_STL && defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible >= 201907L
+  JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(is_pointer_interconvertible_base_of,
+    (class Base, class Derived), bool, emp::is_pointer_interconvertible_base_of_v<Base, Derived>);
+#endif
+
+
+  namespace emp
+  {
+#if !JLN_MP_NO_STL && defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible >= 201907L
+    using std::is_pointer_interconvertible_with_class;
+#else
+    template <class C, class Mem>
+    constexpr bool is_pointer_interconvertible_with_class(Mem C::* m) noexcept
+    {
+#if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_pointer_interconvertible_with_class)
+      return __is_pointer_interconvertible_with_class(C, m);
+#elif JLN_MP_HAS_BUILTIN(__builtin_is_pointer_interconvertible_with_class)
+      return __builtin_is_pointer_interconvertible_with_class(m);
+#else
+      (void)m;
+      return false;
+#endif
+    }
+#endif
+  }
 
 
   // TODO LIBMS || LIBCPP -> use std::
@@ -1741,14 +1775,6 @@ namespace jln::mp::traits
 #endif
 
 
-#if defined(__cpp_lib_reference_from_temporary) && __cpp_lib_reference_from_temporary >= 202202L
-  JLN_MP_MAKE_TRAIT_ST_FROM_STD(reference_constructs_from_temporary, (class T, class U), (T, U));
-  JLN_MP_MAKE_TRAIT_ST_FROM_STD(reference_converts_from_temporary, (class T, class U), (T, U));
-#else
-  // TODO
-#endif
-
-
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_const)
   // TODO use builtin / std::... with macro
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_const, (class T), (T));
@@ -1881,6 +1907,173 @@ namespace jln::mp::traits
     template<typename T> struct remove_cvref<T&&> : remove_cv<T> {};
   }
   JLN_MP_MAKE_TRAIT_T_FROM_S(remove_cvref, (class T), emp::remove_cvref<T>);
+#endif
+
+
+#if JLN_MP_HAS_BUILTIN(__reference_constructs_from_temporary)
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(reference_constructs_from_temporary,
+      (class T, class U), bool, __reference_constructs_from_temporary(T, U));
+#else
+// __reference_binds_to_temporary + check are faster only when __reference_binds_to_temporary gives true.
+// As this case is not the most common, it is disabled.
+# if JLN_MP_HAS_BUILTIN(__reference_binds_to_temporary) && 0
+  namespace detail
+  {
+# if JLN_MP_FEATURE_CONCEPTS
+    template<bool v, class UnrefT, class T, class U, bool constructible = __is_constructible(T, U)>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_impl_v = v;
+
+    template<class UnrefT, class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_impl_v<false, UnrefT, T, U, true>
+      = requires { JLN_MP_FN_PTR(void(*)(UnrefT volatile const*))(JLN_MP_DECLVAL(U volatile const*)); };
+# else
+    template<bool v, class UnrefT, class T, class U, class = void>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_impl_v = v;
+
+    template<class UnrefT, class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_impl_v<false, UnrefT, T, U,
+      decltype(JLN_MP_FN_PTR(void(*)(UnrefT volatile const*))(JLN_MP_DECLVAL(U volatile const*)))
+    > = __is_constructible(T, U);
+# endif
+  }
+  namespace emp
+  {
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v = false;
+
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&, U>
+      = detail::reference_constructs_from_temporary_impl_v<
+        __reference_binds_to_temporary(T&, U), T, T&, U>;
+
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&&, U>
+      = detail::reference_constructs_from_temporary_impl_v<
+        __reference_binds_to_temporary(T&&, U), T, T&&, U>;
+
+    // fast-path
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&, U&>
+      = __reference_binds_to_temporary(T&, U&);
+
+    // fast-path
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&&, U&>
+      = __reference_binds_to_temporary(T&&, U&);
+
+    // fast-path
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&, U&&>
+      = __reference_binds_to_temporary(T&, U&&);
+
+    // fast-path
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&&, U&&>
+      = __reference_binds_to_temporary(T&&, U&&);
+  }
+#else
+  namespace detail
+  {
+    template<bool Constructible, bool UIsRef>
+    struct reference_constructs_from_temporary_impl
+    {
+      // TODO sharing
+      template<class...>
+      static constexpr bool v = false;
+    };
+
+    template<>
+    struct reference_constructs_from_temporary_impl<true, false>
+    {
+      // TODO sharing
+      template<class...>
+      static constexpr bool v = true;
+    };
+
+# if ! JLN_MP_FEATURE_CONCEPTS
+    template<class T, class U, class = void>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_impl_v = true;
+
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_impl_v<
+      T, U, decltype(JLN_MP_FN_PTR(void(*)(T*))(JLN_MP_DECLVAL(U*)))
+    > = false;
+# endif
+
+    template<>
+    struct reference_constructs_from_temporary_impl<true, true>
+    {
+      // T and U are cv qualified
+      template<class T, class U>
+# if JLN_MP_FEATURE_CONCEPTS
+      static constexpr bool v = ! requires { JLN_MP_FN_PTR(void(*)(T*))(JLN_MP_DECLVAL(U*)) }
+# else
+      static constexpr bool v = reference_constructs_from_temporary_impl_v<T, U>;
+# endif
+    };
+  }
+  namespace emp
+  {
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v = false;
+
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&, U&> = false;
+
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&, U>
+      = __is_constructible(T&, U);
+
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T const&, U>
+      = detail::reference_constructs_from_temporary_impl<
+        __is_constructible(T const&, U), false
+      >::template v<T volatile const, U volatile const>;
+
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T const&, U&>
+      = detail::reference_constructs_from_temporary_impl<
+        __is_constructible(T const&, U&), true
+      >::template v<T volatile const, U volatile const>;
+
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T const&, U&&>
+      = detail::reference_constructs_from_temporary_impl<
+        __is_constructible(T const&, U&&), true
+      >::template v<T volatile const, U volatile const>;
+
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&&, U>
+      = detail::reference_constructs_from_temporary_impl<
+        __is_constructible(T&&, U), false
+      >::template v<T volatile const, U volatile const>;
+
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&&, U&>
+      = detail::reference_constructs_from_temporary_impl<
+        __is_constructible(T&&, U&), true
+      >::template v<T volatile const, U volatile const>;
+
+    template<class T, class U>
+    JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&&, U&&>
+      = detail::reference_constructs_from_temporary_impl<
+        __is_constructible(T&&, U&&), true
+      >::template v<T volatile const, U volatile const>;
+  }
+#endif
+  // TODO If T is an lvalue reference type to a const- but not volatile-qualified object type or an rvalue reference type, both std::remove_reference_t<T> and std::remove_reference_t<U> shall be complete types, cv void, or an arrays of unknown bound; otherwise the behavior is undefined.
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(reference_constructs_from_temporary, (class T, class U), bool, (T, U));
+#endif
+
+
+#if JLN_MP_HAS_BUILTIN(__reference_converts_from_temporary)
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(reference_converts_from_temporary,
+      (class T, class U), bool, __reference_converts_from_temporary(T, U));
+#else
+  // TODO don't work with explicit ctor-copyable type (gives true instead of false for <T&&, T> and <T const&, T>). How to check `T x = a` ?
+  // TODO If T is an lvalue reference type to a const- but not volatile-qualified object type or an rvalue reference type, both std::remove_reference_t<T> and std::remove_reference_t<U> shall be complete types, cv void, or an arrays of unknown bound; otherwise the behavior is undefined.
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(reference_converts_from_temporary,
+    (class T, class U), bool, emp::reference_constructs_from_temporary_v<T, U>);
 #endif
 
 
@@ -2188,14 +2381,16 @@ namespace jln::mp::traits
      */
 
     // is_function
-    // TODO add_pointer_impl may not exist
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_pointer)
+    template<class T, class = void> struct decay_maybe_func { using type = __add_pointer(T); };
+#else
     template<class T, class = void> struct decay_maybe_func : add_pointer_impl<T> {};
+#endif
     // not is_function
     template<class T> struct decay_maybe_func<T volatile const> { using type = T; };
   }
   namespace emp
   {
-    // TODO __remove_reference_t
     template<class T> struct decay : detail::decay_maybe_func<T volatile const> {};
     template<class T> struct decay<T&> : detail::decay_maybe_func<T volatile const> {};
     template<class T> struct decay<T&&> : detail::decay_maybe_func<T volatile const> {};

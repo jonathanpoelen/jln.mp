@@ -186,6 +186,14 @@ struct Aggregate
   int i;
 };
 
+struct Aggregate2
+{
+  int j;
+};
+
+struct NotStandardLayout : Aggregate, Aggregate2
+{};
+
 struct WithProtected
 {
   int i;
@@ -197,6 +205,27 @@ protected:
 struct Child : Class
 {
   int j;
+};
+
+class Empty2 {};
+
+struct PriEmptyPubEmpty2 : Empty, public Empty2
+{
+  int x;
+};
+
+struct NonStdLayout : public PriEmptyPubEmpty2
+{
+  int y;
+};
+
+struct PubMem1 { int x; };
+struct PubMem2 { int y; };
+struct PubMem1PubMem2 : PubMem1, PubMem2 {};
+
+struct CtorInt
+{
+  CtorInt(int);
 };
 
 struct Abstract
@@ -287,6 +316,12 @@ struct ExplicitCtor
   explicit ExplicitCtor(int, int) {}
 
   explicit operator bool ();
+};
+
+struct ExplicitCopyCtor
+{
+  ExplicitCopyCtor() = default;
+  explicit ExplicitCopyCtor(ExplicitCopyCtor const&) {}
 };
 
 struct ImplicitBool
@@ -562,6 +597,7 @@ static auto test_x1()
   test_x1_cv_ref<Std, Jln, ThrowableDtor>();
   test_x1_cv_ref<Std, Jln, NoDefaultConstructible>();
   test_x1_cv_ref<Std, Jln, ExplicitCtor>();
+  test_x1_cv_ref<Std, Jln, ExplicitCopyCtor>();
   test_x1_cv_ref<Std, Jln, ImplicitBool>();
   test_x1_cv_ref<Std, Jln, InitializerListCtor>();
   test_x1_cv_ref<Std, Jln, bool>();
@@ -1014,6 +1050,7 @@ TEST()
 //   CHECK_X1(is_trivially_copyable);
 //
 //   CHECK_X1(is_standard_layout);
+//   CHECK_X1_CV(is_standard_layout, NotStandardLayout);
 //
 // #if __cplusplus <= 201703L
 //   CHECK_X1(is_pod);
@@ -1103,6 +1140,9 @@ TEST()
 //   SINGLE_CHECK(is_convertible, void(), void*);
 //   SINGLE_CHECK(is_convertible, void(*)(), void);
 //   SINGLE_CHECK(is_convertible, void(*)(), void*);
+//   SINGLE_CHECK(is_convertible, void(), void(&)());
+//   SINGLE_CHECK(is_convertible, void(), void(&&)());
+//   SINGLE_CHECK(is_convertible, void(), void(*)());
 //   SINGLE_CHECK(is_convertible, Castable, void());
 //   SINGLE_CHECK(is_convertible, Castable, void(*)());
 //   CHECK_XS_F(is_convertible, test_x2_cv_ref, Aggregate, Aggregate);
@@ -1140,6 +1180,7 @@ TEST()
 //   CHECK_XS_F(is_convertible, test_x2_cv_ref, int[2], int);
 //   CHECK_XS_F(is_convertible, test_x2_cv_ref, int, int[]);
 //   CHECK_XS_F(is_convertible, test_x2_cv_ref, int, int[2]);
+//   CHECK_XS_F(is_convertible, test_x2_cv_ref, int, int);
 //
 // #if defined(__cpp_lib_is_nothrow_convertible) && __cpp_lib_is_nothrow_convertible >= 201806L
 //   SINGLE_CHECK(is_nothrow_convertible, int, void);
@@ -1153,6 +1194,9 @@ TEST()
 //   SINGLE_CHECK(is_nothrow_convertible, void(), void*);
 //   SINGLE_CHECK(is_nothrow_convertible, void(*)(), void);
 //   SINGLE_CHECK(is_nothrow_convertible, void(*)(), void*);
+//   SINGLE_CHECK(is_nothrow_convertible, void(), void(&)());
+//   SINGLE_CHECK(is_nothrow_convertible, void(), void(&&)());
+//   SINGLE_CHECK(is_nothrow_convertible, void(), void(*)());
 //   SINGLE_CHECK(is_nothrow_convertible, Castable, void());
 //   SINGLE_CHECK(is_nothrow_convertible, Castable, void(*)());
 //   SINGLE_CHECK(is_nothrow_convertible, NoexceptCastable, void());
@@ -1264,7 +1308,7 @@ TEST()
 //
 //   CHECK_X1(add_lvalue_reference);
 //
-//   CHECK_X1(add_rvalue_reference);
+  // CHECK_X1(add_rvalue_reference);
 //
 //   // CHECK_XS(is_constructible);
 //   CHECK_F(is_constructible, test_constructible);
@@ -1293,18 +1337,159 @@ TEST()
 //
 //   CHECK_F(is_nothrow_move_constructible, test_constructible);
 //
-  CHECK_X2(is_assignable);
+  // SINGLE_CHECK(is_assignable, int, void);
+  // SINGLE_CHECK(is_assignable, void, int);
+  // SINGLE_CHECK(is_assignable, void, void);
+  // SINGLE_CHECK(is_assignable, void, void());
+  // SINGLE_CHECK(is_assignable, void, void(*)());
+  // SINGLE_CHECK(is_assignable, void*, void());
+  // SINGLE_CHECK(is_assignable, void*, void(*)());
+  // SINGLE_CHECK(is_assignable, void(), void);
+  // SINGLE_CHECK(is_assignable, void(), void*);
+  // SINGLE_CHECK(is_assignable, void(*)(), void);
+  // SINGLE_CHECK(is_assignable, void(*)(), void*);
+//   SINGLE_CHECK(is_assignable, void(&)(), void());
+//   SINGLE_CHECK(is_assignable, void(&&)(), void());
+//   SINGLE_CHECK(is_assignable, void(*)(), void());
+  // SINGLE_CHECK(is_assignable, Castable, void());
+  // SINGLE_CHECK(is_assignable, Castable, void(*)());
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Aggregate, Aggregate);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Child, Child);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Child, Aggregate);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Aggregate, Child);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Child, Class);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Class, Child);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Class, Any);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Any, Class);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, int, float);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, void*, std::size_t);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, std::size_t, void*);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, int, InitializerListCtor);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, NoDefault, NoDefault);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, NoCopyable, NoCopyable);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, NoMovable, NoMovable);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, NoDestructible, NoDestructible);
+  // SINGLE_CHECK(is_assignable, Castable, NoDestructible);
+  // SINGLE_CHECK(is_assignable, NoDestructible, Castable);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Assignable1, Assignable1);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Assignable2, Assignable2);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Assignable3, Assignable3);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Assignable4, Assignable4);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Assignable5, Assignable5);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, Assignable6, Assignable6);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, int[2], int[2]);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, int[], int[]);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, int[], int*);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, int*, int[]);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, int[], int);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, int[2], int);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, int, int[]);
+  // CHECK_XS_F(is_assignable, test_x2_cv_ref, int, int[2]);
 
 //   CHECK_F(is_copy_assignable, test_assignable);
 //   CHECK_F(is_move_assignable, test_assignable);
-//
-//   // CHECK_X2(is_trivially_assignable);
+  //
+  // SINGLE_CHECK(is_trivially_assignable, int, void);
+  // SINGLE_CHECK(is_trivially_assignable, void, int);
+  // SINGLE_CHECK(is_trivially_assignable, void, void);
+  // SINGLE_CHECK(is_trivially_assignable, void, void());
+  // SINGLE_CHECK(is_trivially_assignable, void, void(*)());
+  // SINGLE_CHECK(is_trivially_assignable, void*, void());
+  // SINGLE_CHECK(is_trivially_assignable, void*, void(*)());
+  // SINGLE_CHECK(is_trivially_assignable, void(), void);
+  // SINGLE_CHECK(is_trivially_assignable, void(), void*);
+  // SINGLE_CHECK(is_trivially_assignable, void(*)(), void);
+  // SINGLE_CHECK(is_trivially_assignable, void(*)(), void*);
+//   SINGLE_CHECK(is_trivially_assignable, void(&)(), void());
+//   SINGLE_CHECK(is_trivially_assignable, void(&&)(), void());
+//   SINGLE_CHECK(is_trivially_assignable, void(*)(), void());
+  // SINGLE_CHECK(is_trivially_assignable, Castable, void());
+  // SINGLE_CHECK(is_trivially_assignable, Castable, void(*)());
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Aggregate, Aggregate);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Child, Child);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Child, Aggregate);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Aggregate, Child);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Child, Class);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Class, Child);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Class, Any);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Any, Class);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, int, float);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, void*, std::size_t);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, std::size_t, void*);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, int, InitializerListCtor);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, NoDefault, NoDefault);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, NoCopyable, NoCopyable);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, NoMovable, NoMovable);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, NoDestructible, NoDestructible);
+  // SINGLE_CHECK(is_trivially_assignable, Castable, NoDestructible);
+  // SINGLE_CHECK(is_trivially_assignable, NoDestructible, Castable);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Assignable1, Assignable1);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Assignable2, Assignable2);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Assignable3, Assignable3);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Assignable4, Assignable4);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Assignable5, Assignable5);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, Assignable6, Assignable6);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, int[2], int[2]);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, int[], int[]);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, int[], int*);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, int*, int[]);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, int[], int);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, int[2], int);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, int, int[]);
+  // CHECK_XS_F(is_trivially_assignable, test_x2_cv_ref, int, int[2]);
 //
 //   CHECK_F(is_trivially_copy_assignable, test_assignable);
 //
 //   CHECK_F(is_trivially_move_assignable, test_assignable);
-//
-//   // CHECK_X2(is_nothrow_assignable);
+
+  // SINGLE_CHECK(is_nothrow_assignable, int, void);
+  // SINGLE_CHECK(is_nothrow_assignable, void, int);
+  // SINGLE_CHECK(is_nothrow_assignable, void, void);
+  // SINGLE_CHECK(is_nothrow_assignable, void, void());
+  // SINGLE_CHECK(is_nothrow_assignable, void, void(*)());
+  // SINGLE_CHECK(is_nothrow_assignable, void*, void());
+  // SINGLE_CHECK(is_nothrow_assignable, void*, void(*)());
+  // SINGLE_CHECK(is_nothrow_assignable, void(), void);
+  // SINGLE_CHECK(is_nothrow_assignable, void(), void*);
+  // SINGLE_CHECK(is_nothrow_assignable, void(*)(), void);
+  // SINGLE_CHECK(is_nothrow_assignable, void(*)(), void*);
+//   SINGLE_CHECK(is_nothrow_assignable, void(&)(), void());
+//   SINGLE_CHECK(is_nothrow_assignable, void(&&)(), void());
+//   SINGLE_CHECK(is_nothrow_assignable, void(*)(), void());
+  // SINGLE_CHECK(is_nothrow_assignable, Castable, void());
+  // SINGLE_CHECK(is_nothrow_assignable, Castable, void(*)());
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Aggregate, Aggregate);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Child, Child);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Child, Aggregate);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Aggregate, Child);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Child, Class);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Class, Child);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Class, Any);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Any, Class);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, int, float);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, void*, std::size_t);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, std::size_t, void*);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, int, InitializerListCtor);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, NoDefault, NoDefault);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, NoCopyable, NoCopyable);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, NoMovable, NoMovable);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, NoDestructible, NoDestructible);
+  // SINGLE_CHECK(is_nothrow_assignable, Castable, NoDestructible);
+  // SINGLE_CHECK(is_nothrow_assignable, NoDestructible, Castable);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Assignable1, Assignable1);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Assignable2, Assignable2);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Assignable3, Assignable3);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Assignable4, Assignable4);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Assignable5, Assignable5);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, Assignable6, Assignable6);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, int[2], int[2]);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, int[], int[]);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, int[], int*);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, int*, int[]);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, int[], int);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, int[2], int);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, int, int[]);
+  // CHECK_XS_F(is_nothrow_assignable, test_x2_cv_ref, int, int[2]);
 //
 //   CHECK_F(is_nothrow_copy_assignable, test_assignable);
 //
@@ -1335,8 +1520,110 @@ TEST()
 // #if defined(__cpp_lib_is_swappable) && __cpp_lib_is_swappable >= 201603L
 //   CHECK_F(is_swappable, test_swappable);
 //   CHECK_F(is_nothrow_swappable, test_swappable);
-//   // CHECK_X2(is_swappable_with);
-//   // CHECK_X2(is_nothrow_swappable_with);
+//
+//   SINGLE_CHECK(is_swappable_with, int, int);
+//   SINGLE_CHECK(is_swappable_with, int&, int&);
+//   SINGLE_CHECK(is_swappable_with, int&&, int&&);
+//   SINGLE_CHECK(is_swappable_with, int&&, int&);
+//   SINGLE_CHECK(is_swappable_with, int&, int&&);
+//   SINGLE_CHECK(is_swappable_with, int, void);
+//   SINGLE_CHECK(is_swappable_with, void, int);
+//   SINGLE_CHECK(is_swappable_with, void, void);
+//   SINGLE_CHECK(is_swappable_with, void, void());
+//   SINGLE_CHECK(is_swappable_with, void, void(*)());
+//   SINGLE_CHECK(is_swappable_with, void*, void());
+//   SINGLE_CHECK(is_swappable_with, void*, void(*)());
+//   SINGLE_CHECK(is_swappable_with, void(), void);
+//   SINGLE_CHECK(is_swappable_with, void(), void*);
+//   SINGLE_CHECK(is_swappable_with, void(*)(), void);
+//   SINGLE_CHECK(is_swappable_with, void(*)(), void*);
+//   SINGLE_CHECK(is_swappable_with, Castable, void());
+//   SINGLE_CHECK(is_swappable_with, Castable, void(*)());
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Aggregate, Aggregate);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Child, Child);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Child, Aggregate);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Aggregate, Child);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Child, Class);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Class, Child);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Class, Any);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Any, Class);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, int, float);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, int, InitializerListCtor);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, NoDefault, NoDefault);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, NoCopyable, NoCopyable);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, NoMovable, NoMovable);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, NoDestructible, NoDestructible);
+//   SINGLE_CHECK(is_swappable_with, Castable, NoDestructible);
+//   SINGLE_CHECK(is_swappable_with, NoDestructible, Castable);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Swappable1, Swappable1);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Swappable1, Swappable2);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Swappable1, Swappable3);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Swappable2, Swappable1);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Swappable2, Swappable2);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Swappable2, Swappable3);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Swappable3, Swappable1);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Swappable3, Swappable2);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, Swappable3, Swappable3);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, int[2], int[2]);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, int[], int[]);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, int[], int*);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, int*, int[]);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, int[], int);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, int[2], int);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, int, int[]);
+//   CHECK_XS_F(is_swappable_with, test_x2_cv_ref, int, int[2]);
+//
+//   SINGLE_CHECK(is_nothrow_swappable_with, int, int);
+//   SINGLE_CHECK(is_nothrow_swappable_with, int&, int&);
+//   SINGLE_CHECK(is_nothrow_swappable_with, int&&, int&&);
+//   SINGLE_CHECK(is_nothrow_swappable_with, int&&, int&);
+//   SINGLE_CHECK(is_nothrow_swappable_with, int&, int&&);
+//   SINGLE_CHECK(is_nothrow_swappable_with, int, void);
+//   SINGLE_CHECK(is_nothrow_swappable_with, void, int);
+//   SINGLE_CHECK(is_nothrow_swappable_with, void, void);
+//   SINGLE_CHECK(is_nothrow_swappable_with, void, void());
+//   SINGLE_CHECK(is_nothrow_swappable_with, void, void(*)());
+//   SINGLE_CHECK(is_nothrow_swappable_with, void*, void());
+//   SINGLE_CHECK(is_nothrow_swappable_with, void*, void(*)());
+//   SINGLE_CHECK(is_nothrow_swappable_with, void(), void);
+//   SINGLE_CHECK(is_nothrow_swappable_with, void(), void*);
+//   SINGLE_CHECK(is_nothrow_swappable_with, void(*)(), void);
+//   SINGLE_CHECK(is_nothrow_swappable_with, void(*)(), void*);
+//   SINGLE_CHECK(is_nothrow_swappable_with, Castable, void());
+//   SINGLE_CHECK(is_nothrow_swappable_with, Castable, void(*)());
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Aggregate, Aggregate);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Child, Child);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Child, Aggregate);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Aggregate, Child);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Child, Class);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Class, Child);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Class, Any);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Any, Class);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, int, float);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, int, InitializerListCtor);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, NoDefault, NoDefault);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, NoCopyable, NoCopyable);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, NoMovable, NoMovable);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, NoDestructible, NoDestructible);
+//   SINGLE_CHECK(is_nothrow_swappable_with, Castable, NoDestructible);
+//   SINGLE_CHECK(is_nothrow_swappable_with, NoDestructible, Castable);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Swappable1, Swappable1);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Swappable1, Swappable2);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Swappable1, Swappable3);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Swappable2, Swappable1);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Swappable2, Swappable2);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Swappable2, Swappable3);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Swappable3, Swappable1);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Swappable3, Swappable2);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, Swappable3, Swappable3);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, int[2], int[2]);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, int[], int[]);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, int[], int*);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, int*, int[]);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, int[], int);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, int[2], int);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, int, int[]);
+//   CHECK_XS_F(is_nothrow_swappable_with, test_x2_cv_ref, int, int[2]);
 // #endif
 //
 //   CHECK_X1(has_virtual_destructor);
@@ -1347,12 +1634,26 @@ TEST()
   // SINGLE_CHECK(is_same, int, int const);
 //
 // #if defined(__cpp_lib_is_layout_compatible) && __cpp_lib_is_layout_compatible >= 201907L
-//   // CHECK_X2(is_layout_compatible);
+//   CHECK_XS_F(is_layout_compatible, test_x2_cv_ref, int, int);
+//   CHECK_XS_F(is_layout_compatible, test_x2_cv_ref, int, long);
+//   CHECK_XS_F(is_layout_compatible, test_x2_cv_ref, long, long long);
+//   CHECK_XS_F(is_layout_compatible, test_x2_cv_ref, SEnum, SEnum);
+//   CHECK_XS_F(is_layout_compatible, test_x2_cv_ref, SEnum, SLEnum);
+//   CHECK_XS_F(is_layout_compatible, test_x2_cv_ref, SLEnum, SLLEnum);
 // #endif
 //
 // #if defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible >= 201907L
-//   // CHECK_X2(is_pointer_interconvertible_base_of);
-//   // CHECK_X2(is_pointer_interconvertible_with_class);
+//   CHECK_XS_F(is_pointer_interconvertible_base_of, test_x2_cv, Empty, PriEmptyPubEmpty2);
+//   CHECK_XS_F(is_pointer_interconvertible_base_of, test_x2_cv, Empty2, PriEmptyPubEmpty2);
+//   CHECK_XS_F(is_pointer_interconvertible_base_of, test_x2_cv, PriEmptyPubEmpty2, NonStdLayout);
+//   CHECK_XS_F(is_pointer_interconvertible_base_of, test_x2_cv, NonStdLayout, NonStdLayout);
+//
+//   static_assert(
+//     std::is_pointer_interconvertible_with_class(&PubMem1PubMem2::x)
+//     == is_pointer_interconvertible_with_class(&PubMem1PubMem2::x));
+//   static_assert(
+//     std::is_pointer_interconvertible_with_class<PubMem1PubMem2, int>(&PubMem1PubMem2::x)
+//     == is_pointer_interconvertible_with_class<PubMem1PubMem2, int>(&PubMem1PubMem2::x));
 // #endif
 //
 //   SINGLE_CHECK(alignment_of, int);
@@ -1380,7 +1681,369 @@ TEST()
 //
 //   // CHECK_XS(is_nothrow_invocable_r);
 //
-//   // CHECK_X2(reference_constructs_from_temporary);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int, int);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int, int&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int, int&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int, int const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int, int const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&, int);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&, int&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&, int&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&, int const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&, int const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int&&, int);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&&, int&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&&, int&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&&, int const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&&, int const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const&, int);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int const&, int&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int const&, int&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int const&, int const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int const&, int const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const&&, int);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int const&&, int&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int const&&, int&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int const&&, int const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int const&&, int const&&);
+  //
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int, unsigned);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int, unsigned&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int, unsigned&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int, unsigned const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int, unsigned const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&, unsigned);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&, unsigned&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&, unsigned&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&, unsigned const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int&, unsigned const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int&&, unsigned);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int&&, unsigned&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int&&, unsigned&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int&&, unsigned const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int&&, unsigned const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const&, unsigned);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const&, unsigned&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const&, unsigned&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const&, unsigned const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const&, unsigned const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const&&, unsigned);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const&&, unsigned&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const&&, unsigned&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const&&, unsigned const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const&&, unsigned const&&);
+  //
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, CtorInt, int);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, CtorInt, int&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, CtorInt, int&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, CtorInt, int const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, CtorInt, int const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, CtorInt&, int);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, CtorInt&, int&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, CtorInt&, int&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, CtorInt&, int const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, CtorInt&, int const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt&&, int);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt&&, int&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt&&, int&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt&&, int const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt&&, int const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt const&, int);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt const&, int&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt const&, int&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt const&, int const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt const&, int const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt const&&, int);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt const&&, int&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt const&&, int&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt const&&, int const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  CtorInt const&&, int const&&);
+  //
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor, ExplicitCopyCtor);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor, ExplicitCopyCtor&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor, ExplicitCopyCtor&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor, ExplicitCopyCtor const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor, ExplicitCopyCtor const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor&, ExplicitCopyCtor);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor&, ExplicitCopyCtor&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor&, ExplicitCopyCtor&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor&, ExplicitCopyCtor const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor&, ExplicitCopyCtor const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  ExplicitCopyCtor&&, ExplicitCopyCtor);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor&&, ExplicitCopyCtor&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor&&, ExplicitCopyCtor&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor&&, ExplicitCopyCtor const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor&&, ExplicitCopyCtor const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  ExplicitCopyCtor const&, ExplicitCopyCtor);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor const&, ExplicitCopyCtor&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor const&, ExplicitCopyCtor&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor const&, ExplicitCopyCtor const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor const&, ExplicitCopyCtor const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  ExplicitCopyCtor const&&, ExplicitCopyCtor);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor const&&, ExplicitCopyCtor&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor const&&, ExplicitCopyCtor&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor const&&, ExplicitCopyCtor const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, ExplicitCopyCtor const&&, ExplicitCopyCtor const&&);
+  //
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class, Class);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class, Class&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class, Class&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class, Class const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class, Class const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&, Class);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&, Class&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&, Class&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&, Class const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&, Class const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  Class&&, Class);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&&, Class&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&&, Class&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&&, Class const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&&, Class const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  Class const&, Class);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&, Class&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&, Class&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&, Class const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&, Class const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  Class const&&, Class);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&&, Class&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&&, Class&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&&, Class const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&&, Class const&&);
+  //
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class, Child);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class, Child&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class, Child&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class, Child const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class, Child const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&, Child);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&, Child&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&, Child&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&, Child const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&, Child const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  Class&&, Child);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&&, Child&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&&, Child&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&&, Child const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class&&, Child const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  Class const&, Child);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&, Child&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&, Child&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&, Child const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&, Child const&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  Class const&&, Child);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&&, Child&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&&, Child&&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&&, Child const&);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, Class const&&, Child const&&);
+  //
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int[2], int[2]);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int[2], int(&)[2]);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int(&)[2], int[2]);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int(&)[2], int(&)[2]);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int(&&)[2], int[2]);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int(&&)[2], int(&)[2]);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const(&)[2], int[2]);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int const(&)[2], int(&)[2]);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type,  int const(&&)[2], int[2]);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int const(&&)[2], int(&)[2]);
+  //
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, void, void);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, void, void*);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, void*, void);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, void const*, void);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, void, void const*);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, void const*, int*);
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type, void const*&&, int*);
+  //
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, int, void());
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, false_type, void(), void());
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type, void(&)(), void());
+  // SINGLE_CALL_CHECK(reference_constructs_from_temporary, true_type, void(&&)(), void());
+  //
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int, int);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int, int&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int, int&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int, int const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int, int const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&, int);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&, int&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&, int&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&, int const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&, int const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int&&, int);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&&, int&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&&, int&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&&, int const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&&, int const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const&, int);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int const&, int&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int const&, int&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int const&, int const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int const&, int const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const&&, int);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int const&&, int&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int const&&, int&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int const&&, int const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int const&&, int const&&);
+  //
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int, unsigned);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int, unsigned&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int, unsigned&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int, unsigned const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int, unsigned const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&, unsigned);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&, unsigned&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&, unsigned&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&, unsigned const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int&, unsigned const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int&&, unsigned);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int&&, unsigned&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int&&, unsigned&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int&&, unsigned const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int&&, unsigned const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const&, unsigned);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const&, unsigned&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const&, unsigned&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const&, unsigned const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const&, unsigned const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const&&, unsigned);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const&&, unsigned&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const&&, unsigned&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const&&, unsigned const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const&&, unsigned const&&);
+  //
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor, ExplicitCopyCtor);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor, ExplicitCopyCtor&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor, ExplicitCopyCtor&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor, ExplicitCopyCtor const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor, ExplicitCopyCtor const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&, ExplicitCopyCtor);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&, ExplicitCopyCtor&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&, ExplicitCopyCtor&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&, ExplicitCopyCtor const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&, ExplicitCopyCtor const&&);
+  // static_assert(is_convertible_v<ExplicitCopyCtor, ExplicitCopyCtor&&>);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  ExplicitCopyCtor&&, ExplicitCopyCtor); // TODO should be false_type
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&&, ExplicitCopyCtor&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&&, ExplicitCopyCtor&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&&, ExplicitCopyCtor const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&&, ExplicitCopyCtor const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  ExplicitCopyCtor const&, ExplicitCopyCtor);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&, ExplicitCopyCtor&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&, ExplicitCopyCtor&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&, ExplicitCopyCtor const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&, ExplicitCopyCtor const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  ExplicitCopyCtor const&&, ExplicitCopyCtor); // TODO should be false_type
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&&, ExplicitCopyCtor&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&&, ExplicitCopyCtor&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&&, ExplicitCopyCtor const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&&, ExplicitCopyCtor const&&);
+  //
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, CtorInt, int);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, CtorInt, int&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, CtorInt, int&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, CtorInt, int const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, CtorInt, int const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, CtorInt&, int);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, CtorInt&, int&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, CtorInt&, int&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, CtorInt&, int const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, CtorInt&, int const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt&&, int);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt&&, int&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt&&, int&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt&&, int const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt&&, int const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt const&, int);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt const&, int&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt const&, int&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt const&, int const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt const&, int const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt const&&, int);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt const&&, int&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt const&&, int&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt const&&, int const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  CtorInt const&&, int const&&);
+  //
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class, Class);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class, Class&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class, Class&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class, Class const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class, Class const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&, Class);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&, Class&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&, Class&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&, Class const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&, Class const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  Class&&, Class);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&&, Class&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&&, Class&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&&, Class const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&&, Class const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  Class const&, Class);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&, Class&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&, Class&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&, Class const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&, Class const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  Class const&&, Class);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&&, Class&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&&, Class&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&&, Class const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&&, Class const&&);
+  //
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class, Child);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class, Child&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class, Child&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class, Child const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class, Child const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&, Child);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&, Child&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&, Child&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&, Child const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&, Child const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  Class&&, Child);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&&, Child&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&&, Child&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&&, Child const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class&&, Child const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  Class const&, Child);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&, Child&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&, Child&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&, Child const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&, Child const&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  Class const&&, Child);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&&, Child&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&&, Child&&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&&, Child const&);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, Class const&&, Child const&&);
+  //
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int[2], int[2]);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int[2], int(&)[2]);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int(&)[2], int[2]);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int(&)[2], int(&)[2]);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int(&&)[2], int[2]);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int(&&)[2], int(&)[2]);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const(&)[2], int[2]);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int const(&)[2], int(&)[2]);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  int const(&&)[2], int[2]);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int const(&&)[2], int(&)[2]);
+  //
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, void, void);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, void, void*);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, void*, void);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, void const*, void);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, void, void const*);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, void const*, int*);
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type, void const*&&, int*);
+  //
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, int, void());
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, void(), void());
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type, void(&)(), void());
+  // SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type, void(&&)(), void());
+  // CHECK_X2(reference_constructs_from_temporary);
+//   // int&&, int -> true
+//   // int&&, int&& -> false
 //
 //   // CHECK_X2(reference_converts_from_temporary);
 //
