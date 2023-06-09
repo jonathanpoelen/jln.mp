@@ -305,9 +305,12 @@ namespace jln::mp::traits
 
 
 #define JLN_MP_FN_PTR(...) static_cast<__VA_ARGS__>(nullptr)
-#define JLN_MP_DECLVAL(T) static_cast<T(*)()>(nullptr)()
-#define JLN_MP_DECLVAL_NOTHROW(T) static_cast<T(*)() noexcept>(nullptr)()
+#define JLN_MP_DECLVAL(...) static_cast<__VA_ARGS__(*)()>(nullptr)()
+#define JLN_MP_DECLVAL_NOTHROW(...) static_cast<__VA_ARGS__(*)() noexcept>(nullptr)()
 
+
+JLN_MP_DIAGNOSTIC_PUSH()
+JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 // TODO remove
 #ifdef __cpp_noexcept_function_type
@@ -372,7 +375,7 @@ namespace jln::mp::traits
     };
 
     template<bool B, class T = void>
-    using enable_if_t = typename std::enable_if<B, T>::type;
+    using enable_if_t = typename enable_if<B, T>::type;
 
     template<class T, T v>
     struct integral_constant
@@ -533,7 +536,7 @@ namespace jln::mp::traits
     JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(Name, Params, bool, __##Name Values)
 #endif
 
-#if __cplusplus <= 201703L
+#if JLN_MP_CXX_VERSION <= 17
   JLN_MP_MAKE_TRAIT_D(is_pod, (class T), (T));
 #endif
   JLN_MP_MAKE_TRAIT_D(is_abstract, (class T), (T));
@@ -869,6 +872,8 @@ namespace jln::mp::traits
   namespace emp
   {
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_member_object_pointer_v = false;
+
+    // TODO !is_function_v<T> -> is_const_v<T const> ?
 
     template<class T, class C> JLN_MP_CONSTEXPR_VAR
     bool is_member_object_pointer_v<T C::*> = !is_function_v<T>;
@@ -1586,7 +1591,7 @@ namespace jln::mp::traits
 
 #if JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_pointer_interconvertible_base_of)
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_pointer_interconvertible_base_of,
-    (class Base, class Derived), bool, __is_pointer_interconvertible_base_of(_Base, _Derived));
+    (class Base, class Derived), bool, __is_pointer_interconvertible_base_of(Base, Derived));
 #elif !JLN_MP_NO_STL && defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible >= 201907L
   JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(is_pointer_interconvertible_base_of,
     (class Base, class Derived), bool, emp::is_pointer_interconvertible_base_of_v<Base, Derived>);
@@ -1691,75 +1696,6 @@ namespace jln::mp::traits
     using extent = extent_c<T, Dim::value>;
   }
   JLN_MP_MAKE_TRAIT_NO_EMP(extent, (class T, class Dim = number<0>), emp::extent_c_t<T, Dim::value>);
-
-
-  namespace detail
-  {
-    // TODO no stl
-    template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_reference_wrapper_v = false;
-
-    template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_reference_wrapper_v<std::reference_wrapper<T>> = true;
-
-    // TODO cppreference implementation
-
-    template<class T>
-    struct invoke_impl
-    {
-      template<class F, class... Args>
-      static auto call(F&& f, Args&&... args)
-        -> decltype(static_cast<F&&>(f)(static_cast<Args&&>(args)...));
-    };
-
-    template<class C, class M>
-    struct invoke_impl<M C::*>
-    {
-      template<class T, class Td = typename std::decay<T>::type,
-        class = typename std::enable_if<std::is_base_of<C, Td>::value>::type
-      >
-      static auto get(T&& t) -> T&&;
-
-      template<class T, class Td = typename std::decay<T>::type,
-        class = typename std::enable_if<is_reference_wrapper_v<Td>>::type
-      >
-      static auto get(T&& t) -> decltype(t.get());
-
-      template<class T, class Td = typename std::decay<T>::type,
-        class = typename std::enable_if<!std::is_base_of<C, Td>::value>::type,
-        class = typename std::enable_if<!is_reference_wrapper_v<Td>>::type
-      >
-      static auto get(T&& t) -> decltype(*static_cast<T&&>(t));
-
-      template<class T, class... Args, class M1,
-          class = typename std::enable_if<std::is_function<M1>::value>::type
-      >
-      static auto call(M1 C::*pmf, T&& t, Args&&... args)
-        -> decltype((invoke_impl::get(static_cast<T&&>(t)).*pmf)(static_cast<Args&&>(args)...));
-
-      template<class T>
-      static auto call(M C::*pmd, T&& t)
-        -> decltype(invoke_impl::get(static_cast<T&&>(t)).*pmd);
-    };
-
-    template<class F, class... Args, class Fd = typename std::decay<F>::type>
-    auto INVOKE(F&& f, Args&&... args)
-        -> decltype(invoke_impl<Fd>::call(static_cast<F&&>(f), static_cast<Args&&>(args)...));
-
-    template<typename AlwaysVoid, typename, typename...>
-    struct invoke_result {};
-
-    template<typename F, typename...Args>
-    struct invoke_result<
-      decltype(void(detail::INVOKE(std::declval<F>(), std::declval<Args>()...))),
-      F, Args...>
-    {
-      using type = decltype(detail::INVOKE(std::declval<F>(), std::declval<Args>()...));
-    };
-  } // namespace detail
-
-  JLN_MP_MAKE_TRAIT_ST_FROM_S(invoke_result, (class F, class... Args),
-    detail::invoke_result<void, F, Args...>);
 
 
 #if defined(__cpp_lib_is_invocable) && __cpp_lib_is_invocable >= 201703L
@@ -2006,7 +1942,7 @@ namespace jln::mp::traits
       // T and U are cv qualified
       template<class T, class U>
 # if JLN_MP_FEATURE_CONCEPTS
-      static constexpr bool v = ! requires { JLN_MP_FN_PTR(void(*)(T*))(JLN_MP_DECLVAL(U*)) }
+      static constexpr bool v = ! requires { JLN_MP_FN_PTR(void(*)(T*))(JLN_MP_DECLVAL(U*)); };
 # else
       static constexpr bool v = reference_constructs_from_temporary_impl_v<T, U>;
 # endif
@@ -2426,14 +2362,156 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_NO_EMP(unwrap_ref_decay, (class T), emp::unwrap_ref_decay_t<T>);
 
 
-#if __cplusplus >= 202002L
+  namespace detail
+  {
+    struct invoke_caller_deref
+    {
+      template<class T>
+      using f = decltype(*JLN_MP_DECLVAL(T));
+    };
+
+    struct invoke_caller_unwrap
+    {
+      template<class T>
+      using f = decltype(JLN_MP_DECLVAL(T).get());
+    };
+
+    template<class Td, bool>
+    struct invoke_caller_impl;
+
+    template<class Td>
+    struct invoke_caller_impl<Td, true>
+      : identity
+    {};
+
+    template<class Td>
+    struct invoke_caller_impl<Td, false>
+      : invoke_caller_deref
+    {};
+
+    // TODO no stl
+    template<class Td>
+    struct invoke_caller_impl<std::reference_wrapper<Td>, false>
+      : invoke_caller_unwrap
+    {};
+
+    template<class C, class T, class Td = typename emp::decay<T>::type>
+    using invoke_caller = typename invoke_caller_impl<Td, __is_base_of(C, Td)>::template f<T&&>;
+
+    template<class, bool>
+    struct invoke_mem_fn;
+
+    template<class C>
+    struct invoke_mem_fn<C, true>
+    {
+      template<class F, class T, class... Args>
+      using f = decltype((JLN_MP_DECLVAL(invoke_caller<C, T>).*JLN_MP_DECLVAL(F))(JLN_MP_DECLVAL(Args&&)...));
+    };
+
+    template<class C>
+    struct invoke_mem_fn<C, false>
+    {
+      template<class F, class T>
+      using f = decltype(JLN_MP_DECLVAL(invoke_caller<C, T>).*JLN_MP_DECLVAL(F));
+    };
+
+    struct invoke_fn
+    {
+      template<class F, class... Args>
+      using f = decltype(JLN_MP_DECLVAL(F&&)(JLN_MP_DECLVAL(Args&&)...));
+    };
+
+    template<class T>
+    struct invoke_impl : invoke_fn
+    {};
+
+    template<class C, class M>
+    struct invoke_impl<M C::*> : invoke_mem_fn<C, emp::is_function_v<M>>
+    {};
+
+    template<class AlwaysVoid, class F, class... Args>
+    struct invoke_result
+    {};
+
+    template<class F, class... Args>
+    struct invoke_result<
+      emp::void_t<typename invoke_impl<typename emp::decay<F>::type>::template f<F, Args...>>,
+      F, Args...>
+    {
+      using type = typename invoke_impl<typename emp::decay<F>::type>::template f<F, Args...>;
+    };
+  } // namespace detail
+  // TODO is_complete_or_unbounded
+  JLN_MP_MAKE_TRAIT_ST_FROM_S(invoke_result, (class F, class... Args),
+    detail::invoke_result<void, F, Args...>);
+
+
+  namespace emp
+  {
+#if ! JLN_MP_NO_STL
+    using std::basic_common_reference;
+#else
+    template<class T, class U, template<class> class TQual, template<class> class UQual>
+    struct basic_common_reference
+    {};
+#endif
+  }
+  namespace detail
+  {
+    /*
+     * common_reference<> -> no member type
+     * common_reference<T> -> T0
+     * common_reference<T, U> -> {
+     *  is_lvalue_reference<T> && is_lvalue_reference<U>
+     *    ? {
+     *      T -> cv1 X &
+     *      U -> cv2 Y &
+     *      cv12 = cv1 cv2
+     *      VALID(decltype(false ? declval<cv12 X &>() : declval<cv12 Y &>()) -> ExprType)
+     *    }
+     *  is_rvalue_reference<T> && is_rvalue_reference<U>
+     *    ? {
+     *      T -> cv1 X && &
+     *      U -> cv2 Y && &
+     *      cv12 = cv1 cv2
+     *      VALID(decltype(false ? declval<cv12 X &>() : declval<cv12 Y &>()) -> C)
+     *      is_convertible<T, C> && is_convertible<U, C> ? C -> ExprType : no member type
+     *    }
+     *  (is_lvalue_reference<T> && is_rvalue_reference<U>) ||
+     *  (is_rvalue_reference<T> && is_lvalue_leference<U>)
+     *    ? {
+     *      A & = is_lvalue_reference<T> ? T : U
+     *      B && = is_rvalue_reference<T> ? T : U
+     *      A & and B const &
+     *      U -> cv2 Y && &
+     *      VALID(decltype(false ? declval<A &>() : declval<B const &>()) -> D)
+     *      is_convertible<B &&, D> ? D -> ExprType : no member type
+     *    }
+     *  : {
+     *    T1Q / T2Q = add cv ref
+     *    VALID(basic_common_reference_t<remove_cvref_t<T>, remove_cvref_t<U>, T1Q, T2Q> -> ExprType)
+     *  }
+     *  : {
+     *    template<class T> T val();
+     *    VALID(decltype(false ? val<T>() : val<U>()) -> ExprType)
+     *  }
+     *  : common_type<T, U>
+     * common_reference<T, U, R...> -> {
+     *  VALID({typename common_reference<T, U>::type} -> ExprType)
+     *    ? common_reference<ExprType, R...>::type
+     *    : no member type
+     * }
+     */
+    template<class... Ts>
+    struct common_reference;
+  }
+  // TODO undefined if any of the types in T... is an incomplete type other than (possibly cv-qualified) void.
+
+#if JLN_MP_CXX_VERSION >= 20
 // TODO __cpp_lib_common_reference 	Make std::common_reference_t of std::reference_wrapper a reference type 	202302L 	<type_traits> 	(C++23) 	P2655R3
 // TODO __cpp_lib_common_reference_wrapper 	Make std::common_reference_t of std::reference_wrapper a reference type 	202302L 	<functional> 	(C++23) 	P2655R3
   JLN_MP_MAKE_TRAIT_ST_FROM_STD(common_reference, (class... Ts), (Ts...));
   // TODO JLN_MP_MAKE_TRAIT_ST_FROM_STD(basic_common_reference, (class T, class U, template<class> class TQual, template<class> class UQual), (T, U, TQual, UQual));
-#else
-  // TODO remove that or alias on invoke_result
-  JLN_MP_MAKE_TRAIT_ST_FROM_STD(result_of, (class Sig), (Sig));
 #endif
 
 
@@ -2659,6 +2737,7 @@ namespace jln::mp::traits
     JLN_MP_CONSTEXPR_VAR bool is_detected_v = is_detected<Op, Args...>::value;
   }
 
+JLN_MP_DIAGNOSTIC_POP()
 
 #undef JLN_MP_TRAIT_BUILTIN_IMPL_IS
 #undef JLN_MP_MAKE_TRAIT
