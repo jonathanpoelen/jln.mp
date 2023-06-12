@@ -2647,7 +2647,15 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
     {};
 
-    // TODO add common_type<T0, T1, T2, T4, R...>
+    template<class T0, class T1, class T2, class T3, class T4, class... R>
+    struct common_type<T0, T1, T2, T3, T4, R...>
+#if JLN_MP_FEATURE_CONCEPTS
+      : detail::common_type_fold<requires{ typename common_type<T0, T1, T2, T3>::type; }>
+        ::template f<common_type<T0, T1, T2, T3>, T4, R...>
+#else
+      : detail::common_type_fold<common_type<T0, T1, T2, T3>>::template f<T4, R...>
+#endif
+    {};
   }
   JLN_MP_MAKE_TRAIT_T_FROM_S(common_type, (class... Ts), emp::common_type<Ts...>);
 
@@ -2850,12 +2858,60 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
     {};
 
-    // TODO add common_reference<T0, T1, T2, T4, R...>
+    template<class T0, class T1, class T2, class T3, class T4, class... R>
+    struct common_reference<T0, T1, T2, T3, T4, R...>
+#if JLN_MP_FEATURE_CONCEPTS
+      : detail::common_reference_fold<requires{ typename common_reference<T0, T1, T2, T3>::type; }>
+        ::template f<common_reference<T0, T1, T2, T3>, T4, R...>
+#else
+      : detail::common_reference_fold<common_reference<T0, T1, T2, T3>>::template f<T4, R...>
+#endif
+    {};
   }
   // TODO undefined if any of the types in T... is an incomplete type other than (possibly cv-qualified) void.
   JLN_MP_MAKE_TRAIT_T_FROM_S(common_reference, (class... Ts), emp::common_reference<Ts...>);
   // TODO __cpp_lib_common_reference_wrapper 	Make std::common_reference_t of std::reference_wrapper a reference type 	202302L 	<functional> 	(C++23) 	P2655R3
   // TODO https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2655r3.html
+
+
+  // not standard
+  //@{
+  namespace detail
+  {
+    template<class R, class... Ts>
+    using enable_if_convertible_xs = emp::enable_if_t<(... && JLN_MP_IS_CONVERTIBLE_V(Ts, R))>;
+
+    template<class, class... Ts>
+    struct true_common_type_impl
+    {};
+
+    template<class... Ts>
+    struct true_common_type_impl<
+      enable_if_convertible_xs<typename emp::common_type<Ts...>::type, Ts...>,
+      Ts...
+    >
+      : emp::common_type<Ts...>
+    {};
+
+    template<class, class... Ts>
+    struct true_common_reference_impl
+    {};
+
+    template<class... Ts>
+    struct true_common_reference_impl<
+      enable_if_convertible_xs<typename emp::common_reference<Ts...>::type, Ts...>,
+      Ts...
+    >
+      : emp::common_reference<Ts...>
+    {};
+  }
+  // common_type may result in a type that is not compatible with Ts parameters.
+  // In this case, true_common_type does not contain a type type member
+  JLN_MP_MAKE_TRAIT_ST_FROM_S(true_common_type, (class... Ts), detail::true_common_type_impl<void, Ts...>);
+  // common_reference may result in a type that is not compatible with Ts parameters.
+  // In this case, true_common_reference does not contain a type type member
+  JLN_MP_MAKE_TRAIT_ST_FROM_S(true_common_reference, (class... Ts), detail::true_common_reference_impl<void, Ts...>);
+  //@}
 
 
   // https://en.cppreference.com/w/cpp/experimental/is_detected

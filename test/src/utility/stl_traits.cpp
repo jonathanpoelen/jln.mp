@@ -223,6 +223,11 @@ struct CtorInt
   CtorInt(int);
 };
 
+struct CtorInt2
+{
+  CtorInt2(int&&);
+};
+
 struct Abstract
 {
   virtual void foo() = 0;
@@ -4488,6 +4493,162 @@ TEST()
   SINGLE_CALL_CHECK_M2(common_reference, CtorInt, CtorInt volatile const&&, int volatile const);
   SINGLE_CALL_CHECK_M2(common_reference, CtorInt, CtorInt volatile const&&, int volatile const&);
   SINGLE_CALL_CHECK_M2(common_reference, CtorInt, CtorInt volatile const&&, int volatile const&&);
+
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2, int);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2, int&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2, int&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2, int const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2, int const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2, int const&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2, int volatile);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2, int volatile &);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2, int volatile &&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2, int volatile const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2, int volatile const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2, int volatile const&&);
+
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const, int);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const, int&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const, int&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const, int const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const, int const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const, int const&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const, int volatile);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const, int volatile &);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const, int volatile &&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const, int volatile const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const, int volatile const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const, int volatile const&&);
+
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 volatile, CtorInt2 volatile, int);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,          CtorInt2 volatile, int&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 volatile, CtorInt2 volatile, int&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 volatile, CtorInt2 volatile, int const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,          CtorInt2 volatile, int const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,          CtorInt2 volatile, int const&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 volatile, CtorInt2 volatile, int volatile);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,          CtorInt2 volatile, int volatile &);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,          CtorInt2 volatile, int volatile &&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 volatile, CtorInt2 volatile, int volatile const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,          CtorInt2 volatile, int volatile const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,          CtorInt2 volatile, int volatile const&&);
+
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 volatile const, CtorInt2 volatile const, int);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,                CtorInt2 volatile const, int&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 volatile const, CtorInt2 volatile const, int&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 volatile const, CtorInt2 volatile const, int const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,                CtorInt2 volatile const, int const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,                CtorInt2 volatile const, int const&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 volatile const, CtorInt2 volatile const, int volatile);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,                CtorInt2 volatile const, int volatile &);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,                CtorInt2 volatile const, int volatile &&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 volatile const, CtorInt2 volatile const, int volatile const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,                CtorInt2 volatile const, int volatile const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,                CtorInt2 volatile const, int volatile const&&);
+
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&, int);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&, int&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&, int&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&, int const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&, int const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&, int const&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&, int volatile);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&, int volatile&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&, int volatile&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&, int volatile const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&, int volatile const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&, int volatile const&&);
+
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&&, int);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&&, int&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&&, int&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&&, int const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&&, int const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&&, int const&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&&, int volatile);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&&, int volatile&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&&, int volatile&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&&, int volatile const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&&, int volatile const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2&&, int volatile const&&);
+
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const&, int);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&, int&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const&, int&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const&, int const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&, int const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&, int const&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const&, int volatile);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&, int volatile&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&, int volatile&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const&, int volatile const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&, int volatile const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&, int volatile const&&);
+
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const&&, int);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&&, int&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const&&, int&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const&&, int const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&&, int const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&&, int const&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const&&, int volatile);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&&, int volatile&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&&, int volatile&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2 const, CtorInt2 const&&, int volatile const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&&, int volatile const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2,       CtorInt2 const&&, int volatile const&&);
+
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&, int);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&, int&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&, int&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&, int const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&, int const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&, int const&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&, int volatile);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&, int volatile&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&, int volatile&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&, int volatile const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&, int volatile const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&, int volatile const&&);
+
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&&, int);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&&, int&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&&, int&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&&, int const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&&, int const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&&, int const&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&&, int volatile);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&&, int volatile&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&&, int volatile&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&&, int volatile const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&&, int volatile const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile&&, int volatile const&&);
+
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&, int);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&, int&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&, int&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&, int const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&, int const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&, int const&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&, int volatile);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&, int volatile&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&, int volatile&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&, int volatile const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&, int volatile const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&, int volatile const&&);
+
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&&, int);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&&, int&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&&, int&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&&, int const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&&, int const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&&, int const&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&&, int volatile);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&&, int volatile&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&&, int volatile&&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&&, int volatile const);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&&, int volatile const&);
+  SINGLE_CALL_CHECK_M2(common_reference, CtorInt2, CtorInt2 volatile const&&, int volatile const&&);
 
   SINGLE_CALL_CHECK_M2(common_reference, int, AutoConvert, int);
   SINGLE_CALL_CHECK_M2(common_reference, int, AutoConvert, int&);
