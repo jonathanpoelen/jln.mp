@@ -57,6 +57,14 @@
 // TODO macro that forces use of std::
 
 
+// TODO template<class T, class = void> struct xxxx_impl;
+// TODO template<class T> struct xxxx_impl<T, void_t<.....>>;
+// TODO template<class T> struct xxxx = xxxx_impl<T>;
+// TODO ->
+// TODO template<class T> struct xxxx {};
+// TODO template<class T> requires { .... } struct xxxx {};
+
+// TODO template<class T> struct X { using type = T; }; -> template<class T> struct X : type_identity<T> {} ?
 
 
 // TODO remove
@@ -834,11 +842,14 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_reference)
+  #define JLN_MP_IS_REFERENCE_V(...) __is_reference(__VA_ARGS__)
   JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
     is_reference, (class T), bool, __is_reference(T));
 #elif JLN_MP_USE_LIBMS
+  #define JLN_MP_IS_REFERENCE_V(...) std::is_reference_v<__VA_ARGS__>
   JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_reference, (class T), bool, (T));
 #else
+  #define JLN_MP_IS_REFERENCE_V(...) emp::is_reference_v<__VA_ARGS__>
   namespace emp
   {
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_reference_v = false;
@@ -1831,16 +1842,25 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_cvref)
+  #define JLN_MP_REMOVE_CVREF_T(...) __remove_cvref(__VA_ARGS__)
   // TODO use builtin / std::... with macro
   JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(remove_cvref, (class T), __remove_cvref(T));
-#elif JLN_MP_USE_LIBSTDCXX && defined(__cpp_lib_remove_cvref) && __cpp_lib_remove_cvref >= 201711L
-  JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_cvref, (class T), (T));
 #else
+  #define JLN_MP_REMOVE_CVREF_T(...) typename emp::remove_cvref<__VA_ARGS__>::type
   namespace emp
   {
-    template<typename T> struct remove_cvref : remove_cv<T> {};
-    template<typename T> struct remove_cvref<T&> : remove_cv<T> {};
-    template<typename T> struct remove_cvref<T&&> : remove_cv<T> {};
+    template<class T> struct remove_cvref { using type = T; };
+    template<class T> struct remove_cvref<T&> { using type = T; };
+    template<class T> struct remove_cvref<T&&> { using type = T; };
+    template<class T> struct remove_cvref<T const> { using type = T; };
+    template<class T> struct remove_cvref<T const&> { using type = T; };
+    template<class T> struct remove_cvref<T const&&> { using type = T; };
+    template<class T> struct remove_cvref<T volatile> { using type = T; };
+    template<class T> struct remove_cvref<T volatile&> { using type = T; };
+    template<class T> struct remove_cvref<T volatile&&> { using type = T; };
+    template<class T> struct remove_cvref<T volatile const> { using type = T; };
+    template<class T> struct remove_cvref<T volatile const&> { using type = T; };
+    template<class T> struct remove_cvref<T volatile const&&> { using type = T; };
   }
   JLN_MP_MAKE_TRAIT_T_FROM_S(remove_cvref, (class T), emp::remove_cvref<T>);
 #endif
@@ -2049,6 +2069,61 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   JLN_MP_MAKE_TRAIT_NO_EMP(add_volatile, (class T), T volatile);
 
 
+  // not standard
+  //@{
+  namespace detail
+  {
+    template<class From> struct copy_cv_impl : identity {};
+    template<class From> struct copy_cv_impl<From const> : add_const<> {};
+    template<class From> struct copy_cv_impl<From volatile> : add_volatile<> {};
+    template<class From> struct copy_cv_impl<From volatile const> : add_cv<> {};
+
+    template<class From> struct copy_cvref_impl : identity {};
+    template<class From> struct copy_cvref_impl<From const> : add_const<> {};
+    template<class From> struct copy_cvref_impl<From volatile> : add_volatile<> {};
+    template<class From> struct copy_cvref_impl<From volatile const> : add_cv<> {};
+
+    template<class From> struct copy_cvref_impl<From&> : add_lvalue_reference<> {};
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_lvalue_reference)
+    template<class From> struct copy_cvref_impl<From const&> { template<class To> using f = __add_lvalue_reference(To const); };
+    template<class From> struct copy_cvref_impl<From volatile&> { template<class To> using f = __add_lvalue_reference(To volatile); };
+    template<class From> struct copy_cvref_impl<From volatile const&> { template<class To> using f = __add_lvalue_reference(To volatile const); };
+#else
+    struct copy_const_lref    { template<class T> using f = typename add_lvalue_reference_impl<T const>::type; };
+    struct copy_volatile_lref { template<class T> using f = typename add_lvalue_reference_impl<T volatile>::type; };
+    struct copy_cv_lref       { template<class T> using f = typename add_lvalue_reference_impl<T volatile const>::type; };
+
+    template<class From> struct copy_cvref_impl<From const&> : copy_const_lref {};
+    template<class From> struct copy_cvref_impl<From volatile&> : copy_volatile_lref {};
+    template<class From> struct copy_cvref_impl<From volatile const&> : copy_cv_lref {};
+#endif
+
+    template<class From> struct copy_cvref_impl<From&&> : add_rvalue_reference<> {};
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_rvalue_reference)
+    template<class From> struct copy_cvref_impl<From const&&> { template<class To> using f = __add_rvalue_reference(To const); };
+    template<class From> struct copy_cvref_impl<From volatile&&> { template<class To> using f = __add_rvalue_reference(To volatile); };
+    template<class From> struct copy_cvref_impl<From volatile const&&> { template<class To> using f = __add_rvalue_reference(To volatile const); };
+#else
+    struct copy_const_rref    { template<class T> using f = typename add_rvalue_reference_impl<T const>::type; };
+    struct copy_volatile_rref { template<class T> using f = typename add_rvalue_reference_impl<T volatile>::type; };
+    struct copy_cv_rref       { template<class T> using f = typename add_rvalue_reference_impl<T volatile const>::type; };
+
+    template<class From> struct copy_cvref_impl<From const&&> : copy_const_rref {};
+    template<class From> struct copy_cvref_impl<From volatile&&> : copy_volatile_rref {};
+    template<class From> struct copy_cvref_impl<From volatile const&&> : copy_cv_rref {};
+#endif
+  }
+  namespace emp
+  {
+    template<class From, class To>
+    using copy_cv_t = typename detail::copy_cv_impl<From>::template f<To>;
+
+    template<class From, class To>
+    using copy_cvref_t = typename detail::copy_cvref_impl<From>::template f<To>;
+  }
+  //@}
+
+
   namespace detail
   {
     template<int>
@@ -2241,33 +2316,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     //
     // template<class Qualified, class UnQualified>
     // struct match_cv<Qualified volatile const, UnQualified> { using type = UnQualified volatile const; };
-
-    template<int>
-    struct copy_cvref_impl;
-
-    template<> struct copy_cvref_impl<0> : identity {};
-    template<> struct copy_cvref_impl<1> : add_const<> {};
-    template<> struct copy_cvref_impl<2> : add_volatile<> {};
-    template<> struct copy_cvref_impl<3> : add_cv<> {};
-
-    // TODO unimplemented
-    template<> struct copy_cvref_impl<10> : add_lvalue_reference<> {};
-    template<> struct copy_cvref_impl<11> { template<class T> using f = void; };
-    template<> struct copy_cvref_impl<12> : add_volatile<> {};
-    template<> struct copy_cvref_impl<13> : add_cv<> {};
-
-    // TODO unimplemented
-    template<> struct copy_cvref_impl<20> : add_rvalue_reference<> {};
-    template<> struct copy_cvref_impl<21> : add_const<> {};
-    template<> struct copy_cvref_impl<22> : add_volatile<> {};
-    template<> struct copy_cvref_impl<23> : add_cv<> {};
-
-    template<class T> JLN_MP_CONSTEXPR_VAR int cv_select = 0;
-    template<class T> JLN_MP_CONSTEXPR_VAR int cv_select<T const> = 1;
-    template<class T> JLN_MP_CONSTEXPR_VAR int cv_select<T volatile> = 2;
-    template<class T> JLN_MP_CONSTEXPR_VAR int cv_select<T volatile const> = 3;
   }
-
 #if JLN_MP_CLANG || JLN_MP_MSVC
   namespace emp
   {
@@ -2280,11 +2329,11 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   namespace emp
   {
     template<class T> using make_signed_t
-      = typename detail::copy_cvref_impl<detail::cv_select<T>>
+      = typename detail::copy_cv_impl<T>
       ::template f<typename detail::make_signed<T volatile const>::type>;
 
     template<class T> using make_unsigned_t
-      = typename detail::copy_cvref_impl<detail::cv_select<T>>
+      = typename detail::copy_cv_impl<T>
       ::template f<typename detail::make_unsigned<T volatile const>::type>;
 
     template<class T> struct make_signed { using type = make_signed_t<T>; };
@@ -2293,15 +2342,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   JLN_MP_MAKE_TRAIT_NO_EMP(make_signed, (class T), emp::make_signed_t<T>);
   JLN_MP_MAKE_TRAIT_NO_EMP(make_unsigned, (class T), emp::make_unsigned_t<T>);
 #endif
-
-
-  // TODO
-  // namespace emp
-  // {
-  //   template<class Qualified, class UnQualified>
-  //   using copy_cv = typename detail::copy_cvref_impl<detail::cv_select<Qualified>>
-  //     ::template f<UnQualified>;
-  // }
 
 
   namespace detail
@@ -2318,9 +2358,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
     // is_function
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_pointer)
-    template<class T, class = void> struct decay_maybe_func { using type = __add_pointer(T); };
+    template<class T> struct decay_maybe_func { using type = __add_pointer(T); };
 #else
-    template<class T, class = void> struct decay_maybe_func : add_pointer_impl<T> {};
+    template<class T> struct decay_maybe_func : add_pointer_impl<T> {};
 #endif
     // not is_function
     template<class T> struct decay_maybe_func<T volatile const> { using type = T; };
@@ -2446,75 +2486,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     detail::invoke_result<void, F, Args...>);
 
 
-  namespace emp
-  {
-#if ! JLN_MP_NO_STL
-    using std::basic_common_reference;
-#else
-    template<class T, class U, template<class> class TQual, template<class> class UQual>
-    struct basic_common_reference
-    {};
-#endif
-  }
-  namespace detail
-  {
-    /*
-     * common_reference<> -> no member type
-     * common_reference<T> -> T0
-     * common_reference<T, U> -> {
-     *  is_lvalue_reference<T> && is_lvalue_reference<U>
-     *    ? {
-     *      T -> cv1 X &
-     *      U -> cv2 Y &
-     *      cv12 = cv1 cv2
-     *      VALID(decltype(false ? declval<cv12 X &>() : declval<cv12 Y &>()) -> ExprType)
-     *    }
-     *  is_rvalue_reference<T> && is_rvalue_reference<U>
-     *    ? {
-     *      T -> cv1 X && &
-     *      U -> cv2 Y && &
-     *      cv12 = cv1 cv2
-     *      VALID(decltype(false ? declval<cv12 X &>() : declval<cv12 Y &>()) -> C)
-     *      is_convertible<T, C> && is_convertible<U, C> ? C -> ExprType : no member type
-     *    }
-     *  (is_lvalue_reference<T> && is_rvalue_reference<U>) ||
-     *  (is_rvalue_reference<T> && is_lvalue_leference<U>)
-     *    ? {
-     *      A & = is_lvalue_reference<T> ? T : U
-     *      B && = is_rvalue_reference<T> ? T : U
-     *      A & and B const &
-     *      U -> cv2 Y && &
-     *      VALID(decltype(false ? declval<A &>() : declval<B const &>()) -> D)
-     *      is_convertible<B &&, D> ? D -> ExprType : no member type
-     *    }
-     *  : {
-     *    T1Q / T2Q = add cv ref
-     *    VALID(basic_common_reference_t<remove_cvref_t<T>, remove_cvref_t<U>, T1Q, T2Q> -> ExprType)
-     *  }
-     *  : {
-     *    template<class T> T val();
-     *    VALID(decltype(false ? val<T>() : val<U>()) -> ExprType)
-     *  }
-     *  : common_type<T, U>
-     * common_reference<T, U, R...> -> {
-     *  VALID({typename common_reference<T, U>::type} -> ExprType)
-     *    ? common_reference<ExprType, R...>::type
-     *    : no member type
-     * }
-     */
-    template<class... Ts>
-    struct common_reference;
-  }
-  // TODO undefined if any of the types in T... is an incomplete type other than (possibly cv-qualified) void.
-
-#if JLN_MP_CXX_VERSION >= 20
-// TODO __cpp_lib_common_reference 	Make std::common_reference_t of std::reference_wrapper a reference type 	202302L 	<type_traits> 	(C++23) 	P2655R3
-// TODO __cpp_lib_common_reference_wrapper 	Make std::common_reference_t of std::reference_wrapper a reference type 	202302L 	<functional> 	(C++23) 	P2655R3
-  JLN_MP_MAKE_TRAIT_ST_FROM_STD(common_reference, (class... Ts), (Ts...));
-  // TODO JLN_MP_MAKE_TRAIT_ST_FROM_STD(basic_common_reference, (class T, class U, template<class> class TQual, template<class> class UQual), (T, U, TQual, UQual));
-#endif
-
-
 // If T is a complete enumeration (enum) type, provides a member typedef type that names the underlying type of T.
 #if 0
   // Otherwise, the behavior is undefined. (until C++20)
@@ -2576,21 +2547,22 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       JLN_MP_IS_SAME_V(T, DT) && JLN_MP_IS_SAME_V(U, DU)
     >::template f<DT, DU>;
 
+    template<class T, class U>
+    using cond_res = decltype(false ? JLN_MP_DECLVAL(T) : JLN_MP_DECLVAL(U));
+
     template<>
     struct common_type_decayed_dispatch<true>
     {
-      template<class T, class U>
-      using cond = decltype(false ? JLN_MP_DECLVAL(T) : JLN_MP_DECLVAL(U));
-
 #if JLN_MP_CXX_VERSION >= 20
+      // TODO class = void => bool = requires { ... };
       template<class T, class U, class = void>
       struct lvalue_cond
       {};
 
       template<class T, class U>
-      struct lvalue_cond<T, U, emp::void_t<cond<T, U>>>
+      struct lvalue_cond<T, U, decltype(void(false ? JLN_MP_DECLVAL(T) : JLN_MP_DECLVAL(U)))>
       {
-        using type = emp::decay_t<cond<T, U>>;
+        using type = emp::decay_t<decltype(false ? JLN_MP_DECLVAL(T) : JLN_MP_DECLVAL(U))>;
       };
 #endif
 
@@ -2610,9 +2582,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       {};
 
       template<class T, class U, class TRval, class URval>
-      struct f<T, U, TRval, URval, emp::void_t<cond<TRval, URval>>>
+      struct f<T, U, TRval, URval, emp::void_t<cond_res<TRval, URval>>>
       {
-        using type = emp::decay_t<cond<TRval, URval>>;
+        using type = emp::decay_t<cond_res<TRval, URval>>;
       };
     };
 
@@ -2674,8 +2646,216 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       : detail::common_type_fold<common_type<T, U>>::template f<R...>
 #endif
     {};
+
+    // TODO add common_type<T0, T1, T2, T4, R...>
   }
   JLN_MP_MAKE_TRAIT_T_FROM_S(common_type, (class... Ts), emp::common_type<Ts...>);
+
+
+  namespace emp
+  {
+#if ! JLN_MP_NO_STL && JLN_MP_CXX_VERSION >= 20
+    using std::basic_common_reference;
+#else
+    template<class T, class U, template<class> class TQual, template<class> class UQual>
+    struct basic_common_reference
+    {};
+#endif
+
+    template<class... Ts>
+    struct common_reference;
+  }
+  namespace detail
+  {
+    /*
+     * common_reference<> -> no member type
+     * common_reference<T> -> T
+     * common_reference<T, U> -> {
+     *  is_reference<T> && is_reference<U> && VALID(simple_common_ref_t<T, U> -> ExprType)
+     *  or {
+     *    TQ = add cv ref for T
+     *    UQ = add cv ref for U
+     *    VALID(basic_common_reference_t<remove_cvref_t<T>, remove_cvref_t<U>, TQ, UQ> -> ExprType)
+     *  }
+     *  or {
+     *    template<class T> T val();
+     *    VALID(decltype(false ? val<T>() : val<U>()) -> ExprType)
+     *  }
+     *  or common_type<T, U>
+     * }
+     * common_reference<T, U, R...> -> {
+     *  VALID(common_reference_t<T, U> -> ExprType)
+     *    ? common_reference<ExprType, R...>
+     *    : no member type
+     * }
+     *
+     * simple_common_ref<T&, U&> -> {
+     *  T -> cv1 X
+     *  U -> cv2 Y
+     *  cv12 = cv1 cv2
+     *  VALID(decltype(false ? declval<cv12 X&>() : declval<cv12 Y&>()) -> C)
+     *  is_reference<C> ? C : no member type
+     * }
+     * simple_common_ref<T&&, U&&> -> {
+     *  VALID(simple_common_ref_t<T&, U&> -> C)
+     *  is_convertible<T, C> && is_convertible<U, C> ? C : no member type
+     * }
+     * simple_common_ref<T&, U&&> -> {
+     *  VALID(decltype(false ? declval<T&>() : declval<U const&>()) -> D)
+     *  is_convertible<U&&, D> ? D : no member type
+     * }
+     * simple_common_ref<T&&, U&> -> {
+     *  VALID(decltype(false ? declval<U&>() : declval<T const&>()) -> D)
+     *  is_convertible<T&&, D> ? D : no member type
+     * }
+     */
+
+    template<class T, class U>
+    using cond_cv_res = decltype(false
+      ? JLN_MP_DECLVAL(typename copy_cv_impl<U>::template f<T>&)
+      : JLN_MP_DECLVAL(typename copy_cv_impl<T>::template f<U>&)
+    );
+
+    template<class T, class U, int bullet = 1, class = void>
+    struct common_reference_impl : common_reference_impl<T, U, bullet + 1>
+    {};
+
+    // simple_common_ref<T&, U&>
+    template<class T, class U, class = void>
+    struct common_ref
+    {};
+
+    template<class T, class U>
+    struct common_ref<T, U, emp::enable_if_t<
+      JLN_MP_IS_REFERENCE_V(cond_cv_res<T, U>)
+    >>
+    {
+      using type = cond_cv_res<T, U>;
+    };
+
+    template<class T, class U>
+    struct common_reference_impl<T&, U&, 1, emp::void_t<
+      typename common_ref<T, U>::type
+    >>
+      : common_ref<T, U>
+    {};
+
+    template<class T, class U>
+    using common_ref_C = emp::remove_reference_t<typename common_ref<T, U>::type>&&;
+
+    template<class T, class U>
+    struct common_reference_impl<T&&, U&&, 1, emp::enable_if_t<
+        JLN_MP_IS_CONVERTIBLE_V(T&&, common_ref_C<T, U>)
+     && JLN_MP_IS_CONVERTIBLE_V(U&&, common_ref_C<T, U>)
+    >>
+    {
+      using type = common_ref_C<T, U>;
+    };
+
+    template<class T, class U>
+    struct common_reference_impl<T&, U&&, 1, emp::enable_if_t<
+      JLN_MP_IS_CONVERTIBLE_V(U&&, typename common_ref<T, U const>::type)
+    >>
+      : common_ref<T, U const>
+    {};
+
+    template<class T, class U>
+    struct common_reference_impl<T&&, U&, 1, emp::enable_if_t<
+      JLN_MP_IS_CONVERTIBLE_V(T&&, typename common_ref<U, T const>::type)
+    >>
+      : common_ref<U, T const>
+    {};
+
+    template<class T, class U>
+    using basic_common_ref_t = typename emp::basic_common_reference<
+      JLN_MP_REMOVE_CVREF_T(T),
+      JLN_MP_REMOVE_CVREF_T(U),
+      copy_cvref_impl<T>::template f,
+      copy_cvref_impl<U>::template f
+    >::type;
+
+    template<class T, class U>
+    struct common_reference_impl<T, U, 2, emp::void_t<basic_common_ref_t<T, U>>>
+    {
+      using type = basic_common_ref_t<T, U>;
+    };
+
+    template<class T, class U>
+    struct common_reference_impl<T, U, 3,
+      decltype(void(false ? JLN_MP_DECLVAL(T) : JLN_MP_DECLVAL(U)))>
+    {
+      using type = decltype(false ? JLN_MP_DECLVAL(T) : JLN_MP_DECLVAL(U));
+    };
+
+    template<class T, class U>
+    struct common_reference_impl<T, U, 4, void> : common_type2<T, U>
+    {};
+
+#if JLN_MP_FEATURE_CONCEPTS
+    template<bool>
+    struct common_reference_fold;
+
+    template<>
+    struct common_reference_fold<true>
+    {
+      template<class CommonRef, class... xs>
+      using f = emp::common_reference<typename CommonRef::type, xs...>;
+    };
+
+    template<>
+    struct common_reference_fold<false>
+    {
+      template<class, class...>
+      using f = emp::common_reference<>;
+    };
+#else
+    template<class CommonRef, class = void>
+    struct common_reference_fold
+    {
+      template<class...>
+      using f = emp::common_reference<>;
+    };
+
+    template<class CommonRef>
+    struct common_reference_fold<CommonRef, emp::void_t<typename CommonRef::type>>
+    {
+      template<class... xs>
+      using f = emp::common_reference<typename CommonRef::type, xs...>;
+    };
+#endif
+  }
+  namespace emp
+  {
+    template<>
+    struct common_reference<>
+    {};
+
+    template<class T>
+    struct common_reference<T>
+    {
+      using type = T;
+    };
+
+    template<class T, class U>
+    struct common_reference<T, U> : detail::common_reference_impl<T, U>
+    {};
+
+    template<class T, class U, class... R>
+    struct common_reference<T, U, R...>
+#if JLN_MP_FEATURE_CONCEPTS
+      : detail::common_reference_fold<requires{ typename common_reference<T, U>::type; }>
+        ::template f<common_reference<T, U>, R...>
+#else
+      : detail::common_reference_fold<common_reference<T, U>>::template f<R...>
+#endif
+    {};
+
+    // TODO add common_reference<T0, T1, T2, T4, R...>
+  }
+  // TODO undefined if any of the types in T... is an incomplete type other than (possibly cv-qualified) void.
+  JLN_MP_MAKE_TRAIT_T_FROM_S(common_reference, (class... Ts), emp::common_reference<Ts...>);
+  // TODO __cpp_lib_common_reference_wrapper 	Make std::common_reference_t of std::reference_wrapper a reference type 	202302L 	<functional> 	(C++23) 	P2655R3
+  // TODO https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2655r3.html
 
 
   // https://en.cppreference.com/w/cpp/experimental/is_detected
