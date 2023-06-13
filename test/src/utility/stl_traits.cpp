@@ -4845,6 +4845,27 @@ TEST()
   SINGLE_CALL_CHECK_M2(common_reference, notype, char*&&, int volatile const&);
   SINGLE_CALL_CHECK_M2(common_reference, notype, char*&&, int volatile const&&);
 
+  {
+    using R1 = std::pair<long, long>;
+    using P1 = std::pair<int, long>;
+    using P2 = std::pair<long, int>;
+    SINGLE_CALL_CHECK_M2(common_reference, R1, P1, P2);
+    using R2 = std::tuple<long, long>;
+    using T1 = std::tuple<int, long>;
+    using T2 = std::tuple<long, int>;
+    SINGLE_CALL_CHECK_M2(common_reference, R2, T1, T2);
+    using P3 = std::pair<int, int*>;
+    SINGLE_CALL_CHECK_M2(common_reference, notype, P3, P2);
+    using T3 = std::tuple<int, int*>;
+    SINGLE_CALL_CHECK_M2(common_reference, notype, T3, T2);
+    using T4 = std::tuple<int, int, int>;
+    SINGLE_CALL_CHECK_M2(common_reference, notype, T4, T2);
+  }
+
+  SINGLE_CALL_CHECK_M2(common_reference, int&, int&, std::reference_wrapper<int>);
+  SINGLE_CALL_CHECK_M2(common_reference, notype, int&, std::reference_wrapper<std::reference_wrapper<int>>);
+  SINGLE_CALL_CHECK_M2(common_reference, std::reference_wrapper<int> const&, std::reference_wrapper<int>&, std::reference_wrapper<int> const&);
+
   SINGLE_CALL_CHECK_M(common_reference, int, int, int, int);
   SINGLE_CALL_CHECK_M(common_reference, int const&&, int const&&, int const&&, int const&&);
   SINGLE_CALL_CHECK_M(common_reference, long, int, int, long, int);

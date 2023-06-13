@@ -66,6 +66,8 @@
 
 // TODO template<class T> struct X { using type = T; }; -> template<class T> struct X : type_identity<T> {} ?
 
+// TODO no stl but predeclaration stl (reference_wrapper and co)
+
 
 // TODO remove
 #include <type_traits>
@@ -105,6 +107,14 @@
 #  define JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX 0
 #endif
 
+
+// TODO
+namespace std
+{
+  template<class> class reference_wrapper;
+  template<class, class> class pair;
+  template<class...> class tuple;
+}
 
 namespace jln::mp::traits
 {
@@ -2662,13 +2672,12 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
   namespace emp
   {
-#if ! JLN_MP_NO_STL && JLN_MP_CXX_VERSION >= 20
-    using std::basic_common_reference;
-#else
     template<class T, class U, template<class> class TQual, template<class> class UQual>
     struct basic_common_reference
-    {};
+#if ! JLN_MP_NO_STL && JLN_MP_CXX_VERSION >= 20
+      : std::basic_common_reference<T, U, TQual, UQual>;
 #endif
+    {};
 
     template<class... Ts>
     struct common_reference;
@@ -2870,8 +2879,110 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   }
   // TODO undefined if any of the types in T... is an incomplete type other than (possibly cv-qualified) void.
   JLN_MP_MAKE_TRAIT_T_FROM_S(common_reference, (class... Ts), emp::common_reference<Ts...>);
-  // TODO __cpp_lib_common_reference_wrapper 	Make std::common_reference_t of std::reference_wrapper a reference type 	202302L 	<functional> 	(C++23) 	P2655R3
-  // TODO https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2655r3.html
+
+
+  // __cpp_lib_common_reference_wrapper (C++23) P2655
+  namespace emp
+  {
+    // TODO no stl
+    template<class T, class U, template<class> class TQual, template<class> class UQual>
+    struct basic_common_reference<std::reference_wrapper<T>, std::reference_wrapper<U>, TQual, UQual>
+      : detail::common_reference_impl<TQual<T>, UQual<U>, 3>
+    {};
+  }
+  // TODO no stl
+#if JLN_MP_FEATURE_CONCEPTS
+  namespace emp
+  {
+    template<class T, class U, template<class> class TQual, template<class> class UQual>
+      requires JLN_MP_IS_CONVERTIBLE_V(
+        TQual<std::reference_wrapper<T>>, common_reference_t<T&, UQual<U>>)
+    struct basic_common_reference<std::reference_wrapper<T>, U, TQual, UQual>
+      : common_reference<T&, UQual<U>>
+    {};
+
+    template<class T, class U, template<class> class TQual, template<class> class UQual>
+      requires JLN_MP_IS_CONVERTIBLE_V(
+        TQual<std::reference_wrapper<T>>, common_reference_t<T&, UQual<U>>)
+    struct basic_common_reference<U, std::reference_wrapper<T>, UQual, TQual>
+      : common_reference<T&, UQual<U>>
+    {};
+
+    template<class T1, class T2, class U1, class U2,
+             template<class> class TQual, template<class> class UQual>
+      requires requires { typename std::pair<common_reference_t<TQual<T1>, UQual<U1>>,
+                                             common_reference_t<TQual<T2>, UQual<U2>>>; }
+    struct basic_common_reference<std::pair<T1, T2>, std::pair<U1, U2>, TQual, UQual>
+    {
+      using type = std::pair<common_reference_t<TQual<T1>, UQual<U1>>,
+                             common_reference_t<TQual<T2>, UQual<U2>>>;
+    };
+
+    template<class... Ts, class... Us, template<class> class TQual, template<class> class UQual>
+      requires requires { typename std::tuple<common_reference_t<TQual<Ts>, UQual<Us>>...>; }
+    struct basic_common_reference<std::tuple<Ts...>, std::tuple<Us...>, TQual, UQual>
+    {
+      using type = std::tuple<common_reference_t<TQual<Ts>, UQual<Us>>...>;
+    };
+  }
+#else
+  namespace detail
+  {
+    template<class From, class CommonType, class = void>
+    struct basic_common_reference_convertible_impl
+    {};
+
+    template<class From, class CommonType>
+    struct basic_common_reference_convertible_impl<From, CommonType,
+      emp::enable_if_t<JLN_MP_IS_CONVERTIBLE_V(From, typename CommonType::type)>
+    >
+      : CommonType
+    {};
+
+    template<template<class> class TQual, template<class> class UQual,
+             class Ts, class Us, class = void>
+    struct basic_common_reference_tuple_like_impl
+    {
+      template<template<class...> class Tpl>
+      using f = emp::enable_if<false>;
+    };
+
+    template<template<class> class TQual, template<class> class UQual, class... Ts, class... Us>
+    struct basic_common_reference_tuple_like_impl<TQual, UQual, list<Ts...>, list<Us...>,
+      emp::void_t<emp::common_reference_t<TQual<Ts>, UQual<Us>>...>>
+    {
+      template<template<class...> class Tpl>
+      using f = emp::type_identity<Tpl<emp::common_reference_t<TQual<Ts>, UQual<Us>>...>>;
+    };
+  }
+  namespace emp
+  {
+    template<class T, class U, template<class> class TQual, template<class> class UQual>
+    struct basic_common_reference<std::reference_wrapper<T>, U, TQual, UQual>
+      : detail::basic_common_reference_convertible_impl<
+          TQual<std::reference_wrapper<T>>, common_reference<T&, UQual<U>>>
+    {};
+
+    template<class T, class U, template<class> class TQual, template<class> class UQual>
+    struct basic_common_reference<U, std::reference_wrapper<T>, UQual, TQual>
+      : detail::basic_common_reference_convertible_impl<
+          TQual<std::reference_wrapper<T>>, common_reference<T&, UQual<U>>>
+    {};
+
+    template<class T1, class T2, class U1, class U2,
+             template<class> class TQual, template<class> class UQual>
+    struct basic_common_reference<std::pair<T1, T2>, std::pair<U1, U2>, TQual, UQual>
+      : detail::basic_common_reference_tuple_like_impl<TQual, UQual, list<T1, T2>, list<U1, U2>>
+        ::template f<std::pair>
+    {};
+
+    template<class... Ts, class... Us, template<class> class TQual, template<class> class UQual>
+    struct basic_common_reference<std::tuple<Ts...>, std::tuple<Us...>, TQual, UQual>
+      : detail::basic_common_reference_tuple_like_impl<TQual, UQual, list<Ts...>, list<Us...>>
+        ::template f<std::tuple>
+    {};
+  }
+#endif
 
 
   // not standard
