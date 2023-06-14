@@ -8,10 +8,6 @@
 #include <jln/mp/detail/is_same.hpp>
 #include <jln/mp/detail/enumerate.hpp> // JLN_MP_NIL
 
-#ifndef JLN_MP_NO_STL
-# define JLN_MP_NO_STL 0
-#endif
-
 #ifndef JLN_MP_USE_OPTIONAL_BUILTIN
 # define JLN_MP_USE_OPTIONAL_BUILTIN 1
 #endif
@@ -23,12 +19,10 @@
 #endif
 
 #if JLN_MP_MSVC
-# define JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(Name) JLN_MP_USE_OPTIONAL_BUILTIN
+# define JLN_MP_HAS_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(Name) JLN_MP_USE_OPTIONAL_BUILTIN
 #else
-# define JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(Name) JLN_MP_HAS_OPTIONAL_BUILTIN(Name)
+# define JLN_MP_HAS_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(Name) JLN_MP_HAS_OPTIONAL_BUILTIN(Name)
 #endif
-
-// TODO replace some call to JLN_MP_USE_OPTIONAL_BUILTIN with JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC
 
 #ifndef JLN_MP_INT128_AS_INTEGRAL
 # define JLN_MP_INT128_AS_INTEGRAL 0
@@ -50,12 +44,7 @@
 
 // TODO type_identity ?
 
-// TODO MSVC: #pragma warning(disable: 4180)  // qualifier applied to function type has no meaning; ignored
-
-// TODO defined(__cpp_*) && __cpp_* >= XXX -> __cpp_* >= XXX + disable warn
-
-// TODO macro that forces use of std::
-
+// TODO macro that forces usage of std::
 
 // TODO template<class T, class = void> struct xxxx_impl;
 // TODO template<class T> struct xxxx_impl<T, void_t<.....>>;
@@ -64,15 +53,11 @@
 // TODO template<class T> struct xxxx {};
 // TODO template<class T> requires { .... } struct xxxx {};
 
-// TODO template<class T> struct X { using type = T; }; -> template<class T> struct X : type_identity<T> {} ?
-
 // TODO no stl but predeclaration stl (reference_wrapper and co)
 
+// TODO using size_t = decltype(sizeof(int))
 
-// TODO remove
-#include <type_traits>
-
-#if ! JLN_MP_NO_STL
+#if ! JLN_MP_NO_STL_TRAIT
 #  include <type_traits>
 
 #  if defined(_GLIBCXX_RELEASE)
@@ -108,20 +93,43 @@
 #endif
 
 
-// TODO
-namespace std
-{
-  template<class> class reference_wrapper;
-  template<class, class> class pair;
-  template<class...> class tuple;
-}
+#ifndef JLN_MP_BEGIN_NAMESPACE_STD
+// msvc
+# ifdef _STD_BEGIN
+#   define JLN_MP_BEGIN_NAMESPACE_STD _STD_BEGIN
+#   define JLN_MP_END_NAMESPACE_STD _STD_END
+#   define JLN_MP_EXPORT_STD _EXPORT_STD
+#   define JLN_MP_VISIBILITY_STD
+// libc++
+# elif defined(_LIBCPP_BEGIN_NAMESPACE_STD)
+#   define JLN_MP_BEGIN_NAMESPACE_STD _LIBCPP_BEGIN_NAMESPACE_STD
+#   define JLN_MP_END_NAMESPACE_STD _LIBCPP_END_NAMESPACE_STD
+#   define JLN_MP_EXPORT_STD
+#   define JLN_MP_VISIBILITY_STD _LIBCPP_TEMPLATE_VIS
+// libstdc++
+# elif defined(_GLIBCXX_BEGIN_NAMESPACE_VERSION)
+#   define JLN_MP_BEGIN_NAMESPACE_STD namespace std { _GLIBCXX_BEGIN_NAMESPACE_VERSION
+#   define JLN_MP_END_NAMESPACE_STD _GLIBCXX_END_NAMESPACE_VERSION }
+#   define JLN_MP_EXPORT_STD
+#   define JLN_MP_VISIBILITY_STD
+// others
+# else
+#   define JLN_MP_BEGIN_NAMESPACE_STD namespace std {
+#   define JLN_MP_END_NAMESPACE_STD }
+#   define JLN_MP_EXPORT_STD
+#   define JLN_MP_VISIBILITY_STD
+# endif
+#endif
+JLN_MP_BEGIN_NAMESPACE_STD
+  JLN_MP_EXPORT_STD template<class> class JLN_MP_VISIBILITY_STD reference_wrapper;
+  JLN_MP_EXPORT_STD template<class, class> class JLN_MP_VISIBILITY_STD pair;
+  JLN_MP_EXPORT_STD template<class...> class JLN_MP_VISIBILITY_STD tuple;
+JLN_MP_END_NAMESPACE_STD
+
 
 namespace jln::mp::traits
 {
   /// \ingroup trait
-
-  // TODO remove duplicates in JLN_MP_MAKE_TRAIT*
-
 
 #define JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, ...) \
   template<class C = identity>                      \
@@ -199,8 +207,8 @@ namespace jln::mp::traits
   }                                                         \
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, std::Name##_t<JLN_MP_UNPACK Values>)
 
-
-#define JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(Name, Params, Type, ...) \
+#if ! JLN_MP_NO_STL_TRAIT
+# define JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(Name, Params, Type, ...) \
   namespace emp                                                                \
   {                                                                            \
     using std::Name;                                                           \
@@ -211,13 +219,12 @@ namespace jln::mp::traits
   }                                                                            \
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, emp::integral_constant<Type, __VA_ARGS__>)
 
+#define JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(Name, Params, Type, Values) \
+  JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(                               \
+    Name, Params, Type, emp::Name##_v<JLN_MP_UNPACK Values>)
 
-#define JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(Name, Params, Type, Values) \
-  JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(                                 \
-    Name, Params, Type, std::Name##_v<JLN_MP_UNPACK Values>)
 
-
-#define JLN_MP_MAKE_TRAIT_VT_FROM_EXPR_V_x_S_FROM_STD(Name, Params, Type, ...) \
+# define JLN_MP_MAKE_TRAIT_VT_FROM_EXPR_V_x_S_FROM_STD(Name, Params, Type, ...) \
   namespace emp                                                                \
   {                                                                            \
     using std::Name;                                                           \
@@ -231,7 +238,7 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, emp::integral_constant<Type, __VA_ARGS__>)
 
 
-#define JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_V_x_V_FROM_STD(Name, Params, Type, ...) \
+# define JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_V_x_V_FROM_STD(Name, Params, Type, ...) \
   namespace emp                                                                \
   {                                                                            \
     using std::Name##_v;                                                       \
@@ -243,6 +250,11 @@ namespace jln::mp::traits
     using Name##_t = integral_constant<Type, __VA_ARGS__>;                     \
   }                                                                            \
   JLN_MP_MAKE_TRAIT_NO_EMP(Name, Params, emp::integral_constant<Type, __VA_ARGS__>)
+#else // if JLN_MP_NO_STL_TRAIT
+# define JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
+# define JLN_MP_MAKE_TRAIT_VT_FROM_EXPR_V_x_S_FROM_STD JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
+# define JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_V_x_V_FROM_STD JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
+#endif // ! JLN_MP_NO_STL_TRAIT
 
 
 #define JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(Name, Params, ...) \
@@ -258,66 +270,61 @@ namespace jln::mp::traits
 
 
 #if JLN_MP_USE_LIBMS
-# define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F \
+# define JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD \
     JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD
+# define JLN_MP_MAKE_TRAIT_LIBMS_ST_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_V_LIBCXX_SV_FROM_STD \
+    JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_V_x_V_FROM_STD
 #elif JLN_MP_USE_LIBCXX
-# define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F \
+# define JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD \
     JLN_MP_MAKE_TRAIT_VT_FROM_EXPR_V_x_S_FROM_STD
+# define JLN_MP_MAKE_TRAIT_LIBMS_ST_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_V_LIBCXX_SV_FROM_STD \
+    JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD
 #else
-# define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F \
+# define JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD \
+    JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
+# define JLN_MP_MAKE_TRAIT_LIBMS_ST_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_V_LIBCXX_SV_FROM_STD \
     JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
 #endif
 
 #if JLN_MP_USE_LIBCXX
-# define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
+# define JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD \
     JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD
-# define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_VT_STD_S_OTHER_F \
+# define JLN_MP_MAKE_TRAIT_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_S_FROM_STD \
     JLN_MP_MAKE_TRAIT_VT_FROM_EXPR_V_x_S_FROM_STD
-# define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST JLN_MP_MAKE_TRAIT_ST_FROM_STD
+# define JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN JLN_MP_MAKE_TRAIT_ST_FROM_STD
 #else
-# define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
+# define JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD \
     JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
-# define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_VT_STD_S_OTHER_F \
+# define JLN_MP_MAKE_TRAIT_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_S_FROM_STD \
     JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
-# define JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(Name, Params, Values) \
+# define JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(Name, Params, Values) \
     JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(Name, Params, __##Name Values)
 #endif
 
-#if JLN_MP_USE_LIBCXX
-# define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_TS_STD_V_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
+#if JLN_MP_USE_LIBMS
+# define JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD \
     JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD
-#elif JLN_MP_USE_LIBMS
-# define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_TS_STD_V_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
-    JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_V_x_V_FROM_STD
 #else
-# define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_TS_STD_V_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
+# define JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD \
     JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
 #endif
 
-#if JLN_MP_USE_LIBCXX || JLN_MP_USE_LIBMS
-# define JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
+#if JLN_MP_USE_LIBMS || JLN_MP_USE_LIBCXX
+# define JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_FROM_STD \
     JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD
 #else
-# define JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F \
+# define JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_FROM_STD \
     JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
 #endif
 
-#if JLN_MP_USE_LIBCXX || JLN_MP_USE_LIBMS
-# define JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_LIBSTDCXX_BUILTIN_VT_STD_S_OTHER_F \
+#if JLN_MP_USE_LIBMS || JLN_MP_USE_LIBCXX
+# define JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD \
     JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD
 #elif JLN_MP_USE_LIBSTDCXX
-# define JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_LIBSTDCXX_BUILTIN_VT_STD_S_OTHER_F \
+# define JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD \
     JLN_MP_MAKE_TRAIT_VT_FROM_EXPR_V_x_S_FROM_STD
 #else
-# define JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_LIBSTDCXX_BUILTIN_VT_STD_S_OTHER_F \
-    JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
-#endif
-
-#if JLN_MP_USE_LIBMS
-# define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F \
-    JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD
-#else
-# define JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F \
+# define JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD \
     JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V
 #endif
 
@@ -328,57 +335,17 @@ namespace jln::mp::traits
 
 
 JLN_MP_DIAGNOSTIC_PUSH()
+JLN_MP_DIAGNOSTIC_MSVC_IGNORE(4180) // qualifier applied to function type has no meaning
+JLN_MP_DIAGNOSTIC_MSVC_IGNORE(4668) // -Wundef: MACRO is not defined, replaced with '0'
+JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wundef")
 JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
-
-// TODO remove
-#ifdef __cpp_noexcept_function_type
-# define JLN_MP_DEFINE_CV_REF_NOEXCEPT(F) \
-    F(JLN_MP_NIL)                         \
-    F(&)                                  \
-    F(&&)                                 \
-    F(const)                              \
-    F(const&)                             \
-    F(const&&)                            \
-    F(volatile)                           \
-    F(volatile&)                          \
-    F(volatile&&)                         \
-    F(volatile const)                     \
-    F(volatile const&)                    \
-    F(volatile const&&)                   \
-    F(noexcept)                           \
-    F(& noexcept)                         \
-    F(&& noexcept)                        \
-    F(const noexcept)                     \
-    F(const& noexcept)                    \
-    F(const&& noexcept)                   \
-    F(volatile noexcept)                  \
-    F(volatile& noexcept)                 \
-    F(volatile&& noexcept)                \
-    F(volatile const noexcept)            \
-    F(volatile const& noexcept)           \
-    F(volatile const&& noexcept)
-#else // __cpp_noexcept_function_type
-#define JLN_MP_DEFINE_CV_REF_NOEXCEPT(F) \
-    F(JLN_MP_NIL)                        \
-    F(&)                                 \
-    F(&&)                                \
-    F(const)                             \
-    F(const&)                            \
-    F(const&&)                           \
-    F(volatile)                          \
-    F(volatile&)                         \
-    F(volatile&&)                        \
-    F(volatile const)                    \
-    F(volatile const&)                   \
-    F(volatile const&&)
-#endif // __cpp_noexcept_function_type
 
 
   namespace emp
   {
     using nullptr_t = decltype(nullptr);
 
-#if JLN_MP_NO_STL
+#if JLN_MP_NO_STL_TRAIT
     template<class...>
     using void_t = void;
 
@@ -416,7 +383,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     using std::enable_if_t;
 #endif
 
-#if JLN_MP_NO_STL || !defined(__cpp_lib_type_identity) || __cpp_lib_type_identity < 201806L
+#if JLN_MP_NO_STL_TRAIT || __cpp_lib_type_identity < 201806L
     template<class T>
     struct type_identity
     {
@@ -432,33 +399,14 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   }
 
 
-  // not standard
-  //@{
-  namespace detail
-  {
-    // TODO requires { ... } ?
-    template<class T, class = void>
-    JLN_MP_CONSTEXPR_VAR bool is_referenceable_impl_v = false;
-
-    template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_referenceable_impl_v<T, emp::void_t<T&>> = true;
-  }
-  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_referenceable, (class T), bool,
-    detail::is_referenceable_impl_v<T volatile const>);
-
-  // TODO add_const_lvalue_reference ?
-  // TODO is_trivially_relocatable
-  //@}
-
-
   // https://en.cppreference.com/w/cpp/feature_test
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_const)
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_FROM_STD(
     is_const, (class T), bool, __is_const(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_const, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_const, (class T), bool, (T));
 #else
   namespace emp
   {
@@ -475,10 +423,10 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_volatile)
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_FROM_STD(
     is_volatile, (class T), bool, __is_volatile(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_volatile, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_volatile, (class T), bool, (T));
 #else
   namespace emp
   {
@@ -491,6 +439,25 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
   // not standard
   //@{
+#if JLN_MP_FEATURE_CONCEPTS
+  /// is_complete_type = !is_unbounded_array && (is_function || when the expression sizeof(T) is valid).
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_complete_type, (class T), bool,
+    requires{ sizeof(T); } || !JLN_MP_IS_CONST_V(T volatile const));
+  /// is_complete_type = is_function || is_void || is_unbounded_array || when the expression sizeof(T) is valid.
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_complete_or_unbounded_type, (class T), bool,
+    requires{ sizeof(T); } || !JLN_MP_IS_CONST_V(T volatile const));
+
+  namespace emp
+  {
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_v<T[]> = true;
+
+    template<> JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_v<void> = true;
+    template<> JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_v<void const> = true;
+    template<> JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_v<void volatile> = true;
+    template<> JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_v<void volatile const> = true;
+  }
+#else
   namespace detail
   {
     template<class T, bool = false>
@@ -498,14 +465,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
     template<class T>
     JLN_MP_CONSTEXPR_VAR bool is_complete_type_impl_v<T, !sizeof(T)> = true;
-  }
-  // is_complete_type = !is_unbounded_array && (is_function || when the expression sizeof(T) is valid)
-  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_complete_type, (class T), bool,
-    detail::is_complete_type_impl_v<T volatile const>);
 
 
-  namespace detail
-  {
     template<class T, bool = false>
     JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_impl_v = !JLN_MP_IS_CONST_V(T);
 
@@ -518,56 +479,57 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<>
     JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_impl_v<void volatile const> = true;
   }
-  // is_complete_type = is_function || is_void || when the expression sizeof(T) is valid
+  /// is_complete_type = !is_unbounded_array && (is_function || when the expression sizeof(T) is valid).
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_complete_type, (class T), bool,
+    detail::is_complete_type_impl_v<T volatile const>);
+  /// is_complete_type = is_function || is_void || is_unbounded_array || when the expression sizeof(T) is valid.
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_complete_or_unbounded_type, (class T), bool,
     detail::is_complete_or_unbounded_type_impl_v<T volatile const>);
+#endif
   //@}
 
 
 #if JLN_MP_MSVC >= 2000 || JLN_MP_HAS_BUILTIN(__is_trivial)
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_trivial, (class T), bool, __is_trivial(T));
 #elif JLN_MP_MSVC || (JLN_MP_HAS_BUILTIN(__is_trivially_constructible) && JLN_MP_HAS_BUILTIN(__is_trivially_copyable))
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_trivial, (class T), bool, __is_trivially_constructible(T) && __is_trivially_copyable(T));
-#elif ! JLN_MP_NO_STL
+#elif ! JLN_MP_NO_STL_TRAIT
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_trivial, (class T), bool, (T))
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_trivial, (class T), bool, (T))
 #endif
 
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_trivially_copyable, (class T), bool, __is_trivially_copyable(T));
 
 
-#if JLN_MP_USE_LIBMS || JLN_MP_USE_LIBCXX
-# define JLN_MP_MAKE_TRAIT_D(Name, Params, Values) \
-    JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(Name, Params, bool, __##Name Values)
-#elif JLN_MP_USE_LIBSTDCXX
-# define JLN_MP_MAKE_TRAIT_D(Name, Params, Values) \
-    JLN_MP_MAKE_TRAIT_VT_FROM_EXPR_V_x_S_FROM_STD(Name, Params, bool, __##Name Values)
-#else
-# define JLN_MP_MAKE_TRAIT_D(Name, Params, Values) \
-    JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(Name, Params, bool, __##Name Values)
-#endif
-
 #if JLN_MP_CXX_VERSION <= 17
-  JLN_MP_MAKE_TRAIT_D(is_pod, (class T), (T));
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD(
+    is_pod, (class T), bool, __is_pod(T));
 #endif
-  JLN_MP_MAKE_TRAIT_D(is_abstract, (class T), (T));
-  JLN_MP_MAKE_TRAIT_D(is_aggregate, (class T), (T));
-  JLN_MP_MAKE_TRAIT_D(is_base_of, (class T, class U), (T, U));
-  JLN_MP_MAKE_TRAIT_D(is_class, (class T), (T));
-  JLN_MP_MAKE_TRAIT_D(is_empty, (class T), (T));
-  JLN_MP_MAKE_TRAIT_D(is_enum, (class T), (T));
-  JLN_MP_MAKE_TRAIT_D(is_final, (class T), (T));
-  JLN_MP_MAKE_TRAIT_D(is_polymorphic, (class T), (T));
-  JLN_MP_MAKE_TRAIT_D(is_union, (class T), (T));
-
-#undef JLN_MP_MAKE_TRAIT_D
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD(
+    is_abstract, (class T), bool, __is_abstract(T));
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD(
+    is_aggregate, (class T), bool, __is_aggregate(T));
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD(
+    is_base_of, (class T, class U), bool, __is_base_of(T, U));
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD(
+    is_class, (class T), bool, __is_class(T));
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD(
+    is_empty, (class T), bool, __is_empty(T));
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD(
+    is_enum, (class T), bool, __is_enum(T));
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD(
+    is_final, (class T), bool, __is_final(T));
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD(
+    is_polymorphic, (class T), bool, __is_polymorphic(T));
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD(
+    is_union, (class T), bool, __is_union(T));
 
 
 #if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_signed) && (!JLN_MP_INT128_AS_INTEGRAL || JLN_MP_CLANG_LIKE)
@@ -638,8 +600,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_bounded_array, (class T), bool, (T));
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_unbounded_array, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_bounded_array, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_unbounded_array, (class T), bool, (T));
 #else
   namespace emp
   {
@@ -656,38 +618,78 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_lvalue_reference)
   // TODO use builtin / std::... with macro
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(add_lvalue_reference, (class T), (T));
+  JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(add_lvalue_reference, (class T), (T));
+  // not standard
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(add_const_lvalue_reference, (class T), __add_lvalue_reference(T const));
+#elif JLN_MP_FEATURE_CONCEPTS && JLN_MP_GCC
+  namespace detail
+  {
+    template<bool>
+    struct add_lvalue_reference_select
+      : identity
+    {};
+
+    template<>
+    struct add_lvalue_reference_select<true>
+    {
+      template<class T> using f = T&;
+    };
+  }
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(add_lvalue_reference, (class T),
+    typename detail::add_lvalue_reference_select<requires{ JLN_MP_FN_PTR(T&(*)()); }>
+    ::template f<T>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(add_const_lvalue_reference, (class T),
+    typename detail::add_lvalue_reference_select<requires{ JLN_MP_FN_PTR(T&(*)()); }>
+    ::template f<T const>);
 #else
   namespace detail
   {
-    template<class T, bool = is_referenceable_impl_v<T volatile const>>
+    template<class T, class = void>
     struct add_lvalue_reference_impl { using type = T; };
 
     template<class T>
-    struct add_lvalue_reference_impl<T, true> { using type = T&; };
+    struct add_lvalue_reference_impl<T, emp::void_t<T&>> { using type = T&; };
   }
   JLN_MP_MAKE_TRAIT_ST_FROM_S(add_lvalue_reference, (class T), detail::add_lvalue_reference_impl<T>);
+  // not standard
+  JLN_MP_MAKE_TRAIT_ST_FROM_S(add_const_lvalue_reference, (class T), detail::add_lvalue_reference_impl<T const>);
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_rvalue_reference)
   // TODO use builtin / std::... with macro
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(add_rvalue_reference, (class T), (T));
+  JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(add_rvalue_reference, (class T), (T));
+#elif JLN_MP_FEATURE_CONCEPTS && JLN_MP_GCC
+  namespace detail
+  {
+    template<bool>
+    struct add_rvalue_reference_select
+      : identity
+    {};
+
+    template<>
+    struct add_rvalue_reference_select<true>
+    {
+      template<class T> using f = T&;
+    };
+  }
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(add_rvalue_reference, (class T),
+    typename detail::add_rvalue_reference_select<requires{ JLN_MP_FN_PTR(T&(*)()); }>::template f<T>);
 #else
   namespace detail
   {
-    template<class T, bool = is_referenceable_impl_v<T volatile const>>
+    template<class T, class = void>
     struct add_rvalue_reference_impl { using type = T; };
 
     template<class T>
-    struct add_rvalue_reference_impl<T, true> { using type = T&&; };
+    struct add_rvalue_reference_impl<T, emp::void_t<T&>> { using type = T&; };
   }
   JLN_MP_MAKE_TRAIT_ST_FROM_S(add_rvalue_reference, (class T), detail::add_rvalue_reference_impl<T>);
 #endif
 
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     has_unique_object_representations, (class T), bool, __has_unique_object_representations(T));
 
 
@@ -696,7 +698,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(is_void, (class T), bool, __is_void(T));
 #elif JLN_MP_HAS_OPTIONAL_BUILTIN(__is_same)
   #define JLN_MP_IS_VOID_V(...) \
-    __is_same(volatile const __VA_ARGS__, volatile const void)
+    __is_same(__VA_ARGS__ volatile const, void volatile const)
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_void, (class T), bool, JLN_MP_IS_VOID_V(T));
 #else
   #define JLN_MP_IS_VOID_V(...) emp::is_void_v<__VA_ARGS__>
@@ -731,7 +733,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_integral) && (!JLN_MP_INT128_AS_INTEGRAL || JLN_MP_CLANG_LIKE)
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  #define JLN_MP_IS_INTEGRAL_V __is_integral
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
     is_integral, (class T), bool, __is_integral(T));
 #else
   namespace detail
@@ -765,12 +768,14 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<> JLN_MP_CONSTEXPR_VAR bool is_integral_impl_v<volatile const JLN_MP_UINT128_T> = true;
 # endif
   }
-  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_integral, (class T), bool, detail::is_integral_impl_v<T volatile const>);
+  #define JLN_MP_IS_INTEGRAL_V(...) detail::is_integral_impl_v<__VA_ARGS__ volatile const>
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_integral, (class T), bool, JLN_MP_IS_INTEGRAL_V(T));
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_floating_point)
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  #define JLN_MP_IS_FLOATING_POINT_V __is_floating_point
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
     is_floating_point, (class T), bool, __is_floating_point(T));
 #else
   namespace detail
@@ -780,17 +785,18 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<> JLN_MP_CONSTEXPR_VAR bool is_floating_point_impl_v<volatile const double> = true;
     template<> JLN_MP_CONSTEXPR_VAR bool is_floating_point_impl_v<volatile const long double> = true;
   }
-  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_floating_point, (class T), bool, detail::is_floating_point_impl_v<T volatile const>);
+  #define JLN_MP_IS_FLOATING_POINT_V(...) detail::is_floating_point_impl_v<__VA_ARGS__ volatile const>
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_floating_point, (class T), bool, JLN_MP_IS_FLOATING_POINT_V(T));
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_array)
   #define JLN_MP_IS_ARRAY_V(...) __is_array(__VA_ARGS__)
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
     is_array, (class T), bool, __is_array(T));
 #elif JLN_MP_USE_LIBMS
   #define JLN_MP_IS_ARRAY_V(...) emp::is_array_v<__VA_ARGS__>
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_array, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_array, (class T), bool, (T));
 #else
   #define JLN_MP_IS_ARRAY_V(...) emp::is_array_v<__VA_ARGS__>
   namespace emp
@@ -804,10 +810,12 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_pointer)
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  #define JLN_MP_IS_POINTER_V __is_pointer
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
     is_pointer, (class T), bool, __is_pointer(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_pointer, (class T), bool, (T));
+  #define JLN_MP_IS_POINTER_V(...) std::is_pointer_v<__VA_ARGS__>
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_pointer, (class T), bool, (T));
 #else
   namespace emp
   {
@@ -817,15 +825,16 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_pointer_v<T* volatile> = true;
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_pointer_v<T* volatile const> = true;
   }
+  #define JLN_MP_IS_POINTER_V(...) emp::is_pointer_v<__VA_ARGS__>
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_pointer, (class T), bool, (T));
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_lvalue_reference)
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
     is_lvalue_reference, (class T), bool, __is_lvalue_reference(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_lvalue_reference, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_lvalue_reference, (class T), bool, (T));
 #else
   namespace emp
   {
@@ -837,10 +846,10 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_rvalue_reference)
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
     is_rvalue_reference, (class T), bool, __is_rvalue_reference(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_rvalue_reference, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_rvalue_reference, (class T), bool, (T));
 #else
   namespace emp
   {
@@ -853,11 +862,16 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_reference)
   #define JLN_MP_IS_REFERENCE_V(...) __is_reference(__VA_ARGS__)
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
     is_reference, (class T), bool, __is_reference(T));
+#elif JLN_MP_HAS_OPTIONAL_BUILTIN(__is_lvalue_reference) && \
+      JLN_MP_HAS_OPTIONAL_BUILTIN(__is_rvalue_reference)
+  #define JLN_MP_IS_REFERENCE_V(...) __is_lvalue_reference(__VA_ARGS__) && \
+                                     __is_rvalue_reference(__VA_ARGS__)
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_reference, (class T), bool, JLN_MP_IS_REFERENCE_V(T));
 #elif JLN_MP_USE_LIBMS
   #define JLN_MP_IS_REFERENCE_V(...) std::is_reference_v<__VA_ARGS__>
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_reference, (class T), bool, (T));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_reference, (class T), bool, (T));
 #else
   #define JLN_MP_IS_REFERENCE_V(...) emp::is_reference_v<__VA_ARGS__>
   namespace emp
@@ -872,7 +886,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_function)
   #define JLN_MP_IS_FUNCTION_V(...) __is_function(__VA_ARGS__)
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_S_FROM_STD(
     is_function, (class T), bool, __is_function(T));
 #else
   #define JLN_MP_IS_FUNCTION_V(...) emp::is_function_v<__VA_ARGS__>
@@ -887,91 +901,96 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_member_object_pointer)
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_TS_STD_V_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_ST_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_V_LIBCXX_SV_FROM_STD(
     is_member_object_pointer, (class T), bool, __is_member_object_pointer(T));
 #else
   namespace emp
   {
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_member_object_pointer_v = false;
 
-    // TODO !is_function_v<T> -> is_const_v<T const> ?
+    template<class T, class C> JLN_MP_CONSTEXPR_VAR
+    bool is_member_object_pointer_v<T C::*> = !JLN_MP_IS_FUNCTION_V(T);
 
     template<class T, class C> JLN_MP_CONSTEXPR_VAR
-    bool is_member_object_pointer_v<T C::*> = !is_function_v<T>;
+    bool is_member_object_pointer_v<T C::* const> = !JLN_MP_IS_FUNCTION_V(T);
 
     template<class T, class C> JLN_MP_CONSTEXPR_VAR
-    bool is_member_object_pointer_v<T C::* const> = !is_function_v<T>;
+    bool is_member_object_pointer_v<T C::* volatile> = !JLN_MP_IS_FUNCTION_V(T);
 
     template<class T, class C> JLN_MP_CONSTEXPR_VAR
-    bool is_member_object_pointer_v<T C::* volatile> = !is_function_v<T>;
-
-    template<class T, class C> JLN_MP_CONSTEXPR_VAR
-    bool is_member_object_pointer_v<T C::* volatile const> = !is_function_v<T>;
+    bool is_member_object_pointer_v<T C::* volatile const> = !JLN_MP_IS_FUNCTION_V(T);
   }
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_member_object_pointer, (class T), bool, (T));
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_member_function_pointer)
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_FROM_STD(
     is_member_function_pointer, (class T), bool, __is_member_function_pointer(T));
 #else
   namespace emp
   {
-    // TODO msvc call spec and gcc
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_member_function_pointer_v = false;
 
     template<class T, class C> JLN_MP_CONSTEXPR_VAR
-    bool is_member_function_pointer_v<T C::*> = is_function_v<T>;
+    bool is_member_function_pointer_v<T C::*> = JLN_MP_IS_FUNCTION_V(T);
 
     template<class T, class C> JLN_MP_CONSTEXPR_VAR
-    bool is_member_function_pointer_v<T C::* const> = is_function_v<T>;
+    bool is_member_function_pointer_v<T C::* const> = JLN_MP_IS_FUNCTION_V(T);
 
     template<class T, class C> JLN_MP_CONSTEXPR_VAR
-    bool is_member_function_pointer_v<T C::* volatile> = is_function_v<T>;
+    bool is_member_function_pointer_v<T C::* volatile> = JLN_MP_IS_FUNCTION_V(T);
 
     template<class T, class C> JLN_MP_CONSTEXPR_VAR
-    bool is_member_function_pointer_v<T C::* volatile const> = is_function_v<T>;
+    bool is_member_function_pointer_v<T C::* volatile const> = JLN_MP_IS_FUNCTION_V(T);
   }
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_member_function_pointer, (class T), bool, (T));
 #endif
 
 
 #if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_arithmetic)
+  #define JLN_MP_IS_ARITHMETIC_V __is_arithmetic
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_arithmetic, (class T), bool, __is_arithmetic(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_arithmetic, (class T), bool, (T));
+  #define JLN_MP_IS_ARITHMETIC_V(...) std::is_arithmetic_v<__VA_ARGS__>
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_arithmetic, (class T), bool, (T));
 #else
-  // TODO or *_FROM_EMP_V
-  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_arithmetic, (class T), bool,
-    emp::is_integral_v<T> || emp::is_floating_point_v<T>);
+  #define JLN_MP_IS_ARITHMETIC_V(...) JLN_MP_IS_INTEGRAL_V(__VA_ARGS__) || \
+                                      JLN_MP_IS_FLOATING_POINT_V(__VA_ARGS__)
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_arithmetic, (class T), bool, JLN_MP_IS_ARITHMETIC_V(T));
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_fundamental)
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  #define JLN_MP_IS_FUNDAMENTAL_V __is_fundamental
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
     is_fundamental, (class T), bool, __is_fundamental(T));
+#elif JLN_MP_HAS_OPTIONAL_BUILTIN(__is_compound)
+  #define JLN_MP_IS_FUNDAMENTAL_V(...) !__is_compound(__VA_ARGS__)
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
+    is_fundamental, (class T), bool, !__is_compound(T));
 #elif JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_fundamental, (class T), bool, (T));
+  #define JLN_MP_IS_FUNDAMENTAL_V(...) std::is_fundamental_v<__VA_ARGS__>
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_fundamental, (class T), bool, (T));
 #else
-  // TODO or *_FROM_EMP_V
+  #define JLN_MP_IS_FUNDAMENTAL_V(...) emp::is_fundamental_v<__VA_ARGS__>
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_fundamental, (class T), bool,
-    emp::is_arithmetic_v<T> || JLN_MP_IS_VOID_V(T) || JLN_MP_IS_NULL_POINTER_V(T));
+    JLN_MP_IS_ARITHMETIC_V(T) || JLN_MP_IS_VOID_V(T) || JLN_MP_IS_NULL_POINTER_V(T));
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_object)
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
     is_object, (class T), bool, __is_object(T));
 #else
-  // TODO or *_FROM_EMP_V
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_object, (class T), bool,
     JLN_MP_IS_CONST_V(T const) && !JLN_MP_IS_VOID_V(T));
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_member_pointer)
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  #define JLN_MP_IS_MEMBER_POINTER_V __is_member_pointer
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
     is_member_pointer, (class T), bool, __is_member_pointer(T));
 #else
   namespace emp
@@ -991,52 +1010,57 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class T, class C>
     JLN_MP_CONSTEXPR_VAR bool is_member_pointer_v<T C::* volatile const> = true;
   }
+  #define JLN_MP_IS_MEMBER_POINTER_V(...) emp::is_member_pointer_v<__VA_ARGS__>
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_member_pointer, (class T), bool, (T));
 #endif
 
 
 #if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__is_scalar)
   #define JLN_MP_IS_SCALAR_V(...) __is_scalar(__VA_ARGS__)
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
     is_scalar, (class T), bool, __is_scalar(T));
 #else
   #define JLN_MP_IS_SCALAR_V(...) /*emp::*/is_scalar_v<__VA_ARGS__>
   // TODO or *_FROM_EMP_V
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_scalar, (class T), bool,
-    emp::is_arithmetic_v<T> || __is_enum(T) || emp::is_pointer_v<T>
-    || emp::is_member_pointer_v<T> || JLN_MP_IS_NULL_POINTER_V(T));
+    JLN_MP_IS_ARITHMETIC_V(T) || __is_enum(T) || JLN_MP_IS_POINTER_V(T)
+    || JLN_MP_IS_MEMBER_POINTER_V(T) || JLN_MP_IS_NULL_POINTER_V(T));
 #endif
 
 
 #if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_standard_layout)
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_standard_layout, (class T), bool, __is_standard_layout(T));
 #else
   // TODO is_complete_or_unbounded
   // this implementation is not compliant
   namespace emp
   {
-    template<class T> JLN_MP_CONSTEXPR_VAR bool is_standard_layout_v
-      = JLN_MP_IS_SCALAR_V(typename remove_all_extents<T>::type>);
+    template<class T> JLN_MP_CONSTEXPR_VAR bool is_standard_layout_v = JLN_MP_IS_SCALAR_V(T);
+    template<class T> JLN_MP_CONSTEXPR_VAR bool is_standard_layout_v<T[]> = is_standard_layout_v<T>;
+    template<class T, std::size_t N> JLN_MP_CONSTEXPR_VAR bool is_standard_layout_v<T[N]> = is_standard_layout_v<T>
   }
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_standard_layout, (class T), bool, (T));
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_compound)
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
     is_compound, (class T), bool, __is_compound(T));
+#elif JLN_MP_HAS_OPTIONAL_BUILTIN(__is_fundamental)
+  JLN_MP_MAKE_TRAIT_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBCXX_SV_FROM_STD(
+    is_compound, (class T), bool, !__is_fundamental(T));
 #else
-  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_compound, (class T), bool, !emp::is_fundamental_v<T>);
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_compound, (class T), bool, !JLN_MP_IS_FUNDAMENTAL_V(T));
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_convertible_to)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_convertible_to)
   #define JLN_MP_IS_CONVERTIBLE_V(...) __is_convertible_to(__VA_ARGS__)
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_convertible, (class From, class To), bool, __is_convertible_to(From, To));
 #elif JLN_MP_FEATURE_CONCEPTS
-  // TODO slow with clang ?
   #define JLN_MP_IS_CONVERTIBLE_V(...) emp::is_convertible_v<__VA_ARGS__>
   namespace detail
   {
@@ -1088,13 +1112,13 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<>
     JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<void, void> = true;
 
-    // TODO is_complete_or_unbounded
     template<class From, class To>
     JLN_MP_CONSTEXPR_VAR bool is_convertible_impl_v<
       From, To,
       decltype(JLN_MP_FN_PTR(void(*)(To))(JLN_MP_DECLVAL(From&&)))
     > = !JLN_MP_IS_ARRAY_V(To) && !JLN_MP_IS_FUNCTION_V(To);
   }
+  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_convertible, (class From, class To), bool,
     detail::is_convertible_impl_v<From, To>);
 #endif
@@ -1132,7 +1156,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_scoped_enum)
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_scoped_enum, (class T), bool, __is_scoped_enum(T));
 #else
   // TODO or *_FROM_EMP_V
@@ -1143,7 +1167,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_constructible, (class T, class... Args), bool, __is_constructible(T, Args...));
 
 
@@ -1152,66 +1176,66 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   // T() does not work with when T = U[n]
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_default_constructible, (class T), bool, requires { T{}; });
 #else
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_default_constructible, (class T), bool, __is_constructible(T));
 #endif
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_copy_constructible, (class T), bool, __is_constructible(T, emp::add_lvalue_reference_t<T const>));
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_move_constructible, (class T), bool,
       __is_constructible(T, T /*emp::add_rvalue_reference_t<T>*/));
 
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_trivially_constructible, (class T, class... Args), bool,
       __is_trivially_constructible(T, Args...));
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_trivially_default_constructible, (class T), bool, __is_trivially_constructible(T));
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_trivially_copy_constructible, (class T), bool,
       __is_trivially_constructible(T, emp::add_lvalue_reference_t<T const>));
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_trivially_move_constructible, (class T), bool,
       __is_trivially_constructible(T, T /*emp::add_rvalue_reference_t<T>*/));
 
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_nothrow_constructible, (class T, class... Args), bool, __is_nothrow_constructible(T, Args...));
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_nothrow_default_constructible, (class T), bool, __is_nothrow_constructible(T));
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_nothrow_copy_constructible, (class T), bool,
       __is_nothrow_constructible(T, emp::add_lvalue_reference_t<T const>));
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_nothrow_move_constructible, (class T), bool,
       __is_nothrow_constructible(T, T /*emp::add_rvalue_reference_t<T>*/));
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_assignable)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_assignable)
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_FROM_STD(
     is_assignable, (class T, class U), bool, __is_assignable(T, U));
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_copy_assignable, (class T), bool,
       __is_assignable(emp::add_lvalue_reference_t<T>, emp::add_lvalue_reference_t<T const>));
 
@@ -1219,7 +1243,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     __is_assignable(emp::add_lvalue_reference_t<__VA_ARGS__>, __VA_ARGS__)
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_move_assignable, (class T), bool, JLN_MP_IS_MOVE_ASSIGNABLE_V(T));
 #else
 # if JLN_MP_FEATURE_CONCEPTS
@@ -1260,13 +1284,13 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_nothrow_assignable)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_nothrow_assignable)
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_nothrow_assignable, (class T, class U), bool, __is_nothrow_assignable(T, U));
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_nothrow_copy_assignable, (class T), bool,
       __is_nothrow_assignable(emp::add_lvalue_reference_t<T>, emp::add_lvalue_reference_t<T const>));
 
@@ -1274,7 +1298,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     __is_nothrow_assignable(emp::add_lvalue_reference_t<__VA_ARGS__>, __VA_ARGS__)
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_nothrow_move_assignable, (class T), bool, JLN_MP_IS_NOTHROW_MOVE_ASSIGNABLE_V(T));
 #else
   namespace detail
@@ -1316,23 +1340,23 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_trivially_assignable, (class T, class U), bool, __is_trivially_assignable(T, U));
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_trivially_copy_assignable, (class T), bool,
       __is_trivially_assignable(emp::add_lvalue_reference_t<T>, emp::add_lvalue_reference_t<T const>));
 
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_trivially_move_assignable, (class T), bool,
       __is_trivially_assignable(emp::add_lvalue_reference_t<T>, T /*emp::add_rvalue_reference_t<T>*/));
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_destructible)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_destructible)
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_FROM_STD(
     is_destructible, (class T), bool, __is_destructible(T));
 #else
   namespace detail
@@ -1366,7 +1390,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 #if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_trivially_destructible)
   #define JLN_MP_IS_TRIVIALLY_DESTRUCTIBLE_V(...) __is_trivially_destructible(__VA_ARGS__)
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_trivially_destructible, (class T), bool, __is_trivially_destructible(T));
 #else
 # if JLN_MP_HAS_BUILTIN(__has_trivial_destructor)
@@ -1403,9 +1427,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_nothrow_destructible)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_nothrow_destructible)
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_BUILTIN_T_STD_SV_LIBCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_nothrow_destructible, (class T), bool, __is_nothrow_destructible(T));
 #else
   namespace detail
@@ -1442,7 +1466,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_implicit_lifetime)
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_FROM_STD(
     is_implicit_lifetime, (class T), bool, __is_implicit_lifetime(T));
 #else
   namespace detail
@@ -1579,22 +1603,22 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 #if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__has_virtual_destructor)
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(has_virtual_destructor, (class T), bool, __has_virtual_destructor(T));
-#elif ! JLN_MP_NO_STL
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(has_virtual_destructor, (class T), bool, (T));
+#elif ! JLN_MP_NO_STL_TRAIT
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(has_virtual_destructor, (class T), bool, (T));
 #else
   // this implementation is not compliant and fails with classes and unions
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(has_virtual_destructor, (class T), bool, false);
 #endif
 
 
-  JLN_MP_MAKE_TRAIT_FROM_LIBMS_LIBCXX_BUILTIN_T_STD_SV_LIBSTDCXX_BUILTIN_VT_STD_S_OTHER_F(
+  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD(
     is_same, (class T, class U), bool, JLN_MP_IS_SAME_V(T, U));
 
 
 // TODO no stl
-#if ! JLN_MP_NO_STL && defined(__cpp_lib_is_layout_compatible) && __cpp_lib_is_layout_compatible >= 201907L
+#if ! JLN_MP_NO_STL_TRAIT && __cpp_lib_is_layout_compatible >= 201907L
   // TODO is_complete_or_unbounded
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_layout_compatible, (class T, class U), bool, (T, U));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_layout_compatible, (class T, class U), bool, (T, U));
 #elif JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_layout_compatible)
   // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(
@@ -1610,10 +1634,10 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
 
 
-#if JLN_MP_USE_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_pointer_interconvertible_base_of)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_pointer_interconvertible_base_of)
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_pointer_interconvertible_base_of,
     (class Base, class Derived), bool, __is_pointer_interconvertible_base_of(Base, Derived));
-#elif !JLN_MP_NO_STL && defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible >= 201907L
+#elif !JLN_MP_NO_STL_TRAIT && __cpp_lib_is_pointer_interconvertible >= 201907L
   JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(is_pointer_interconvertible_base_of,
     (class Base, class Derived), bool, emp::is_pointer_interconvertible_base_of_v<Base, Derived>);
 #endif
@@ -1621,7 +1645,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
   namespace emp
   {
-#if !JLN_MP_NO_STL && defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible >= 201907L
+#if !JLN_MP_NO_STL_TRAIT && __cpp_lib_is_pointer_interconvertible >= 201907L
     using std::is_pointer_interconvertible_with_class;
 #else
     template <class C, class Mem>
@@ -1643,14 +1667,14 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   // TODO LIBMS || LIBCPP -> use std::
   // TODO is_complete_or_unbounded
 #if JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(alignment_of, (class T), std::size_t, (T));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(alignment_of, (class T), std::size_t, (T));
 #else
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(alignment_of, (class T), std::size_t, alignof(T));
 #endif
 
 
 #if JLN_MP_USE_LIBMS
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(rank, (class T), std::size_t, (T));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(rank, (class T), std::size_t, (T));
 #else
   namespace emp
   {
@@ -1719,23 +1743,23 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   JLN_MP_MAKE_TRAIT_NO_EMP(extent, (class T, class Dim = number<0>), emp::extent_c_t<T, Dim::value>);
 
 
-#if defined(__cpp_lib_is_invocable) && __cpp_lib_is_invocable >= 201703L
+#if __cpp_lib_is_invocable >= 201703L
   // TODO https://en.cppreference.com/w/cpp/utility/functional (C++23)
   // TODO
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_invocable, (class Fn, class... Args), bool, (Fn, Args...));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_invocable, (class Fn, class... Args), bool, (Fn, Args...));
   // TODO
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
   // TODO
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_nothrow_invocable, (class Fn, class... Args), bool, (Fn, Args...));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_nothrow_invocable, (class Fn, class... Args), bool, (Fn, Args...));
   // TODO
-  JLN_MP_MAKE_TRAIT_T_FROM_STD_V_x_SV_FROM_STD(is_nothrow_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_nothrow_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_const)
   // TODO use builtin / std::... with macro
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_const, (class T), (T));
-#elif ! JLN_MP_NO_STL
+  JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(remove_const, (class T), (T));
+#elif ! JLN_MP_NO_STL_TRAIT
   JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_const, (class T), (T));
 #else
   namespace emp
@@ -1749,8 +1773,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_volatile)
   // TODO use builtin / std::... with macro
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_volatile, (class T), (T));
-#elif ! JLN_MP_NO_STL
+  JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(remove_volatile, (class T), (T));
+#elif ! JLN_MP_NO_STL_TRAIT
   JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_volatile, (class T), (T));
 #else
   namespace emp
@@ -1764,7 +1788,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 #if ! JLN_MP_BUILTIN_HIDDEN_BY_LIBSTDCXX && JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_cv)
   // TODO use builtin / std::... with macro
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_cv, (class T), (T));
+  JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(remove_cv, (class T), (T));
 #elif JLN_MP_HAS_BUILTIN(__remove_const) && JLN_MP_HAS_BUILTIN(__remove_volatile)
   JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(remove_cv, (class T), __remove_const(__remove_volatile(T)));
 #elif JLN_MP_USE_LIBSTDCXX
@@ -1783,8 +1807,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_extents)
   // TODO use builtin / std::... with macro
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_extents, (class T), (T));
-#elif ! JLN_MP_NO_STL
+  JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(remove_extents, (class T), (T));
+#elif ! JLN_MP_NO_STL_TRAIT
   JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_extent, (class T), (T));
 #else
   namespace emp
@@ -1799,8 +1823,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_all_extents)
   // TODO use builtin / std::... with macro
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_all_extents, (class T), (T));
-#elif ! JLN_MP_NO_STL
+  JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(remove_all_extents, (class T), (T));
+#elif ! JLN_MP_NO_STL_TRAIT
   JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_all_extents, (class T), (T));
 #else
   namespace emp
@@ -1815,8 +1839,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_pointer)
   // TODO use builtin / std::... with macro
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(remove_pointer, (class T), (T));
-#elif ! JLN_MP_NO_STL
+  JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(remove_pointer, (class T), (T));
+#elif ! JLN_MP_NO_STL_TRAIT
   JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_pointer, (class T), (T));
 #else
   namespace emp
@@ -1838,7 +1862,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 # else
   JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(remove_reference, (class T), __remove_reference_t(T))
 # endif
-#elif ! JLN_MP_NO_STL
+#elif ! JLN_MP_NO_STL_TRAIT
   JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_reference, (class T), (T));
 #else
   namespace emp
@@ -2045,7 +2069,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_pointer)
   // TODO use builtin / std::... with macro
-  JLN_MP_MAKE_TRAIT_FROM_LIBCXX_STD_ST_OTHER_BUILTIN_ST(add_pointer, (class T), (T));
+  JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(add_pointer, (class T), (T));
 #else
   namespace detail
   {
@@ -2064,7 +2088,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class T> using add_const_t = T const;
     template<class T> using add_volatile_t = T volatile;
 
-    #if ! JLN_MP_NO_STL
+    #if ! JLN_MP_NO_STL_TRAIT
     using std::add_cv;
     using std::add_const;
     using std::add_volatile;
@@ -2099,9 +2123,15 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class From> struct copy_cvref_impl<From volatile&> { template<class To> using f = __add_lvalue_reference(To volatile); };
     template<class From> struct copy_cvref_impl<From volatile const&> { template<class To> using f = __add_lvalue_reference(To volatile const); };
 #else
+# if JLN_MP_FEATURE_CONCEPTS && JLN_MP_GCC
+    struct copy_const_lref    { template<class T> using f = emp::add_lvalue_reference<T const>; };
+    struct copy_volatile_lref { template<class T> using f = emp::add_lvalue_reference<T volatile>; };
+    struct copy_cv_lref       { template<class T> using f = emp::add_lvalue_reference<T volatile const>; };
+# else
     struct copy_const_lref    { template<class T> using f = typename add_lvalue_reference_impl<T const>::type; };
     struct copy_volatile_lref { template<class T> using f = typename add_lvalue_reference_impl<T volatile>::type; };
     struct copy_cv_lref       { template<class T> using f = typename add_lvalue_reference_impl<T volatile const>::type; };
+# endif
 
     template<class From> struct copy_cvref_impl<From const&> : copy_const_lref {};
     template<class From> struct copy_cvref_impl<From volatile&> : copy_volatile_lref {};
@@ -2114,9 +2144,15 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class From> struct copy_cvref_impl<From volatile&&> { template<class To> using f = __add_rvalue_reference(To volatile); };
     template<class From> struct copy_cvref_impl<From volatile const&&> { template<class To> using f = __add_rvalue_reference(To volatile const); };
 #else
+# if JLN_MP_FEATURE_CONCEPTS && JLN_MP_GCC
+    struct copy_const_rref    { template<class T> using f = emp::add_rvalue_reference<T const>; };
+    struct copy_volatile_rref { template<class T> using f = emp::add_rvalue_reference<T volatile>; };
+    struct copy_cv_rref       { template<class T> using f = emp::add_rvalue_reference<T volatile const>; };
+# else
     struct copy_const_rref    { template<class T> using f = typename add_rvalue_reference_impl<T const>::type; };
     struct copy_volatile_rref { template<class T> using f = typename add_rvalue_reference_impl<T volatile>::type; };
     struct copy_cv_rref       { template<class T> using f = typename add_rvalue_reference_impl<T volatile const>::type; };
+# endif
 
     template<class From> struct copy_cvref_impl<From const&&> : copy_const_rref {};
     template<class From> struct copy_cvref_impl<From volatile&&> : copy_volatile_rref {};
@@ -2390,13 +2426,13 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   JLN_MP_MAKE_TRAIT_T_FROM_S(decay, (class T), emp::decay<T>);
 
 
-#if ! JLN_MP_NO_STL && defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref >= 201811L
+#if ! JLN_MP_NO_STL_TRAIT && __cpp_lib_unwrap_ref >= 201811L
   JLN_MP_MAKE_TRAIT_ST_FROM_STD(unwrap_reference, (class T), (T));
 #else
   namespace emp
   {
     template<class T> struct unwrap_reference { using type = T; };
-    #if ! JLN_MP_NO_STL
+    #if ! JLN_MP_NO_STL_TRAIT
     template<class T> struct unwrap_reference<std::reference_wrapper<T>> { using type = T&; };
     #endif
   }
@@ -2674,7 +2710,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   {
     template<class T, class U, template<class> class TQual, template<class> class UQual>
     struct basic_common_reference
-#if ! JLN_MP_NO_STL && JLN_MP_CXX_VERSION >= 20
+#if ! JLN_MP_NO_STL_TRAIT && JLN_MP_CXX_VERSION >= 20
       : std::basic_common_reference<T, U, TQual, UQual>;
 #endif
     {};
@@ -3022,6 +3058,25 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   // common_reference may result in a type that is not compatible with Ts parameters.
   // In this case, true_common_reference does not contain a type type member
   JLN_MP_MAKE_TRAIT_ST_FROM_S(true_common_reference, (class... Ts), detail::true_common_reference_impl<void, Ts...>);
+
+
+#if JLN_MP_FEATURE_CONCEPTS
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_referenceable, (class T), bool,
+    requires{ JLN_MP_FN_PTR(T&(*)()); });
+#else
+  namespace detail
+  {
+    template<class T, class = void>
+    JLN_MP_CONSTEXPR_VAR bool is_referenceable_impl_v = false;
+
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_referenceable_impl_v<T, emp::void_t<T&>> = true;
+  }
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_referenceable, (class T), bool,
+    detail::is_referenceable_impl_v<T volatile const>);
+#endif
+
+  // TODO is_trivially_relocatable
   //@}
 
 

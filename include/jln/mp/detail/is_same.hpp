@@ -2,11 +2,15 @@
 
 #include <jln/mp/detail/compiler.hpp>
 
+#ifndef JLN_MP_NO_STL_TRAIT
+# define JLN_MP_NO_STL_TRAIT 0
+#endif
+
 #if JLN_MP_HAS_BUILTIN(__is_same)
 #  define JLN_MP_IS_SAME_V __is_same
 #else
 
-#if JLN_MP_MSVC && (!defined(JLN_MP_NO_STL) || !JLN_MP_NO_STL)
+#if JLN_MP_MSVC && ! JLN_MP_NO_STL_TRAIT
 # include <type_traits>
 
 namespace jln::mp::detail

@@ -1024,6 +1024,7 @@ TEST()
   JLN_MP_DIAGNOSTIC_POP()
 
 //   SINGLE_CALL_CHECK(is_complete_type, true_type, void(int));
+//   SINGLE_CALL_CHECK(is_complete_type, true_type, void(int) const);
 //   SINGLE_CALL_CHECK(is_complete_type, true_type, void(int) const&);
 //   SINGLE_CALL_CHECK(is_complete_type, true_type, int&);
 //   SINGLE_CALL_CHECK(is_complete_type, true_type, int);
@@ -1038,6 +1039,7 @@ TEST()
 //   SINGLE_CALL_CHECK(is_complete_type, false_type, incomplete const);
 //
 //   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, void(int));
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, void(int) const);
 //   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, void(int) const&);
 //   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, int&);
 //   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, int);
