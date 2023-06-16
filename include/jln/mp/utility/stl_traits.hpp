@@ -93,6 +93,7 @@
 #endif
 
 
+// TODO custom stl
 #ifndef JLN_MP_BEGIN_NAMESPACE_STD
 // msvc
 # ifdef _STD_BEGIN
@@ -653,9 +654,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(add_lvalue_reference, (class T),
     typename detail::add_lvalue_reference_select<requires{ JLN_MP_DECLVAL_PTR(T&(*)()); }>
     ::template f<T>);
-  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(add_const_lvalue_reference, (class T),
-    typename detail::add_lvalue_reference_select<requires{ JLN_MP_DECLVAL_PTR(T&(*)()); }>
-    ::template f<T const>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_S(add_const_lvalue_reference, (class T),
+    emp::add_lvalue_reference<T const>);
 #else
   namespace detail
   {
@@ -673,6 +673,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_rvalue_reference)
+  #define JLN_MP_ADD_RVALUE_REFERENCE_T __add_rvalue_reference
   // TODO use builtin / std::... with macro
   JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(add_rvalue_reference, (class T), (T));
 #elif JLN_MP_FEATURE_CONCEPTS && JLN_MP_GCC
@@ -686,9 +687,10 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<>
     struct add_rvalue_reference_select<true>
     {
-      template<class T> using f = T&;
+      template<class T> using f = T&&;
     };
   }
+  #define JLN_MP_ADD_RVALUE_REFERENCE_T(...) emp::add_rvalue_reference_t<__VA_ARGS__>
   JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(add_rvalue_reference, (class T),
     typename detail::add_rvalue_reference_select<requires{ JLN_MP_DECLVAL_PTR(T&(*)()); }>::template f<T>);
 #else
@@ -698,8 +700,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     struct add_rvalue_reference_impl { using type = T; };
 
     template<class T>
-    struct add_rvalue_reference_impl<T, emp::void_t<T&>> { using type = T&; };
+    struct add_rvalue_reference_impl<T, emp::void_t<T&>> { using type = T&&; };
   }
+  #define JLN_MP_ADD_RVALUE_REFERENCE_T(...) typename detail::add_rvalue_reference_impl<__VA_ARGS__>::type
   JLN_MP_MAKE_TRAIT_ST_FROM_S(add_rvalue_reference, (class T), detail::add_rvalue_reference_impl<T>);
 #endif
 
@@ -1654,21 +1657,23 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   {
     template<class T>
     JLN_MP_CONSTEXPR_VAR bool is_swappable_v
-      = detail::is_swappable_impl_v<add_lvalue_reference_t<T>>;
+      = detail::is_swappable_impl_v<JLN_MP_ADD_LVALUE_REFERENCE_T(T)>;
 
     template<class T>
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_swappable_v
-      = detail::is_nothrow_swappable_impl_v<add_lvalue_reference_t<T>>;
+      = detail::is_nothrow_swappable_impl_v<JLN_MP_ADD_LVALUE_REFERENCE_T(T)>;
 
     // TODO T, T -> is_swappable_v<T> ?
     template<class T, class U>
     JLN_MP_CONSTEXPR_VAR bool is_swappable_with_v
-      = detail::is_swappable_with_impl_v<add_rvalue_reference_t<T>, add_rvalue_reference_t<U>>;
+      = detail::is_swappable_with_impl_v<JLN_MP_ADD_RVALUE_REFERENCE_T(T),
+                                         JLN_MP_ADD_RVALUE_REFERENCE_T(U)>;
 
     // TODO T, T -> is_nothrow_swappable_v<T> ?
     template<class T, class U>
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_swappable_with_v
-      = detail::is_nothrow_swappable_with_impl_v<add_rvalue_reference_t<T>, add_rvalue_reference_t<U>>;
+      = detail::is_nothrow_swappable_with_impl_v<JLN_MP_ADD_RVALUE_REFERENCE_T(T),
+                                                 JLN_MP_ADD_RVALUE_REFERENCE_T(U)>;
   }
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_swappable, (class T), bool, (T));
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_nothrow_swappable, (class T), bool, (T));
@@ -1819,16 +1824,15 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if __cpp_lib_is_invocable >= 201703L
-  // TODO use __reference_converts_from_temporary
   // TODO https://en.cppreference.com/w/cpp/utility/functional (C++23)
   // TODO
-  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_invocable, (class Fn, class... Args), bool, (Fn, Args...));
-  // TODO
-  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
-  // TODO
-  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_nothrow_invocable, (class Fn, class... Args), bool, (Fn, Args...));
-  // TODO
-  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_nothrow_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
+  // JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_invocable, (class Fn, class... Args), bool, (Fn, Args...));
+  // // TODO
+  // JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
+  // // TODO
+  // JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_nothrow_invocable, (class Fn, class... Args), bool, (Fn, Args...));
+  // // TODO
+  // JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_nothrow_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
 #endif
 
 
@@ -2146,6 +2150,19 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_pointer)
   // TODO use builtin / std::... with macro
   JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(add_pointer, (class T), (T));
+#elif JLN_MP_FEATURE_CONCEPTS && JLN_MP_GCC
+  namespace emp
+  {
+    template<class T> struct add_pointer { using type = T; };
+    template<class T> struct add_pointer<T&> { using type = T*; };
+    template<class T> struct add_pointer<T&&> { using type = T*; };
+
+    template<class T>
+    requires requires { static_cast<T*>(nullptr); }
+    struct add_pointer<T> { using type = T*; };
+  }
+  #define JLN_MP_ADD_POINTER_S(...) emp::add_pointer<__VA_ARGS__>
+  JLN_MP_MAKE_TRAIT_T_FROM_S(add_pointer, (class T), emp::add_pointer<T>);
 #else
   namespace detail
   {
@@ -2154,6 +2171,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class T> struct add_pointer_impl<T&, emp::void_t<T*>> { using type = T*; };
     template<class T> struct add_pointer_impl<T&&, emp::void_t<T*>> { using type = T*; };
   }
+  #define JLN_MP_ADD_POINTER_S(...) detail::add_pointer_impl<__VA_ARGS__>
   JLN_MP_MAKE_TRAIT_ST_FROM_S(add_pointer, (class T), detail::add_pointer_impl<T>);
 #endif
 
@@ -2183,10 +2201,27 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   //@{
   namespace detail
   {
+    struct copy_volatile_lref { template<class T> using f = JLN_MP_ADD_LVALUE_REFERENCE_T(T volatile); };
+    struct copy_cv_lref       { template<class T> using f = JLN_MP_ADD_LVALUE_REFERENCE_T(T volatile const); };
+
+    struct copy_const_rref    { template<class T> using f = JLN_MP_ADD_RVALUE_REFERENCE_T(T const); };
+    struct copy_volatile_rref { template<class T> using f = JLN_MP_ADD_RVALUE_REFERENCE_T(T volatile); };
+    struct copy_cv_rref       { template<class T> using f = JLN_MP_ADD_RVALUE_REFERENCE_T(T volatile const); };
+
+    template<class From> struct copy_const_impl : identity {};
+    template<class From> struct copy_const_impl<From const> : add_const<> {};
+
+    template<class From> struct copy_volatile_impl : identity {};
+    template<class From> struct copy_volatile_impl<From volatile> : add_volatile<> {};
+
     template<class From> struct copy_cv_impl : identity {};
     template<class From> struct copy_cv_impl<From const> : add_const<> {};
     template<class From> struct copy_cv_impl<From volatile> : add_volatile<> {};
     template<class From> struct copy_cv_impl<From volatile const> : add_cv<> {};
+
+    template<class From> struct copy_reference_impl : identity {};
+    template<class From> struct copy_reference_impl<From&> : add_lvalue_reference<> {};
+    template<class From> struct copy_reference_impl<From&&> : add_rvalue_reference<> {};
 
     template<class From> struct copy_cvref_impl : identity {};
     template<class From> struct copy_cvref_impl<From const> : add_const<> {};
@@ -2194,55 +2229,25 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class From> struct copy_cvref_impl<From volatile const> : add_cv<> {};
 
     template<class From> struct copy_cvref_impl<From&> : add_lvalue_reference<> {};
-#if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_lvalue_reference)
-    template<class From> struct copy_cvref_impl<From const&> { template<class To> using f = __add_lvalue_reference(To const); };
-    template<class From> struct copy_cvref_impl<From volatile&> { template<class To> using f = __add_lvalue_reference(To volatile); };
-    template<class From> struct copy_cvref_impl<From volatile const&> { template<class To> using f = __add_lvalue_reference(To volatile const); };
-#else
-# if JLN_MP_FEATURE_CONCEPTS && JLN_MP_GCC
-    struct copy_const_lref    { template<class T> using f = emp::add_lvalue_reference<T const>; };
-    struct copy_volatile_lref { template<class T> using f = emp::add_lvalue_reference<T volatile>; };
-    struct copy_cv_lref       { template<class T> using f = emp::add_lvalue_reference<T volatile const>; };
-# else
-    struct copy_const_lref    { template<class T> using f = typename add_lvalue_reference_impl<T const>::type; };
-    struct copy_volatile_lref { template<class T> using f = typename add_lvalue_reference_impl<T volatile>::type; };
-    struct copy_cv_lref       { template<class T> using f = typename add_lvalue_reference_impl<T volatile const>::type; };
-# endif
-
-    template<class From> struct copy_cvref_impl<From const&> : copy_const_lref {};
+    template<class From> struct copy_cvref_impl<From const&> : add_const_lvalue_reference<> {};
     template<class From> struct copy_cvref_impl<From volatile&> : copy_volatile_lref {};
     template<class From> struct copy_cvref_impl<From volatile const&> : copy_cv_lref {};
-#endif
 
     template<class From> struct copy_cvref_impl<From&&> : add_rvalue_reference<> {};
-#if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_rvalue_reference)
-    template<class From> struct copy_cvref_impl<From const&&> { template<class To> using f = __add_rvalue_reference(To const); };
-    template<class From> struct copy_cvref_impl<From volatile&&> { template<class To> using f = __add_rvalue_reference(To volatile); };
-    template<class From> struct copy_cvref_impl<From volatile const&&> { template<class To> using f = __add_rvalue_reference(To volatile const); };
-#else
-# if JLN_MP_FEATURE_CONCEPTS && JLN_MP_GCC
-    struct copy_const_rref    { template<class T> using f = emp::add_rvalue_reference<T const>; };
-    struct copy_volatile_rref { template<class T> using f = emp::add_rvalue_reference<T volatile>; };
-    struct copy_cv_rref       { template<class T> using f = emp::add_rvalue_reference<T volatile const>; };
-# else
-    struct copy_const_rref    { template<class T> using f = typename add_rvalue_reference_impl<T const>::type; };
-    struct copy_volatile_rref { template<class T> using f = typename add_rvalue_reference_impl<T volatile>::type; };
-    struct copy_cv_rref       { template<class T> using f = typename add_rvalue_reference_impl<T volatile const>::type; };
-# endif
-
     template<class From> struct copy_cvref_impl<From const&&> : copy_const_rref {};
     template<class From> struct copy_cvref_impl<From volatile&&> : copy_volatile_rref {};
     template<class From> struct copy_cvref_impl<From volatile const&&> : copy_cv_rref {};
-#endif
   }
-  namespace emp
-  {
-    template<class From, class To>
-    using copy_cv_t = typename detail::copy_cv_impl<From>::template f<To>;
-
-    template<class From, class To>
-    using copy_cvref_t = typename detail::copy_cvref_impl<From>::template f<To>;
-  }
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(copy_cvref, (class From, class To),
+    typename detail::copy_cvref_impl<From>::template f<To>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(copy_cv, (class From, class To),
+    typename detail::copy_cv_impl<From>::template f<To>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(copy_const, (class From, class To),
+    typename detail::copy_const_impl<From>::template f<To>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(copy_volatile, (class From, class To),
+    typename detail::copy_volatile_impl<From>::template f<To>);
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(copy_reference, (class From, class To),
+    typename detail::copy_reference_impl<From>::template f<To>);
   //@}
 
 
@@ -2405,39 +2410,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
 
 #undef JLN_MP_MK_SIGNED_CV
-
-    // TODO copy_const / copy_volatile / copy_cv / copy_reference / copy_cvref
-
-    // TODO
-    // template<bool IsConst, bool IsVolatile, bool IsLRef, bool isRRef>
-    // struct copy_cvref_select;
-    //
-    // template<> struct copy_cvref_select<false, false, false, false> : identity {};
-    // template<> struct copy_cvref_select<true, false, false, false> : add_const<> {};
-    // template<> struct copy_cvref_select<false, true, false, false> : add_volatile<> {};
-    // template<> struct copy_cvref_select<true, true, false, false> : add_cv<> {};
-    //
-    // template<> struct copy_cvref_select<false, false, true, false> : add_lvalue_reference<> {};
-    // template<> struct copy_cvref_select<true, false, true, false> : add_const<> {};
-    // template<> struct copy_cvref_select<false, true, true, false> : add_volatile<> {};
-    // template<> struct copy_cvref_select<true, true, true, false> : add_cv<> {};
-    //
-    // template<> struct copy_cvref_select<false, false, false, true> : add_rvalue_reference<> {};
-    // template<> struct copy_cvref_select<true, false, false, true> : add_const<> {};
-    // template<> struct copy_cvref_select<false, true, false, true> : add_volatile<> {};
-    // template<> struct copy_cvref_select<true, true, false, true> : add_cv<> {};
-    //
-    // template<class Qualified, class UnQualified>
-    // struct match_cv { using type = UnQualified; };
-    //
-    // template<class Qualified, class UnQualified>
-    // struct match_cv<Qualified const, UnQualified> { using type = UnQualified const; };
-    //
-    // template<class Qualified, class UnQualified>
-    // struct match_cv<Qualified volatile, UnQualified> { using type = UnQualified volatile; };
-    //
-    // template<class Qualified, class UnQualified>
-    // struct match_cv<Qualified volatile const, UnQualified> { using type = UnQualified volatile const; };
   }
 #if JLN_MP_CLANG_LIKE || JLN_MP_MSVC
   namespace emp
@@ -2466,6 +2438,10 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
 
 
+#if JLN_MP_HAS_BUILTIN(__decay)
+  #define JLN_MP_DECAY_T(...) __decay(__VA_ARGS__)
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(decay, (class T), __decay(T));
+#else
   namespace detail
   {
     /* decay:
@@ -2482,7 +2458,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__add_pointer)
     template<class T> struct decay_maybe_func { using type = __add_pointer(T); };
 #else
-    template<class T> struct decay_maybe_func : add_pointer_impl<T> {};
+    template<class T> struct decay_maybe_func : JLN_MP_ADD_POINTER_S(T) {};
 #endif
     // not is_function
     template<class T> struct decay_maybe_func<T volatile const> { using type = T; };
@@ -2499,7 +2475,13 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class T, std::size_t N> struct decay<T(&)[N]> { using type = T*; };
     template<class T, std::size_t N> struct decay<T(&&)[N]> { using type = T*; };
   }
+# if JLN_MP_GCC
+  #define JLN_MP_DECAY_T(...) emp::decay_t<__VA_ARGS__>
+# else
+  #define JLN_MP_DECAY_T(...) typename emp::decay<__VA_ARGS__>::type
+# endif
   JLN_MP_MAKE_TRAIT_T_FROM_S(decay, (class T), emp::decay<T>);
+#endif
 
 
 #if ! JLN_MP_NO_STL_TRAIT && __cpp_lib_unwrap_ref >= 201811L
@@ -2518,8 +2500,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
   namespace emp
   {
-    template<class T> struct unwrap_ref_decay : unwrap_reference<decay_t<T>> {};
-    template<class T> using unwrap_ref_decay_t = unwrap_reference_t<decay_t<T>>;
+    template<class T> struct unwrap_ref_decay : unwrap_reference<JLN_MP_DECAY_T(T)> {};
+    template<class T> using unwrap_ref_decay_t = unwrap_reference_t<JLN_MP_DECAY_T(T)>;
   }
   JLN_MP_MAKE_TRAIT_NO_EMP(unwrap_ref_decay, (class T), emp::unwrap_ref_decay_t<T>);
 
@@ -2557,7 +2539,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       : invoke_caller_unwrap
     {};
 
-    template<class C, class T, class Td = typename emp::decay<T>::type>
+    template<class C, class T, class Td = JLN_MP_DECAY_T(T)>
     using invoke_caller = typename invoke_caller_impl<Td, __is_base_of(C, Td)>::template f<T&&>;
 
     template<class, bool>
@@ -2588,7 +2570,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     {};
 
     template<class C, class M>
-    struct invoke_impl<M C::*> : invoke_mem_fn<C, emp::is_function_v<M>>
+    struct invoke_impl<M C::*> : invoke_mem_fn<C, JLN_MP_IS_FUNCTION_V(M)>
     {};
 
     template<class AlwaysVoid, class F, class... Args>
@@ -2597,10 +2579,10 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
     template<class F, class... Args>
     struct invoke_result<
-      emp::void_t<typename invoke_impl<typename emp::decay<F>::type>::template f<F, Args...>>,
+      emp::void_t<typename invoke_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>>,
       F, Args...>
     {
-      using type = typename invoke_impl<typename emp::decay<F>::type>::template f<F, Args...>;
+      using type = typename invoke_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>;
     };
   } // namespace detail
   // TODO use __reference_converts_from_temporary
@@ -2665,7 +2647,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       using f = emp::common_type<T, U>;
     };
 
-    template<class T, class U, class DT = emp::decay_t<T>, class DU = emp::decay_t<U>>
+    template<class T, class U, class DT = JLN_MP_DECAY_T(T), class DU = JLN_MP_DECAY_T(U)>
     using common_type2 = typename common_type_decayed_dispatch<
       JLN_MP_IS_SAME_V(T, DT) && JLN_MP_IS_SAME_V(U, DU)
     >::template f<DT, DU>;
@@ -2685,21 +2667,21 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       template<class T, class U>
       struct lvalue_cond<T, U, decltype(void(false ? JLN_MP_DECLVAL(T) : JLN_MP_DECLVAL(U)))>
       {
-        using type = emp::decay_t<decltype(false ? JLN_MP_DECLVAL(T) : JLN_MP_DECLVAL(U))>;
+        using type = JLN_MP_DECAY_T(decltype(false ? JLN_MP_DECLVAL(T) : JLN_MP_DECLVAL(U)));
       };
 #endif
 
       // TODO use std::common_type<T, U> when JLN_MP_TRAITS_USE_COMMON_TYPE2
       template<class T, class U,
-        class TRal = emp::add_rvalue_reference_t<T>,
-        class URal = emp::add_rvalue_reference_t<U>,
+        class TRal = JLN_MP_ADD_RVALUE_REFERENCE_T(T),
+        class URal = JLN_MP_ADD_RVALUE_REFERENCE_T(U),
         class = void>
       struct f
 #if JLN_MP_CXX_VERSION >= 20
         : lvalue_cond<
           // TODO when T or U is void, this `f` struct is not selected -> remove add_lvalue_reference ?
           JLN_MP_ADD_LVALUE_REFERENCE_T(T const),
-          emp::add_lvalue_reference_t<U const>
+          JLN_MP_ADD_LVALUE_REFERENCE_T(U const)
         >
 #endif
       {};
@@ -2707,7 +2689,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       template<class T, class U, class TRval, class URval>
       struct f<T, U, TRval, URval, emp::void_t<cond_res<TRval, URval>>>
       {
-        using type = emp::decay_t<cond_res<TRval, URval>>;
+        using type = JLN_MP_DECAY_T(cond_res<TRval, URval>);
       };
     };
 
