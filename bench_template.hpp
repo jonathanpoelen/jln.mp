@@ -1,3 +1,5 @@
+// for comp in g++ clang++ ; do echo $comp; for ((i=0;i<5;++i)) do /usr/bin/time --format='%Es - %MK' $comp test.cpp -fsyntax-only -std=c++20 -I ~/projects/jln.mpl/include -DINCLUDE='"jln/mp/utility/stl_traits.hpp"' -DJLN_MP_NO_STL_TRAIT=1 -DJLN_MP_USE_OPTIONAL_BUILTIN=0 -DIMPL=0 -DNELEM=500 -DCHECK=0 -DNREPEAT=1 -DALGO='transform<t>' -DEXTRA='template<class T> struct S { enum E : int; void f(T) noexcept; }; template<class T> struct P { S<T>& operator*() noexcept; }; struct t { template<class T> using f = traits::emp::is_nothrow_invocable_t<decltype(&S<T>::f), P<T>, T>; };' || break ; done ; done
+
 #include <jln/mp/algorithm/iota.hpp>
 #include <jln/mp/algorithm/repeat.hpp>
 #include <jln/mp/algorithm/transform.hpp>

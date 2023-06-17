@@ -1823,19 +1823,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   JLN_MP_MAKE_TRAIT_NO_EMP(extent, (class T, class Dim = number<0>), emp::extent_c_t<T, Dim::value>);
 
 
-#if __cpp_lib_is_invocable >= 201703L
-  // TODO https://en.cppreference.com/w/cpp/utility/functional (C++23)
-  // TODO
-  // JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_invocable, (class Fn, class... Args), bool, (Fn, Args...));
-  // // TODO
-  // JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
-  // // TODO
-  // JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_nothrow_invocable, (class Fn, class... Args), bool, (Fn, Args...));
-  // // TODO
-  // JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_nothrow_invocable_r, (class R, class Fn, class... Args), bool, (R, Fn, Args...));
-#endif
-
-
 #if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_const)
   // TODO use builtin / std::... with macro
   JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(remove_const, (class T), (T));
@@ -2137,11 +2124,14 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_HAS_BUILTIN(__reference_converts_from_temporary)
+  #define JLN_MP_REFERENCE_CONVERTS_FROM_TEMPORARY_V __reference_converts_from_temporary
   JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     reference_converts_from_temporary, (class T, class U), bool, __reference_converts_from_temporary(T, U));
 #else
   // TODO don't work with explicit ctor-copyable type (gives true instead of false for <T&&, T> and <T const&, T>). How to check `T x = a` ?
   // TODO If T is an lvalue reference type to a const- but not volatile-qualified object type or an rvalue reference type, both std::remove_reference_t<T> and std::remove_reference_t<U> shall be complete types, cv void, or an arrays of unknown bound; otherwise the behavior is undefined.
+  #define JLN_MP_REFERENCE_CONVERTS_FROM_TEMPORARY_V(...) \
+    emp::reference_constructs_from_temporary_v<__VA_ARGS__>
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(reference_converts_from_temporary,
     (class T, class U), bool, emp::reference_constructs_from_temporary_v<T, U>);
 #endif
@@ -2514,6 +2504,17 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       using f = decltype(*JLN_MP_DECLVAL(T));
     };
 
+    struct invoke_caller_deref_if_noexcept
+    {
+#if JLN_MP_FEATURE_CONCEPTS
+      template<class T>
+      requires(noexcept(*JLN_MP_DECLVAL_NOTHROW(T)))
+#else
+      template<class T, class = emp::enable_if_t<noexcept(*JLN_MP_DECLVAL_NOTHROW(T))>>
+#endif
+      using f = decltype(*JLN_MP_DECLVAL_NOTHROW(T));
+    };
+
     struct invoke_caller_unwrap
     {
       template<class T>
@@ -2523,8 +2524,16 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class Td, bool>
     struct invoke_caller_impl;
 
+    template<class Td, bool>
+    struct invoke_caller_if_noexcept_impl;
+
     template<class Td>
     struct invoke_caller_impl<Td, true>
+      : identity
+    {};
+
+    template<class Td>
+    struct invoke_caller_if_noexcept_impl<Td, true>
       : identity
     {};
 
@@ -2533,17 +2542,34 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       : invoke_caller_deref
     {};
 
+    template<class Td>
+    struct invoke_caller_if_noexcept_impl<Td, false>
+      : invoke_caller_deref_if_noexcept
+    {};
+
     // TODO no stl
     template<class Td>
     struct invoke_caller_impl<std::reference_wrapper<Td>, false>
       : invoke_caller_unwrap
     {};
 
+    // TODO no stl
+    template<class Td>
+    struct invoke_caller_if_noexcept_impl<std::reference_wrapper<Td>, false>
+      : invoke_caller_unwrap
+    {};
+
     template<class C, class T, class Td = JLN_MP_DECAY_T(T)>
     using invoke_caller = typename invoke_caller_impl<Td, __is_base_of(C, Td)>::template f<T&&>;
 
+    template<class C, class T, class Td = JLN_MP_DECAY_T(T)>
+    using invoke_caller_if_noexcept = typename invoke_caller_if_noexcept_impl<Td, __is_base_of(C, Td)>::template f<T&&>;
+
     template<class, bool>
     struct invoke_mem_fn;
+
+    template<class, bool>
+    struct invoke_mem_fn_if_noexcept;
 
     template<class C>
     struct invoke_mem_fn<C, true>
@@ -2553,10 +2579,40 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     };
 
     template<class C>
+    struct invoke_mem_fn_if_noexcept<C, true>
+    {
+      template<class F, class T, class... Args>
+#if JLN_MP_FEATURE_CONCEPTS
+      requires (noexcept((JLN_MP_DECLVAL_NOTHROW(invoke_caller_if_noexcept<C, T>).*JLN_MP_DECLVAL_NOTHROW(F))(JLN_MP_DECLVAL_NOTHROW(Args&&)...)))
+      using f = decltype((JLN_MP_DECLVAL_NOTHROW(invoke_caller_if_noexcept<C, T>).*JLN_MP_DECLVAL_NOTHROW(F))(JLN_MP_DECLVAL_NOTHROW(Args&&)...));
+#else
+      using f = emp::enable_if_t<
+        noexcept((JLN_MP_DECLVAL_NOTHROW(invoke_caller_if_noexcept<C, T>).*JLN_MP_DECLVAL_NOTHROW(F))(JLN_MP_DECLVAL_NOTHROW(Args&&)...)),
+        decltype((JLN_MP_DECLVAL_NOTHROW(invoke_caller_if_noexcept<C, T>).*JLN_MP_DECLVAL_NOTHROW(F))(JLN_MP_DECLVAL_NOTHROW(Args&&)...))
+      >;
+#endif
+    };
+
+    template<class C>
     struct invoke_mem_fn<C, false>
     {
       template<class F, class T>
       using f = decltype(JLN_MP_DECLVAL(invoke_caller<C, T>).*JLN_MP_DECLVAL(F));
+    };
+
+    template<class C>
+    struct invoke_mem_fn_if_noexcept<C, false>
+    {
+      template<class F, class T>
+#if JLN_MP_FEATURE_CONCEPTS
+      requires (noexcept(JLN_MP_DECLVAL_NOTHROW(invoke_caller_if_noexcept<C, T>).*JLN_MP_DECLVAL_NOTHROW(F)))
+      using f = decltype(JLN_MP_DECLVAL_NOTHROW(invoke_caller_if_noexcept<C, T>).*JLN_MP_DECLVAL_NOTHROW(F));
+#else
+      using f = emp::enable_if_t<
+        noexcept(JLN_MP_DECLVAL_NOTHROW(invoke_caller_if_noexcept<C, T>).*JLN_MP_DECLVAL_NOTHROW(F)),
+        decltype(JLN_MP_DECLVAL_NOTHROW(invoke_caller_if_noexcept<C, T>).*JLN_MP_DECLVAL_NOTHROW(F))
+      >;
+#endif
     };
 
     struct invoke_fn
@@ -2565,30 +2621,214 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       using f = decltype(JLN_MP_DECLVAL(F&&)(JLN_MP_DECLVAL(Args&&)...));
     };
 
+    struct invoke_fn_if_noexcept
+    {
+      template<class F, class... Args>
+#if JLN_MP_FEATURE_CONCEPTS
+      requires (noexcept(JLN_MP_DECLVAL_NOTHROW(F&&)(JLN_MP_DECLVAL_NOTHROW(Args&&)...)))
+      using f = decltype(JLN_MP_DECLVAL_NOTHROW(F&&)(JLN_MP_DECLVAL_NOTHROW(Args&&)...));
+#else
+      using f = emp::enable_if_t<
+        noexcept(JLN_MP_DECLVAL_NOTHROW(F&&)(JLN_MP_DECLVAL_NOTHROW(Args&&)...)),
+        decltype(JLN_MP_DECLVAL_NOTHROW(F&&)(JLN_MP_DECLVAL_NOTHROW(Args&&)...))
+      >;
+#endif
+    };
+
     template<class T>
     struct invoke_impl : invoke_fn
+    {};
+
+    template<class T>
+    struct invoke_if_noexcept_impl : invoke_fn_if_noexcept
     {};
 
     template<class C, class M>
     struct invoke_impl<M C::*> : invoke_mem_fn<C, JLN_MP_IS_FUNCTION_V(M)>
     {};
 
+    template<class C, class M>
+    struct invoke_if_noexcept_impl<M C::*> : invoke_mem_fn_if_noexcept<C, JLN_MP_IS_FUNCTION_V(M)>
+    {};
+
     template<class AlwaysVoid, class F, class... Args>
     struct invoke_result
     {};
 
+    template<class AlwaysVoid, class F, class... Args>
+    struct invoke_result_if_noexcept
+    {};
+
     template<class F, class... Args>
+#if JLN_MP_FEATURE_CONCEPTS
+    requires requires { typename invoke_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>; }
+    struct invoke_result<void, F, Args...>
+#else
     struct invoke_result<
       emp::void_t<typename invoke_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>>,
       F, Args...>
+#endif
     {
       using type = typename invoke_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>;
     };
+
+    template<class F, class... Args>
+#if JLN_MP_FEATURE_CONCEPTS
+    requires requires { typename invoke_if_noexcept_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>; }
+    struct invoke_result_if_noexcept<void, F, Args...>
+#else
+    struct invoke_result_if_noexcept<
+      emp::void_t<typename invoke_if_noexcept_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>>,
+      F, Args...>
+#endif
+    {
+      using type = typename invoke_if_noexcept_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>;
+    };
   } // namespace detail
-  // TODO use __reference_converts_from_temporary
   // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_ST_FROM_S(invoke_result, (class F, class... Args),
     detail::invoke_result<void, F, Args...>);
+  // not standard
+  // TODO is_complete_or_unbounded
+  JLN_MP_MAKE_TRAIT_ST_FROM_S(invoke_result_if_noexcept, (class F, class... Args),
+    detail::invoke_result_if_noexcept<void, F, Args...>);
+
+
+#if JLN_MP_FEATURE_CONCEPTS
+  namespace emp
+  {
+    template<class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_v
+      = requires { typename detail::invoke_result<void, F, Args...>::type; };
+
+    template<class R, class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_r_v = false;
+
+    template<class R, class F, class... Args>
+    requires requires { JLN_MP_DECLVAL_PTR(void(*)(R))(
+      JLN_MP_DECLVAL(typename detail::invoke_result<void, F, Args...>::type)
+    ); }
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_r_v<R, F, Args...>
+      = !JLN_MP_REFERENCE_CONVERTS_FROM_TEMPORARY_V(
+          R, typename detail::invoke_result<void, F, Args...>::type);
+
+    #define JLN_MP_IS_INVOCABLE_R_VOID_V(...) \
+      requires { typename detail::invoke_result<void, __VA_ARGS__>::type; }
+
+
+    template<class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_v
+      = requires { typename detail::invoke_result_if_noexcept<void, F, Args...>::type; };
+
+    template<class R, class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_r_v = false;
+
+    template<class R, class F, class... Args>
+    requires(noexcept(JLN_MP_DECLVAL_PTR(void(*)(R)noexcept)(
+      JLN_MP_DECLVAL_NOTHROW(typename detail::invoke_result_if_noexcept<void, F, Args...>::type)
+    )))
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_r_v<R, F, Args...>
+      = !JLN_MP_REFERENCE_CONVERTS_FROM_TEMPORARY_V(
+          R, typename detail::invoke_result_if_noexcept<void, F, Args...>::type);
+
+    #define JLN_MP_IS_NOTHROW_INVOCABLE_R_VOID_V(...) \
+      requires { typename detail::invoke_result_if_noexcept<void, __VA_ARGS__>::type; }
+  }
+#else
+  namespace detail
+  {
+    template<class Invoke, class = void>
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_impl_v = false;
+
+    template<class Invoke>
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_impl_v<
+      Invoke, emp::void_t<typename Invoke::type>
+    > = true;
+
+    template<class R, class Invoke, class = void>
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_impl_r_v = false;
+
+    template<class R, class Invoke>
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_impl_r_v<
+      R, Invoke, decltype(JLN_MP_DECLVAL_PTR(void(*)(R))(JLN_MP_DECLVAL(typename Invoke::type)))
+    > = !JLN_MP_REFERENCE_CONVERTS_FROM_TEMPORARY_V(R, typename Invoke::type);
+
+    template<class R, class Invoke, bool = true>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_impl_r_v = false;
+
+    template<class R, class Invoke>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_impl_r_v<
+      R, Invoke, noexcept(JLN_MP_DECLVAL_PTR(void(*)(R)noexcept)(JLN_MP_DECLVAL_NOTHROW(typename Invoke::type)))
+    > = !JLN_MP_REFERENCE_CONVERTS_FROM_TEMPORARY_V(R, typename Invoke::type);
+
+    #define JLN_MP_IS_INVOCABLE_R_VOID_V(...) \
+      detail::is_invocable_impl_v<detail::invoke_result<void, __VA_ARGS__>>
+
+    #define JLN_MP_IS_NOTHROW_INVOCABLE_R_VOID_V(...) \
+      detail::is_invocable_impl_v<detail::invoke_result_if_noexcept<void, __VA_ARGS__>>
+  }
+  namespace emp
+  {
+    template<class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_v
+      = detail::is_invocable_impl_v<detail::invoke_result<void, F, Args...>>;
+
+    template<class R, class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_r_v
+      = detail::is_invocable_impl_r_v<R, detail::invoke_result<void, F, Args...>>;
+
+    template<class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_v
+      = detail::is_invocable_impl_v<detail::invoke_result_if_noexcept<void, F, Args...>>;
+
+    template<class R, class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_r_v
+      = detail::is_nothrow_invocable_impl_r_v<R, detail::invoke_result_if_noexcept<void, F, Args...>>;
+  }
+#endif
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_invocable, (class F, class... Args), bool, (F, Args...));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_invocable_r, (class R, class F, class... Args), bool, (R, F, Args...));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_nothrow_invocable, (class F, class... Args), bool, (F, Args...));
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_nothrow_invocable_r, (class R, class F, class... Args), bool, (R, F, Args...));
+  namespace emp
+  {
+    template<class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_r_v<void, F, Args...>
+      = JLN_MP_IS_INVOCABLE_R_VOID_V(F, Args...);
+
+    template<class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_r_v<void const, F, Args...>
+      = JLN_MP_IS_INVOCABLE_R_VOID_V(F, Args...);
+
+    template<class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_r_v<void volatile, F, Args...>
+      = JLN_MP_IS_INVOCABLE_R_VOID_V(F, Args...);
+
+    template<class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_r_v<void volatile const, F, Args...>
+      = JLN_MP_IS_INVOCABLE_R_VOID_V(F, Args...);
+
+    #undef JLN_MP_IS_INVOCABLE_R_VOID_V
+
+
+    template<class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_r_v<void, F, Args...>
+      = JLN_MP_IS_NOTHROW_INVOCABLE_R_VOID_V(F, Args...);
+
+    template<class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_r_v<void const, F, Args...>
+      = JLN_MP_IS_NOTHROW_INVOCABLE_R_VOID_V(F, Args...);
+
+    template<class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_r_v<void volatile, F, Args...>
+      = JLN_MP_IS_NOTHROW_INVOCABLE_R_VOID_V(F, Args...);
+
+    template<class F, class... Args>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_r_v<void volatile const, F, Args...>
+      = JLN_MP_IS_NOTHROW_INVOCABLE_R_VOID_V(F, Args...);
+
+    #undef JLN_MP_IS_NOTHROW_INVOCABLE_R_VOID_V
+  }
 
 
 // If T is a complete enumeration (enum) type, provides a member typedef type that names the underlying type of T.
