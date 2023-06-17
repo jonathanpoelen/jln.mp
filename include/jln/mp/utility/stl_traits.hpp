@@ -42,20 +42,22 @@
 # endif
 #endif
 
-// TODO type_identity ?
 
-// TODO macro that forces usage of std::
+// TODO no std => using size_t = decltype(sizeof(int))
 
-// TODO template<class T, class = void> struct xxxx_impl;
-// TODO template<class T> struct xxxx_impl<T, void_t<.....>>;
-// TODO template<class T> struct xxxx = xxxx_impl<T>;
-// TODO ->
-// TODO template<class T> struct xxxx {};
-// TODO template<class T> requires { .... } struct xxxx {};
 
-// TODO no stl but predeclaration stl (reference_wrapper and co)
+#ifndef JLN_MP_NO_STL
+# define JLN_MP_NO_STL 0
+#endif
 
-// TODO using size_t = decltype(sizeof(int))
+#ifndef JLN_MP_NO_STL_TRAIT
+# define JLN_MP_NO_STL_TRAIT 0
+#endif
+
+#if JLN_MP_NO_STL && defined(JLN_MP_NO_STL_TRAIT)
+# undef JLN_MP_NO_STL_TRAIT
+# define JLN_MP_NO_STL_TRAIT 0
+#endif
 
 #if ! JLN_MP_NO_STL_TRAIT
 #  include <type_traits>
@@ -93,39 +95,77 @@
 #endif
 
 
-// TODO custom stl
-#ifndef JLN_MP_BEGIN_NAMESPACE_STD
-// msvc
-# ifdef _STD_BEGIN
-#   define JLN_MP_BEGIN_NAMESPACE_STD _STD_BEGIN
-#   define JLN_MP_END_NAMESPACE_STD _STD_END
-#   define JLN_MP_EXPORT_STD _EXPORT_STD
-#   define JLN_MP_VISIBILITY_STD
-// libc++
-# elif defined(_LIBCPP_BEGIN_NAMESPACE_STD)
-#   define JLN_MP_BEGIN_NAMESPACE_STD _LIBCPP_BEGIN_NAMESPACE_STD
-#   define JLN_MP_END_NAMESPACE_STD _LIBCPP_END_NAMESPACE_STD
-#   define JLN_MP_EXPORT_STD
-#   define JLN_MP_VISIBILITY_STD _LIBCPP_TEMPLATE_VIS
-// libstdc++
-# elif defined(_GLIBCXX_BEGIN_NAMESPACE_VERSION)
-#   define JLN_MP_BEGIN_NAMESPACE_STD namespace std { _GLIBCXX_BEGIN_NAMESPACE_VERSION
-#   define JLN_MP_END_NAMESPACE_STD _GLIBCXX_END_NAMESPACE_VERSION }
-#   define JLN_MP_EXPORT_STD
-#   define JLN_MP_VISIBILITY_STD
-// others
-# else
-#   define JLN_MP_BEGIN_NAMESPACE_STD namespace std {
-#   define JLN_MP_END_NAMESPACE_STD }
-#   define JLN_MP_EXPORT_STD
-#   define JLN_MP_VISIBILITY_STD
+#if ! JLN_MP_NO_STL
+# ifndef JLN_MP_STD_BEGIN_NAMESPACE
+    // msvc
+#   ifdef _STD_BEGIN
+#     define JLN_MP_STD_BEGIN_NAMESPACE _STD_BEGIN
+    // libc++
+#   elif defined(_LIBCPP_BEGIN_NAMESPACE_STD)
+#     define JLN_MP_STD_BEGIN_NAMESPACE _LIBCPP_BEGIN_NAMESPACE_STD
+    // libstdc++
+#   elif defined(_GLIBCXX_BEGIN_NAMESPACE_VERSION)
+#     define JLN_MP_STD_BEGIN_NAMESPACE namespace std { _GLIBCXX_BEGIN_NAMESPACE_VERSION
+    // others
+#   else
+#     define JLN_MP_STD_BEGIN_NAMESPACE namespace std {
+#   endif
 # endif
+# ifndef JLN_MP_STD_END_NAMESPACE
+    // msvc
+#   ifdef _STD_BEGIN
+#     define JLN_MP_STD_END_NAMESPACE _STD_END
+    // libc++
+#   elif defined(_LIBCPP_BEGIN_NAMESPACE_STD)
+#     define JLN_MP_STD_END_NAMESPACE _LIBCPP_END_NAMESPACE_STD
+    // libstdc++
+#   elif defined(_GLIBCXX_BEGIN_NAMESPACE_VERSION)
+#     define JLN_MP_STD_END_NAMESPACE _GLIBCXX_END_NAMESPACE_VERSION }
+    // others
+#   else
+#     define JLN_MP_STD_END_NAMESPACE }
+#   endif
+# endif
+# ifndef JLN_MP_STD_EXPORT
+    // msvc
+#   ifdef _STD_BEGIN
+#     define JLN_MP_STD_EXPORT _EXPORT_STD
+    // libc++
+#   elif defined(_LIBCPP_BEGIN_NAMESPACE_STD)
+#     define JLN_MP_STD_EXPORT
+    // libstdc++
+#   elif defined(_GLIBCXX_BEGIN_NAMESPACE_VERSION)
+#     define JLN_MP_STD_EXPORT
+    // others
+#   else
+#     define JLN_MP_STD_EXPORT
+#   endif
+# endif
+# ifndef JLN_MP_STD_VISIBILITY
+    // msvc
+#   ifdef _STD_BEGIN
+#     define JLN_MP_STD_VISIBILITY
+    // libc++
+#   elif defined(_LIBCPP_BEGIN_NAMESPACE_STD)
+#     define JLN_MP_STD_VISIBILITY _LIBCPP_TEMPLATE_VIS
+    // libstdc++
+#   elif defined(_GLIBCXX_BEGIN_NAMESPACE_VERSION)
+#     define JLN_MP_STD_VISIBILITY
+    // others
+#   else
+#     define JLN_MP_STD_VISIBILITY
+#   endif
+# endif
+JLN_MP_STD_BEGIN_NAMESPACE
+  JLN_MP_STD_EXPORT template<class> class JLN_MP_STD_VISIBILITY reference_wrapper;
+  JLN_MP_STD_EXPORT template<class, class> class JLN_MP_STD_VISIBILITY pair;
+  JLN_MP_STD_EXPORT template<class...> class JLN_MP_STD_VISIBILITY tuple;
+JLN_MP_STD_END_NAMESPACE
+# undef JLN_MP_STD_BEGIN_NAMESPACE
+# undef JLN_MP_STD_END_NAMESPACE
+# undef JLN_MP_STD_EXPORT
+# undef JLN_MP_STD_VISIBILITY
 #endif
-JLN_MP_BEGIN_NAMESPACE_STD
-  JLN_MP_EXPORT_STD template<class> class JLN_MP_VISIBILITY_STD reference_wrapper;
-  JLN_MP_EXPORT_STD template<class, class> class JLN_MP_VISIBILITY_STD pair;
-  JLN_MP_EXPORT_STD template<class...> class JLN_MP_VISIBILITY_STD tuple;
-JLN_MP_END_NAMESPACE_STD
 
 
 #if JLN_MP_GCC && JLN_MP_GCC < 1300
@@ -399,8 +439,13 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
         using type = T;
     };
 
+    #if JLN_MP_GCC
+    template<class T>
+    using type_identity_t = T;
+    #else
     template<class T>
     using type_identity_t = typename type_identity<T>::type;
+    #endif
 #else
     using std::type_identity;
     using std::type_identity_t;
@@ -1578,7 +1623,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
 
 
-#if JLN_MP_HAS_OPTIONAL_BUILTIN(__is_implicit_lifetime)
+#if JLN_MP_HAS_BUILTIN(__is_implicit_lifetime)
   JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_FROM_STD(
     is_implicit_lifetime, (class T), bool, __is_implicit_lifetime(T));
 #else
@@ -1601,8 +1646,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       template<class T>
       static constexpr bool v = JLN_MP_IS_TRIVIALLY_DESTRUCTIBLE_V(T)
         && (__is_trivially_constructible(T)
-          || __is_trivially_constructible(T, JLN_MP_ADD_LVALUE_REFERENCE_T(T const))
-          || __is_trivially_constructible(T, T /*emp::add_rvalue_reference_t<T>*/)
+         || __is_trivially_constructible(T, JLN_MP_ADD_LVALUE_REFERENCE_T(T))
+         || __is_trivially_constructible(T, T /*emp::add_rvalue_reference_t<T>*/)
         );
     };
   }
@@ -1610,12 +1655,10 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   {
     template<class T> JLN_MP_CONSTEXPR_VAR bool is_implicit_lifetime_v
       = detail::is_implicit_lifetime_impl<
-        JLN_MP_IS_SCALAR_V(T)
-      || JLN_MP_IS_ARRAY_V(T)
-#if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_aggregate)
-      || __is_aggregate(T)
-#endif
-      >::template v<T volatile const>;
+          JLN_MP_IS_SCALAR_V(T)
+       || JLN_MP_IS_ARRAY_V(T)
+       || __is_aggregate(T)
+        >::template v<T const>;
   }
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_implicit_lifetime, (class T), bool, (T));
 #endif
@@ -1727,8 +1770,23 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
 
 
-  JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_LIBSTDCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_LIBSTDCXX_S_FROM_STD(
-    is_same, (class T, class U), bool, JLN_MP_IS_SAME_V(T, U));
+  namespace emp
+  {
+#if ! JLN_MP_NO_STL_TRAIT
+    using std::is_same;
+#elif JLN_MP_HAS_OPTIONAL_BUILTIN(__is_same)
+    template<class T, class U> struct is_same : integral_constant<bool, __is_same(T, U)> {};
+#else
+    template<class T, class U> struct is_same : false_type {};
+    template<class T> struct is_same<T, T> : true_type {};
+#endif
+    using jln::mp::detail::is_same_v;
+
+    template<class T, class U>
+    using is_same_t = integral_constant<bool, JLN_MP_IS_SAME_V(T, U)>;
+  }
+  JLN_MP_MAKE_TRAIT_NO_EMP(is_same, (class T, class U),
+    emp::integral_constant<bool, JLN_MP_IS_SAME_V(T, U)>);
 
 
 // TODO no stl
@@ -2522,7 +2580,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   namespace emp
   {
     template<class T> struct unwrap_reference { using type = T; };
-    #if ! JLN_MP_NO_STL_TRAIT
+    #if ! JLN_MP_NO_STL
     template<class T> struct unwrap_reference<std::reference_wrapper<T>> { using type = T&; };
     #endif
   }
@@ -2557,12 +2615,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       using f = decltype(*JLN_MP_DECLVAL_NOTHROW(T));
     };
 
-    struct invoke_caller_unwrap
-    {
-      template<class T>
-      using f = decltype(JLN_MP_DECLVAL(T).get());
-    };
-
     template<class Td, bool>
     struct invoke_caller_impl;
 
@@ -2589,17 +2641,23 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       : invoke_caller_deref_if_noexcept
     {};
 
-    // TODO no stl
+    #if ! JLN_MP_NO_STL
+    struct invoke_caller_unwrap
+    {
+      template<class T>
+      using f = decltype(JLN_MP_DECLVAL(T).get());
+    };
+
     template<class Td>
     struct invoke_caller_impl<std::reference_wrapper<Td>, false>
       : invoke_caller_unwrap
     {};
 
-    // TODO no stl
     template<class Td>
     struct invoke_caller_if_noexcept_impl<std::reference_wrapper<Td>, false>
       : invoke_caller_unwrap
     {};
+    #endif
 
     template<class C, class T, class Td = JLN_MP_DECAY_T(T)>
     using invoke_caller = typename invoke_caller_impl<Td, __is_base_of(C, Td)>::template f<T&&>;
@@ -2702,7 +2760,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     {};
 
     template<class F, class... Args>
-#if JLN_MP_FEATURE_CONCEPTS
+#if JLN_MP_FEATURE_CONCEPTS && JLN_MP_GCC
     requires requires { JLN_MP_FIX_REQUIRES_ON_TYPE(
       typename invoke_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>
     ); }
@@ -2717,7 +2775,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     };
 
     template<class F, class... Args>
-#if JLN_MP_FEATURE_CONCEPTS
+#if JLN_MP_FEATURE_CONCEPTS && JLN_MP_GCC
     requires requires { JLN_MP_FIX_REQUIRES_ON_TYPE(
       typename invoke_if_noexcept_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>
     ); }
@@ -3272,6 +3330,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   JLN_MP_MAKE_TRAIT_T_FROM_S(common_reference, (class... Ts), emp::common_reference<Ts...>);
 
 
+#if ! JLN_MP_NO_STL
   // __cpp_lib_common_reference_wrapper (C++23) P2655
   namespace emp
   {
@@ -3281,8 +3340,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       : detail::common_reference_impl<TQual<T>, UQual<U>, 3>
     {};
   }
-  // TODO no stl
-#if JLN_MP_FEATURE_CONCEPTS
+# if JLN_MP_FEATURE_CONCEPTS
   namespace emp
   {
     template<class T, class U, template<class> class TQual, template<class> class UQual>
@@ -3320,7 +3378,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       using type = std::tuple<common_reference_t<TQual<Ts>, UQual<Us>>...>;
     };
   }
-#else
+# else
   namespace detail
   {
     template<class From, class CommonType, class = void>
@@ -3377,6 +3435,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
         ::template f<std::tuple>
     {};
   }
+# endif
 #endif
 
 

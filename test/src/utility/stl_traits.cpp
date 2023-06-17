@@ -715,8 +715,6 @@ static void test_arithmetic()
 template<template<class...> class Std, template<class...> class Jln, class... xs>
 static void test_constructible()
 {
-  test_x1<Std, Jln>();
-
   CHECK_IMPL(Std, Jln, Constructible1, xs...);
   CHECK_IMPL(Std, Jln, Constructible2, xs...);
   CHECK_IMPL(Std, Jln, Constructible3, xs...);
@@ -974,6 +972,25 @@ static void test_invoke_mem()
   CHECK_IMPL(maybe_uncallable<Std>::template f, maybe_uncallable<Jln>::template f, C const*, Ts...);
 }
 
+#if defined(__cpp_lib_is_implicit_lifetime) && __cpp_lib_is_implicit_lifetime >= 202302L
+  template<typename T>
+  struct is_implicit_lifetime_for_test : std::is_implicit_lifetime<T>
+  {};
+#else
+  template<typename T>
+  struct is_implicit_lifetime_for_test : std::disjunction<
+    std::is_scalar<T>,
+    std::is_array<T>,
+    std::is_aggregate<T>,
+    std::conjunction<
+      std::is_trivially_destructible<T>,
+      std::disjunction<
+        std::is_trivially_default_constructible<T>,
+        std::is_trivially_copy_constructible<T>,
+        std::is_trivially_move_constructible<T>>>>
+  {};
+#endif
+
 #ifdef IN_IDE_PARSER
 template<template<class...> class Std, template<class...> class Jln, class... xs>
 static void test_fake()
@@ -1037,8 +1054,6 @@ TEST()
   #define CHECK_X1_ARITHMETIC(name) test_arithmetic<std::name, name>()
   #define CHECK_F(name, fn) fn<std::name, name>()
   #define CHECK_XS_F(name, fn, ...) fn<std::name, name, __VA_ARGS__>()
-
-  // TODO CHECK_XS
 
   // TODO
   JLN_MP_DIAGNOSTIC_POP()
@@ -1343,34 +1358,61 @@ TEST()
 //   CHECK_X1(add_lvalue_reference);
 //
 //   CHECK_X1(add_rvalue_reference);
-//
-//   // CHECK_XS(is_constructible);
-//   CHECK_F(is_constructible, test_constructible);
-//
-//   CHECK_F(is_default_constructible, test_constructible);
-//
-//   CHECK_F(is_copy_constructible, test_constructible);
-//
-//   CHECK_F(is_move_constructible, test_constructible);
-//
-//   // CHECK_XS(is_trivially_constructible);
-//   CHECK_F(is_trivially_constructible, test_constructible);
-//
-//   CHECK_F(is_trivially_default_constructible, test_constructible);
-//
-//   CHECK_F(is_trivially_copy_constructible, test_constructible);
-//
-//   CHECK_F(is_trivially_move_constructible, test_constructible);
-//
-//   // CHECK_XS(is_nothrow_constructible);
-//   CHECK_F(is_nothrow_constructible, test_constructible);
-//
-//   CHECK_F(is_nothrow_default_constructible, test_constructible);
-//
-//   CHECK_F(is_nothrow_copy_constructible, test_constructible);
-//
-//   CHECK_F(is_nothrow_move_constructible, test_constructible);
-//
+
+  // SINGLE_CALL_CHECK(is_constructible, true_type, int);
+  // SINGLE_CALL_CHECK(is_constructible, true_type, int, int);
+  // SINGLE_CALL_CHECK(is_constructible, false_type, int, int, int);
+  // CHECK_X1(is_constructible);
+  // CHECK_F(is_constructible, test_constructible);
+  // CHECK_XS_F(is_constructible, test_constructible, int);
+  // CHECK_XS_F(is_constructible, test_constructible, int, int);
+  // CHECK_XS_F(is_constructible, test_constructible, int, int, int);
+  //
+  // CHECK_X1(is_default_constructible);
+  // CHECK_F(is_default_constructible, test_constructible);
+  //
+  // CHECK_X1(is_copy_constructible);
+  // CHECK_F(is_copy_constructible, test_constructible);
+  //
+  // CHECK_X1(is_move_constructible);
+  // CHECK_F(is_move_constructible, test_constructible);
+  //
+  // SINGLE_CALL_CHECK(is_trivially_constructible, true_type, int);
+  // SINGLE_CALL_CHECK(is_trivially_constructible, true_type, int, int);
+  // SINGLE_CALL_CHECK(is_trivially_constructible, false_type, int, int, int);
+  // CHECK_X1(is_trivially_constructible);
+  // CHECK_F(is_trivially_constructible, test_constructible);
+  // CHECK_XS_F(is_trivially_constructible, test_constructible, int);
+  // CHECK_XS_F(is_trivially_constructible, test_constructible, int, int);
+  // CHECK_XS_F(is_trivially_constructible, test_constructible, int, int, int);
+  //
+  // CHECK_X1(is_trivially_default_constructible);
+  // CHECK_F(is_trivially_default_constructible, test_constructible);
+  //
+  // CHECK_X1(is_trivially_copy_constructible);
+  // CHECK_F(is_trivially_copy_constructible, test_constructible);
+  //
+  // CHECK_X1(is_trivially_move_constructible);
+  // CHECK_F(is_trivially_move_constructible, test_constructible);
+  //
+  // SINGLE_CALL_CHECK(is_nothrow_constructible, true_type, int);
+  // SINGLE_CALL_CHECK(is_nothrow_constructible, true_type, int, int);
+  // SINGLE_CALL_CHECK(is_nothrow_constructible, false_type, int, int, int);
+  // CHECK_X1(is_nothrow_constructible);
+  // CHECK_F(is_nothrow_constructible, test_constructible);
+  // CHECK_XS_F(is_nothrow_constructible, test_constructible, int);
+  // CHECK_XS_F(is_nothrow_constructible, test_constructible, int, int);
+  // CHECK_XS_F(is_nothrow_constructible, test_constructible, int, int, int);
+  //
+  // CHECK_X1(is_nothrow_default_constructible);
+  // CHECK_F(is_nothrow_default_constructible, test_constructible);
+  //
+  // CHECK_X1(is_nothrow_copy_constructible);
+  // CHECK_F(is_nothrow_copy_constructible, test_constructible);
+  //
+  // CHECK_X1(is_nothrow_move_constructible);
+  // CHECK_F(is_nothrow_move_constructible, test_constructible);
+
   // SINGLE_CALL_CHECK(is_assignable, false_type, int, void);
   // SINGLE_CALL_CHECK(is_assignable, false_type, void, int);
   // SINGLE_CALL_CHECK(is_assignable, false_type, void, void);
@@ -1536,21 +1578,7 @@ TEST()
 //
 //   CHECK_X1(is_nothrow_destructible);
 //
-// #if defined(__cpp_lib_is_implicit_lifetime) && __cpp_lib_is_implicit_lifetime >= 202302L
-//   // TODO
-// // template<typename T>
-// // struct is_implicit_lifetime : std::disjunction<
-// //       std::is_scalar<T>,
-// //       std::is_array<T>,
-// //       std::is_aggregate<T>,
-// //       std::conjunction<
-// //             std::is_trivially_destructible<T>,
-// //             std::disjunction<
-// //                    std::is_trivially_default_constructible<T>,
-// //                    std::is_trivially_copy_constructible<T>,
-// // std::is_trivially_move_constructible<T>>>> {};
-//   CHECK_X1(is_implicit_lifetime);
-// #endif
+  // test_x1<is_implicit_lifetime_for_test, is_implicit_lifetime>();
 //
 // #if defined(__cpp_lib_is_swappable) && __cpp_lib_is_swappable >= 201603L
 //   CHECK_F(is_swappable, test_swappable);
@@ -6221,7 +6249,11 @@ TEST()
 //   SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&, ExplicitCopyCtor const&);
 //   SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&, ExplicitCopyCtor const&&);
 //   static_assert(is_convertible_v<ExplicitCopyCtor, ExplicitCopyCtor&&>);
-//   SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  ExplicitCopyCtor&&, ExplicitCopyCtor); // TODO should be false_type
+#if JLN_MP_HAS_BUILTIN(__reference_converts_from_temporary)
+  SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type,  ExplicitCopyCtor&&, ExplicitCopyCtor);
+#else
+  SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  ExplicitCopyCtor&&, ExplicitCopyCtor);
+#endif
 //   SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&&, ExplicitCopyCtor&);
 //   SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&&, ExplicitCopyCtor&&);
 //   SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor&&, ExplicitCopyCtor const&);
@@ -6231,7 +6263,11 @@ TEST()
 //   SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&, ExplicitCopyCtor&&);
 //   SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&, ExplicitCopyCtor const&);
 //   SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&, ExplicitCopyCtor const&&);
-//   SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  ExplicitCopyCtor const&&, ExplicitCopyCtor); // TODO should be false_type
+#if JLN_MP_HAS_BUILTIN(__reference_converts_from_temporary)
+  SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type,  ExplicitCopyCtor const&&, ExplicitCopyCtor);
+#else
+  SINGLE_CALL_CHECK(reference_converts_from_temporary, true_type,  ExplicitCopyCtor const&&, ExplicitCopyCtor);
+#endif
 //   SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&&, ExplicitCopyCtor&);
 //   SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&&, ExplicitCopyCtor&&);
 //   SINGLE_CALL_CHECK(reference_converts_from_temporary, false_type, ExplicitCopyCtor const&&, ExplicitCopyCtor const&);
@@ -6393,16 +6429,21 @@ TEST()
 //   CHECK_F(make_unsigned, test_x1_make_unsigned_signed);
 //
 //   CHECK_X1(decay);
-//
-// #if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref >= 201811L
-//   CHECK_X1_CV(unwrap_reference, void);
-//   CHECK_X1_CV_REF(unwrap_reference, int);
-//   // TODO CHECK_X1_CV_REF(unwrap_reference, std::reference_wrapper<int>);
-//
-//   CHECK_X1(unwrap_ref_decay);
-//   // TODO CHECK_X1_CV_REF(add_pointer, std::reference_wrapper<int>);
-// #endif
-//
+
+  // SINGLE_CALL_CHECK(unwrap_reference, void, void);
+  // SINGLE_CALL_CHECK(unwrap_reference, int, int);
+  // SINGLE_CALL_CHECK(unwrap_reference, int&, int&);
+  // SINGLE_CALL_CHECK(unwrap_reference, int const, int const);
+  // SINGLE_CALL_CHECK(unwrap_reference, int&, std::reference_wrapper<int>);
+  // SINGLE_CALL_CHECK(unwrap_reference, std::reference_wrapper<int> const, std::reference_wrapper<int> const);
+  //
+  // SINGLE_CALL_CHECK(unwrap_ref_decay, void, void);
+  // SINGLE_CALL_CHECK(unwrap_ref_decay, int, int);
+  // SINGLE_CALL_CHECK(unwrap_ref_decay, int, int&);
+  // SINGLE_CALL_CHECK(unwrap_ref_decay, int, int const);
+  // SINGLE_CALL_CHECK(unwrap_ref_decay, int&, std::reference_wrapper<int>);
+  // SINGLE_CALL_CHECK(unwrap_ref_decay, int&, std::reference_wrapper<int> const);
+
   // SINGLE_CALL_CHECK_M(common_reference, notype, JLN_MP_NIL);
 //   SINGLE_CALL_CHECK_M(common_reference, int, int);
 //
