@@ -1676,12 +1676,12 @@ TEST()
 //   CHECK_XS_F(is_layout_compatible, test_x2_cv_ref, SEnum, SLEnum);
 //   CHECK_XS_F(is_layout_compatible, test_x2_cv_ref, SLEnum, SLLEnum);
 // #endif
-//
-// #if defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible >= 201907L
-//   CHECK_XS_F(is_pointer_interconvertible_base_of, test_x2_cv, Empty, PriEmptyPubEmpty2);
-//   CHECK_XS_F(is_pointer_interconvertible_base_of, test_x2_cv, Empty2, PriEmptyPubEmpty2);
-//   CHECK_XS_F(is_pointer_interconvertible_base_of, test_x2_cv, PriEmptyPubEmpty2, NonStdLayout);
-//   CHECK_XS_F(is_pointer_interconvertible_base_of, test_x2_cv, NonStdLayout, NonStdLayout);
+
+// #if defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible >= 201907L && (JLN_MP_HAS_BUILTIN(__is_pointer_interconvertible_base_of) || !JLN_MP_NO_STL_TRAIT)
+//   SINGLE_CALL_CHECK(is_pointer_interconvertible_base_of, true_type, Empty, PriEmptyPubEmpty2);
+//   SINGLE_CALL_CHECK(is_pointer_interconvertible_base_of, true_type, Empty2, PriEmptyPubEmpty2);
+//   SINGLE_CALL_CHECK(is_pointer_interconvertible_base_of, false_type, PriEmptyPubEmpty2, NonStdLayout);
+//   SINGLE_CALL_CHECK(is_pointer_interconvertible_base_of, true_type, NonStdLayout, NonStdLayout);
 //
 //   static_assert(
 //     std::is_pointer_interconvertible_with_class(&PubMem1PubMem2::x)

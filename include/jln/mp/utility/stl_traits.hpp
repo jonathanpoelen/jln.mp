@@ -128,6 +128,13 @@ JLN_MP_BEGIN_NAMESPACE_STD
 JLN_MP_END_NAMESPACE_STD
 
 
+#if JLN_MP_GCC && JLN_MP_GCC < 1300
+# define JLN_MP_FIX_REQUIRES_ON_TYPE(...) emp::void_t<__VA_ARGS__>()
+#else
+# define JLN_MP_FIX_REQUIRES_ON_TYPE(...) __VA_ARGS__
+#endif
+
+
 namespace jln::mp::traits
 {
   /// \ingroup trait
@@ -339,6 +346,7 @@ JLN_MP_DIAGNOSTIC_PUSH()
 JLN_MP_DIAGNOSTIC_MSVC_IGNORE(4180) // qualifier applied to function type has no meaning
 JLN_MP_DIAGNOSTIC_MSVC_IGNORE(4668) // -Wundef: MACRO is not defined, replaced with '0'
 JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wundef")
+JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wdeprecated-copy")
 JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
@@ -1198,7 +1206,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
     template<class T>
     requires __is_enum(T)
-    JLN_MP_CONSTEXPR_VAR bool is_scoped_enum_v<T> = requires { JLN_MP_DECLVAL_PTR(void(*)(int))(T()); };
+    JLN_MP_CONSTEXPR_VAR bool is_scoped_enum_v<T>
+      = requires { JLN_MP_DECLVAL_PTR(void(*)(int))(T()); };
   }
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_scoped_enum, (class T), bool, (T));
 #else
@@ -1741,12 +1750,18 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
 
 
-#if JLN_MP_HAS_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_pointer_interconvertible_base_of)
+#if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_pointer_interconvertible_base_of)
+  // TODO If both Base and Derived are non-union class types, and they are not the same type (ignoring cv-qualification), Derived shall be a complete type; otherwise the behavior is undefined.
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_pointer_interconvertible_base_of,
     (class Base, class Derived), bool, __is_pointer_interconvertible_base_of(Base, Derived));
 #elif !JLN_MP_NO_STL_TRAIT && __cpp_lib_is_pointer_interconvertible >= 201907L
+  // TODO If both Base and Derived are non-union class types, and they are not the same type (ignoring cv-qualification), Derived shall be a complete type; otherwise the behavior is undefined.
   JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(is_pointer_interconvertible_base_of,
     (class Base, class Derived), bool, emp::is_pointer_interconvertible_base_of_v<Base, Derived>);
+#else
+  // TODO If both Base and Derived are non-union class types, and they are not the same type (ignoring cv-qualification), Derived shall be a complete type; otherwise the behavior is undefined.
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_pointer_interconvertible_base_of,
+    (class Base, class Derived), bool, false);
 #endif
 
 
@@ -2688,7 +2703,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
     template<class F, class... Args>
 #if JLN_MP_FEATURE_CONCEPTS
-    requires requires { typename invoke_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>; }
+    requires requires { JLN_MP_FIX_REQUIRES_ON_TYPE(
+      typename invoke_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>
+    ); }
     struct invoke_result<void, F, Args...>
 #else
     struct invoke_result<
@@ -2701,7 +2718,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
     template<class F, class... Args>
 #if JLN_MP_FEATURE_CONCEPTS
-    requires requires { typename invoke_if_noexcept_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>; }
+    requires requires { JLN_MP_FIX_REQUIRES_ON_TYPE(
+      typename invoke_if_noexcept_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>
+    ); }
     struct invoke_result_if_noexcept<void, F, Args...>
 #else
     struct invoke_result_if_noexcept<
@@ -2725,8 +2744,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   namespace emp
   {
     template<class F, class... Args>
-    JLN_MP_CONSTEXPR_VAR bool is_invocable_v
-      = requires { typename detail::invoke_result<void, F, Args...>::type; };
+    JLN_MP_CONSTEXPR_VAR bool is_invocable_v = requires { JLN_MP_FIX_REQUIRES_ON_TYPE(
+      typename detail::invoke_result<void, F, Args...>::type
+    ); };
 
     template<class R, class F, class... Args>
     JLN_MP_CONSTEXPR_VAR bool is_invocable_r_v = false;
@@ -2739,13 +2759,14 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       = !JLN_MP_REFERENCE_CONVERTS_FROM_TEMPORARY_V(
           R, typename detail::invoke_result<void, F, Args...>::type);
 
-    #define JLN_MP_IS_INVOCABLE_R_VOID_V(...) \
-      requires { typename detail::invoke_result<void, __VA_ARGS__>::type; }
+    #define JLN_MP_IS_INVOCABLE_R_VOID_V(...) requires { JLN_MP_FIX_REQUIRES_ON_TYPE( \
+      typename detail::invoke_result<void, __VA_ARGS__>::type); }
 
 
     template<class F, class... Args>
-    JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_v
-      = requires { typename detail::invoke_result_if_noexcept<void, F, Args...>::type; };
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_v = requires { JLN_MP_FIX_REQUIRES_ON_TYPE(
+      typename detail::invoke_result_if_noexcept<void, F, Args...>::type
+    ); };
 
     template<class R, class F, class... Args>
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_invocable_r_v = false;
@@ -2758,8 +2779,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       = !JLN_MP_REFERENCE_CONVERTS_FROM_TEMPORARY_V(
           R, typename detail::invoke_result_if_noexcept<void, F, Args...>::type);
 
-    #define JLN_MP_IS_NOTHROW_INVOCABLE_R_VOID_V(...) \
-      requires { typename detail::invoke_result_if_noexcept<void, __VA_ARGS__>::type; }
+    #define JLN_MP_IS_NOTHROW_INVOCABLE_R_VOID_V(...) requires { JLN_MP_FIX_REQUIRES_ON_TYPE( \
+      typename detail::invoke_result_if_noexcept<void, __VA_ARGS__>::type); }
   }
 #else
   namespace detail
@@ -3012,7 +3033,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class T, class U, class... R>
     struct common_type<T, U, R...>
 #if JLN_MP_FEATURE_CONCEPTS
-      : detail::common_type_fold<requires{ typename common_type<T, U>::type; }>
+      : detail::common_type_fold<requires{ JLN_MP_FIX_REQUIRES_ON_TYPE(
+          typename common_type<T, U>::type
+        ); }>
         ::template f<common_type<T, U>, R...>
 #else
       : detail::common_type_fold<common_type<T, U>>::template f<R...>
@@ -3022,7 +3045,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class T0, class T1, class T2, class T3, class T4, class... R>
     struct common_type<T0, T1, T2, T3, T4, R...>
 #if JLN_MP_FEATURE_CONCEPTS
-      : detail::common_type_fold<requires{ typename common_type<T0, T1, T2, T3>::type; }>
+      : detail::common_type_fold<requires{ JLN_MP_FIX_REQUIRES_ON_TYPE(
+          typename common_type<T0, T1, T2, T3>::type
+        ); }>
         ::template f<common_type<T0, T1, T2, T3>, T4, R...>
 #else
       : detail::common_type_fold<common_type<T0, T1, T2, T3>>::template f<T4, R...>
@@ -3222,7 +3247,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class T, class U, class... R>
     struct common_reference<T, U, R...>
 #if JLN_MP_FEATURE_CONCEPTS
-      : detail::common_reference_fold<requires{ typename common_reference<T, U>::type; }>
+      : detail::common_reference_fold<requires{ JLN_MP_FIX_REQUIRES_ON_TYPE(
+          typename common_reference<T, U>::type
+        ); }>
         ::template f<common_reference<T, U>, R...>
 #else
       : detail::common_reference_fold<common_reference<T, U>>::template f<R...>
@@ -3232,7 +3259,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class T0, class T1, class T2, class T3, class T4, class... R>
     struct common_reference<T0, T1, T2, T3, T4, R...>
 #if JLN_MP_FEATURE_CONCEPTS
-      : detail::common_reference_fold<requires{ typename common_reference<T0, T1, T2, T3>::type; }>
+      : detail::common_reference_fold<requires{ JLN_MP_FIX_REQUIRES_ON_TYPE(
+          typename common_reference<T0, T1, T2, T3>::typ
+        ); }>
         ::template f<common_reference<T0, T1, T2, T3>, T4, R...>
 #else
       : detail::common_reference_fold<common_reference<T0, T1, T2, T3>>::template f<T4, R...>
@@ -3272,8 +3301,10 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
     template<class T1, class T2, class U1, class U2,
              template<class> class TQual, template<class> class UQual>
-      requires requires { typename std::pair<common_reference_t<TQual<T1>, UQual<U1>>,
-                                             common_reference_t<TQual<T2>, UQual<U2>>>; }
+      requires requires { JLN_MP_FIX_REQUIRES_ON_TYPE(
+        typename std::pair<common_reference_t<TQual<T1>, UQual<U1>>,
+                           common_reference_t<TQual<T2>, UQual<U2>>>
+      ); }
     struct basic_common_reference<std::pair<T1, T2>, std::pair<U1, U2>, TQual, UQual>
     {
       using type = std::pair<common_reference_t<TQual<T1>, UQual<U1>>,
@@ -3281,7 +3312,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     };
 
     template<class... Ts, class... Us, template<class> class TQual, template<class> class UQual>
-      requires requires { typename std::tuple<common_reference_t<TQual<Ts>, UQual<Us>>...>; }
+      requires requires { JLN_MP_FIX_REQUIRES_ON_TYPE(
+        typename std::tuple<common_reference_t<TQual<Ts>, UQual<Us>>...>
+      ); }
     struct basic_common_reference<std::tuple<Ts...>, std::tuple<Us...>, TQual, UQual>
     {
       using type = std::tuple<common_reference_t<TQual<Ts>, UQual<Us>>...>;
