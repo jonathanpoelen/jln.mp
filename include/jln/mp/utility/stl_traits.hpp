@@ -1170,6 +1170,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       = detail::is_nothrow_convertible_impl<JLN_MP_IS_CONVERTIBLE_V(From, To)>
         ::template v<From, To>;
 
+    template<>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_convertible_v<void, void> = true;
+
     template<class From>
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_convertible_v<From, void> = false;
 
@@ -1248,13 +1251,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
   // TODO is_complete_or_unbounded
-#if JLN_MP_FEATURE_CONCEPTS
-  // T() does not work with when T = U[n]
-  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_default_constructible, (class T), bool, requires { T{}; });
-#else
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_default_constructible, (class T), bool, __is_constructible(T));
-#endif
 
   // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
@@ -1327,10 +1325,10 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     requires { JLN_MP_DECLVAL(T&&) = JLN_MP_DECLVAL(U&&); }
 
   #define JLN_MP_IS_COPY_ASSIGNABLE_V(...) \
-    requires { JLN_MP_DECLVAL(__VA_ARGS__&) = JLN_MP_DECLVAL(__VA_ARGS__&&); }
+    requires { JLN_MP_DECLVAL(__VA_ARGS__&) = JLN_MP_DECLVAL(__VA_ARGS__ const&); }
 
   #define JLN_MP_IS_MOVE_ASSIGNABLE_V(...) \
-    requires { JLN_MP_DECLVAL(__VA_ARGS__&) = JLN_MP_DECLVAL(__VA_ARGS__ const&); }
+    requires { JLN_MP_DECLVAL(__VA_ARGS__&) = JLN_MP_DECLVAL(__VA_ARGS__ &&); }
 # else
   namespace detail
   {
@@ -1435,19 +1433,32 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_FROM_STD(
     is_destructible, (class T), bool, __is_destructible(T));
+#elif JLN_MP_FEATURE_CONCEPTS
+  namespace emp
+  {
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_destructible_v = requires { JLN_MP_DECLVAL(T*)->~T(); };
+
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_destructible_v<T&> = true;
+
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_destructible_v<T&&> = true;
+
+    template<class T, std::size_t n>
+    JLN_MP_CONSTEXPR_VAR bool is_destructible_v<T[n]> = is_destructible_v<T>;
+  }
+  #define JLN_MP_IS_DESTRUCTIBLE_V(...) emp::is_destructible_v<T volatile const>
+  // TODO is_complete_or_unbounded
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_destructible, (class T), bool, (T volatile const));
 #else
   namespace detail
   {
-#if JLN_MP_FEATURE_CONCEPTS
-    template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_destructible_impl_v = requires { JLN_MP_DECLVAL(T*)->~T(); };
-#else
     template<class T, class = void>
     JLN_MP_CONSTEXPR_VAR bool is_destructible_impl_v = false;
 
     template<class T>
     JLN_MP_CONSTEXPR_VAR bool is_destructible_impl_v<T, decltype(JLN_MP_DECLVAL(T*)->~T())> = true;
-#endif
 
     template<class T>
     JLN_MP_CONSTEXPR_VAR bool is_destructible_impl_v<T&> = true;
@@ -1508,14 +1519,31 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_nothrow_destructible, (class T), bool, __is_nothrow_destructible(T));
+#elif JLN_MP_FEATURE_CONCEPTS && JLN_MP_GCC
+  namespace emp
+  {
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_v = false;
+
+    template<class T>
+    requires requires { JLN_MP_DECLVAL_NOTHROW(T*)->~T(); }
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_v<T>
+      = noexcept(JLN_MP_DECLVAL_NOTHROW(T*)->~T());
+
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_v<T&> = true;
+
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_v<T&&> = true;
+
+    template<class T, std::size_t n>
+    JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_v<T[n]> = is_nothrow_destructible_v<T>;
+  }
+  // TODO is_complete_or_unbounded
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_nothrow_destructible, (class T), bool, (T volatile const));
 #else
   namespace detail
   {
-#if JLN_MP_FEATURE_CONCEPTS
-    template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_impl_v
-      = requires { JLN_MP_DECLVAL_NOTHROW(T*)->~T(); };
-#else
     template<class T, bool = true>
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_impl_v = false;
 
@@ -1523,7 +1551,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_impl_v<
       T, noexcept(JLN_MP_DECLVAL_NOTHROW(T*)->~T())
     > = true;
-#endif
 
     template<class T>
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_impl_v<T&> = true;
