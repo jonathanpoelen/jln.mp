@@ -1972,9 +1972,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
 
 
-#if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_extents)
+#if JLN_MP_HAS_OPTIONAL_BUILTIN(__remove_extent)
   // TODO use builtin / std::... with macro
-  JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(remove_extents, (class T), (T));
+  JLN_MP_MAKE_TRAIT_LIBCXX_ST_FROM_STD_x_OTHER_ST_FROM_BUILTIN(remove_extent, (class T), (T));
 #elif ! JLN_MP_NO_STL_TRAIT
   JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_extent, (class T), (T));
 #else
@@ -2574,7 +2574,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
 
 
-#if ! JLN_MP_NO_STL_TRAIT && __cpp_lib_unwrap_ref >= 201811L
+#if ! JLN_MP_NO_STL_TRAIT && __cpp_lib_unwrap_ref >= 201811L \
+  /* unwrap_reference is missing from <type_traits> with libc++-15 */ \
+  && (! JLN_MP_USE_LIBCXX || _LIBCPP_VERSION >= 16000)
   JLN_MP_MAKE_TRAIT_ST_FROM_STD(unwrap_reference, (class T), (T));
 #else
   namespace emp
