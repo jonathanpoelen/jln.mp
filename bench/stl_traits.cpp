@@ -15,6 +15,10 @@
 # define BENCH_ALL 0
 #endif
 
+#if BENCH_ALL && ! defined(NREPEAT)
+# define NREPEAT 50
+#endif
+
 #ifndef BENCH_SHOW_SOURCE
 # define BENCH_SHOW_SOURCE 0
 #endif
@@ -23,7 +27,7 @@
 # define NREPEAT 0
 #else
 # ifndef NREPEAT
-#   define NREPEAT 800
+#   define NREPEAT 500
 # endif
 #endif
 
@@ -53,37 +57,38 @@
 #define PP_CONCAT_I(a, b) a##b
 
 #if BENCH_SHOW_SOURCE
-# define BENCH_DECL(nrep, wrapper, expr) \
-  PRINT [T = number<0>..number<nrep>] expr;
+# define BENCH_DECL(expr) \
+  PRINT expr [T = number<0>..number<NREPEAT>];
 #else
-# define BENCH_DECL(nrep, wrapper, expr)                                            \
-  namespace PP_CONCAT(n, __COUNTER__) {                                             \
-    struct wrapper { template<class T> using f = expr; };                           \
-    using l = jln::mp::emp::make_int_sequence_c<nrep, jln::mp::transform<wrapper>>; \
+# define BENCH_DECL(expr)                                \
+  namespace PP_CONCAT(n, __COUNTER__) {                  \
+    struct tt { template<class T> using f = expr; };     \
+    using l = jln::mp::emp::make_int_sequence_c<NREPEAT, \
+      jln::mp::transform<tt>>;                           \
   }
 #endif
 
-#define BENCH_S(n, algo, values) \
-  BENCH_DECL(n, bs, typename algo<JLN_MP_UNPACK values>::type)
+#define BENCH_S(algo, values) \
+  BENCH_DECL(typename algo<JLN_MP_UNPACK values>::type)
 
-#define BENCH_T(n, algo, values) \
-  BENCH_DECL(n, bt, algo##_t<JLN_MP_UNPACK values>)
+#define BENCH_T(algo, values) \
+  BENCH_DECL(algo##_t<JLN_MP_UNPACK values>)
 
-#define BENCH_V(n, algo, values) \
-  BENCH_DECL(n, bv, jln::mp::number<algo##_v<JLN_MP_UNPACK values>>)
+#define BENCH_V(algo, values) \
+  BENCH_DECL(jln::mp::number<algo##_v<JLN_MP_UNPACK values>>)
 
-#define BENCH_B(n, algo, values) \
-  BENCH_DECL(n, b, algo<JLN_MP_UNPACK values>)
+#define BENCH_B(algo, values) \
+  BENCH_DECL(algo<JLN_MP_UNPACK values>)
 
-#define BENCH_ST(n, algo, values) \
-  BENCH_S(n, algo, values)        \
-  BENCH_T(n, algo, values)
+#define BENCH_ST(algo, values) \
+  BENCH_S(algo, values)        \
+  BENCH_T(algo, values)
 
-#define BENCH_SV(n, algo, values) \
-  BENCH_S(n, algo, values)        \
-  BENCH_V(n, algo, values)
+#define BENCH_SV(algo, values) \
+  BENCH_S(algo, values)        \
+  BENCH_V(algo, values)
 
-#define BENCH_0(n, algo, values)
+#define BENCH_0(algo, values)
 
 #define BENCH_SELECT_ST_S BENCH_S
 #define BENCH_SELECT_ST_V BENCH_0
@@ -101,10 +106,20 @@
 #define BENCH_SELECT_SV_SVT BENCH_SV
 #define BENCH_SELECT_SV_B BENCH_B
 
-#define BENCH_SELECT(bench_filter, bench_accept) BENCH_SELECT_##bench_accept##_##bench_filter
+#define BENCH_COND_1 1, 1, 1
+#define BENCH_COND_II(x, b, ...) b
+#define BENCH_COND_I(...) BENCH_COND_II(__VA_ARGS__)
+#define BENCH_COND(def) BENCH_COND_I(PP_CONCAT(BENCH_COND_, def), 0, 0)
 
-#define BENCH(n, bench_filter, bench_accept, algo, values) \
-  BENCH_SELECT(bench_filter, bench_accept)(n, NAMESPACE::algo, values)
+#define BENCH_SELECT_1_I(bench_filter, bench_accept) BENCH_SELECT_##bench_accept##_##bench_filter
+#define BENCH_SELECT_10(bench_filter, bench_accept) BENCH_SELECT_1_I(bench_filter, bench_accept)
+#define BENCH_SELECT_11(bench_filter, bench_accept) BENCH_0
+#define BENCH_SELECT_00(bench_filter, bench_accept) BENCH_0
+
+#define BENCH(bench_accept, algo, values, disable_name)         \
+  PP_CONCAT(PP_CONCAT(BENCH_SELECT_, BENCH_COND(BENCH_##algo)), \
+            BENCH_COND(BENCH_##algo##_DISABLE_##disable_name))  \
+  (BENCH_TYPE, bench_accept)(NAMESPACE::algo, values)
 
 
 template<class T>
@@ -121,637 +136,373 @@ JLN_MP_DIAGNOSTIC_PUSH()
 JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wundef")
 
 #if BENCH_ALL
-# define BENCH_IS_CONST 1
-# define BENCH_IS_VOLATILE 1
-# define BENCH_IS_TRIVIAL 1
-# define BENCH_IS_TRIVIALLY_COPYABLE 1
-# define BENCH_IS_ABSTRACT 1
-# define BENCH_IS_AGGREGATE 1
-# define BENCH_IS_BASE_OF 1
-# define BENCH_IS_CLASS 1
-# define BENCH_IS_EMPTY 1
-# define BENCH_IS_ENUM 1
-# define BENCH_IS_FINAL 1
-# define BENCH_IS_POLYMORPHIC 1
-# define BENCH_IS_UNION 1
-# define BENCH_IS_SIGNED 1
-# define BENCH_IS_UNSIGNED 1
-# define BENCH_IS_BOUNDED_ARRAY 1
-# define BENCH_ADD_LVALUE_REFERENCE 1
-# define BENCH_ADD_RVALUE_REFERENCE 1
-# define BENCH_HAS_UNIQUE_OBJECT_REPRESENTATIONS 1
-# define BENCH_IS_VOID 1
-# define BENCH_IS_NULL_POINTER 1
-# define BENCH_IS_INTEGRAL 1
-# define BENCH_IS_FLOATING_POINT 1
-# define BENCH_IS_ARRAY 1
-# define BENCH_IS_POINTER 1
-# define BENCH_IS_LVALUE_REFERENCE 1
-# define BENCH_IS_RVALUE_REFERENCE 1
-# define BENCH_IS_REFERENCE 1
-# define BENCH_IS_FUNCTION 1
-# define BENCH_IS_MEMBER_OBJECT_POINTER 1
-# define BENCH_IS_MEMBER_FUNCTION_POINTER 1
-# define BENCH_IS_ARITHMETIC 1
-# define BENCH_IS_FUNDAMENTAL 1
-# define BENCH_IS_OBJECT 1
-# define BENCH_IS_MEMBER_POINTER 1
-# define BENCH_IS_SCALAR 1
-# define BENCH_IS_STANDARD_LAYOUT 1
-# define BENCH_IS_COMPOUND 1
-# define BENCH_IS_CONVERTIBLE 1
-# define BENCH_IS_NOTHROW_CONVERTIBLE 1
-# define BENCH_IS_SCOPED_ENUM 1
-# define BENCH_IS_CONSTRUCTIBLE 1
-# define BENCH_IS_DEFAULT_CONSTRUCTIBLE 1
-# define BENCH_IS_COPY_CONSTRUCTIBLE 1
-# define BENCH_IS_MOVE_CONSTRUCTIBLE 1
-# define BENCH_IS_TRIVIALLY_CONSTRUCTIBLE 1
-# define BENCH_IS_TRIVIALLY_DEFAULT_CONSTRUCTIBLE 1
-# define BENCH_IS_TRIVIALLY_COPY_CONSTRUCTIBLE 1
-# define BENCH_IS_TRIVIALLY_MOVE_CONSTRUCTIBLE 1
-# define BENCH_IS_NOTHROW_CONSTRUCTIBLE 1
-# define BENCH_IS_NOTHROW_DEFAULT_CONSTRUCTIBLE 1
-# define BENCH_IS_NOTHROW_COPY_CONSTRUCTIBLE 1
-# define BENCH_IS_NOTHROW_MOVE_CONSTRUCTIBLE 1
-# define BENCH_IS_ASSIGNABLE 1
-# define BENCH_IS_COPY_ASSIGNABLE 1
-# define BENCH_IS_MOVE_ASSIGNABLE 1
-# define BENCH_IS_NOTHROW_ASSIGNABLE 1
-# define BENCH_IS_NOTHROW_COPY_ASSIGNABLE 1
-# define BENCH_IS_NOTHROW_MOVE_ASSIGNABLE 1
-# define BENCH_IS_TRIVIALLY_ASSIGNABLE 1
-# define BENCH_IS_TRIVIALLY_COPY_ASSIGNABLE 1
-# define BENCH_IS_TRIVIALLY_MOVE_ASSIGNABLE 1
-# define BENCH_IS_DESTRUCTIBLE 1
-# define BENCH_IS_TRIVIALLY_DESTRUCTIBLE 1
-# define BENCH_IS_NOTHROW_DESTRUCTIBLE 1
-# define BENCH_IS_IMPLICIT_LIFETIME 1
-# define BENCH_IS_SWAPPABLE 1
-# define BENCH_IS_NOTHROW_SWAPPABLE 1
-# define BENCH_IS_SWAPPABLE_WITH 1
-# define BENCH_IS_NOTHROW_SWAPPABLE_WITH 1
-# define BENCH_HAS_VIRTUAL_DESTRUCTOR 1
-# define BENCH_IS_SAME 1
-# define BENCH_IS_LAYOUT_COMPATIBLE 1
-# define BENCH_IS_POINTER_INTERCONVERTIBLE_BASE_OF 1
-# define BENCH_ALIGNMENT_OF 1
-# define BENCH_RANK 1
-# define BENCH_EXTENT 1
-# define BENCH_REMOVE_CONST 1
-# define BENCH_REMOVE_VOLATILE 1
-# define BENCH_REMOVE_CV 1
-# define BENCH_REMOVE_EXTENTS 1
-# define BENCH_REMOVE_ALL_EXTENTS 1
-# define BENCH_REMOVE_POINTER 1
-# define BENCH_REMOVE_REFERENCE 1
-# define BENCH_REMOVE_CVREF 1
-# define BENCH_REFERENCE_CONSTRUCTS_FROM_TEMPORARY 1
-# define BENCH_REFERENCE_CONVERTS_FROM_TEMPORARY 1
-# define BENCH_ADD_POINTER 1
-# define BENCH_ADD_CV 1
-# define BENCH_ADD_CONST 1
-# define BENCH_ADD_VOLATILE 1
-# define BENCH_MAKE_SIGNED 1
-# define BENCH_MAKE_UNSIGNED 1
-# define BENCH_DECAY 1
-# define BENCH_UNWRAP_REFERENCE 1
-# define BENCH_UNWRAP_REF_DECAY 1
-# define BENCH_INVOKE_RESULT 1
-# define BENCH_IS_INVOCABLE 1
-# define BENCH_IS_INVOCABLE_R 1
-# define BENCH_IS_NOTHROW_INVOCABLE 1
-# define BENCH_IS_NOTHROW_INVOCABLE_R 1
-# define BENCH_UNDERLYING_TYPE 1
-# define BENCH_COMMON_TYPE 1
-# define BENCH_COMMON_REFERENCE 1
+# define BENCH_is_const 1
+# define BENCH_is_volatile 1
+# define BENCH_is_trivial 1
+# define BENCH_is_trivially_copyable 1
+# define BENCH_is_abstract 1
+# define BENCH_is_aggregate 1
+# define BENCH_is_base_of 1
+# define BENCH_is_class 1
+# define BENCH_is_empty 1
+# define BENCH_is_enum 1
+# define BENCH_is_final 1
+# define BENCH_is_polymorphic 1
+# define BENCH_is_union 1
+# define BENCH_is_signed 1
+# define BENCH_is_unsigned 1
+# define BENCH_is_bounded_array 1
+# define BENCH_add_lvalue_reference 1
+# define BENCH_add_rvalue_reference 1
+# define BENCH_has_unique_object_representations 1
+# define BENCH_is_void 1
+# define BENCH_is_null_pointer 1
+# define BENCH_is_integral 1
+# define BENCH_is_floating_point 1
+# define BENCH_is_array 1
+# define BENCH_is_pointer 1
+# define BENCH_is_lvalue_reference 1
+# define BENCH_is_rvalue_reference 1
+# define BENCH_is_reference 1
+# define BENCH_is_function 1
+# define BENCH_is_member_object_pointer 1
+# define BENCH_is_member_function_pointer 1
+# define BENCH_is_arithmetic 1
+# define BENCH_is_fundamental 1
+# define BENCH_is_object 1
+# define BENCH_is_member_pointer 1
+# define BENCH_is_scalar 1
+# define BENCH_is_standard_layout 1
+# define BENCH_is_compound 1
+# define BENCH_is_convertible 1
+# define BENCH_is_nothrow_convertible 1
+# define BENCH_is_scoped_enum 1
+# define BENCH_is_constructible 1
+# define BENCH_is_default_constructible 1
+# define BENCH_is_copy_constructible 1
+# define BENCH_is_move_constructible 1
+# define BENCH_is_trivially_constructible 1
+# define BENCH_is_trivially_default_constructible 1
+# define BENCH_is_trivially_copy_constructible 1
+# define BENCH_is_trivially_move_constructible 1
+# define BENCH_is_nothrow_constructible 1
+# define BENCH_is_nothrow_default_constructible 1
+# define BENCH_is_nothrow_copy_constructible 1
+# define BENCH_is_nothrow_move_constructible 1
+# define BENCH_is_assignable 1
+# define BENCH_is_copy_assignable 1
+# define BENCH_is_move_assignable 1
+# define BENCH_is_nothrow_assignable 1
+# define BENCH_is_nothrow_copy_assignable 1
+# define BENCH_is_nothrow_move_assignable 1
+# define BENCH_is_trivially_assignable 1
+# define BENCH_is_trivially_copy_assignable 1
+# define BENCH_is_trivially_move_assignable 1
+# define BENCH_is_destructible 1
+# define BENCH_is_trivially_destructible 1
+# define BENCH_is_nothrow_destructible 1
+# define BENCH_is_implicit_lifetime 1
+# define BENCH_is_swappable 1
+# define BENCH_is_nothrow_swappable 1
+# define BENCH_is_swappable_with 1
+# define BENCH_is_nothrow_swappable_with 1
+# define BENCH_has_virtual_destructor 1
+# define BENCH_is_same 1
+# define BENCH_is_layout_compatible 1
+# define BENCH_is_pointer_interconvertible_base_of 1
+# define BENCH_alignment_of 1
+# define BENCH_rank 1
+# define BENCH_extent 1
+# define BENCH_remove_const 1
+# define BENCH_remove_volatile 1
+# define BENCH_remove_cv 1
+# define BENCH_remove_extents 1
+# define BENCH_remove_all_extents 1
+# define BENCH_remove_pointer 1
+# define BENCH_remove_reference 1
+# define BENCH_remove_cvref 1
+# define BENCH_reference_constructs_from_temporary 1
+# define BENCH_reference_converts_from_temporary 1
+# define BENCH_add_pointer 1
+# define BENCH_add_cv 1
+# define BENCH_add_const 1
+# define BENCH_add_volatile 1
+# define BENCH_make_signed 1
+# define BENCH_make_unsigned 1
+# define BENCH_decay 1
+# define BENCH_unwrap_reference 1
+# define BENCH_unwrap_ref_decay 1
+# define BENCH_invoke_result 1
+# define BENCH_is_invocable 1
+# define BENCH_is_invocable_r 1
+# define BENCH_is_nothrow_invocable 1
+# define BENCH_is_nothrow_invocable_r 1
+# define BENCH_underlying_type 1
+# define BENCH_common_type 1
+# define BENCH_common_reference 1
 #endif
 
 
-#if BENCH_IS_CONST
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_const, (T))
-#endif
+BENCH(SV, is_const, (T), 0)
 
-#if BENCH_IS_VOLATILE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_volatile, (T))
-#endif
+BENCH(SV, is_volatile, (T), 0)
 
-#if BENCH_IS_TRIVIAL
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_trivial, (T))
-#endif
+BENCH(SV, is_trivial, (T), 0)
 
-#if BENCH_IS_TRIVIALLY_COPYABLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_trivially_copyable, (T))
-#endif
+BENCH(SV, is_trivially_copyable, (T), 0)
 
-#if BENCH_IS_ABSTRACT
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_abstract, (T))
-#endif
+BENCH(SV, is_abstract, (T), 0)
 
-#if BENCH_IS_AGGREGATE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_aggregate, (T))
-#endif
+BENCH(SV, is_aggregate, (T), 0)
 
-#if BENCH_IS_BASE_OF
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_base_of, (T, T))
-#endif
+BENCH(SV, is_base_of, (T, T), 0)
 
-#if BENCH_IS_CLASS
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_class, (T))
-#endif
+BENCH(SV, is_class, (T), 0)
 
-#if BENCH_IS_EMPTY
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_empty, (T))
-#endif
+BENCH(SV, is_empty, (T), 0)
 
-#if BENCH_IS_ENUM
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_enum, (T))
-#endif
+BENCH(SV, is_enum, (T), 0)
 
-#if BENCH_IS_FINAL
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_final, (T))
-#endif
+BENCH(SV, is_final, (T), 0)
 
-#if BENCH_IS_POLYMORPHIC
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_polymorphic, (T))
-#endif
+BENCH(SV, is_polymorphic, (T), 0)
 
-#if BENCH_IS_UNION
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_union, (T))
-#endif
+BENCH(SV, is_union, (T), 0)
 
-#if BENCH_IS_SIGNED
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_signed, (T))
-#endif
+BENCH(SV, is_signed, (T), 0)
 
-#if BENCH_IS_UNSIGNED
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_unsigned, (T))
-#endif
+BENCH(SV, is_unsigned, (T), 0)
 
-#if BENCH_IS_BOUNDED_ARRAY && (! BENCH_STD || __cpp_lib_bounded_array_traits >= 201902L)
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_bounded_array, (T))
+#if ! BENCH_STD || __cpp_lib_bounded_array_traits >= 201902L
+BENCH(SV, is_bounded_array, (T), 0)
 #endif
 
-#if BENCH_ADD_LVALUE_REFERENCE
-  BENCH(NREPEAT, BENCH_TYPE, ST, add_lvalue_reference, (T))
-#endif
+BENCH(ST, add_lvalue_reference, (T), 0)
 
-#if BENCH_ADD_RVALUE_REFERENCE
-  BENCH(NREPEAT, BENCH_TYPE, ST, add_rvalue_reference, (T))
-#endif
+BENCH(ST, add_rvalue_reference, (T), 0)
 
-#if BENCH_HAS_UNIQUE_OBJECT_REPRESENTATIONS
-  BENCH(NREPEAT, BENCH_TYPE, SV, has_unique_object_representations, (T))
-#endif
+BENCH(SV, has_unique_object_representations, (T), 0)
 
-#if BENCH_IS_VOID
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_void, (T))
-#endif
+BENCH(SV, is_void, (T), 0)
 
-#if BENCH_IS_NULL_POINTER
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_null_pointer, (T))
-#endif
+BENCH(SV, is_null_pointer, (T), 0)
 
-#if BENCH_IS_INTEGRAL
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_integral, (T))
-#endif
+BENCH(SV, is_integral, (T), 0)
 
-#if BENCH_IS_FLOATING_POINT
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_floating_point, (T))
-#endif
+BENCH(SV, is_floating_point, (T), 0)
 
-#if BENCH_IS_ARRAY
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_array, (T))
-#endif
+BENCH(SV, is_array, (T), 0)
 
-#if BENCH_IS_POINTER
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_pointer, (T))
-#endif
+BENCH(SV, is_pointer, (T), 0)
 
-#if BENCH_IS_LVALUE_REFERENCE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_lvalue_reference, (T))
-#endif
+BENCH(SV, is_lvalue_reference, (T), 0)
 
-#if BENCH_IS_RVALUE_REFERENCE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_rvalue_reference, (T))
-#endif
+BENCH(SV, is_rvalue_reference, (T), 0)
 
-#if BENCH_IS_REFERENCE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_reference, (T))
-#endif
+BENCH(SV, is_reference, (T), 0)
 
-#if BENCH_IS_FUNCTION
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_function, (T))
-#endif
+BENCH(SV, is_function, (T), 0)
 
-#if BENCH_IS_MEMBER_OBJECT_POINTER
-# if ! BENCH_IS_MEMBER_OBJECT_POINTER_DISABLE_T
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_member_object_pointer, (T))
-# endif
-# if ! BENCH_IS_MEMBER_OBJECT_POINTER_DISABLE_MEM_T
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_member_object_pointer, (int T::*))
-# endif
-#endif
+BENCH(SV, is_member_object_pointer, (T), T)
+BENCH(SV, is_member_object_pointer, (int T::*), MEM_T)
 
-#if BENCH_IS_MEMBER_FUNCTION_POINTER
-# if ! BENCH_IS_MEMBER_FUNCTION_POINTER_DISABLE_T
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_member_function_pointer, (T))
-# endif
-# if ! BENCH_IS_MEMBER_FUNCTION_POINTER_DISABLE_MEM_T
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_member_function_pointer, (int(T::*)()))
-# endif
-#endif
+BENCH(SV, is_member_function_pointer, (T), T)
+BENCH(SV, is_member_function_pointer, (int(T::*)()), MEM_T)
 
-#if BENCH_IS_MEMBER_POINTER
-# if ! BENCH_IS_MEMBER_POINTER_DISABLE_T
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_member_pointer, (T))
-# endif
-# if ! BENCH_IS_MEMBER_POINTER_DISABLE_MEM_T
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_member_pointer, (int T::*))
-# endif
-#endif
+BENCH(SV, is_member_pointer, (T), T)
+BENCH(SV, is_member_pointer, (int T::*), MEM_T)
 
-#if BENCH_IS_ARITHMETIC
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_arithmetic, (T))
-#endif
+BENCH(SV, is_arithmetic, (T), 0)
 
-#if BENCH_IS_FUNDAMENTAL
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_fundamental, (T))
-#endif
+BENCH(SV, is_fundamental, (T), 0)
 
-#if BENCH_IS_OBJECT
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_object, (T))
-#endif
+BENCH(SV, is_object, (T), 0)
 
-#if BENCH_IS_SCALAR
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_scalar, (T))
-#endif
+BENCH(SV, is_scalar, (T), 0)
 
-#if BENCH_IS_STANDARD_LAYOUT
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_standard_layout, (T))
-#endif
+BENCH(SV, is_standard_layout, (T), 0)
 
-#if BENCH_IS_COMPOUND
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_compound, (T))
-#endif
+BENCH(SV, is_compound, (T), 0)
 
-#if BENCH_IS_CONVERTIBLE
-# if ! BENCH_IS_CONVERTIBLE_DISABLE_T
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_convertible, (T, T))
-# endif
-# if ! BENCH_IS_CONVERTIBLE_DISABLE_REF
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_convertible, (T&, T&))
-# endif
-# if ! BENCH_IS_CONVERTIBLE_DISABLE_REF_FALSE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_convertible, (T&, int))
-# endif
-#endif
+BENCH(SV, is_convertible, (T, T), T)
+BENCH(SV, is_convertible, (T&, T&), REF)
+BENCH(SV, is_convertible, (T&, int), REF_FALSE)
 
-#if BENCH_IS_NOTHROW_CONVERTIBLE && (! BENCH_STD || __cpp_lib_is_nothrow_convertible >= 201806L)
-# if ! BENCH_IS_NOTHROW_CONVERTIBLE_DISABLE_T
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_convertible, (T, T))
-# endif
-# if ! BENCH_IS_NOTHROW_CONVERTIBLE_DISABLE_REF
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_convertible, (T&, T&))
-# endif
-# if ! BENCH_IS_NOTHROW_CONVERTIBLE_DISABLE_REF_FALSE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_convertible, (T&, int))
-# endif
+#if ! BENCH_STD || __cpp_lib_is_nothrow_convertible >= 201806L
+BENCH(SV, is_nothrow_convertible, (T, T), T)
+BENCH(SV, is_nothrow_convertible, (T&, T&), REF)
+BENCH(SV, is_nothrow_convertible, (T&, int), REF_FALSE)
 #endif
 
-#if BENCH_IS_SCOPED_ENUM && (! BENCH_STD || __cpp_lib_is_scoped_enum >= 202011L)
-# if ! BENCH_IS_SCOPED_ENUM_DISABLE_T
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_scoped_enum, (T))
-# endif
-# if ! BENCH_IS_SCOPED_ENUM_DISABLE_E
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_scoped_enum, (typename X<T>::E))
-# endif
+#if ! BENCH_STD || __cpp_lib_is_scoped_enum >= 202011L
+BENCH(SV, is_scoped_enum, (T), T)
+BENCH(SV, is_scoped_enum, (typename X<T>::E), E)
 #endif
 
-#if BENCH_IS_CONSTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_constructible, (T))
-#endif
+BENCH(SV, is_constructible, (T), 0)
 
-#if BENCH_IS_DEFAULT_CONSTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_default_constructible, (T))
-#endif
+BENCH(SV, is_default_constructible, (T), 0)
 
-#if BENCH_IS_COPY_CONSTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_copy_constructible, (T))
-#endif
+BENCH(SV, is_copy_constructible, (T), 0)
 
-#if BENCH_IS_MOVE_CONSTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_move_constructible, (T))
-#endif
+BENCH(SV, is_move_constructible, (T), 0)
 
-#if BENCH_IS_TRIVIALLY_CONSTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_trivially_constructible, (T))
-#endif
 
-#if BENCH_IS_TRIVIALLY_DEFAULT_CONSTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_trivially_default_constructible, (T))
-#endif
+BENCH(SV, is_trivially_constructible, (T), 0)
 
-#if BENCH_IS_TRIVIALLY_COPY_CONSTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_trivially_copy_constructible, (T))
-#endif
+BENCH(SV, is_trivially_default_constructible, (T), 0)
 
-#if BENCH_IS_TRIVIALLY_MOVE_CONSTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_trivially_move_constructible, (T))
-#endif
+BENCH(SV, is_trivially_copy_constructible, (T), 0)
 
-#if BENCH_IS_NOTHROW_CONSTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_constructible, (T))
-#endif
+BENCH(SV, is_trivially_move_constructible, (T), 0)
 
-#if BENCH_IS_NOTHROW_DEFAULT_CONSTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_default_constructible, (T))
-#endif
+BENCH(SV, is_nothrow_constructible, (T), 0)
 
-#if BENCH_IS_NOTHROW_COPY_CONSTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_copy_constructible, (T))
-#endif
+BENCH(SV, is_nothrow_default_constructible, (T), 0)
 
-#if BENCH_IS_NOTHROW_MOVE_CONSTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_move_constructible, (T))
-#endif
+BENCH(SV, is_nothrow_copy_constructible, (T), 0)
 
-#if BENCH_IS_ASSIGNABLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_assignable, (T, T))
-#endif
+BENCH(SV, is_nothrow_move_constructible, (T), 0)
 
-#if BENCH_IS_COPY_ASSIGNABLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_copy_assignable, (T))
-#endif
+BENCH(SV, is_assignable, (T, T), 0)
 
-#if BENCH_IS_MOVE_ASSIGNABLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_move_assignable, (T))
-#endif
+BENCH(SV, is_copy_assignable, (T), 0)
 
-#if BENCH_IS_NOTHROW_ASSIGNABLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_assignable, (T, T))
-#endif
+BENCH(SV, is_move_assignable, (T), 0)
 
-#if BENCH_IS_NOTHROW_COPY_ASSIGNABLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_copy_assignable, (T))
-#endif
+BENCH(SV, is_nothrow_assignable, (T, T), 0)
 
-#if BENCH_IS_NOTHROW_MOVE_ASSIGNABLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_move_assignable, (T))
-#endif
+BENCH(SV, is_nothrow_copy_assignable, (T), 0)
 
-#if BENCH_IS_TRIVIALLY_ASSIGNABLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_trivially_assignable, (T, T))
-#endif
+BENCH(SV, is_nothrow_move_assignable, (T), 0)
 
-#if BENCH_IS_TRIVIALLY_COPY_ASSIGNABLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_trivially_copy_assignable, (T))
-#endif
+BENCH(SV, is_trivially_assignable, (T, T), 0)
 
-#if BENCH_IS_TRIVIALLY_MOVE_ASSIGNABLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_trivially_move_assignable, (T))
-#endif
+BENCH(SV, is_trivially_copy_assignable, (T), 0)
 
-#if BENCH_IS_DESTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_destructible, (T))
-#endif
+BENCH(SV, is_trivially_move_assignable, (T), 0)
 
-#if BENCH_IS_TRIVIALLY_DESTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_trivially_destructible, (T))
-#endif
+BENCH(SV, is_destructible, (T), 0)
 
-#if BENCH_IS_NOTHROW_DESTRUCTIBLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_destructible, (T))
-#endif
+BENCH(SV, is_trivially_destructible, (T), 0)
 
-#if BENCH_IS_IMPLICIT_LIFETIME && (! BENCH_STD || __cpp_lib_is_implicit_lifetime >= 202302L)
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_implicit_lifetime, (T))
-#endif
+BENCH(SV, is_nothrow_destructible, (T), 0)
 
-#if BENCH_IS_SWAPPABLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_swappable, (T))
+#if ! BENCH_STD || __cpp_lib_is_implicit_lifetime >= 202302L
+BENCH(SV, is_implicit_lifetime, (T), 0)
 #endif
 
-#if BENCH_IS_NOTHROW_SWAPPABLE
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_swappable, (T))
-#endif
+BENCH(SV, is_swappable, (T), 0)
 
-#if BENCH_IS_SWAPPABLE_WITH
-# if ! BENCH_IS_SWAPPABLE_WITH_DISABLE_REF
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_swappable_with, (T&, T&))
-# endif
-# if ! BENCH_IS_SWAPPABLE_WITH_DISABLE_REF2
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_swappable_with, (X<T>&, X<T[1]>&))
-# endif
-#endif
+BENCH(SV, is_nothrow_swappable, (T), 0)
 
-#if BENCH_IS_NOTHROW_SWAPPABLE_WITH
-# if ! BENCH_IS_NOTHROW_SWAPPABLE_WITH_DISABLE_REF
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_swappable_with, (T&, T&))
-# endif
-# if ! BENCH_IS_NOTHROW_SWAPPABLE_WITH_DISABLE_REF2
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_swappable_with, (X<T>&, X<T[1]>&))
-# endif
-#endif
+BENCH(SV, is_swappable_with, (T&, T&), REF)
+BENCH(SV, is_swappable_with, (X<T>&, X<T[1]>&), REF2)
 
-#if BENCH_HAS_VIRTUAL_DESTRUCTOR
-  BENCH(NREPEAT, BENCH_TYPE, SV, has_virtual_destructor, (T))
-#endif
+BENCH(SV, is_nothrow_swappable_with, (T&, T&), REF)
+BENCH(SV, is_nothrow_swappable_with, (X<T>&, X<T[1]>&), REF2)
 
-#if BENCH_IS_SAME
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_same, (T, T))
-#endif
+BENCH(SV, has_virtual_destructor, (T), 0)
 
-// #if BENCH_IS_LAYOUT_COMPATIBLE
-//   BENCH(NREPEAT, BENCH_TYPE, SV, is_layout_compatible, (T, T))
-// #endif
+BENCH(SV, is_same, (T, T), 0)
 
-// #if BENCH_IS_POINTER_INTERCONVERTIBLE_BASE_OF
-//   BENCH(NREPEAT, BENCH_TYPE, SV, is_pointer_interconvertible_base_of, (T, T))
-// #endif
+// BENCH(SV, is_layout_compatible, (T, T), 0)
 
-#if BENCH_ALIGNMENT_OF
-  BENCH(NREPEAT, BENCH_TYPE, SV, alignment_of, (T))
-#endif
+// BENCH(SV, is_pointer_interconvertible_base_of, (T, T), 0)
 
-#if BENCH_RANK
-# if ! BENCH_RANK_DISABLE_T
-  BENCH(NREPEAT, BENCH_TYPE, SV, rank, (T))
-# endif
-# if ! BENCH_RANK_DISABLE_ARRAY
-  BENCH(NREPEAT, BENCH_TYPE, SV, rank, (T[1]))
-# endif
-#endif
+BENCH(SV, alignment_of, (T), 0)
 
-#if BENCH_EXTENT
-# if BENCH_STD
-#   define EXTENT_NAME extent
-# else
-#   define EXTENT_NAME extent_c
-# endif
-# if ! BENCH_EXTENT_DISABLE_T
-  BENCH(NREPEAT, BENCH_TYPE, SV, EXTENT_NAME, (T))
-# endif
-# if ! BENCH_EXTENT_DISABLE_ARRAY
-  BENCH(NREPEAT, BENCH_TYPE, SV, EXTENT_NAME, (T[1]))
-# endif
-#endif
+BENCH(SV, rank, (T), T)
+BENCH(SV, rank, (T[1]), ARRAY)
 
-#if BENCH_REMOVE_CONST
-  BENCH(NREPEAT, BENCH_TYPE, ST, remove_const, (T))
+#if BENCH_STD
+#  define EXTENT_NAME extent
+#else
+#  define EXTENT_NAME extent_c
 #endif
+BENCH(SV, EXTENT_NAME, (T), T)
+BENCH(SV, EXTENT_NAME, (T[1]), ARRAY)
 
-#if BENCH_REMOVE_VOLATILE
-  BENCH(NREPEAT, BENCH_TYPE, ST, remove_volatile, (T))
-#endif
+BENCH(ST, remove_const, (T), 0)
 
-#if BENCH_REMOVE_CV
-  BENCH(NREPEAT, BENCH_TYPE, ST, remove_cv, (T))
-#endif
+BENCH(ST, remove_volatile, (T), 0)
 
-#if BENCH_REMOVE_EXTENTS
-  BENCH(NREPEAT, BENCH_TYPE, ST, remove_extent, (T))
-#endif
+BENCH(ST, remove_cv, (T), 0)
 
-#if BENCH_REMOVE_ALL_EXTENTS
-  BENCH(NREPEAT, BENCH_TYPE, ST, remove_all_extents, (T))
-#endif
+BENCH(ST, remove_extent, (T), 0)
 
-#if BENCH_REMOVE_POINTER
-  BENCH(NREPEAT, BENCH_TYPE, ST, remove_pointer, (T))
-#endif
+BENCH(ST, remove_all_extents, (T), 0)
 
-#if BENCH_REMOVE_REFERENCE
-  BENCH(NREPEAT, BENCH_TYPE, ST, remove_reference, (T))
-#endif
+BENCH(ST, remove_pointer, (T), 0)
 
-#if BENCH_REMOVE_CVREF && (! BENCH_STD || __cpp_lib_remove_cvref >= 201711L)
-  BENCH(NREPEAT, BENCH_TYPE, ST, remove_cvref, (T))
-#endif
+BENCH(ST, remove_reference, (T), 0)
 
-#if BENCH_REFERENCE_CONSTRUCTS_FROM_TEMPORARY && (! BENCH_STD || __cpp_lib_reference_from_temporary >= 202202L)
-  BENCH(NREPEAT, BENCH_TYPE, ST, reference_constructs_from_temporary, (T&, T&))
+#if ! BENCH_STD || __cpp_lib_remove_cvref >= 201711L
+BENCH(ST, remove_cvref, (T), 0)
 #endif
 
-#if BENCH_REFERENCE_CONVERTS_FROM_TEMPORARY && (! BENCH_STD || __cpp_lib_reference_from_temporary >= 202202L)
-  BENCH(NREPEAT, BENCH_TYPE, ST, reference_converts_from_temporary, (T&, T&))
+#if ! BENCH_STD || __cpp_lib_reference_from_temporary >= 202202L
+BENCH(ST, reference_constructs_from_temporary, (T&, T&), 0)
 #endif
 
-#if BENCH_ADD_POINTER
-  BENCH(NREPEAT, BENCH_TYPE, ST, add_pointer, (T))
+#if ! BENCH_STD || __cpp_lib_reference_from_temporary >= 202202L
+BENCH(ST, reference_converts_from_temporary, (T&, T&), 0)
 #endif
 
-#if BENCH_ADD_CV
-  BENCH(NREPEAT, BENCH_TYPE, ST, add_cv, (T))
-#endif
+BENCH(ST, add_pointer, (T), 0)
 
-#if BENCH_ADD_CONST
-  BENCH(NREPEAT, BENCH_TYPE, ST, add_const, (T))
-#endif
+BENCH(ST, add_cv, (T), 0)
 
-#if BENCH_ADD_VOLATILE
-  BENCH(NREPEAT, BENCH_TYPE, ST, add_volatile, (T))
-#endif
+BENCH(ST, add_const, (T), 0)
 
-#if BENCH_MAKE_SIGNED
-  BENCH(NREPEAT, BENCH_TYPE, ST, make_signed, (typename X<T>::E))
-#endif
+BENCH(ST, add_volatile, (T), 0)
 
-#if BENCH_MAKE_UNSIGNED
-  BENCH(NREPEAT, BENCH_TYPE, ST, make_unsigned, (typename X<T>::E))
-#endif
+BENCH(ST, make_signed, (typename X<T>::E), 0)
 
-#if BENCH_DECAY
-# if ! BENCH_DECAY_DISABLE_T
-  BENCH(NREPEAT, BENCH_TYPE, ST, decay, (T))
-# endif
-# if ! BENCH_DECAY_DISABLE_REF
-  BENCH(NREPEAT, BENCH_TYPE, ST, decay, (T&))
-# endif
-#endif
+BENCH(ST, make_unsigned, (typename X<T>::E), 0)
 
-#if BENCH_UNWRAP_REFERENCE && (! BENCH_STD || __cpp_lib_unwrap_ref >= 201811L) \
-  /* unwrap_reference is missing from <type_traits> with libc++-15 */ \
-  && (! _LIBCPP_VERSION || _LIBCPP_VERSION >= 16000)
-  BENCH(NREPEAT, BENCH_TYPE, ST, unwrap_reference, (T))
-#endif
+BENCH(ST, decay, (T), T)
+BENCH(ST, decay, (T&), REF)
 
-#if BENCH_UNWRAP_REF_DECAY && (! BENCH_STD || __cpp_lib_unwrap_ref >= 201811L) \
-  /* unwrap_ref_decay is missing from <type_traits> with libc++-15 */ \
-  && (! _LIBCPP_VERSION || _LIBCPP_VERSION >= 16000)
-  BENCH(NREPEAT, BENCH_TYPE, ST, unwrap_ref_decay, (T))
+#if (! BENCH_STD || __cpp_lib_unwrap_ref >= 201811L) \
+ /* unwrap_reference is missing from <type_traits> with libc++-15 */ \
+ && (! _LIBCPP_VERSION || _LIBCPP_VERSION >= 16000)
+BENCH(ST, unwrap_reference, (T), 0)
 #endif
 
-#if BENCH_INVOKE_RESULT
-# if ! BENCH_INVOKE_RESULT_DISABLE_FN
-  BENCH(NREPEAT, BENCH_TYPE, ST, invoke_result, (int(*)(T), T))
-# endif
-# if ! BENCH_INVOKE_RESULT_DISABLE_MEM_VAR
-  BENCH(NREPEAT, BENCH_TYPE, ST, invoke_result, (int T::*, T))
-# endif
-# if ! BENCH_INVOKE_RESULT_DISABLE_MEM_FN
-  BENCH(NREPEAT, BENCH_TYPE, ST, invoke_result, (int(T::*)(), T))
-# endif
+#if (! BENCH_STD || __cpp_lib_unwrap_ref >= 201811L) \
+ /* unwrap_ref_decay is missing from <type_traits> with libc++-15 */ \
+ && (! _LIBCPP_VERSION || _LIBCPP_VERSION >= 16000)
+BENCH(ST, unwrap_ref_decay, (T), 0)
 #endif
 
-#if BENCH_IS_INVOCABLE
-# if ! BENCH_IS_INVOCABLE_DISABLE_FN
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_invocable, (int(*)(T), T))
-# endif
-# if ! BENCH_IS_INVOCABLE_DISABLE_MEM_VAR
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_invocable, (int T::*, T))
-# endif
-# if ! BENCH_IS_INVOCABLE_DISABLE_MEM_FN
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_invocable, (int(T::*)(), T))
-# endif
-#endif
+BENCH(ST, invoke_result, (int(*)(T), T), FN)
+BENCH(ST, invoke_result, (int T::*, T), MEM_VAR)
+BENCH(ST, invoke_result, (int(T::*)(), T), MEM_FN)
 
-#if BENCH_IS_INVOCABLE_R
-# if ! BENCH_IS_INVOCABLE_R_DISABLE_FN
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_invocable_r, (int, int(*)(T), T))
-# endif
-# if ! BENCH_IS_INVOCABLE_R_DISABLE_MEM_VAR
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_invocable_r, (int, int T::*, T))
-# endif
-# if ! BENCH_IS_INVOCABLE_R_DISABLE_MEM_FN
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_invocable_r, (int, int(T::*)(), T))
-# endif
-#endif
+BENCH(SV, is_invocable, (int(*)(T), T), FN)
+BENCH(SV, is_invocable, (int T::*, T), MEM_VAR)
+BENCH(SV, is_invocable, (int(T::*)(), T), MEM_FN)
 
-#if BENCH_IS_NOTHROW_INVOCABLE
-# if ! BENCH_IS_NOTHROW_INVOCABLE_DISABLE_FN
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_invocable, (int(*)(T), T))
-# endif
-# if ! BENCH_IS_NOTHROW_INVOCABLE_DISABLE_MEM_VAR
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_invocable, (int T::*, T))
-# endif
-# if ! BENCH_IS_NOTHROW_INVOCABLE_DISABLE_MEM_FN
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_invocable, (int(T::*)(), T))
-# endif
-#endif
+BENCH(SV, is_invocable_r, (int, int(*)(T), T), FN)
+BENCH(SV, is_invocable_r, (int, int T::*, T), MEM_VAR)
+BENCH(SV, is_invocable_r, (int, int(T::*)(), T), MEM_FN)
 
-#if BENCH_IS_NOTHROW_INVOCABLE_R
-# if ! BENCH_IS_NOTHROW_INVOCABLE_R_DISABLE_FN
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_invocable_r, (int, int(*)(T), T))
-# endif
-# if ! BENCH_IS_NOTHROW_INVOCABLE_R_DISABLE_MEM_VAR
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_invocable_r, (int, int T::*, T))
-# endif
-# if ! BENCH_IS_NOTHROW_INVOCABLE_R_DISABLE_MEM_FN
-  BENCH(NREPEAT, BENCH_TYPE, SV, is_nothrow_invocable_r, (int, int(T::*)(), T))
-# endif
-#endif
+BENCH(SV, is_nothrow_invocable, (int(*)(T), T), FN)
+BENCH(SV, is_nothrow_invocable, (int T::*, T), MEM_VAR)
+BENCH(SV, is_nothrow_invocable, (int(T::*)(), T), MEM_FN)
 
-#if BENCH_UNDERLYING_TYPE
-  BENCH(NREPEAT, BENCH_TYPE, ST, underlying_type, (typename X<T>::E))
-#endif
+BENCH(SV, is_nothrow_invocable_r, (int, int(*)(T), T), FN)
+BENCH(SV, is_nothrow_invocable_r, (int, int T::*, T), MEM_VAR)
+BENCH(SV, is_nothrow_invocable_r, (int, int(T::*)(), T), MEM_FN)
 
-#if BENCH_COMMON_TYPE
-  BENCH(NREPEAT, BENCH_TYPE, ST, common_type, (T, T&, T&&, T const&))
-#endif
+BENCH(ST, underlying_type, (typename X<T>::E), 0)
 
-#if BENCH_COMMON_REFERENCE && (! BENCH_STD || __cpp_lib_common_reference >= 202302L)
-  BENCH(NREPEAT, BENCH_TYPE, ST, common_reference, (T&, T const&, T&&))
+BENCH(ST, common_type, (T, T&, T&&, T const&), 0)
+
+#if ! BENCH_STD || __cpp_lib_common_reference >= 202302L
+BENCH(ST, common_reference, (T&, T const&, T&&), 0)
 #endif
+
 
 JLN_MP_DIAGNOSTIC_POP()
