@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>stl_traits.cpp</title>
+<meta name="generator" content="KF5::SyntaxHighlighting - Definition (C++) - Theme (My Breeze Dark)"/>
+</head><body style="background-color:#232629;color:#d5d5c8"><pre>
+<span style="color:#7a7c7d;">// type:</span>
+<span style="color:#7a7c7d;">//   S = xxx&lt;...&gt;::type</span>
+<span style="color:#7a7c7d;">//   V = xxx_v&lt;...&gt;</span>
+<span style="color:#7a7c7d;">//   T = xxx_t&lt;...&gt;</span>
+<span style="color:#7a7c7d;">//   B = xxx&lt;...&gt;</span>
+<span style="color:#7a7c7d;">// values: S, V, T, SV, ST, SVT, B</span>
+<span style="color:#60c260;">#ifndef BENCH_TYPE</span>
+<span style="color:#60c260;"># define BENCH_TYPE </span><span style="color:#a4bbd9;">SVT</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#60c260;">#ifndef BENCH_STD</span>
+<span style="color:#60c260;"># define BENCH_STD </span><span style="color:#ff9e15;">0</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#60c260;">#ifndef BENCH_ALL</span>
+<span style="color:#60c260;"># define BENCH_ALL </span><span style="color:#ff9e15;">0</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#60c260;">#if BENCH_ALL &amp;&amp; ! defined(NREPEAT)</span>
+<span style="color:#60c260;"># define NREPEAT </span><span style="color:#ff9e15;">50</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#60c260;">#ifndef BENCH_SHOW_SOURCE</span>
+<span style="color:#60c260;"># define BENCH_SHOW_SOURCE </span><span style="color:#ff9e15;">0</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#60c260;">#ifdef IN_IDE_PARSER</span>
+<span style="color:#60c260;"># define NREPEAT </span><span style="color:#ff9e15;">0</span>
+<span style="color:#60c260;">#else</span>
+<span style="color:#60c260;"># ifndef NREPEAT</span>
+<span style="color:#60c260;">#   define NREPEAT </span><span style="color:#ff9e15;">500</span>
+<span style="color:#60c260;"># endif</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#60c260;">#if BENCH_STD</span>
+<span style="color:#60c260;"># define NAMESPACE std</span>
+<span style="color:#60c260;">#else</span>
+<span style="color:#60c260;"># define NAMESPACE jln</span><span style="color:#f44f4f;">::</span><span style="color:#60c260;">mp</span><span style="color:#f44f4f;">::</span><span style="color:#60c260;">traits</span><span style="color:#f44f4f;">::</span><span style="color:#60c260;">emp</span>
+<span style="color:#60c260;">#endif</span>
+
+
+<span style="color:#60c260;">#if BENCH_SHOW_SOURCE</span>
+<span style="color:#60c260;"># if BENCH_STD</span>
+<span style="color:#60c260;">#   include </span><span style="color:#5cbc5c;">&lt;type_traits&gt;</span>
+<span style="color:#60c260;"># endif</span>
+<span style="color:#60c260;"># include </span><span style="color:#5cbc5c;">&lt;jln/mp/detail/unpack.hpp&gt;</span>
+<span style="color:#60c260;"># include </span><span style="color:#5cbc5c;">&lt;jln/mp/detail/compiler.hpp&gt;</span>
+<span style="color:#60c260;">#else</span>
+<span style="color:#60c260;"># include </span><span style="color:#5cbc5c;">&lt;jln/mp/algorithm/transform.hpp&gt;</span>
+<span style="color:#60c260;"># include </span><span style="color:#5cbc5c;">&lt;jln/mp/algorithm/make_int_sequence.hpp&gt;</span>
+
+<span style="color:#60c260;"># include </span><span style="color:#5cbc5c;">&lt;jln/mp/utility/stl_traits.hpp&gt;</span>
+<span style="color:#60c260;"># include </span><span style="color:#5cbc5c;">&lt;type_traits&gt;</span>
+<span style="color:#60c260;">#endif</span>
+
+
+<span style="color:#60c260;">#define PP_CONCAT</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">a</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> b</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#a4bbd9;">PP_CONCAT_I</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">a</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> b</span><span style="color:#f44f4f;">)</span>
+<span style="color:#60c260;">#define PP_CONCAT_I</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">a</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> b</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> a</span><span style="color:#f44f4f;">##</span><span style="color:#60c260;">b</span>
+
+<span style="color:#60c260;">#if BENCH_SHOW_SOURCE</span>
+<span style="color:#60c260;"># define BENCH_DECL</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">expr</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">  </span><span style="color:#a4bbd9;">PRINT</span><span style="color:#60c260;"> expr </span><span style="color:#f44f4f;">[</span><span style="color:#60c260;">T </span><span style="color:#f44f4f;">=</span><span style="color:#60c260;"> number</span><span style="color:#f44f4f;">&lt;</span><span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">&gt;..</span><span style="color:#60c260;">number</span><span style="color:#f44f4f;">&lt;</span><span style="color:#a4bbd9;">NREPEAT</span><span style="color:#f44f4f;">&gt;]</span><span style="color:#fff041;">;</span>
+<span style="color:#60c260;">#else</span>
+<span style="color:#60c260;"># define BENCH_DECL</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">expr</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;">                                </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">  </span><span style="font-weight:bold;">namespace</span><span style="color:#60c260;"> </span><span style="color:#a4bbd9;">PP_CONCAT</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">n</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> </span><span style="color:#27ae60;">__COUNTER__</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#f44f4f;">{</span><span style="color:#60c260;">                  </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">    </span><span style="font-weight:bold;">struct</span><span style="color:#60c260;"> tt </span><span style="color:#f44f4f;">{</span><span style="color:#60c260;"> </span><span style="font-weight:bold;">template</span><span style="color:#f44f4f;">&lt;</span><span style="font-weight:bold;">class</span><span style="color:#60c260;"> T</span><span style="color:#f44f4f;">&gt;</span><span style="color:#60c260;"> </span><span style="font-weight:bold;">using</span><span style="color:#60c260;"> f </span><span style="color:#f44f4f;">=</span><span style="color:#60c260;"> expr</span><span style="color:#fff041;">;</span><span style="color:#60c260;"> </span><span style="color:#f44f4f;">}</span><span style="color:#fff041;">;</span><span style="color:#60c260;">     </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">    </span><span style="font-weight:bold;">using</span><span style="color:#60c260;"> l </span><span style="color:#f44f4f;">=</span><span style="color:#60c260;"> jln</span><span style="color:#f44f4f;">::</span><span style="color:#60c260;">mp</span><span style="color:#f44f4f;">::</span><span style="color:#60c260;">emp</span><span style="color:#f44f4f;">::</span><span style="color:#60c260;">make_int_sequence_c</span><span style="color:#f44f4f;">&lt;</span><span style="color:#a4bbd9;">NREPEAT</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">      jln</span><span style="color:#f44f4f;">::</span><span style="color:#60c260;">mp</span><span style="color:#f44f4f;">::</span><span style="color:#60c260;">transform</span><span style="color:#f44f4f;">&lt;</span><span style="color:#60c260;">tt</span><span style="color:#f44f4f;">&gt;&gt;</span><span style="color:#fff041;">;</span><span style="color:#60c260;">                           </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">  </span><span style="color:#f44f4f;">}</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#60c260;">#define BENCH_S</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">algo</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">  </span><span style="color:#a4bbd9;">BENCH_DECL</span><span style="color:#f44f4f;">(</span><span style="font-weight:bold;">typename</span><span style="color:#60c260;"> algo</span><span style="color:#f44f4f;">&lt;</span><span style="color:#a4bbd9;">JLN_MP_UNPACK</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">&gt;::</span><span style="color:#60c260;">type</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#60c260;">#define BENCH_T</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">algo</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">  </span><span style="color:#a4bbd9;">BENCH_DECL</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">algo</span><span style="color:#f44f4f;">##</span><span style="color:#a8a8a8;">_t</span><span style="color:#f44f4f;">&lt;</span><span style="color:#a4bbd9;">JLN_MP_UNPACK</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">&gt;)</span>
+
+<span style="color:#60c260;">#define BENCH_V</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">algo</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">  </span><span style="color:#a4bbd9;">BENCH_DECL</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">jln</span><span style="color:#f44f4f;">::</span><span style="color:#60c260;">mp</span><span style="color:#f44f4f;">::</span><span style="color:#60c260;">number</span><span style="color:#f44f4f;">&lt;</span><span style="color:#60c260;">algo</span><span style="color:#f44f4f;">##</span><span style="color:#a8a8a8;">_v</span><span style="color:#f44f4f;">&lt;</span><span style="color:#a4bbd9;">JLN_MP_UNPACK</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">&gt;&gt;)</span>
+
+<span style="color:#60c260;">#define BENCH_B</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">algo</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">  </span><span style="color:#a4bbd9;">BENCH_DECL</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">algo</span><span style="color:#f44f4f;">&lt;</span><span style="color:#a4bbd9;">JLN_MP_UNPACK</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">&gt;)</span>
+
+<span style="color:#60c260;">#define BENCH_ST</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">algo</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">  </span><span style="color:#a4bbd9;">BENCH_S</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">algo</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;">        </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">  </span><span style="color:#a4bbd9;">BENCH_T</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">algo</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#60c260;">#define BENCH_SV</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">algo</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">  </span><span style="color:#a4bbd9;">BENCH_S</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">algo</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;">        </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">  </span><span style="color:#a4bbd9;">BENCH_V</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">algo</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#60c260;">#define BENCH_0</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">algo</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#60c260;">#define BENCH_SELECT_ST_S </span><span style="color:#a4bbd9;">BENCH_S</span>
+<span style="color:#60c260;">#define BENCH_SELECT_ST_V </span><span style="color:#a4bbd9;">BENCH_0</span>
+<span style="color:#60c260;">#define BENCH_SELECT_ST_T </span><span style="color:#a4bbd9;">BENCH_T</span>
+<span style="color:#60c260;">#define BENCH_SELECT_ST_SV </span><span style="color:#a4bbd9;">BENCH_S</span>
+<span style="color:#60c260;">#define BENCH_SELECT_ST_ST </span><span style="color:#a4bbd9;">BENCH_ST</span>
+<span style="color:#60c260;">#define BENCH_SELECT_ST_SVT </span><span style="color:#a4bbd9;">BENCH_ST</span>
+<span style="color:#60c260;">#define BENCH_SELECT_ST_B </span><span style="color:#a4bbd9;">BENCH_B</span>
+
+<span style="color:#60c260;">#define BENCH_SELECT_SV_S </span><span style="color:#a4bbd9;">BENCH_S</span>
+<span style="color:#60c260;">#define BENCH_SELECT_SV_V </span><span style="color:#a4bbd9;">BENCH_V</span>
+<span style="color:#60c260;">#define BENCH_SELECT_SV_T </span><span style="color:#a4bbd9;">BENCH_0</span>
+<span style="color:#60c260;">#define BENCH_SELECT_SV_SV </span><span style="color:#a4bbd9;">BENCH_SV</span>
+<span style="color:#60c260;">#define BENCH_SELECT_SV_ST </span><span style="color:#a4bbd9;">BENCH_S</span>
+<span style="color:#60c260;">#define BENCH_SELECT_SV_SVT </span><span style="color:#a4bbd9;">BENCH_SV</span>
+<span style="color:#60c260;">#define BENCH_SELECT_SV_B </span><span style="color:#a4bbd9;">BENCH_B</span>
+
+<span style="color:#60c260;">#define BENCH_COND_1 </span><span style="color:#ff9e15;">1</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> </span><span style="color:#ff9e15;">1</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;">#define BENCH_COND_II</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">x</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> b</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> </span><span style="color:#f44f4f;">...)</span><span style="color:#60c260;"> b</span>
+<span style="color:#60c260;">#define BENCH_COND_I</span><span style="color:#f44f4f;">(...)</span><span style="color:#60c260;"> </span><span style="color:#a4bbd9;">BENCH_COND_II</span><span style="color:#f44f4f;">(</span><span style="color:#27ae60;">__VA_ARGS__</span><span style="color:#f44f4f;">)</span>
+<span style="color:#60c260;">#define BENCH_COND</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">def</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#a4bbd9;">BENCH_COND_I</span><span style="color:#f44f4f;">(</span><span style="color:#a4bbd9;">PP_CONCAT</span><span style="color:#f44f4f;">(</span><span style="color:#a4bbd9;">BENCH_COND_</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> def</span><span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> </span><span style="color:#ff9e15;">0</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> </span><span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#60c260;">#define BENCH_SELECT_1_I</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">bench_filter</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> bench_accept</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#a4bbd9;">BENCH_SELECT_</span><span style="color:#f44f4f;">##</span><span style="color:#60c260;">bench_accept</span><span style="color:#f44f4f;">##</span><span style="color:#60c260;">_</span><span style="color:#f44f4f;">##</span><span style="color:#60c260;">bench_filter</span>
+<span style="color:#60c260;">#define BENCH_SELECT_10</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">bench_filter</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> bench_accept</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#a4bbd9;">BENCH_SELECT_1_I</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">bench_filter</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> bench_accept</span><span style="color:#f44f4f;">)</span>
+<span style="color:#60c260;">#define BENCH_SELECT_11</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">bench_filter</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> bench_accept</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#a4bbd9;">BENCH_0</span>
+<span style="color:#60c260;">#define BENCH_SELECT_00</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">bench_filter</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> bench_accept</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;"> </span><span style="color:#a4bbd9;">BENCH_0</span>
+
+<span style="color:#60c260;">#define BENCH</span><span style="color:#f44f4f;">(</span><span style="color:#60c260;">bench_accept</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> algo</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> values</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> disable_name</span><span style="color:#f44f4f;">)</span><span style="color:#60c260;">         </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">  </span><span style="color:#a4bbd9;">PP_CONCAT</span><span style="color:#f44f4f;">(</span><span style="color:#a4bbd9;">PP_CONCAT</span><span style="color:#f44f4f;">(</span><span style="color:#a4bbd9;">BENCH_SELECT_</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> </span><span style="color:#a4bbd9;">BENCH_COND</span><span style="color:#f44f4f;">(</span><span style="color:#a4bbd9;">BENCH_</span><span style="color:#f44f4f;">##</span><span style="color:#60c260;">algo</span><span style="color:#f44f4f;">))</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">            </span><span style="color:#a4bbd9;">BENCH_COND</span><span style="color:#f44f4f;">(</span><span style="color:#a4bbd9;">BENCH_</span><span style="color:#f44f4f;">##</span><span style="color:#60c260;">algo</span><span style="color:#f44f4f;">##</span><span style="color:#a8a8a8;">_DISABLE_</span><span style="color:#f44f4f;">##</span><span style="color:#60c260;">disable_name</span><span style="color:#f44f4f;">))</span><span style="color:#60c260;">  </span><span style="color:#fff041;">\</span>
+<span style="color:#60c260;">  </span><span style="color:#f44f4f;">(</span><span style="color:#a4bbd9;">BENCH_TYPE</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> bench_accept</span><span style="color:#f44f4f;">)(</span><span style="color:#a4bbd9;">NAMESPACE</span><span style="color:#f44f4f;">::</span><span style="color:#60c260;">algo</span><span style="color:#fff041;">,</span><span style="color:#60c260;"> values</span><span style="color:#f44f4f;">)</span>
+
+
+<span style="font-weight:bold;">template</span><span style="color:#f44f4f;">&lt;</span><span style="font-weight:bold;">class</span> T<span style="color:#f44f4f;">&gt;</span>
+<span style="font-weight:bold;">struct</span> X
+<span style="color:#f44f4f;">{</span>
+  <span style="font-weight:bold;">enum</span> <span style="font-weight:bold;">class</span> E <span style="color:#f44f4f;">:</span> <span style="color:#2ed1d3;">int</span><span style="color:#fff041;">;</span>
+<span style="color:#f44f4f;">}</span><span style="color:#fff041;">;</span>
+
+<span style="font-weight:bold;">template</span><span style="color:#f44f4f;">&lt;</span><span style="font-weight:bold;">class</span> T<span style="color:#fff041;">,</span> <span style="font-weight:bold;">class</span> U<span style="color:#f44f4f;">&gt;</span>
+<span style="color:#2ed1d3;">void</span> swap<span style="color:#f44f4f;">(</span>X<span style="color:#f44f4f;">&lt;</span>T<span style="color:#f44f4f;">&gt;&amp;</span><span style="color:#fff041;">,</span> X<span style="color:#f44f4f;">&lt;</span>U<span style="color:#f44f4f;">&gt;&amp;)</span> <span style="font-weight:bold;">noexcept</span><span style="color:#fff041;">;</span>
+
+
+<span style="color:#a4bbd9;">JLN_MP_DIAGNOSTIC_PUSH</span><span style="color:#f44f4f;">()</span>
+<span style="color:#a4bbd9;">JLN_MP_DIAGNOSTIC_GCC_IGNORE</span><span style="color:#f44f4f;">(</span><span style="color:#f44f4f;">&quot;-Wundef&quot;</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#60c260;">#if BENCH_ALL</span>
+<span style="color:#60c260;"># define BENCH_is_const </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_volatile </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_trivial </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_trivially_copyable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_abstract </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_aggregate </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_base_of </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_class </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_empty </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_enum </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_final </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_polymorphic </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_union </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_signed </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_unsigned </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_bounded_array </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_add_lvalue_reference </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_add_rvalue_reference </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_has_unique_object_representations </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_void </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_null_pointer </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_integral </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_floating_point </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_array </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_pointer </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_lvalue_reference </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_rvalue_reference </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_reference </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_function </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_member_object_pointer </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_member_function_pointer </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_arithmetic </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_fundamental </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_object </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_member_pointer </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_scalar </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_standard_layout </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_compound </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_convertible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_nothrow_convertible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_scoped_enum </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_constructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_default_constructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_copy_constructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_move_constructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_trivially_constructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_trivially_default_constructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_trivially_copy_constructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_trivially_move_constructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_nothrow_constructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_nothrow_default_constructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_nothrow_copy_constructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_nothrow_move_constructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_assignable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_copy_assignable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_move_assignable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_nothrow_assignable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_nothrow_copy_assignable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_nothrow_move_assignable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_trivially_assignable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_trivially_copy_assignable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_trivially_move_assignable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_destructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_trivially_destructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_nothrow_destructible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_implicit_lifetime </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_swappable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_nothrow_swappable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_swappable_with </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_nothrow_swappable_with </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_has_virtual_destructor </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_same </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_layout_compatible </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_pointer_interconvertible_base_of </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_alignment_of </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_rank </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_extent </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_remove_const </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_remove_volatile </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_remove_cv </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_remove_extents </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_remove_all_extents </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_remove_pointer </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_remove_reference </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_remove_cvref </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_reference_constructs_from_temporary </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_reference_converts_from_temporary </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_add_pointer </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_add_cv </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_add_const </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_add_volatile </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_make_signed </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_make_unsigned </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_decay </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_unwrap_reference </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_unwrap_ref_decay </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_invoke_result </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_invocable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_invocable_r </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_nothrow_invocable </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_is_nothrow_invocable_r </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_underlying_type </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_common_type </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;"># define BENCH_common_reference </span><span style="color:#ff9e15;">1</span>
+<span style="color:#60c260;">#endif</span>
+
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_const<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_volatile<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_trivial<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_trivially_copyable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_abstract<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_aggregate<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_base_of<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_class<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_empty<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_enum<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_final<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_polymorphic<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_union<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_signed<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_unsigned<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#60c260;">#if ! BENCH_STD || __cpp_lib_bounded_array_traits &gt;= 201902L</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_bounded_array<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> add_lvalue_reference<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> add_rvalue_reference<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> has_unique_object_representations<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_void<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_null_pointer<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_integral<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_floating_point<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_array<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_pointer<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_lvalue_reference<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_rvalue_reference<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_reference<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_function<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_member_object_pointer<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_member_object_pointer<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span> T<span style="color:#f44f4f;">::*)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MEM_T</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_member_function_pointer<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_member_function_pointer<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span><span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">::*)())</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MEM_T</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_member_pointer<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_member_pointer<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span> T<span style="color:#f44f4f;">::*)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MEM_T</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_arithmetic<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_fundamental<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_object<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_scalar<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_standard_layout<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_compound<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_convertible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_convertible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">&amp;</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">&amp;)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">REF</span><span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_convertible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">&amp;</span><span style="color:#fff041;">,</span> <span style="color:#2ed1d3;">int</span><span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">REF_FALSE</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#60c260;">#if ! BENCH_STD || __cpp_lib_is_nothrow_convertible &gt;= 201806L</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_convertible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_convertible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">&amp;</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">&amp;)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">REF</span><span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_convertible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">&amp;</span><span style="color:#fff041;">,</span> <span style="color:#2ed1d3;">int</span><span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">REF_FALSE</span><span style="color:#f44f4f;">)</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#60c260;">#if ! BENCH_STD || __cpp_lib_is_scoped_enum &gt;= 202011L</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_scoped_enum<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_scoped_enum<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="font-weight:bold;">typename</span> X<span style="color:#f44f4f;">&lt;</span>T<span style="color:#f44f4f;">&gt;::</span>E<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> E<span style="color:#f44f4f;">)</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_constructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_default_constructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_copy_constructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_move_constructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_trivially_constructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_trivially_default_constructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_trivially_copy_constructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_trivially_move_constructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_constructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_default_constructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_copy_constructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_move_constructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_assignable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_copy_assignable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_move_assignable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_assignable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_copy_assignable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_move_assignable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_trivially_assignable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_trivially_copy_assignable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_trivially_move_assignable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_destructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_trivially_destructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_destructible<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#60c260;">#if ! BENCH_STD || __cpp_lib_is_implicit_lifetime &gt;= 202302L</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_implicit_lifetime<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_swappable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_swappable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_swappable_with<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">&amp;</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">&amp;)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">REF</span><span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_swappable_with<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>X<span style="color:#f44f4f;">&lt;</span>T<span style="color:#f44f4f;">&gt;&amp;</span><span style="color:#fff041;">,</span> X<span style="color:#f44f4f;">&lt;</span>T<span style="color:#f44f4f;">[</span><span style="color:#ff9e15;">1</span><span style="color:#f44f4f;">]&gt;&amp;)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">REF2</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_swappable_with<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">&amp;</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">&amp;)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">REF</span><span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_swappable_with<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>X<span style="color:#f44f4f;">&lt;</span>T<span style="color:#f44f4f;">&gt;&amp;</span><span style="color:#fff041;">,</span> X<span style="color:#f44f4f;">&lt;</span>T<span style="color:#f44f4f;">[</span><span style="color:#ff9e15;">1</span><span style="color:#f44f4f;">]&gt;&amp;)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">REF2</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> has_virtual_destructor<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_same<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#7a7c7d;">// BENCH(SV, is_layout_compatible, (T, T), 0)</span>
+
+<span style="color:#7a7c7d;">// BENCH(SV, is_pointer_interconvertible_base_of, (T, T), 0)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> alignment_of<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> rank<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> rank<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">[</span><span style="color:#ff9e15;">1</span><span style="color:#f44f4f;">])</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">ARRAY</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#60c260;">#if BENCH_STD</span>
+<span style="color:#60c260;">#  define EXTENT_NAME extent</span>
+<span style="color:#60c260;">#else</span>
+<span style="color:#60c260;">#  define EXTENT_NAME extent_c</span>
+<span style="color:#60c260;">#endif</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">EXTENT_NAME</span><span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">EXTENT_NAME</span><span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">[</span><span style="color:#ff9e15;">1</span><span style="color:#f44f4f;">])</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">ARRAY</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> remove_const<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> remove_volatile<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> remove_cv<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> remove_extent<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> remove_all_extents<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> remove_pointer<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> remove_reference<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#60c260;">#if ! BENCH_STD || __cpp_lib_remove_cvref &gt;= 201711L</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> remove_cvref<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#60c260;">#if ! BENCH_STD || __cpp_lib_reference_from_temporary &gt;= 202202L</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> reference_constructs_from_temporary<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">&amp;</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">&amp;)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#60c260;">#if ! BENCH_STD || __cpp_lib_reference_from_temporary &gt;= 202202L</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> reference_converts_from_temporary<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">&amp;</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">&amp;)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> add_pointer<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> add_cv<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> add_const<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> add_volatile<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> make_signed<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="font-weight:bold;">typename</span> X<span style="color:#f44f4f;">&lt;</span>T<span style="color:#f44f4f;">&gt;::</span>E<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> make_unsigned<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="font-weight:bold;">typename</span> X<span style="color:#f44f4f;">&lt;</span>T<span style="color:#f44f4f;">&gt;::</span>E<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> decay<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> decay<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">&amp;)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">REF</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#60c260;">#if (! BENCH_STD || __cpp_lib_unwrap_ref &gt;= 201811L) \</span>
+<span style="color:#60c260;"> </span><span style="color:#7a7c7d;">/* unwrap_reference is missing from &lt;type_traits&gt; with libc++-15 */</span><span style="color:#60c260;"> \</span>
+<span style="color:#60c260;"> &amp;&amp; (! _LIBCPP_VERSION || _LIBCPP_VERSION &gt;= 16000)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> unwrap_reference<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#60c260;">#if (! BENCH_STD || __cpp_lib_unwrap_ref &gt;= 201811L) \</span>
+<span style="color:#60c260;"> </span><span style="color:#7a7c7d;">/* unwrap_ref_decay is missing from &lt;type_traits&gt; with libc++-15 */</span><span style="color:#60c260;"> \</span>
+<span style="color:#60c260;"> &amp;&amp; (! _LIBCPP_VERSION || _LIBCPP_VERSION &gt;= 16000)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> unwrap_ref_decay<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+<span style="color:#60c260;">#endif</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> invoke_result<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span><span style="color:#f44f4f;">(*)(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> FN<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> invoke_result<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span> T<span style="color:#f44f4f;">::*</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MEM_VAR</span><span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> invoke_result<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span><span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">::*)()</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MEM_FN</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_invocable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span><span style="color:#f44f4f;">(*)(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> FN<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_invocable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span> T<span style="color:#f44f4f;">::*</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MEM_VAR</span><span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_invocable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span><span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">::*)()</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MEM_FN</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_invocable_r<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span><span style="color:#fff041;">,</span> <span style="color:#2ed1d3;">int</span><span style="color:#f44f4f;">(*)(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> FN<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_invocable_r<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span><span style="color:#fff041;">,</span> <span style="color:#2ed1d3;">int</span> T<span style="color:#f44f4f;">::*</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MEM_VAR</span><span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_invocable_r<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span><span style="color:#fff041;">,</span> <span style="color:#2ed1d3;">int</span><span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">::*)()</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MEM_FN</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_invocable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span><span style="color:#f44f4f;">(*)(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> FN<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_invocable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span> T<span style="color:#f44f4f;">::*</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MEM_VAR</span><span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_invocable<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span><span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">::*)()</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MEM_FN</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_invocable_r<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span><span style="color:#fff041;">,</span> <span style="color:#2ed1d3;">int</span><span style="color:#f44f4f;">(*)(</span>T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> FN<span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_invocable_r<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span><span style="color:#fff041;">,</span> <span style="color:#2ed1d3;">int</span> T<span style="color:#f44f4f;">::*</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MEM_VAR</span><span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>SV<span style="color:#fff041;">,</span> is_nothrow_invocable_r<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="color:#2ed1d3;">int</span><span style="color:#fff041;">,</span> <span style="color:#2ed1d3;">int</span><span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">::*)()</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MEM_FN</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> <span style="color:#3abaff;">underlying_type</span><span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span><span style="font-weight:bold;">typename</span> X<span style="color:#f44f4f;">&lt;</span>T<span style="color:#f44f4f;">&gt;::</span>E<span style="color:#f44f4f;">)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> <span style="color:#3abaff;">common_type</span><span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">&amp;</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">&amp;&amp;</span><span style="color:#fff041;">,</span> T <span style="color:#37aff0;">const</span><span style="color:#f44f4f;">&amp;)</span><span style="color:#fff041;">,</span> <span style="color:#ff9e15;">0</span><span style="color:#f44f4f;">)</span>
+
+<span style="color:#60c260;">#if ! BENCH_STD || JLN_MP_CXX_VERSION &gt;= 20</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> common_reference<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">&amp;</span><span style="color:#fff041;">,</span> T <span style="color:#37aff0;">const</span><span style="color:#f44f4f;">&amp;)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">LREF</span><span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> common_reference<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">&amp;&amp;</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">&amp;&amp;)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">RVAL</span><span style="color:#f44f4f;">)</span>
+<span style="color:#a4bbd9;">BENCH</span><span style="color:#f44f4f;">(</span>ST<span style="color:#fff041;">,</span> common_reference<span style="color:#fff041;">,</span> <span style="color:#f44f4f;">(</span>T<span style="color:#f44f4f;">&amp;</span><span style="color:#fff041;">,</span> T<span style="color:#f44f4f;">&amp;&amp;)</span><span style="color:#fff041;">,</span> <span style="color:#a4bbd9;">MIXREF</span><span style="color:#f44f4f;">)</span>
+<span style="color:#60c260;">#endif</span>
+
+
+<span style="color:#a4bbd9;">JLN_MP_DIAGNOSTIC_POP</span><span style="color:#f44f4f;">()</span>
+</pre>
+
+<img src="add_const-clang++-libc++.webp"/>
+<img src="add_const-clang++-libstdc++.webp"/>
+<img src="add_const-g++-libstdc++.webp"/>
+<img src="add_cv-clang++-libc++.webp"/>
+<img src="add_cv-clang++-libstdc++.webp"/>
+<img src="add_cv-g++-libstdc++.webp"/>
+<img src="add_lvalue_reference-clang++-libc++.webp"/>
+<img src="add_lvalue_reference-clang++-libstdc++.webp"/>
+<img src="add_lvalue_reference-g++-libstdc++.webp"/>
+<img src="add_pointer-clang++-libc++.webp"/>
+<img src="add_pointer-clang++-libstdc++.webp"/>
+<img src="add_pointer-g++-libstdc++.webp"/>
+<img src="add_rvalue_reference-clang++-libc++.webp"/>
+<img src="add_rvalue_reference-clang++-libstdc++.webp"/>
+<img src="add_rvalue_reference-g++-libstdc++.webp"/>
+<img src="add_volatile-clang++-libc++.webp"/>
+<img src="add_volatile-clang++-libstdc++.webp"/>
+<img src="add_volatile-g++-libstdc++.webp"/>
+<img src="alignment_of-clang++-libc++.webp"/>
+<img src="alignment_of-clang++-libstdc++.webp"/>
+<img src="alignment_of-g++-libstdc++.webp"/>
+<img src="common_reference-clang++-libc++.webp"/>
+<img src="common_reference-clang++-libstdc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_LREF=1-clang++-libc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_LREF=1-clang++-libstdc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_LREF=1 -DBENCH_common_reference_DISABLE_MIXREF=1-clang++-libc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_LREF=1 -DBENCH_common_reference_DISABLE_MIXREF=1-clang++-libstdc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_LREF=1 -DBENCH_common_reference_DISABLE_MIXREF=1-g++-libstdc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_LREF=1 -DBENCH_common_reference_DISABLE_RVAL=1-clang++-libc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_LREF=1 -DBENCH_common_reference_DISABLE_RVAL=1-clang++-libstdc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_LREF=1 -DBENCH_common_reference_DISABLE_RVAL=1-g++-libstdc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_LREF=1-g++-libstdc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_MIXREF=1-clang++-libc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_MIXREF=1-clang++-libstdc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_MIXREF=1-g++-libstdc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_RVAL=1-clang++-libc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_RVAL=1-clang++-libstdc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_RVAL=1 -DBENCH_common_reference_DISABLE_MIXREF=1-clang++-libc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_RVAL=1 -DBENCH_common_reference_DISABLE_MIXREF=1-clang++-libstdc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_RVAL=1 -DBENCH_common_reference_DISABLE_MIXREF=1-g++-libstdc++.webp"/>
+<img src="common_reference -DBENCH_common_reference_DISABLE_RVAL=1-g++-libstdc++.webp"/>
+<img src="common_reference-g++-libstdc++.webp"/>
+<img src="common_type-clang++-libc++.webp"/>
+<img src="common_type-clang++-libstdc++.webp"/>
+<img src="common_type-g++-libstdc++.webp"/>
+<img src="decay-clang++-libc++.webp"/>
+<img src="decay-clang++-libstdc++.webp"/>
+<img src="decay -DBENCH_decay_DISABLE_REF=1-clang++-libc++.webp"/>
+<img src="decay -DBENCH_decay_DISABLE_REF=1-clang++-libstdc++.webp"/>
+<img src="decay -DBENCH_decay_DISABLE_REF=1-g++-libstdc++.webp"/>
+<img src="decay -DBENCH_decay_DISABLE_T=1-clang++-libc++.webp"/>
+<img src="decay -DBENCH_decay_DISABLE_T=1-clang++-libstdc++.webp"/>
+<img src="decay -DBENCH_decay_DISABLE_T=1-g++-libstdc++.webp"/>
+<img src="decay-g++-libstdc++.webp"/>
+<img src="EXTENT_NAME-clang++-libc++.webp"/>
+<img src="EXTENT_NAME-clang++-libstdc++.webp"/>
+<img src="EXTENT_NAME -DBENCH_EXTENT_NAME_DISABLE_ARRAY=1-clang++-libc++.webp"/>
+<img src="EXTENT_NAME -DBENCH_EXTENT_NAME_DISABLE_ARRAY=1-clang++-libstdc++.webp"/>
+<img src="EXTENT_NAME -DBENCH_EXTENT_NAME_DISABLE_ARRAY=1-g++-libstdc++.webp"/>
+<img src="EXTENT_NAME -DBENCH_EXTENT_NAME_DISABLE_T=1-clang++-libc++.webp"/>
+<img src="EXTENT_NAME -DBENCH_EXTENT_NAME_DISABLE_T=1-clang++-libstdc++.webp"/>
+<img src="EXTENT_NAME -DBENCH_EXTENT_NAME_DISABLE_T=1-g++-libstdc++.webp"/>
+<img src="EXTENT_NAME-g++-libstdc++.webp"/>
+<img src="has_unique_object_representations-clang++-libc++.webp"/>
+<img src="has_unique_object_representations-clang++-libstdc++.webp"/>
+<img src="has_unique_object_representations-g++-libstdc++.webp"/>
+<img src="has_virtual_destructor-clang++-libc++.webp"/>
+<img src="has_virtual_destructor-clang++-libstdc++.webp"/>
+<img src="has_virtual_destructor-g++-libstdc++.webp"/>
+<img src="invoke_result-clang++-libc++.webp"/>
+<img src="invoke_result-clang++-libstdc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_FN=1-clang++-libc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_FN=1-clang++-libstdc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_FN=1 -DBENCH_invoke_result_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_FN=1 -DBENCH_invoke_result_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_FN=1 -DBENCH_invoke_result_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_FN=1 -DBENCH_invoke_result_DISABLE_MEM_VAR=1-clang++-libc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_FN=1 -DBENCH_invoke_result_DISABLE_MEM_VAR=1-clang++-libstdc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_FN=1 -DBENCH_invoke_result_DISABLE_MEM_VAR=1-g++-libstdc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_FN=1-g++-libstdc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_MEM_VAR=1-clang++-libc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_MEM_VAR=1-clang++-libstdc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_MEM_VAR=1 -DBENCH_invoke_result_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_MEM_VAR=1 -DBENCH_invoke_result_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_MEM_VAR=1 -DBENCH_invoke_result_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="invoke_result -DBENCH_invoke_result_DISABLE_MEM_VAR=1-g++-libstdc++.webp"/>
+<img src="invoke_result-g++-libstdc++.webp"/>
+<img src="is_abstract-clang++-libc++.webp"/>
+<img src="is_abstract-clang++-libstdc++.webp"/>
+<img src="is_abstract-g++-libstdc++.webp"/>
+<img src="is_aggregate-clang++-libc++.webp"/>
+<img src="is_aggregate-clang++-libstdc++.webp"/>
+<img src="is_aggregate-g++-libstdc++.webp"/>
+<img src="is_arithmetic-clang++-libc++.webp"/>
+<img src="is_arithmetic-clang++-libstdc++.webp"/>
+<img src="is_arithmetic-g++-libstdc++.webp"/>
+<img src="is_array-clang++-libc++.webp"/>
+<img src="is_array-clang++-libstdc++.webp"/>
+<img src="is_array-g++-libstdc++.webp"/>
+<img src="is_assignable-clang++-libc++.webp"/>
+<img src="is_assignable-clang++-libstdc++.webp"/>
+<img src="is_assignable-g++-libstdc++.webp"/>
+<img src="is_base_of-clang++-libc++.webp"/>
+<img src="is_base_of-clang++-libstdc++.webp"/>
+<img src="is_base_of-g++-libstdc++.webp"/>
+<img src="is_bounded_array-clang++-libc++.webp"/>
+<img src="is_bounded_array-clang++-libstdc++.webp"/>
+<img src="is_bounded_array-g++-libstdc++.webp"/>
+<img src="is_class-clang++-libc++.webp"/>
+<img src="is_class-clang++-libstdc++.webp"/>
+<img src="is_class-g++-libstdc++.webp"/>
+<img src="is_compound-clang++-libc++.webp"/>
+<img src="is_compound-clang++-libstdc++.webp"/>
+<img src="is_compound-g++-libstdc++.webp"/>
+<img src="is_const-clang++-libc++.webp"/>
+<img src="is_const-clang++-libstdc++.webp"/>
+<img src="is_const-g++-libstdc++.webp"/>
+<img src="is_constructible-clang++-libc++.webp"/>
+<img src="is_constructible-clang++-libstdc++.webp"/>
+<img src="is_constructible-g++-libstdc++.webp"/>
+<img src="is_convertible-clang++-libc++.webp"/>
+<img src="is_convertible-clang++-libstdc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_REF=1-clang++-libc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_REF=1-clang++-libstdc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_REF=1 -DBENCH_is_convertible_DISABLE_REF_FALSE=1-clang++-libc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_REF=1 -DBENCH_is_convertible_DISABLE_REF_FALSE=1-clang++-libstdc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_REF=1 -DBENCH_is_convertible_DISABLE_REF_FALSE=1-g++-libstdc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_REF=1-g++-libstdc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_REF_FALSE=1-clang++-libc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_REF_FALSE=1-clang++-libstdc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_REF_FALSE=1-g++-libstdc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_T=1-clang++-libc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_T=1-clang++-libstdc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_T=1 -DBENCH_is_convertible_DISABLE_REF=1-clang++-libc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_T=1 -DBENCH_is_convertible_DISABLE_REF=1-clang++-libstdc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_T=1 -DBENCH_is_convertible_DISABLE_REF=1-g++-libstdc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_T=1 -DBENCH_is_convertible_DISABLE_REF_FALSE=1-clang++-libc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_T=1 -DBENCH_is_convertible_DISABLE_REF_FALSE=1-clang++-libstdc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_T=1 -DBENCH_is_convertible_DISABLE_REF_FALSE=1-g++-libstdc++.webp"/>
+<img src="is_convertible -DBENCH_is_convertible_DISABLE_T=1-g++-libstdc++.webp"/>
+<img src="is_convertible-g++-libstdc++.webp"/>
+<img src="is_copy_assignable-clang++-libc++.webp"/>
+<img src="is_copy_assignable-clang++-libstdc++.webp"/>
+<img src="is_copy_assignable-g++-libstdc++.webp"/>
+<img src="is_copy_constructible-clang++-libc++.webp"/>
+<img src="is_copy_constructible-clang++-libstdc++.webp"/>
+<img src="is_copy_constructible-g++-libstdc++.webp"/>
+<img src="is_default_constructible-clang++-libc++.webp"/>
+<img src="is_default_constructible-clang++-libstdc++.webp"/>
+<img src="is_default_constructible-g++-libstdc++.webp"/>
+<img src="is_destructible-clang++-libc++.webp"/>
+<img src="is_destructible-clang++-libstdc++.webp"/>
+<img src="is_destructible-g++-libstdc++.webp"/>
+<img src="is_empty-clang++-libc++.webp"/>
+<img src="is_empty-clang++-libstdc++.webp"/>
+<img src="is_empty-g++-libstdc++.webp"/>
+<img src="is_enum-clang++-libc++.webp"/>
+<img src="is_enum-clang++-libstdc++.webp"/>
+<img src="is_enum-g++-libstdc++.webp"/>
+<img src="is_final-clang++-libc++.webp"/>
+<img src="is_final-clang++-libstdc++.webp"/>
+<img src="is_final-g++-libstdc++.webp"/>
+<img src="is_floating_point-clang++-libc++.webp"/>
+<img src="is_floating_point-clang++-libstdc++.webp"/>
+<img src="is_floating_point-g++-libstdc++.webp"/>
+<img src="is_function-clang++-libc++.webp"/>
+<img src="is_function-clang++-libstdc++.webp"/>
+<img src="is_function-g++-libstdc++.webp"/>
+<img src="is_fundamental-clang++-libc++.webp"/>
+<img src="is_fundamental-clang++-libstdc++.webp"/>
+<img src="is_fundamental-g++-libstdc++.webp"/>
+<img src="is_implicit_lifetime-clang++-libc++.webp"/>
+<img src="is_implicit_lifetime-clang++-libstdc++.webp"/>
+<img src="is_implicit_lifetime-g++-libstdc++.webp"/>
+<img src="is_integral-clang++-libc++.webp"/>
+<img src="is_integral-clang++-libstdc++.webp"/>
+<img src="is_integral-g++-libstdc++.webp"/>
+<img src="is_invocable-clang++-libc++.webp"/>
+<img src="is_invocable-clang++-libstdc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_FN=1-clang++-libc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_FN=1-clang++-libstdc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_FN=1 -DBENCH_is_invocable_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_FN=1 -DBENCH_is_invocable_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_FN=1 -DBENCH_is_invocable_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_FN=1 -DBENCH_is_invocable_DISABLE_MEM_VAR=1-clang++-libc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_FN=1 -DBENCH_is_invocable_DISABLE_MEM_VAR=1-clang++-libstdc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_FN=1 -DBENCH_is_invocable_DISABLE_MEM_VAR=1-g++-libstdc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_FN=1-g++-libstdc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_MEM_VAR=1-clang++-libc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_MEM_VAR=1-clang++-libstdc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_MEM_VAR=1 -DBENCH_is_invocable_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_MEM_VAR=1 -DBENCH_is_invocable_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_MEM_VAR=1 -DBENCH_is_invocable_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="is_invocable -DBENCH_is_invocable_DISABLE_MEM_VAR=1-g++-libstdc++.webp"/>
+<img src="is_invocable-g++-libstdc++.webp"/>
+<img src="is_invocable_r-clang++-libc++.webp"/>
+<img src="is_invocable_r-clang++-libstdc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_FN=1-clang++-libc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_FN=1-clang++-libstdc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_FN=1 -DBENCH_is_invocable_r_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_FN=1 -DBENCH_is_invocable_r_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_FN=1 -DBENCH_is_invocable_r_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_FN=1 -DBENCH_is_invocable_r_DISABLE_MEM_VAR=1-clang++-libc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_FN=1 -DBENCH_is_invocable_r_DISABLE_MEM_VAR=1-clang++-libstdc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_FN=1 -DBENCH_is_invocable_r_DISABLE_MEM_VAR=1-g++-libstdc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_FN=1-g++-libstdc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_MEM_VAR=1-clang++-libc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_MEM_VAR=1-clang++-libstdc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_MEM_VAR=1 -DBENCH_is_invocable_r_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_MEM_VAR=1 -DBENCH_is_invocable_r_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_MEM_VAR=1 -DBENCH_is_invocable_r_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="is_invocable_r -DBENCH_is_invocable_r_DISABLE_MEM_VAR=1-g++-libstdc++.webp"/>
+<img src="is_invocable_r-g++-libstdc++.webp"/>
+<img src="is_lvalue_reference-clang++-libc++.webp"/>
+<img src="is_lvalue_reference-clang++-libstdc++.webp"/>
+<img src="is_lvalue_reference-g++-libstdc++.webp"/>
+<img src="is_member_function_pointer-clang++-libc++.webp"/>
+<img src="is_member_function_pointer-clang++-libstdc++.webp"/>
+<img src="is_member_function_pointer -DBENCH_is_member_function_pointer_DISABLE_MEM_T=1-clang++-libc++.webp"/>
+<img src="is_member_function_pointer -DBENCH_is_member_function_pointer_DISABLE_MEM_T=1-clang++-libstdc++.webp"/>
+<img src="is_member_function_pointer -DBENCH_is_member_function_pointer_DISABLE_MEM_T=1-g++-libstdc++.webp"/>
+<img src="is_member_function_pointer -DBENCH_is_member_function_pointer_DISABLE_T=1-clang++-libc++.webp"/>
+<img src="is_member_function_pointer -DBENCH_is_member_function_pointer_DISABLE_T=1-clang++-libstdc++.webp"/>
+<img src="is_member_function_pointer -DBENCH_is_member_function_pointer_DISABLE_T=1-g++-libstdc++.webp"/>
+<img src="is_member_function_pointer-g++-libstdc++.webp"/>
+<img src="is_member_object_pointer-clang++-libc++.webp"/>
+<img src="is_member_object_pointer-clang++-libstdc++.webp"/>
+<img src="is_member_object_pointer -DBENCH_is_member_object_pointer_DISABLE_MEM_T=1-clang++-libc++.webp"/>
+<img src="is_member_object_pointer -DBENCH_is_member_object_pointer_DISABLE_MEM_T=1-clang++-libstdc++.webp"/>
+<img src="is_member_object_pointer -DBENCH_is_member_object_pointer_DISABLE_MEM_T=1-g++-libstdc++.webp"/>
+<img src="is_member_object_pointer -DBENCH_is_member_object_pointer_DISABLE_T=1-clang++-libc++.webp"/>
+<img src="is_member_object_pointer -DBENCH_is_member_object_pointer_DISABLE_T=1-clang++-libstdc++.webp"/>
+<img src="is_member_object_pointer -DBENCH_is_member_object_pointer_DISABLE_T=1-g++-libstdc++.webp"/>
+<img src="is_member_object_pointer-g++-libstdc++.webp"/>
+<img src="is_member_pointer-clang++-libc++.webp"/>
+<img src="is_member_pointer-clang++-libstdc++.webp"/>
+<img src="is_member_pointer -DBENCH_is_member_pointer_DISABLE_MEM_T=1-clang++-libc++.webp"/>
+<img src="is_member_pointer -DBENCH_is_member_pointer_DISABLE_MEM_T=1-clang++-libstdc++.webp"/>
+<img src="is_member_pointer -DBENCH_is_member_pointer_DISABLE_MEM_T=1-g++-libstdc++.webp"/>
+<img src="is_member_pointer -DBENCH_is_member_pointer_DISABLE_T=1-clang++-libc++.webp"/>
+<img src="is_member_pointer -DBENCH_is_member_pointer_DISABLE_T=1-clang++-libstdc++.webp"/>
+<img src="is_member_pointer -DBENCH_is_member_pointer_DISABLE_T=1-g++-libstdc++.webp"/>
+<img src="is_member_pointer-g++-libstdc++.webp"/>
+<img src="is_move_assignable-clang++-libc++.webp"/>
+<img src="is_move_assignable-clang++-libstdc++.webp"/>
+<img src="is_move_assignable-g++-libstdc++.webp"/>
+<img src="is_move_constructible-clang++-libc++.webp"/>
+<img src="is_move_constructible-clang++-libstdc++.webp"/>
+<img src="is_move_constructible-g++-libstdc++.webp"/>
+<img src="is_nothrow_assignable-clang++-libc++.webp"/>
+<img src="is_nothrow_assignable-clang++-libstdc++.webp"/>
+<img src="is_nothrow_assignable-g++-libstdc++.webp"/>
+<img src="is_nothrow_constructible-clang++-libc++.webp"/>
+<img src="is_nothrow_constructible-clang++-libstdc++.webp"/>
+<img src="is_nothrow_constructible-g++-libstdc++.webp"/>
+<img src="is_nothrow_convertible-clang++-libc++.webp"/>
+<img src="is_nothrow_convertible-clang++-libstdc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_REF=1-clang++-libc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_REF=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_REF=1 -DBENCH_is_nothrow_convertible_DISABLE_REF_FALSE=1-clang++-libc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_REF=1 -DBENCH_is_nothrow_convertible_DISABLE_REF_FALSE=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_REF=1 -DBENCH_is_nothrow_convertible_DISABLE_REF_FALSE=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_REF=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_REF_FALSE=1-clang++-libc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_REF_FALSE=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_REF_FALSE=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_T=1-clang++-libc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_T=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_T=1 -DBENCH_is_nothrow_convertible_DISABLE_REF=1-clang++-libc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_T=1 -DBENCH_is_nothrow_convertible_DISABLE_REF=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_T=1 -DBENCH_is_nothrow_convertible_DISABLE_REF=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_T=1 -DBENCH_is_nothrow_convertible_DISABLE_REF_FALSE=1-clang++-libc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_T=1 -DBENCH_is_nothrow_convertible_DISABLE_REF_FALSE=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_T=1 -DBENCH_is_nothrow_convertible_DISABLE_REF_FALSE=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_convertible -DBENCH_is_nothrow_convertible_DISABLE_T=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_convertible-g++-libstdc++.webp"/>
+<img src="is_nothrow_copy_assignable-clang++-libc++.webp"/>
+<img src="is_nothrow_copy_assignable-clang++-libstdc++.webp"/>
+<img src="is_nothrow_copy_assignable-g++-libstdc++.webp"/>
+<img src="is_nothrow_copy_constructible-clang++-libc++.webp"/>
+<img src="is_nothrow_copy_constructible-clang++-libstdc++.webp"/>
+<img src="is_nothrow_copy_constructible-g++-libstdc++.webp"/>
+<img src="is_nothrow_default_constructible-clang++-libc++.webp"/>
+<img src="is_nothrow_default_constructible-clang++-libstdc++.webp"/>
+<img src="is_nothrow_default_constructible-g++-libstdc++.webp"/>
+<img src="is_nothrow_destructible-clang++-libc++.webp"/>
+<img src="is_nothrow_destructible-clang++-libstdc++.webp"/>
+<img src="is_nothrow_destructible-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_FN=1-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_FN=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_FN=1 -DBENCH_is_nothrow_invocable_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_FN=1 -DBENCH_is_nothrow_invocable_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_FN=1 -DBENCH_is_nothrow_invocable_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_FN=1 -DBENCH_is_nothrow_invocable_DISABLE_MEM_VAR=1-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_FN=1 -DBENCH_is_nothrow_invocable_DISABLE_MEM_VAR=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_FN=1 -DBENCH_is_nothrow_invocable_DISABLE_MEM_VAR=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_FN=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_MEM_VAR=1-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_MEM_VAR=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_MEM_VAR=1 -DBENCH_is_nothrow_invocable_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_MEM_VAR=1 -DBENCH_is_nothrow_invocable_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_MEM_VAR=1 -DBENCH_is_nothrow_invocable_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable -DBENCH_is_nothrow_invocable_DISABLE_MEM_VAR=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable_r-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_FN=1-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_FN=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_FN=1 -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_FN=1 -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_FN=1 -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_FN=1 -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_VAR=1-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_FN=1 -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_VAR=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_FN=1 -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_VAR=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_FN=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_VAR=1-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_VAR=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_VAR=1 -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_FN=1-clang++-libc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_VAR=1 -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_FN=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_VAR=1 -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_FN=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r -DBENCH_is_nothrow_invocable_r_DISABLE_MEM_VAR=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_invocable_r-g++-libstdc++.webp"/>
+<img src="is_nothrow_move_assignable-clang++-libc++.webp"/>
+<img src="is_nothrow_move_assignable-clang++-libstdc++.webp"/>
+<img src="is_nothrow_move_assignable-g++-libstdc++.webp"/>
+<img src="is_nothrow_move_constructible-clang++-libc++.webp"/>
+<img src="is_nothrow_move_constructible-clang++-libstdc++.webp"/>
+<img src="is_nothrow_move_constructible-g++-libstdc++.webp"/>
+<img src="is_nothrow_swappable-clang++-libc++.webp"/>
+<img src="is_nothrow_swappable-clang++-libstdc++.webp"/>
+<img src="is_nothrow_swappable-g++-libstdc++.webp"/>
+<img src="is_nothrow_swappable_with-clang++-libc++.webp"/>
+<img src="is_nothrow_swappable_with-clang++-libstdc++.webp"/>
+<img src="is_nothrow_swappable_with -DBENCH_is_nothrow_swappable_with_DISABLE_REF=1-clang++-libc++.webp"/>
+<img src="is_nothrow_swappable_with -DBENCH_is_nothrow_swappable_with_DISABLE_REF=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_swappable_with -DBENCH_is_nothrow_swappable_with_DISABLE_REF=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_swappable_with -DBENCH_is_nothrow_swappable_with_DISABLE_REF2=1-clang++-libc++.webp"/>
+<img src="is_nothrow_swappable_with -DBENCH_is_nothrow_swappable_with_DISABLE_REF2=1-clang++-libstdc++.webp"/>
+<img src="is_nothrow_swappable_with -DBENCH_is_nothrow_swappable_with_DISABLE_REF2=1-g++-libstdc++.webp"/>
+<img src="is_nothrow_swappable_with-g++-libstdc++.webp"/>
+<img src="is_null_pointer-clang++-libc++.webp"/>
+<img src="is_null_pointer-clang++-libstdc++.webp"/>
+<img src="is_null_pointer-g++-libstdc++.webp"/>
+<img src="is_object-clang++-libc++.webp"/>
+<img src="is_object-clang++-libstdc++.webp"/>
+<img src="is_object-g++-libstdc++.webp"/>
+<img src="is_pointer-clang++-libc++.webp"/>
+<img src="is_pointer-clang++-libstdc++.webp"/>
+<img src="is_pointer-g++-libstdc++.webp"/>
+<img src="is_polymorphic-clang++-libc++.webp"/>
+<img src="is_polymorphic-clang++-libstdc++.webp"/>
+<img src="is_polymorphic-g++-libstdc++.webp"/>
+<img src="is_reference-clang++-libc++.webp"/>
+<img src="is_reference-clang++-libstdc++.webp"/>
+<img src="is_reference-g++-libstdc++.webp"/>
+<img src="is_rvalue_reference-clang++-libc++.webp"/>
+<img src="is_rvalue_reference-clang++-libstdc++.webp"/>
+<img src="is_rvalue_reference-g++-libstdc++.webp"/>
+<img src="is_same-clang++-libc++.webp"/>
+<img src="is_same-clang++-libstdc++.webp"/>
+<img src="is_same-g++-libstdc++.webp"/>
+<img src="is_scalar-clang++-libc++.webp"/>
+<img src="is_scalar-clang++-libstdc++.webp"/>
+<img src="is_scalar-g++-libstdc++.webp"/>
+<img src="is_scoped_enum-clang++-libc++.webp"/>
+<img src="is_scoped_enum-clang++-libstdc++.webp"/>
+<img src="is_scoped_enum -DBENCH_is_scoped_enum_DISABLE_E=1-clang++-libc++.webp"/>
+<img src="is_scoped_enum -DBENCH_is_scoped_enum_DISABLE_E=1-clang++-libstdc++.webp"/>
+<img src="is_scoped_enum -DBENCH_is_scoped_enum_DISABLE_E=1-g++-libstdc++.webp"/>
+<img src="is_scoped_enum -DBENCH_is_scoped_enum_DISABLE_T=1-clang++-libc++.webp"/>
+<img src="is_scoped_enum -DBENCH_is_scoped_enum_DISABLE_T=1-clang++-libstdc++.webp"/>
+<img src="is_scoped_enum -DBENCH_is_scoped_enum_DISABLE_T=1-g++-libstdc++.webp"/>
+<img src="is_scoped_enum-g++-libstdc++.webp"/>
+<img src="is_signed-clang++-libc++.webp"/>
+<img src="is_signed-clang++-libstdc++.webp"/>
+<img src="is_signed-g++-libstdc++.webp"/>
+<img src="is_standard_layout-clang++-libc++.webp"/>
+<img src="is_standard_layout-clang++-libstdc++.webp"/>
+<img src="is_standard_layout-g++-libstdc++.webp"/>
+<img src="is_swappable-clang++-libc++.webp"/>
+<img src="is_swappable-clang++-libstdc++.webp"/>
+<img src="is_swappable-g++-libstdc++.webp"/>
+<img src="is_swappable_with-clang++-libc++.webp"/>
+<img src="is_swappable_with-clang++-libstdc++.webp"/>
+<img src="is_swappable_with -DBENCH_is_swappable_with_DISABLE_REF=1-clang++-libc++.webp"/>
+<img src="is_swappable_with -DBENCH_is_swappable_with_DISABLE_REF=1-clang++-libstdc++.webp"/>
+<img src="is_swappable_with -DBENCH_is_swappable_with_DISABLE_REF=1-g++-libstdc++.webp"/>
+<img src="is_swappable_with -DBENCH_is_swappable_with_DISABLE_REF2=1-clang++-libc++.webp"/>
+<img src="is_swappable_with -DBENCH_is_swappable_with_DISABLE_REF2=1-clang++-libstdc++.webp"/>
+<img src="is_swappable_with -DBENCH_is_swappable_with_DISABLE_REF2=1-g++-libstdc++.webp"/>
+<img src="is_swappable_with-g++-libstdc++.webp"/>
+<img src="is_trivial-clang++-libc++.webp"/>
+<img src="is_trivial-clang++-libstdc++.webp"/>
+<img src="is_trivial-g++-libstdc++.webp"/>
+<img src="is_trivially_assignable-clang++-libc++.webp"/>
+<img src="is_trivially_assignable-clang++-libstdc++.webp"/>
+<img src="is_trivially_assignable-g++-libstdc++.webp"/>
+<img src="is_trivially_constructible-clang++-libc++.webp"/>
+<img src="is_trivially_constructible-clang++-libstdc++.webp"/>
+<img src="is_trivially_constructible-g++-libstdc++.webp"/>
+<img src="is_trivially_copyable-clang++-libc++.webp"/>
+<img src="is_trivially_copyable-clang++-libstdc++.webp"/>
+<img src="is_trivially_copyable-g++-libstdc++.webp"/>
+<img src="is_trivially_copy_assignable-clang++-libc++.webp"/>
+<img src="is_trivially_copy_assignable-clang++-libstdc++.webp"/>
+<img src="is_trivially_copy_assignable-g++-libstdc++.webp"/>
+<img src="is_trivially_copy_constructible-clang++-libc++.webp"/>
+<img src="is_trivially_copy_constructible-clang++-libstdc++.webp"/>
+<img src="is_trivially_copy_constructible-g++-libstdc++.webp"/>
+<img src="is_trivially_default_constructible-clang++-libc++.webp"/>
+<img src="is_trivially_default_constructible-clang++-libstdc++.webp"/>
+<img src="is_trivially_default_constructible-g++-libstdc++.webp"/>
+<img src="is_trivially_destructible-clang++-libc++.webp"/>
+<img src="is_trivially_destructible-clang++-libstdc++.webp"/>
+<img src="is_trivially_destructible-g++-libstdc++.webp"/>
+<img src="is_trivially_move_assignable-clang++-libc++.webp"/>
+<img src="is_trivially_move_assignable-clang++-libstdc++.webp"/>
+<img src="is_trivially_move_assignable-g++-libstdc++.webp"/>
+<img src="is_trivially_move_constructible-clang++-libc++.webp"/>
+<img src="is_trivially_move_constructible-clang++-libstdc++.webp"/>
+<img src="is_trivially_move_constructible-g++-libstdc++.webp"/>
+<img src="is_union-clang++-libc++.webp"/>
+<img src="is_union-clang++-libstdc++.webp"/>
+<img src="is_union-g++-libstdc++.webp"/>
+<img src="is_unsigned-clang++-libc++.webp"/>
+<img src="is_unsigned-clang++-libstdc++.webp"/>
+<img src="is_unsigned-g++-libstdc++.webp"/>
+<img src="is_void-clang++-libc++.webp"/>
+<img src="is_void-clang++-libstdc++.webp"/>
+<img src="is_void-g++-libstdc++.webp"/>
+<img src="is_volatile-clang++-libc++.webp"/>
+<img src="is_volatile-clang++-libstdc++.webp"/>
+<img src="is_volatile-g++-libstdc++.webp"/>
+<img src="make_signed-clang++-libc++.webp"/>
+<img src="make_signed-clang++-libstdc++.webp"/>
+<img src="make_signed-g++-libstdc++.webp"/>
+<img src="make_unsigned-clang++-libc++.webp"/>
+<img src="make_unsigned-clang++-libstdc++.webp"/>
+<img src="make_unsigned-g++-libstdc++.webp"/>
+<img src="rank-clang++-libc++.webp"/>
+<img src="rank-clang++-libstdc++.webp"/>
+<img src="rank -DBENCH_rank_DISABLE_ARRAY=1-clang++-libc++.webp"/>
+<img src="rank -DBENCH_rank_DISABLE_ARRAY=1-clang++-libstdc++.webp"/>
+<img src="rank -DBENCH_rank_DISABLE_ARRAY=1-g++-libstdc++.webp"/>
+<img src="rank -DBENCH_rank_DISABLE_T=1-clang++-libc++.webp"/>
+<img src="rank -DBENCH_rank_DISABLE_T=1-clang++-libstdc++.webp"/>
+<img src="rank -DBENCH_rank_DISABLE_T=1-g++-libstdc++.webp"/>
+<img src="rank-g++-libstdc++.webp"/>
+<img src="reference_constructs_from_temporary-clang++-libc++.webp"/>
+<img src="reference_constructs_from_temporary-clang++-libstdc++.webp"/>
+<img src="reference_constructs_from_temporary-g++-libstdc++.webp"/>
+<img src="reference_converts_from_temporary-clang++-libc++.webp"/>
+<img src="reference_converts_from_temporary-clang++-libstdc++.webp"/>
+<img src="reference_converts_from_temporary-g++-libstdc++.webp"/>
+<img src="remove_all_extents-clang++-libc++.webp"/>
+<img src="remove_all_extents-clang++-libstdc++.webp"/>
+<img src="remove_all_extents-g++-libstdc++.webp"/>
+<img src="remove_const-clang++-libc++.webp"/>
+<img src="remove_const-clang++-libstdc++.webp"/>
+<img src="remove_const-g++-libstdc++.webp"/>
+<img src="remove_cv-clang++-libc++.webp"/>
+<img src="remove_cv-clang++-libstdc++.webp"/>
+<img src="remove_cv-g++-libstdc++.webp"/>
+<img src="remove_cvref-clang++-libc++.webp"/>
+<img src="remove_cvref-clang++-libstdc++.webp"/>
+<img src="remove_cvref-g++-libstdc++.webp"/>
+<img src="remove_extent-clang++-libc++.webp"/>
+<img src="remove_extent-clang++-libstdc++.webp"/>
+<img src="remove_extent-g++-libstdc++.webp"/>
+<img src="remove_pointer-clang++-libc++.webp"/>
+<img src="remove_pointer-clang++-libstdc++.webp"/>
+<img src="remove_pointer-g++-libstdc++.webp"/>
+<img src="remove_reference-clang++-libc++.webp"/>
+<img src="remove_reference-clang++-libstdc++.webp"/>
+<img src="remove_reference-g++-libstdc++.webp"/>
+<img src="remove_volatile-clang++-libc++.webp"/>
+<img src="remove_volatile-clang++-libstdc++.webp"/>
+<img src="remove_volatile-g++-libstdc++.webp"/>
+<img src="underlying_type-clang++-libc++.webp"/>
+<img src="underlying_type-clang++-libstdc++.webp"/>
+<img src="underlying_type-g++-libstdc++.webp"/>
+<img src="unwrap_ref_decay-clang++-libc++.webp"/>
+<img src="unwrap_ref_decay-clang++-libstdc++.webp"/>
+<img src="unwrap_ref_decay-g++-libstdc++.webp"/>
+<img src="unwrap_reference-clang++-libc++.webp"/>
+<img src="unwrap_reference-clang++-libstdc++.webp"/>
+<img src="unwrap_reference-g++-libstdc++.webp"/>
+
+</body></html>
