@@ -7,7 +7,10 @@ bench_file_contents = f:read'a'
 f:close()
 
 -- {[algoname] = {'ST'|'SV'|'SVT', {subbench...}}, [N]=algoname}
-algos = {['ALL']={'SVT', {}}, 'ALL'}
+algos = {
+  ['NONE']={'0', {}}, 'NONE',
+  ['ALL']={'SVT', {}}, 'ALL',
+}
 
 -- extract first, second and last parameter
 -- format: BENCH(ST, invoke_result, (int(*)(T), T), FN)
@@ -41,16 +44,15 @@ std_versions_table = {
 default_colors = {'\x1b[m', '\x1b[37m', '\x1b[34m', '\x1b[35m', }
 default_nocolors = {'',     '',         '',          '', }
 
-gcc = '    g++'
-clang = 'clang++'
-libcpp = 'libc++   '
-libstdcpp = 'libstdc++'
-
 compile_options = ' -fsyntax-only -I include bench/stl_traits.cpp'
 show_source = false
 show_all_times = true
 full = false
 noexe = false
+timeonly = false
+namedonly = false
+multibench = false
+novariant = false
 colors = default_colors
 
 bench_types = {}
@@ -67,13 +69,25 @@ for opti=1,#arg do
 
   if algos[opt] then
     table.insert(bench_algonames, opt)
+
   elseif opt == 'all' then
-    table.insert(bench_algonames, 'ALL')
+    for _, algoname in ipairs(algos) do
+      table.insert(bench_algonames, algoname)
+    end
+
+  elseif opt == 'tt' or opt == 'time' or opt == 'nomem' then
+    timeonly = true
+
+  elseif opt == 'm' or opt == 'multi' or opt == 'multibench' then
+    multibench = true
+
+  elseif opt == 'novar' or opt == 'novariant' then
+    novariant = true
 
   elseif opt:sub(1,1) == '-' then
     compile_options = compile_options .. ' ' .. opt
 
-  elseif opt == 'list' then
+  elseif opt == 'l' or opt == 'list' then
     for _, algoname in ipairs(algos) do
       algodef = algos[algoname]
       print(colors[3] .. algoname .. colors[1] ..
@@ -83,6 +97,9 @@ for opti=1,#arg do
       end
     end
     os.exit(0)
+
+  elseif opt == 'nm' or opt == 'name' or opt == 'names' then
+    namedonly = true
 
   elseif opt == 'n' or opt == 'noexe' then
     noexe = true
@@ -110,9 +127,9 @@ for opti=1,#arg do
     table.insert(builtins, 0)
 
   elseif opt == 'gcc' or opt == 'g++' then
-    table.insert(compilers, gcc)
+    table.insert(compilers, 'g++')
   elseif opt == 'clang' or opt == 'clang++' then
-    table.insert(compilers, clang)
+    table.insert(compilers, 'clang++')
 
   elseif std_versions_table[opt] then
     table.insert(cppversions, opt:sub(-2))
@@ -122,10 +139,10 @@ for opti=1,#arg do
 
   elseif opt == 'libcpp' or opt == 'libc++'
       or opt == 'lcpp' or opt == 'lc++' then
-    table.insert(stdlibs, libcpp)
+    table.insert(stdlibs, 'libc++')
   elseif opt == 'libstdcpp' or opt == 'libstdc++'
       or opt == 'lstdcpp' or opt == 'lstdc++' then
-    table.insert(stdlibs, libstdcpp)
+    table.insert(stdlibs, 'libstdc++')
 
   elseif opt == 'b' or opt == 'baseline'
       or opt == 's' or opt == 'struct'
@@ -141,16 +158,17 @@ for opti=1,#arg do
   end
 end
 
-runsep = (not noexe or show_source) and '-----\n'
+runsep = not namedonly and (not noexe or show_source) and '-----\n'
 
 bench_type_compiler_option_table = {
-  SVT=' -DBENCH_TYPE=SVT',
-  SV= ' -DBENCH_TYPE=SV ',
-  ST= ' -DBENCH_TYPE=ST ',
-  S=  ' -DBENCH_TYPE=S  ',
-  V=  ' -DBENCH_TYPE=V  ',
-  T=  ' -DBENCH_TYPE=T  ',
-  B=  ' -DBENCH_TYPE=B  ',
+  ['0']= ' -DBENCH_TYPE=0  ',
+  SVT=   ' -DBENCH_TYPE=SVT',
+  SV=    ' -DBENCH_TYPE=SV ',
+  ST=    ' -DBENCH_TYPE=ST ',
+  S=     ' -DBENCH_TYPE=S  ',
+  V=     ' -DBENCH_TYPE=V  ',
+  T=     ' -DBENCH_TYPE=T  ',
+  B=     ' -DBENCH_TYPE=B  ',
 }
 
 if not full and #bench_algonames == 0 then
@@ -159,13 +177,17 @@ if not full and #bench_algonames == 0 then
   if #builtins == 0 then builtins = {'1'} end
 end
 
-if #compilers == 0 then compilers = {gcc, 'clang++'} end
+if #compilers == 0 then compilers = {'g++', 'clang++'} end
 if #namespaces == 0 then namespaces = {'std', 'jln'} end
-if #stdlibs == 0 then stdlibs = {libstdcpp, libcpp} end
+if #stdlibs == 0 then stdlibs = {'libstdc++', 'libc++'} end
 if #builtins == 0 then builtins = {'0', '1'} end
 if #cppversions == 0 then cppversions = {'17', '20'} end
 
 function make_bench_options(algoname, subbenchs)
+  if novariant then
+    return {''}
+  end
+
   local subbenchs_opts = {}
   for _, subbench in ipairs(subbenchs) do
     table.insert(subbenchs_opts, ' -DBENCH_' .. algoname .. '_DISABLE_' .. subbench .. '=1')
@@ -206,7 +228,7 @@ function execute_or_exit(cmd)
   return contents
 end
 
-if show_all_times then
+if show_all_times and not namedonly then
   function print_for_time(s)
     io.stdout:write(s)
   end
@@ -217,8 +239,18 @@ end
 
 source_cache = {}
 
-function compile(cmd)
-  print(colors[2] .. '# ' .. cmd .. colors[1])
+timecmd = timeonly and "" or (namedonly and "/usr/bin/time --format='%M' "
+                                         or "/usr/bin/time --format='%MK' " )
+timesuffix = timeonly and '' or (namedonly and ',' or 's - ')
+
+if not noexe then
+  posix = require'posix'
+  clock_gettime = posix.clock_gettime
+  CLOCK_MONOTONIC = posix.CLOCK_MONOTONIC
+end
+
+function compile(id_elems, cmd)
+  if not namedonly then print(colors[2] .. '# ' .. cmd .. colors[1]) end
 
   if show_source then
     local cacheid = cmd:gsub(' %-DJLN_MP_USE_OPTIONAL_BUILTIN=.', '', 1)
@@ -240,14 +272,20 @@ function compile(cmd)
   end
 
   if noexe then
+    if namedonly then
+      print(table.concat(id_elems, ','))
+    end
     return
   end
 
   local lines = {}
+  cmd = timecmd .. cmd .. " -DJLN_MP_NO_STL_TRAIT=1 -fdiagnostics-color=always 2>&1"
 
   print_for_time(colors[2] .. '( ')
   for i=0,5 do
-    local line = execute_or_exit("/usr/bin/time --format='%Es - %MK' " .. cmd .. " -fdiagnostics-color=always 2>&1")
+    local sec1, ns1 = clock_gettime(CLOCK_MONOTONIC)
+    local line = execute_or_exit(cmd)
+    local sec2, ns2 = clock_gettime(CLOCK_MONOTONIC)
 
     -- output too long. Assume this is a compilation error
     if #line > 100 then
@@ -255,7 +293,8 @@ function compile(cmd)
       os.exit(3)
     end
 
-    line = line:sub(1,-2)
+    local ms = ((sec2 - sec1) * 1000000000 + (ns2 - ns1)) // 1000000
+    line = string.format('%02d.%03d%s%s', ms // 1000, ms % 1000, timesuffix, line:sub(1,-2))
     print_for_time(line .. '  |  ')
     table.insert(lines, line)
   end
@@ -263,35 +302,49 @@ function compile(cmd)
 
   -- get the median time
   table.sort(lines)
-  print(lines[3]:sub(1,-2))
+  if namedonly then
+    print(table.concat(id_elems, ',') .. ',' .. lines[3])
+  else
+    print(lines[3])
+  end
 end
 
-function matrix_compile(subbenchs_opts, bench_opt)
+function matrix_compile(algoname, subbenchs_opts, bench_opt)
+  local id_elems = {}
   for _, compiler in ipairs(compilers) do
+    id_elems[2] = compiler
+    local compilercmd = compiler == 'g++' and 'g++    ' or compiler
     for _, stdlib in ipairs(stdlibs) do
-      if compiler == gcc then
+      if compiler == 'g++' then
         -- -stdlib may not be supported by gcc, skip compiling with libc++
-        if stdlib ~= libstdcpp then
+        if stdlib ~= 'libstdc++' then
           break
         end
+        id_elems[3] = stdlib
         stdlib = #compilers > 1 and '                  ' or ''
       else -- clang
-        stdlib=' -stdlib=' .. stdlib
+        id_elems[3] = stdlib
+        stdlib=' -stdlib=' .. stdlib .. (stdlib == 'libc++' and '   ' or '')
       end
 
       for _, bench_type in ipairs(bench_types) do
+        id_elems[4] = bench_type
         for _, subbenchs_opt in ipairs(subbenchs_opts) do
+          id_elems[1] = algoname .. subbenchs_opt
           for _, namespace in ipairs(namespaces) do
+            id_elems[5] = namespace
             local dnamespace = namespace == 'std'
               and ' -DBENCH_STD=1'
-              or ' -DBENCH_STD=0 -DJLN_MP_NO_STL_TRAIT=1'
+              or ' -DBENCH_STD=0'
             for _, cppversion in ipairs(cppversions) do
+              id_elems[6] = cppversion
               for _, builtin in ipairs(builtins) do
+                id_elems[7] = 'builtin=' .. builtin
                 local dbuiltin = namespace == 'jln'
                   and ' -DJLN_MP_USE_OPTIONAL_BUILTIN=' .. builtin
                   or ''
 
-                compile(compiler .. bench_opt .. stdlib ..
+                compile(id_elems, compilercmd .. bench_opt .. stdlib ..
                         bench_type_compiler_option_table[bench_type] ..
                         ' -std=c++' .. cppversion .. dnamespace .. dbuiltin .. subbenchs_opt)
 
@@ -320,18 +373,24 @@ if full then
     SV= {B=true, SVT=false, SV=true,  ST=false, S=true, V=true,  T=false,},
     ST= {B=true, SVT=false, SV=false, ST=true,  S=true, V=false, T=true,},
   }
-  for _, algoname in ipairs(algos) do
-    algodef = algos[algoname]
-    algo_bench_type = algodef[1]
-    bench_types = {}
-    for _, bench_type in ipairs(saved_bench_types) do
-      if keepable_table[algo_bench_type][bench_type] then
-        table.insert(bench_types, bench_type)
+  for _, algoname in ipairs(#bench_algonames ~= 0 and bench_algonames or algos) do
+    if algoname ~= 'NONE' then
+      algodef = algos[algoname]
+      algo_bench_type = algodef[1]
+      bench_types = {}
+      for _, bench_type in ipairs(saved_bench_types) do
+        if keepable_table[algo_bench_type][bench_type] then
+          table.insert(bench_types, bench_type)
+        end
       end
+      subbenchs_opts = make_bench_options(algoname, algodef[2])
+      bench_opt = compile_options .. ' -DBENCH_' .. algoname .. '=1'
+    else
+      bench_types = {'0'}
+      subbenchs_opts = {''}
+      bench_opt = compile_options
     end
-    subbenchs_opts = make_bench_options(algoname, algodef[2])
-    bench_opt = compile_options .. ' -DBENCH_' .. algoname .. '=1'
-    matrix_compile(subbenchs_opts, bench_opt)
+    matrix_compile(algoname, subbenchs_opts, bench_opt)
   end
 else
   if #bench_types == 0 then
@@ -347,9 +406,13 @@ else
     end
   end
 
-  subbenchs_opts = #bench_algonames == 1
-    and make_bench_options(bench_algonames[1], algos[bench_algonames[1]][2])
-    or {''}
+  if #bench_algonames == 1 then
+    algoname = bench_algonames[1]
+    subbenchs_opts = make_bench_options(algoname, algos[bench_algonames[1]][2])
+  else
+    algoname = table.concat(bench_algonames, ',')
+    subbenchs_opts = {''}
+  end
   bench_opt = compile_options .. ' -DBENCH_' .. table.concat(bench_algonames, '=1 -DBENCH_') .. '=1'
-  matrix_compile(subbenchs_opts, bench_opt)
+  matrix_compile(algoname, subbenchs_opts, bench_opt)
 end

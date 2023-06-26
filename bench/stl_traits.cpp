@@ -1,7 +1,8 @@
-// S = xxx<...>::type
-// V = xxx_v<...>
-// T = xxx_t<...>
-// B = xxx<...>
+// type:
+//   S = xxx<...>::type
+//   V = xxx_v<...>
+//   T = xxx_t<...>
+//   B = xxx<...>
 // values: S, V, T, SV, ST, SVT, B
 #ifndef BENCH_TYPE
 # define BENCH_TYPE SVT
@@ -500,8 +501,10 @@ BENCH(ST, underlying_type, (typename X<T>::E), 0)
 
 BENCH(ST, common_type, (T, T&, T&&, T const&), 0)
 
-#if ! BENCH_STD || __cpp_lib_common_reference >= 202302L
-BENCH(ST, common_reference, (T&, T const&, T&&), 0)
+#if ! BENCH_STD || JLN_MP_CXX_VERSION >= 20
+BENCH(ST, common_reference, (T&, T const&), LREF)
+BENCH(ST, common_reference, (T&&, T&&), RVAL)
+BENCH(ST, common_reference, (T&, T&&), MIXREF)
 #endif
 
 
