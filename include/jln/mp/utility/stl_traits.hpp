@@ -12,6 +12,10 @@
 # define JLN_MP_USE_OPTIONAL_BUILTIN 1
 #endif
 
+#ifndef JLN_MP_CHECK_UB_TRAIT_CALL
+# define JLN_MP_CHECK_UB_TRAIT_CALL 0
+#endif
+
 #if JLN_MP_USE_OPTIONAL_BUILTIN
 # define JLN_MP_HAS_OPTIONAL_BUILTIN JLN_MP_HAS_BUILTIN
 #else
@@ -497,78 +501,142 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   namespace emp
   {
     template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_complete_type_v = !JLN_MP_IS_CONST_V(T volatile const);
+    JLN_MP_CONSTEXPR_VAR bool is_complete_v = !JLN_MP_IS_CONST_V(T volatile const);
 
     template<class T>
     requires requires { sizeof(T); }
-    JLN_MP_CONSTEXPR_VAR bool is_complete_type_v<T> = true;
+    JLN_MP_CONSTEXPR_VAR bool is_complete_v<T> = true;
 
     template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_v = !JLN_MP_IS_CONST_V(T volatile const);
+    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_v = !JLN_MP_IS_CONST_V(T volatile const);
 
     template<class T>
     requires requires { sizeof(T); }
-    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_v<T> = true;
+    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_v<T> = true;
 
     template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_v<T[]> = true;
+    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_v<T[]> = true;
 
-    template<> JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_v<void> = true;
-    template<> JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_v<void const> = true;
-    template<> JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_v<void volatile> = true;
-    template<> JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_v<void volatile const> = true;
+    template<> JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_v<void> = true;
+    template<> JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_v<void const> = true;
+    template<> JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_v<void volatile> = true;
+    template<> JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_v<void volatile const> = true;
   }
-  /// is_complete_type = !is_unbounded_array && (is_function || when the expression sizeof(T) is valid).
-  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_complete_type, (class T), bool, (T));
-  /// is_complete_type = is_function || is_void || is_unbounded_array || when the expression sizeof(T) is valid.
-  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_complete_or_unbounded_type, (class T), bool, (T));
+  /// is_complete = !is_unbounded_array && (is_function || when the expression sizeof(T) is valid).
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_complete, (class T), bool, (T));
+  /// is_complete = is_function || is_void || is_unbounded_array || when the expression sizeof(T) is valid.
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_complete_or_unbounded, (class T), bool, (T));
 #else
   namespace detail
   {
     template<class T, bool = false>
-    JLN_MP_CONSTEXPR_VAR bool is_complete_type_impl_v = !JLN_MP_IS_CONST_V(T);
+    JLN_MP_CONSTEXPR_VAR bool is_complete_impl_v = !JLN_MP_IS_CONST_V(T);
 
     template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_complete_type_impl_v<T, !sizeof(T)> = true;
+    JLN_MP_CONSTEXPR_VAR bool is_complete_impl_v<T, !sizeof(T)> = true;
 
 
     template<class T, bool = false>
-    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_impl_v = !JLN_MP_IS_CONST_V(T);
+    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_impl_v = !JLN_MP_IS_CONST_V(T);
 
     template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_impl_v<T, !sizeof(T)> = true;
+    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_impl_v<T, !sizeof(T)> = true;
 
     template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_impl_v<T[]> = true;
+    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_impl_v<T[]> = true;
 
     template<>
-    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_type_impl_v<void volatile const> = true;
+    JLN_MP_CONSTEXPR_VAR bool is_complete_or_unbounded_impl_v<void volatile const> = true;
   }
-  /// is_complete_type = !is_unbounded_array && (is_function || when the expression sizeof(T) is valid).
-  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_complete_type, (class T), bool,
-    detail::is_complete_type_impl_v<T volatile const>);
-  /// is_complete_type = is_function || is_void || is_unbounded_array || when the expression sizeof(T) is valid.
-  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_complete_or_unbounded_type, (class T), bool,
-    detail::is_complete_or_unbounded_type_impl_v<T volatile const>);
+  /// is_complete = !is_unbounded_array && (is_function || when the expression sizeof(T) is valid).
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_complete, (class T), bool,
+    detail::is_complete_impl_v<T volatile const>);
+  /// is_complete = is_function || is_void || is_unbounded_array || when the expression sizeof(T) is valid.
+  JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_complete_or_unbounded, (class T), bool,
+    detail::is_complete_or_unbounded_impl_v<T volatile const>);
+#endif
+
+#if JLN_MP_CHECK_UB_TRAIT_CALL
+  namespace detail
+  {
+    template<class T>
+    struct check_complete
+    {
+# if JLN_MP_FEATURE_CONCEPTS
+      static_assert(emp::is_complete_v<T volatile const>,
+        "template argument must be a complete class");
+# else
+      static_assert(is_complete_impl_v<T volatile const>,
+        "template argument must be a complete class");
+# endif
+
+      using type = T;
+    };
+
+    template<class T>
+    struct check_complete_or_unbounded
+    {
+# if JLN_MP_FEATURE_CONCEPTS
+      static_assert(emp::is_complete_or_unbounded_v<T volatile const>,
+        "template argument must be a complete class or an unbounded array");
+# else
+      static_assert(is_complete_or_unbounded_impl_v<T volatile const>,
+        "template argument must be a complete class or an unbounded array");
+# endif
+
+      using type = T;
+    };
+
+# if JLN_MP_GCC
+    template<class T> using check_complete_t
+      = typename check_complete<T>::type;
+
+    template<class T> using check_complete_or_unbounded_t
+      = typename check_complete_or_unbounded<T>::type;
+
+#   define JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(...) \
+      detail::check_complete_or_unbounded_t<__VA_ARGS__>
+#   define JLN_MP_CHECK_COMPLETE_T(...) \
+      detail::check_complete_t<__VA_ARGS__>
+# else
+#   define JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(...) \
+      typename  detail::check_complete_or_unbounded<__VA_ARGS__>::type
+#   define JLN_MP_CHECK_COMPLETE_T(...) \
+      typename detail::check_complete<__VA_ARGS__>::type
+# endif
+  }
+#else
+# define JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(...) __VA_ARGS__
+# define JLN_MP_CHECK_COMPLETE_T(...) __VA_ARGS__
 #endif
   //@}
 
 
 #if JLN_MP_MSVC >= 2000 || JLN_MP_HAS_BUILTIN(__is_trivial)
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_trivial, (class T), bool, __is_trivial(T));
 #elif JLN_MP_MSVC || (JLN_MP_HAS_BUILTIN(__is_trivially_constructible) && JLN_MP_HAS_BUILTIN(__is_trivially_copyable))
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_trivial, (class T), bool, __is_trivially_constructible(T) && __is_trivially_copyable(T));
 #elif ! JLN_MP_NO_STL_TRAIT
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_trivial, (class T), bool, (T))
+# else
+  // this implementation is not compliant and fails with classes and unions
+  namespace emp
+  {
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_trivial_v = JLN_MP_IS_SCALAR_V(JLN_MP_CHECK_COMPLETE_T(T));
+
+    template<class T>
+    JLN_MP_CONSTEXPR_VAR bool is_trivial_v<T[]> = is_trivial_v<T>;
+
+    template<class T, std::size_t n>
+    JLN_MP_CONSTEXPR_VAR bool is_trivial_v<T[n]> = is_trivial_v<T>;
+  }
+  JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_trivial, (class T), bool, (T));
 #endif
 
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_trivially_copyable, (class T), bool, __is_trivially_copyable(T));
 
@@ -760,7 +828,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
 
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     has_unique_object_representations, (class T), bool, __has_unique_object_representations(T));
 
@@ -1103,11 +1170,11 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_standard_layout)
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_standard_layout, (class T), bool, __is_standard_layout(T));
+#elif ! JLN_MP_NO_STL_TRAIT
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_standard_layout, (class T), bool, (T))
 #else
-  // TODO is_complete_or_unbounded
   // this implementation is not compliant
   namespace emp
   {
@@ -1158,7 +1225,10 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   {
     template<class From, class To>
     JLN_MP_CONSTEXPR_VAR bool is_convertible_v = detail::is_convertible_impl_v<
-      To, requires{ JLN_MP_DECLVAL_PTR(void(*)(To))(JLN_MP_DECLVAL(From&&)); }
+      To, requires{
+        JLN_MP_DECLVAL_PTR(void(*)(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(To)))
+        (JLN_MP_DECLVAL(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(From)&&));
+      }
     >;
   }
 # else
@@ -1176,7 +1246,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   namespace emp
   {
     template<class From, class To>
-    JLN_MP_CONSTEXPR_VAR bool is_convertible_v = detail::is_convertible_impl_v<From, To>;
+    JLN_MP_CONSTEXPR_VAR bool is_convertible_v = detail::is_convertible_impl_v<
+      JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(From), JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(To)>;
   }
 # endif
   namespace emp
@@ -1193,7 +1264,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     JLN_MP_CONSTEXPR_VAR bool is_convertible_v<From, To[N]> = false;
   }
   #define JLN_MP_IS_CONVERTIBLE_V(...) emp::is_convertible_v<__VA_ARGS__>
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_convertible, (class From, class To), bool, (From, To));
 #endif
 
@@ -1299,90 +1369,82 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 #endif
 
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_constructible, (class T, class... Args), bool, __is_constructible(T, Args...));
 
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_default_constructible, (class T), bool, __is_constructible(T));
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_copy_constructible, (class T), bool, __is_constructible(T, JLN_MP_ADD_LVALUE_REFERENCE_T(T const)));
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_move_constructible, (class T), bool,
       __is_constructible(T, T /*emp::add_rvalue_reference_t<T>*/));
 
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_trivially_constructible, (class T, class... Args), bool,
       __is_trivially_constructible(T, Args...));
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_trivially_default_constructible, (class T), bool, __is_trivially_constructible(T));
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_trivially_copy_constructible, (class T), bool,
       __is_trivially_constructible(T, JLN_MP_ADD_LVALUE_REFERENCE_T(T const)));
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_trivially_move_constructible, (class T), bool,
       __is_trivially_constructible(T, T /*emp::add_rvalue_reference_t<T>*/));
 
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_nothrow_constructible, (class T, class... Args), bool, __is_nothrow_constructible(T, Args...));
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_nothrow_default_constructible, (class T), bool, __is_nothrow_constructible(T));
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_nothrow_copy_constructible, (class T), bool,
       __is_nothrow_constructible(T, JLN_MP_ADD_LVALUE_REFERENCE_T(T const)));
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_nothrow_move_constructible, (class T), bool,
       __is_nothrow_constructible(T, T /*emp::add_rvalue_reference_t<T>*/));
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_assignable)
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_FROM_STD(
     is_assignable, (class T, class U), bool, __is_assignable(T, U));
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
-    is_copy_assignable, (class T), bool,
-      __is_assignable(JLN_MP_ADD_LVALUE_REFERENCE_T(T), JLN_MP_ADD_LVALUE_REFERENCE_T(T const)));
+    is_copy_assignable, (class T), bool, __is_assignable(
+      JLN_MP_ADD_LVALUE_REFERENCE_T(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(T)),
+      JLN_MP_ADD_LVALUE_REFERENCE_T(T const)));
 
-  #define JLN_MP_IS_MOVE_ASSIGNABLE_V(...) \
-    __is_assignable(JLN_MP_ADD_LVALUE_REFERENCE_T(__VA_ARGS__), __VA_ARGS__)
+  #define JLN_MP_IS_MOVE_ASSIGNABLE_V(...) __is_assignable( \
+    JLN_MP_ADD_LVALUE_REFERENCE_T(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(__VA_ARGS__)), __VA_ARGS__)
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_move_assignable, (class T), bool, JLN_MP_IS_MOVE_ASSIGNABLE_V(T));
 #else
 # if JLN_MP_FEATURE_CONCEPTS
-  #define JLN_MP_IS_ASSIGNABLE_V(T, U) \
-    requires { JLN_MP_DECLVAL(T&&) = JLN_MP_DECLVAL(U&&); }
+  #define JLN_MP_IS_ASSIGNABLE_V(T, U) requires {                  \
+    JLN_MP_DECLVAL(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(T)&&)      \
+      = JLN_MP_DECLVAL(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(U)&&); \
+  }
 
-  #define JLN_MP_IS_COPY_ASSIGNABLE_V(...) \
-    requires { JLN_MP_DECLVAL(__VA_ARGS__&) = JLN_MP_DECLVAL(__VA_ARGS__ const&); }
+  #define JLN_MP_IS_COPY_ASSIGNABLE_V(...) requires {                  \
+    JLN_MP_DECLVAL(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(__VA_ARGS__)&) \
+      = JLN_MP_DECLVAL(__VA_ARGS__ const&);                            \
+  }
 
-  #define JLN_MP_IS_MOVE_ASSIGNABLE_V(...) \
-    requires { JLN_MP_DECLVAL(__VA_ARGS__&) = JLN_MP_DECLVAL(__VA_ARGS__ &&); }
+  #define JLN_MP_IS_MOVE_ASSIGNABLE_V(...) requires {                  \
+    JLN_MP_DECLVAL(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(__VA_ARGS__)&) \
+      = JLN_MP_DECLVAL(__VA_ARGS__&&);                                 \
+  }
 # else
   namespace detail
   {
@@ -1394,38 +1456,34 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       T, U, decltype(void(JLN_MP_DECLVAL(T&&) = JLN_MP_DECLVAL(U&&)))
     > = true;
   }
-  #define JLN_MP_IS_ASSIGNABLE_V(...) detail::is_assignable_impl_v<__VA_ARGS__>
+  #define JLN_MP_IS_ASSIGNABLE_V(T, U) detail::is_assignable_impl_v< \
+    JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(T), JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(U)>
 
-  #define JLN_MP_IS_COPY_ASSIGNABLE_V(...)                                   \
-    detail::is_assignable_impl_v<JLN_MP_ADD_LVALUE_REFERENCE_T(__VA_ARGS__), \
-                                 JLN_MP_ADD_LVALUE_REFERENCE_T(__VA_ARGS__ const)>
+  #define JLN_MP_IS_COPY_ASSIGNABLE_V(...) detail::is_assignable_impl_v<              \
+    JLN_MP_ADD_LVALUE_REFERENCE_T(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(__VA_ARGS__)), \
+    JLN_MP_ADD_LVALUE_REFERENCE_T(__VA_ARGS__ const)>
 
-  #define JLN_MP_IS_MOVE_ASSIGNABLE_V(...) \
-    detail::is_assignable_impl_v<JLN_MP_ADD_LVALUE_REFERENCE_T(__VA_ARGS__), __VA_ARGS__>
+  #define JLN_MP_IS_MOVE_ASSIGNABLE_V(...) detail::is_assignable_impl_v< \
+    JLN_MP_ADD_LVALUE_REFERENCE_T(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(__VA_ARGS__)), __VA_ARGS__>
 # endif
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_assignable, (class T, class U), bool, JLN_MP_IS_ASSIGNABLE_V(T, U));
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_copy_assignable, (class T), bool, JLN_MP_IS_COPY_ASSIGNABLE_V(T));
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_move_assignable, (class T), bool, JLN_MP_IS_MOVE_ASSIGNABLE_V(T));
 #endif
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_nothrow_assignable)
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_nothrow_assignable, (class T, class U), bool, __is_nothrow_assignable(T, U));
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
-    is_nothrow_copy_assignable, (class T), bool,
-      __is_nothrow_assignable(JLN_MP_ADD_LVALUE_REFERENCE_T(T), JLN_MP_ADD_LVALUE_REFERENCE_T(T const)));
+    is_nothrow_copy_assignable, (class T), bool, __is_nothrow_assignable(
+      JLN_MP_ADD_LVALUE_REFERENCE_T(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(T)),
+      JLN_MP_ADD_LVALUE_REFERENCE_T(T const)));
 
-  #define JLN_MP_IS_NOTHROW_MOVE_ASSIGNABLE_V(...) \
-    __is_nothrow_assignable(JLN_MP_ADD_LVALUE_REFERENCE_T(__VA_ARGS__), __VA_ARGS__)
+  #define JLN_MP_IS_NOTHROW_MOVE_ASSIGNABLE_V(...) __is_nothrow_assignable( \
+    JLN_MP_ADD_LVALUE_REFERENCE_T(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(__VA_ARGS__)), __VA_ARGS__)
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
     is_nothrow_move_assignable, (class T), bool, JLN_MP_IS_NOTHROW_MOVE_ASSIGNABLE_V(T));
 #else
@@ -1445,53 +1503,52 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class T>
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_copy_assignable_v
       = detail::is_nothrow_assignable_impl_v<
-          JLN_MP_ADD_LVALUE_REFERENCE_T(T), JLN_MP_ADD_LVALUE_REFERENCE_T(T const)>;
+          JLN_MP_ADD_LVALUE_REFERENCE_T(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(T)),
+          JLN_MP_ADD_LVALUE_REFERENCE_T(T const)
+        >;
 
     // TODO use emp version ?
-    #define JLN_MP_IS_NOTHROW_MOVE_ASSIGNABLE_V(...) \
-      detail::is_nothrow_assignable_impl_v<JLN_MP_ADD_LVALUE_REFERENCE_T(__VA_ARGS__), __VA_ARGS__>
+    #define JLN_MP_IS_NOTHROW_MOVE_ASSIGNABLE_V(...) detail::is_nothrow_assignable_impl_v< \
+      JLN_MP_ADD_LVALUE_REFERENCE_T(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(__VA_ARGS__)), __VA_ARGS__>
 
     template<class T>
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_move_assignable_v
       = JLN_MP_IS_NOTHROW_MOVE_ASSIGNABLE_V(T);
   }
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_nothrow_assignable, (class T, class U), bool,
     detail::is_nothrow_assignable_impl_v<T, U>);
-  // TODO is_complete_or_unbounded
   // TODO use JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V ?
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_nothrow_copy_assignable, (class T), bool, (T));
-  // TODO is_complete_or_unbounded
   // TODO use JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V ?
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_nothrow_move_assignable, (class T), bool, (T));
 #endif
 
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_trivially_assignable, (class T, class U), bool, __is_trivially_assignable(T, U));
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
-    is_trivially_copy_assignable, (class T), bool,
-      __is_trivially_assignable(JLN_MP_ADD_LVALUE_REFERENCE_T(T), JLN_MP_ADD_LVALUE_REFERENCE_T(T const)));
+    is_trivially_copy_assignable, (class T), bool, __is_trivially_assignable(
+      JLN_MP_ADD_LVALUE_REFERENCE_T(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(T)),
+      JLN_MP_ADD_LVALUE_REFERENCE_T(T const)));
 
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_FROM_STD(
-    is_trivially_move_assignable, (class T), bool,
-      __is_trivially_assignable(JLN_MP_ADD_LVALUE_REFERENCE_T(T), T /*emp::add_rvalue_reference_t<T>*/));
+    is_trivially_move_assignable, (class T), bool, __is_trivially_assignable(
+      JLN_MP_ADD_LVALUE_REFERENCE_T(JLN_MP_CHECK_COMPLETE_OR_UNBOUNDED_T(T)),
+      T /*emp::add_rvalue_reference_t<T>*/));
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_destructible)
   #define JLN_MP_IS_DESTRUCTIBLE_V __is_destructible
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_LIBCXX_T_OTHER_SVT_FROM_EXPR_V_x_LIBMS_LIBCXX_SV_FROM_STD(
     is_destructible, (class T), bool, __is_destructible(T));
 #elif JLN_MP_FEATURE_CONCEPTS
   namespace emp
   {
     template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_destructible_v = requires { JLN_MP_DECLVAL(T*)->~T(); };
+    JLN_MP_CONSTEXPR_VAR bool is_destructible_v = requires {
+      JLN_MP_DECLVAL(JLN_MP_CHECK_COMPLETE_T(T)*)->~T();
+    };
 
     template<class T>
     JLN_MP_CONSTEXPR_VAR bool is_destructible_v<T&> = true;
@@ -1503,7 +1560,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     JLN_MP_CONSTEXPR_VAR bool is_destructible_v<T[n]> = is_destructible_v<T>;
   }
   #define JLN_MP_IS_DESTRUCTIBLE_V(...) emp::is_destructible_v<T volatile const>
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_destructible, (class T), bool, (T volatile const));
 #else
   namespace detail
@@ -1512,7 +1568,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     JLN_MP_CONSTEXPR_VAR bool is_destructible_impl_v = false;
 
     template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_destructible_impl_v<T, decltype(JLN_MP_DECLVAL(T*)->~T())> = true;
+    JLN_MP_CONSTEXPR_VAR bool is_destructible_impl_v<
+      T, decltype(JLN_MP_DECLVAL(JLN_MP_CHECK_COMPLETE_T(T)*)->~T())
+    > = true;
 
     template<class T>
     JLN_MP_CONSTEXPR_VAR bool is_destructible_impl_v<T&> = true;
@@ -1525,7 +1583,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     JLN_MP_CONSTEXPR_VAR bool is_destructible_impl_v<T[n]> = is_destructible_impl_v<T>;
   }
   #define JLN_MP_IS_DESTRUCTIBLE_V(...) detail::is_destructible_impl_v<T volatile const>
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_destructible, (class T), bool,
     detail::is_destructible_impl_v<T volatile const>);
 #endif
@@ -1537,19 +1594,20 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     is_trivially_destructible, (class T), bool, __is_trivially_destructible(T));
 #else
 # if JLN_MP_HAS_BUILTIN(__has_trivial_destructor)
-  // TODO is_complete_or_unbounded
   #define JLN_MP_IS_TRIVIALLY_DESTRUCTIBLE_V(...) \
     JLN_MP_IS_DESTRUCTIBLE_V(T) && __has_trivial_destructor(T)
   // TODO or *_FROM_EMP_V
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_trivially_destructible, (class T), bool,
     JLN_MP_IS_TRIVIALLY_DESTRUCTIBLE_V(T));
+#elif ! JLN_MP_NO_STL_TRAIT
+  JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_trivially_destructible, (class T), bool, (T))
 # else
   // this implementation is not compliant and fails with classes and unions
   namespace emp
   {
-    // TODO is_complete_or_unbounded
     template<class T>
-    JLN_MP_CONSTEXPR_VAR bool is_trivially_destructible_v = JLN_MP_IS_SCALAR_V(T);
+    JLN_MP_CONSTEXPR_VAR bool is_trivially_destructible_v
+      = JLN_MP_IS_SCALAR_V(JLN_MP_CHECK_COMPLETE_T(T));
 
     template<class T>
     JLN_MP_CONSTEXPR_VAR bool is_trivially_destructible_v<T&> = true;
@@ -1570,7 +1628,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_HAS_OPTIONAL_BUILTIN_EXISTS_WITH_MSVC(__is_nothrow_destructible)
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_LIBMS_T_LIBCXX_VT_OTHER_SVT_FROM_EXPR_V_x_LIBMS_SV_LIBCXX_S_FROM_STD(
     is_nothrow_destructible, (class T), bool, __is_nothrow_destructible(T));
 #elif JLN_MP_FEATURE_CONCEPTS && JLN_MP_GCC
@@ -1580,7 +1637,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_v = false;
 
     template<class T>
-    requires requires { JLN_MP_DECLVAL_NOTHROW(T*)->~T(); }
+    requires requires { JLN_MP_DECLVAL_NOTHROW(JLN_MP_CHECK_COMPLETE_T(T)*)->~T(); }
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_v<T>
       = noexcept(JLN_MP_DECLVAL_NOTHROW(T*)->~T());
 
@@ -1593,7 +1650,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class T, std::size_t n>
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_v<T[n]> = is_nothrow_destructible_v<T>;
   }
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(is_nothrow_destructible, (class T), bool, (T volatile const));
 #else
   namespace detail
@@ -1603,7 +1659,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
     template<class T>
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_impl_v<
-      T, noexcept(JLN_MP_DECLVAL_NOTHROW(T*)->~T())
+      T, noexcept(JLN_MP_DECLVAL_NOTHROW(JLN_MP_CHECK_COMPLETE_T(T)*)->~T())
     > = true;
 
     template<class T>
@@ -1617,7 +1673,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     JLN_MP_CONSTEXPR_VAR bool is_nothrow_destructible_impl_v<T[n]>
       = is_nothrow_destructible_impl_v<T>;
   }
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_nothrow_destructible, (class T), bool,
     detail::is_nothrow_destructible_impl_v<T volatile const>);
 #endif
@@ -1791,10 +1846,8 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 // TODO no stl
 #if ! JLN_MP_NO_STL_TRAIT && __cpp_lib_is_layout_compatible >= 201907L
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(is_layout_compatible, (class T, class U), bool, (T, U));
 #elif JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_layout_compatible)
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(
     is_layout_compatible, (class T, class U), bool, __is_layout_compatible(T, U));
 #else
@@ -1809,15 +1862,12 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
 #if JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_pointer_interconvertible_base_of)
-  // TODO If both Base and Derived are non-union class types, and they are not the same type (ignoring cv-qualification), Derived shall be a complete type; otherwise the behavior is undefined.
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_pointer_interconvertible_base_of,
     (class Base, class Derived), bool, __is_pointer_interconvertible_base_of(Base, Derived));
 #elif !JLN_MP_NO_STL_TRAIT && __cpp_lib_is_pointer_interconvertible >= 201907L
-  // TODO If both Base and Derived are non-union class types, and they are not the same type (ignoring cv-qualification), Derived shall be a complete type; otherwise the behavior is undefined.
   JLN_MP_MAKE_TRAIT_T_FROM_EXPR_V_x_SV_FROM_STD(is_pointer_interconvertible_base_of,
     (class Base, class Derived), bool, emp::is_pointer_interconvertible_base_of_v<Base, Derived>);
 #else
-  // TODO If both Base and Derived are non-union class types, and they are not the same type (ignoring cv-qualification), Derived shall be a complete type; otherwise the behavior is undefined.
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(is_pointer_interconvertible_base_of,
     (class Base, class Derived), bool, false);
 #endif
@@ -1845,7 +1895,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
 
   // TODO LIBMS || LIBCPP -> use std::
-  // TODO is_complete_or_unbounded
 #if JLN_MP_USE_LIBMS
   JLN_MP_MAKE_TRAIT_SV_FROM_STD_x_T_FROM_EMP(alignment_of, (class T), std::size_t, (T));
 #else
@@ -2168,6 +2217,37 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       static constexpr bool v = reference_constructs_from_temporary_impl_v<T, U>;
 # endif
     };
+
+# if JLN_MP_CHECK_UB_TRAIT_CALL
+    template<bool, class T, class U>
+    struct reference_constructs_from_temporary_check_complete_or_unbounded
+    {
+      using type = T;
+    };
+
+    template<class T, class U>
+    struct reference_constructs_from_temporary_check_complete_or_unbounded<false, T, U>
+    {
+# if JLN_MP_FEATURE_CONCEPTS
+      static_assert(
+        emp::is_complete_or_unbounded_v<T volatile const>
+     && emp::is_complete_or_unbounded_v<U volatile const>,
+        "template argument must be a complete class or an unbounded array");
+# else
+      static_assert(
+        is_complete_or_unbounded_impl_v<T volatile const>
+     && is_complete_or_unbounded_impl_v<U volatile const>,
+        "template argument must be a complete class or an unbounded array");
+# endif
+
+      using type = T;
+    };
+#   define JLN_MP_REFERENCE_CONSTRUCTS_FROM_TEMPORARY_CHECK_COMPLETE_OR_UNBOUNDED_T(pred, T, U) \
+      typename detail::reference_constructs_from_temporary_check_complete_or_unbounded<         \
+        pred, T, U volatile const>::type
+# else
+#   define JLN_MP_REFERENCE_CONSTRUCTS_FROM_TEMPORARY_CHECK_COMPLETE_OR_UNBOUNDED_T(pred, T, U) T
+# endif
   }
   namespace emp
   {
@@ -2184,41 +2264,61 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     template<class T, class U>
     JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T const&, U>
       = detail::reference_constructs_from_temporary_impl<
-        __is_constructible(T const&, U), false
+        __is_constructible(
+          JLN_MP_REFERENCE_CONSTRUCTS_FROM_TEMPORARY_CHECK_COMPLETE_OR_UNBOUNDED_T(
+            is_volatile<T>, T, U) const&,
+          U
+        ), false
       >::template v<T volatile const, U volatile const>;
 
     template<class T, class U>
     JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T const&, U&>
       = detail::reference_constructs_from_temporary_impl<
-        __is_constructible(T const&, U&), true
+        __is_constructible(
+          JLN_MP_REFERENCE_CONSTRUCTS_FROM_TEMPORARY_CHECK_COMPLETE_OR_UNBOUNDED_T(
+            is_volatile<T>, T, U) const&,
+          U&
+        ), true
       >::template v<T volatile const, U volatile const>;
 
     template<class T, class U>
     JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T const&, U&&>
       = detail::reference_constructs_from_temporary_impl<
-        __is_constructible(T const&, U&&), true
+        __is_constructible(
+          JLN_MP_REFERENCE_CONSTRUCTS_FROM_TEMPORARY_CHECK_COMPLETE_OR_UNBOUNDED_T(
+            is_volatile<T>, T, U) const&,
+          U&&
+        ), true
       >::template v<T volatile const, U volatile const>;
 
     template<class T, class U>
     JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&&, U>
       = detail::reference_constructs_from_temporary_impl<
-        __is_constructible(T&&, U), false
+        __is_constructible(
+          JLN_MP_REFERENCE_CONSTRUCTS_FROM_TEMPORARY_CHECK_COMPLETE_OR_UNBOUNDED_T(false, T, U)&&,
+          U
+        ), false
       >::template v<T volatile const, U volatile const>;
 
     template<class T, class U>
     JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&&, U&>
       = detail::reference_constructs_from_temporary_impl<
-        __is_constructible(T&&, U&), true
+        __is_constructible(
+          JLN_MP_REFERENCE_CONSTRUCTS_FROM_TEMPORARY_CHECK_COMPLETE_OR_UNBOUNDED_T(false, T, U)&&,
+          U&
+        ), true
       >::template v<T volatile const, U volatile const>;
 
     template<class T, class U>
     JLN_MP_CONSTEXPR_VAR bool reference_constructs_from_temporary_v<T&&, U&&>
       = detail::reference_constructs_from_temporary_impl<
-        __is_constructible(T&&, U&&), true
+        __is_constructible(
+          JLN_MP_REFERENCE_CONSTRUCTS_FROM_TEMPORARY_CHECK_COMPLETE_OR_UNBOUNDED_T(false, T, U)&&,
+          U&&
+        ), true
       >::template v<T volatile const, U volatile const>;
   }
 #endif
-  // TODO If T is an lvalue reference type to a const- but not volatile-qualified object type or an rvalue reference type, both std::remove_reference_t<T> and std::remove_reference_t<U> shall be complete types, cv void, or an arrays of unknown bound; otherwise the behavior is undefined.
   JLN_MP_MAKE_TRAIT_ST_FROM_EMP_V(reference_constructs_from_temporary, (class T, class U), bool, (T, U));
 #endif
 
@@ -2229,7 +2329,6 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
     reference_converts_from_temporary, (class T, class U), bool, __reference_converts_from_temporary(T, U));
 #else
   // TODO don't work with explicit ctor-copyable type (gives true instead of false for <T&&, T> and <T const&, T>). How to check `T x = a` ?
-  // TODO If T is an lvalue reference type to a const- but not volatile-qualified object type or an rvalue reference type, both std::remove_reference_t<T> and std::remove_reference_t<U> shall be complete types, cv void, or an arrays of unknown bound; otherwise the behavior is undefined.
   #define JLN_MP_REFERENCE_CONVERTS_FROM_TEMPORARY_V(...) \
     emp::reference_constructs_from_temporary_v<__VA_ARGS__>
   JLN_MP_MAKE_TRAIT_SVT_FROM_EXPR_V(reference_converts_from_temporary,
@@ -2592,6 +2691,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 
   namespace emp
   {
+    // TODO inline
     template<class T> struct unwrap_ref_decay : unwrap_reference<JLN_MP_DECAY_T(T)> {};
     template<class T> using unwrap_ref_decay_t = unwrap_reference_t<JLN_MP_DECAY_T(T)>;
   }
@@ -2791,11 +2891,9 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
       using type = typename invoke_if_noexcept_impl<JLN_MP_DECAY_T(F)>::template f<F, Args...>;
     };
   } // namespace detail
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_ST_FROM_S(invoke_result, (class F, class... Args),
     detail::invoke_result<void, F, Args...>);
   // not standard
-  // TODO is_complete_or_unbounded
   JLN_MP_MAKE_TRAIT_ST_FROM_S(invoke_result_if_noexcept, (class F, class... Args),
     detail::invoke_result_if_noexcept<void, F, Args...>);
 
@@ -3120,6 +3218,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
   namespace emp
   {
     template<class T, class U, template<class> class TQual, template<class> class UQual>
+    // TODO enable when no stl trait ?
     struct basic_common_reference
 #if ! JLN_MP_NO_STL_TRAIT && JLN_MP_CXX_VERSION >= 20
       : std::basic_common_reference<T, U, TQual, UQual>

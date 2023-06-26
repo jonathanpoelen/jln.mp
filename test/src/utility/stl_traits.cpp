@@ -1058,35 +1058,35 @@ TEST()
   // TODO
   JLN_MP_DIAGNOSTIC_POP()
 
-//   SINGLE_CALL_CHECK(is_complete_type, true_type, void(int));
-//   SINGLE_CALL_CHECK(is_complete_type, true_type, void(int) const);
-//   SINGLE_CALL_CHECK(is_complete_type, true_type, void(int) const&);
-//   SINGLE_CALL_CHECK(is_complete_type, true_type, int&);
-//   SINGLE_CALL_CHECK(is_complete_type, true_type, int);
-//   SINGLE_CALL_CHECK(is_complete_type, true_type, int const);
-//   SINGLE_CALL_CHECK(is_complete_type, true_type, int[2]);
-//   SINGLE_CALL_CHECK(is_complete_type, true_type, const int[2]);
-//   SINGLE_CALL_CHECK(is_complete_type, false_type, int[]);
-//   SINGLE_CALL_CHECK(is_complete_type, false_type, const int[]);
-//   SINGLE_CALL_CHECK(is_complete_type, false_type, void);
-//   SINGLE_CALL_CHECK(is_complete_type, false_type, void const);
-//   SINGLE_CALL_CHECK(is_complete_type, false_type, incomplete);
-//   SINGLE_CALL_CHECK(is_complete_type, false_type, incomplete const);
+//   SINGLE_CALL_CHECK(is_complete, true_type, void(int));
+//   SINGLE_CALL_CHECK(is_complete, true_type, void(int) const);
+//   SINGLE_CALL_CHECK(is_complete, true_type, void(int) const&);
+//   SINGLE_CALL_CHECK(is_complete, true_type, int&);
+//   SINGLE_CALL_CHECK(is_complete, true_type, int);
+//   SINGLE_CALL_CHECK(is_complete, true_type, int const);
+//   SINGLE_CALL_CHECK(is_complete, true_type, int[2]);
+//   SINGLE_CALL_CHECK(is_complete, true_type, const int[2]);
+//   SINGLE_CALL_CHECK(is_complete, false_type, int[]);
+//   SINGLE_CALL_CHECK(is_complete, false_type, const int[]);
+//   SINGLE_CALL_CHECK(is_complete, false_type, void);
+//   SINGLE_CALL_CHECK(is_complete, false_type, void const);
+//   SINGLE_CALL_CHECK(is_complete, false_type, incomplete);
+//   SINGLE_CALL_CHECK(is_complete, false_type, incomplete const);
 //
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, void(int));
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, void(int) const);
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, void(int) const&);
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, int&);
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, int);
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, int const);
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, int[2]);
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, const int[2]);
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, int[]);
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, const int[]);
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, void);
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, true_type, void const);
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, false_type, incomplete);
-//   SINGLE_CALL_CHECK(is_complete_or_unbounded_type, false_type, incomplete const);
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, true_type, void(int));
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, true_type, void(int) const);
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, true_type, void(int) const&);
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, true_type, int&);
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, true_type, int);
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, true_type, int const);
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, true_type, int[2]);
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, true_type, const int[2]);
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, true_type, int[]);
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, true_type, const int[]);
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, true_type, void);
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, true_type, void const);
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, false_type, incomplete);
+//   SINGLE_CALL_CHECK(is_complete_or_unbounded, false_type, incomplete const);
 //
 //   CHECK_X1_CV_REF(is_const, int);
 //
