@@ -1,5 +1,7 @@
 #!/usr/bin/env lua
 
+-- TODO add compiler and stdlib version
+
 bench_file = 'bench/stl_traits.cpp'
 
 f = io.open(bench_file)

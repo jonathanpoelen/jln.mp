@@ -46,8 +46,12 @@
 # endif
 #endif
 
+// TODO requires shortcut
 
 // TODO no std => using size_t = decltype(sizeof(int))
+
+// TODO remove_member_pointer_t<T> -> T
+// TODO remove_member_pointer_t<T C::*> -> T
 
 
 #ifndef JLN_MP_NO_STL
