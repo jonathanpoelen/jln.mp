@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-License-Identifier: MIT
 #include "test/test_case.hpp"
 
 #ifdef __cpp_nontype_template_parameter_class

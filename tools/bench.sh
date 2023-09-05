@@ -1,4 +1,6 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+# SPDX-License-Identifier: MIT
 
 TIMES=${TIMES:-3}
 NELEM=${NELEM:-100}

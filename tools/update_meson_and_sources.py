@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+# SPDX-License-Identifier: MIT
 
 import os
 import shutil
@@ -46,6 +48,12 @@ def make_targets(path, prefix, target_prefix='t'):
   return l
 
 
+LICENSE = (
+  '// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>\n'
+  '// SPDX-License-Identifier: MIT\n'
+)
+
+
 autogen_tests = []
 
 def gentest(test_prefix, dir_path, filename):
@@ -53,6 +61,7 @@ def gentest(test_prefix, dir_path, filename):
   test_name = f'test/autogen/{test_name}'
   autogen_tests.append(test_name)
   with open(test_name, 'w') as ftest:
+    ftest.write(LICENSE)
     ftest.write(f'#include "jln/{dir_path}/{filename}"\n')
 
 def genfiles(dir_path):
@@ -60,6 +69,7 @@ def genfiles(dir_path):
   seppos = dir_path.find('/')
   test_prefix = '' if seppos == -1 else f'{dir_path[seppos+1:]}/'
   with open(f'{path}.hpp', 'w') as outfile:
+    outfile.write(LICENSE)
     outfile.write("#pragma once\n\n")
 
     for d in ordered_listdir(f'{path}'):
@@ -75,6 +85,7 @@ def genfiles(dir_path):
         else:
           outfile.write(f'#include <jln/{dir_path}/{d}.hpp>\n')
           with open(f'{newpath}.hpp', 'w') as flist:
+            flist.write(LICENSE)
             flist.write("#pragma once\n\n")
             for filename in ordered_listdir(newpath):
               if filename.endswith('.hpp'):
@@ -94,6 +105,7 @@ new_alias('mp', make_targets('test/src', 'mp'))
 genfiles('mp')
 genfiles('mp/smp')
 with open(f'test/autogen/main.cpp', 'w') as f:
+  f.write(LICENSE)
   f.write('int main() {}')
 autogen_tests.append(f'test/autogen/main.cpp')
 
@@ -116,5 +128,6 @@ with open('meson.build', 'w') as f:
   f.write(content[stop + len(stop_str):])
 
 with open('test/mp.cpp', 'w') as f:
+  f.write(LICENSE)
   for path in cpp_test_paths:
     f.write(f'#include "{path[5:]}"\n')

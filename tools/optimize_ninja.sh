@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
+# SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+# SPDX-License-Identifier: MIT
+
 if [ -d "$1" ] ;then
   f=$1/build.ninja
 elif [ -d "$MESON_BUILD_ROOT" ]; then

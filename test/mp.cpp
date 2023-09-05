@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-License-Identifier: MIT
 #include "src/algorithm/accumulate.cpp"
 #include "src/algorithm/after.cpp"
 #include "src/algorithm/all_of.cpp"

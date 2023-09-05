@@ -1,4 +1,6 @@
 #!/usr/bin/env lua
+-- SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+-- SPDX-License-Identifier: MIT
 
 function eprint(...)
   io.stderr:write(...)
@@ -23,6 +25,7 @@ tconcat = table.concat
 
 system_includes = {}
 sources = {}
+copyrights = {}
 
 function process_include(jln_prefix, incpath)
   if jln_prefix ~= '' then
@@ -49,6 +52,16 @@ function process_comment(comment)
   return ''
 end
 
+function process_copyright(comment)
+  copyrights[comment] = comment
+  return ''
+end
+
+function process_license(comment)
+  license = comment
+  return ''
+end
+
 l=require'lpeg'
 P=l.P
 S=l.S
@@ -59,7 +72,9 @@ Ct=l.Ct
 nl = S'\n '^0
 ws = P' '^0
 patt = Cs(
-  ('/*' * (1 - P'*/')^0 * 2 * nl / process_comment)^-1 * (
+  ('/*' * (1 - P'*/')^0 * 2 * nl / process_comment)^-1 *
+  ('// SPDX-FileCopyrightText:' * (1 - P'\n')^0 * 1 / process_copyright)^-1 *
+  ('// SPDX-License-Identifier:' * (1 - P'\n')^0 * 1 / process_license)^-1 * (
     '#' * ws * 'include' * ws * '<' * C(P'jln/'^-1) * C((1 - P'>')^0) * 1 * nl / process_include
   + '#pragma once' * nl / ''
   + 1
@@ -85,9 +100,16 @@ for k in pairs(system_includes) do
 end
 table.sort(includes)
 
+for k,_ in pairs(copyrights) do
+  tinsert(copyrights, k)
+end
+table.sort(copyrights)
+
 embed = {
   first_comment or '',
-  '// amalgamated version of https://github.com/jonathanpoelen/jln.mp\n\n',
+  tconcat(copyrights, ''),
+  license or '',
+  '// Amalgamated version of https://github.com/jonathanpoelen/jln.mp\n\n',
   '#pragma once\n\n',
   '#ifndef JLN_MP_HPP\n',
   '#define JLN_MP_HPP\n\n',
