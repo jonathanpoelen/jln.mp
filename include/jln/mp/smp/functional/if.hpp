@@ -6,7 +6,6 @@
 #include <jln/mp/smp/number/to_bool.hpp>
 #include <jln/mp/functional/invoke_twice.hpp>
 #include <jln/mp/functional/if.hpp>
-#include <jln/mp/functional/tee.hpp>
 #include <jln/mp/number/as_number.hpp>
 
 namespace jln::mp::smp

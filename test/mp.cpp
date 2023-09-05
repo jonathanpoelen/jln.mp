@@ -97,6 +97,7 @@
 #include "src/algorithm/zip.cpp"
 #include "src/algorithm/zip_longest.cpp"
 #include "src/assume.cpp"
+#include "src/functional/apply_or_identity.cpp"
 #include "src/functional/bind_back.cpp"
 #include "src/functional/bind_front.cpp"
 #include "src/functional/capture_back.cpp"

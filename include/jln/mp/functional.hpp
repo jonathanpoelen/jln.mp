@@ -1,5 +1,6 @@
 #pragma once
 
+#include <jln/mp/functional/apply_or_identity.hpp>
 #include <jln/mp/functional/bind_back.hpp>
 #include <jln/mp/functional/bind_front.hpp>
 #include <jln/mp/functional/call.hpp>
