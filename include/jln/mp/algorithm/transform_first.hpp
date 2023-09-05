@@ -5,6 +5,8 @@
 
 namespace jln::mp
 {
+  /// \ingroup algorithm
+
   /// Replace the first element of the \sequence.
   /// \treturn \list
   template<class F, class C = listify>
