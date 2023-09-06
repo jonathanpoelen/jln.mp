@@ -389,7 +389,7 @@ local pattern = P{
     -- + '/*' * Until'*/' * 2
 }
 
-preprocOnlyPattern = (ws + '#' * unl)^0 * -P(1)
+preprocOnlyPattern = (ws + (P'#' + '//') * unl)^0 * -P(1)
 
 parseFile = function(contents)
   reset_parser()
