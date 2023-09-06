@@ -1,4 +1,6 @@
-// amalgamated version of https://github.com/jonathanpoelen/jln.mp
+// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-License-Identifier: MIT
+// Amalgamated version of https://github.com/jonathanpoelen/jln.mp
 
 #pragma once
 
