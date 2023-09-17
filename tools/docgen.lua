@@ -375,7 +375,7 @@ local pattern = P{
             return i and name:sub(i+1) or name
           end) * ';'
           * Cc(nil) * Cc(nil) * Cc(nil) * Cc(nil)
-        + 'static constexpr ' * Cc(kwindexes.static_constexpr) * id * ws * cid * ws0 * '='
+        + (P'static' + 'inline') * ' constexpr ' * Cc(kwindexes.static_constexpr) * id * ws * cid * ws0 * '='
           * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
         ) / f_type
     + 'namespace '
@@ -562,8 +562,7 @@ htmlifier_init = function()
     if current_lvl ~= 1 then
       id = lvl_stack[current_lvl-1] .. '__' .. id
     else
-      prefix = #headers == 0 and '</article>\n' or '</section>\n'
-      prefix = prefix .. '<section id="' .. id .. '">'
+      prefix = '</section>\n' .. prefix .. '<section>'
       headers[#headers+1] = {id, title}
     end
     lvl_stack[current_lvl] = id
@@ -600,7 +599,7 @@ htmlifier_init = function()
       mdinlinecodepatt
     + '[![' * C(Until']') * 1 * '(' * C(Until')') * 1 * '](' * C(Until')') * 1
       / function(text, img, link)
-          return '<a href="' .. link .. '"><img src="' .. img .. '" alt="' .. text .. '"/></a>'
+          return '<a href="' .. link .. '"><img src="' .. img .. '" alt="' .. text .. '"></a>'
         end
     + '[' * C(Until']') * 1 * '(' * C(Until')') * 1
       / function(text, link) return '<a href="' .. link .. '">' .. text .. '</a>' end
@@ -615,8 +614,7 @@ htmlifier_init = function()
     headers = {}
     local html = md2htmlpatt:match(contents)
     if html then
-      -- </article> and <section> added by md2htmlpatt
-      html = '<article id="main">' .. html .. '</section>\n'
+      html = '<section id="main">' .. html .. '</section>\n'
     end
     return headers, html
   end
@@ -801,7 +799,15 @@ end
 -- os.exit()
 
 htmlfagments = {
-  '<!DOCTYPE html><html><head><meta charset="utf-8"/><link rel="stylesheet" type="text/css" media="all" href="default.css"></head><body>\n',
+  [[<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" media="all" href="default.css">
+  <title>Jln.Mp: A C++17 metaprogramming library - V2</title>
+</head>
+<body>
+]],
 }
 function push(s)
   htmlfagments[#htmlfagments + 1] = s
@@ -960,9 +966,9 @@ function comp_by_firstname(f1, f2)
   return f1.firstname < f2.firstname
 end
 
-push('<section id="short_descriptions">\n')
+push('<section>\n')
 
-push('<h1>Short descriptions</h1>')
+push('<h1 id="short_descriptions">Short descriptions</h1>')
 push('<nav><p>')
 for _,g in ipairs(tgroups) do
   push('<a class="link_group" href="#g_' .. g.name .. '">' .. g.name .. '</a>')
@@ -1011,9 +1017,9 @@ function push_blocks(name, t)
   end
 end
 
-push('<section id="detailed_descriptions">\n')
+push('<section>\n')
 
-push('<h1>Detailed descriptions</h1>')
+push('<h1 id="detailed_descriptions">Detailed descriptions</h1>')
 push('<nav><p>')
 for _,g in ipairs(tgroups) do
   push('<a class="link_group" href="#g6__' .. g.name .. '">' .. g.name .. '</a>')
