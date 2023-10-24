@@ -19,13 +19,14 @@ namespace jln::mp
     inline constexpr int_ split_after = 1;
     inline constexpr int_ split_before = 2;
     inline constexpr int_ split_skip = 3;
-    // inline constexpr int_ split_na = 4;
+    inline constexpr int_ split_keep_sep = 4;
   }
   /// \endcond
 
   /// \ingroup group
 
   /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
+  /// The separator value is removed.
   /// \semantics
   ///   \code
   ///   split_if<is<_0>>::f<_0, _1, _2, _0, _3>
@@ -89,6 +90,12 @@ namespace jln::mp::detail
   struct split_state<list<number<split_skip>, x>, list<list<xs...>, Ls...>>
   {
     using type = list<list<>, list<xs...>, Ls...>;
+  };
+
+  template<class x, class... Ls, class... xs>
+  struct split_state<list<number<split_keep_sep>, x>, list<list<xs...>, Ls...>>
+  {
+    using type = list<list<>, list<x>, list<xs...>, Ls...>;
   };
 
   template<class x, class y>

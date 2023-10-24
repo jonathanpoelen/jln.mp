@@ -85,6 +85,7 @@
 #include <jln/mp/algorithm/split_at.hpp>
 #include <jln/mp/algorithm/split_before.hpp>
 #include <jln/mp/algorithm/split_from.hpp>
+#include <jln/mp/algorithm/split_keep_separator.hpp>
 #include <jln/mp/algorithm/starts_with.hpp>
 #include <jln/mp/algorithm/suffix.hpp>
 #include <jln/mp/algorithm/take_until.hpp>

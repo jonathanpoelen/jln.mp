@@ -83,6 +83,7 @@
 #include "src/algorithm/split_at.cpp"
 #include "src/algorithm/split_before.cpp"
 #include "src/algorithm/split_from.cpp"
+#include "src/algorithm/split_keep_separator.cpp"
 #include "src/algorithm/starts_with.cpp"
 #include "src/algorithm/suffix.cpp"
 #include "src/algorithm/take_until.cpp"

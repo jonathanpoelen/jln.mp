@@ -9,7 +9,7 @@ namespace jln::mp
   /// \ingroup group
 
   /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
-  /// The split value is inserted at the beginning of the following list.
+  /// The separator value is inserted at the beginning of the following list.
   /// \semantics
   ///   \code
   ///   split_before_if<is<_0>>::f<_0, _1, _2, _0, _3>
