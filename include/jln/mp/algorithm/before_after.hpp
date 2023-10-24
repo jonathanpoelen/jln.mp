@@ -20,8 +20,9 @@ namespace jln::mp
 
   /// \ingroup search
 
-  /// Find the \sequence before_after a sub-\sequence.
-  /// Calls \c TC with all the elements before_after the sub-\sequence found.
+  /// Find the \sequences before and after a sub-\sequence.
+  /// Calls \c TC with result of \c SubC1 and \c SubC2 called
+  /// respectively with the sequences before and after the one found.
   /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence
   /// \see search, search_before
