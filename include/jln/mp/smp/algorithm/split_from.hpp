@@ -40,7 +40,7 @@ namespace jln::mp::detail
   struct smp_split_from_i
   {
     template<class position, class C1, class C2, class C, class... xs>
-    using f = _split_from_i<position::value, C1, C2, C, xs...>;
+    using f = split_at_impl<position::value, C1, C2, C, xs...>;
   };
 
   template<class SubC1, class SubC2, class C>

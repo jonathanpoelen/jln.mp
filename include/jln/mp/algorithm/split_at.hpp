@@ -4,11 +4,22 @@
 
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/list/take_front.hpp>
-#include <jln/mp/functional/tee.hpp>
-#include <jln/mp/algorithm/split_from.hpp>
 
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    template<unsigned position, class C1, class C2, class C, class... xs>
+    using split_at_impl = typename C::template f<
+      // take_front
+      typename detail::rotate_impl<position>
+      ::template f<position, drop_front_c<sizeof...(xs) - position, C1>, xs...>,
+      typename drop_front_c<position, C2>::template f<xs...>
+    >;
+  }
+  /// \endcond
+
   /// \ingroup group
 
   /// Splits a sequence at an arbitrary position.
@@ -18,7 +29,7 @@ namespace jln::mp
   struct split_at2_with_c
   {
     template<class... xs>
-    using f = typename detail::_split_from_i<(sizeof...(xs) & 0) + i, SubC1, SubC2, C, xs...>;
+    using f = typename detail::split_at_impl<(sizeof...(xs) & 0) + i, SubC1, SubC2, C, xs...>;
   };
 
   template<class i, class SubC1 = listify, class SubC2 = SubC1, class C = listify>
@@ -37,7 +48,7 @@ namespace jln::mp
   using split_at_c = split_at2_with_c<i, listify, listify, C>;
 
   template<class i, class C = listify>
-  using split_at = split_at2_with_c<i::value, listify, listify, C>;;
+  using split_at = split_at2_with_c<i::value, listify, listify, C>;
 
   namespace emp
   {

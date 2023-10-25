@@ -2,24 +2,10 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/list/drop_front.hpp>
-#include <jln/mp/list/take_front.hpp>
+#include <jln/mp/algorithm/split_at.hpp>
 
 namespace jln::mp
 {
-  /// \cond
-  namespace detail
-  {
-    template<unsigned position, class C1, class C2, class C, class... xs>
-    using _split_from_i = typename C::template f<
-      // take_front
-      typename detail::rotate_impl<position>
-      ::template f<position, drop_front_c<sizeof...(xs) - position, C1>, xs...>,
-      typename drop_front_c<position, C2>::template f<xs...>
-    >;
-  }
-  /// \endcond
-
   /// \ingroup group
 
   /// Splits a sequence at an arbitrary position returns by \c GetIndex.
@@ -29,7 +15,7 @@ namespace jln::mp
   struct split_from2
   {
     template<class... xs>
-    using f = typename detail::_split_from_i<
+    using f = typename detail::split_at_impl<
       JLN_MP_DCALL_V_TRACE_XS(xs, GetIndex, xs...)::value, SubC1, SubC2, C, xs...>;
   };
 
