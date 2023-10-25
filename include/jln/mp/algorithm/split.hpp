@@ -105,7 +105,10 @@ namespace jln::mp::detail
   struct _split<true>
   {
     template<int_ policy, class C, class Pred, class... xs>
-    using f = typename fold_right<lift<split_state_t>, optimize_useless_unpack_t<unpack<C>>>
+    using f = typename fold_right<
+      JLN_MP_LIFT_WRAP(split_state),
+      optimize_useless_unpack_t<unpack<C>>
+    >
       ::template f<list<list<>>,
                    list<number<Pred::template f<xs>::value
                      ? policy : split_keep>, xs>...

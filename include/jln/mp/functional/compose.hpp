@@ -14,10 +14,10 @@ namespace jln::mp
   namespace detail
   {
     template<unsigned> struct _compose_f;
-    template<class, class> struct _compose;
+    template<class, class> struct compose_impl;
 
     template<class x, class y>
-    using compose_t = typename _compose<x, y>::type;
+    using compose_impl_t = typename compose_impl<x, y>::type;
   }
   /// \endcond
 
@@ -43,7 +43,7 @@ namespace jln::mp
   using compose = typename conditional_c<sizeof...(Fs) == 0>
     ::template f<
       at1<F>,
-      mp::fold_right<lift<detail::compose_t>>
+      mp::fold_right<JLN_MP_LIFT_WRAP(detail::compose_impl)>
     >
     ::template f<identity, F, Fs...>;
 }
@@ -106,39 +106,39 @@ namespace jln::mp::detail
   };
 
   template<class F, class C>
-  struct _compose
+  struct compose_impl
   {
     using type = tee<F, C>;
   };
 
   template<template<class...> class F, class x>
-  struct _compose<lift<F>, x>
+  struct compose_impl<lift<F>, x>
   {
     using type = lift<F, x>;
   };
 
   template<template<class...> class F, class x>
-  struct _compose<lift_t<F>, x>
+  struct compose_impl<lift_t<F>, x>
   {
     using type = lift_t<F, x>;
   };
 
   template<class F>
-  struct _compose<F, identity>
+  struct compose_impl<F, identity>
   {
     using type = F;
   };
 
   // fix ambiguity
   template<template<class...> class F>
-  struct _compose<lift<F>, identity>
+  struct compose_impl<lift<F>, identity>
   {
     using type = lift<F>;
   };
 
   // fix ambiguity
   template<template<class...> class F>
-  struct _compose<lift_t<F>, identity>
+  struct compose_impl<lift_t<F>, identity>
   {
     using type = lift_t<F>;
   };

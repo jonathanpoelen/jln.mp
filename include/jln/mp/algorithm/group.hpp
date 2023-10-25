@@ -99,7 +99,7 @@ namespace jln::mp::detail
   template<class C, class Cmp, class x, class... xs, class... ys>
   struct _group_impl<C, Cmp, x, list<ys...>, xs...>
   {
-    using type = typename fold_right<lift<split_state_t>, unpack<_group_insert_x<x, C>>>
+    using type = typename fold_right<JLN_MP_LIFT_WRAP(split_state), unpack<_group_insert_x<x, C>>>
       ::template f<list<list<>>,
                    list<number<Cmp::template f<ys, xs>::value
                      ? split_keep : split_before>, xs>...
@@ -110,7 +110,7 @@ namespace jln::mp::detail
   struct _smp_group_impl
   {
     template<class C, class Cmp, class x, class... xs>
-    using f = typename fold_right<lift<split_state_t>, unpack<_group_insert_x<x, C>>>
+    using f = typename fold_right<JLN_MP_LIFT_WRAP(split_state), unpack<_group_insert_x<x, C>>>
       ::template f<list<list<>>,
                    list<number<Cmp::template f<ys, xs>::value
                      ? split_keep : split_before>, xs>...

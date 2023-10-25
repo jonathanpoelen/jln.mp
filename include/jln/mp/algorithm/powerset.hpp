@@ -63,27 +63,27 @@ namespace jln::mp::detail
   };
 
   template<class, class>
-  struct _powerset_impl;
+  struct powerset_impl;
 
   template<class... seqs, class y>
-  struct _powerset_impl<y, list<seqs...>>
+  struct powerset_impl<y, list<seqs...>>
   {
     using type = join<>::f<typename _power<seqs, y>::type...>;
   };
 
   template<class x, class y>
-  using powerset_impl_t = typename _powerset_impl<x, y>::type;
+  using powerset_impl_t = typename powerset_impl<x, y>::type;
 
   template<class C>
   struct _powerset<C, true>
   {
-    using type = fold_right<lift<powerset_impl_t>, unpack<C>>;
+    using type = fold_right<JLN_MP_LIFT_WRAP(powerset_impl), unpack<C>>;
   };
 
   template<>
   struct _powerset<listify, true>
   {
-    using type = fold_right<lift<powerset_impl_t>>;
+    using type = fold_right<JLN_MP_LIFT_WRAP(powerset_impl)>;
   };
 
   template<class C>

@@ -105,5 +105,13 @@ namespace jln::mp
     template<class... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...);
   };
-  /// \endcond
+
+#if JLN_MP_GCC
+#  define JLN_MP_LIFT_WRAP_IMPL(fn, fn_t) jln::mp::lift_t<fn>
+#else
+#  define JLN_MP_LIFT_WRAP_IMPL(fn, fn_t) jln::mp::lift<fn_t>
+#endif
+
+#define JLN_MP_LIFT_WRAP(fn) JLN_MP_LIFT_WRAP_IMPL(fn, fn##_t)
+/// \endcond
 } // namespace jln::mp
