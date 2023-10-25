@@ -4,12 +4,14 @@ if get_option('mp_debug')
   add_global_arguments('-DJLN_MP_ENABLE_DEBUG=1', language : 'cpp')
 endif
 
-jln_default_flags = {}
+jln_default_flags = {
+  'conversion_warnings': 'off'
+}
 sys = build_machine.system()
 
 # quick compilation
 if not ['darwin', 'windows'].contains(sys)
-  jln_default_flags = {
+  jln_default_flags += {
     'debug': 'off',
     'whole_program': 'strip_all',
   }

@@ -65,7 +65,7 @@ namespace jln::mp::detail
 {
   constexpr unsigned rotate_size(int_ n, unsigned size)
   {
-    return size ? (n < 0 ? size + n % size : n) % size : 0;
+    return size ? static_cast<unsigned>(n < 0 ? size + n % size : n) % size : 0;
   }
 
   template <unsigned n>
