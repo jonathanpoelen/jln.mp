@@ -156,6 +156,38 @@ namespace jln::mp
       (sizeof...(xs) & 0) + N-9
     >::template f<N-9, JLN_MP_TRACE_F(C), xs...>;
   };
+
+#if __has_builtin(__type_pack_element)
+  template<unsigned N, class C>
+  struct drop_front_c<N, front<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, __type_pack_element<N, xs...>);
+  };
+
+  template<unsigned N>
+  struct drop_front_c<N, front<identity>>
+  {
+    template<class... xs>
+    using f = __type_pack_element<N, xs...>;
+  };
+
+  template<unsigned N, class C>
+  struct drop_front_max_c<N, front<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      __type_pack_element<sizeof...(xs) < N ? sizeof...(xs) : N, xs...>
+    );
+  };
+
+  template<unsigned N>
+  struct drop_front_max_c<N, front<identity>>
+  {
+    template<class... xs>
+    using f = __type_pack_element<sizeof...(xs) < N ? sizeof...(xs) : N, xs...>;
+  };
+#endif
   /// \endcond
 }
 

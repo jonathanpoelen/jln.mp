@@ -61,6 +61,36 @@ namespace jln::mp
 
 
 /// \cond
+#include <jln/mp/list/front.hpp>
+
+namespace jln::mp
+{
+  template <int_ N1, int_ N2, class C>
+  struct rotate_c<N1, rotate_c<N2, C>>
+    : rotate_c<N1 + N2, C>
+  {};
+
+#if __has_builtin(__type_pack_element)
+  // back<C>
+  template <int_ N, class C>
+  struct rotate_c<N, front<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      __type_pack_element<detail::rotate_size(N, sizeof...(xs)), xs...>
+    );
+  };
+
+  // back<>
+  template <int_ N>
+  struct rotate_c<N, front<>>
+  {
+    template<class... xs>
+    using f = __type_pack_element<detail::rotate_size(N, sizeof...(xs)), xs...>;
+  };
+#endif
+}
+
 namespace jln::mp::detail
 {
   constexpr unsigned rotate_size(int_ n, unsigned size)
