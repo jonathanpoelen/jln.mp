@@ -8,6 +8,9 @@
 
 namespace jln::mp
 {
+  /// \ingroup trait
+
+#if !JLN_MP_FEATURE_CONCEPTS || !JLN_MP_GCC
   /// \cond
   namespace detail
   {
@@ -16,9 +19,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup trait
-
-  /// Checks whether a \value to a type member.
+  /// Checks whether \c x has a type member.
   /// \treturn \bool
   template<class C = identity>
   struct has_value_type
@@ -44,8 +45,40 @@ namespace jln::mp
     using f = typename detail::_has_value_type<x>::type;
   };
   /// \endcond
+
+#else
+
+  template<class C = identity>
+  struct has_value_type
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<requires{ typename x::value_type; }>);
+  };
+
+  namespace emp
+  {
+    template<class x>
+    using has_value_type = number<requires{ typename x::value_type; }>;
+
+    template<class x>
+    inline constexpr bool has_value_type_v = requires{ typename x::value_type; };
+  }
+
+  /// \cond
+  template<>
+  struct has_value_type<identity>
+  {
+    template<class x>
+    using f = number<requires{ typename x::value_type; }>;
+  };
+  /// \endcond
+
+#undef JLN_MP_HAS_TYPE
+
+#endif
 }
 
+#if !JLN_MP_FEATURE_CONCEPTS || !JLN_MP_GCC
 #include <type_traits>
 
 /// \cond
@@ -58,9 +91,10 @@ namespace jln::mp::detail
   };
 
   template<class x>
-  struct _has_value_type<x, std::void_t<typename x::type>>
+  struct _has_value_type<x, std::void_t<typename x::value_type>>
   {
     using type = true_;
   };
 }
 /// \endcond
+#endif

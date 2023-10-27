@@ -9,7 +9,7 @@ TEST_SUITE_BEGIN()
 
 struct dummy
 {
-  using type = int;
+  using value_type = int;
 };
 
 TEST()
