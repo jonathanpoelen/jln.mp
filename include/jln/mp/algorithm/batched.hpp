@@ -13,7 +13,7 @@ namespace jln::mp
   namespace detail
   {
     template<bool>
-    struct _group_n;
+    struct _batched;
   }
   /// \endcond
 
@@ -23,7 +23,7 @@ namespace jln::mp
   /// \post If `n <= 0`, then the result sequence is empty
   /// \semantics
   ///   \code
-  ///   group_n<number<2>>::f<
+  ///   batched<number<2>>::f<
   ///     void, void, int, void, void
   ///   > = list<
   ///     list<void, void>,
@@ -33,23 +33,23 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence
   template<int_ n, class C = listify>
-  struct group_n_c
+  struct batched_c
   {
     template<class... xs>
-    using f = typename detail::_group_n<sizeof...(xs) != 0 && 0 < n>
+    using f = typename detail::_batched<sizeof...(xs) != 0 && 0 < n>
       ::template f<C, n, xs...>;
   };
 
   template<class n, class C = listify>
-  using group_n = group_n_c<n::value, C>;
+  using batched = batched_c<n::value, C>;
 
   namespace emp
   {
     template<class L, class n, class C = mp::listify>
-    using group_n = unpack<L, mp::group_n<n, C>>;
+    using batched = unpack<L, mp::batched<n, C>>;
 
     template<class L, int_ n, class C = mp::listify>
-    using group_n_c = unpack<L, mp::group_n_c<n, C>>;
+    using batched_c = unpack<L, mp::batched_c<n, C>>;
   }
 }
 
@@ -62,7 +62,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<class, int_... i>
-  struct _group_n_impl
+  struct _batched_impl
   {
     template<class C, int_ n, class... xs>
     using f = typename fold_right<JLN_MP_LIFT_WRAP(split_state), unpack<pop_front<C>>>
@@ -73,15 +73,15 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct _group_n<true>
+  struct _batched<true>
   {
     template<class C, int_ n, class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), _group_n_impl)
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), _batched_impl)
       ::template f<C, n, xs...>;
   };
 
   template<>
-  struct _group_n<false>
+  struct _batched<false>
   {
     template<class C, int_, class...>
     using f = JLN_MP_CALL_TRACE_0_ARG(C);

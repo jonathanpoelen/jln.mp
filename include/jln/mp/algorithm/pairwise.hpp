@@ -30,7 +30,7 @@ namespace jln::mp
   ///   >
   ///   \endcode
   /// \treturn \sequence of \list
-  /// \see sliding, group_n
+  /// \see sliding, batched
   template<class F = listify, class C = listify>
   struct pairwise_with
   {

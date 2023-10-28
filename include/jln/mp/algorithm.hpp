@@ -8,6 +8,7 @@
 #include <jln/mp/algorithm/anticirculant_matrix.hpp>
 #include <jln/mp/algorithm/any_of.hpp>
 #include <jln/mp/algorithm/arrange.hpp>
+#include <jln/mp/algorithm/batched.hpp>
 #include <jln/mp/algorithm/before.hpp>
 #include <jln/mp/algorithm/before_after.hpp>
 #include <jln/mp/algorithm/circulant_matrix.hpp>
@@ -35,7 +36,6 @@
 #include <jln/mp/algorithm/fold_tree.hpp>
 #include <jln/mp/algorithm/fold_xs.hpp>
 #include <jln/mp/algorithm/group.hpp>
-#include <jln/mp/algorithm/group_n.hpp>
 #include <jln/mp/algorithm/index.hpp>
 #include <jln/mp/algorithm/indices.hpp>
 #include <jln/mp/algorithm/intersperse.hpp>

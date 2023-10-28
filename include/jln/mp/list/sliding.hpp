@@ -66,7 +66,7 @@ namespace jln::mp
 #include <jln/mp/algorithm/pairwise.hpp>
 #include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/algorithm/transform.hpp>
-#include <jln/mp/algorithm/group_n.hpp>
+#include <jln/mp/algorithm/batched.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/list/slice.hpp>
@@ -147,7 +147,7 @@ namespace jln::mp::detail
       : size == 1 ? (stride == 1 ? 2 : 3)  // C<list<xs>...> / slice<0, n/stride, stride>
       : stride > n ? 9                     // take_front
       : stride == 1 ? (size == 2 ? 4 : 5)  // common case
-      : stride == size ? 6                 // group_n
+      : stride == size ? 6                 // batched
       // slice<zip_longest> / slice<zip>
       : ((n - size) % stride) ? (slinding_pivot(n, size, stride) < 0 ? 7 : 8) : 7;
   }
@@ -225,12 +225,12 @@ namespace jln::mp::detail
       ::template f<xs...>;
   };
 
-  // stride=size (group_n)
+  // stride=size (batched)
   template<>
   struct _sliding<6>
   {
     template<class C, int_ size, int_, class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), _group_n_impl)
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), _batched_impl)
       ::template f<C, size, xs...>;
   };
 
