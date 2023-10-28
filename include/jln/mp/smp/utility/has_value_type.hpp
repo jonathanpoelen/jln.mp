@@ -23,8 +23,4 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, has_value_type);
 }
-
-#include <jln/mp/smp/optimizer/optimizer.hpp>
-
-JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_0(mp::has_value_type, 1, types::boolean);
 /// \endcond

@@ -24,31 +24,4 @@ namespace jln::mp::detail
     (template<class...> class Tpl, class C),
     (is_specialization_of<Tpl, C>));
 }
-
-#include <jln/mp/smp/optimizer/optimizer.hpp>
-
-namespace jln::mp::optimizer
-{
-  template<template<class...> class Tpl>
-  struct optimized_for_is_specialization_of
-  {
-    template<class C>
-    using f = is_specialization_of<Tpl, C>;
-  };
-
-  template<template<class...> class Tpl, class C, class params>
-  struct optimizer_impl<is_specialization_of<Tpl, C>, params>
-  {
-    using type = typename count_param_always_maybe_never_selector<params, 1>
-      ::template f<dispatch_optimizer<optimized_for_regular_optimizer>>
-      ::template f<
-        C,
-        typename conditional_c<is_real_type_v<params>>
-          ::template f<is_specialization_of<Tpl>, always<types::boolean>>
-          ::template f<params>,
-        typename conditional_c<is_real_type_v<params>>
-          ::template f<lift<always>, optimized_for_is_specialization_of<Tpl>>
-      >;
-  };
-}
 /// \endcond

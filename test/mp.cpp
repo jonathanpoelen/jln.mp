@@ -178,8 +178,6 @@
 #include "src/number/numbers.cpp"
 #include "src/number/operators.cpp"
 #include "src/number/to_bool.cpp"
-#include "src/optimizer/optimizer.cpp"
-#include "src/optimizer/types.cpp"
 #include "src/set/set_contains.cpp"
 #include "src/set/set_difference.cpp"
 #include "src/set/set_intersection.cpp"

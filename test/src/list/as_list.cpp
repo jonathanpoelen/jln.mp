@@ -15,19 +15,6 @@ struct other_list;
 TEST()
 {
   using namespace jln::mp;
-  namespace z = optimizer;
-  namespace t = optimizer::types;
-
-  test_context<lift<z::optimize>, void>()
-    .test<t::uncallable::f<>, as_list<>, t::uncallable>()
-    .test<t::uncallable::f<>, as_list<>, z::seq<int, int>>()
-    .test<z::optimized_result_t<t::any_list, as_list<>>, as_list<>, int>()
-    .test<z::optimized_result_t<list<>, always<list<>>>, as_list<>, list<>>()
-    .test<z::optimized_result_t<z::list_t<t::number>, identity>, as_list<>, z::list_t<t::number>>()
-    .test<z::optimized_result_t<t::any_list, as_list<>>, as_list<>, t::any>()
-    .test<z::optimized_result_t<t::basic_union<t::uncallable, t::any_list>, as_list<>>,
-      as_list<>, z::pack<t::any>>()
-    ;
 
   test_unary_pack<as_list>();
 

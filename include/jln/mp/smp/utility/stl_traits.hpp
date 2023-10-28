@@ -5,21 +5,9 @@
 #include <jln/mp/smp/assume.hpp>
 #include <jln/mp/utility/stl_traits.hpp>
 #include <jln/mp/smp/functional/identity.hpp>
-#include <jln/mp/smp/optimizer/optimizer.hpp>
 
 namespace jln::mp
 {
-
-#define JLN_MP_SMP_MAKE_OPTIMIZER_TRAIT(Name, arity, output) \
-  namespace optimizer                                        \
-  {                                                          \
-    template<class C, class params>                          \
-    struct optimizer_impl<traits::Name<C>, params>           \
-    {                                                        \
-      using type = optimized_for_regular<arity, output>      \
-        ::f<params, traits::Name, C>;                        \
-    };                                                       \
-  }
 
 #define JLN_MP_SMP_MAKE_BASIC_TRAIT(Name)           \
   namespace smp::traits                             \
@@ -39,7 +27,6 @@ namespace jln::mp
   }
 
 #define JLN_MP_SMP_MAKE_TRAIT(Name, arity, output)     \
-  JLN_MP_SMP_MAKE_OPTIMIZER_TRAIT(Name, arity, output) \
   JLN_MP_SMP_MAKE_BASIC_TRAIT(Name)
 
 
@@ -136,18 +123,6 @@ namespace jln::mp
   JLN_MP_SMP_MAKE_TRAIT(rank, 1, types::number)
 
   JLN_MP_SMP_MAKE_BASIC_TRAIT(extent)
-  namespace optimizer
-  {
-    template<class C, class params>
-    struct optimizer_impl<traits::extent<C>, params>
-    {
-      using type = typename count_param_always_maybe_never_selector<params, 2>
-        ::template f<
-          add_uncallable_output<dispatch_optimizer<optimized_for_regular_optimizer>>,
-          add_uncallable_output<dispatch_optimizer<optimized_for_regular_optimizer>>>
-        ::template f<C, types::any, lift<traits::extent>>;
-    };
-  }
 
   // type relations:
   JLN_MP_SMP_MAKE_TRAIT(is_same, 2, types::boolean)
@@ -218,7 +193,6 @@ namespace jln::mp
   JLN_MP_SMP_MAKE_TRAIT(aligned_storage, 1, types::any)
   JLN_MP_SMP_MAKE_TRAIT(aligned_union, 1, types::any)
 
-#undef JLN_MP_SMP_MAKE_OPTIMIZER_TRAIT
 #undef JLN_MP_SMP_MAKE_BASIC_TRAIT
 #undef JLN_MP_SMP_MAKE_TRAIT
 }

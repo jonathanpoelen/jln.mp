@@ -19,15 +19,4 @@ namespace jln::mp::detail
     using type = smp::listify;
   };
 }
-
-#include <jln/mp/smp/optimizer/optimizer.hpp>
-
-namespace jln::mp::optimizer
-{
-  template<class params>
-  struct optimizer_impl<listify, params>
-  {
-    using type = optimized_result<list_t<params>, listify>;
-  };
-}
 /// \endcond

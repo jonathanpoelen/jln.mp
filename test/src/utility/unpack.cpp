@@ -12,61 +12,6 @@ TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
-  namespace z = optimizer;
-  namespace t = optimizer::types;
-
-  test_context<lift<z::optimize>, void>()
-    .test<t::uncallable::f<>, unpack<listify>, t::uncallable>()
-    .test<t::uncallable::f<>, unpack<listify>, int>()
-    .test<t::uncallable::f<>, unpack<listify>, z::seq<int, int>>()
-    .test<z::optimized_result_t<list<int>, always<list<int>>>,
-      unpack<listify>, list<int>>()
-    .test<z::optimized_result_t<list<void, int>, always<list<void, int>>>,
-      unpack<listify>, z::seq<list<int>, void>>()
-    .test<z::optimized_result_t<z::list_t<t::number, int>, unpack<listify>>,
-      unpack<listify>, z::seq<list<int>, t::number>>()
-    .test<z::optimized_result_t<z::list_t<t::number>, unpack<listify>>,
-      unpack<listify>, z::list_t<t::number>>()
-    .test<z::optimized_result_t<z::list_t<z::pack<t::any>>, unpack<listify>>,
-      unpack<listify>, z::list_t<z::pack<t::any>>>()
-    .test<z::optimized_result_t<z::list_t<int, z::pack<t::any>>, unpack<listify>>,
-      unpack<listify>, z::seq<z::list_t<z::pack<t::any>>, int>>()
-    .test<z::optimized_result_t<z::union_<t::uncallable, z::list_t<t::number>>,
-                                unpack<listify>>,
-      unpack<listify>, z::union_<z::list_t<t::number>, int>>()
-    .test<z::optimized_result_t<z::union_<t::uncallable, z::list_t<t::number>>,
-                                unpack<listify>>,
-      unpack<listify>, z::union_<t::uncallable, z::list_t<t::number>, int>>()
-    .test<z::optimized_result_t<z::union_<t::uncallable, z::list_t<z::pack<void>, t::number>>,
-                                unpack<listify>>,
-      unpack<listify>, z::seq<z::union_<t::uncallable, z::list_t<t::number>, int>, z::pack<void>>>()
-
-    // unpack_append
-    .test<t::uncallable::f<>, unpack_append<listify>, t::uncallable>()
-    .test<t::uncallable::f<>, unpack_append<listify>, int>()
-    .test<t::uncallable::f<>, unpack_append<listify>, z::seq<int, int>>()
-    .test<z::optimized_result_t<list<int>, always<list<int>>>,
-      unpack_append<listify>, list<int>>()
-    .test<z::optimized_result_t<list<int, void>, always<list<int, void>>>,
-      unpack_append<listify>, z::seq<list<int>, void>>()
-    .test<z::optimized_result_t<z::list_t<int, t::number>, unpack_append<listify>>,
-      unpack_append<listify>, z::seq<list<int>, t::number>>()
-    .test<z::optimized_result_t<z::list_t<t::number>, unpack_append<listify>>,
-      unpack_append<listify>, z::list_t<t::number>>()
-    .test<z::optimized_result_t<z::list_t<z::pack<t::any>>, unpack_append<listify>>,
-      unpack_append<listify>, z::list_t<z::pack<t::any>>>()
-    .test<z::optimized_result_t<z::list_t<z::pack<t::any>, int>, unpack_append<listify>>,
-      unpack_append<listify>, z::seq<z::list_t<z::pack<t::any>>, int>>()
-    .test<z::optimized_result_t<z::union_<t::uncallable, z::list_t<t::number>>,
-                                unpack_append<listify>>,
-      unpack_append<listify>, z::union_<z::list_t<t::number>, int>>()
-    .test<z::optimized_result_t<z::union_<t::uncallable, z::list_t<t::number>>,
-                                unpack_append<listify>>,
-      unpack_append<listify>, z::union_<t::uncallable, z::list_t<t::number>, int>>()
-    .test<z::optimized_result_t<z::union_<t::uncallable, z::list_t<t::number, z::pack<void>>>,
-                                unpack_append<listify>>,
-      unpack_append<listify>, z::seq<z::union_<t::uncallable, z::list_t<t::number>, int>, z::pack<void>>>()
-    ;
 
   test_mulary_pack<unpack>();
   test_mulary_pack<unpack_append>();

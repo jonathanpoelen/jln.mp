@@ -11,16 +11,6 @@ TEST_SUITE_BEGIN()
 TEST()
 {
   using namespace jln::mp;
-  namespace z = optimizer;
-  namespace tt = optimizer::types;
-
-  test_context<lift<z::optimize>, void>()
-    .test<tt::uncallable::f<>, is_specialization_of<list>, tt::uncallable>()
-    .test<tt::uncallable::f<>, is_specialization_of<list>, z::seq<int, int>>()
-    .test<z::optimized_result_t<false_, always<false_>>, is_specialization_of<list>, int>()
-    .test<z::optimized_result_t<true_, always<true_>>, is_specialization_of<list>, list<>>()
-    .test<z::optimized_result_t<tt::boolean, is_specialization_of<list>>, is_specialization_of<list>, tt::any>()
-    ;
 
   (void)is_specialization_of<list, ut::unary>();
   (void)is_specialization_of<list, ut::listify>();

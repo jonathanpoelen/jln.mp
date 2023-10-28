@@ -25,44 +25,4 @@ namespace jln::mp::detail
     using type = smp::join<sfinae<C>>;
   };
 } // namespace jln::mp::detail
-
-#include <jln/mp/smp/optimizer/optimizer.hpp>
-
-namespace jln::mp::optimizer
-{
-  template<bool>
-  struct optimized_for_join_wrap;
-
-  template<>
-  struct optimized_for_join_wrap<true>
-  {
-    template<class... xs>
-    using f = wrap_optimize_with_params<types::basic_seq<xs...>>;
-  };
-
-  template<>
-  struct optimized_for_join_wrap<false>
-  {
-    template<class... xs>
-    using f = wrap_optimize_with_function<lift<join>, types::basic_seq<xs...>>;
-  };
-
-  struct optimized_for_join_impl
-  {
-    template<class... xs>
-    using f = typename optimized_for_join_wrap<(... && is_real_type_v<xs>)>
-      ::template f<xs...>;
-  };
-
-  template<class C, class params>
-  struct optimizer_impl<join<C>, params>
-  {
-    using type = typename dispatch_join_list<params>
-      ::template f<
-        optimized_for_join_impl,
-        add_uncallable_output<optimized_for_join_impl>,
-        always<uncallable>>
-      ::template f<C>;
-  };
-}
 /// \endcond

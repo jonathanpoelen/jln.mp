@@ -11,22 +11,6 @@ TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
-  namespace z = optimizer;
-  namespace t = optimizer::types;
-
-  test_context<lift<z::optimize>, void>()
-    .test<t::uncallable::f<>, is<int>, t::uncallable>()
-    .test<t::uncallable::f<>, is<int>, z::seq<int, int>>()
-    .test<z::optimized_result_t<_1, always<_1>>, is<int>, int>()
-    .test<z::optimized_result_t<z::union_<t::uncallable, _1>, always<_1>>,
-      is<int>, z::union_<t::uncallable, int>>()
-    .test<z::optimized_result_t<_0, always<_0>>, is<int>, void>()
-    .test<z::optimized_result_t<t::boolean, is<int>>, is<int>, t::number>()
-    .test<z::optimized_result_t<t::basic_union<t::uncallable, t::boolean>, is<int>>,
-      is<int>, t::basic_pack<int>>()
-    .test<z::optimized_result_t<z::union_<t::uncallable, t::boolean>, is<int>>,
-      is<int>, z::union_<int, z::seq<int, int>>>()
-    ;
 
   test_unary_pack<is, _1>();
 

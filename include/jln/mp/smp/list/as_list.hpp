@@ -20,24 +20,4 @@ namespace jln::mp::detail
     using type = smp::as_list<sfinae<C>>;
   };
 }
-
-#include <jln/mp/smp/optimizer/optimizer.hpp>
-
-namespace jln::mp::optimizer
-{
-  template<class C, class params>
-  struct optimizer_impl<as_list<C>, params>
-  {
-    using type = typename count_param_always_maybe_never_selector<params, 1>
-      ::template f<
-        typename dispatch_list<params>
-          ::template f<
-            always<wrap_optimize_with_params<params>>,
-            always<wrap_optimize_with_function<lift<as_list>, types::any_list>>,
-            always<wrap_optimize_with_function<lift<as_list>, types::any_list>>
-          >
-      >
-      ::template f<C>;
-  };
-}
 /// \endcond
