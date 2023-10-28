@@ -5,44 +5,57 @@
 // Compiler type
 //@{
 #if defined(_MSC_VER) && defined(__clang__)
-#  define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
-#  define JLN_MP_MSVC_LIKE _MSC_VER
-#  define JLN_MP_CLANG_CL (__clang_major__ * 100 + __clang_minor__)
-#  define JLN_MP_CLANG 0
-#  define JLN_MP_MSVC 0
-#  define JLN_MP_GCC 0
-#  define JLN_MP_OPTIMIZED_ALIAS 0
+#  ifndef JLN_MP_CLANG_LIKE
+#    define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
+#  endif
+#  ifndef JLN_MP_MSVC_LIKE
+#    define JLN_MP_MSVC_LIKE _MSC_VER
+#  endif
+#  ifndef JLN_MP_CLANG_CL
+#    define JLN_MP_CLANG_CL (__clang_major__ * 100 + __clang_minor__)
+#  endif
 #elif defined(__clang__)
-#  define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
-#  define JLN_MP_MSVC_LIKE 0
-#  define JLN_MP_CLANG_CL 0
-#  define JLN_MP_CLANG (__clang_major__ * 100 + __clang_minor__)
-#  define JLN_MP_MSVC 0
-#  define JLN_MP_GCC 0
-#  define JLN_MP_OPTIMIZED_ALIAS 0
+#  ifndef JLN_MP_CLANG_LIKE
+#    define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
+#  endif
+#  ifndef JLN_MP_CLANG
+#    define JLN_MP_CLANG (__clang_major__ * 100 + __clang_minor__)
+#  endif
 #elif defined(_MSC_VER)
-#  define JLN_MP_CLANG_LIKE 0
-#  define JLN_MP_MSVC_LIKE _MSC_VER
-#  define JLN_MP_CLANG_CL 0
-#  define JLN_MP_CLANG 0
-#  define JLN_MP_MSVC _MSC_VER
-#  define JLN_MP_GCC 0
-#  define JLN_MP_OPTIMIZED_ALIAS 0
+#  ifndef JLN_MP_MSVC_LIKE
+#    define JLN_MP_MSVC_LIKE _MSC_VER
+#  endif
+#  ifndef JLN_MP_MSVC
+#    define JLN_MP_MSVC _MSC_VER
+#  endif
 #elif defined(__GNUC__)
+#  ifndef JLN_MP_GCC
+#    define JLN_MP_GCC (__GNUC__ * 100 + __GNUC_MINOR__)
+#  endif
+#  ifndef JLN_MP_OPTIMIZED_ALIAS
+#    define JLN_MP_OPTIMIZED_ALIAS 1
+#  endif
+#endif
+
+#ifndef JLN_MP_CLANG_LIKE
 #  define JLN_MP_CLANG_LIKE 0
+#endif
+#ifndef JLN_MP_MSVC_LIKE
 #  define JLN_MP_MSVC_LIKE 0
+#endif
+#ifndef JLN_MP_CLANG_CL
 #  define JLN_MP_CLANG_CL 0
+#endif
+#ifndef JLN_MP_CLANG
 #  define JLN_MP_CLANG 0
+#endif
+#ifndef JLN_MP_MSVC
 #  define JLN_MP_MSVC 0
-#  define JLN_MP_GCC (__GNUC__ * 100 + __GNUC_MINOR__)
-#  define JLN_MP_OPTIMIZED_ALIAS 1
-#else
-#  define JLN_MP_CLANG_LIKE 0
-#  define JLN_MP_MSVC_LIKE 0
-#  define JLN_MP_CLANG_CL 0
-#  define JLN_MP_CLANG 0
-#  define JLN_MP_MSVC 0
+#endif
+#ifndef JLN_MP_GCC
 #  define JLN_MP_GCC 0
+#endif
+#ifndef JLN_MP_OPTIMIZED_ALIAS
 #  define JLN_MP_OPTIMIZED_ALIAS 0
 #endif
 //@}
