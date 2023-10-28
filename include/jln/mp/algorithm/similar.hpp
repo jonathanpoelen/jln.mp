@@ -10,7 +10,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-#if JLN_MP_CLANG
+#if JLN_MP_CLANG || (JLN_MP_GCC && JLN_MP_FEATURE_CONCEPTS)
 # define JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(...)
 #else
 # define JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(...) , __VA_ARGS__
@@ -81,6 +81,12 @@ namespace jln::mp::detail
     using type = T;
   };
 
+#if JLN_MP_GCC && JLN_MP_FEATURE_CONCEPTS
+# define JLN_MP_SIMILAR_REQUIRES(...) requires requires{ static_cast<__VA_ARGS__*>(nullptr); }
+#else
+# define JLN_MP_SIMILAR_REQUIRES(...)
+#endif
+
   template<template<class...> class Tpl>
   struct tpl_type1 {};
 
@@ -92,6 +98,7 @@ namespace jln::mp::detail
 
   // fix ambiguous
   template<template<class> class Tpl, class x>
+  JLN_MP_SIMILAR_REQUIRES(tpl_type1<Tpl>)
   struct normalize_similar<Tpl<x> JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(std::void_t<tpl_type1<Tpl>>)>
   {
     using type = tpl_type1<Tpl>;
@@ -112,6 +119,7 @@ namespace jln::mp::detail
 
   // fix ambiguous
   template<template<auto> class Tpl, auto x>
+  JLN_MP_SIMILAR_REQUIRES(tpl_type3<Tpl>)
   struct normalize_similar<Tpl<x> JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(std::void_t<tpl_type3<Tpl>>)>
   {
     using type = tpl_type3<Tpl>;
@@ -125,6 +133,7 @@ namespace jln::mp::detail
 
   // fix ambiguous
   template<template<auto> class Tpl, std::size_t x>
+  JLN_MP_SIMILAR_REQUIRES(tpl_type3<Tpl>)
   struct normalize_similar<Tpl<x> JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(std::void_t<tpl_type3<Tpl>>)>
   {
     using type = tpl_type3<Tpl>;
@@ -149,5 +158,6 @@ namespace jln::mp::detail
 
 }
 
+#undef JLN_MP_SIMILAR_REQUIRES
 #undef JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM
 /// \endcond
