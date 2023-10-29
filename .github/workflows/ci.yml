@@ -173,7 +173,7 @@ jobs:
           CLICOLOR_FORCE= ninja -C build -k10 mp
 
   auto-gen:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'jonathanpoelen/jln.mp'
     needs: [linux, linux-old, macos, windows-cl, windows-clang, windows-gcc, cuda-linux]
     runs-on: ubuntu-latest
     steps:
