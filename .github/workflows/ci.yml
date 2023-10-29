@@ -169,7 +169,7 @@ jobs:
             s/-Wall.*-fforce-emit-vtables//
             s/-fcolor-diagnostics//
             s/-MD.*-fsyntax-only//
-          ' build.ninja -i
+          ' build/build.ninja -i
           CLICOLOR_FORCE= ninja -C build -k10 mp
 
   auto-gen:
