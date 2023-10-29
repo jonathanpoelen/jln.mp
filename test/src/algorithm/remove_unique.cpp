@@ -31,8 +31,10 @@ TEST()
     .test<list<_0, _0, _0, _0, _0>, _0, _0, _0, _0, _0>()
     .test<list<_0, _0, _0, _2, _2, _2, _0, _0>,
       _0, _0, _1, _0, _2, _2, _2, _0, _0, _3>()
+#if !JLN_MP_CUDA
     .test<list<int&, int&>,
       int, int&, int&&, int const, int const&, int const&&, int&>()
+#endif
     ;
 
   test_context<remove_unique_if<>, smp::remove_unique_if<>>()
@@ -44,8 +46,10 @@ TEST()
     .test<list<_0, _0, _0, _0, _0>, _0, _0, _0, _0, _0>()
     .test<list<_0, _0, _0, _2, _2, _2, _0, _0>,
       _0, _0, _1, _0, _2, _2, _2, _0, _0, _3>()
+#if !JLN_MP_CUDA
     .test<list<int&, int&>,
       int, int&, int&&, int const, int const&, int const&&, int&>()
+#endif
     ;
 
   using first = unpack<at0<>>;

@@ -46,19 +46,27 @@ namespace jln::mp
     using f = number<(!x::value)>;
   };
 
+#if JLN_MP_CUDA
+#  define JLN_MP_AS_BOOL(v) std::enable_if_t<std::size_t{v} <= 1, bool>{v}
+#else
+#  define JLN_MP_AS_BOOL(v) bool{v}
+#endif
+
   template<>
   struct as_bool<not_<>>
   {
     template<class x>
-    using f = number<!bool{x::value}>;
+    using f = number<!JLN_MP_AS_BOOL(x::value)>;
   };
 
   template<class C>
   struct as_bool<not_<C>>
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<!bool{x::value}>);
+    using f = JLN_MP_CALL_TRACE(C, number<!JLN_MP_AS_BOOL(x::value)>);
   };
+
+#undef JLN_MP_AS_BOOL
 
   template<>
   struct to_bool<not_<>>

@@ -143,9 +143,37 @@ jobs:
         CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
         CLICOLOR_FORCE= ninja -C build -k10
 
+
+  cuda-linux:
+    name: Ubuntu nvcc dbg=${{ matrix.debug }}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        debug: ['false', 'true']
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Jimver/cuda-toolkit@v0.2.10
+        with:
+          cuda: '11.7.1'
+          linux-local-args: '["--toolkit"]'
+
+      - run: |
+          python -m pip install ninja meson
+          CXX=clang++ meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
+          sed '
+            s/clang++/nvcc -x cu -diag-suppress 177 -std=c++17/
+            s/-Wall.*-fforce-emit-vtables//
+            s/-fcolor-diagnostics//
+            s/-MD.*-fsyntax-only//
+          ' build.ninja -i
+          CLICOLOR_FORCE= ninja -C build -k10 mp
+
   auto-gen:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: [linux, linux-old, macos, windows-cl, windows-clang, windows-gcc]
+    needs: [linux, linux-old, macos, windows-cl, windows-clang, windows-gcc, cuda-linux]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

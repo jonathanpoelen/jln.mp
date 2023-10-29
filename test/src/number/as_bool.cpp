@@ -26,7 +26,7 @@ TEST()
   test_context<as_bool<>, smp::as_bool<>>()
     .test<a, a>()
     .test<number<1>, b>()
-    .not_invocable<number<1>, number<3>>() // narrowing conversion
+    .not_invocable<number<1>, number<3>>()
     .not_invocable<void>()
     .not_invocable<c>() // narrowing conversion
     .not_invocable<>()
@@ -35,7 +35,7 @@ TEST()
   test_context<as_bool<not_<>>, smp::as_bool<smp::not_<>>>()
     .test<number<1>, a>()
     .test<number<0>, b>()
-    .not_invocable<number<1>, number<3>>() // narrowing conversion
+    .not_invocable<number<1>, number<3>>()
     .not_invocable<void>()
     .not_invocable<c>() // narrowing conversion
     .not_invocable<>()

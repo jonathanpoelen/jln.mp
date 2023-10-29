@@ -4,7 +4,11 @@
 
 // Compiler type
 //@{
-#if defined(_MSC_VER) && defined(__clang__)
+#if defined(__CUDACC__)
+#  ifndef JLN_MP_CUDA
+#    define JLN_MP_CUDA (__CUDACC_VER_MAJOR__ * 100 + __CUDACC_VER_MINOR__)
+#  endif
+#elif defined(_MSC_VER) && defined(__clang__)
 #  ifndef JLN_MP_CLANG_LIKE
 #    define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
 #  endif
@@ -54,6 +58,9 @@
 #endif
 #ifndef JLN_MP_GCC
 #  define JLN_MP_GCC 0
+#endif
+#ifndef JLN_MP_CUDA
+#  define JLN_MP_CUDA 0
 #endif
 #ifndef JLN_MP_OPTIMIZED_ALIAS
 #  define JLN_MP_OPTIMIZED_ALIAS 0

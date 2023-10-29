@@ -38,7 +38,7 @@ namespace jln::mp
   struct erase_c
   {
     template<class... xs>
-    using f = typename detail::erase_impl<C, start, size, sizeof...(xs)>
+    using f = typename detail::erase_impl<C, start, size, int_(sizeof...(xs))>
       ::template f<xs...>;
   };
 

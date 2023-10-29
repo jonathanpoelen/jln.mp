@@ -6,9 +6,19 @@
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/number/number.hpp>
 
+#if JLN_MP_CUDA
+#  include <type_traits>
+#endif
+
 namespace jln::mp
 {
   /// \ingroup number
+
+#if JLN_MP_CUDA
+#  define JLN_MP_AS_BOOL(v) std::enable_if_t<std::size_t{v} <= 1, bool>{v}
+#else
+#  define JLN_MP_AS_BOOL(v) bool{v}
+#endif
 
   /// Narrowing convertion from \value to \bool.
   /// \treturn \bool
@@ -16,13 +26,13 @@ namespace jln::mp
   struct as_bool
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<bool{x::value}>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_AS_BOOL(x::value)>);
   };
 
   namespace emp
   {
     template<class x>
-    using as_bool = number<bool{x::value}>;
+    using as_bool = number<JLN_MP_AS_BOOL(x::value)>;
   }
 
   /// \cond
@@ -30,7 +40,9 @@ namespace jln::mp
   struct as_bool<identity>
   {
     template<class x>
-    using f = number<bool{x::value}>;
+    using f = number<JLN_MP_AS_BOOL(x::value)>;
   };
   /// \endcond
+
+#undef JLN_MP_AS_BOOL
 }

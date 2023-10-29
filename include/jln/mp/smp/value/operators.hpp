@@ -24,7 +24,7 @@ namespace jln::mp::detail
   >;
 
 // x/0 is not a substitution failure
-#if JLN_MP_MSVC
+#if JLN_MP_MSVC || JLN_MP_CUDA
   template<template<class...> class Tpl, class C, int i = 0>
   using smp_opv_without_zero = contract<
     if_<

@@ -43,7 +43,11 @@ namespace jln::mp::detail
   template<class... Selectors>
   struct smp_compress_select<
     list<Selectors...>,
+#if JLN_MP_CUDA
+    std::enable_if_t<((std::size_t{Selectors::value} <= 1) || ...) || !sizeof...(Selectors)>
+#else
     std::void_t<decltype(bool{Selectors::value})...>
+#endif
   >
   {
     template<class C>

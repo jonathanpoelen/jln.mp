@@ -48,10 +48,22 @@ TEST()
     .test<false_, int, int, void>()
     .test<false_, int, int, list<int>>()
     .test<false_, similar<>, list<>>()
-    .test<true_
-      , tx<>, tx<int>, tx<int, int>, tx<int, int, int>
-    >()
     // check ambiguity
+    .test<true_, t1<int>, t1<char>>()
+    .test<true_, t2<int, int>, t2<int, char>>()
+    .test<true_, tx<>, tx<int>, tx<int, int>, tx<int, int, int>>()
+    .test<true_, a1<1>, a1<2>>()
+    .test<true_, a2<1, 1>, a2<2, 2>>()
+    .test<true_, ax<1>, ax<1, 2>>()
+    .test<true_, ta1<int, 1>, ta1<int, 2>>()
+    .test<true_, ta2<int, 1, 1>, ta2<int, 2, 2>>()
+    .test<true_, tax<int, 1, 1>, tax<int, 1>>()
+    .test<true_, at1<1, int>, at1<2, int>>()
+    .test<true_, at2<1, int, int>, at2<2, int, int>>()
+    .test<true_, atx<1>, atx<1, int>>()
+    .test<true_, p1<int, 1>, p1<int, 2>>()
+    .test<true_, p2<int, 1, 1>, p2<int, 2, 2>>()
+    .test<true_, px<int, 1>, px<int, 1, 2>>()
     .test<false_
       , t1<int>, t2<int, int>, tx<>, tx<int>, tx<int, int>, tx<int, int, int>
       , a1<1>, a2<1, 1>, ax<>, ax<1>, ax<1, 1>, ax<1, 1, 1>

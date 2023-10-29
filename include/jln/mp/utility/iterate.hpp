@@ -26,8 +26,9 @@ namespace jln::mp
   struct iterate_c
   {
     template<class x>
-    using f = typename detail::iterate_impl<n>
-      ::template f<n, C, JLN_MP_TRACE_F(F), x>;
+    using f = JLN_MP_CALL_TRACE(C,
+      typename detail::iterate_impl<n>::template f<n, JLN_MP_TRACE_F(F), x>
+    );
   };
 
   /// Apply a function \c n times to its argument.
@@ -43,6 +44,16 @@ namespace jln::mp
     template<class L, uint_ n, class F, class C = mp::identity>
     using iterate_c = unpack<L, mp::iterate_c<n, F, C>>;
   }
+
+  /// \cond
+  template<uint_ n, class F>
+  struct iterate_c<n, F, identity>
+  {
+    template<class x>
+    using f = typename detail::iterate_impl<n>
+      ::template f<n, JLN_MP_TRACE_F(F), x>;
+  };
+  /// \endcond
 } // namespace jln::mp
 
 
@@ -63,40 +74,75 @@ namespace jln::mp::detail
   template<>
   struct iterate_impl<0>
   {
-    template<uint_ i, class C, class F, class x>
-    using f = JLN_MP_CALL_TRACE(C, x);
+    template<uint_ i, class F, class x>
+    using f = x;
   };
 
 #define JLN_MP_ITERATE(n, mp_xs, mp_rsx, mp_rep)  \
   template<>                                      \
   struct iterate_impl<n>                          \
   {                                               \
-    template<uint_ i, class C, class F, class x>  \
-    using f = JLN_MP_CALL_TRACE(C,                \
+    template<uint_ i, class F, class x>           \
+    using f =                                     \
       mp_rep(typename F::template f<, JLN_MP_NIL) \
       x                                           \
       mp_rep(>, JLN_MP_NIL)                       \
-    );                                            \
+    ;                                             \
   };
 
   JLN_MP_GEN_XS_1_TO_8(JLN_MP_ITERATE)
 
 #undef JLN_MP_ITERATE
 
-#define JLN_MP_ITERATE(n, mp_xs, mp_rsx, mp_rep)    \
-  template<>                                        \
-  struct iterate_impl<n>                            \
-  {                                                 \
-    template<uint_ i, class C, class F, class x>    \
-    using f = typename iterate_impl<i-n>            \
-      ::template f<i-n, C, F,                       \
-        mp_rep(typename F::template f<, JLN_MP_NIL) \
-        x                                           \
-        mp_rep(>, JLN_MP_NIL)                       \
-      >;                                            \
+  template<class F, class x>
+  struct iterate8_impl
+  {
+    using type =
+      typename F::template f<
+        typename F::template f<
+          typename F::template f<
+            typename F::template f<
+              typename F::template f<
+                typename F::template f<
+                  typename F::template f<
+                    typename F::template f<
+                      x>>>>>>>>;
   };
 
-  JLN_MP_GEN_XS_8_16_32_64_128(JLN_MP_ITERATE)
+  template<>
+  struct iterate_impl<8>
+  {
+    template<uint_ i, class F, class x>
+    using f = typename iterate_impl<i-8>
+      ::template f<i-8, F, typename iterate8_impl<F, x>::type>;
+  };
+
+  template<>
+  struct iterate_impl<16>
+  {
+    template<uint_ i, class F, class x>
+    using f = typename iterate_impl<i-16>
+      ::template f<i-16, F, typename iterate8_impl<
+        F, typename iterate8_impl<F, x>::type
+      >::type>;
+  };
+
+#define JLN_MP_ITERATE(n)                                   \
+  template<>                                                \
+  struct iterate_impl<n>                                    \
+  {                                                         \
+    template<uint_ i, class F, class x>                     \
+    using f = typename iterate_impl<i-n>                    \
+      ::template f<i-n, F,                                  \
+        typename iterate_impl<n/2>::template f<n/2, F,      \
+          typename iterate_impl<n/2>::template f<n/2, F, x> \
+        >                                                   \
+      >;                                                    \
+  }
+
+  JLN_MP_ITERATE(32);
+  JLN_MP_ITERATE(64);
+  JLN_MP_ITERATE(128);
 
 #undef JLN_MP_ITERATE
 }
