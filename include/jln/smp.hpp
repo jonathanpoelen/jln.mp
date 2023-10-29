@@ -115,45 +115,65 @@ namespace jln::mp
 }
 // Compiler type
 //@{
-#if defined(_MSC_VER) && defined(__clang__)
-#  define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
-#  define JLN_MP_MSVC_LIKE _MSC_VER
-#  define JLN_MP_CLANG_CL (__clang_major__ * 100 + __clang_minor__)
-#  define JLN_MP_CLANG 0
-#  define JLN_MP_MSVC 0
-#  define JLN_MP_GCC 0
-#  define JLN_MP_OPTIMIZED_ALIAS 0
+#if defined(__CUDACC__)
+#  ifndef JLN_MP_CUDA
+#    define JLN_MP_CUDA (__CUDACC_VER_MAJOR__ * 100 + __CUDACC_VER_MINOR__)
+#  endif
+#elif defined(_MSC_VER) && defined(__clang__)
+#  ifndef JLN_MP_CLANG_LIKE
+#    define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
+#  endif
+#  ifndef JLN_MP_MSVC_LIKE
+#    define JLN_MP_MSVC_LIKE _MSC_VER
+#  endif
+#  ifndef JLN_MP_CLANG_CL
+#    define JLN_MP_CLANG_CL (__clang_major__ * 100 + __clang_minor__)
+#  endif
 #elif defined(__clang__)
-#  define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
-#  define JLN_MP_MSVC_LIKE 0
-#  define JLN_MP_CLANG_CL 0
-#  define JLN_MP_CLANG (__clang_major__ * 100 + __clang_minor__)
-#  define JLN_MP_MSVC 0
-#  define JLN_MP_GCC 0
-#  define JLN_MP_OPTIMIZED_ALIAS 0
+#  ifndef JLN_MP_CLANG_LIKE
+#    define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
+#  endif
+#  ifndef JLN_MP_CLANG
+#    define JLN_MP_CLANG (__clang_major__ * 100 + __clang_minor__)
+#  endif
 #elif defined(_MSC_VER)
-#  define JLN_MP_CLANG_LIKE 0
-#  define JLN_MP_MSVC_LIKE _MSC_VER
-#  define JLN_MP_CLANG_CL 0
-#  define JLN_MP_CLANG 0
-#  define JLN_MP_MSVC _MSC_VER
-#  define JLN_MP_GCC 0
-#  define JLN_MP_OPTIMIZED_ALIAS 0
+#  ifndef JLN_MP_MSVC_LIKE
+#    define JLN_MP_MSVC_LIKE _MSC_VER
+#  endif
+#  ifndef JLN_MP_MSVC
+#    define JLN_MP_MSVC _MSC_VER
+#  endif
 #elif defined(__GNUC__)
+#  ifndef JLN_MP_GCC
+#    define JLN_MP_GCC (__GNUC__ * 100 + __GNUC_MINOR__)
+#  endif
+#  ifndef JLN_MP_OPTIMIZED_ALIAS
+#    define JLN_MP_OPTIMIZED_ALIAS 1
+#  endif
+#endif
+
+#ifndef JLN_MP_CLANG_LIKE
 #  define JLN_MP_CLANG_LIKE 0
+#endif
+#ifndef JLN_MP_MSVC_LIKE
 #  define JLN_MP_MSVC_LIKE 0
+#endif
+#ifndef JLN_MP_CLANG_CL
 #  define JLN_MP_CLANG_CL 0
+#endif
+#ifndef JLN_MP_CLANG
 #  define JLN_MP_CLANG 0
+#endif
+#ifndef JLN_MP_MSVC
 #  define JLN_MP_MSVC 0
-#  define JLN_MP_GCC (__GNUC__ * 100 + __GNUC_MINOR__)
-#  define JLN_MP_OPTIMIZED_ALIAS 1
-#else
-#  define JLN_MP_CLANG_LIKE 0
-#  define JLN_MP_MSVC_LIKE 0
-#  define JLN_MP_CLANG_CL 0
-#  define JLN_MP_CLANG 0
-#  define JLN_MP_MSVC 0
+#endif
+#ifndef JLN_MP_GCC
 #  define JLN_MP_GCC 0
+#endif
+#ifndef JLN_MP_CUDA
+#  define JLN_MP_CUDA 0
+#endif
+#ifndef JLN_MP_OPTIMIZED_ALIAS
 #  define JLN_MP_OPTIMIZED_ALIAS 0
 #endif
 //@}
@@ -825,7 +845,15 @@ namespace jln::mp
     template<class... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...);
   };
-  /// \endcond
+
+#if JLN_MP_GCC
+#  define JLN_MP_LIFT_WRAP_IMPL(fn, fn_t) jln::mp::lift_t<fn>
+#else
+#  define JLN_MP_LIFT_WRAP_IMPL(fn, fn_t) jln::mp::lift<fn_t>
+#endif
+
+#define JLN_MP_LIFT_WRAP(fn) JLN_MP_LIFT_WRAP_IMPL(fn, fn##_t)
+/// \endcond
 } // namespace jln::mp
 namespace jln::mp
 {
@@ -2304,6 +2332,38 @@ namespace jln::mp
       (sizeof...(xs) & 0) + N-9
     >::template f<N-9, JLN_MP_TRACE_F(C), xs...>;
   };
+
+#if JLN_MP_HAS_BUILTIN(__type_pack_element)
+  template<unsigned N, class C>
+  struct drop_front_c<N, front<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, __type_pack_element<N, xs...>);
+  };
+
+  template<unsigned N>
+  struct drop_front_c<N, front<identity>>
+  {
+    template<class... xs>
+    using f = __type_pack_element<N, xs...>;
+  };
+
+  template<unsigned N, class C>
+  struct drop_front_max_c<N, front<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      __type_pack_element<sizeof...(xs) < N ? sizeof...(xs) : N, xs...>
+    );
+  };
+
+  template<unsigned N>
+  struct drop_front_max_c<N, front<identity>>
+  {
+    template<class... xs>
+    using f = __type_pack_element<sizeof...(xs) < N ? sizeof...(xs) : N, xs...>;
+  };
+#endif
   /// \endcond
 }
 
@@ -2631,9 +2691,16 @@ namespace jln::mp::detail
 #undef JLN_DROP_WHILE_IMPL
 }
 /// \endcond
+
 namespace jln::mp
 {
   /// \ingroup number
+
+#if JLN_MP_CUDA
+#  define JLN_MP_AS_BOOL(v) std::enable_if_t<std::size_t{v} <= 1, bool>{v}
+#else
+#  define JLN_MP_AS_BOOL(v) bool{v}
+#endif
 
   /// Narrowing convertion from \value to \bool.
   /// \treturn \bool
@@ -2641,13 +2708,13 @@ namespace jln::mp
   struct as_bool
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<bool{x::value}>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_AS_BOOL(x::value)>);
   };
 
   namespace emp
   {
     template<class x>
-    using as_bool = number<bool{x::value}>;
+    using as_bool = number<JLN_MP_AS_BOOL(x::value)>;
   }
 
   /// \cond
@@ -2655,9 +2722,11 @@ namespace jln::mp
   struct as_bool<identity>
   {
     template<class x>
-    using f = number<bool{x::value}>;
+    using f = number<JLN_MP_AS_BOOL(x::value)>;
   };
   /// \endcond
+
+#undef JLN_MP_AS_BOOL
 }
 namespace jln::mp
 {
@@ -2722,19 +2791,27 @@ namespace jln::mp
     using f = number<(!x::value)>;
   };
 
+#if JLN_MP_CUDA
+#  define JLN_MP_AS_BOOL(v) std::enable_if_t<std::size_t{v} <= 1, bool>{v}
+#else
+#  define JLN_MP_AS_BOOL(v) bool{v}
+#endif
+
   template<>
   struct as_bool<not_<>>
   {
     template<class x>
-    using f = number<!bool{x::value}>;
+    using f = number<!JLN_MP_AS_BOOL(x::value)>;
   };
 
   template<class C>
   struct as_bool<not_<C>>
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<!bool{x::value}>);
+    using f = JLN_MP_CALL_TRACE(C, number<!JLN_MP_AS_BOOL(x::value)>);
   };
+
+#undef JLN_MP_AS_BOOL
 
   template<>
   struct to_bool<not_<>>
@@ -4198,4931 +4275,6 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-namespace jln::mp
-{
-  /// \ingroup list
-
-  /// Appends \c x to the end of the sequence.
-  /// \treturn \sequence
-  template<class x, class C = listify>
-  struct push_back
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs..., x);
-  };
-
-  namespace emp
-  {
-    template<class L, class T, class C = mp::listify>
-    using push_back = unpack<L, mp::push_back<T, C>>;
-  }
-
-  /// \cond
-  template<class x>
-  struct push_back<x, listify>
-  {
-    template<class... xs>
-    using f = list<xs..., x>;
-  };
-  /// \endcond
-}
-
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class x>
-    struct basic_item
-    {};
-
-    template<class... xs>
-    struct inherit : basic_item<xs>...
-    {};
-  }
-#if JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC
-# define JLN_MP_SET_CONTAINS_BASE(x, ...) __is_base_of(detail::basic_item<x>, __VA_ARGS__)
-#else
-# define JLN_MP_SET_CONTAINS_BASE(x, ...) std::is_base_of<detail::basic_item<x>, __VA_ARGS__>::value
-#endif
-#define JLN_MP_SET_CONTAINS(x, ...) JLN_MP_SET_CONTAINS_BASE(x, detail::inherit<__VA_ARGS__>)
-  /// \endcond
-
-  /// \ingroup set
-
-  /// Checks if \c x is an element of the \set whose elements are \c xs.
-  /// \treturn \bool
-  /// \pre `emp::unique<xs...> == list<xs...>`
-  template<class x, class C = identity>
-  struct set_contains
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_SET_CONTAINS(x, xs...)>);
-  };
-
-  namespace emp
-  {
-    /// \c true if \c x is an element of the set \c Set, \c false otherwise.
-    template<class Set, class x>
-    inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<detail::inherit>, Set>::type
-    );
-
-    /// \c true if \c x is an element of all \set \c Sets, \c false otherwise.
-    template<class x, class... Sets>
-    constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
-    ) && ...);
-
-    /// \c true if \c x is an element of any \set \c Sets, \c false otherwise.
-    template<class x, class... Sets>
-    constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
-    ) || ...);
-
-    /// \c true if \c x is an element of none \set \c Sets, \c false otherwise.
-    template<class x, class... Sets>
-    constexpr bool set_none_contains_v = !set_any_contains_v<x, Sets...>;
-
-    /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
-    template<class Set, class x>
-    using set_contains = number<set_contains_v<Set, x>>;
-
-    /// \c true_ if \c x is an element of all \set \c Sets, \c false_ otherwise.
-    template<class x, class... Sets>
-    using set_all_contains = number<set_all_contains_v<x, Sets...>>;
-
-    /// \c true_ if \c x is an element of any \set \c Sets, \c false_ otherwise.
-    template<class x, class... Sets>
-    using set_any_contains = number<set_any_contains_v<x, Sets...>>;
-
-    /// \c true_ if \c x is an element of none \set \c Sets, \c false_ otherwise.
-    template<class x, class... Sets>
-    using set_none_contains = number<!set_any_contains_v<x, Sets...>>;
-  }
-
-  /// Checks if \c x is an element of all \set \c Sets.
-  /// \treturn \bool
-  /// \pre `emp::unique<Sets> && ...`
-  template<class x, class C = identity>
-  struct set_all_contains
-  {
-    template<class... Sets>
-    using f = JLN_MP_CALL_TRACE(C, number<emp::set_all_contains_v<x, Sets...>>);
-  };
-
-  /// Checks if \c x is an element of any \set \c Sets.
-  /// \treturn \bool
-  /// \pre `emp::unique<Sets> && ...`
-  template<class x, class C = identity>
-  struct set_any_contains
-  {
-    template<class... Sets>
-    using f = JLN_MP_CALL_TRACE(C, number<emp::set_any_contains_v<x, Sets...>>);
-  };
-
-  /// Checks if \c x is an element of none \set \c Sets.
-  /// \treturn \bool
-  /// \pre `emp::unique<Sets> && ...`
-  template<class x, class C = identity>
-  struct set_none_contains
-  {
-    template<class... Sets>
-    using f = JLN_MP_CALL_TRACE(C, number<!emp::set_any_contains_v<x, Sets...>>);
-  };
-}
-
-/// \cond
-namespace jln::mp
-{
-  template<class x>
-  struct set_contains<x, identity>
-  {
-    template<class... xs>
-    using f = number<JLN_MP_SET_CONTAINS(x, xs...)>;
-  };
-
-  template<class x>
-  struct set_all_contains<x, identity>
-  {
-    template<class... Sets>
-    using f = number<emp::set_all_contains_v<x, Sets...>>;
-  };
-
-  template<class x>
-  struct set_any_contains<x, identity>
-  {
-    template<class... Sets>
-    using f = number<emp::set_any_contains_v<x, Sets...>>;
-  };
-
-  template<class x>
-  struct set_none_contains<x, identity>
-  {
-    template<class... Sets>
-    using f = number<!emp::set_any_contains_v<x, Sets...>>;
-  };
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<bool>
-    struct set_push_back_select;
-
-    template<class Set, class x, class = number<0>>
-    struct set_push_back_impl;
-  }
-  /// \endcond
-
-  /// \ingroup set
-
-  /// Appends \c x to the end of the \set whose elements are \c xs if not already in \c xs.
-  /// \treturn \set
-  /// \pre `emp::unique<xs...> == list<xs...>`
-  /// \post \c emp::is_unique<result>
-  /// \see set_push_front, set_push_back_elements
-  template<class x, class C = listify>
-  struct set_push_back
-  {
-    template<class... xs>
-    using f = typename detail::set_push_back_select<JLN_MP_SET_CONTAINS(x, xs...)>
-      ::template f<JLN_MP_TRACE_F(C), x, xs...>;
-  };
-
-  namespace emp
-  {
-    template<class Set, class x>
-    using set_push_back = typename detail::set_push_back_impl<Set, x>::type;
-  }
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<>
-  struct set_push_back_select<false>
-  {
-    template<class C, class x, class... xs>
-    using f = typename C::template f<xs..., x>;
-  };
-
-  template<>
-  struct set_push_back_select<true>
-  {
-    template<class C, class, class... xs>
-    using f = typename C::template f<xs...>;
-  };
-
-  template<class L, class x, class>
-  struct set_push_back_impl
-  {
-    using type = L;
-  };
-
-  template<class... xs, class x>
-  struct set_push_back_impl<list<xs...>, x, number<JLN_MP_SET_CONTAINS(x, xs...)>>
-  {
-    using type = list<xs..., x>;
-  };
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class Cmp, class C>
-    struct mk_unique;
-  }
-  /// \endcond
-
-  /// \ingroup algorithm
-
-  /// Returns a list with duplicate elements removed.
-  /// \treturn \set
-  template<class C = listify>
-  using unique = typename detail::mk_unique<lift<std::is_same>, C>::type;
-
-  /// Returns a list with duplicate elements removed.
-  /// Only the first element found is kept.
-  /// \treturn \sequence
-  template<class Cmp = lift<std::is_same>, class C = listify>
-  using unique_if = typename detail::mk_unique<Cmp, C>::type;
-
-  namespace emp
-  {
-    template<class L, class C = mp::listify>
-    using unique = unpack<L, unique<C>>;
-
-    template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
-    using unique_if = unpack<L, unique_if<Cmp, C>>;
-  }
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<class Cmp>
-  struct _set_cmp_push_back
-  {
-    template<class x, class... xs>
-    using f = typename conditional_c<
-      none_of<push_back<x, Cmp>>::template f<xs...>::value
-    >::template f<list<xs..., x>, list<xs...>>;
-  };
-
-  template<class Cmp, class C>
-  struct mk_unique
-  {
-    using type = push_front<list<>, fold<
-      unpack<_set_cmp_push_back<JLN_MP_TRACE_F(Cmp)>>,
-      optimize_useless_unpack_t<unpack<C>>
-    >>;
-  };
-
-  template<class C>
-  struct mk_unique<lift<std::is_same>, C>
-  {
-    using type = push_front<list<>, fold<
-      lift<emp::set_push_back>,
-      optimize_useless_unpack_t<unpack<C>>
-    >>;
-  };
-
-  template<class C>
-  struct mk_unique<lift_t<std::is_same>, C>
-  : mk_unique<lift<std::is_same>, C>
-  {};
-
-  template<class C>
-  struct mk_unique<same<>, C>
-  : mk_unique<lift<std::is_same>, C>
-  {};
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class S>
-    struct wrapper;
-  }
-  /// \endcond
-
-  /// \ingroup utility
-
-  namespace emp
-  {
-    /// converts a \typelist to a \c lift<S>
-    template<class L>
-    using wrapper = typename detail::wrapper<L>::type;
-
-    template<class L, class... xs>
-    using rewrap = typename wrapper<L>::template f<xs...>;
-  }
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class...> class S, class... xs>
-  struct wrapper<S<xs...>>
-  {
-    using type = lift<S>;
-  };
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<template<class...> class, class>
-    struct _flatten_once;
-
-    template<template<class...> class, class>
-    struct _flatten;
-  }
-  /// \endcond
-
-  /// \ingroup algorithm
-
-  /// Remove 1 dimension level from a sequence.
-  /// \semantics
-  ///   \code
-  ///   call<flatten_once<>, list<a, b>, c, list<list<d, e>, f>
-  ///   ==
-  ///   list<a, b, c, list<d, e>, f>
-  ///   \endcode
-  /// \treturn \sequence
-  /// \see flatten
-  template<class S = lift<list>, class C = listify>
-  struct flatten_once
-  {};
-
-  template<template<class...> class S, class C>
-  struct flatten_once<lift<S, identity>, C>
-  {
-    template<class... xs>
-    using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<JLN_MP_TRACE_F(C)::template f, typename detail::_flatten_once<S, xs>::type...>
-      ::type;
-  };
-
-  template<template<class...> class S, class C = listify>
-  using flatten_once_f = flatten_once<lift<S>, C>;
-
-  /// Recursive version of \c flatten_once.
-  ///   \code
-  ///   call<flatten<>, list<a, b>, c, list<list<d, e>, f>
-  ///   ==
-  ///   list<a, b, c, d, e, f>
-  ///   \endcode
-  /// \treturn \sequence
-  /// \see flatten_once
-  template<class S = lift<list>, class C = listify>
-  struct flatten
-  {};
-
-  template<template<class...> class S, class C>
-  struct flatten<lift<S, identity>, C>
-  {
-    template<class... xs>
-    using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<JLN_MP_TRACE_F(C)::template f, typename detail::_flatten<S, xs>::type...>
-      ::type;
-  };
-
-  template<template<class...> class S, class C = listify>
-  using flatten_f = flatten<lift<S>, C>;
-
-  namespace emp
-  {
-    template<class L, class S = wrapper<L>, class C = mp::listify>
-    using flatten_once = unpack<L, mp::flatten_once<S, C>>;
-
-    template<class L, class S = wrapper<L>, class C = mp::listify>
-    using flatten = unpack<L, mp::flatten<S, C>>;
-
-    template<class L, template<class...> class S, class C = mp::listify>
-    using flatten_once_f = unpack<L, mp::flatten_once_f<S, C>>;
-
-    template<class L, template<class...> class S, class C = mp::listify>
-    using flatten_f = unpack<L, mp::flatten_f<S, C>>;
-  }
-
-/// \cond
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
-  template<template<class...> class S, template<class...> class C>
-  struct flatten_once<lift<S, identity>, lift<C>>
-  {
-    template<class... xs>
-    using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<C, typename detail::_flatten_once<S, xs>::type...>
-      ::type;
-  };
-
-  template<template<class...> class S, template<class...> class C>
-  struct flatten<lift<S, identity>, lift<C>>
-  {
-    template<class... xs>
-    using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<C, typename detail::_flatten<S, xs>::type...>
-      ::type;
-  };
-#endif
-/// \endcond
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class...> class, class T>
-  struct _flatten_once
-  {
-    using type = list<T>;
-  };
-
-  template<template<class...> class S, class... xs>
-  struct _flatten_once<S, S<xs...>>
-  {
-    using type = list<xs...>;
-  };
-
-  template<template<class...> class, class T>
-  struct _flatten
-  {
-    using type = list<T>;
-  };
-
-  template<template<class...> class S, class... xs>
-  struct _flatten<S, S<xs...>>
-  : _join_select<sizeof...(xs)>
-    ::template f<list, typename _flatten<S, xs>::type...>
-  {};
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template <unsigned n>
-    struct rotate_impl;
-
-    constexpr unsigned rotate_size(int_ n, unsigned size);
-  }
-  /// \endcond
-
-  /// \ingroup algorithm
-
-  /// Rotates the elements of a \sequence around a pivot.
-  /// \tparam N  a negative value start to end of sequence. The final offset is a modulo of `sizeof...(xs)`.
-  /// \semantics
-  ///   Equivalent to
-  ///   \code
-  ///     len = sizeof...(xs)
-  ///     n = len ? (N < 0 ? len + N % len : N) % size : 0
-  ///
-  ///     C::f<...xs[n:], ...xs[:n]>
-  ///   \endcode
-  /// \treturn \sequence
-  template <int_ N, class C = listify>
-  struct rotate_c
-  {
-    template<class... xs>
-    using f = typename detail::rotate_impl<
-      detail::rotate_size(N, sizeof...(xs))
-    >
-    ::template f<
-      detail::rotate_size(N, sizeof...(xs)),
-      C, xs...
-    >;
-  };
-
-  template <class N, class C = listify>
-  using rotate = rotate_c<N::value, C>;
-
-  namespace emp
-  {
-    template <class L, class n, class C = mp::listify>
-    using rotate = unpack<L, mp::rotate<n, C>>;
-
-    template <class L, int_ n, class C = mp::listify>
-    using rotate_c = unpack<L, mp::rotate_c<n, C>>;
-  }
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  constexpr unsigned rotate_size(int_ n, unsigned size)
-  {
-    return size ? (n < 0 ? size + n % size : n) % size : 0;
-  }
-
-  template <unsigned n>
-  struct rotate_impl : rotate_impl<
-      n < 16 ? 8
-    : n < 64 ? 16
-    : n < 256 ? 64
-    : 256
-  >
-  {};
-
-#define JLN_MP_ROTATE_IMPL(n, mp_xs, mp_rxs, _)           \
-  template<>                                              \
-  struct rotate_impl<n>                                   \
-  {                                                       \
-    template<unsigned size, class C,                      \
-      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
-      class... xs>                                        \
-    using f = JLN_MP_CALL_TRACE(C,                        \
-      xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)); \
-  };
-
-  JLN_MP_GEN_XS_0_TO_8(JLN_MP_ROTATE_IMPL)
-
-#undef JLN_MP_ROTATE_IMPL
-
-#define JLN_MP_ROTATE_IMPL(n, mp_xs, mp_rxs, _)           \
-  template<>                                              \
-  struct rotate_impl<n>                                   \
-  {                                                       \
-    template<unsigned size, class C,                      \
-      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
-      class... xs>                                        \
-    using f = typename rotate_impl<size-n>                \
-      ::template f<size-n, C,                             \
-        xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL) \
-      >;                                                  \
-  };
-
-  JLN_MP_GEN_XS_8_16_64_256(JLN_MP_ROTATE_IMPL)
-
-#undef JLN_MP_ROTATE_IMPL
-} // namespace jln::mp
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class C, class... Fs>
-    struct _tee;
-  }
-  /// \endcond
-
-  /// \ingroup functional
-
-  /// Invokes multiple functions passing all parameters to each.
-  /// \treturn \value
-  /// \see each, partial
-#ifdef JLN_MP_DOXYGENATING
-  template<class... Fs, class C>
-  struct tee
-  {
-    template<class... xs>
-    using f = C::f<Fs::f<xs...>...>;
-  };
-#else
-  template<class... Fs>
-  struct tee
-  : detail::rotate_impl<sizeof...(Fs)-1>
-  ::template f<sizeof...(Fs)-1, lift<detail::_tee>, Fs...>
-  {};
-#endif
-
-  /// \cond
-  template<class F, class C>
-  struct tee<F, C>
-  {
-    template<class... xs>
-    using f = typename JLN_MP_TRACE_F(C)::template f<
-      JLN_MP_DCALL_TRACE_XS(xs, F, xs...)
-    >;
-  };
-
-  template<class F0, class F1, class C>
-  struct tee<F0, F1, C>
-  {
-    template<class... xs>
-    using f = typename JLN_MP_TRACE_F(C)::template f<
-      JLN_MP_DCALL_TRACE_XS(xs, F0, xs...),
-      JLN_MP_DCALL_TRACE_XS(xs, F1, xs...)
-    >;
-  };
-
-  template<class F0, class F1, class F2, class C>
-  struct tee<F0, F1, F2, C>
-  {
-    template<class... xs>
-    using f = typename JLN_MP_TRACE_F(C)::template f<
-      JLN_MP_DCALL_TRACE_XS(xs, F0, xs...),
-      JLN_MP_DCALL_TRACE_XS(xs, F1, xs...),
-      JLN_MP_DCALL_TRACE_XS(xs, F2, xs...)
-    >;
-  };
-  /// \endcond
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<class C, class... Fs>
-  struct _tee
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_DCALL_TRACE_XS(xs, Fs, xs...)...);
-  };
-
-  template<class C>
-  struct optimize_tee
-  {
-    using type = C;
-  };
-
-  template<class C>
-  struct optimize_tee<tee<C, identity>>
-    : optimize_tee<C>
-  {};
-
-  template<class C>
-  using optimize_tee_t = typename optimize_tee<C>::type;
-} // namespace jln::mp
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class F, class C>
-    struct not_fn_impl;
-  }
-  /// \endcond
-
-  /// \ingroup functional
-
-  /// Returns the negation of \c F.
-  /// \treturn \bool
-  template<class F, class C = identity>
-  using not_fn = typename detail::not_fn_impl<F, C>::type;
-
-  namespace emp
-  {
-    template<class F, class... xs>
-    using not_of = mp::number<!JLN_MP_DCALL_V_TRACE_XS(xs, F, xs...)::value>;
-
-    template<class L, class F, class C = mp::identity>
-    using not_fn = unpack<L, mp::not_fn<F, C>>;
-  }
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<class F>
-  struct to_not_fn;
-
-  template<class F>
-  using to_not_fn_t = typename to_not_fn<F>::type;
-
-  template<class Pred>
-  struct to_not_fn
-  {
-    using type = tee<Pred, not_<>>;
-  };
-
-  template<>
-  struct to_not_fn<not_<>>
-  {
-    using type = not_<not_<>>;
-  };
-
-  template<>
-  struct to_not_fn<not_<not_<>>>
-  {
-    using type = not_<>;
-  };
-
-  template<class C>
-  struct to_not_fn<not_<to_bool<C>>>
-  : to_not_fn<not_<C>>
-  {};
-
-  template<class C>
-  struct to_not_fn<not_<not_<not_<C>>>>
-  : to_not_fn<not_<C>>
-  {};
-
-  template<>
-  struct to_not_fn<identity>
-  {
-    using type = not_<>;
-  };
-
-  template<class PredNot>
-  struct optimise_not_not;
-
-  template<class PredNot>
-  struct optimise_not_not<not_<not_<PredNot>>>
-  {
-    using type = PredNot;
-  };
-
-  template<class PredNot>
-  struct optimise_not_not
-  {
-    using type = PredNot;
-  };
-
-  template<class C>
-  struct to_not_fn<to_bool<C>>
-  {
-    using type = to_bool<typename optimise_not_not<to_not_fn_t<C>>::type>;
-  };
-
-  template<class x, class C>
-  struct to_not_fn<is<x, C>>
-  {
-    using type = is<x, typename optimise_not_not<to_not_fn_t<C>>::type>;
-  };
-
-  template<class C>
-  struct to_not_fn<same<C>>
-  {
-    using type = same<typename optimise_not_not<to_not_fn_t<C>>::type>;
-  };
-
-  template<class PredNot>
-  struct to_not_fn_lift;
-
-  template<template<class...> class F, class C, class Not>
-  struct to_not_fn_lift<lift<F, tee<C, Not>>>
-  {
-    using type = tee<lift<F, C>, Not>;
-  };
-
-  template<class PredNot>
-  struct to_not_fn_lift
-  {
-    using type = PredNot;
-  };
-
-  template<template<class...> class F, class C>
-  struct to_not_fn<lift<F, C>>
-  : to_not_fn_lift<lift<F, to_not_fn_t<C>>>
-  {};
-
-  template<class x, class C>
-  struct to_not_fn<push_front<x, C>>
-  {
-    using type = push_front<x, to_not_fn_t<C>>;
-  };
-
-  template<class x, class C>
-  struct to_not_fn<push_back<x, C>>
-  {
-    using type = push_back<x, to_not_fn_t<C>>;
-  };
-
-  template<class Pred>
-  struct to_not_fn_tee;
-
-  template<class Pred>
-  struct to_not_fn_tee<tee<Pred, not_<>>>
-  {
-    using type = tee<Pred, not_<not_<>>>;
-  };
-
-  template<class Pred>
-  struct to_not_fn_tee
-  : to_not_fn<Pred>
-  {};
-
-  template<class Pred>
-  struct to_not_fn<tee<Pred, not_<>>>
-  : to_not_fn_tee<to_not_fn_t<Pred>>
-  {};
-
-  template<class PredNot>
-  struct to_not_fn_tee2;
-
-  template<class PredNot>
-  struct to_not_fn_tee2<tee<PredNot, not_<>>>
-  : to_not_fn<PredNot>
-  {};
-
-  template<class PredNot>
-  struct to_not_fn_tee2<tee<PredNot, not_<not_<>>>>
-  : to_not_fn<PredNot>
-  {};
-
-  template<class PredNot>
-  struct to_not_fn_tee2
-  {
-    using type = PredNot;
-  };
-
-  template<class Pred, class C>
-  struct to_not_fn<tee<Pred, C>>
-  : to_not_fn_tee2<tee<Pred, to_not_fn_t<C>>>
-  {};
-
-  template<class F, class C>
-  struct not_fn_impl
-  : to_not_fn<tee<F, C>>
-  {};
-
-  template<class F>
-  struct not_fn_impl<F, identity>
-  : to_not_fn<F>
-  {};
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class Pred>
-    struct mk_wrap_in_list_if;
-
-    template<class Pred>
-    struct mk_wrap_in_list_if_not;
-  }
-  /// \endcond
-
-  /// \ingroup list
-
-  /// Returns a \list with the first element if the predicate is checked, otherwise returns a empty list.
-  /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
-  /// \treturn \list
-  template<class Pred>
-  using wrap_in_list_if = typename detail::mk_wrap_in_list_if_not<
-    detail::to_not_fn_t<Pred>
-  >::type;
-
-  /// Returns a \list with the first element if the predicate is not checked, otherwise returns a empty list.
-  /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
-  /// \treturn \list
-  template<class Pred>
-  using wrap_in_list_if_not = typename detail::mk_wrap_in_list_if<
-    detail::to_not_fn_t<Pred>
-  >::type;
-
-  template<bool b>
-  struct wrap_in_list_c;
-
-  template<>
-  struct wrap_in_list_c<true>
-  : listify
-  {
-#ifdef JLN_MP_DOXYGENATING
-    template<class... xs>
-    using f = list<xs...>;
-#endif
-  };
-
-  template<>
-  struct wrap_in_list_c<false>
-  : always<list<>>
-  {
-#ifdef JLN_MP_DOXYGENATING
-    template<class... xs>
-    using f = list<>;
-#endif
-  };
-
-  template<class b>
-  using wrap_in_list = wrap_in_list_c<b::value>;
-
-  namespace emp
-  {
-    template<class Pred, class... xs>
-    using wrap_in_list_if = typename mp::wrap_in_list_if<Pred>::template f<xs...>;
-
-    template<class Pred, class... xs>
-    using wrap_in_list_if_not = typename mp::wrap_in_list_if_not<Pred>::template f<xs...>;
-
-    template<class b, class... xs>
-    using wrap_in_list = typename mp::wrap_in_list_c<b::value>::template f<xs...>;
-
-    template<bool b, class... xs>
-    using wrap_in_list_c = typename mp::wrap_in_list_c<b>::template f<xs...>;
-  }
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<class Pred>
-  struct _wrap_in_list_if
-  {
-    template<class x, class... xs>
-    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      bool(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)::value)
-    >, x);
-  };
-
-  template<class Pred>
-  struct _wrap_in_list_if_not
-  {
-    template<class x, class... xs>
-    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      !bool(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)::value)
-    >, x);
-  };
-
-#if ! JLN_MP_ENABLE_DEBUG
-  template<template<class...> class Pred>
-  struct _wrap_in_list_if<lift<Pred>>
-  {
-    template<class x, class... xs>
-    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      bool(JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::value)
-    >, x);
-  };
-
-  template<template<class...> class Pred>
-  struct _wrap_in_list_if_not<lift<Pred>>
-  {
-    template<class x, class... xs>
-    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      !bool(JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::value)
-    >, x);
-  };
-
-  template<template<class...> class Pred>
-  struct _wrap_in_list_if<lift_t<Pred>>
-  {
-    template<class x, class... xs>
-    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      bool(JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::type::value)
-    >, x);
-  };
-
-  template<template<class...> class Pred>
-  struct _wrap_in_list_if_not<lift_t<Pred>>
-  {
-    template<class x, class... xs>
-    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
-      !bool(JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::type::value)
-    >, x);
-  };
-#endif
-
-  template<class Pred>
-  struct mk_wrap_in_list_if
-  {
-    using type = _wrap_in_list_if<Pred>;
-  };
-
-  template<class Pred>
-  struct mk_wrap_in_list_if_not
-  {
-    using type = _wrap_in_list_if_not<Pred>;
-  };
-
-
-  template<class x>
-  struct mk_wrap_in_list_if<is<x, not_<>>>
-  {
-    using type = _wrap_in_list_if_not<is<x>>;
-  };
-
-  template<>
-  struct mk_wrap_in_list_if<same<not_<>>>
-  {
-    using type = _wrap_in_list_if_not<same<>>;
-  };
-
-  template<template<class...> class F>
-  struct mk_wrap_in_list_if<lift<F, not_<>>>
-  {
-    using type = _wrap_in_list_if_not<lift<F>>;
-  };
-
-  template<class Pred>
-  struct mk_wrap_in_list_if<tee<Pred, not_<>>>
-  {
-    using type = _wrap_in_list_if_not<Pred>;
-  };
-
-
-  template<class x>
-  struct mk_wrap_in_list_if_not<is<x, not_<>>>
-  {
-    using type = _wrap_in_list_if<is<x>>;
-  };
-
-  template<>
-  struct mk_wrap_in_list_if_not<same<not_<>>>
-  {
-    using type = _wrap_in_list_if<same<>>;
-  };
-
-  template<template<class...> class F>
-  struct mk_wrap_in_list_if_not<lift<F, not_<>>>
-  {
-    using type = _wrap_in_list_if<lift<F>>;
-  };
-
-  template<class Pred>
-  struct mk_wrap_in_list_if_not<tee<Pred, not_<>>>
-  {
-    using type = _wrap_in_list_if<Pred>;
-  };
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \ingroup filter
-
-  /// Removes all elements that satisfy a predicate.
-  /// \treturn \sequence
-  template<class Pred, class C = listify>
-  using remove_if = transform<wrap_in_list_if_not<Pred>, join<C>>;
-
-  /// Removes all occurence of a \value.
-  /// \treturn \sequence
-  template<class T, class C = listify>
-  using remove = remove_if<is<T>, C>;
-
-  namespace emp
-  {
-    template<class L, class Pred, class C = mp::listify>
-    using remove_if = unpack<L, mp::remove_if<Pred, C>>;
-
-    template<class L, class T, class C = mp::listify>
-    using remove = unpack<L, mp::remove<T, C>>;
-  }
-}
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class x>
-    struct _is_number;
-  }
-  /// \endcond
-
-  /// \ingroup number
-
-  /// Checks whether a \value is a \number.
-  /// \treturn \bool
-  template<class C = identity>
-  struct is_number
-  {
-    template<class x>
-    using f = JLN_MP_CALL_TRACE(C, typename detail::_is_number<x>::type);
-  };
-
-  namespace emp
-  {
-    template<class x>
-    using is_number = typename detail::_is_number<x>::type;
-  }
-
-  /// \cond
-  template<>
-  struct is_number<identity>
-  {
-    template<class x>
-    using f = typename detail::_is_number<x>::type;
-  };
-  /// \endcond
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<class x>
-  struct _is_number
-  {
-    using type = false_;
-  };
-
-  template<int_ x>
-  struct _is_number<number<x>>
-  {
-    using type = true_;
-  };
-}
-/// \endcond
-// uncallable_function
-// na
-
-namespace jln::mp::optimizer
-{
-  using mp::detail::uncallable_function;
-
-  template<class R, class F>
-  struct optimized_result_t
-  {
-    using output_result = R;
-    using function = F;
-  };
-
-  namespace types
-  {
-    struct uncallable
-    {
-      template<class...>
-      using f = optimized_result_t<uncallable, uncallable_function>;
-    };
-
-    using mp::na;
-    class any {};
-    class number {};
-    class boolean {};
-    // fized len pack
-    template<class...> class basic_seq {};
-    // mp::list of
-    template<class...> class basic_list {};
-    // pack with 0 or more element
-    template<class>    class basic_pack {};
-    template<class...> class basic_union {};
-
-    using unknown = basic_union<uncallable, basic_pack<any>>;
-    using any_list = basic_list<basic_pack<any>>;
-
-    // uncallable always single or first parameter of basic_union
-
-    // union_<x> -> x
-    // union_<x, x, y> -> basic_union<x, y>
-    // union_<x, union_<y>> -> basic_union<x, y>
-    // union_<x, y, uncallable, z> -> basic_union<uncallable, x, y, z>
-    // union_<pack<x>, x> -> basic_pack<x>
-    // union_<pack<union_<x, y>>, y> -> basic_union<pack<x>, pack<y>>
-    // union_<x, any, seq<...>> -> basic_union<any, seq<...>>
-    // union_<x, pack<any>, seq<...>> -> basic_pack<any>
-    // union_<x, any, pack<any>, z> -> basic_pack<any>
-    // union_<boolean, number> -> number
-    // union_<true_, boolean> -> boolean
-    // union_<true_, false_> -> boolean
-    // union_<true_, mp::number<2>> -> basic_union<true_, number<2>>
-    // union_<true_, mp::number<2>, number> -> basic_union<true_, number>
-
-    // pack<uncallable> -> uncallable
-    // pack<seq<>> -> basic_seq<>
-    // pack<pack<x>> -> basic_pack<x>
-    // pack<union_<uncallable, x>> -> basic_union<uncallable, basic_pack<x>>
-    // pack<union_<pack<x>, pack<y>, z>> -> basic_union<basic_pack<x>, basic_pack<y>, basic_pack<z>>
-
-    // seq<x> -> x
-    // seq<x, uncallable, x> -> uncallable
-    // seq<x, x, seq<y, y>, x, x> -> basic_seq<x, x, y, y, x, x>
-    // seq<pack<x>, pack<x>, x, pack<x>> -> basic_seq<pack<x>, x, pack<x>>
-    // seq<x, x, uncallable, x, x> -> basic_union<uncallable, basic_seq<x, x, x, x>>
-    // seq<x, union_<uncallable, x, y>, z>
-    //  -> basic_union<uncallable, basic_seq<x, basic_union<x, y>, z>>
-    // seq<x, union_<uncallable, x>, union_<uncallable, y, z>>
-    //  -> basic_union<uncallable, basic_seq<x, basic_union<y, z>>
-
-    // basic_list<types::...> -> basic_list<types::...>
-    // basic_list<not types::...> -> list<...>
-  }
-
-  namespace opti_detail
-  {
-    template<class x> struct pack_impl;
-    template<class seq> struct post_normalize_seq;
-    template<class seq> struct post_normalize_list;
-    template<class... xs> struct union_impl;
-    template<class... xs> struct pre_seq_impl;
-
-    template<class x> struct is_real_type_impl;
-
-    template<class R>
-    struct optimized_result_impl;
-  }
-
-  template<class R, class F>
-  using optimized_result = typename opti_detail::optimized_result_impl<R>
-    ::template f<F>;
-
-  template<class... xs>
-  using pack = typename opti_detail::pack_impl<xs...>::type;
-
-  template<class... xs>
-  using union_ = typename opti_detail::union_impl<xs...>::type;
-
-  template<class... xs>
-  using seq = typename opti_detail::post_normalize_seq<
-    typename opti_detail::pre_seq_impl<xs...>::type
-  >::type;
-
-  template<class... xs>
-  using list_t = typename opti_detail::post_normalize_list<
-    typename opti_detail::pre_seq_impl<xs...>::type
-  >::type;
-
-  template<class x>
-  inline constexpr bool is_real_type_v = opti_detail::is_real_type_impl<x>::value;
-
-  template<class OptimizerResult>
-  using add_uncallable_output_t = optimized_result_t<
-    union_<types::uncallable, typename OptimizerResult::output_result>,
-    typename OptimizerResult::function
-  >;
-}
-
-
-namespace jln::mp::optimizer::opti_detail
-{
-  template<class> struct is_real_type_impl : true_ {};
-  template<> struct is_real_type_impl<types::uncallable> : false_ {};
-  template<> struct is_real_type_impl<types::any> : false_ {};
-  template<> struct is_real_type_impl<types::number> : false_ {};
-  template<> struct is_real_type_impl<types::boolean> : false_ {};
-  template<class... xs> struct is_real_type_impl<types::basic_seq<xs...>> : false_ {};
-  template<class... xs> struct is_real_type_impl<types::basic_list<xs...>> : false_ {};
-  template<class... xs> struct is_real_type_impl<types::basic_pack<xs...>> : false_ {};
-  template<class... xs> struct is_real_type_impl<types::basic_union<xs...>> : false_ {};
-
-
-  template<class R>
-  struct optimized_result_impl
-  {
-    template<class F>
-    using f = optimized_result_t<R, always<R>>;
-  };
-
-  template<>
-  struct optimized_result_impl<types::uncallable>
-  : types::uncallable
-  {};
-
-#define JLN_MP_OPTIMIZER_TYPE_IMPL(t_param, tpl_param) \
-  template<tpl_param>                                  \
-  struct optimized_result_impl<t_param>                \
-  {                                                    \
-    template<class F>                                  \
-    using f = optimized_result_t<t_param, F>;          \
-  }
-
-  JLN_MP_OPTIMIZER_TYPE_IMPL(types::any, JLN_MP_NIL);
-  JLN_MP_OPTIMIZER_TYPE_IMPL(types::number, JLN_MP_NIL);
-  JLN_MP_OPTIMIZER_TYPE_IMPL(types::boolean, JLN_MP_NIL);
-  JLN_MP_OPTIMIZER_TYPE_IMPL(types::basic_seq<xs...>, class... xs);
-  JLN_MP_OPTIMIZER_TYPE_IMPL(types::basic_list<xs...>, class... xs);
-  JLN_MP_OPTIMIZER_TYPE_IMPL(types::basic_pack<x>, class x);
-  JLN_MP_OPTIMIZER_TYPE_IMPL(types::basic_union<xs...>, class... xs);
-
-#undef JLN_MP_OPTIMIZER_TYPE_IMPL
-
-  // basic_pack
-
-  template<class x>
-  struct pack_impl
-  {
-    using type = types::basic_pack<x>;
-  };
-
-  template<class x>
-  struct pack_impl<types::basic_pack<x>>
-  {
-    using type = types::basic_pack<x>;
-  };
-
-  template<>
-  struct pack_impl<types::basic_seq<>>
-  {
-    using type = types::basic_seq<>;
-  };
-
-  template<>
-  struct pack_impl<types::uncallable>
-  {
-    using type = types::uncallable;
-  };
-
-  template<>
-  struct pack_impl<types::basic_union<types::uncallable, types::basic_seq<>>>
-  {
-    using type = types::basic_union<types::uncallable, types::basic_seq<>>;
-  };
-
-  template<class x>
-  struct pack_impl<types::basic_union<types::uncallable, x>>
-  {
-    using type = types::basic_union<types::uncallable, types::basic_pack<x>>;
-  };
-
-  using pack_from_union = remove<types::basic_seq<>, lift<union_impl>>;
-
-  template<class... xs>
-  struct pack_impl<types::basic_union<xs...>>
-  {
-    using type = typename pack_from_union::f<typename pack_impl<xs>::type...>::type;
-  };
-
-  template<class... xs>
-  struct pack_impl<types::basic_union<types::uncallable, xs...>>
-  {
-    using type = typename pack_from_union::f<
-      types::uncallable, typename pack_impl<xs>::type...
-    >::type;
-  };
-
-  // misc
-
-  template<bool>
-  struct tpl_or_identity_impl;
-
-  template<>
-  struct tpl_or_identity_impl<false>
-  {
-    template<template<class...> class Tpl, class... xs>
-    using f = Tpl<xs...>;
-  };
-
-  template<>
-  struct tpl_or_identity_impl<true>
-  {
-    template<template<class...> class Tpl, class x>
-    using f = x;
-  };
-
-  template<template<class...> class Tpl>
-  struct tpl_or_identity
-  {
-    template<class... xs>
-    using f = typename tpl_or_identity_impl<sizeof...(xs) == 1>
-      ::template f<Tpl, xs...>;
-  };
-
-  // basic_union
-
-  class true_and_false;
-
-  template<class> // any
-  inline constexpr int union_num_level = 0;
-
-  template<>
-  inline constexpr int union_num_level<true_> = 1;
-
-  template<>
-  inline constexpr int union_num_level<false_> = 2;
-
-  template<>
-  inline constexpr int union_num_level<true_and_false> = 3;
-
-  template<>
-  inline constexpr int union_num_level<types::boolean> = 4;
-
-  template<>
-  inline constexpr int union_num_level<types::number> = 5;
-
-  template<int>
-  struct union_num_impl;
-
-  template<> struct union_num_impl<1> { using type = true_; };
-  template<> struct union_num_impl<2> { using type = false_; };
-  template<> struct union_num_impl<3> { using type = true_and_false; };
-  template<> struct union_num_impl<4> { using type = types::boolean; };
-  template<> struct union_num_impl<5> { using type = types::number; };
-
-  template<class state, int lvl>
-  using union_num_t = typename union_num_impl<
-    union_num_level<state> < lvl ? lvl : union_num_level<state>
-  >::type;
-
-
-  template<class seq, class item>
-  struct pre_normalize_union_impl;
-
-  template<class seq, class item>
-  using pre_normalize_union = typename pre_normalize_union_impl<seq, item>::type;
-
-  using union_state = types::basic_seq<
-    types::any /* or uncallable */,
-    types::any /* or true_ | false_ | true_and_false | boolean | number */
-  >;
-
-  template<class u, class n, class... xs, class item>
-  struct pre_normalize_union_impl<types::basic_seq<u, n, xs...>, item>
-  {
-    using type = types::basic_seq<u, n, xs..., item>;
-  };
-
-  template<class u, class n, class... xs>
-  struct pre_normalize_union_impl<types::basic_seq<u, n, xs...>, types::uncallable>
-  {
-    using type = types::basic_seq<types::uncallable, n, xs...>;
-  };
-
-  template<class u, class n, class... xs>
-  struct pre_normalize_union_impl<types::basic_seq<u, n, xs...>, true_>
-  {
-    using type = types::basic_seq<u, union_num_t<n, 1>, xs...>;
-  };
-
-  template<class u, class n, class... xs>
-  struct pre_normalize_union_impl<types::basic_seq<u, n, xs...>, false_>
-  {
-    using type = types::basic_seq<u, union_num_t<n, 2>, xs...>;
-  };
-
-  template<class u, class... xs>
-  struct pre_normalize_union_impl<types::basic_seq<u, false_, xs...>, true_>
-  {
-    using type = types::basic_seq<u, true_and_false, xs...>;
-  };
-
-  template<class u, class... xs>
-  struct pre_normalize_union_impl<types::basic_seq<u, true_, xs...>, false_>
-  {
-    using type = types::basic_seq<u, true_and_false, xs...>;
-  };
-
-  template<class u, class n, class... xs>
-  struct pre_normalize_union_impl<types::basic_seq<u, n, xs...>, types::boolean>
-  {
-    using type = types::basic_seq<u, union_num_t<n, 4>, xs...>;
-  };
-
-  template<class u, class n, class... xs>
-  struct pre_normalize_union_impl<types::basic_seq<u, n, xs...>, types::number>
-  {
-    using type = types::basic_seq<u, types::number, xs...>;
-  };
-
-  template<class u, int_ n, class... xs>
-  struct pre_normalize_union_impl<types::basic_seq<u, types::number, xs...>, number<n>>
-  {
-    using type = types::basic_seq<u, types::number, xs...>;
-  };
-
-
-  template<class>
-  struct wrap_seq_or_empty_list
-  {
-    using type = list<>;
-  };
-
-  template<class... xs>
-  struct wrap_seq_or_empty_list<types::basic_seq<xs...>>
-  {
-    using type = list<types::basic_seq<xs...>>;
-  };
-
-
-  template<class x>
-  struct wrap_non_pack_or_empty_list
-  {
-    using type = list<x>;
-  };
-
-  template<class x>
-  struct wrap_non_pack_or_empty_list<types::basic_pack<x>>
-  {
-    using type = list<>;
-  };
-
-
-  using unpack_for_pre_normalize_union = unpack<fold<lift<pre_normalize_union>>>;
-
-
-  template<bool>
-  struct normalize_union_has_any;
-
-  template<>
-  struct normalize_union_has_any<true>
-  {
-    template<class... xs>
-    using f = typename detail::_join_select<sizeof...(xs) + 1>
-      ::template f<
-        list,
-        typename conditional_c<(false || ... || std::is_same<types::uncallable, xs>::value)>
-        ::template f<
-          list<types::uncallable, types::any>,
-          list<types::any>
-        >,
-        typename wrap_seq_or_empty_list<xs>::type...
-      >::type;
-  };
-
-  template<>
-  struct normalize_union_has_any<false>
-  {
-    template<class... xs>
-    using f = unpack_for_pre_normalize_union::f<
-      typename detail::_join_select<sizeof...(xs)>
-      ::template f<
-        list,
-        typename wrap_non_pack_or_empty_list<xs>::type...
-      >::type,
-      union_state
-    >;
-  };
-
-
-  template<class x>
-  struct pack_as_list_or_empty_list
-  {
-    using type = list<>;
-  };
-
-  template<class x>
-  struct pack_as_list_or_empty_list<types::basic_pack<x>>
-  {
-    using type = list<x>;
-  };
-
-  template<bool>
-  struct normalize_union_has_pack_any;
-
-  template<class, class>
-  struct normalize_union_merge;
-
-  template<>
-  struct normalize_union_has_pack_any<true>
-  {
-    template<class... xs>
-    using f = typename conditional_c<(false || ... || std::is_same<types::uncallable, xs>::value)>
-      ::template f<
-        types::basic_union<types::uncallable, types::basic_pack<types::any>>,
-        types::basic_pack<types::any>
-      >;
-  };
-
-  struct normalize_union_has_pack_any_impl
-  {
-    template<class... xs>
-    using f = typename normalize_union_merge<
-      unpack_for_pre_normalize_union::f<
-        typename detail::_join_select<sizeof...(xs)>
-        ::template f<
-          list,
-          typename pack_as_list_or_empty_list<xs>::type...
-        >::type,
-        union_state
-      >,
-      typename normalize_union_has_any<(false || ... || std::is_same<types::any, xs>::value)>
-      ::template f<xs...>
-    >::type;
-  };
-
-  using unique_union_impl = fold<lift<emp::set_push_back>>;
-
-  template<>
-  struct normalize_union_has_pack_any<false>
-  {
-    template<class... xs>
-    using f = typename detail::_unpack<
-      normalize_union_has_pack_any_impl,
-      unique_union_impl::f<list<>, xs...>
-    >::type;
-  };
-
-
-  template<class>
-  struct wrap_num_state_in_pack_in_list
-  {
-    using type = mp::list<>;
-  };
-
-  template<>
-  struct wrap_num_state_in_pack_in_list<true_>
-  {
-    using type = mp::list<types::basic_pack<true_>>;
-  };
-
-  template<>
-  struct wrap_num_state_in_pack_in_list<false_>
-  {
-    using type = mp::list<types::basic_pack<false_>>;
-  };
-
-  template<>
-  struct wrap_num_state_in_pack_in_list<true_and_false>
-  {
-    using type = mp::list<types::basic_pack<false_>, types::basic_pack<true_>>;
-  };
-
-  template<>
-  struct wrap_num_state_in_pack_in_list<types::boolean>
-  {
-    using type = mp::list<types::basic_pack<types::boolean>>;
-  };
-
-  template<>
-  struct wrap_num_state_in_pack_in_list<types::number>
-  {
-    using type = mp::list<types::basic_pack<types::number>>;
-  };
-
-
-  template<class, bool, bool>
-  struct wrap_num_state_in_list
-  {
-    using type = mp::list<>;
-  };
-
-  template<>
-  struct wrap_num_state_in_list<true_, true, false>
-  {
-    using type = mp::list<true_>;
-  };
-
-  template<>
-  struct wrap_num_state_in_list<true_, false, true>
-  {
-    using type = mp::list<true_>;
-  };
-
-  template<>
-  struct wrap_num_state_in_list<false_, true, false>
-  {
-    using type = mp::list<false_>;
-  };
-
-  template<bool b>
-  struct wrap_num_state_in_list<true_and_false, true, b>
-  {
-    using type = mp::list<types::boolean>;
-  };
-
-  template<bool b>
-  struct wrap_num_state_in_list<types::boolean, true, b>
-  {
-    using type = mp::list<types::boolean>;
-  };
-
-  template<bool b>
-  struct wrap_num_state_in_list<types::number, true, b>
-  {
-    using type = mp::list<types::number>;
-  };
-
-
-  template<bool>
-  struct union_merge_pack_maybe_remove_number;
-
-  template<>
-  struct union_merge_pack_maybe_remove_number<false>
-  {
-    template<class... xs>
-    using f = list<types::basic_pack<xs>...>;
-  };
-
-  template<class>
-  struct wrap_in_pack_in_list;
-
-  template<>
-  struct wrap_in_pack_in_list<true_>
-  {
-    template<class x>
-    using f = list<>;
-  };
-
-  template<>
-  struct wrap_in_pack_in_list<false_>
-  {
-    template<class x>
-    using f = list<types::basic_pack<x>>;
-  };
-
-  template<>
-  struct union_merge_pack_maybe_remove_number<true>
-  {
-    template<class... xs>
-    using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<
-        list,
-        typename wrap_in_pack_in_list<typename detail::_is_number<xs>::type>
-        ::template f<xs>...
-      >::type;
-  };
-
-
-  template<bool>
-  struct union_merge_maybe_remove_number;
-
-  template<>
-  struct union_merge_maybe_remove_number<false>
-  {
-    template<class y, class... xs>
-    using f = typename wrap_in_list_c<none_of<is<y>>::template f<xs...>::value>::template f<y>;
-  };
-
-  template<>
-  struct union_merge_maybe_remove_number<true>
-  {
-    template<class y, class... xs>
-    using f = typename wrap_in_list_c<conditional_c<detail::_is_number<y>::type::value>
-      ::template f<always<false_>, none_of<is<y>>>
-      ::template f<xs...>
-      ::value
-    >::template f<y>;
-  };
-
-
-  template<class... xs>
-  using union_or_identity_t = typename tpl_or_identity_impl<sizeof...(xs) == 1>
-    ::template f<types::basic_union, xs...>;
-
-
-  template<class... xs>
-  using seq_or_identity_t = typename tpl_or_identity_impl<sizeof...(xs) == 1>
-    ::template f<types::basic_seq, xs...>;
-
-
-  template<class u1, class n1, class... xs, class u2, class n2, class... ys>
-  struct normalize_union_merge<types::basic_seq<u1, n1, xs...>, types::basic_seq<u2, n2, ys...>>
-  {
-    using maybe_remove_number = union_merge_maybe_remove_number<
-      union_num_level<n1> == 5 || union_num_level<n2> == 5
-    >;
-
-    using type = typename detail::_join_select<sizeof...(ys) + 4>
-      ::template f<
-        union_or_identity_t,
-        typename conditional_c<std::is_same<types::uncallable, u1>::value
-                            || std::is_same<types::uncallable, u2>::value>
-          ::template f<list<types::uncallable>, list<>>,
-        typename union_merge_pack_maybe_remove_number<union_num_level<n1> == 5>::template f<xs...>,
-        typename wrap_num_state_in_pack_in_list<n1>::type,
-        typename wrap_num_state_in_list<
-          n2, union_num_level<n1> < union_num_level<n2>, union_num_level<n1> == 2>::type,
-        typename maybe_remove_number::template f<ys, xs...>...
-      >::type;
-  };
-
-  template<class u1, class n1, class... xs, class y, class... ys>
-  struct normalize_union_merge<types::basic_seq<u1, n1, xs...>, list<y, ys...>>
-  {
-    using type = typename detail::_join_select<5>
-      ::template f<
-        union_or_identity_t,
-        typename conditional_c<std::is_same<types::uncallable, u1>::value
-                            || std::is_same<types::uncallable, y>::value>
-          ::template f<list<types::uncallable>, list<>>,
-        typename union_merge_pack_maybe_remove_number<union_num_level<n1> == 5>::template f<xs...>,
-        typename wrap_num_state_in_pack_in_list<n1>::type,
-        typename conditional_c<std::is_same<types::uncallable, y>::value>
-          ::template f<list<>, list<y>>,
-        list<ys...>
-      >::type;
-  };
-
-  template<class... xs>
-  using normalize_union_impl = typename normalize_union_has_pack_any<
-    (false || ... || std::is_same<types::basic_pack<types::any>, xs>::value)
-  >::template f<xs...>;
-
-  using union_impl_f = flatten_once<lift<types::basic_union>, lift<normalize_union_impl>>;
-
-  template<class... xs>
-  struct union_impl
-  {
-    using type = typename union_impl_f::template f<xs...>;
-  };
-
-  // common case
-  template<class... xs>
-  struct union_impl<types::uncallable, types::basic_union<types::uncallable, xs...>>
-  {
-    using type = types::basic_union<types::uncallable, xs...>;
-  };
-
-  // common case
-  template<class... xs>
-  struct union_impl<types::uncallable, types::basic_union<xs...>>
-  {
-    using type = types::basic_union<types::uncallable, xs...>;
-  };
-
-  template<class x>
-  struct union_impl<x>
-  {
-    using type = x;
-  };
-
-  template<>
-  struct union_impl<>
-  {
-    using type = types::basic_seq<>;
-  };
-
-  // basic_seq
-
-  template<class l, class item>
-  struct pre_normalize_seq_impl
-  {
-    using type = types::uncallable;
-  };
-
-  using seq_state = types::basic_seq<
-    types::number /* or uncallable */,
-    types::number /* previous pack */
-  >;
-
-  template<class u, class p, class... xs, class item>
-  struct pre_normalize_seq_impl<types::basic_seq<u, p, xs...>, item>
-  {
-    using type = types::basic_seq<u, types::number, xs..., item>;
-  };
-
-  template<class u, class p, class... xs, class... ys>
-  struct pre_normalize_seq_impl<types::basic_seq<u, p, xs...>, types::basic_seq<ys...>>
-  {
-    using type = types::basic_seq<u, types::number, xs..., ys...>;
-  };
-
-  template<class u, class p, class... xs, class y>
-  struct pre_normalize_seq_impl<types::basic_seq<u, p, xs...>, types::basic_pack<y>>
-  {
-    using type = types::basic_seq<u, types::basic_pack<y>, xs..., types::basic_pack<y>>;
-  };
-
-  template<class u, class... xs, class y>
-  struct pre_normalize_seq_impl<types::basic_seq<u, types::basic_pack<y>, xs...>, types::basic_pack<y>>
-  {
-    using type = types::basic_seq<u, types::basic_pack<y>, xs...>;
-  };
-
-  // seq<..., pack<y>> + y -> seq<..., y, pack<y>>
-  template<class u, class... xs, class y>
-  struct pre_normalize_seq_impl<types::basic_seq<u, types::basic_pack<y>, xs...>, y>
-  {
-    using type = typename detail::_join_select<3>::template f<
-      types::basic_seq,
-      list<u, types::basic_pack<y>>,
-      typename detail::rotate_impl<sizeof...(xs)-1>
-        ::template f<sizeof...(xs)-1, drop_front_c<1>, xs...>,
-      list<y, types::basic_pack<y>>
-    >::type;
-  };
-
-  template<class u, class p, class... xs>
-  struct pre_normalize_seq_impl<types::basic_seq<u, p, xs...>, types::uncallable>
-  {
-    using type = types::uncallable;
-  };
-
-  template<class u, class p, class... xs, class y>
-  struct pre_normalize_seq_impl<
-    types::basic_seq<u, p, xs...>, types::basic_union<types::uncallable, y>>
-  {
-    using type = types::basic_seq<types::uncallable, types::number, xs..., y>;
-  };
-
-  template<class u, class p, class... xs, class... ys>
-  struct pre_normalize_seq_impl<
-    types::basic_seq<u, p, xs...>, types::basic_union<types::uncallable, types::basic_seq<ys...>>>
-  {
-    using type = types::basic_seq<types::uncallable, types::number, xs..., ys...>;
-  };
-
-  template<class u, class p, class... xs, class... ys>
-  struct pre_normalize_seq_impl<
-    types::basic_seq<u, p, xs...>, types::basic_union<types::uncallable, ys...>>
-  {
-    using type = types::basic_seq<types::uncallable, types::number, xs..., types::basic_union<ys...>>;
-  };
-
-  template<class seq, class item>
-  using pre_normalize_seq = typename pre_normalize_seq_impl<seq, item>::type;
-
-  template<class seq>
-  struct post_normalize_seq
-  {
-    using type = types::uncallable;
-  };
-
-  template<class p, class x>
-  struct post_normalize_seq<types::basic_seq<types::number, p, x>>
-  {
-    using type = x;
-  };
-
-  template<class p, class... xs>
-  struct post_normalize_seq<types::basic_seq<types::number, p, xs...>>
-  {
-    using type = types::basic_seq<xs...>;
-  };
-
-  template<class p, class x>
-  struct post_normalize_seq<types::basic_seq<types::uncallable, p, x>>
-  {
-    using type = types::basic_union<types::uncallable, x>;
-  };
-
-  template<class p, class... xs>
-  struct post_normalize_seq<types::basic_seq<types::uncallable, p, xs...>>
-  {
-    using type = types::basic_union<types::uncallable, types::basic_seq<xs...>>;
-  };
-
-  template<class... xs>
-  struct pre_seq_impl
-  {
-    using type = typename detail::fold_impl<sizeof...(xs)>
-      ::template f<pre_normalize_seq, seq_state, xs...>;
-  };
-
-  // basic_list
-
-  template<class seq>
-  struct post_normalize_list
-  {
-    using type = types::uncallable;
-  };
-
-  template<bool>
-  struct post_normalize_list_or_strong_list;
-
-  template<>
-  struct post_normalize_list_or_strong_list<true>
-  {
-    template<class... xs>
-    using f = list<xs...>;
-  };
-
-  template<>
-  struct post_normalize_list_or_strong_list<false>
-  {
-    template<class... xs>
-    using f = types::basic_list<xs...>;
-  };
-
-  template<class p, class... xs>
-  struct post_normalize_list<types::basic_seq<types::number, p, xs...>>
-  {
-    using type = typename post_normalize_list_or_strong_list<
-      (true && ... && is_real_type_impl<xs>::value)
-    >::template f<xs...>;
-  };
-
-  template<class p, class... xs>
-  struct post_normalize_list<types::basic_seq<types::uncallable, p, xs...>>
-  {
-    using type = types::basic_union<
-      types::uncallable,
-      typename post_normalize_list_or_strong_list<
-        (true && ... && is_real_type_impl<xs>::value)
-      >::template f<xs...>
-    >;
-  };
-}
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<int>
-    struct fold_xs_impl;
-
-    constexpr int_ partial_fold_xs_size(int_ i, int_ size);
-
-    template<template<class...> class F, int_ n, class... xs>
-    using partial_fold_xs_select = typename detail::fold_xs_impl<n-1>
-      ::template f<F, n-1, xs...>;
-  }
-  /// \endcond
-
-  /// \ingroup reduce
-
-  /// As \c fold_xs, but stop searching at position \c OffsetEnd.
-  template<int_ OffsetEnd, class F, class C = identity>
-  struct partial_fold_xs_c
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      detail::partial_fold_xs_select<
-        JLN_MP_TRACE_F(F)::template f,
-        detail::partial_fold_xs_size(OffsetEnd, sizeof...(xs)),
-        xs...
-      >
-    );
-  };
-
-  template<class OffsetEnd, class F, class C = identity>
-  using partial_fold_xs = partial_fold_xs_c<OffsetEnd::value, F, C>;
-
-  /// Folds left over a list using a mulary predicate.
-  /// The first element in the input pack as the state,
-  /// use \c push_front<> to add state if needed.
-  /// \semantics
-  ///   Equivalent to
-  ///   \code
-  ///   F::f<... F::f<xs[0], xs[1], ..., xs[n-1]>, xs[2], ..., xs[n-1]>, ..., xs[n-1]>, ...>
-  ///   \endcode
-  /// \treturn \value
-  /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
-#ifdef JLN_MP_DOXYGENATING
-  template<class F, class C = identity>
-  using fold_xs = partial_fold_xs_c<-1, F, C>;
-#else
-  template<class F, class C = identity>
-  struct fold_xs
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      detail::partial_fold_xs_select<JLN_MP_TRACE_F(F)::template f, sizeof...(xs), xs...>
-    );
-  };
-#endif
-
-  namespace emp
-  {
-    template<class L, class OffsetEnd, class state, class F, class C = mp::identity>
-    using partial_fold_xs = unpack<L,
-      mp::push_front<state, mp::partial_fold_xs<OffsetEnd, F, C>>>;
-
-    template<class L, int_ OffsetEnd, class state, class F, class C = mp::identity>
-    using partial_fold_xs_c = unpack<L,
-      mp::push_front<state, mp::partial_fold_xs_c<OffsetEnd, F, C>>>;
-
-    template<class L, class state, class F, class C = mp::identity>
-    using fold_xs = unpack<L,
-      mp::push_front<state, mp::fold_xs<F, C>>>;
-  }
-}
-
-
-/// \cond
-namespace jln::mp
-{
-  template<int_ OffsetEnd, class F>
-  struct partial_fold_xs_c<OffsetEnd, F, identity>
-  {
-    template<class... xs>
-    using f = detail::partial_fold_xs_select<
-      JLN_MP_TRACE_F(F)::template f,
-      detail::partial_fold_xs_size(OffsetEnd, sizeof...(xs)),
-      xs...
-    >;
-  };
-
-  template<class F>
-  struct fold_xs<F, identity>
-  {
-    template<class... xs>
-    using f = detail::partial_fold_xs_select<JLN_MP_TRACE_F(F)::template f, sizeof...(xs), xs...>;
-  };
-
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
-  template<int_ OffsetEnd, template<class...> class F, class C>
-  struct partial_fold_xs_c<OffsetEnd, lift<F>, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      detail::partial_fold_xs_select<
-        F,
-        detail::partial_fold_xs_size(OffsetEnd, sizeof...(xs)),
-        xs...
-      >
-    );
-  };
-
-  template<int_ OffsetEnd, template<class...> class F>
-  struct partial_fold_xs_c<OffsetEnd, lift<F>, identity>
-  {
-    template<class... xs>
-    using f = detail::partial_fold_xs_select<
-      F,
-      detail::partial_fold_xs_size(OffsetEnd, sizeof...(xs)),
-      xs...
-    >;
-  };
-
-  template<template<class...> class F, class C>
-  struct fold_xs<lift<F>, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      detail::partial_fold_xs_select<F, sizeof...(xs), xs...>
-    );
-  };
-  template<template<class...> class F>
-  struct fold_xs<lift<F>, identity>
-  {
-    template<class... xs>
-    using f = detail::partial_fold_xs_select<F, sizeof...(xs), xs...>;
-  };
-#endif
-}
-
-namespace jln::mp::detail
-{
-  constexpr int_ partial_fold_xs_size(int_ i, int_ size)
-  {
-    // size contains state + xs...
-    return (size == 0) ? 0
-      : (i >= size) ? 1
-      : (i >= 0) ? i + 1
-      : (i >= -size) ? size + i + 1
-      : 0
-      ;
-  }
-
-  template<int n>
-  struct fold_xs_impl : fold_xs_impl<
-      n < 8 ? 4
-    : n < 16 ? 8
-    : n < 64 ? 16
-    : 64
-  >
-  {};
-
-  template<>
-  struct fold_xs_impl<-1>
-  {};
-
-  template<>
-  struct fold_xs_impl<0>
-  {
-    template<template<class...> class, int m, class state>
-    using f = state;
-  };
-
-  template<>
-  struct fold_xs_impl<1>
-  {
-    template<template<class...> class F, int m, class state, class... xs>
-    using f = F<state, xs...>;
-  };
-
-  template<>
-  struct fold_xs_impl<2>
-  {
-    template<template<class...> class F, int m, class state,
-      class _1, class... xs>
-    using f = F<F<state, _1, xs...>, xs...>;
-  };
-
-  template<>
-  struct fold_xs_impl<3>
-  {
-    template<template<class...> class F, int m, class state,
-      class _1, class _2, class... xs>
-    using f = F<F<F<state, _1, _2, xs...>, _2, xs...>, xs...>;
-  };
-
-  // newline='\n'
-  // for n in (4, 8, 16, 64):
-  //   args = ', '.join(f'class _{i}' for i in range(1,n))
-  //   ps = [f'_{i}, ' for i in range(1, n)]
-  //   print(f'''
-  //   template<>
-  //   struct fold_xs_impl<{n}>
-  //   {{
-  //     template<template<class...> class F, int m, class state,
-  //       {args}, class... xs>
-  //     using f = typename fold_xs_impl<
-  //       m-{n-1}
-  //     >::template f<F, m-{n-1}, {'F<' * (n-1)}state{''.join(f',{newline}      {"".join(ps[i:])}xs...>' for i in range(n))};
-  //   }};
-  // ''', end='')
-
-  template<>
-  struct fold_xs_impl<4>
-  {
-    template<template<class...> class F, int m, class state,
-      class _1, class _2, class _3, class... xs>
-    using f = typename fold_xs_impl<
-      m-3
-    >::template f<F, m-3, F<F<F<state,
-      _1, _2, _3, xs...>,
-      _2, _3, xs...>,
-      _3, xs...>,
-      xs...>;
-  };
-
-  template<>
-  struct fold_xs_impl<8>
-  {
-    template<template<class...> class F, int m, class state,
-      class _1, class _2, class _3, class _4, class _5, class _6, class _7, class... xs>
-    using f = typename fold_xs_impl<
-      m-7
-    >::template f<F, m-7, F<F<F<F<F<F<F<state,
-      _1, _2, _3, _4, _5, _6, _7, xs...>,
-      _2, _3, _4, _5, _6, _7, xs...>,
-      _3, _4, _5, _6, _7, xs...>,
-      _4, _5, _6, _7, xs...>,
-      _5, _6, _7, xs...>,
-      _6, _7, xs...>,
-      _7, xs...>,
-      xs...>;
-  };
-
-  template<>
-  struct fold_xs_impl<16>
-  {
-    template<template<class...> class F, int m, class state,
-      class _1, class _2, class _3, class _4, class _5, class _6, class _7,
-      class _8, class _9, class _10, class _11, class _12, class _13, class _14,
-      class _15, class... xs>
-    using f = typename fold_xs_impl<
-      m-15
-    >::template f<F, m-15, F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<state,
-      _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
-      _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
-      _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
-      _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
-      _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
-      _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
-      _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
-      _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
-      _9, _10, _11, _12, _13, _14, _15, xs...>,
-      _10, _11, _12, _13, _14, _15, xs...>,
-      _11, _12, _13, _14, _15, xs...>,
-      _12, _13, _14, _15, xs...>,
-      _13, _14, _15, xs...>,
-      _14, _15, xs...>,
-      _15, xs...>,
-      xs...>;
-  };
-
-  template<>
-  struct fold_xs_impl<64>
-  {
-    template<template<class...> class F, int m, class state,
-      class _1, class _2, class _3, class _4, class _5, class _6, class _7,
-      class _8, class _9, class _10, class _11, class _12, class _13,
-      class _14, class _15, class _16, class _17, class _18, class _19,
-      class _20, class _21, class _22, class _23, class _24, class _25,
-      class _26, class _27, class _28, class _29, class _30, class _31,
-      class _32, class _33, class _34, class _35, class _36, class _37,
-      class _38, class _39, class _40, class _41, class _42, class _43,
-      class _44, class _45, class _46, class _47, class _48, class _49,
-      class _50, class _51, class _52, class _53, class _54, class _55,
-      class _56, class _57, class _58, class _59, class _60, class _61,
-      class _62, class _63,
-      class... xs>
-    using f = typename fold_xs_impl<
-      m-63
-    >::template f<F, m-63, F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<
-                           F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<
-                           F<F<F<F<F<F<F<F<F<F<F<
-      state,
-      _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16,
-      _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31,
-      _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46,
-      _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61,
-      _62, _63, xs...>,
-      _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17,
-      _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32,
-      _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47,
-      _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62,
-      _63, xs...>,
-      _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18,
-      _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33,
-      _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48,
-      _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63,
-      xs...>,
-      _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19,
-      _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34,
-      _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49,
-      _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20,
-      _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35,
-      _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50,
-      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20,
-      _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35,
-      _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50,
-      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21,
-      _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36,
-      _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51,
-      _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22,
-      _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37,
-      _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52,
-      _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23,
-      _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38,
-      _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53,
-      _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24,
-      _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39,
-      _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54,
-      _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25,
-      _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40,
-      _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55,
-      _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26,
-      _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41,
-      _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56,
-      _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27,
-      _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42,
-      _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57,
-      _58, _59, _60, _61, _62, _63, xs...>,
-      _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28,
-      _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43,
-      _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58,
-      _59, _60, _61, _62, _63, xs...>,
-      _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29,
-      _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44,
-      _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59,
-      _60, _61, _62, _63, xs...>,
-      _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30,
-      _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45,
-      _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
-      _61, _62, _63, xs...>,
-      _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31,
-      _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46,
-      _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61,
-      _62, _63, xs...>,
-      _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32,
-      _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47,
-      _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62,
-      _63, xs...>,
-      _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33,
-      _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48,
-      _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63,
-      xs...>,
-      _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34,
-      _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49,
-      _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35,
-      _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50,
-      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36,
-      _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51,
-      _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37,
-      _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52,
-      _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38,
-      _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53,
-      _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39,
-      _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54,
-      _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40,
-      _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55,
-      _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41,
-      _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56,
-      _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42,
-      _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57,
-      _58, _59, _60, _61, _62, _63, xs...>,
-      _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43,
-      _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58,
-      _59, _60, _61, _62, _63, xs...>,
-      _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44,
-      _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59,
-      _60, _61, _62, _63, xs...>,
-      _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45,
-      _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
-      _61, _62, _63, xs...>,
-      _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46,
-      _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61,
-      _62, _63, xs...>,
-      _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47,
-      _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62,
-      _63, xs...>,
-      _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48,
-      _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63,
-      xs...>,
-      _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49,
-      _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50,
-      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51,
-      _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52,
-      _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53,
-      _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54,
-      _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55,
-      _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56,
-      _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57,
-      _58, _59, _60, _61, _62, _63, xs...>,
-      _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58,
-      _59, _60, _61, _62, _63, xs...>,
-      _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59,
-      _60, _61, _62, _63, xs...>,
-      _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
-      _61, _62, _63, xs...>,
-      _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61,
-      _62, _63, xs...>,
-      _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62,
-      _63, xs...>,
-      _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63,
-      xs...>,
-      _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _57, _58, _59, _60, _61, _62, _63, xs...>,
-      _58, _59, _60, _61, _62, _63, xs...>,
-      _59, _60, _61, _62, _63, xs...>,
-      _60, _61, _62, _63, xs...>,
-      _61, _62, _63, xs...>,
-      _62, _63, xs...>,
-      _63, xs...>,
-      xs...>;
-  };
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \ingroup utility
-
-  /// \treturn \bool
-  template <class T, class C = identity>
-  using is_not = is<T, not_<C>>;
-} // namespace jln::mp
-namespace jln::mp
-{
-  /// \endcond
-  namespace detail
-  {
-    template<class Pred, class Replacement>
-    struct substitute_if;
-  }
-  /// \endcond
-
-  /// \ingroup algorithm
-
-  /// Replaces every occurrence that satisfy a predicate by some \value.
-  /// \treturn \sequence
-  template<class Pred, class T, class C = listify>
-  using replace_if = transform<detail::substitute_if<Pred, T>, C>;
-
-  /// Replaces every occurrence of a \value by another \value.
-  /// \treturn \sequence
-  template<class T, class U, class C = listify>
-  using replace = replace_if<is<T>, U, C>;
-
-  namespace emp
-  {
-    template<class L, class T, class U, class C = mp::listify>
-    using replace = unpack<L, mp::replace<T, U, C>>;
-
-    template<class L, class Pred, class T, class C = mp::listify>
-    using replace_if = unpack<L, mp::replace_if<Pred, T, C>>;
-  }
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<class Pred, class Replacement>
-  struct substitute_if
-  {
-    template<class x>
-    using f = typename conditional_c<bool(JLN_MP_TRACE_F(Pred)::template f<x>::value)>
-      ::template f<Replacement, x>;
-  };
-
-  template<class T, class Replacement>
-  struct substitute_if<is<T>, Replacement>
-  {
-    template<class x>
-    using f = typename conditional_c<std::is_same<T, x>::value>
-      ::template f<Replacement, x>;
-  };
-
-  template<class T, class Replacement>
-  struct substitute_if<is_not<T>, Replacement>
-  {
-    template<class x>
-    using f = typename conditional_c<std::is_same<T, x>::value>
-      ::template f<x, Replacement>;
-  };
-
-#if ! JLN_MP_ENABLE_DEBUG
-  template<template<class...> class Pred, class Replacement>
-  struct substitute_if<lift<Pred>, Replacement>
-  {
-    template<class x>
-    using f = typename conditional_c<bool(Pred<x>::value)>
-      ::template f<Replacement, x>;
-  };
-
-  template<template<class...> class Pred, class Replacement>
-  struct substitute_if<lift_t<Pred>, Replacement>
-  {
-    template<class x>
-    using f = typename conditional_c<bool(Pred<x>::type::value)>
-      ::template f<Replacement, x>;
-  };
-#endif
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \ingroup list
-
-  /// Retrieves an element of a sequence at an arbitrary position.
-  /// \pre `0 <= N < sizeof...(xs)`
-  /// \treturn \value
-  template<class N, class C = identity>
-  using at = drop_front<N, front<C>>;
-
-  template<unsigned n, class C = identity>
-  using at_c = drop_front_c<n, front<C>>;
-
-  template<class C = identity>
-  using at0 = front<C>;
-
-  template<class C = identity>
-  using at1 = drop_front_c<1, front<C>>;
-
-  template<class C = identity>
-  using at2 = drop_front_c<2, front<C>>;
-
-  template<class C = identity>
-  using at3 = drop_front_c<3, front<C>>;
-
-  template<class C = identity>
-  using at4 = drop_front_c<4, front<C>>;
-
-  template<class C = identity>
-  using at5 = drop_front_c<5, front<C>>;
-
-  template<class C = identity>
-  using at6 = drop_front_c<6, front<C>>;
-
-  template<class C = identity>
-  using at7 = drop_front_c<7, front<C>>;
-
-  template<class C = identity>
-  using at8 = drop_front_c<8, front<C>>;
-
-  template<class C = identity>
-  using at9 = drop_front_c<9, front<C>>;
-
-  namespace emp
-  {
-    template<class L, class i, class C = mp::identity>
-    using at = unpack<L, mp::drop_front_c<i::value, mp::front<C>>>;
-
-    template<class L, unsigned i, class C = mp::identity>
-    using at_c = unpack<L, mp::drop_front_c<i, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at0 = unpack<L, mp::front<C>>;
-
-    template<class L, class C = mp::identity>
-    using at1 = unpack<L, mp::drop_front_c<1, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at2 = unpack<L, mp::drop_front_c<2, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at3 = unpack<L, mp::drop_front_c<3, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at4 = unpack<L, mp::drop_front_c<4, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at5 = unpack<L, mp::drop_front_c<5, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at6 = unpack<L, mp::drop_front_c<6, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at7 = unpack<L, mp::drop_front_c<7, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at8 = unpack<L, mp::drop_front_c<8, mp::front<C>>>;
-
-    template<class L, class C = mp::identity>
-    using at9 = unpack<L, mp::drop_front_c<9, mp::front<C>>>;
-  }
-}
-namespace jln::mp::optimizer
-{
-  using types::uncallable;
-
-  template<class F, class input>
-  struct optimizer_impl
-  {
-    using type = optimized_result_t<types::unknown, F>;
-  };
-
-  namespace opti_detail
-  {
-    template<class F, class params>
-    struct optimizer_wrap_impl
-    {
-      using type = typename optimizer_impl<F, params>::type;
-    };
-  }
-
-  template<class F, class params>
-  using optimize = typename opti_detail::optimizer_wrap_impl<F, params>::type;
-
-  template<class F, class input>
-  using optimized_function = typename optimize<F, input>::function;
-
-  template<class F, class input>
-  using output_result = typename optimize<F, input>::output_result;
-
-  template<class F, class... params>
-  using optimized_for = optimize<F, seq<params...>>;
-
-  template<class F, class... params>
-  using optimized_function_for = typename optimize<F, seq<params...>>::function;
-
-  template<class F, class... params>
-  using output_result_for = typename optimize<F, seq<params...>>::output_result;
-
-  template<class>
-  struct number_as_bool_selector;
-
-  template<class C>
-  struct add_uncallable_output
-  {
-    template<class... xs>
-    using f = add_uncallable_output_t<JLN_MP_DCALL_TRACE_XS(xs, C, xs...)>;
-  };
-
-  struct uncallable_union
-  {
-    template<class... xs>
-    using f = union_<uncallable, xs...>;
-  };
-
-  template<class params>
-  struct wrap_optimize_with_params
-  {
-    template<class C, class...>
-    using f = optimize<C, params>;
-  };
-
-  template<class F, class params>
-  struct wrap_optimize_with_function
-  {
-    template<class C, class...>
-    using f = optimized_result<
-      typename optimize<C, params>::output_result,
-      typename F::template f<typename optimize<C, params>::function>
-    >;
-  };
-}
-
-namespace jln::mp::optimizer::opti_detail
-{
-  struct wrap_uncallable_type_member
-  {
-    using type = optimized_result_t<uncallable, uncallable_function>;
-  };
-
-  template<class F>
-  struct optimizer_wrap_impl<F, types::uncallable>
-  : wrap_uncallable_type_member
-  {};
-
-  template<class F, class... xs>
-  struct optimizer_wrap_impl<F, types::basic_union<types::uncallable, xs...>>
-  {
-    using _opti = typename optimizer_impl<F, union_<xs...>>::type;
-
-    using type = optimized_result_t<
-      union_<types::uncallable, typename _opti::output_result>,
-      typename _opti::function
-    >;
-  };
-
-
-  constexpr int_ umin(std::initializer_list<int_> l)
-  {
-    int_ r = *l.begin();
-    for (int_ i : l)
-      r = r < i ? r : i;
-    return r;
-  }
-
-  constexpr int_ umax(std::initializer_list<int_> l)
-  {
-    int_ r = 0;
-    for (int_ i : l)
-      r = r < i ? i : r;
-    return r;
-  }
-}
-
-namespace jln::mp::optimizer
-{
-  template<class>
-  struct count_min_param : number<1>
-  {};
-
-  template<>
-  struct count_min_param<types::uncallable> : number<0>
-  {};
-
-  template<class... xs>
-  struct count_min_param<types::basic_seq<xs...>>
-  : number<(0 + ... + count_min_param<xs>::value)>
-  {};
-
-  template<class... xs>
-  struct count_min_param<types::basic_union<xs...>>
-  : number<opti_detail::umin({count_min_param<xs>::value...})>
-  {};
-
-  template<class... xs>
-  struct count_min_param<types::basic_union<types::uncallable, xs...>>
-  : number<opti_detail::umin({count_min_param<xs>::value...})>
-  {};
-
-  template<class x>
-  struct count_min_param<types::basic_pack<x>>
-  : number<0>
-  {};
-
-
-  template<class>
-  struct is_varlen_param : false_
-  {};
-
-  template<> struct is_varlen_param<types::uncallable> : true_ {};
-
-  template<> struct is_varlen_param<types::boolean> : false_ {};
-  template<> struct is_varlen_param<types::any> : false_ {};
-  template<> struct is_varlen_param<types::number> : false_ {};
-  template<> struct is_varlen_param<types::na> : false_ {};
-
-  template<class... xs>
-  struct is_varlen_param<types::basic_seq<xs...>>
-  : number<(... || is_varlen_param<xs>::value)>
-  {};
-
-  template<class x, class... xs>
-  struct is_varlen_param<types::basic_union<x, xs...>>
-  : number<(is_varlen_param<x>::value || ... || is_varlen_param<xs>::value)
-    || !std::is_same<
-        std::integer_sequence<int_, count_min_param<x>::value, count_min_param<xs>::value...>,
-        std::integer_sequence<int_, count_min_param<xs>::value..., count_min_param<x>::value>
-      >::value>
-  {};
-
-  template<class... xs>
-  struct is_varlen_param<types::basic_union<types::uncallable, xs...>>
-  : true_
-  {};
-
-  template<class x>
-  struct is_varlen_param<types::basic_pack<x>>
-  : true_
-  {};
-}
-
-namespace jln::mp::optimizer::opti_detail
-{
-  template<class params>
-  struct extract_all_types_impl
-  {
-    using type = params;
-  };
-
-  template<class x>
-  struct extract_all_types_impl<types::basic_pack<x>>
-  {
-    using type = union_<x, types::basic_seq<>>;
-  };
-
-  template<class... xs>
-  struct extract_all_types_impl<types::basic_seq<xs...>>
-  {
-    using type = union_<xs...>;
-  };
-
-  template<class... xs>
-  struct extract_all_types_impl<types::basic_union<xs...>>
-  {
-    using type = union_<typename extract_all_types_impl<xs>::type...>;
-  };
-
-
-  template<class params>
-  struct remove_empty_seq_from_union_impl
-  {
-    using type = params;
-  };
-
-  template<class... xs>
-  struct remove_empty_seq_from_union_impl<types::basic_union<xs...>>
-  {
-    using type = typename detail::_join_select<sizeof...(xs)>
-      ::template f<
-        union_or_identity_t,
-        typename wrap_in_list_c<!std::is_same<types::basic_seq<>, xs>::value>::template f<xs>...
-      >::type;
-  };
-
-
-  // ::f<always, maybe = add_uncallable_output<always>, never = uncallable>
-  template<bool always_or_never, bool force_maybe>
-  struct always_maybe_never_impl;
-
-  template<> struct always_maybe_never_impl<true, false>
-  {
-    template<class always, class maybe = void, class never = uncallable>
-    using f = always;
-  };
-
-  template<> struct always_maybe_never_impl<true, true>
-  {
-    template<class always, class maybe = add_uncallable_output<always>, class never = uncallable>
-    using f = maybe;
-  };
-
-  template<> struct always_maybe_never_impl<false, true>
-  {
-    template<class always, class maybe = add_uncallable_output<always>, class never = uncallable>
-    using f = maybe;
-  };
-
-  template<> struct always_maybe_never_impl<false, false>
-  {
-    template<class always, class maybe = void, class never = uncallable>
-    using f = never;
-  };
-
-
-#define JLN_SELECT_NUMBER_AS_BOOL_TRUE 0
-#define JLN_SELECT_NUMBER_AS_BOOL_FALSE 1
-#define JLN_SELECT_NUMBER_AS_BOOL_MAYBE_TRUE 2
-#define JLN_SELECT_NUMBER_AS_BOOL_MAYBE_FALSE 3
-#define JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER 4
-#define JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER 5
-#define JLN_SELECT_NUMBER_AS_BOOL_NEVER 6
-
-  using select_number_as_bool_true = at_c<0>;
-  using select_number_as_bool_false = at_c<1>;
-  using select_number_as_bool_maybe_true = at_c<2>;
-  using select_number_as_bool_maybe_false = at_c<3>;
-  using select_number_as_bool_as_number = at_c<4>;
-  using select_number_as_bool_maybe_number = at_c<5>;
-  using select_number_as_bool_never = at_c<6>;
-
-  template<class x>
-  using number_as_bool_selector_from_union = typename number_as_bool_selector<x>
-    ::template f<
-      number<0b0000001>,
-      number<0b0000010>,
-      number<0b0000100>,
-      number<0b0001000>,
-      number<0b0010000>,
-      number<0b0100000>,
-      number<0b1000000>
-    >;
-
-  constexpr int number_as_bool_from_union_table[] {
-    -1,
-    // 0bxx
-    JLN_SELECT_NUMBER_AS_BOOL_TRUE,
-    JLN_SELECT_NUMBER_AS_BOOL_FALSE,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    // 0b1xx
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_TRUE,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_TRUE,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    // 0b10xx
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_FALSE,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_FALSE,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    // 0b11xx
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    // 0b1xxxx (as_number)
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER,
-    // 0b1xxxxx (maybe_number)
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    // 0b1xxxxxx (never_number)
-    JLN_SELECT_NUMBER_AS_BOOL_NEVER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_TRUE,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_FALSE,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    // 0b1xx
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_TRUE,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_TRUE,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    // 0b10xx
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_FALSE,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_FALSE,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    // 0b11xx
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    // 0b101xxxx (never_number + as_number)
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    // 0b11xxxxx (never_number + maybe_number)
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-    JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER,
-  };
-
-
-  template<class F, class params>
-  struct transform_from_params_impl
-  {
-    using type = output_result<F, params>;
-  };
-
-  template<class F, class x>
-  struct transform_from_params_impl<F, types::basic_pack<x>>
-  {
-    using type = pack<output_result<F, x>>;
-  };
-
-  template<class F, class... xs>
-  struct transform_from_params_impl<F, types::basic_seq<xs...>>
-  {
-    using type = seq<output_result<F, xs>...>;
-  };
-
-  template<class F, class... xs>
-  struct transform_from_params_impl<F, types::basic_union<xs...>>
-  {
-    using type = union_<typename transform_from_params_impl<F, xs>::type...>;
-  };
-}
-
-namespace jln::mp::optimizer
-{
-  template<class params>
-  using extract_all_types_t = typename opti_detail::extract_all_types_impl<params>::type;
-
-
-  template<class params>
-  using remove_empty_seq_from_union_t =
-    typename opti_detail::remove_empty_seq_from_union_impl<params>::type;
-
-
-  template<class C>
-  struct extract_one_param_as_union
-  {
-    template<class R, class... xs>
-    using f = typename C
-      ::template f<remove_empty_seq_from_union_t<extract_all_types_t<R>>, xs...>;
-  };
-
-
-  // TODO rename
-  // ::f<always, maybe = add_uncallable_output<always>, never = uncallable>
-  template<class params, int n>
-  using count_param_always_maybe_never_selector = opti_detail::always_maybe_never_impl<
-    count_min_param<params>::value == n,
-    is_varlen_param<params>::value
-  >;
-
-
-  // ::f<always, maybe, never>
-  template<class, int i>
-  struct has_index_selector : at_c<i == 0 ? 0 : 2>
-  {};
-
-  template<int i>
-  struct has_index_selector<types::uncallable, i> : at_c<2>
-  {};
-
-  template<class... xs, int i>
-  struct has_index_selector<types::basic_seq<xs...>, i>
-  : at_c<i < sizeof...(xs) ? 0 : 2>
-  {};
-
-  namespace opti_detail
-  {
-    template<int_ i>
-    using has_index_union_selector = at_c<i == 0b100 ? 0 : i == 0b001 ? 2 : 1>;
-  }
-
-  template<class... xs, int i>
-  struct has_index_selector<types::basic_union<xs...>, i>
-  : opti_detail::has_index_union_selector<(... | has_index_selector<xs, i>
-    ::template f<number<0b100>, number<0b010>, number<0b001>>::value
-  )>
-  {};
-
-  template<class x, int i>
-  struct has_index_selector<types::basic_pack<x>, i>
-  : at_c<1>
-  {};
-
-
-  using remove_empty_seq_from_identity = detail::_wrap_in_list_if_not<is<types::basic_seq<>>>;
-
-
-  // ::f<all_values,
-  //     params_without_out_of_range = add_uncallable_output<all_values>,
-  //     out_of_range_for_all = uncallable>
-  // all_values::f<xs...>
-  // params_without_out_of_range::f<xs...>
-  // out_of_range_for_all::f<x>
-  template<class params, int i>
-  struct dispatch_param_at_c
-  {
-    template<class all_values,
-             class params_without_out_of_range = void,
-             class out_of_range_for_all = uncallable>
-    using f = typename conditional_c<i != 0 || std::is_same<types::uncallable, params>::value>
-      ::template f<out_of_range_for_all, all_values>
-      ::template f<params>;
-  };
-
-  template<class... xs, int i>
-  struct dispatch_param_at_c<types::basic_seq<xs...>, i>
-  {
-    template<class all_values,
-             class params_without_out_of_range = void,
-             class out_of_range_for_all = uncallable>
-    using f = typename conditional_c<i < sizeof...(xs)>
-      ::template f<at_c<i, all_values>, lift<types::basic_seq, out_of_range_for_all>>
-      ::template f<xs...>;
-  };
-
-  namespace opti_detail
-  {
-    template<int i>
-    struct dispatch_param_at_from_union
-    {
-      template<class... xs>
-      using f = typename detail::_join_select<sizeof...(xs)>::template f<
-        union_,
-        typename remove_empty_seq_from_identity::template f<
-          typename dispatch_param_at_c<xs, i>::template f<
-            identity, identity, always<types::basic_seq<>>
-          >
-        >...
-      >::type;
-    };
-  }
-
-  template<class... xs, int i>
-  struct dispatch_param_at_c<types::basic_union<xs...>, i>
-  {
-    template<class all_values,
-             class params_without_out_of_range = add_uncallable_output<all_values>,
-             class out_of_range_for_all = uncallable>
-    using f = typename has_index_selector<types::basic_union<xs...>, i>
-      ::template f<
-        tee<opti_detail::dispatch_param_at_from_union<i>, all_values>,
-        tee<opti_detail::dispatch_param_at_from_union<i>, params_without_out_of_range>,
-        lift<types::basic_union, out_of_range_for_all>>
-      ::template f<xs...>;
-  };
-
-  template<class x, int i>
-  struct dispatch_param_at_c<types::basic_pack<x>, i>
-  {
-    template<class all_values,
-             class params_without_out_of_range = add_uncallable_output<all_values>,
-             class out_of_range_for_all = uncallable>
-    using f = typename params_without_out_of_range::template f<x>;
-  };
-
-
-  template<class params, int i>
-  using param_at_c = typename dispatch_param_at_c<params, i>
-    ::template f<identity, uncallable_union, always<uncallable>>;
-
-
-  template<class x>
-  struct select_cond
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = typename conditional_c<std::is_scalar<x>::value || std::is_array<x>::value>
-      ::template f<nobool, union_<nobool, True, False>>;
-  };
-
-  template<>
-  struct select_cond<true_>
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = True;
-  };
-
-  template<class Int>
-  struct select_cond<std::integral_constant<Int, 1>>
-  : select_cond<true_>
-  {};
-
-  template<>
-  struct select_cond<false_>
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = False;
-  };
-
-  template<class Int>
-  struct select_cond<std::integral_constant<Int, 0>>
-  : select_cond<false_>
-  {};
-
-  template<int_ i>
-  struct select_cond<number<i>>
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = nobool;
-  };
-
-  template<class Int, Int i>
-  struct select_cond<std::integral_constant<Int, i>>
-  : select_cond<number<2>>
-  {};
-
-  template<>
-  struct select_cond<types::boolean>
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = union_<True, False>;
-  };
-
-  template<>
-  struct select_cond<types::number>
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = union_<nobool, True, False>;
-  };
-
-  template<>
-  struct select_cond<types::na>
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = nobool;
-  };
-
-  template<>
-  struct select_cond<types::uncallable>
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = nobool;
-  };
-
-  template<>
-  struct select_cond<types::any>
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = union_<True, False>;
-  };
-
-  template<class... xs>
-  struct select_cond<types::basic_seq<xs...>>
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = nobool;
-  };
-
-  template<class... xs>
-  struct select_cond<types::basic_list<xs...>>
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = nobool;
-  };
-
-  template<class... xs>
-  struct select_cond<list<xs...>>
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = nobool;
-  };
-
-  template<class x>
-  struct select_cond<types::basic_pack<x>>
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = union_<nobool, typename select_cond<x>::template f<True, False, nobool>>;
-  };
-
-  template<class... xs>
-  struct select_cond<types::basic_union<xs...>>
-  {
-    template<class True, class False, class nobool = uncallable>
-    using f = union_<typename select_cond<xs>::template f<True, False, nobool>...>;
-  };
-
-
-  // ::f<F,
-  //     all_i_params,
-  //     params_without_out_of_range = add_uncallable_output<all_values>,
-  //     out_of_range_for_all_params = uncallable>
-  // all_i_params<F<left, right>, ...>
-  // params_without_out_of_range<F<left, right>, ...>
-  // out_of_range_for_all_params<params>
-  template<class params>
-  struct dispatch_split_param_at_1
-  {
-    template<class F,
-             class all_values,
-             class params_without_out_of_range = void,
-             class out_of_range_for_all = uncallable>
-    using f = typename all_values::template f<typename F::template f<params, types::basic_seq<>>>;
-  };
-
-  template<>
-  struct dispatch_split_param_at_1<uncallable>
-  {
-    template<class F,
-             class all_values,
-             class params_without_out_of_range = void,
-             class out_of_range_for_all = uncallable>
-    using f = typename out_of_range_for_all::template f<uncallable>;
-  };
-
-  template<>
-  struct dispatch_split_param_at_1<types::basic_seq<>>
-  {
-    template<class F,
-             class all_values,
-             class params_without_out_of_range = void,
-             class out_of_range_for_all = uncallable>
-    using f = typename out_of_range_for_all::template f<types::basic_seq<>>;
-  };
-
-  template<class x, class... xs>
-  struct dispatch_split_param_at_1<types::basic_seq<x, xs...>>
-  {
-    template<class F,
-             class all_values,
-             class params_without_out_of_range = void,
-             class out_of_range_for_all = uncallable>
-    using f = typename all_values::template f<typename F::template f<x, seq<xs...>>>;
-  };
-
-  namespace opti_detail
-  {
-    template<class... ps>
-    struct dispatch_split_param_at_1_from_seq_pack_state1
-    {
-      template<class...>
-      using f = dispatch_split_param_at_1_from_seq_pack_state1;
-
-      using type = dispatch_split_param_at_1_from_seq_pack_state1;
-
-      template<class C>
-      using g = typename C::template f<ps...>;
-    };
-
-    template<class F, class... ps>
-    struct dispatch_split_param_at_1_from_seq_pack_state0
-    {
-      template<class x, class... xs>
-      struct f
-      {
-        using type = dispatch_split_param_at_1_from_seq_pack_state1<
-          ps..., typename F::template f<x, seq<xs...>>
-        >;
-      };
-
-      template<class x, class... xs>
-      struct f<types::basic_pack<x>, xs...>
-      {
-        using type = dispatch_split_param_at_1_from_seq_pack_state0<
-          F, ps..., typename F::template f<x, seq<types::basic_pack<x>, xs...>>
-        >;
-      };
-
-      template<class C>
-      using g = typename C::template f<ps...>;
-    };
-
-    template<class state, class... xs>
-    using dispatch_split_param_at_1_from_seq_pack = typename state::template f<xs...>::type;
-  }
-
-  template<class x, class... xs>
-  struct dispatch_split_param_at_1<types::basic_seq<types::basic_pack<x>, xs...>>
-  {
-    template<class F,
-             class all_values,
-             class params_without_out_of_range = void,
-             class out_of_range_for_all = uncallable>
-    using f = typename detail::fold_xs_impl<sizeof...(xs)>
-      ::template f<
-        opti_detail::dispatch_split_param_at_1_from_seq_pack,
-        sizeof...(xs),
-        opti_detail::dispatch_split_param_at_1_from_seq_pack_state0<
-          F, typename F::template f<x, types::basic_seq<types::basic_pack<x>, xs...>>>,
-        xs...>
-      ::template g<all_values>;
-  };
-
-  template<class x>
-  struct dispatch_split_param_at_1<types::basic_pack<x>>
-  {
-    template<class F,
-             class all_values,
-             class params_without_out_of_range = add_uncallable_output<all_values>,
-             class out_of_range_for_all = uncallable>
-    using f = typename params_without_out_of_range::template f<
-      typename F::template f<x, types::basic_pack<x>>
-    >;
-  };
-
-  template<class... xs>
-  struct dispatch_split_param_at_1<types::basic_union<xs...>>
-  {
-    template<class F,
-             class all_values,
-             class params_without_out_of_range = add_uncallable_output<all_values>,
-             class out_of_range_for_all = uncallable>
-    using f = typename detail::_join_select<sizeof...(xs)>::template f<
-      has_index_selector<types::basic_union<xs...>, 0>
-        ::template f<all_values, params_without_out_of_range, out_of_range_for_all>
-        ::template f,
-      typename dispatch_split_param_at_1<xs>::template f<
-        F, listify, listify, always<list<>>
-      >...
-    >::type;
-  };
-
-
-  // // ::f<all_i_params, params_without_out_of_range, out_of_range_for_all_params>
-  // // all_i_params<list<left, right>, ...>
-  // // params_without_out_of_range<list<left, right>, ...>
-  // // out_of_range_for_all_params<params>
-  // template<class params, int i>
-  // struct dispatch_split_param_at_c
-  // {
-  //   template<class all_values, class params_without_out_of_range, class out_of_range_for_all>
-  //   using f = typename out_of_range_for_all::template f<params>;
-  // };
-  //
-  // template<>
-  // struct dispatch_split_param_at_c<uncallable, 0>
-  // {
-  //   template<class all_values, class params_without_out_of_range, class out_of_range_for_all>
-  //   using f = typename out_of_range_for_all::template f<uncallable>;
-  // };
-  //
-  // template<>
-  // struct dispatch_split_param_at_c<uncallable, 1>
-  // {
-  //   template<class all_values, class params_without_out_of_range, class out_of_range_for_all>
-  //   using f = typename out_of_range_for_all::template f<uncallable>;
-  // };
-  //
-  // template<class params>
-  // struct dispatch_split_param_at_c<params, 0>
-  // {
-  //   template<class all_values, class params_without_out_of_range, class out_of_range_for_all>
-  //   using f = typename all_values::template f<list<types::basic_seq<>, params>>;
-  // };
-  //
-  // template<class params>
-  // struct dispatch_split_param_at_c<params, 1>
-  // {
-  //   template<class all_values, class params_without_out_of_range, class out_of_range_for_all>
-  //   using f = typename all_values::template f<list<params, types::basic_seq<>>>;
-  // };
-  //
-  // template<>
-  // struct dispatch_split_param_at_c<types::basic_seq<>, 0>
-  // {
-  //   template<class all_values, class params_without_out_of_range, class out_of_range_for_all>
-  //   using f = typename all_values::template f<list<types::basic_seq<>, types::basic_seq<>>>;
-  // };
-  //
-  // template<>
-  // struct dispatch_split_param_at_c<types::basic_seq<>, 1>
-  // {
-  //   template<class all_values, class params_without_out_of_range, class out_of_range_for_all>
-  //   using f = typename out_of_range_for_all::template f<types::basic_seq<>>;
-  // };
-  //
-  // template<class x, class... xs>
-  // struct dispatch_split_param_at_c<types::basic_seq<x, xs...>, 0>
-  // {
-  //   template<class all_values, class params_without_out_of_range, class out_of_range_for_all>
-  //   using f = typename all_values::template f<list<types::basic_seq<>, types::basic_seq<x, xs...>>>;
-  // };
-  //
-  // template<class x, class... xs>
-  // struct dispatch_split_param_at_c<types::basic_seq<x, xs...>, 1>
-  // {
-  //   // TODO pack
-  //   template<class all_values, class params_without_out_of_range, class out_of_range_for_all>
-  //   using f = typename all_values::template f<list<x, seq<xs...>>>;
-  // };
-  //
-  // template<class x, class... xs, int i>
-  // struct dispatch_split_param_at_c<types::basic_seq<x, xs...>, i>
-  // {
-  //   // TODO
-  //   template<class all_values, class params_without_out_of_range, class out_of_range_for_all>
-  //   using f = typename all_values::template f<list<x, seq<xs...>>>;
-  // };
-  //
-  // template<class x>
-  // struct dispatch_split_param_at_c<types::basic_pack<x>>
-  // {
-  //   template<class all_values, class params_without_out_of_range, class out_of_range_for_all>
-  //   using f = typename all_values::template f<list<types::basic_pack<x>, types::basic_pack<x>>>;
-  // };
-  //
-  // template<class... xs>
-  // struct dispatch_split_param_at_c<types::basic_union<xs...>>
-  // {
-  //   template<class all_values, class params_without_out_of_range, class out_of_range_for_all>
-  //   using f = typename detail::_join_select<sizeof...(xs)>::template f<
-  //     typename has_index_selector<types::basic_union<xs...>, 0>
-  //       ::template f<all_values, params_without_out_of_range, out_of_range_for_all>
-  //       ::f,
-  //     typename dispatch_split_param_at_c<xs>::template f<
-  //       listify, listify, always<list<>>
-  //     >...
-  //   >::type;
-  // };
-
-
-  template<class x>
-  struct type_is_number : false_ {};
-
-  template<> struct type_is_number<types::number> : true_ {};
-  template<> struct type_is_number<types::boolean> : true_ {};
-
-
-  template<class>
-  struct is_list_t_or_list : false_ {};
-
-  template<class... xs>
-  struct is_list_t_or_list<types::basic_union<xs...>>
-  : number<(... && is_list_t_or_list<xs>::value)>
-  {};
-
-  template<class... xs> struct is_list_t_or_list<list<xs...>> : true_ {};
-  template<class... xs> struct is_list_t_or_list<types::basic_list<xs...>> : true_ {};
-
-
-  // ::f<uncallable, uncallable_union, callable>
-  template<class x>
-  struct dispatch_uncallable : at_c<2> {};
-
-  template<> struct dispatch_uncallable<types::uncallable> : at_c<0> {};
-  template<class x> struct dispatch_uncallable<types::basic_union<types::uncallable, x>> : at_c<1> {};
-
-
-  namespace opti_detail
-  {
-    template<class>
-    struct is_list_like_impl
-    {
-      using type = false_;
-    };
-
-    template<class... xs>
-    struct is_list_like_impl<types::basic_seq<xs...>>
-    {
-      using type = false_;
-    };
-
-    template<class... xs>
-    struct is_list_like_impl<types::basic_union<xs...>>
-    {
-      using type = false_;
-    };
-
-    template<class x>
-    struct is_list_like_impl<types::basic_pack<x>>
-    {
-      using type = false_;
-    };
-
-    template<template<class...> class Tpl, class... xs>
-    struct is_list_like_impl<Tpl<xs...>>
-    {
-      using type = true_;
-    };
-  }
-
-
-  // f<F, always, maybe = add_uncallable_output<always>, never = uncallable>
-  // always::f<F::f<xs...>...>
-  // maybe::f<F::f<xs...>...>
-  // never::f<params>
-  template<class params>
-  struct dispatch_unpack
-  {
-    template<class F,
-             class always,
-             class maybe = void,
-             class never = uncallable>
-    using f = typename never::template f<params>;
-  };
-
-  template<>
-  struct dispatch_unpack<types::any>
-  {
-    template<class F,
-             class always,
-             class maybe = add_uncallable_output<always>,
-             class never = uncallable>
-    using f = typename maybe::template f<
-      typename F::template f<types::basic_pack<types::any>>
-    >;
-  };
-
-  template<class... xs>
-  struct dispatch_unpack<types::basic_seq<xs...>>
-  {
-    template<class F,
-             class always,
-             class maybe = void,
-             class never = uncallable>
-    using f = typename never::template f<types::basic_seq<xs...>>;
-  };
-
-  template<class x>
-  struct dispatch_unpack<types::basic_pack<x>>
-  {
-    template<class F,
-             class always,
-             class maybe = void,
-             class never = uncallable>
-    using f = typename never::template f<types::basic_pack<x>>;
-  };
-
-  template<>
-  struct dispatch_unpack<types::basic_pack<types::any>>
-  {
-    template<class F,
-             class always,
-             class maybe = add_uncallable_output<always>,
-             class never = uncallable>
-    using f = typename maybe::template f<
-      typename F::template f<types::basic_pack<types::any>>
-    >;
-  };
-
-  template<template<class...> class Tpl, class... xs>
-  struct dispatch_unpack<Tpl<xs...>>
-  {
-    template<class F,
-             class always,
-             class maybe = void,
-             class never = uncallable>
-    using f = typename always::template f<JLN_MP_DCALL_TRACE_XS(xs, F, xs...)>;
-  };
-
-  template<template<class...> class Tpl, class... xs>
-  struct dispatch_unpack<types::basic_pack<Tpl<xs...>>>
-  {
-    template<class F,
-             class always,
-             class maybe = void,
-             class never = uncallable>
-    using f = typename always::template f<JLN_MP_DCALL_TRACE_XS(xs, F, xs...)>;
-  };
-
-  namespace opti_detail
-  {
-    template<int>
-    struct dispatch_unpack_from_union_impl;
-
-    template<>
-    struct dispatch_unpack_from_union_impl<0>
-    {
-      template<class always, class maybe, class never, class... xs>
-      using f = mp::always<typename always::template f<xs...>>;
-    };
-
-    template<>
-    struct dispatch_unpack_from_union_impl<1>
-    {
-      template<class always, class maybe, class never, class... xs>
-      using f = mp::always<typename maybe::template f<xs...>>;
-    };
-
-    template<>
-    struct dispatch_unpack_from_union_impl<2>
-    {
-      template<class always, class maybe, class never, class... xs>
-      using f = never;
-    };
-
-    template<std::size_t n, class always, class maybe, class never>
-    struct dispatch_unpack_from_union
-    {
-      template<class... xs>
-      using f = typename dispatch_unpack_from_union_impl<
-        n == sizeof...(xs) ? 0 : sizeof...(xs) ? 1 : 2
-      >::template f<always, maybe, never, xs...>;
-    };
-  }
-
-  template<class... xs>
-  struct dispatch_unpack<types::basic_union<xs...>>
-  {
-    template<class F,
-             class always,
-             class maybe = add_uncallable_output<always>,
-             class never = uncallable>
-    using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<
-        opti_detail::dispatch_unpack_from_union<sizeof...(xs), always, maybe, never>
-          ::template f,
-        typename dispatch_unpack<xs>
-          ::template f<F, listify, listify, mp::always<list<>>>
-        ...
-      >::type
-      ::template f<types::basic_union<xs...>>;
-  };
-
-
-  // template<class x>
-  // struct number_as_bool_selector
-  // {
-  //   template<class always_true, class always_false,
-  //            class maybe_true, class maybe_false,
-  //            class as_number, class maybe_number, class never_number>
-  //   using f = ...;
-  // };
-
-  template<class x>
-  struct number_as_bool_selector
-  : at_c<((std::is_class<x>::value && !std::is_null_pointer<x>::value)
-        || std::is_union<x>::value
-    ) ? JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER : JLN_SELECT_NUMBER_AS_BOOL_NEVER>
-  {};
-
-  template<>
-  struct number_as_bool_selector<false_>
-  : opti_detail::select_number_as_bool_false
-  {};
-
-  template<int_ value>
-  struct number_as_bool_selector<number<value>>
-  : opti_detail::select_number_as_bool_true
-  {};
-
-  template<>
-  struct number_as_bool_selector<std::true_type>
-  : opti_detail::select_number_as_bool_true
-  {};
-
-  template<>
-  struct number_as_bool_selector<std::false_type>
-  : opti_detail::select_number_as_bool_false
-  {};
-
-  template<class Int>
-  struct number_as_bool_selector<std::integral_constant<Int, 0>>
-  : opti_detail::select_number_as_bool_false
-  {};
-
-  template<std::size_t value>
-  struct number_as_bool_selector<std::integral_constant<std::size_t, value>>
-  : opti_detail::select_number_as_bool_true
-  {};
-
-  template<>
-  struct number_as_bool_selector<types::na>
-  : opti_detail::select_number_as_bool_never
-  {};
-
-  template<>
-  struct number_as_bool_selector<types::uncallable>
-  : opti_detail::select_number_as_bool_never
-  {};
-
-  template<>
-  struct number_as_bool_selector<types::boolean>
-  : opti_detail::select_number_as_bool_as_number
-  {};
-
-  template<>
-  struct number_as_bool_selector<types::number>
-  : opti_detail::select_number_as_bool_as_number
-  {};
-
-  template<class... xs>
-  struct number_as_bool_selector<types::basic_list<xs...>>
-  : opti_detail::select_number_as_bool_never
-  {};
-
-  template<class... xs>
-  struct number_as_bool_selector<types::basic_seq<xs...>>
-  : opti_detail::select_number_as_bool_never
-  {};
-
-  template<class x>
-  struct number_as_bool_selector<types::basic_pack<x>>
-  : number_as_bool_selector<x>
-    ::template f<
-      opti_detail::select_number_as_bool_maybe_true,
-      opti_detail::select_number_as_bool_maybe_false,
-      opti_detail::select_number_as_bool_maybe_true,
-      opti_detail::select_number_as_bool_maybe_false,
-      opti_detail::select_number_as_bool_maybe_number,
-      opti_detail::select_number_as_bool_maybe_number,
-      opti_detail::select_number_as_bool_never
-    >
-  {};
-
-  template<class... xs>
-  struct number_as_bool_selector<types::basic_union<xs...>>
-  : at_c<opti_detail::number_as_bool_from_union_table[
-    (... | opti_detail::number_as_bool_selector_from_union<xs>::value)
-  ]>
-  {};
-
-
-  namespace opti_detail
-  {
-    template<class F>
-    using dispatch_idx_3 = typename F::template f<
-      always<number<0b001>>,
-      always<number<0b010>>,
-      always<number<0b100>>
-    >;
-
-    constexpr int dispatch_idx_3_union_table[]{
-      // 0b00x
-      0, 0,
-      // 0b01x
-      1, 1,
-      // 0b100
-      2,
-      // 0b1xx
-      1, 1, 1,
-    };
-
-    constexpr int dispatch_idx_3_seq_table[]{
-      // 0b00x
-      0, 0,
-      // 0b01x
-      1, 1,
-      // 0b1xx
-      2, 2, 2, 2,
-    };
-
-    template<template<class> class F, class... xs>
-    using dispatch_3_union_selector = at_c<dispatch_idx_3_union_table[
-      (... | dispatch_idx_3<F<xs>>::value)
-    ]>;
-
-    template<template<class> class F, class... xs>
-    using dispatch_3_seq_selector = at_c<dispatch_idx_3_seq_table[
-      (0 | ... | dispatch_idx_3<F<xs>>::value)
-    ]>;
-
-    template<template<class> class F, class C>
-    struct dispatch_3_filter
-    {
-      template<class... xs>
-      using f = typename detail::_join_select<sizeof...(xs)>
-      ::template f<
-        C::template f,
-        typename F<xs>::template f<listify, listify, always<list<>>>...
-      >::type;
-    };
-  }
-
-
-  template<class C>
-  struct to_creator
-  {
-    template<class all,
-             class partial = tee<all, lift<add_uncallable_output>>,
-             class never = always<uncallable>>
-    using f = typename C::template f<all, partial, never>;
-  };
-
-
-  template<class C>
-  struct to_selector
-  {
-    template<class all,
-             class partial = add_uncallable_output<all>,
-             class never = uncallable>
-    using f = typename C::template f<always<all>, always<partial>, always<never>>;
-  };
-
-  template<class C,
-           class all,
-           class partial = add_uncallable_output<all>,
-           class never = uncallable>
-  using selector = typename C::template f<always<all>, always<partial>, always<never>>;
-
-
-  template<class params>
-  struct dispatch_list
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void /*add_uncallable_output<all_is_list>*/,
-             class never_list = uncallable>
-    using f = typename never_list::template f<params>;
-  };
-
-  template<class... xs>
-  struct dispatch_list<list<xs...>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = void>
-    using f = typename all_is_list::template f<list<xs...>>;
-  };
-
-  template<class... xs>
-  struct dispatch_list<types::basic_list<xs...>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = void>
-    using f = typename all_is_list::template f<types::basic_list<xs...>>;
-  };
-
-  template<>
-  struct dispatch_list<types::any>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = add_uncallable_output<all_is_list>,
-             class never_list = void>
-    using f = typename possibly_list_without_nolist::template f<types::any_list>;
-  };
-
-  template<class x>
-  struct dispatch_list<types::basic_pack<x>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = add_uncallable_output<all_is_list>,
-             class never_list = uncallable>
-    using f = typename dispatch_list<x>
-      ::template f<
-        possibly_list_without_nolist,
-        possibly_list_without_nolist,
-        lift<types::basic_pack, never_list>
-      >;
-  };
-
-  template<class... xs>
-  struct dispatch_list<types::basic_union<xs...>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = add_uncallable_output<all_is_list>,
-             class never_list = uncallable>
-    using f = typename opti_detail::dispatch_3_union_selector<dispatch_list, xs...>
-      ::template f<
-        all_is_list,
-        opti_detail::dispatch_3_filter<dispatch_list, possibly_list_without_nolist>,
-        lift<types::basic_union, never_list>>
-      ::template f<xs...>;
-  };
-
-
-  template<class params>
-  struct dispatch_lists
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void /*add_uncallable_output<all_is_list>*/,
-             class never_list = uncallable>
-    using f = typename never_list::template f<params>;
-  };
-
-  template<class... xs>
-  struct dispatch_lists<list<xs...>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = void>
-    using f = typename all_is_list::template f<list<xs...>>;
-  };
-
-  template<class... xs>
-  struct dispatch_lists<types::basic_list<xs...>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = void>
-    using f = typename all_is_list::template f<types::basic_list<xs...>>;
-  };
-
-  template<>
-  struct dispatch_lists<types::any>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = add_uncallable_output<all_is_list>,
-             class never_list = void>
-    using f = typename possibly_list_without_nolist::template f<types::any_list>;
-  };
-
-  template<class x>
-  struct dispatch_lists<types::basic_pack<x>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = add_uncallable_output<all_is_list>,
-             class never_list = uncallable>
-    using f = typename dispatch_lists<x>
-      ::template f<
-        lift<types::basic_pack, all_is_list>,
-        lift<types::basic_pack, possibly_list_without_nolist>,
-        lift<types::basic_pack, never_list>
-      >;
-  };
-
-  template<class... xs>
-  struct dispatch_lists<types::basic_seq<xs...>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = uncallable>
-    using f = typename opti_detail::dispatch_3_seq_selector<dispatch_lists, xs...>
-      ::template f<
-        all_is_list,
-        opti_detail::dispatch_3_filter<dispatch_lists, possibly_list_without_nolist>,
-        lift<types::basic_seq, never_list>>
-      ::template f<xs...>;
-  };
-
-  template<class... xs>
-  struct dispatch_lists<types::basic_union<xs...>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = add_uncallable_output<all_is_list>,
-             class never_list = uncallable>
-    using f = typename opti_detail::dispatch_3_union_selector<dispatch_lists, xs...>
-      ::template f<
-        lift<types::basic_union, all_is_list>,
-        opti_detail::dispatch_3_filter<dispatch_lists,
-          lift<opti_detail::union_or_identity_t, possibly_list_without_nolist>>,
-        lift<types::basic_union, never_list>>
-      ::template f<xs...>;
-  };
-
-
-  template<class params>
-  struct dispatch_join_list
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void /*add_uncallable_output<all_is_list>*/,
-             class never_list = uncallable>
-    using f = typename never_list::template f<params>;
-  };
-
-  template<class... xs>
-  struct dispatch_join_list<list<xs...>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = void>
-    using f = typename all_is_list::template f<xs...>;
-  };
-
-  template<class... xs>
-  struct dispatch_join_list<types::basic_list<xs...>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = void>
-    using f = typename all_is_list::template f<xs...>;
-  };
-
-  template<>
-  struct dispatch_join_list<types::any>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = add_uncallable_output<all_is_list>,
-             class never_list = void>
-    using f = typename possibly_list_without_nolist::template f<types::basic_pack<types::any>>;
-  };
-
-  template<>
-  struct dispatch_join_list<types::basic_pack<types::any>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = add_uncallable_output<all_is_list>,
-             class never_list = void>
-    using f = typename possibly_list_without_nolist::template f<types::basic_pack<types::any>>;
-  };
-
-  template<>
-  struct dispatch_join_list<types::basic_pack<list<>>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = void>
-    using f = typename all_is_list::template f<>;
-  };
-
-  template<class x>
-  struct dispatch_join_list<types::basic_pack<list<x>>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = void>
-    using f = typename all_is_list::template f<types::basic_pack<x>>;
-  };
-
-  template<class... xs>
-  struct dispatch_join_list<types::basic_pack<list<xs...>>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = void>
-    using f = typename all_is_list::template f<types::basic_pack<types::basic_seq<xs...>>>;
-  };
-
-  template<class x>
-  struct dispatch_join_list<types::basic_pack<types::basic_list<x>>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = void>
-    using f = typename all_is_list::template f<types::basic_pack<x>>;
-  };
-
-  template<class... xs>
-  struct dispatch_join_list<types::basic_pack<types::basic_list<xs...>>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = void>
-    using f = typename all_is_list::template f<types::basic_pack<types::basic_seq<xs...>>>;
-  };
-
-  template<class... xs>
-  struct dispatch_join_list<types::basic_pack<types::basic_union<xs...>>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = add_uncallable_output<all_is_list>,
-             class never_list = uncallable>
-    using f = typename dispatch_join_list<types::basic_union<xs...>>
-      ::template f<
-        lift<types::basic_pack, all_is_list>,
-        lift<types::basic_pack, possibly_list_without_nolist>,
-        lift<types::basic_pack, never_list>
-      >;
-  };
-
-  template<class x>
-  struct dispatch_join_list<types::basic_pack<x>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = uncallable>
-    using f = typename never_list::template f<types::basic_pack<x>>;
-  };
-
-  template<>
-  struct dispatch_join_list<types::basic_seq<>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = void,
-             class never_list = void>
-    using f = typename all_is_list::template f<>;
-  };
-
-  namespace opti_detail
-  {
-    template<class x>
-    struct dispatch_seq_or_x
-    {
-      template<class C>
-      using f = typename C::template f<x>;
-    };
-
-    template<class... xs>
-    struct dispatch_seq_or_x<types::basic_seq<xs...>>
-    {
-      template<class C>
-      using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
-    };
-
-    template<class C>
-    struct dispatch_as_seq
-    {
-      template<class... xs>
-      using f = typename dispatch_seq_or_x<seq<xs...>>::template f<C>;
-    };
-  }
-
-  template<class... xs>
-  struct dispatch_join_list<types::basic_seq<xs...>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = add_uncallable_output<all_is_list>,
-             class never_list = uncallable>
-    using f = typename opti_detail::dispatch_3_seq_selector<dispatch_join_list, xs...>
-      ::template f<
-        opti_detail::dispatch_3_filter<dispatch_join_list,
-          opti_detail::dispatch_as_seq<all_is_list>>,
-        opti_detail::dispatch_3_filter<dispatch_join_list,
-          opti_detail::dispatch_as_seq<possibly_list_without_nolist>>,
-        lift<types::basic_seq, never_list>>
-      ::template f<xs...>;
-  };
-
-  template<class... xs>
-  struct dispatch_join_list<types::basic_union<xs...>>
-  {
-    template<class all_is_list,
-             class possibly_list_without_nolist = add_uncallable_output<all_is_list>,
-             class never_list = uncallable>
-    using f = typename opti_detail::dispatch_3_union_selector<dispatch_join_list, xs...>
-      ::template f<
-        lift<types::basic_union, all_is_list>,
-        replace<types::basic_seq<>, list<types::basic_seq<>>,
-          opti_detail::dispatch_3_filter<dispatch_join_list,
-            lift<opti_detail::union_or_identity_t, possibly_list_without_nolist>>>,
-        lift<types::basic_union, never_list>>
-      ::template f<xs...>;
-  };
-
-
-  template<class x>
-  struct dispatch_bool
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = add_uncallable_output<all_is_bool>,
-             class never_bool = uncallable>
-    using f = typename conditional_c<std::is_scalar<x>::value || std::is_array<x>::value>
-      ::template f<never_bool, possibly_bool_without_nobool>
-      ::template f<x>;
-  };
-
-  template<>
-  struct dispatch_bool<false_>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = void,
-             class never_bool = void>
-    using f = typename all_is_bool::template f<false_>;
-  };
-
-  template<>
-  struct dispatch_bool<true_>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = void,
-             class never_bool = void>
-    using f = typename all_is_bool::template f<true_>;
-  };
-
-  template<int_ i>
-  struct dispatch_bool<number<i>>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = void,
-             class never_bool = uncallable>
-    using f = typename never_bool::template f<number<i>>;
-  };
-
-  template<class Int>
-  struct dispatch_bool<std::integral_constant<Int, 0>>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = void,
-             class never_bool = void>
-    using f = typename all_is_bool::template f<std::integral_constant<Int, 0>>;
-  };
-
-  template<class Int>
-  struct dispatch_bool<std::integral_constant<Int, 1>>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = void,
-             class never_bool = void>
-    using f = typename all_is_bool::template f<std::integral_constant<Int, 1>>;
-  };
-
-  template<class Int, Int n>
-  struct dispatch_bool<std::integral_constant<Int, n>>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = void,
-             class never_bool = uncallable>
-    using f = typename never_bool::template f<std::integral_constant<Int, n>>;
-  };
-
-  template<>
-  struct dispatch_bool<types::boolean>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = void,
-             class never_bool = void>
-    using f = typename all_is_bool::template f<types::boolean>;
-  };
-
-  template<>
-  struct dispatch_bool<types::number>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = add_uncallable_output<all_is_bool>,
-             class never_bool = void>
-    using f = typename possibly_bool_without_nobool::template f<types::number>;
-  };
-
-  template<>
-  struct dispatch_bool<types::any>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = add_uncallable_output<all_is_bool>,
-             class never_bool = void>
-    using f = typename possibly_bool_without_nobool::template f<types::any>;
-  };
-
-  template<class x>
-  struct dispatch_bool<types::basic_pack<x>>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = add_uncallable_output<all_is_bool>,
-             class never_bool = uncallable>
-    using f = typename dispatch_bool<x>
-      ::template f<
-        possibly_bool_without_nobool,
-        possibly_bool_without_nobool,
-        lift<types::basic_pack, never_bool>
-      >;
-  };
-  template<>
-  struct dispatch_bool<types::uncallable>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = void,
-             class never_bool = uncallable>
-    using f = typename never_bool::template f<types::uncallable>;
-  };
-
-  template<>
-  struct dispatch_bool<types::na>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = void,
-             class never_bool = uncallable>
-    using f = typename never_bool::template f<types::na>;
-  };
-
-  template<class... xs>
-  struct dispatch_bool<list<xs...>>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = void,
-             class never_bool = uncallable>
-    using f = typename never_bool::template f<list<xs...>>;
-  };
-
-  template<class... xs>
-  struct dispatch_bool<types::basic_list<xs...>>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = void,
-             class never_bool = uncallable>
-    using f = typename never_bool::template f<types::basic_list<xs...>>;
-  };
-
-  template<class... xs>
-  struct dispatch_bool<types::basic_seq<xs...>>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = void,
-             class never_bool = uncallable>
-    using f = typename never_bool::template f<types::basic_seq<xs...>>;
-  };
-
-  template<class... xs>
-  struct dispatch_bool<types::basic_union<xs...>>
-  {
-    template<class all_is_bool,
-             class possibly_bool_without_nobool = add_uncallable_output<all_is_bool>,
-             class never_bool = uncallable>
-    using f = typename opti_detail::dispatch_3_union_selector<dispatch_bool, xs...>
-      ::template f<
-        all_is_bool,
-        opti_detail::dispatch_3_filter<dispatch_bool, possibly_bool_without_nobool>,
-        lift<types::basic_union, never_bool>>
-      ::template f<xs...>;
-  };
-
-
-  template<class>
-  struct callable_selector
-  {
-    template <class Callable, class MaybeCallable = void, class Uncallable = uncallable>
-    using f = Callable;
-  };
-
-  template<class... xs>
-  struct callable_selector<types::basic_union<types::uncallable, xs...>>
-  {
-    template <class Callable, class MaybeCallable = add_uncallable_output<Callable>, class Uncallable = uncallable>
-    using f = MaybeCallable;
-  };
-
-  template<> struct callable_selector<types::uncallable>
-  {
-    template <class Callable, class MaybeCallable = add_uncallable_output<Callable>, class Uncallable = uncallable>
-    using f = Uncallable;
-  };
-
-
-  template<class C>
-  struct dispatch_optimizer
-  {
-    template<class F, class params, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C,
-      output_result<F, params>,
-      optimized_function<F, params>,
-      xs...
-    );
-  };
-
-
-  template<class TC, class FC = uncallable>
-  struct dispatch_if_not_uncallable
-  {
-    template<class F, class params, class... xs>
-    using f = typename callable_selector<output_result<F, params>>
-      ::template f<TC, TC, FC>
-      ::template f<
-        output_result<F, params>,
-        optimized_function<F, params>,
-        xs...
-      >;
-  };
-
-
-  template<class TC, class FC = uncallable>
-  struct if_not_uncallable
-  {
-    template<class Params, class... xs>
-    using f = typename callable_selector<Params>
-      ::template f<TC, TC, FC>
-      ::template f<Params, xs...>;
-  };
-
-
-  template<class C>
-  struct add_uncallable_result
-  {
-    template<class R, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, union_<uncallable, R>, xs...);
-  };
-
-
-  template<class Callable, class Uncallable = uncallable>
-  struct propagate_uncallable
-  {
-    template<class params, class R, class... xs>
-    using f = typename callable_selector<params>
-      ::template f<Callable, add_uncallable_output<Callable>, Uncallable>
-      ::template f<R, xs...>;
-  };
-
-
-  namespace opti_detail
-  {
-    template<class params>
-    struct remove_uncallable_union_impl
-    {
-      using type = params;
-    };
-
-    template<class x>
-    struct remove_uncallable_union_impl<types::basic_union<uncallable, x>>
-    {
-      using type = x;
-    };
-
-    template<class... xs>
-    struct remove_uncallable_union_impl<types::basic_union<uncallable, xs...>>
-    {
-      using type = types::basic_union<xs...>;
-    };
-  }
-
-
-  template<class C>
-  struct remove_uncallable_union
-  {
-    template<class params, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C,
-      typename opti_detail::remove_uncallable_union_impl<params>::type,
-      xs...
-    );
-  };
-
-
-  template<class C>
-  struct rewrap_uncallable
-  {
-    template<class params, class... xs>
-    using f = typename callable_selector<params>
-      ::template f<C, add_uncallable_output<remove_uncallable_union<C>>>
-      ::template f<params, xs...>;
-  };
-
-
-  template<class F, class params>
-  using transform_from_params_t = typename opti_detail::transform_from_params_impl<F, params>::type;
-}
-
-
-namespace jln::mp::optimizer
-{
-  struct optimized_for_regular_optimizer
-  {
-    template<class R, class C, class F, class... xs>
-    using f = optimized_result<R, typename F::template f<xs..., C>>;
-  };
-
-
-#define JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_0(func, arity, output) \
-  namespace jln::mp::optimizer                                           \
-  {                                                                      \
-    template<class C, class params>                                      \
-    struct optimizer_impl<func<C>, params>                               \
-    {                                                                    \
-      using type = optimized_for_regular<arity, output>                  \
-        ::f<params, func, C>;                                            \
-    };                                                                   \
-  }
-
-#define JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_1(func, arity, output) \
-  namespace jln::mp::optimizer                                           \
-  {                                                                      \
-    template<class x, class C, class params>                             \
-    struct optimizer_impl<func<x, C>, params>                            \
-    {                                                                    \
-      using type = optimized_for_regular<arity, output>                  \
-        ::f<params, func, C, x>;                                         \
-    };                                                                   \
-  }
-
-#define JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_2(func, arity, output) \
-  namespace jln::mp::optimizer                                           \
-  {                                                                      \
-    template<class x, class y, class C, class params>                    \
-    struct optimizer_impl<func<x, y, C>, params>                         \
-    {                                                                    \
-      using type = optimized_for_regular<arity, output>                  \
-        ::f<params, func, C, x, y>;                                      \
-    };                                                                   \
-  }
-
-  // TODO move output to ::f<output, ...>
-  template<int arity, class output>
-  struct optimized_for_regular;
-
-  namespace opti_detail
-  {
-    template<class params>
-    struct optimized_for_regular_get_output
-    {
-      template<class F, class output>
-      using f = typename conditional_c<is_real_type_v<params>>
-        ::template f<F, always<output>>
-        ::template f<params>;
-    };
-
-    template<class... xs>
-    struct optimized_for_regular_get_output<types::basic_union<xs...>>
-    {
-      template<class F, class output>
-      using f = typename conditional_c<(... && is_real_type_v<xs>)>
-        ::template f<transform<F, lift<union_>>, always<output>>
-        ::template f<xs...>;
-    };
-  }
-
-  template<class output>
-  struct optimized_for_regular<-1, output>
-  {
-    template<class params, template<class...> class Tpl, class C, class... xs>
-    using f = dispatch_optimizer<optimized_for_regular_optimizer>
-      ::template f<
-        C,
-        typename opti_detail::optimized_for_regular_get_output<params>
-          ::template f<Tpl<xs...>, output>,
-        typename conditional_c<is_real_type_v<params>>
-          ::template f<lift<always>, lift<Tpl>>,
-        xs...
-      >;
-  };
-
-  template<class output>
-  struct optimized_for_regular<1, output>
-  {
-    template<class params, template<class...> class Tpl, class C, class... xs>
-    using f = typename count_param_always_maybe_never_selector<params, 1>
-      ::template f<dispatch_optimizer<optimized_for_regular_optimizer>>
-      ::template f<
-        C,
-        typename opti_detail::optimized_for_regular_get_output<params>
-          ::template f<Tpl<xs...>, output>,
-        typename conditional_c<is_real_type_v<params>>
-          ::template f<lift<always>, lift<Tpl>>,
-        xs...
-      >;
-  };
-
-  namespace opti_detail
-  {
-    template<class params>
-    struct optimized_for_regular2_selector
-    {
-      template<class output, template<class...> class Tpl, class C, class... xs>
-      using f = typename count_param_always_maybe_never_selector<params, 2>
-        ::template f<dispatch_optimizer<optimized_for_regular_optimizer>>
-        ::template f<C, output, lift<Tpl>, xs...>;
-    };
-
-    template<bool>
-    struct optimized_for_regular2_selector_impl;
-
-    template<>
-    struct optimized_for_regular2_selector_impl<false>
-    {
-      template<class x, class y, class output, template<class...> class Tpl, class C, class... xs>
-      using f = typename count_param_always_maybe_never_selector<types::basic_seq<x, y>, 2>
-        ::template f<dispatch_optimizer<optimized_for_regular_optimizer>>
-        ::template f<C, output, lift<Tpl>, xs...>;
-    };
-
-    template<>
-    struct optimized_for_regular2_selector_impl<true>
-    {
-      template<class x, class y, class output, template<class...> class Tpl, class C, class... xs>
-      using f = dispatch_optimizer<optimized_for_regular_optimizer>
-        ::template f<C, typename Tpl<xs...>::template f<x, y>, lift<always>>;
-    };
-
-    template<class x, class y>
-    struct optimized_for_regular2_selector<types::basic_seq<x, y>>
-    {
-      template<class output, template<class...> class Tpl, class C, class... xs>
-      using f = typename optimized_for_regular2_selector_impl<is_real_type_v<x>
-                                                           && is_real_type_v<y>>
-        ::template f<x, y, output, Tpl, C, xs...>;
-    };
-
-    template<bool>
-    struct optimized_for_regular2_with_uncallable_selector_impl;
-
-    template<>
-    struct optimized_for_regular2_with_uncallable_selector_impl<false>
-    {
-      template<class x, class y, class output, template<class...> class Tpl, class C, class... xs>
-      using f = typename count_param_always_maybe_never_selector<
-        types::basic_union<uncallable, types::basic_seq<x, y>>, 2
-      >
-        ::template f<dispatch_optimizer<optimized_for_regular_optimizer>>
-        ::template f<C, output, lift<Tpl>, xs...>;
-    };
-
-    template<>
-    struct optimized_for_regular2_with_uncallable_selector_impl<true>
-    {
-      template<class x, class y, class output, template<class...> class Tpl, class C, class... xs>
-      using f = dispatch_optimizer<optimized_for_regular_optimizer>
-        ::template f<
-          C,
-          types::basic_union<uncallable, typename Tpl<xs...>::template f<x, y>>,
-          lift<always>
-      >;
-    };
-
-    template<class x, class y>
-    struct optimized_for_regular2_selector<types::basic_union<uncallable, types::basic_seq<x, y>>>
-    {
-      template<class output, template<class...> class Tpl, class C, class... xs>
-      using f = typename optimized_for_regular2_with_uncallable_selector_impl<is_real_type_v<x>
-                                                                           && is_real_type_v<y>>
-        ::template f<x, y, output, Tpl, C, xs...>;
-    };
-  }
-
-  template<class output>
-  struct optimized_for_regular<2, output>
-  {
-    template<class params, template<class...> class Tpl, class C, class... xs>
-    using f = typename opti_detail::optimized_for_regular2_selector<params>
-      ::template f<output, Tpl, C, xs...>;
-  };
-
-
-  template<class R>
-  using optimized_for_identity = optimized_result<R, identity>;
-
-  template<class params>
-  struct optimizer_impl<identity, params>
-  {
-    using type = typename count_param_always_maybe_never_selector<params, 1>
-      ::template f<
-        lift<optimized_for_identity>,
-        extract_one_param_as_union<add_uncallable_result<lift<optimized_for_identity>>>,
-        uncallable>
-      ::template f<params>;
-  };
-
-
-  struct optimized_for_transform0
-  {
-    template<class F, class R, class C>
-    using f = optimize<C, types::basic_seq<>>;
-  };
-
-  struct optimized_for_transform
-  {
-    template<class R, class C, class F>
-    using f = optimized_result<R, transform<F, C>>;
-  };
-
-  struct optimized_for_transform1_or_more
-  {
-    template<class R, class F, class C>
-    using f = typename dispatch_optimizer<optimized_for_transform>
-      ::f<C, R, F>;
-  };
-
-  struct optimized_for_transform0_or_more
-  {
-    template<class R, class F, class C>
-    using f = typename dispatch_optimizer<optimized_for_transform>
-      ::f<C, union_<R, types::basic_seq<>>, F>;
-  };
-
-  template<class F, class C, class params>
-  struct optimizer_impl<transform<F, C>, params>
-  {
-    using type = typename count_param_always_maybe_never_selector<params, 0>
-      ::template f<
-        optimized_for_transform0,
-        optimized_for_transform0_or_more,
-        if_not_uncallable<optimized_for_transform1_or_more>>
-      ::template f<
-        transform_from_params_t<F, params>,
-        optimized_function<F, remove_empty_seq_from_union_t<extract_all_types_t<params>>>,
-        C
-      >;
-  };
-
-
-  struct optimized_if_pred_true
-  {
-    template<class Pred, class OTC, class OFC>
-    using f = OTC;
-  };
-
-  struct optimized_if_pred_false
-  {
-    template<class Pred, class OTC, class OFC>
-    using f = OFC;
-  };
-
-  struct optimized_for_if
-  {
-    template<class R, class Pred, class OTC, class OFC>
-    using f = optimized_result<R, if_<Pred, OTC, OFC>>;
-  };
-
-  struct optimized_if_pred_maybe_true
-  {
-    template<class Pred, class OTC, class OFC>
-    using f = typename optimized_for_if
-    ::template f<
-      union_<types::uncallable, typename OTC::output_result>,
-      Pred, OTC, uncallable_function
-    >;
-  };
-
-  struct optimized_if_pred_maybe_false
-  {
-    template<class Pred, class OTC, class OFC>
-    using f = typename optimized_for_if
-    ::template f<
-      union_<types::uncallable, typename OFC::output_result>,
-      Pred, uncallable_function, OFC
-    >;
-  };
-
-  struct optimized_if_pred_number
-  {
-    template<class Pred, class OTC, class OFC>
-    using f = typename optimized_for_if
-    ::template f<
-      union_<
-        typename OTC::output_result,
-        typename OFC::output_result
-      >,
-      Pred,
-      typename OTC::function,
-      typename OFC::function
-    >;
-  };
-
-  struct optimized_if_pred_maybe_number
-  {
-    template<class Pred, class OTC, class OFC>
-    using f = typename optimized_for_if
-    ::template f<
-      union_<
-        types::uncallable,
-        typename OTC::output_result,
-        typename OFC::output_result
-      >,
-      Pred,
-      typename OTC::function,
-      typename OFC::function
-    >;
-  };
-
-  struct optimized_if_pred_nerver_number
-  {
-    template<class Pred, class TC, class FC, class params>
-    using f = types::uncallable;
-  };
-
-  template<class Pred, class TC, class FC, class params>
-  struct optimizer_impl<if_<Pred, TC, FC>, params>
-  {
-    using type = typename number_as_bool_selector<output_result<Pred, params>>
-      ::template f<
-        optimized_if_pred_true,
-        optimized_if_pred_false,
-        optimized_if_pred_maybe_true,
-        optimized_if_pred_maybe_false,
-        optimized_if_pred_number,
-        optimized_if_pred_maybe_number,
-        uncallable>
-      ::template f<
-        optimized_function<Pred, params>,
-        optimize<TC, params>,
-        optimize<FC, params>
-      >;
-  };
-
-
-  template<class F, class params>
-  struct optimizer_impl<tee<F, identity>, params>
-  {
-    using type = optimize<F, params>;
-  };
-
-
-  struct optimized_for_try_callable
-  {
-    template<class OptiF, class TC, class FC, class params>
-    using f = optimize<
-      transform<typename OptiF::function, TC>,
-      typename OptiF::output_result
-    >;
-  };
-
-  struct optimized_for_try_uncallable
-  {
-    template<class OptiF, class TC, class FC, class params>
-    using f = optimize<FC, params>;
-  };
-
-  template<class R, class F, class TC, class FC>
-  using optimized_for_try_maybe_callable_impl = optimized_result<R, try_<F, TC, FC>>;
-
-  struct optimized_for_try_maybe_callable
-  {
-    template<class OptiF, class TC, class FC, class params>
-    using f = optimized_for_try_maybe_callable_impl<
-      union_<
-        output_result<TC, typename OptiF::output_result>,
-        output_result<FC, params>
-      >,
-      typename OptiF::function,
-      optimized_function<TC, typename OptiF::output_result>,
-      optimized_function<FC, params>
-    >;
-  };
-
-  template<class F, class TC, class FC, class params>
-  struct optimizer_impl<try_<F, TC, FC>, params>
-  {
-    using type = typename callable_selector<output_result<F, params>>
-      ::template f<optimized_for_try_callable,
-                   optimized_for_try_maybe_callable,
-                   optimized_for_try_uncallable>
-      ::template f<optimize<F, params>, TC, FC, params>
-      ;
-  };
-}
-
-
-#undef JLN_SELECT_NUMBER_AS_BOOL_TRUE
-#undef JLN_SELECT_NUMBER_AS_BOOL_FALSE
-#undef JLN_SELECT_NUMBER_AS_BOOL_MAYBE_TRUE
-#undef JLN_SELECT_NUMBER_AS_BOOL_MAYBE_FALSE
-#undef JLN_SELECT_NUMBER_AS_BOOL_AS_NUMBER
-#undef JLN_SELECT_NUMBER_AS_BOOL_MAYBE_NUMBER
-#undef JLN_SELECT_NUMBER_AS_BOOL_NEVER
 namespace jln::mp::smp
 {
   using listify = contract<mp::listify>;
@@ -9135,15 +4287,6 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, listify>
   {
     using type = smp::listify;
-  };
-}
-
-namespace jln::mp::optimizer
-{
-  template<class params>
-  struct optimizer_impl<listify, params>
-  {
-    using type = optimized_result<list_t<params>, listify>;
   };
 }
 /// \endcond
@@ -9161,14 +4304,6 @@ namespace jln::mp::detail
   {
     using type = smp::clear<sfinae<C>>;
   };
-}
-
-namespace jln::mp::optimizer
-{
-  template<class C, class params>
-  struct optimizer_impl<clear<C>, params>
-  : optimizer_impl<C, types::basic_seq<>>
-  {};
 }
 /// \endcond
 namespace jln::mp
@@ -9694,6 +4829,136 @@ namespace jln::mp::detail
 
 #undef JLN_DROP_WHILE_IMPL
 }
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template <unsigned n>
+    struct rotate_impl;
+
+    constexpr unsigned rotate_size(int_ n, unsigned size);
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Rotates the elements of a \sequence around a pivot.
+  /// \tparam N  a negative value start to end of sequence. The final offset is a modulo of `sizeof...(xs)`.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///     len = sizeof...(xs)
+  ///     n = len ? (N < 0 ? len + N % len : N) % size : 0
+  ///
+  ///     C::f<...xs[n:], ...xs[:n]>
+  ///   \endcode
+  /// \treturn \sequence
+  template <int_ N, class C = listify>
+  struct rotate_c
+  {
+    template<class... xs>
+    using f = typename detail::rotate_impl<
+      detail::rotate_size(N, sizeof...(xs))
+    >
+    ::template f<
+      detail::rotate_size(N, sizeof...(xs)),
+      C, xs...
+    >;
+  };
+
+  template <class N, class C = listify>
+  using rotate = rotate_c<N::value, C>;
+
+  namespace emp
+  {
+    template <class L, class n, class C = mp::listify>
+    using rotate = unpack<L, mp::rotate<n, C>>;
+
+    template <class L, int_ n, class C = mp::listify>
+    using rotate_c = unpack<L, mp::rotate_c<n, C>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp
+{
+  template <int_ N1, int_ N2, class C>
+  struct rotate_c<N1, rotate_c<N2, C>>
+    : rotate_c<N1 + N2, C>
+  {};
+
+#if JLN_MP_HAS_BUILTIN(__type_pack_element)
+  // back<C>
+  template <int_ N, class C>
+  struct rotate_c<N, front<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      __type_pack_element<detail::rotate_size(N, sizeof...(xs)), xs...>
+    );
+  };
+
+  // back<>
+  template <int_ N>
+  struct rotate_c<N, front<>>
+  {
+    template<class... xs>
+    using f = __type_pack_element<detail::rotate_size(N, sizeof...(xs)), xs...>;
+  };
+#endif
+}
+
+namespace jln::mp::detail
+{
+  constexpr unsigned rotate_size(int_ n, unsigned size)
+  {
+    return size ? static_cast<unsigned>(n < 0 ? size + n % size : n) % size : 0;
+  }
+
+  template <unsigned n>
+  struct rotate_impl : rotate_impl<
+      n < 16 ? 8
+    : n < 64 ? 16
+    : n < 256 ? 64
+    : 256
+  >
+  {};
+
+#define JLN_MP_ROTATE_IMPL(n, mp_xs, mp_rxs, _)           \
+  template<>                                              \
+  struct rotate_impl<n>                                   \
+  {                                                       \
+    template<unsigned size, class C,                      \
+      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
+      class... xs>                                        \
+    using f = JLN_MP_CALL_TRACE(C,                        \
+      xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)); \
+  };
+
+  JLN_MP_GEN_XS_0_TO_8(JLN_MP_ROTATE_IMPL)
+
+#undef JLN_MP_ROTATE_IMPL
+
+#define JLN_MP_ROTATE_IMPL(n, mp_xs, mp_rxs, _)           \
+  template<>                                              \
+  struct rotate_impl<n>                                   \
+  {                                                       \
+    template<unsigned size, class C,                      \
+      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
+      class... xs>                                        \
+    using f = typename rotate_impl<size-n>                \
+      ::template f<size-n, C,                             \
+        xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL) \
+      >;                                                  \
+  };
+
+  JLN_MP_GEN_XS_8_16_64_256(JLN_MP_ROTATE_IMPL)
+
+#undef JLN_MP_ROTATE_IMPL
+} // namespace jln::mp
 /// \endcond
 namespace jln::mp
 {
@@ -10573,17 +5838,6 @@ namespace jln::mp::detail
     using type = smp::always<T, sfinae<C>>;
   };
 }
-
-namespace jln::mp::optimizer
-{
-  template<class x, class C, class params>
-  struct optimizer_impl<always<x, C>, params>
-  {
-    using type = typename callable_selector<params>
-      ::template f<dispatch_optimizer<optimized_for_regular_optimizer>>
-      ::template f<C, x, lift<always>, x>;
-  };
-}
 /// \endcond
 namespace jln::mp::smp
 {
@@ -11019,6 +6273,94 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
+    template<class C, class... Fs>
+    struct _tee;
+  }
+  /// \endcond
+
+  /// \ingroup functional
+
+  /// Invokes multiple functions passing all parameters to each.
+  /// \treturn \value
+  /// \see each, partial
+#ifdef JLN_MP_DOXYGENATING
+  template<class... Fs, class C>
+  struct tee
+  {
+    template<class... xs>
+    using f = C::f<Fs::f<xs...>...>;
+  };
+#else
+  template<class... Fs>
+  struct tee
+  : detail::rotate_impl<sizeof...(Fs)-1>
+  ::template f<sizeof...(Fs)-1, lift<detail::_tee>, Fs...>
+  {};
+#endif
+
+  /// \cond
+  template<class F, class C>
+  struct tee<F, C>
+  {
+    template<class... xs>
+    using f = typename JLN_MP_TRACE_F(C)::template f<
+      JLN_MP_DCALL_TRACE_XS(xs, F, xs...)
+    >;
+  };
+
+  template<class F0, class F1, class C>
+  struct tee<F0, F1, C>
+  {
+    template<class... xs>
+    using f = typename JLN_MP_TRACE_F(C)::template f<
+      JLN_MP_DCALL_TRACE_XS(xs, F0, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F1, xs...)
+    >;
+  };
+
+  template<class F0, class F1, class F2, class C>
+  struct tee<F0, F1, F2, C>
+  {
+    template<class... xs>
+    using f = typename JLN_MP_TRACE_F(C)::template f<
+      JLN_MP_DCALL_TRACE_XS(xs, F0, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F1, xs...),
+      JLN_MP_DCALL_TRACE_XS(xs, F2, xs...)
+    >;
+  };
+  /// \endcond
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class C, class... Fs>
+  struct _tee
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_DCALL_TRACE_XS(xs, Fs, xs...)...);
+  };
+
+  template<class C>
+  struct optimize_tee
+  {
+    using type = C;
+  };
+
+  template<class C>
+  struct optimize_tee<tee<C, identity>>
+    : optimize_tee<C>
+  {};
+
+  template<class C>
+  using optimize_tee_t = typename optimize_tee<C>::type;
+} // namespace jln::mp
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
     template<class C, class F>
     struct circulant_matrix_impl;
   }
@@ -11264,6 +6606,34 @@ namespace jln::mp::detail
 }
 /// \endcond
 
+namespace jln::mp
+{
+  /// \ingroup list
+
+  /// Appends \c x to the end of the sequence.
+  /// \treturn \sequence
+  template<class x, class C = listify>
+  struct push_back
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs..., x);
+  };
+
+  namespace emp
+  {
+    template<class L, class T, class C = mp::listify>
+    using push_back = unpack<L, mp::push_back<T, C>>;
+  }
+
+  /// \cond
+  template<class x>
+  struct push_back<x, listify>
+  {
+    template<class... xs>
+    using f = list<xs..., x>;
+  };
+  /// \endcond
+}
 JLN_MP_DIAGNOSTIC_PUSH()
 JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wlogical-op")
 
@@ -12119,19 +7489,25 @@ namespace jln::mp
 {
   /// \ingroup number
 
+#if JLN_MP_CUDA
+#  define JLN_MP_AS_NUMBER(v) std::enable_if_t<v < 0 || std::size_t{v} <= (~0ull >> 1), int_>{v}
+#else
+#  define JLN_MP_AS_NUMBER(v) int_{v}
+#endif
+
   /// Narrowing convertion from \value to \number.
   /// \treturn \number
   template<class C = identity>
   struct as_number
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<int_{x::value}>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_AS_NUMBER(x::value)>);
   };
 
   namespace emp
   {
     template<class x>
-    using as_number = number<int_{x::value}>;
+    using as_number = number<JLN_MP_AS_NUMBER(x::value)>;
   }
 
   /// \cond
@@ -12139,7 +7515,7 @@ namespace jln::mp
   struct as_number<identity>
   {
     template<class x>
-    using f = number<int_{x::value}>;
+    using f = number<JLN_MP_AS_NUMBER(x::value)>;
   };
   /// \endcond
 }
@@ -12192,8 +7568,6 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT2(argument_category::unary, is);
 }
-
-JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_1(is, 1, types::boolean)
 /// \endcond
 namespace jln::mp
 {
@@ -12246,36 +7620,6 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, size<C>>
   {
     using type = smp::size<sfinae<C>>;
-  };
-}
-
-namespace jln::mp::optimizer
-{
-  template<bool>
-  struct optimized_for_size;
-
-  template<>
-  struct optimized_for_size<false>
-  {
-    template<class C, class params>
-    using f = optimize<C, number<count_min_param<params>::value>>;
-  };
-
-  template<>
-  struct optimized_for_size<true>
-  {
-    template<class C, class params>
-    using f = optimized_result<
-      typename optimize<C, types::number>::output_result,
-      size<typename optimize<C, types::number>::function>
-    >;
-  };
-
-  template<class C, class params>
-  struct optimizer_impl<size<C>, params>
-  {
-    using type = typename optimized_for_size<is_varlen_param<params>::value>
-      ::template f<C, params>;
   };
 }
 /// \endcond
@@ -12401,7 +7745,7 @@ namespace jln::mp::detail
   >;
 
 // x/0 is not a substitution failure
-#if JLN_MP_MSVC
+#if JLN_MP_MSVC || JLN_MP_CUDA
   template<template<class...> class Tpl, class C, int_ i = 0>
   using smp_op_without_zero = contract<
     if_<
@@ -13279,6 +8623,346 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    template<int>
+    struct fold_right_impl;
+  }
+  /// \endcond
+
+  /// \ingroup reduce
+
+  /// Folds right over a list using a binary predicate.
+  /// The first element in the input pack as the state,
+  /// use \c push_front<> to add state if needed.
+  /// \semantics
+  ///   \code
+  ///   F::f<xs[1], F::f<..., F::f<xs[n-2], F::f<xs[n-1], xs[0]>>>>
+  ///   \endcode
+  /// \pre `sizeof...(xs) >= 1`
+  /// \treturn \value
+  /// \see fold, fold_tree, reverse_fold_right, fold_balanced_tree
+  template<class F, class C = identity>
+  struct fold_right
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename detail::fold_right_impl<
+        int(sizeof...(xs)) - 1
+      >::template f<JLN_MP_TRACE_F(F)::template f, xs...>
+    );
+  };
+
+  namespace emp
+  {
+    template<class L, class state, class F, class C = mp::identity>
+    using fold_right = unpack<L,
+      mp::push_front<state, mp::fold_right<F, C>>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp
+{
+  template<class F>
+  struct fold_right<F, identity>
+  {
+    template<class... xs>
+    using f = typename detail::fold_right_impl<
+      int(sizeof...(xs)) - 1
+    >::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
+  };
+
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  template<template<class...> class F, class C>
+  struct fold_right<lift<F>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename detail::fold_right_impl<
+        int(sizeof...(xs)) - 1
+      >::template f<F, xs...>
+    );
+  };
+
+  template<template<class...> class F>
+  struct fold_right<lift<F>, identity>
+  {
+    template<class... xs>
+    using f = typename detail::fold_right_impl<
+      int(sizeof...(xs)) - 1
+    >::template f<F, xs...>;
+  };
+#endif
+}
+
+namespace jln::mp::detail
+{
+  template<int n>
+  struct fold_right_impl : fold_right_impl<
+      n < 8 ? 4
+    : n < 16 ? 8
+    : n < 64 ? 16
+    : n < 256 ? 64
+    : 256
+  >
+  {};
+
+#define JLN_MP_FOLD_RIGHT_SELECT(n, mp_xs, mp_rxs, mp_dup) \
+  template<>                                               \
+  struct fold_right_impl<n>                                \
+  {                                                        \
+    template<template<class...> class F, class state,      \
+      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),              \
+      class... xs>                                         \
+    using f = mp_xs(F<, JLN_MP_COMMA, JLN_MP_NIL)          \
+      typename fold_right_impl<sizeof...(xs)>              \
+      ::template f<F, state, xs...>                        \
+    mp_dup(>, JLN_MP_NIL);                                 \
+  };
+
+  JLN_MP_GEN_XS_4_8_16_64_256(JLN_MP_FOLD_RIGHT_SELECT)
+
+#undef JLN_MP_FOLD_RIGHT_SELECT
+
+#define JLN_MP_FOLD_RIGHT_SELECT(n, mp_xs, mp_rxs, mp_dup) \
+  template<>                                               \
+  struct fold_right_impl<n>                                \
+  {                                                        \
+    template<template<class...> class F, class state,      \
+      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA)>              \
+    using f = mp_xs(F<, JLN_MP_COMMA, JLN_MP_NIL)          \
+      state mp_dup(>, JLN_MP_NIL);                         \
+  };
+
+  JLN_MP_GEN_XS_1_TO_4(JLN_MP_FOLD_RIGHT_SELECT)
+
+#undef JLN_MP_FOLD_RIGHT_SELECT
+
+  template<>
+  struct fold_right_impl<0>
+  {
+    template<template<class...> class, class state>
+    using f = state;
+  };
+
+  template<>
+  struct fold_right_impl<-1>
+  {};
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template <bool>
+    struct _split;
+
+    inline constexpr int_ split_keep = 0;
+    inline constexpr int_ split_after = 1;
+    inline constexpr int_ split_before = 2;
+    inline constexpr int_ split_skip = 3;
+    inline constexpr int_ split_keep_sep = 4;
+  }
+  /// \endcond
+
+  /// \ingroup group
+
+  /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
+  /// The separator value is removed.
+  /// \semantics
+  ///   \code
+  ///   split_if<is<_0>>::f<_0, _1, _2, _0, _3>
+  ///   == list<
+  ///     list<>,
+  ///     list<_1, _2>,
+  ///     list<_3>
+  ///   >
+  ///   \endcode
+  /// \treturn \sequence of \list
+  /// \see split_before_if, split_after_if
+  template<class Pred = identity, class C = listify>
+  struct split_if
+  {
+    template <class... xs>
+    using f = typename detail::_split<sizeof...(xs) != 0>
+      ::template f<detail::split_skip, C, JLN_MP_TRACE_F(Pred), xs...>;
+  };
+
+  template<class x, class C = listify>
+  using split = split_if<is<x>, C>;
+
+  namespace emp
+  {
+    template<class L, class Pred = mp::identity, class C = mp::listify>
+    using split_if = unpack<L, mp::split_if<Pred, C>>;
+
+    template<class L, class x, class C = mp::listify>
+    using split = unpack<L, mp::split<x, C>>;
+  }
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template <class x, class state>
+  struct split_state;
+
+  template<class x, class... Ls, class... xs>
+  struct split_state<list<number<split_keep>, x>, list<list<xs...>, Ls...>>
+  {
+    using type = list<list<x, xs...>, Ls...>;
+  };
+
+  template<class x, class... Ls, class... xs>
+  struct split_state<list<number<split_after>, x>, list<list<xs...>, Ls...>>
+  {
+    using type = list<list<x>, list<xs...>, Ls...>;
+  };
+
+  template<class x, class... Ls, class... xs>
+  struct split_state<list<number<split_before>, x>, list<list<xs...>, Ls...>>
+  {
+    using type = list<list<>, list<x, xs...>, Ls...>;
+  };
+
+  template<class x, class... Ls, class... xs>
+  struct split_state<list<number<split_skip>, x>, list<list<xs...>, Ls...>>
+  {
+    using type = list<list<>, list<xs...>, Ls...>;
+  };
+
+  template<class x, class... Ls, class... xs>
+  struct split_state<list<number<split_keep_sep>, x>, list<list<xs...>, Ls...>>
+  {
+    using type = list<list<>, list<x>, list<xs...>, Ls...>;
+  };
+
+  template<class x, class y>
+  using split_state_t = typename split_state<x, y>::type;
+
+  template<>
+  struct _split<true>
+  {
+    template<int_ policy, class C, class Pred, class... xs>
+    using f = typename fold_right<
+      JLN_MP_LIFT_WRAP(split_state),
+      optimize_useless_unpack_t<unpack<C>>
+    >
+      ::template f<list<list<>>,
+                   list<number<Pred::template f<xs>::value
+                     ? policy : split_keep>, xs>...
+      >;
+  };
+
+  template<>
+  struct _split<false>
+  {
+    template<int_, class C, class>
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<bool>
+    struct _batched;
+  }
+  /// \endcond
+
+  /// \ingroup group
+
+  /// Splits a sequence by arbitrary size group.
+  /// \post If `n <= 0`, then the result sequence is empty
+  /// \semantics
+  ///   \code
+  ///   batched<number<2>>::f<
+  ///     void, void, int, void, void
+  ///   > = list<
+  ///     list<void, void>,
+  ///     list<int, void>,
+  ///     list<void>
+  ///   >
+  ///   \endcode
+  /// \treturn \sequence
+  template<int_ n, class C = listify>
+  struct batched_c
+  {
+    template<class... xs>
+    using f = typename detail::_batched<sizeof...(xs) != 0 && 0 < n>
+      ::template f<C, n, xs...>;
+  };
+
+  template<class n, class C = listify>
+  using batched = batched_c<n::value, C>;
+
+  namespace emp
+  {
+    template<class L, class n, class C = mp::listify>
+    using batched = unpack<L, mp::batched<n, C>>;
+
+    template<class L, int_ n, class C = mp::listify>
+    using batched_c = unpack<L, mp::batched_c<n, C>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class, int_... i>
+  struct _batched_impl
+  {
+    template<class C, int_ n, class... xs>
+    using f = typename fold_right<JLN_MP_LIFT_WRAP(split_state), unpack<pop_front<C>>>
+      ::template f<
+        list<list<>>,
+        list<number<(i % n ? split_keep : split_before)>, xs>...
+      >;
+  };
+
+  template<>
+  struct _batched<true>
+  {
+    template<class C, int_ n, class... xs>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), _batched_impl)
+      ::template f<C, n, xs...>;
+  };
+
+  template<>
+  struct _batched<false>
+  {
+    template<class C, int_, class...>
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
+  };
+}
+/// \endcond
+namespace jln::mp::smp
+{
+  template<int_ n, class C = listify>
+  using batched_c = contract<mp::batched_c<n, assume_lists<C>>>;
+}
+
+JLN_MP_MAKE_REGULAR_SMP2_P(batched, (N), (C, smp::listify), smp::batched_c<N::value, C>)
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, int_ n, class C>
+  struct _sfinae<sfinae, batched_c<n, C>>
+  {
+    using type = smp::batched_c<n, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
   /// \ingroup search
 
   /// Extract the first elements of a \sequence that does not satisfy a \predicate.
@@ -13551,8 +9235,9 @@ namespace jln::mp
 
   /// \ingroup search
 
-  /// Find the \sequence before_after a sub-\sequence.
-  /// Calls \c TC with all the elements before_after the sub-\sequence found.
+  /// Find the \sequences before and after a sub-\sequence.
+  /// Calls \c TC with result of \c SubC1 and \c SubC2 called
+  /// respectively with the sequences before and after the one found.
   /// If no element is found, \c FC is used with the whole \sequence.
   /// \treturn \sequence
   /// \see search, search_before
@@ -13650,241 +9335,6 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<int>
-    struct fold_right_impl;
-  }
-  /// \endcond
-
-  /// \ingroup reduce
-
-  /// Folds right over a list using a binary predicate.
-  /// The first element in the input pack as the state,
-  /// use \c push_front<> to add state if needed.
-  /// \semantics
-  ///   \code
-  ///   F::f<xs[1], F::f<..., F::f<xs[n-2], F::f<xs[n-1], xs[0]>>>>
-  ///   \endcode
-  /// \pre `sizeof...(xs) >= 1`
-  /// \treturn \value
-  /// \see fold, fold_tree, reverse_fold_right, fold_balanced_tree
-  template<class F, class C = identity>
-  struct fold_right
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      typename detail::fold_right_impl<
-        int(sizeof...(xs)) - 1
-      >::template f<JLN_MP_TRACE_F(F)::template f, xs...>
-    );
-  };
-
-  namespace emp
-  {
-    template<class L, class state, class F, class C = mp::identity>
-    using fold_right = unpack<L,
-      mp::push_front<state, mp::fold_right<F, C>>>;
-  }
-}
-
-
-/// \cond
-namespace jln::mp
-{
-  template<class F>
-  struct fold_right<F, identity>
-  {
-    template<class... xs>
-    using f = typename detail::fold_right_impl<
-      int(sizeof...(xs)) - 1
-    >::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
-  };
-
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
-  template<template<class...> class F, class C>
-  struct fold_right<lift<F>, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      typename detail::fold_right_impl<
-        int(sizeof...(xs)) - 1
-      >::template f<F, xs...>
-    );
-  };
-
-  template<template<class...> class F>
-  struct fold_right<lift<F>, identity>
-  {
-    template<class... xs>
-    using f = typename detail::fold_right_impl<
-      int(sizeof...(xs)) - 1
-    >::template f<F, xs...>;
-  };
-#endif
-}
-
-namespace jln::mp::detail
-{
-  template<int n>
-  struct fold_right_impl : fold_right_impl<
-      n < 8 ? 4
-    : n < 16 ? 8
-    : n < 64 ? 16
-    : n < 256 ? 64
-    : 256
-  >
-  {};
-
-#define JLN_MP_FOLD_RIGHT_SELECT(n, mp_xs, mp_rxs, mp_dup) \
-  template<>                                               \
-  struct fold_right_impl<n>                                \
-  {                                                        \
-    template<template<class...> class F, class state,      \
-      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),              \
-      class... xs>                                         \
-    using f = mp_xs(F<, JLN_MP_COMMA, JLN_MP_NIL)          \
-      typename fold_right_impl<sizeof...(xs)>              \
-      ::template f<F, state, xs...>                        \
-    mp_dup(>, JLN_MP_NIL);                                 \
-  };
-
-  JLN_MP_GEN_XS_4_8_16_64_256(JLN_MP_FOLD_RIGHT_SELECT)
-
-#undef JLN_MP_FOLD_RIGHT_SELECT
-
-#define JLN_MP_FOLD_RIGHT_SELECT(n, mp_xs, mp_rxs, mp_dup) \
-  template<>                                               \
-  struct fold_right_impl<n>                                \
-  {                                                        \
-    template<template<class...> class F, class state,      \
-      mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA)>              \
-    using f = mp_xs(F<, JLN_MP_COMMA, JLN_MP_NIL)          \
-      state mp_dup(>, JLN_MP_NIL);                         \
-  };
-
-  JLN_MP_GEN_XS_1_TO_4(JLN_MP_FOLD_RIGHT_SELECT)
-
-#undef JLN_MP_FOLD_RIGHT_SELECT
-
-  template<>
-  struct fold_right_impl<0>
-  {
-    template<template<class...> class, class state>
-    using f = state;
-  };
-
-  template<>
-  struct fold_right_impl<-1>
-  {};
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template <bool>
-    struct _split;
-
-    inline constexpr int_ split_keep = 0;
-    inline constexpr int_ split_after = 1;
-    inline constexpr int_ split_before = 2;
-    inline constexpr int_ split_skip = 3;
-    // inline constexpr int_ split_na = 4;
-  }
-  /// \endcond
-
-  /// \ingroup group
-
-  /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
-  /// \semantics
-  ///   \code
-  ///   split_if<is<_0>>::f<_0, _1, _2, _0, _3>
-  ///   == list<
-  ///     list<>,
-  ///     list<_1, _2>,
-  ///     list<_3>
-  ///   >
-  ///   \endcode
-  /// \treturn \sequence of \list
-  /// \see split_before_if, split_after_if
-  template<class Pred = identity, class C = listify>
-  struct split_if
-  {
-    template <class... xs>
-    using f = typename detail::_split<sizeof...(xs) != 0>
-      ::template f<detail::split_skip, C, JLN_MP_TRACE_F(Pred), xs...>;
-  };
-
-  template<class x, class C = listify>
-  using split = split_if<is<x>, C>;
-
-  namespace emp
-  {
-    template<class L, class Pred = mp::identity, class C = mp::listify>
-    using split_if = unpack<L, mp::split_if<Pred, C>>;
-
-    template<class L, class x, class C = mp::listify>
-    using split = unpack<L, mp::split<x, C>>;
-  }
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template <class x, class state>
-  struct split_state;
-
-  template<class x, class... Ls, class... xs>
-  struct split_state<list<number<split_keep>, x>, list<list<xs...>, Ls...>>
-  {
-    using type = list<list<x, xs...>, Ls...>;
-  };
-
-  template<class x, class... Ls, class... xs>
-  struct split_state<list<number<split_after>, x>, list<list<xs...>, Ls...>>
-  {
-    using type = list<list<x>, list<xs...>, Ls...>;
-  };
-
-  template<class x, class... Ls, class... xs>
-  struct split_state<list<number<split_before>, x>, list<list<xs...>, Ls...>>
-  {
-    using type = list<list<>, list<x, xs...>, Ls...>;
-  };
-
-  template<class x, class... Ls, class... xs>
-  struct split_state<list<number<split_skip>, x>, list<list<xs...>, Ls...>>
-  {
-    using type = list<list<>, list<xs...>, Ls...>;
-  };
-
-  template<class x, class y>
-  using split_state_t = typename split_state<x, y>::type;
-
-  template<>
-  struct _split<true>
-  {
-    template<int_ policy, class C, class Pred, class... xs>
-    using f = typename fold_right<lift<split_state_t>, optimize_useless_unpack_t<unpack<C>>>
-      ::template f<list<list<>>,
-                   list<number<Pred::template f<xs>::value
-                     ? policy : split_keep>, xs>...
-      >;
-  };
-
-  template<>
-  struct _split<false>
-  {
-    template<int_, class C, class>
-    using f = JLN_MP_CALL_TRACE_0_ARG(C);
-  };
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
     template<bool>
     struct _group;
   }
@@ -13966,7 +9416,7 @@ namespace jln::mp::detail
   template<class C, class Cmp, class x, class... xs, class... ys>
   struct _group_impl<C, Cmp, x, list<ys...>, xs...>
   {
-    using type = typename fold_right<lift<split_state_t>, unpack<_group_insert_x<x, C>>>
+    using type = typename fold_right<JLN_MP_LIFT_WRAP(split_state), unpack<_group_insert_x<x, C>>>
       ::template f<list<list<>>,
                    list<number<Cmp::template f<ys, xs>::value
                      ? split_keep : split_before>, xs>...
@@ -13977,7 +9427,7 @@ namespace jln::mp::detail
   struct _smp_group_impl
   {
     template<class C, class Cmp, class x, class... xs>
-    using f = typename fold_right<lift<split_state_t>, unpack<_group_insert_x<x, C>>>
+    using f = typename fold_right<JLN_MP_LIFT_WRAP(split_state), unpack<_group_insert_x<x, C>>>
       ::template f<list<list<>>,
                    list<number<Cmp::template f<ys, xs>::value
                      ? split_keep : split_before>, xs>...
@@ -14099,7 +9549,7 @@ namespace jln::mp::detail
   struct _collapse
   {
     template<class x, class... xs>
-    using f = typename fold_right<lift<split_state_t>, unpack<_group_insert_x<x, C>>>
+    using f = typename fold_right<JLN_MP_LIFT_WRAP(split_state), unpack<_group_insert_x<x, C>>>
       ::template f<list<list<>>, list<ns, xs>...>;
   };
 
@@ -14485,6 +9935,391 @@ namespace jln::mp::smp
 }
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    template<class F, class C>
+    struct not_fn_impl;
+  }
+  /// \endcond
+
+  /// \ingroup functional
+
+  /// Returns the negation of \c F.
+  /// \treturn \bool
+  template<class F, class C = identity>
+  using not_fn = typename detail::not_fn_impl<F, C>::type;
+
+  namespace emp
+  {
+    template<class F, class... xs>
+    using not_of = mp::number<!JLN_MP_DCALL_V_TRACE_XS(xs, F, xs...)::value>;
+
+    template<class L, class F, class C = mp::identity>
+    using not_fn = unpack<L, mp::not_fn<F, C>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class F>
+  struct to_not_fn;
+
+  template<class F>
+  using to_not_fn_t = typename to_not_fn<F>::type;
+
+  template<class Pred>
+  struct to_not_fn
+  {
+    using type = tee<Pred, not_<>>;
+  };
+
+  template<>
+  struct to_not_fn<not_<>>
+  {
+    using type = not_<not_<>>;
+  };
+
+  template<>
+  struct to_not_fn<not_<not_<>>>
+  {
+    using type = not_<>;
+  };
+
+  template<class C>
+  struct to_not_fn<not_<to_bool<C>>>
+  : to_not_fn<not_<C>>
+  {};
+
+  template<class C>
+  struct to_not_fn<not_<not_<not_<C>>>>
+  : to_not_fn<not_<C>>
+  {};
+
+  template<>
+  struct to_not_fn<identity>
+  {
+    using type = not_<>;
+  };
+
+  template<class PredNot>
+  struct optimise_not_not;
+
+  template<class PredNot>
+  struct optimise_not_not<not_<not_<PredNot>>>
+  {
+    using type = PredNot;
+  };
+
+  template<class PredNot>
+  struct optimise_not_not
+  {
+    using type = PredNot;
+  };
+
+  template<class C>
+  struct to_not_fn<to_bool<C>>
+  {
+    using type = to_bool<typename optimise_not_not<to_not_fn_t<C>>::type>;
+  };
+
+  template<class x, class C>
+  struct to_not_fn<is<x, C>>
+  {
+    using type = is<x, typename optimise_not_not<to_not_fn_t<C>>::type>;
+  };
+
+  template<class C>
+  struct to_not_fn<same<C>>
+  {
+    using type = same<typename optimise_not_not<to_not_fn_t<C>>::type>;
+  };
+
+  template<class PredNot>
+  struct to_not_fn_lift;
+
+  template<template<class...> class F, class C, class Not>
+  struct to_not_fn_lift<lift<F, tee<C, Not>>>
+  {
+    using type = tee<lift<F, C>, Not>;
+  };
+
+  template<class PredNot>
+  struct to_not_fn_lift
+  {
+    using type = PredNot;
+  };
+
+  template<template<class...> class F, class C>
+  struct to_not_fn<lift<F, C>>
+  : to_not_fn_lift<lift<F, to_not_fn_t<C>>>
+  {};
+
+  template<class x, class C>
+  struct to_not_fn<push_front<x, C>>
+  {
+    using type = push_front<x, to_not_fn_t<C>>;
+  };
+
+  template<class x, class C>
+  struct to_not_fn<push_back<x, C>>
+  {
+    using type = push_back<x, to_not_fn_t<C>>;
+  };
+
+  template<class Pred>
+  struct to_not_fn_tee;
+
+  template<class Pred>
+  struct to_not_fn_tee<tee<Pred, not_<>>>
+  {
+    using type = tee<Pred, not_<not_<>>>;
+  };
+
+  template<class Pred>
+  struct to_not_fn_tee
+  : to_not_fn<Pred>
+  {};
+
+  template<class Pred>
+  struct to_not_fn<tee<Pred, not_<>>>
+  : to_not_fn_tee<to_not_fn_t<Pred>>
+  {};
+
+  template<class PredNot>
+  struct to_not_fn_tee2;
+
+  template<class PredNot>
+  struct to_not_fn_tee2<tee<PredNot, not_<>>>
+  : to_not_fn<PredNot>
+  {};
+
+  template<class PredNot>
+  struct to_not_fn_tee2<tee<PredNot, not_<not_<>>>>
+  : to_not_fn<PredNot>
+  {};
+
+  template<class PredNot>
+  struct to_not_fn_tee2
+  {
+    using type = PredNot;
+  };
+
+  template<class Pred, class C>
+  struct to_not_fn<tee<Pred, C>>
+  : to_not_fn_tee2<tee<Pred, to_not_fn_t<C>>>
+  {};
+
+  template<class F, class C>
+  struct not_fn_impl
+  : to_not_fn<tee<F, C>>
+  {};
+
+  template<class F>
+  struct not_fn_impl<F, identity>
+  : to_not_fn<F>
+  {};
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class Pred>
+    struct mk_wrap_in_list_if;
+
+    template<class Pred>
+    struct mk_wrap_in_list_if_not;
+  }
+  /// \endcond
+
+  /// \ingroup list
+
+  /// Returns a \list with the first element if the predicate is checked, otherwise returns a empty list.
+  /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
+  /// \treturn \list
+  template<class Pred>
+  using wrap_in_list_if = typename detail::mk_wrap_in_list_if_not<
+    detail::to_not_fn_t<Pred>
+  >::type;
+
+  /// Returns a \list with the first element if the predicate is not checked, otherwise returns a empty list.
+  /// \pre \c Pred<xs...>::value must be narrowing convertible to bool
+  /// \treturn \list
+  template<class Pred>
+  using wrap_in_list_if_not = typename detail::mk_wrap_in_list_if<
+    detail::to_not_fn_t<Pred>
+  >::type;
+
+  template<bool b>
+  struct wrap_in_list_c;
+
+  template<>
+  struct wrap_in_list_c<true>
+  : listify
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f = list<xs...>;
+#endif
+  };
+
+  template<>
+  struct wrap_in_list_c<false>
+  : always<list<>>
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f = list<>;
+#endif
+  };
+
+  template<class b>
+  using wrap_in_list = wrap_in_list_c<b::value>;
+
+  namespace emp
+  {
+    template<class Pred, class... xs>
+    using wrap_in_list_if = typename mp::wrap_in_list_if<Pred>::template f<xs...>;
+
+    template<class Pred, class... xs>
+    using wrap_in_list_if_not = typename mp::wrap_in_list_if_not<Pred>::template f<xs...>;
+
+    template<class b, class... xs>
+    using wrap_in_list = typename mp::wrap_in_list_c<b::value>::template f<xs...>;
+
+    template<bool b, class... xs>
+    using wrap_in_list_c = typename mp::wrap_in_list_c<b>::template f<xs...>;
+  }
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class Pred>
+  struct _wrap_in_list_if
+  {
+    template<class x, class... xs>
+    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
+      bool(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)::value)
+    >, x);
+  };
+
+  template<class Pred>
+  struct _wrap_in_list_if_not
+  {
+    template<class x, class... xs>
+    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
+      !bool(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)::value)
+    >, x);
+  };
+
+#if ! JLN_MP_ENABLE_DEBUG
+  template<template<class...> class Pred>
+  struct _wrap_in_list_if<lift<Pred>>
+  {
+    template<class x, class... xs>
+    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
+      bool(JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::value)
+    >, x);
+  };
+
+  template<template<class...> class Pred>
+  struct _wrap_in_list_if_not<lift<Pred>>
+  {
+    template<class x, class... xs>
+    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
+      !bool(JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::value)
+    >, x);
+  };
+
+  template<template<class...> class Pred>
+  struct _wrap_in_list_if<lift_t<Pred>>
+  {
+    template<class x, class... xs>
+    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
+      bool(JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::type::value)
+    >, x);
+  };
+
+  template<template<class...> class Pred>
+  struct _wrap_in_list_if_not<lift_t<Pred>>
+  {
+    template<class x, class... xs>
+    using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
+      !bool(JLN_MP_DCALLF_V_XS(xs, Pred, x, xs...)::type::value)
+    >, x);
+  };
+#endif
+
+  template<class Pred>
+  struct mk_wrap_in_list_if
+  {
+    using type = _wrap_in_list_if<Pred>;
+  };
+
+  template<class Pred>
+  struct mk_wrap_in_list_if_not
+  {
+    using type = _wrap_in_list_if_not<Pred>;
+  };
+
+
+  template<class x>
+  struct mk_wrap_in_list_if<is<x, not_<>>>
+  {
+    using type = _wrap_in_list_if_not<is<x>>;
+  };
+
+  template<>
+  struct mk_wrap_in_list_if<same<not_<>>>
+  {
+    using type = _wrap_in_list_if_not<same<>>;
+  };
+
+  template<template<class...> class F>
+  struct mk_wrap_in_list_if<lift<F, not_<>>>
+  {
+    using type = _wrap_in_list_if_not<lift<F>>;
+  };
+
+  template<class Pred>
+  struct mk_wrap_in_list_if<tee<Pred, not_<>>>
+  {
+    using type = _wrap_in_list_if_not<Pred>;
+  };
+
+
+  template<class x>
+  struct mk_wrap_in_list_if_not<is<x, not_<>>>
+  {
+    using type = _wrap_in_list_if<is<x>>;
+  };
+
+  template<>
+  struct mk_wrap_in_list_if_not<same<not_<>>>
+  {
+    using type = _wrap_in_list_if<same<>>;
+  };
+
+  template<template<class...> class F>
+  struct mk_wrap_in_list_if_not<lift<F, not_<>>>
+  {
+    using type = _wrap_in_list_if<lift<F>>;
+  };
+
+  template<class Pred>
+  struct mk_wrap_in_list_if_not<tee<Pred, not_<>>>
+  {
+    using type = _wrap_in_list_if<Pred>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
   /// \ingroup filter
 
   /// Removes elements that have a corresponding element in selectors to 0.
@@ -14564,7 +10399,11 @@ namespace jln::mp::detail
   template<class... Selectors>
   struct smp_compress_select<
     list<Selectors...>,
+#if JLN_MP_CUDA
+    std::enable_if_t<((std::size_t{Selectors::value} <= 1) || ...) || !sizeof...(Selectors)>
+#else
     std::void_t<decltype(bool{Selectors::value})...>
+#endif
   >
   {
     template<class C>
@@ -14801,44 +10640,6 @@ namespace jln::mp::detail
     using type = smp::join<sfinae<C>>;
   };
 } // namespace jln::mp::detail
-
-namespace jln::mp::optimizer
-{
-  template<bool>
-  struct optimized_for_join_wrap;
-
-  template<>
-  struct optimized_for_join_wrap<true>
-  {
-    template<class... xs>
-    using f = wrap_optimize_with_params<types::basic_seq<xs...>>;
-  };
-
-  template<>
-  struct optimized_for_join_wrap<false>
-  {
-    template<class... xs>
-    using f = wrap_optimize_with_function<lift<join>, types::basic_seq<xs...>>;
-  };
-
-  struct optimized_for_join_impl
-  {
-    template<class... xs>
-    using f = typename optimized_for_join_wrap<(... && is_real_type_v<xs>)>
-      ::template f<xs...>;
-  };
-
-  template<class C, class params>
-  struct optimizer_impl<join<C>, params>
-  {
-    using type = typename dispatch_join_list<params>
-      ::template f<
-        optimized_for_join_impl,
-        add_uncallable_output<optimized_for_join_impl>,
-        always<uncallable>>
-      ::template f<C>;
-  };
-}
 /// \endcond
 namespace jln::mp::smp
 {
@@ -14856,6 +10657,14 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  /// \treturn \bool
+  template <class T, class C = identity>
+  using is_not = is<T, not_<C>>;
+} // namespace jln::mp
 namespace jln::mp::smp
 {
   template<class x, class C = identity>
@@ -14975,55 +10784,6 @@ namespace jln::mp::detail
     using type = smp::wrap_in_list_c<b>;
   };
 }
-
-namespace jln::mp::optimizer
-{
-  struct optimized_for_wrap_in_list_if
-  {
-    template<class R, class Pred, class x>
-    using f = optimized_result<
-      typename select_cond<R>::template f<list_t<x>, list<>>,
-      detail::_wrap_in_list_if<Pred>
-    >;
-  };
-
-  template<class Pred, class params>
-  struct optimizer_impl<detail::_wrap_in_list_if<Pred>, params>
-  {
-    using type = typename dispatch_optimizer<optimized_for_wrap_in_list_if>
-      ::template f<Pred, params, param_at_c<params, 0>>;
-  };
-
-
-  struct optimized_for_wrap_in_list_if_not
-  {
-    template<class R, class Pred, class x>
-    using f = optimized_result<
-      typename select_cond<R>::template f<list<>, list_t<x>>,
-      detail::_wrap_in_list_if_not<Pred>
-    >;
-  };
-
-  template<class Pred, class params>
-  struct optimizer_impl<detail::_wrap_in_list_if_not<Pred>, params>
-  {
-    using type = typename dispatch_optimizer<optimized_for_wrap_in_list_if_not>
-      ::template f<Pred, params, param_at_c<params, 0>>;
-  };
-
-
-  template<class params>
-  struct optimizer_impl<wrap_in_list_c<true>, params>
-  {
-    using type = optimized_result<list_t<params>, wrap_in_list_c<true>>;
-  };
-
-  template<class params>
-  struct optimizer_impl<wrap_in_list_c<false>, params>
-  {
-    using type = optimized_result_t<list<>, always<list<>>>;
-  };
-}
 /// \endcond
 namespace jln::mp
 {
@@ -15058,6 +10818,285 @@ namespace jln::mp::smp
   template<class x, class C = listify>
   using copy = contract<mp::copy<x, subcontract<C>>>;
 }
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class x>
+    struct basic_item
+    {};
+
+    template<class... xs>
+    struct inherit : basic_item<xs>...
+    {};
+  }
+#if JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC
+# define JLN_MP_SET_CONTAINS_BASE(x, ...) __is_base_of(detail::basic_item<x>, __VA_ARGS__)
+#else
+# define JLN_MP_SET_CONTAINS_BASE(x, ...) std::is_base_of<detail::basic_item<x>, __VA_ARGS__>::value
+#endif
+#define JLN_MP_SET_CONTAINS(x, ...) JLN_MP_SET_CONTAINS_BASE(x, detail::inherit<__VA_ARGS__>)
+  /// \endcond
+
+  /// \ingroup set
+
+  /// Checks if \c x is an element of the \set whose elements are \c xs.
+  /// \treturn \bool
+  /// \pre `emp::unique<xs...> == list<xs...>`
+  template<class x, class C = identity>
+  struct set_contains
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_SET_CONTAINS(x, xs...)>);
+  };
+
+  namespace emp
+  {
+    /// \c true if \c x is an element of the set \c Set, \c false otherwise.
+    template<class Set, class x>
+    inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
+      x, typename detail::_unpack<mp::lift<detail::inherit>, Set>::type
+    );
+
+    /// \c true if \c x is an element of all \set \c Sets, \c false otherwise.
+    template<class x, class... Sets>
+    constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
+      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
+    ) && ...);
+
+    /// \c true if \c x is an element of any \set \c Sets, \c false otherwise.
+    template<class x, class... Sets>
+    constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
+      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
+    ) || ...);
+
+    /// \c true if \c x is an element of none \set \c Sets, \c false otherwise.
+    template<class x, class... Sets>
+    constexpr bool set_none_contains_v = !set_any_contains_v<x, Sets...>;
+
+    /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
+    template<class Set, class x>
+    using set_contains = number<set_contains_v<Set, x>>;
+
+    /// \c true_ if \c x is an element of all \set \c Sets, \c false_ otherwise.
+    template<class x, class... Sets>
+    using set_all_contains = number<set_all_contains_v<x, Sets...>>;
+
+    /// \c true_ if \c x is an element of any \set \c Sets, \c false_ otherwise.
+    template<class x, class... Sets>
+    using set_any_contains = number<set_any_contains_v<x, Sets...>>;
+
+    /// \c true_ if \c x is an element of none \set \c Sets, \c false_ otherwise.
+    template<class x, class... Sets>
+    using set_none_contains = number<!set_any_contains_v<x, Sets...>>;
+  }
+
+  /// Checks if \c x is an element of all \set \c Sets.
+  /// \treturn \bool
+  /// \pre `emp::unique<Sets> && ...`
+  template<class x, class C = identity>
+  struct set_all_contains
+  {
+    template<class... Sets>
+    using f = JLN_MP_CALL_TRACE(C, number<emp::set_all_contains_v<x, Sets...>>);
+  };
+
+  /// Checks if \c x is an element of any \set \c Sets.
+  /// \treturn \bool
+  /// \pre `emp::unique<Sets> && ...`
+  template<class x, class C = identity>
+  struct set_any_contains
+  {
+    template<class... Sets>
+    using f = JLN_MP_CALL_TRACE(C, number<emp::set_any_contains_v<x, Sets...>>);
+  };
+
+  /// Checks if \c x is an element of none \set \c Sets.
+  /// \treturn \bool
+  /// \pre `emp::unique<Sets> && ...`
+  template<class x, class C = identity>
+  struct set_none_contains
+  {
+    template<class... Sets>
+    using f = JLN_MP_CALL_TRACE(C, number<!emp::set_any_contains_v<x, Sets...>>);
+  };
+}
+
+/// \cond
+namespace jln::mp
+{
+  template<class x>
+  struct set_contains<x, identity>
+  {
+    template<class... xs>
+    using f = number<JLN_MP_SET_CONTAINS(x, xs...)>;
+  };
+
+  template<class x>
+  struct set_all_contains<x, identity>
+  {
+    template<class... Sets>
+    using f = number<emp::set_all_contains_v<x, Sets...>>;
+  };
+
+  template<class x>
+  struct set_any_contains<x, identity>
+  {
+    template<class... Sets>
+    using f = number<emp::set_any_contains_v<x, Sets...>>;
+  };
+
+  template<class x>
+  struct set_none_contains<x, identity>
+  {
+    template<class... Sets>
+    using f = number<!emp::set_any_contains_v<x, Sets...>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<bool>
+    struct set_push_back_select;
+
+    template<class Set, class x, class = number<0>>
+    struct set_push_back_impl;
+  }
+  /// \endcond
+
+  /// \ingroup set
+
+  /// Appends \c x to the end of the \set whose elements are \c xs if not already in \c xs.
+  /// \treturn \set
+  /// \pre `emp::unique<xs...> == list<xs...>`
+  /// \post \c emp::is_unique<result>
+  /// \see set_push_front, set_push_back_elements
+  template<class x, class C = listify>
+  struct set_push_back
+  {
+    template<class... xs>
+    using f = typename detail::set_push_back_select<JLN_MP_SET_CONTAINS(x, xs...)>
+      ::template f<JLN_MP_TRACE_F(C), x, xs...>;
+  };
+
+  namespace emp
+  {
+    template<class Set, class x>
+    using set_push_back = typename detail::set_push_back_impl<Set, x>::type;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct set_push_back_select<false>
+  {
+    template<class C, class x, class... xs>
+    using f = typename C::template f<xs..., x>;
+  };
+
+  template<>
+  struct set_push_back_select<true>
+  {
+    template<class C, class, class... xs>
+    using f = typename C::template f<xs...>;
+  };
+
+  template<class L, class x, class>
+  struct set_push_back_impl
+  {
+    using type = L;
+  };
+
+  template<class... xs, class x>
+  struct set_push_back_impl<list<xs...>, x, number<JLN_MP_SET_CONTAINS(x, xs...)>>
+  {
+    using type = list<xs..., x>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class Cmp, class C>
+    struct mk_unique;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Returns a list with duplicate elements removed.
+  /// \treturn \set
+  template<class C = listify>
+  using unique = typename detail::mk_unique<lift<std::is_same>, C>::type;
+
+  /// Returns a list with duplicate elements removed.
+  /// Only the first element found is kept.
+  /// \treturn \sequence
+  template<class Cmp = lift<std::is_same>, class C = listify>
+  using unique_if = typename detail::mk_unique<Cmp, C>::type;
+
+  namespace emp
+  {
+    template<class L, class C = mp::listify>
+    using unique = unpack<L, unique<C>>;
+
+    template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
+    using unique_if = unpack<L, unique_if<Cmp, C>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class Cmp>
+  struct _set_cmp_push_back
+  {
+    template<class x, class... xs>
+    using f = typename conditional_c<
+      none_of<push_back<x, Cmp>>::template f<xs...>::value
+    >::template f<list<xs..., x>, list<xs...>>;
+  };
+
+  template<class Cmp, class C>
+  struct mk_unique
+  {
+    using type = push_front<list<>, fold<
+      unpack<_set_cmp_push_back<JLN_MP_TRACE_F(Cmp)>>,
+      optimize_useless_unpack_t<unpack<C>>
+    >>;
+  };
+
+  template<class C>
+  struct mk_unique<lift<std::is_same>, C>
+  {
+    using type = push_front<list<>, fold<
+      lift<emp::set_push_back>,
+      optimize_useless_unpack_t<unpack<C>>
+    >>;
+  };
+
+  template<class C>
+  struct mk_unique<lift_t<std::is_same>, C>
+  : mk_unique<lift<std::is_same>, C>
+  {};
+
+  template<class C>
+  struct mk_unique<same<>, C>
+  : mk_unique<lift<std::is_same>, C>
+  {};
+}
+/// \endcond
 namespace jln::mp
 {
   /// \cond
@@ -17051,6 +13090,169 @@ namespace jln::mp::smp
   template<class T, class TC = listify, class FC = clear<TC>>
   using find_last = find_last_if<is<T>, TC, FC>;
 }
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class S>
+    struct wrapper;
+  }
+  /// \endcond
+
+  /// \ingroup utility
+
+  namespace emp
+  {
+    /// converts a \typelist to a \c lift<S>
+    template<class L>
+    using wrapper = typename detail::wrapper<L>::type;
+
+    template<class L, class... xs>
+    using rewrap = typename wrapper<L>::template f<xs...>;
+  }
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class...> class S, class... xs>
+  struct wrapper<S<xs...>>
+  {
+    using type = lift<S>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<template<class...> class, class>
+    struct _flatten_once;
+
+    template<template<class...> class, class>
+    struct _flatten;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Remove 1 dimension level from a sequence.
+  /// \semantics
+  ///   \code
+  ///   call<flatten_once<>, list<a, b>, c, list<list<d, e>, f>
+  ///   ==
+  ///   list<a, b, c, list<d, e>, f>
+  ///   \endcode
+  /// \treturn \sequence
+  /// \see flatten
+  template<class S = lift<list>, class C = listify>
+  struct flatten_once
+  {};
+
+  template<template<class...> class S, class C>
+  struct flatten_once<lift<S, identity>, C>
+  {
+    template<class... xs>
+    using f = typename detail::_join_select<sizeof...(xs)>
+      ::template f<JLN_MP_TRACE_F(C)::template f, typename detail::_flatten_once<S, xs>::type...>
+      ::type;
+  };
+
+  template<template<class...> class S, class C = listify>
+  using flatten_once_f = flatten_once<lift<S>, C>;
+
+  /// Recursive version of \c flatten_once.
+  ///   \code
+  ///   call<flatten<>, list<a, b>, c, list<list<d, e>, f>
+  ///   ==
+  ///   list<a, b, c, d, e, f>
+  ///   \endcode
+  /// \treturn \sequence
+  /// \see flatten_once
+  template<class S = lift<list>, class C = listify>
+  struct flatten
+  {};
+
+  template<template<class...> class S, class C>
+  struct flatten<lift<S, identity>, C>
+  {
+    template<class... xs>
+    using f = typename detail::_join_select<sizeof...(xs)>
+      ::template f<JLN_MP_TRACE_F(C)::template f, typename detail::_flatten<S, xs>::type...>
+      ::type;
+  };
+
+  template<template<class...> class S, class C = listify>
+  using flatten_f = flatten<lift<S>, C>;
+
+  namespace emp
+  {
+    template<class L, class S = wrapper<L>, class C = mp::listify>
+    using flatten_once = unpack<L, mp::flatten_once<S, C>>;
+
+    template<class L, class S = wrapper<L>, class C = mp::listify>
+    using flatten = unpack<L, mp::flatten<S, C>>;
+
+    template<class L, template<class...> class S, class C = mp::listify>
+    using flatten_once_f = unpack<L, mp::flatten_once_f<S, C>>;
+
+    template<class L, template<class...> class S, class C = mp::listify>
+    using flatten_f = unpack<L, mp::flatten_f<S, C>>;
+  }
+
+/// \cond
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  template<template<class...> class S, template<class...> class C>
+  struct flatten_once<lift<S, identity>, lift<C>>
+  {
+    template<class... xs>
+    using f = typename detail::_join_select<sizeof...(xs)>
+      ::template f<C, typename detail::_flatten_once<S, xs>::type...>
+      ::type;
+  };
+
+  template<template<class...> class S, template<class...> class C>
+  struct flatten<lift<S, identity>, lift<C>>
+  {
+    template<class... xs>
+    using f = typename detail::_join_select<sizeof...(xs)>
+      ::template f<C, typename detail::_flatten<S, xs>::type...>
+      ::type;
+  };
+#endif
+/// \endcond
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class...> class, class T>
+  struct _flatten_once
+  {
+    using type = list<T>;
+  };
+
+  template<template<class...> class S, class... xs>
+  struct _flatten_once<S, S<xs...>>
+  {
+    using type = list<xs...>;
+  };
+
+  template<template<class...> class, class T>
+  struct _flatten
+  {
+    using type = list<T>;
+  };
+
+  template<template<class...> class S, class... xs>
+  struct _flatten<S, S<xs...>>
+  : _join_select<sizeof...(xs)>
+    ::template f<list, typename _flatten<S, xs>::type...>
+  {};
+}
+/// \endcond
 namespace jln::mp::smp
 {
   template<class S = mp::lift<list>, class C = listify>
@@ -17364,6 +13566,471 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<int>
+    struct fold_xs_impl;
+
+    constexpr int_ partial_fold_xs_size(int_ i, int_ size);
+
+    template<template<class...> class F, int_ n, class... xs>
+    using partial_fold_xs_select = typename detail::fold_xs_impl<n-1>
+      ::template f<F, n-1, xs...>;
+  }
+  /// \endcond
+
+  /// \ingroup reduce
+
+  /// As \c fold_xs, but stop searching at position \c OffsetEnd.
+  template<int_ OffsetEnd, class F, class C = identity>
+  struct partial_fold_xs_c
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      detail::partial_fold_xs_select<
+        JLN_MP_TRACE_F(F)::template f,
+        detail::partial_fold_xs_size(OffsetEnd, sizeof...(xs)),
+        xs...
+      >
+    );
+  };
+
+  template<class OffsetEnd, class F, class C = identity>
+  using partial_fold_xs = partial_fold_xs_c<OffsetEnd::value, F, C>;
+
+  /// Folds left over a list using a mulary predicate.
+  /// The first element in the input pack as the state,
+  /// use \c push_front<> to add state if needed.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   F::f<... F::f<xs[0], xs[1], ..., xs[n-1]>, xs[2], ..., xs[n-1]>, ..., xs[n-1]>, ...>
+  ///   \endcode
+  /// \treturn \value
+  /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
+#ifdef JLN_MP_DOXYGENATING
+  template<class F, class C = identity>
+  using fold_xs = partial_fold_xs_c<-1, F, C>;
+#else
+  template<class F, class C = identity>
+  struct fold_xs
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      detail::partial_fold_xs_select<JLN_MP_TRACE_F(F)::template f, sizeof...(xs), xs...>
+    );
+  };
+#endif
+
+  namespace emp
+  {
+    template<class L, class OffsetEnd, class state, class F, class C = mp::identity>
+    using partial_fold_xs = unpack<L,
+      mp::push_front<state, mp::partial_fold_xs<OffsetEnd, F, C>>>;
+
+    template<class L, int_ OffsetEnd, class state, class F, class C = mp::identity>
+    using partial_fold_xs_c = unpack<L,
+      mp::push_front<state, mp::partial_fold_xs_c<OffsetEnd, F, C>>>;
+
+    template<class L, class state, class F, class C = mp::identity>
+    using fold_xs = unpack<L,
+      mp::push_front<state, mp::fold_xs<F, C>>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp
+{
+  template<int_ OffsetEnd, class F>
+  struct partial_fold_xs_c<OffsetEnd, F, identity>
+  {
+    template<class... xs>
+    using f = detail::partial_fold_xs_select<
+      JLN_MP_TRACE_F(F)::template f,
+      detail::partial_fold_xs_size(OffsetEnd, sizeof...(xs)),
+      xs...
+    >;
+  };
+
+  template<class F>
+  struct fold_xs<F, identity>
+  {
+    template<class... xs>
+    using f = detail::partial_fold_xs_select<JLN_MP_TRACE_F(F)::template f, sizeof...(xs), xs...>;
+  };
+
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  template<int_ OffsetEnd, template<class...> class F, class C>
+  struct partial_fold_xs_c<OffsetEnd, lift<F>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      detail::partial_fold_xs_select<
+        F,
+        detail::partial_fold_xs_size(OffsetEnd, sizeof...(xs)),
+        xs...
+      >
+    );
+  };
+
+  template<int_ OffsetEnd, template<class...> class F>
+  struct partial_fold_xs_c<OffsetEnd, lift<F>, identity>
+  {
+    template<class... xs>
+    using f = detail::partial_fold_xs_select<
+      F,
+      detail::partial_fold_xs_size(OffsetEnd, sizeof...(xs)),
+      xs...
+    >;
+  };
+
+  template<template<class...> class F, class C>
+  struct fold_xs<lift<F>, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      detail::partial_fold_xs_select<F, sizeof...(xs), xs...>
+    );
+  };
+  template<template<class...> class F>
+  struct fold_xs<lift<F>, identity>
+  {
+    template<class... xs>
+    using f = detail::partial_fold_xs_select<F, sizeof...(xs), xs...>;
+  };
+#endif
+}
+
+namespace jln::mp::detail
+{
+  constexpr int_ partial_fold_xs_size(int_ i, int_ size)
+  {
+    // size contains state + xs...
+    return (size == 0) ? 0
+      : (i >= size) ? 1
+      : (i >= 0) ? i + 1
+      : (i >= -size) ? size + i + 1
+      : 0
+      ;
+  }
+
+  template<int n>
+  struct fold_xs_impl : fold_xs_impl<
+      n < 8 ? 4
+    : n < 16 ? 8
+    : n < 64 ? 16
+    : 64
+  >
+  {};
+
+  template<>
+  struct fold_xs_impl<-1>
+  {};
+
+  template<>
+  struct fold_xs_impl<0>
+  {
+    template<template<class...> class, int m, class state>
+    using f = state;
+  };
+
+  template<>
+  struct fold_xs_impl<1>
+  {
+    template<template<class...> class F, int m, class state, class... xs>
+    using f = F<state, xs...>;
+  };
+
+  template<>
+  struct fold_xs_impl<2>
+  {
+    template<template<class...> class F, int m, class state,
+      class _1, class... xs>
+    using f = F<F<state, _1, xs...>, xs...>;
+  };
+
+  template<>
+  struct fold_xs_impl<3>
+  {
+    template<template<class...> class F, int m, class state,
+      class _1, class _2, class... xs>
+    using f = F<F<F<state, _1, _2, xs...>, _2, xs...>, xs...>;
+  };
+
+  // newline='\n'
+  // for n in (4, 8, 16, 64):
+  //   args = ', '.join(f'class _{i}' for i in range(1,n))
+  //   ps = [f'_{i}, ' for i in range(1, n)]
+  //   print(f'''
+  //   template<>
+  //   struct fold_xs_impl<{n}>
+  //   {{
+  //     template<template<class...> class F, int m, class state,
+  //       {args}, class... xs>
+  //     using f = typename fold_xs_impl<
+  //       m-{n-1}
+  //     >::template f<F, m-{n-1}, {'F<' * (n-1)}state{''.join(f',{newline}      {"".join(ps[i:])}xs...>' for i in range(n))};
+  //   }};
+  // ''', end='')
+
+  template<>
+  struct fold_xs_impl<4>
+  {
+    template<template<class...> class F, int m, class state,
+      class _1, class _2, class _3, class... xs>
+    using f = typename fold_xs_impl<
+      m-3
+    >::template f<F, m-3, F<F<F<state,
+      _1, _2, _3, xs...>,
+      _2, _3, xs...>,
+      _3, xs...>,
+      xs...>;
+  };
+
+  template<>
+  struct fold_xs_impl<8>
+  {
+    template<template<class...> class F, int m, class state,
+      class _1, class _2, class _3, class _4, class _5, class _6, class _7, class... xs>
+    using f = typename fold_xs_impl<
+      m-7
+    >::template f<F, m-7, F<F<F<F<F<F<F<state,
+      _1, _2, _3, _4, _5, _6, _7, xs...>,
+      _2, _3, _4, _5, _6, _7, xs...>,
+      _3, _4, _5, _6, _7, xs...>,
+      _4, _5, _6, _7, xs...>,
+      _5, _6, _7, xs...>,
+      _6, _7, xs...>,
+      _7, xs...>,
+      xs...>;
+  };
+
+  template<>
+  struct fold_xs_impl<16>
+  {
+    template<template<class...> class F, int m, class state,
+      class _1, class _2, class _3, class _4, class _5, class _6, class _7,
+      class _8, class _9, class _10, class _11, class _12, class _13, class _14,
+      class _15, class... xs>
+    using f = typename fold_xs_impl<
+      m-15
+    >::template f<F, m-15, F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<state,
+      _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _7, _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _8, _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _9, _10, _11, _12, _13, _14, _15, xs...>,
+      _10, _11, _12, _13, _14, _15, xs...>,
+      _11, _12, _13, _14, _15, xs...>,
+      _12, _13, _14, _15, xs...>,
+      _13, _14, _15, xs...>,
+      _14, _15, xs...>,
+      _15, xs...>,
+      xs...>;
+  };
+
+  template<>
+  struct fold_xs_impl<64>
+  {
+    template<template<class...> class F, int m, class state,
+      class _1, class _2, class _3, class _4, class _5, class _6, class _7,
+      class _8, class _9, class _10, class _11, class _12, class _13,
+      class _14, class _15, class _16, class _17, class _18, class _19,
+      class _20, class _21, class _22, class _23, class _24, class _25,
+      class _26, class _27, class _28, class _29, class _30, class _31,
+      class _32, class _33, class _34, class _35, class _36, class _37,
+      class _38, class _39, class _40, class _41, class _42, class _43,
+      class _44, class _45, class _46, class _47, class _48, class _49,
+      class _50, class _51, class _52, class _53, class _54, class _55,
+      class _56, class _57, class _58, class _59, class _60, class _61,
+      class _62, class _63,
+      class... xs>
+    using f = typename fold_xs_impl<
+      m-63
+    >::template f<F, m-63, F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<
+                           F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<F<
+                           F<F<F<F<F<F<F<F<F<F<F<
+      state,
+      _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16,
+      _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31,
+      _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46,
+      _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61,
+      _62, _63, xs...>,
+      _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17,
+      _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32,
+      _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47,
+      _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62,
+      _63, xs...>,
+      _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18,
+      _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33,
+      _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48,
+      _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63,
+      xs...>,
+      _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19,
+      _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34,
+      _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49,
+      _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20,
+      _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35,
+      _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50,
+      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20,
+      _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35,
+      _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50,
+      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21,
+      _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36,
+      _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51,
+      _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22,
+      _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37,
+      _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52,
+      _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23,
+      _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38,
+      _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53,
+      _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24,
+      _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39,
+      _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54,
+      _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25,
+      _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40,
+      _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55,
+      _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26,
+      _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41,
+      _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56,
+      _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27,
+      _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42,
+      _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57,
+      _58, _59, _60, _61, _62, _63, xs...>,
+      _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28,
+      _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43,
+      _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58,
+      _59, _60, _61, _62, _63, xs...>,
+      _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29,
+      _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44,
+      _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59,
+      _60, _61, _62, _63, xs...>,
+      _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30,
+      _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45,
+      _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
+      _61, _62, _63, xs...>,
+      _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31,
+      _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46,
+      _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61,
+      _62, _63, xs...>,
+      _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32,
+      _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47,
+      _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62,
+      _63, xs...>,
+      _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33,
+      _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48,
+      _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63,
+      xs...>,
+      _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34,
+      _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49,
+      _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35,
+      _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50,
+      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36,
+      _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51,
+      _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37,
+      _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52,
+      _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38,
+      _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53,
+      _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39,
+      _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54,
+      _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40,
+      _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55,
+      _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41,
+      _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56,
+      _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42,
+      _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57,
+      _58, _59, _60, _61, _62, _63, xs...>,
+      _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43,
+      _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58,
+      _59, _60, _61, _62, _63, xs...>,
+      _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44,
+      _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59,
+      _60, _61, _62, _63, xs...>,
+      _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45,
+      _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
+      _61, _62, _63, xs...>,
+      _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46,
+      _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61,
+      _62, _63, xs...>,
+      _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47,
+      _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62,
+      _63, xs...>,
+      _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48,
+      _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63,
+      xs...>,
+      _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49,
+      _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50,
+      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51,
+      _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52,
+      _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53,
+      _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54,
+      _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55,
+      _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56,
+      _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57,
+      _58, _59, _60, _61, _62, _63, xs...>,
+      _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58,
+      _59, _60, _61, _62, _63, xs...>,
+      _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59,
+      _60, _61, _62, _63, xs...>,
+      _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
+      _61, _62, _63, xs...>,
+      _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61,
+      _62, _63, xs...>,
+      _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62,
+      _63, xs...>,
+      _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63,
+      xs...>,
+      _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _55, _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _56, _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _57, _58, _59, _60, _61, _62, _63, xs...>,
+      _58, _59, _60, _61, _62, _63, xs...>,
+      _59, _60, _61, _62, _63, xs...>,
+      _60, _61, _62, _63, xs...>,
+      _61, _62, _63, xs...>,
+      _62, _63, xs...>,
+      _63, xs...>,
+      xs...>;
+  };
+}
+/// \endcond
 namespace jln::mp::smp
 {
   template<int_ OffsetEnd, class F, class C = identity>
@@ -17431,109 +14098,96 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp
 {
-  /// \cond
-  namespace detail
-  {
-    template<bool>
-    struct _group_n;
-  }
-  /// \endcond
+  /// \ingroup list
 
-  /// \ingroup group
+  /// Retrieves an element of a sequence at an arbitrary position.
+  /// \pre `0 <= N < sizeof...(xs)`
+  /// \treturn \value
+  template<class N, class C = identity>
+  using at = drop_front<N, front<C>>;
 
-  /// Splits a sequence by arbitrary size group.
-  /// \post If `n <= 0`, then the result sequence is empty
-  /// \semantics
-  ///   \code
-  ///   group_n<number<2>>::f<
-  ///     void, void, int, void, void
-  ///   > = list<
-  ///     list<void, void>,
-  ///     list<int, void>,
-  ///     list<void>
-  ///   >
-  ///   \endcode
-  /// \treturn \sequence
-  template<int_ n, class C = listify>
-  struct group_n_c
-  {
-    template<class... xs>
-    using f = typename detail::_group_n<sizeof...(xs) != 0 && 0 < n>
-      ::template f<C, n, xs...>;
-  };
+  template<unsigned n, class C = identity>
+  using at_c = drop_front_c<n, front<C>>;
 
-  template<class n, class C = listify>
-  using group_n = group_n_c<n::value, C>;
+  template<class C = identity>
+  using at0 = front<C>;
+
+  template<class C = identity>
+  using at1 = drop_front_c<1, front<C>>;
+
+  template<class C = identity>
+  using at2 = drop_front_c<2, front<C>>;
+
+  template<class C = identity>
+  using at3 = drop_front_c<3, front<C>>;
+
+  template<class C = identity>
+  using at4 = drop_front_c<4, front<C>>;
+
+  template<class C = identity>
+  using at5 = drop_front_c<5, front<C>>;
+
+  template<class C = identity>
+  using at6 = drop_front_c<6, front<C>>;
+
+  template<class C = identity>
+  using at7 = drop_front_c<7, front<C>>;
+
+  template<class C = identity>
+  using at8 = drop_front_c<8, front<C>>;
+
+  template<class C = identity>
+  using at9 = drop_front_c<9, front<C>>;
 
   namespace emp
   {
-    template<class L, class n, class C = mp::listify>
-    using group_n = unpack<L, mp::group_n<n, C>>;
+    template<class L, class i, class C = mp::identity>
+    using at = unpack<L, mp::drop_front_c<i::value, mp::front<C>>>;
 
-    template<class L, int_ n, class C = mp::listify>
-    using group_n_c = unpack<L, mp::group_n_c<n, C>>;
+    template<class L, unsigned i, class C = mp::identity>
+    using at_c = unpack<L, mp::drop_front_c<i, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at0 = unpack<L, mp::front<C>>;
+
+    template<class L, class C = mp::identity>
+    using at1 = unpack<L, mp::drop_front_c<1, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at2 = unpack<L, mp::drop_front_c<2, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at3 = unpack<L, mp::drop_front_c<3, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at4 = unpack<L, mp::drop_front_c<4, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at5 = unpack<L, mp::drop_front_c<5, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at6 = unpack<L, mp::drop_front_c<6, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at7 = unpack<L, mp::drop_front_c<7, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at8 = unpack<L, mp::drop_front_c<8, mp::front<C>>>;
+
+    template<class L, class C = mp::identity>
+    using at9 = unpack<L, mp::drop_front_c<9, mp::front<C>>>;
   }
 }
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<class, int_... i>
-  struct _group_n_impl
-  {
-    template<class C, int_ n, class... xs>
-    using f = typename fold_right<lift<split_state_t>, unpack<pop_front<C>>>
-      ::template f<
-        list<list<>>,
-        list<number<(i % n ? split_keep : split_before)>, xs>...
-      >;
-  };
-
-  template<>
-  struct _group_n<true>
-  {
-    template<class C, int_ n, class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), _group_n_impl)
-      ::template f<C, n, xs...>;
-  };
-
-  template<>
-  struct _group_n<false>
-  {
-    template<class C, int_, class...>
-    using f = JLN_MP_CALL_TRACE_0_ARG(C);
-  };
-}
-/// \endcond
-namespace jln::mp::smp
-{
-  template<int_ n, class C = listify>
-  using group_n_c = contract<mp::group_n_c<n, assume_lists<C>>>;
-}
-
-JLN_MP_MAKE_REGULAR_SMP2_P(group_n, (N), (C, smp::listify), smp::group_n_c<N::value, C>)
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, int_ n, class C>
-  struct _sfinae<sfinae, group_n_c<n, C>>
-  {
-    using type = smp::group_n_c<n, sfinae<C>>;
-  };
-}
-/// \endcond
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
     template<unsigned> struct _compose_f;
-    template<class, class> struct _compose;
+    template<class, class> struct compose_impl;
 
     template<class x, class y>
-    using compose_t = typename _compose<x, y>::type;
+    using compose_impl_t = typename compose_impl<x, y>::type;
   }
   /// \endcond
 
@@ -17559,7 +14213,7 @@ namespace jln::mp
   using compose = typename conditional_c<sizeof...(Fs) == 0>
     ::template f<
       at1<F>,
-      mp::fold_right<lift<detail::compose_t>>
+      mp::fold_right<JLN_MP_LIFT_WRAP(detail::compose_impl)>
     >
     ::template f<identity, F, Fs...>;
 }
@@ -17619,39 +14273,39 @@ namespace jln::mp::detail
   };
 
   template<class F, class C>
-  struct _compose
+  struct compose_impl
   {
     using type = tee<F, C>;
   };
 
   template<template<class...> class F, class x>
-  struct _compose<lift<F>, x>
+  struct compose_impl<lift<F>, x>
   {
     using type = lift<F, x>;
   };
 
   template<template<class...> class F, class x>
-  struct _compose<lift_t<F>, x>
+  struct compose_impl<lift_t<F>, x>
   {
     using type = lift_t<F, x>;
   };
 
   template<class F>
-  struct _compose<F, identity>
+  struct compose_impl<F, identity>
   {
     using type = F;
   };
 
   // fix ambiguity
   template<template<class...> class F>
-  struct _compose<lift<F>, identity>
+  struct compose_impl<lift<F>, identity>
   {
     using type = lift<F>;
   };
 
   // fix ambiguity
   template<template<class...> class F>
-  struct _compose<lift_t<F>, identity>
+  struct compose_impl<lift_t<F>, identity>
   {
     using type = lift_t<F>;
   };
@@ -18168,63 +14822,6 @@ namespace jln::mp::detail
     using type = contract<identity>;
   };
 }
-
-namespace jln::mp::optimizer
-{
-  template<class params>
-  struct optimized_for_unpack_merge_append_params
-  {
-    template<class... xs>
-    using f = seq<xs..., params>;
-  };
-
-  template<class params>
-  struct optimized_for_unpack_merge_params
-  {
-    template<class... xs>
-    using f = seq<params, xs...>;
-  };
-
-  template<class C, template<class...> class Unpack>
-  struct optimized_for_unpack
-  {
-    template<class... seqs>
-    using f = optimized_result<
-      typename optimize<C, union_<seqs...>>::output_result,
-      Unpack<typename optimize<C, union_<seqs...>>::function>
-    >;
-  };
-
-  template<template<class...> class UnpackMergeParams>
-  struct optimized_for_unpack_extract_params
-  {
-    template<class param1, class params>
-    using f = typename dispatch_unpack<param1>
-      ::template f<
-        UnpackMergeParams<params>,
-        lift<union_>,
-        push_front<uncallable, lift<union_>>,
-        always<uncallable>>;
-  };
-
-  template<class C, class params>
-  struct optimizer_impl<unpack<C>, params>
-  {
-    using type = typename dispatch_split_param_at_1<params>
-      ::template f<
-        optimized_for_unpack_extract_params<optimized_for_unpack_merge_params>,
-        optimized_for_unpack<C, unpack>>;
-  };
-
-  template<class C, class params>
-  struct optimizer_impl<unpack_append<C>, params>
-  {
-    using type = typename dispatch_split_param_at_1<params>
-      ::template f<
-        optimized_for_unpack_extract_params<optimized_for_unpack_merge_append_params>,
-        optimized_for_unpack<C, unpack_append>>;
-  };
-}
 /// \endcond
 /// \cond
 namespace jln::mp::detail
@@ -18392,7 +14989,7 @@ namespace jln::mp
   ///   >
   ///   \endcode
   /// \treturn \sequence of \list
-  /// \see sliding, group_n
+  /// \see sliding, batched
   template<class F = listify, class C = listify>
   struct pairwise_with
   {
@@ -21037,27 +17634,27 @@ namespace jln::mp::detail
   };
 
   template<class, class>
-  struct _powerset_impl;
+  struct powerset_impl;
 
   template<class... seqs, class y>
-  struct _powerset_impl<y, list<seqs...>>
+  struct powerset_impl<y, list<seqs...>>
   {
     using type = join<>::f<typename _power<seqs, y>::type...>;
   };
 
   template<class x, class y>
-  using powerset_impl_t = typename _powerset_impl<x, y>::type;
+  using powerset_impl_t = typename powerset_impl<x, y>::type;
 
   template<class C>
   struct _powerset<C, true>
   {
-    using type = fold_right<lift<powerset_impl_t>, unpack<C>>;
+    using type = fold_right<JLN_MP_LIFT_WRAP(powerset_impl), unpack<C>>;
   };
 
   template<>
   struct _powerset<listify, true>
   {
-    using type = fold_right<lift<powerset_impl_t>>;
+    using type = fold_right<JLN_MP_LIFT_WRAP(powerset_impl)>;
   };
 
   template<class C>
@@ -21330,6 +17927,29 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp
+{
+  /// \ingroup filter
+
+  /// Removes all elements that satisfy a predicate.
+  /// \treturn \sequence
+  template<class Pred, class C = listify>
+  using remove_if = transform<wrap_in_list_if_not<Pred>, join<C>>;
+
+  /// Removes all occurence of a \value.
+  /// \treturn \sequence
+  template<class T, class C = listify>
+  using remove = remove_if<is<T>, C>;
+
+  namespace emp
+  {
+    template<class L, class Pred, class C = mp::listify>
+    using remove_if = unpack<L, mp::remove_if<Pred, C>>;
+
+    template<class L, class T, class C = mp::listify>
+    using remove = unpack<L, mp::remove<T, C>>;
+  }
+}
 namespace jln::mp::smp
 {
   template<class Pred, class C = listify>
@@ -21429,6 +18049,84 @@ namespace jln::mp::detail
     template<int_ i, class C>
     using f = bad_contract;
   };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \endcond
+  namespace detail
+  {
+    template<class Pred, class Replacement>
+    struct substitute_if;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Replaces every occurrence that satisfy a predicate by some \value.
+  /// \treturn \sequence
+  template<class Pred, class T, class C = listify>
+  using replace_if = transform<detail::substitute_if<Pred, T>, C>;
+
+  /// Replaces every occurrence of a \value by another \value.
+  /// \treturn \sequence
+  template<class T, class U, class C = listify>
+  using replace = replace_if<is<T>, U, C>;
+
+  namespace emp
+  {
+    template<class L, class T, class U, class C = mp::listify>
+    using replace = unpack<L, mp::replace<T, U, C>>;
+
+    template<class L, class Pred, class T, class C = mp::listify>
+    using replace_if = unpack<L, mp::replace_if<Pred, T, C>>;
+  }
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class Pred, class Replacement>
+  struct substitute_if
+  {
+    template<class x>
+    using f = typename conditional_c<bool(JLN_MP_TRACE_F(Pred)::template f<x>::value)>
+      ::template f<Replacement, x>;
+  };
+
+  template<class T, class Replacement>
+  struct substitute_if<is<T>, Replacement>
+  {
+    template<class x>
+    using f = typename conditional_c<std::is_same<T, x>::value>
+      ::template f<Replacement, x>;
+  };
+
+  template<class T, class Replacement>
+  struct substitute_if<is_not<T>, Replacement>
+  {
+    template<class x>
+    using f = typename conditional_c<std::is_same<T, x>::value>
+      ::template f<x, Replacement>;
+  };
+
+#if ! JLN_MP_ENABLE_DEBUG
+  template<template<class...> class Pred, class Replacement>
+  struct substitute_if<lift<Pred>, Replacement>
+  {
+    template<class x>
+    using f = typename conditional_c<bool(Pred<x>::value)>
+      ::template f<Replacement, x>;
+  };
+
+  template<template<class...> class Pred, class Replacement>
+  struct substitute_if<lift_t<Pred>, Replacement>
+  {
+    template<class x>
+    using f = typename conditional_c<bool(Pred<x>::type::value)>
+      ::template f<Replacement, x>;
+  };
+#endif
 }
 /// \endcond
 namespace jln::mp::smp
@@ -23260,12 +19958,34 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-#if JLN_MP_CLANG
-# define JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(...)
+#if (JLN_MP_GCC || JLN_MP_CUDA) && JLN_MP_FEATURE_CONCEPTS
+#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(name, TplType, Tpl, ...) \
+     requires requires{ static_cast<TplType<Tpl>*>(nullptr); }                \
+     struct name<Tpl<__VA_ARGS__>>
+#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(name, TplType, Tpl, ...) \
+     struct name<Tpl<__VA_ARGS__>>
+
+    template<class>
+#elif JLN_MP_CUDA
+#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(name, TplType, Tpl, ...) \
+     struct name<Tpl<__VA_ARGS__>, decltype(static_cast<void(*)(TplType<Tpl>*)>(nullptr)(nullptr))>
+#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT
+
+    template<class, class = void>
+#elif JLN_MP_CLANG
+#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(name, TplType, Tpl, ...) \
+     struct name<Tpl<__VA_ARGS__>>
+#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT
+
+    template<class, class = void>
 #else
-# define JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(...) , __VA_ARGS__
+#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(name, TplType, Tpl, ...) \
+     struct name<Tpl<__VA_ARGS__>, std::void_t<TplType<Tpl>>>
+#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(name, TplType, Tpl, ...) \
+     struct name<Tpl<__VA_ARGS__>>
+
+    template<class, class = void>
 #endif
-    template<class JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(class = void)>
     struct normalize_similar;
   }
   /// \endcond
@@ -23325,81 +20045,118 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  template<class T JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(class)>
-  struct normalize_similar
-  {
-    using type = T;
-  };
-
   template<template<class...> class Tpl>
   struct tpl_type1 {};
-
-  template<template<class...> class Tpl, class... xs>
-  struct normalize_similar<Tpl<xs...>>
-  {
-    using type = tpl_type1<Tpl>;
-  };
-
-  // fix ambiguous
-  template<template<class> class Tpl, class x>
-  struct normalize_similar<Tpl<x> JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(std::void_t<tpl_type1<Tpl>>)>
-  {
-    using type = tpl_type1<Tpl>;
-  };
 
   template<template<class T, JLN_MP_TPL_AUTO_OR(T)...> class Tpl>
   struct tpl_type2 {};
 
+#if JLN_MP_ENABLE_TPL_AUTO
+  template<template<auto...> class Tpl>
+#else
+  template<template<class, std::size_t...> class Tpl>
+#endif
+  struct tpl_type3;
+
+  template<template<JLN_MP_TPL_AUTO_OR(std::size_t), class...> class Tpl>
+  struct tpl_type4;
+
+
+#if (JLN_MP_GCC || JLN_MP_CUDA) && JLN_MP_FEATURE_CONCEPTS
+#  define JLN_MP_NORMALIZE_SIMILAR2 normalize_similar
+#  define JLN_MP_NORMALIZE_SIMILAR3 normalize_similar
+#  define JLN_MP_NORMALIZE_SIMILAR4 normalize_similar
+  template<class T>
+  struct normalize_similar
+#else
+#  if JLN_MP_CUDA
+#    define JLN_MP_NORMALIZE_SIMILAR2 normalize_similar2
+#    define JLN_MP_NORMALIZE_SIMILAR3 normalize_similar3
+#    define JLN_MP_NORMALIZE_SIMILAR4 normalize_similar4
+#  else
+#    define JLN_MP_NORMALIZE_SIMILAR2 normalize_similar2
+#    define JLN_MP_NORMALIZE_SIMILAR3 normalize_similar2
+#    define JLN_MP_NORMALIZE_SIMILAR4 normalize_similar2
+#  endif
+  template<class T, class = void>
+  struct JLN_MP_NORMALIZE_SIMILAR4
+#endif
+  {
+    using type = T;
+  };
+
+#if JLN_MP_CUDA && !JLN_MP_FEATURE_CONCEPTS
+  template<class T, class = void>
+  struct normalize_similar3 : normalize_similar4<T>
+  {};
+
+  template<class T, class = void>
+  struct normalize_similar2 : normalize_similar3<T>
+  {};
+#else
+  // fix ambiguous
+# if JLN_MP_ENABLE_TPL_AUTO
+  template<template<auto> class Tpl, auto x>
+# else
+  template<template<auto> class Tpl, std::size_t x>
+# endif
+  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(JLN_MP_NORMALIZE_SIMILAR2, tpl_type3, Tpl, x)
+  {
+    using type = tpl_type3<Tpl>;
+  };
+#endif
+
   template<class T, template<class, JLN_MP_TPL_AUTO_OR(T)...> class Tpl, JLN_MP_TPL_AUTO_OR(T)... xs>
-  struct normalize_similar<Tpl<T, xs...>>
+  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(JLN_MP_NORMALIZE_SIMILAR2, tpl_type2, Tpl, T, xs...)
   {
     using type = tpl_type2<Tpl>;
   };
 
 #if JLN_MP_ENABLE_TPL_AUTO
-  template<template<auto...> class Tpl>
-  struct tpl_type3 {};
-
-  // fix ambiguous
-  template<template<auto> class Tpl, auto x>
-  struct normalize_similar<Tpl<x> JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(std::void_t<tpl_type3<Tpl>>)>
-  {
-    using type = tpl_type3<Tpl>;
-  };
-
   template<template<auto...> class Tpl, auto... xs>
-  struct normalize_similar<Tpl<xs...>>
+  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(
+    JLN_MP_NORMALIZE_SIMILAR3, tpl_type3, Tpl, xs...)
 #else
-  template<template<class, std::size_t...> class Tpl>
-  struct tpl_type3;
-
-  // fix ambiguous
-  template<template<auto> class Tpl, std::size_t x>
-  struct normalize_similar<Tpl<x> JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM(std::void_t<tpl_type3<Tpl>>)>
-  {
-    using type = tpl_type3<Tpl>;
-  };
-
   template<template<class, std::size_t...> class Tpl, class T, std::size_t... N>
-  struct normalize_similar<Tpl<T, N>>
+  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(JLN_MP_NORMALIZE_SIMILAR3, tpl_type3, Tpl, T, N...)
 #endif
   {
     using type = tpl_type3<Tpl>;
   };
 
-  template<template<JLN_MP_TPL_AUTO_OR(std::size_t), class...> class Tpl>
-  struct tpl_type4;
-
   template<template<JLN_MP_TPL_AUTO_OR(std::size_t), class...> class Tpl,
     JLN_MP_TPL_AUTO_OR(std::size_t) N, class... T>
-  struct normalize_similar<Tpl<N, T...>>
+  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(
+    JLN_MP_NORMALIZE_SIMILAR4, tpl_type4, Tpl, N, T...)
   {
     using type = tpl_type4<Tpl>;
   };
 
-}
+#if (JLN_MP_GCC || JLN_MP_CUDA) && JLN_MP_FEATURE_CONCEPTS
+  // fix ambiguous
+  template<template<class> class Tpl, class x>
+  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(normalize_similar, tpl_type1, Tpl, x)
+  {
+    using type = tpl_type1<Tpl>;
+  };
 
-#undef JLN_MP_NORMALIZE_SIMILAR_EXTRA_PARAM
+  template<template<class...> class Tpl, class... xs>
+  struct normalize_similar<Tpl<xs...>>
+#else
+  template<class T, class>
+  struct normalize_similar : normalize_similar2<T>
+  {};
+
+  template<template<class...> class Tpl, class... xs>
+  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(normalize_similar, tpl_type1, Tpl, xs...)
+#endif
+  {
+    using type = tpl_type1<Tpl>;
+  };
+
+#undef JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT
+#undef JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA
+}
 /// \endcond
 namespace jln::mp::smp
 {
@@ -24104,7 +20861,7 @@ namespace jln::mp
   /// \ingroup group
 
   /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
-  /// The split value is inserted at the end of the previous list.
+  /// The separator value is inserted at the end of the previous list.
   /// \semantics
   ///   \code
   ///   split_after_if<is<_0>>::f<_0, _1, _2, _0, _3>
@@ -24162,7 +20919,7 @@ namespace jln::mp
   namespace detail
   {
     template<unsigned position, class C1, class C2, class C, class... xs>
-    using _split_from_i = typename C::template f<
+    using split_at_impl = typename C::template f<
       // take_front
       typename detail::rotate_impl<position>
       ::template f<position, drop_front_c<sizeof...(xs) - position, C1>, xs...>,
@@ -24173,34 +20930,6 @@ namespace jln::mp
 
   /// \ingroup group
 
-  /// Splits a sequence at an arbitrary position returns by \c GetIndex.
-  /// \pre `GetIndex::f<xs...>::value >= 0 && GetIndex::f<xs...>::value <= sizeof...(xs)`
-  /// \treturn \sequence of two \values
-  template<class GetIndex, class SubC1 = listify, class SubC2 = SubC1, class C = listify>
-  struct split_from2
-  {
-    template<class... xs>
-    using f = typename detail::_split_from_i<
-      JLN_MP_DCALL_V_TRACE_XS(xs, GetIndex, xs...)::value, SubC1, SubC2, C, xs...>;
-  };
-
-  template<class GetIndex, class C = listify>
-  using split_from = split_from2<GetIndex, listify, listify, C>;
-
-  namespace emp
-  {
-    template<class L, class GetIndex,
-      class SubC1 = mp::listify, class SubC2 = SubC1, class C = mp::listify>
-    using split_from2 = unpack<L, mp::split_from2<GetIndex, SubC1, SubC2, C>>;
-
-    template<class L, class GetIndex, class C = mp::listify>
-    using split_from = unpack<L, mp::split_from2<GetIndex, mp::listify, mp::listify, C>>;
-  }
-}
-namespace jln::mp
-{
-  /// \ingroup group
-
   /// Splits a sequence at an arbitrary position.
   /// \pre `i >= 0 && i <= sizeof...(xs)`
   /// \treturn \sequence of two \values
@@ -24208,7 +20937,7 @@ namespace jln::mp
   struct split_at2_with_c
   {
     template<class... xs>
-    using f = typename detail::_split_from_i<(sizeof...(xs) & 0) + i, SubC1, SubC2, C, xs...>;
+    using f = typename detail::split_at_impl<(sizeof...(xs) & 0) + i, SubC1, SubC2, C, xs...>;
   };
 
   template<class i, class SubC1 = listify, class SubC2 = SubC1, class C = listify>
@@ -24227,7 +20956,7 @@ namespace jln::mp
   using split_at_c = split_at2_with_c<i, listify, listify, C>;
 
   template<class i, class C = listify>
-  using split_at = split_at2_with_c<i::value, listify, listify, C>;;
+  using split_at = split_at2_with_c<i::value, listify, listify, C>;
 
   namespace emp
   {
@@ -24377,7 +21106,7 @@ namespace jln::mp
   /// \ingroup group
 
   /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
-  /// The split value is inserted at the beginning of the following list.
+  /// The separator value is inserted at the beginning of the following list.
   /// \semantics
   ///   \code
   ///   split_before_if<is<_0>>::f<_0, _1, _2, _0, _3>
@@ -24430,6 +21159,34 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp
+{
+  /// \ingroup group
+
+  /// Splits a sequence at an arbitrary position returns by \c GetIndex.
+  /// \pre `GetIndex::f<xs...>::value >= 0 && GetIndex::f<xs...>::value <= sizeof...(xs)`
+  /// \treturn \sequence of two \values
+  template<class GetIndex, class SubC1 = listify, class SubC2 = SubC1, class C = listify>
+  struct split_from2
+  {
+    template<class... xs>
+    using f = typename detail::split_at_impl<
+      JLN_MP_DCALL_V_TRACE_XS(xs, GetIndex, xs...)::value, SubC1, SubC2, C, xs...>;
+  };
+
+  template<class GetIndex, class C = listify>
+  using split_from = split_from2<GetIndex, listify, listify, C>;
+
+  namespace emp
+  {
+    template<class L, class GetIndex,
+      class SubC1 = mp::listify, class SubC2 = SubC1, class C = mp::listify>
+    using split_from2 = unpack<L, mp::split_from2<GetIndex, SubC1, SubC2, C>>;
+
+    template<class L, class GetIndex, class C = mp::listify>
+    using split_from = unpack<L, mp::split_from2<GetIndex, mp::listify, mp::listify, C>>;
+  }
+}
 /// \cond
 namespace jln::mp::detail
 {
@@ -24459,7 +21216,7 @@ namespace jln::mp::detail
   struct smp_split_from_i
   {
     template<class position, class C1, class C2, class C, class... xs>
-    using f = _split_from_i<position::value, C1, C2, C, xs...>;
+    using f = split_at_impl<position::value, C1, C2, C, xs...>;
   };
 
   template<class SubC1, class SubC2, class C>
@@ -24490,6 +21247,154 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, split_from2<GetIndex, SubC1, SubC2, C>>
   {
     using type = smp::split_from2<sfinae<GetIndex>, sfinae<SubC1>, sfinae<SubC2>, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \ingroup group
+
+  /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
+  /// The separator value is inserted in a new list.
+  /// \semantics
+  ///   \code
+  ///   split_keep_separator_if<is<_0>>::f<_0, _1, _2, _0, _3>
+  ///   == list<
+  ///     list<>,
+  ///     list<_0>,
+  ///     list<_1, _2>,
+  ///     list<_0>,
+  ///     list<_3>
+  ///   >
+  ///   \endcode
+  /// \treturn \sequence of \list
+  /// \see split_if, split_before_if
+  template<class Pred, class C = listify>
+  struct split_keep_separator_if
+  {
+    template <class... xs>
+    using f = typename detail::_split<sizeof...(xs) != 0>
+      ::template f<detail::split_keep_sep, C, JLN_MP_TRACE_F(Pred), xs...>;
+  };
+
+  template<class x, class C = listify>
+  using split_keep_separator = split_keep_separator_if<is<x>, C>;
+
+  namespace emp
+  {
+    template<class L, class Pred, class C = mp::listify>
+    using split_keep_separator_if = unpack<L, mp::split_keep_separator_if<Pred, C>>;
+
+    template<class L, class x, class C = mp::listify>
+    using split_keep_separator = unpack<L, mp::split_keep_separator<x, C>>;
+  }
+}
+namespace jln::mp::smp
+{
+  template<class Pred, class C = listify>
+  using split_keep_separator_if = try_contract<
+    mp::split_keep_separator_if<assume_unary<Pred>, assume_lists<C>>>;
+
+  template<class x, class C = listify>
+  using split_keep_separator = contract<mp::split_keep_separator<x, assume_lists<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class F, class C>
+  struct _sfinae<sfinae, split_keep_separator_if<F, C>>
+  {
+    using type = smp::split_keep_separator_if<sfinae<F>, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class i>
+    struct split_once_select;
+  }
+  /// \endcond
+  /// \ingroup group
+
+  /// Splits a \sequence at the first position that satisfy a predicate.
+  /// \treturn \sequence of two or zero \sequence
+  template<class Pred, class TC = listify, class FC = clear<>>
+  struct split_once_if
+  {
+    template<class... xs>
+    using f = typename detail::split_once_select<
+      typename index_if<Pred, identity, always<number<-1>>>::template f<xs...>
+    >
+      ::template f<TC, FC>
+      ::template f<xs...>;
+  };
+
+  template<class x, class TC = listify, class FC = clear<>>
+  using split_once = split_once_if<is<x>, TC, FC>;
+
+  namespace emp
+  {
+    template<class L, class Pred, class TC = listify, class FC = clear<>>
+    using split_once_if = unpack<L, mp::split_once_if<Pred, TC, FC>>;
+
+    template<class L, class x, class TC = listify, class FC = clear<>>
+    using split_once = unpack<L, mp::split_once_if<is<x>, TC, FC>>;
+  }
+}
+
+
+namespace jln::mp::detail
+{
+  template<int_ i>
+  struct split_once_select<number<i>>
+  {
+    template<class TC, class FC>
+    using f = split_at2_with_c<i, listify, pop_front<>, TC>;
+  };
+
+  template<>
+  struct split_once_select<number<-1>>
+  {
+    template<class TC, class FC>
+    using f = JLN_MP_TRACE_F(FC);
+  };
+}
+/// \cond
+namespace jln::mp::detail
+{
+  template<class TC, class FC>
+  struct smp_split_once_select
+  {
+    template<class i>
+    using f = typename split_once_select<i>::template f<TC, FC>;
+  };
+}
+/// \endcond
+
+namespace jln::mp::smp
+{
+  template<class Pred, class TC = listify, class FC = clear<>>
+  using split_once_if = contract<invoke_twice<try_<
+    index_if<Pred, identity, always<number<-1>>>,
+    detail::smp_split_once_select<assume_binary_list<TC>, subcontract<FC>>,
+    mp::always<violation>
+  >>>;
+
+  template<class x, class TC = listify, class FC = clear<>>
+  using split_once = split_once_if<is<x>, TC, FC>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class Pred, class TC, class FC>
+  struct _sfinae<sfinae, split_once_if<Pred, TC, FC>>
+  {
+    using type = smp::split_once_if<sfinae<Pred>, sfinae<TC>, sfinae<FC>>;
   };
 }
 /// \endcond
@@ -25805,6 +22710,7 @@ namespace jln::mp
   {
     JLN_MP_DIAGNOSTIC_PUSH()
     JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
+    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wunused-function")
     template <class T, int X>
     struct flag
     {
@@ -26646,24 +23552,6 @@ namespace jln::mp::detail
     using type = smp::as_list<sfinae<C>>;
   };
 }
-
-namespace jln::mp::optimizer
-{
-  template<class C, class params>
-  struct optimizer_impl<as_list<C>, params>
-  {
-    using type = typename count_param_always_maybe_never_selector<params, 1>
-      ::template f<
-        typename dispatch_list<params>
-          ::template f<
-            always<wrap_optimize_with_params<params>>,
-            always<wrap_optimize_with_function<lift<as_list>, types::any_list>>,
-            always<wrap_optimize_with_function<lift<as_list>, types::any_list>>
-          >
-      >
-      ::template f<C>;
-  };
-}
 /// \endcond
 namespace jln::mp::smp
 {
@@ -26774,7 +23662,7 @@ namespace jln::mp
   struct erase_c
   {
     template<class... xs>
-    using f = typename detail::erase_impl<C, start, size, sizeof...(xs)>
+    using f = typename detail::erase_impl<C, start, size, int_(sizeof...(xs))>
       ::template f<xs...>;
   };
 
@@ -26997,24 +23885,6 @@ namespace jln::mp::detail
   };
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, is_list);
-}
-
-namespace jln::mp::optimizer
-{
-  template<class C, class params>
-  struct optimizer_impl<is_list<C>, params>
-  {
-    using type = typename count_param_always_maybe_never_selector<params, 1>
-      ::template f<
-        typename dispatch_list<params>
-          ::template f<
-            always<wrap_optimize_with_params<true_>>,
-            always<wrap_optimize_with_function<lift<is_list>, types::boolean>>,
-            always<wrap_optimize_with_params<false_>>
-          >
-      >
-      ::template f<C>;
-  };
 }
 /// \endcond
 namespace jln::mp
@@ -27671,7 +24541,7 @@ namespace jln::mp::detail
       : size == 1 ? (stride == 1 ? 2 : 3)  // C<list<xs>...> / slice<0, n/stride, stride>
       : stride > n ? 9                     // take_front
       : stride == 1 ? (size == 2 ? 4 : 5)  // common case
-      : stride == size ? 6                 // group_n
+      : stride == size ? 6                 // batched
       // slice<zip_longest> / slice<zip>
       : ((n - size) % stride) ? (slinding_pivot(n, size, stride) < 0 ? 7 : 8) : 7;
   }
@@ -27749,12 +24619,12 @@ namespace jln::mp::detail
       ::template f<xs...>;
   };
 
-  // stride=size (group_n)
+  // stride=size (batched)
   template<>
   struct _sliding<6>
   {
     template<class C, int_ size, int_, class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), _group_n_impl)
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), _batched_impl)
       ::template f<C, size, xs...>;
   };
 
@@ -28568,8 +25438,6 @@ namespace jln::mp::detail
     using type = smp::alignof_<sfinae<C>>;
   };
 }
-
-JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_0(mp::alignof_, 1, types::number)
 /// \endcond
 namespace jln::mp::smp
 {
@@ -28920,6 +25788,60 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, as_number<C>>
   {
     using type = smp::as_number<sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class x>
+    struct _is_number;
+  }
+  /// \endcond
+
+  /// \ingroup number
+
+  /// Checks whether a \value is a \number.
+  /// \treturn \bool
+  template<class C = identity>
+  struct is_number
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_is_number<x>::type);
+  };
+
+  namespace emp
+  {
+    template<class x>
+    using is_number = typename detail::_is_number<x>::type;
+  }
+
+  /// \cond
+  template<>
+  struct is_number<identity>
+  {
+    template<class x>
+    using f = typename detail::_is_number<x>::type;
+  };
+  /// \endcond
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class x>
+  struct _is_number
+  {
+    using type = false_;
+  };
+
+  template<int_ x>
+  struct _is_number<number<x>>
+  {
+    using type = true_;
   };
 }
 /// \endcond
@@ -29624,27 +26546,12 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (bool b), (conditional_c<b>));
 }
-
-namespace jln::mp::optimizer
-{
-  template<bool b>
-  struct optimized_for_conditional
-  {
-    template<class... xs>
-    using f = optimized_result<union_<xs...>, conditional_c<b>>;
-  };
-
-  template<bool b, class params>
-  struct optimizer_impl<conditional_c<b>, params>
-  {
-    using type = typename count_param_always_maybe_never_selector<params, 2>
-      ::template f<dispatch_param_at_c<params, b ? 0 : 1>>
-      ::template f<optimized_for_conditional<b>>;
-  };
-}
 /// \endcond
 namespace jln::mp
 {
+  /// \ingroup trait
+
+#if !JLN_MP_FEATURE_CONCEPTS || !JLN_MP_GCC
   /// \cond
   namespace detail
   {
@@ -29653,9 +26560,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup trait
-
-  /// Checks whether a \value to a type member.
+  /// Checks whether \c x has a type member.
   /// \treturn \bool
   template<class C = identity>
   struct has_type
@@ -29681,8 +26586,40 @@ namespace jln::mp
     using f = typename detail::_has_type<x>::type;
   };
   /// \endcond
+
+#else
+
+  template<class C = identity>
+  struct has_type
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<requires{ typename x::type; }>);
+  };
+
+  namespace emp
+  {
+    template<class x>
+    using has_type = number<requires{ typename x::type; }>;
+
+    template<class x>
+    inline constexpr bool has_type_v = requires{ typename x::type; };
+  }
+
+  /// \cond
+  template<>
+  struct has_type<identity>
+  {
+    template<class x>
+    using f = number<requires{ typename x::type; }>;
+  };
+  /// \endcond
+
+#undef JLN_MP_HAS_TYPE
+
+#endif
 }
 
+#if !JLN_MP_FEATURE_CONCEPTS || !JLN_MP_GCC
 /// \cond
 namespace jln::mp::detail
 {
@@ -29699,6 +26636,7 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+#endif
 namespace jln::mp::smp
 {
   template<class C = identity>
@@ -29716,11 +26654,12 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, has_type);
 }
-
-JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_0(mp::has_type, 1, types::boolean);
 /// \endcond
 namespace jln::mp
 {
+  /// \ingroup trait
+
+#if !JLN_MP_FEATURE_CONCEPTS || !JLN_MP_GCC
   /// \cond
   namespace detail
   {
@@ -29729,9 +26668,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup trait
-
-  /// Checks whether a \value to a type member.
+  /// Checks whether \c x has a type member.
   /// \treturn \bool
   template<class C = identity>
   struct has_value_type
@@ -29757,8 +26694,40 @@ namespace jln::mp
     using f = typename detail::_has_value_type<x>::type;
   };
   /// \endcond
+
+#else
+
+  template<class C = identity>
+  struct has_value_type
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<requires{ typename x::value_type; }>);
+  };
+
+  namespace emp
+  {
+    template<class x>
+    using has_value_type = number<requires{ typename x::value_type; }>;
+
+    template<class x>
+    inline constexpr bool has_value_type_v = requires{ typename x::value_type; };
+  }
+
+  /// \cond
+  template<>
+  struct has_value_type<identity>
+  {
+    template<class x>
+    using f = number<requires{ typename x::value_type; }>;
+  };
+  /// \endcond
+
+#undef JLN_MP_HAS_TYPE
+
+#endif
 }
 
+#if !JLN_MP_FEATURE_CONCEPTS || !JLN_MP_GCC
 /// \cond
 namespace jln::mp::detail
 {
@@ -29769,12 +26738,13 @@ namespace jln::mp::detail
   };
 
   template<class x>
-  struct _has_value_type<x, std::void_t<typename x::type>>
+  struct _has_value_type<x, std::void_t<typename x::value_type>>
   {
     using type = true_;
   };
 }
 /// \endcond
+#endif
 namespace jln::mp::smp
 {
   template<class C = identity>
@@ -29792,8 +26762,6 @@ namespace jln::mp::detail
 
   JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, has_value_type);
 }
-
-JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_0(mp::has_value_type, 1, types::boolean);
 /// \endcond
 namespace jln::mp
 {
@@ -29868,31 +26836,6 @@ namespace jln::mp::detail
     (template<class...> class Tpl, class C),
     (is_specialization_of<Tpl, C>));
 }
-
-namespace jln::mp::optimizer
-{
-  template<template<class...> class Tpl>
-  struct optimized_for_is_specialization_of
-  {
-    template<class C>
-    using f = is_specialization_of<Tpl, C>;
-  };
-
-  template<template<class...> class Tpl, class C, class params>
-  struct optimizer_impl<is_specialization_of<Tpl, C>, params>
-  {
-    using type = typename count_param_always_maybe_never_selector<params, 1>
-      ::template f<dispatch_optimizer<optimized_for_regular_optimizer>>
-      ::template f<
-        C,
-        typename conditional_c<is_real_type_v<params>>
-          ::template f<is_specialization_of<Tpl>, always<types::boolean>>
-          ::template f<params>,
-        typename conditional_c<is_real_type_v<params>>
-          ::template f<lift<always>, optimized_for_is_specialization_of<Tpl>>
-      >;
-  };
-}
 /// \endcond
 namespace jln::mp
 {
@@ -29912,8 +26855,9 @@ namespace jln::mp
   struct iterate_c
   {
     template<class x>
-    using f = typename detail::iterate_impl<n>
-      ::template f<n, C, JLN_MP_TRACE_F(F), x>;
+    using f = JLN_MP_CALL_TRACE(C,
+      typename detail::iterate_impl<n>::template f<n, JLN_MP_TRACE_F(F), x>
+    );
   };
 
   /// Apply a function \c n times to its argument.
@@ -29929,6 +26873,16 @@ namespace jln::mp
     template<class L, uint_ n, class F, class C = mp::identity>
     using iterate_c = unpack<L, mp::iterate_c<n, F, C>>;
   }
+
+  /// \cond
+  template<uint_ n, class F>
+  struct iterate_c<n, F, identity>
+  {
+    template<class x>
+    using f = typename detail::iterate_impl<n>
+      ::template f<n, JLN_MP_TRACE_F(F), x>;
+  };
+  /// \endcond
 } // namespace jln::mp
 
 
@@ -29949,40 +26903,75 @@ namespace jln::mp::detail
   template<>
   struct iterate_impl<0>
   {
-    template<uint_ i, class C, class F, class x>
-    using f = JLN_MP_CALL_TRACE(C, x);
+    template<uint_ i, class F, class x>
+    using f = x;
   };
 
 #define JLN_MP_ITERATE(n, mp_xs, mp_rsx, mp_rep)  \
   template<>                                      \
   struct iterate_impl<n>                          \
   {                                               \
-    template<uint_ i, class C, class F, class x>  \
-    using f = JLN_MP_CALL_TRACE(C,                \
+    template<uint_ i, class F, class x>           \
+    using f =                                     \
       mp_rep(typename F::template f<, JLN_MP_NIL) \
       x                                           \
       mp_rep(>, JLN_MP_NIL)                       \
-    );                                            \
+    ;                                             \
   };
 
   JLN_MP_GEN_XS_1_TO_8(JLN_MP_ITERATE)
 
 #undef JLN_MP_ITERATE
 
-#define JLN_MP_ITERATE(n, mp_xs, mp_rsx, mp_rep)    \
-  template<>                                        \
-  struct iterate_impl<n>                            \
-  {                                                 \
-    template<uint_ i, class C, class F, class x>    \
-    using f = typename iterate_impl<i-n>            \
-      ::template f<i-n, C, F,                       \
-        mp_rep(typename F::template f<, JLN_MP_NIL) \
-        x                                           \
-        mp_rep(>, JLN_MP_NIL)                       \
-      >;                                            \
+  template<class F, class x>
+  struct iterate8_impl
+  {
+    using type =
+      typename F::template f<
+        typename F::template f<
+          typename F::template f<
+            typename F::template f<
+              typename F::template f<
+                typename F::template f<
+                  typename F::template f<
+                    typename F::template f<
+                      x>>>>>>>>;
   };
 
-  JLN_MP_GEN_XS_8_16_32_64_128(JLN_MP_ITERATE)
+  template<>
+  struct iterate_impl<8>
+  {
+    template<uint_ i, class F, class x>
+    using f = typename iterate_impl<i-8>
+      ::template f<i-8, F, typename iterate8_impl<F, x>::type>;
+  };
+
+  template<>
+  struct iterate_impl<16>
+  {
+    template<uint_ i, class F, class x>
+    using f = typename iterate_impl<i-16>
+      ::template f<i-16, F, typename iterate8_impl<
+        F, typename iterate8_impl<F, x>::type
+      >::type>;
+  };
+
+#define JLN_MP_ITERATE(n)                                   \
+  template<>                                                \
+  struct iterate_impl<n>                                    \
+  {                                                         \
+    template<uint_ i, class F, class x>                     \
+    using f = typename iterate_impl<i-n>                    \
+      ::template f<i-n, F,                                  \
+        typename iterate_impl<n/2>::template f<n/2, F,      \
+          typename iterate_impl<n/2>::template f<n/2, F, x> \
+        >                                                   \
+      >;                                                    \
+  }
+
+  JLN_MP_ITERATE(32);
+  JLN_MP_ITERATE(64);
+  JLN_MP_ITERATE(128);
 
 #undef JLN_MP_ITERATE
 }
@@ -30007,41 +26996,6 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, iterate_c<n, F, C>>
   {
     using type = smp::iterate_c<n, sfinae<F>, sfinae<C>>;
-  };
-}
-
-namespace jln::mp::optimizer
-{
-  template<class F, class C, class params>
-  struct optimizer_impl<iterate_c<0, F, C>, params>
-  {
-    using type = typename count_param_always_maybe_never_selector<params, 1>
-      ::template f<lift<optimize>>
-      ::template f<C, params>;
-  };
-
-  template<class F, class C, class params>
-  struct optimizer_impl<iterate_c<1, F, C>, params>
-  {
-    using type = typename count_param_always_maybe_never_selector<params, 1>
-      ::template f<lift<optimize>>
-      ::template f<tee<F, C>, params>;
-  };
-
-  struct optimized_for_iterate2
-  {
-    template<class params, class n, class F, class C>
-    using f = typename callable_selector<output_result<F, params>>
-      ::template f<dispatch_optimizer<optimized_for_regular_optimizer>>
-      ::template f<C, types::any, lift<iterate>, n, F>;
-  };
-
-  template<uint_ n, class F, class C, class params>
-  struct optimizer_impl<iterate_c<n, F, C>, params>
-  {
-    using type = typename count_param_always_maybe_never_selector<params, 1>
-      ::template f<optimized_for_iterate2>
-      ::template f<params, number<n>, F, C>;
   };
 }
 /// \endcond
@@ -30176,8 +27130,6 @@ namespace jln::mp::detail
     using type = smp::sizeof_<sfinae<C>>;
   };
 }
-
-JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_0(mp::sizeof_, 1, types::number)
 /// \endcond
 namespace jln::mp::traits
 {
@@ -30440,17 +27392,6 @@ namespace jln::mp::traits
 namespace jln::mp
 {
 
-#define JLN_MP_SMP_MAKE_OPTIMIZER_TRAIT(Name, arity, output) \
-  namespace optimizer                                        \
-  {                                                          \
-    template<class C, class params>                          \
-    struct optimizer_impl<traits::Name<C>, params>           \
-    {                                                        \
-      using type = optimized_for_regular<arity, output>      \
-        ::f<params, traits::Name, C>;                        \
-    };                                                       \
-  }
-
 #define JLN_MP_SMP_MAKE_BASIC_TRAIT(Name)           \
   namespace smp::traits                             \
   {                                                 \
@@ -30469,7 +27410,6 @@ namespace jln::mp
   }
 
 #define JLN_MP_SMP_MAKE_TRAIT(Name, arity, output)     \
-  JLN_MP_SMP_MAKE_OPTIMIZER_TRAIT(Name, arity, output) \
   JLN_MP_SMP_MAKE_BASIC_TRAIT(Name)
 
 
@@ -30566,18 +27506,6 @@ namespace jln::mp
   JLN_MP_SMP_MAKE_TRAIT(rank, 1, types::number)
 
   JLN_MP_SMP_MAKE_BASIC_TRAIT(extent)
-  namespace optimizer
-  {
-    template<class C, class params>
-    struct optimizer_impl<traits::extent<C>, params>
-    {
-      using type = typename count_param_always_maybe_never_selector<params, 2>
-        ::template f<
-          add_uncallable_output<dispatch_optimizer<optimized_for_regular_optimizer>>,
-          add_uncallable_output<dispatch_optimizer<optimized_for_regular_optimizer>>>
-        ::template f<C, types::any, lift<traits::extent>>;
-    };
-  }
 
   // type relations:
   JLN_MP_SMP_MAKE_TRAIT(is_same, 2, types::boolean)
@@ -30648,7 +27576,6 @@ namespace jln::mp
   JLN_MP_SMP_MAKE_TRAIT(aligned_storage, 1, types::any)
   JLN_MP_SMP_MAKE_TRAIT(aligned_union, 1, types::any)
 
-#undef JLN_MP_SMP_MAKE_OPTIMIZER_TRAIT
 #undef JLN_MP_SMP_MAKE_BASIC_TRAIT
 #undef JLN_MP_SMP_MAKE_TRAIT
 }
@@ -30667,8 +27594,6 @@ namespace jln::mp::detail
     using type = smp::type_<sfinae<C>>;
   };
 }
-
-JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_0(mp::type_, 1, types::any)
 /// \endcond
 namespace jln::mp
 {
@@ -30711,8 +27636,6 @@ namespace jln::mp::detail
     using type = smp::value_type<sfinae<C>>;
   };
 }
-
-JLN_MP_OPTIMIZER_CREATE_REGULAR_OPTIMIZER_0(mp::value_type, 1, types::any)
 /// \endcond
 namespace jln::mp
 {
@@ -30771,6 +27694,9 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp
 {
+  /// \ingroup value
+
+#if !JLN_MP_FEATURE_CONCEPTS || !JLN_MP_GCC
   /// \cond
   namespace detail
   {
@@ -30778,8 +27704,6 @@ namespace jln::mp
     struct _has_value;
   }
   /// \endcond
-
-  /// \ingroup value
 
   /// Checks whether \c x has a value member.
   /// \treturn \bool
@@ -30807,8 +27731,40 @@ namespace jln::mp
     using f = typename detail::_has_value<x>::type;
   };
   /// \endcond
+
+#else
+
+  template<class C = identity>
+  struct has_value
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<requires{ x::value; }>);
+  };
+
+  namespace emp
+  {
+    template<class x>
+    using has_value = number<requires{ x::value; }>;
+
+    template<class x>
+    inline constexpr bool has_value_v = requires{ x::value; };
+  }
+
+  /// \cond
+  template<>
+  struct has_value<identity>
+  {
+    template<class x>
+    using f = number<requires{ x::value; }>;
+  };
+  /// \endcond
+
+#undef JLN_MP_HAS_TYPE
+
+#endif
 }
 
+#if !JLN_MP_FEATURE_CONCEPTS || !JLN_MP_GCC
 /// \cond
 namespace jln::mp::detail
 {
@@ -30825,6 +27781,7 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+#endif
 namespace jln::mp::smp
 {
   template<class C = identity>
@@ -31771,7 +28728,7 @@ namespace jln::mp::detail
   >;
 
 // x/0 is not a substitution failure
-#if JLN_MP_MSVC
+#if JLN_MP_MSVC || JLN_MP_CUDA
   template<template<class...> class Tpl, class C, int i = 0>
   using smp_opv_without_zero = contract<
     if_<
