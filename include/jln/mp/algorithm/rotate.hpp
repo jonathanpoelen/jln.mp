@@ -70,7 +70,7 @@ namespace jln::mp
     : rotate_c<N1 + N2, C>
   {};
 
-#if __has_builtin(__type_pack_element)
+#if JLN_MP_HAS_BUILTIN(__type_pack_element)
   // back<C>
   template <int_ N, class C>
   struct rotate_c<N, front<C>>
