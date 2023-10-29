@@ -214,7 +214,9 @@ jobs:
           ./tools/amalgamated.lua include/jln/mp.hpp > standalone/include/jln/mp.hpp
           ./tools/amalgamated.lua include/jln/mp/smp.hpp > standalone/include/jln/smp.hpp
 
-          for comp in g++-9 g++-10 g++-11 g++-12 clang++-12 clang++-13 clang++-14 ; do
+          echo Compilers: /usr/bin/g++-* /usr/bin/clang++-*
+          for comp in /usr/bin/g++-* /usr/bin/clang++-* ; do
+            echo Compiler: $comp
             for basename in mp smp ; do
               $comp -std=c++17 -fsyntax-only -x c++ - <<<'#include "standalone/include/jln/'$basename'.hpp"'
             done
