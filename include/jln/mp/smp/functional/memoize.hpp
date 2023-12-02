@@ -7,7 +7,7 @@
 
 namespace jln::mp::smp
 {
-  template <class C>
+  template<class C>
   using memoize = contract<memoize<subcontract<C>>>;
 }
 

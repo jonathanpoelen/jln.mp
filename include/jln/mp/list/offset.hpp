@@ -17,18 +17,18 @@ namespace jln::mp
   ///   size<push_front<I, sub<C>>>
   ///   \endcode
   /// \treturn \number
-  template <int_ I, class C = identity>
+  template<int_ I, class C = identity>
   struct offset_c
   {
-    template <class... xs>
+    template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, number<I - int_{sizeof...(xs)}>);
   };
 
   /// \cond
-  template <int_ I>
+  template<int_ I>
   struct offset_c<I, identity>
   {
-    template <class... xs>
+    template<class... xs>
     using f = number<I - int_{sizeof...(xs)}>;
   };
   /// \endcond

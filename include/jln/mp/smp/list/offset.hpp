@@ -8,7 +8,7 @@
 
 namespace jln::mp::smp
 {
-  template <int_ i, class C = identity>
+  template<int_ i, class C = identity>
   using offset_c = contract<mp::offset_c<i, assume_number<C>>>;
 }
 

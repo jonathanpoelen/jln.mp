@@ -24,7 +24,7 @@ namespace jln::mp
   template<class Pred, class C = listify>
   struct split_after_if
   {
-    template <class... xs>
+    template<class... xs>
     using f = typename detail::_split<sizeof...(xs) != 0>
       ::template f<detail::split_after, C, JLN_MP_TRACE_F(Pred), xs...>;
   };

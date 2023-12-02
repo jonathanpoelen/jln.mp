@@ -10,7 +10,7 @@
 
 namespace jln::mp::smp
 {
-  template <template<class...> class F, template<class...> class... Fs>
+  template<template<class...> class F, template<class...> class... Fs>
   using compose_f = mp::detail::sfinae<
     mp::compose<mp::lift<F>, mp::lift<Fs>...>
   >;

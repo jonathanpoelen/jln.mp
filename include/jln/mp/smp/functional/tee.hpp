@@ -14,7 +14,7 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template <class... Fs>
+  template<class... Fs>
   using tee = typename mp::conditional_c<sizeof...(Fs) == 0>
     ::template f<
       na,

@@ -12,7 +12,7 @@ namespace jln::mp
 #define JLN_MP_SMP_MAKE_BASIC_TRAIT(Name)           \
   namespace smp::traits                             \
   {                                                 \
-    template <class C = identity>                   \
+    template<class C = identity>                   \
     using Name = try_contract<                      \
       mp::traits::Name<assume_unary<C>>>;           \
   }                                                 \

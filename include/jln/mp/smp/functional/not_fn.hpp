@@ -9,6 +9,6 @@
 
 namespace jln::mp::smp
 {
-  template <class F, class C = identity>
+  template<class F, class C = identity>
   using not_fn = contract<concepts::predicate<F, assume_positive_number<not_<C>>, violation>>;
 }

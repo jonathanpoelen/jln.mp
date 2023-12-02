@@ -26,7 +26,7 @@ namespace jln::mp
   template<class Pred, class C = listify>
   struct split_keep_separator_if
   {
-    template <class... xs>
+    template<class... xs>
     using f = typename detail::_split<sizeof...(xs) != 0>
       ::template f<detail::split_keep_sep, C, JLN_MP_TRACE_F(Pred), xs...>;
   };

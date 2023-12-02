@@ -17,7 +17,7 @@ namespace jln::mp
   {
     JLN_MP_DIAGNOSTIC_PUSH()
     JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
-    template <int X>
+    template<int X>
     struct flag
     {
       friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<X>);
@@ -30,7 +30,7 @@ namespace jln::mp
       unsigned w;
     };
 
-    template <int X, unsigned z, unsigned w>
+    template<int X, unsigned z, unsigned w>
     struct injecter
     {
       friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<X>) { return random_data{z,w}; }
@@ -90,7 +90,7 @@ namespace jln::mp
 
     /// \pre id >= 1
     /// \pre random_for_id<id-1>() must have been called
-    template <int id>
+    template<int id>
     JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned random_for_id()
     {
       constexpr auto data = f(flag<id-1>{});
@@ -101,7 +101,7 @@ namespace jln::mp
       return (z << 16) + w;
     }
 
-    template <auto v = []{}>
+    template<auto v = []{}>
     JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned next_random()
     {
       return random_for_id<next_id<random_data, 1, v>()>();

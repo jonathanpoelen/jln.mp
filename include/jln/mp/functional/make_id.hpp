@@ -31,20 +31,20 @@ namespace jln::mp
     JLN_MP_DIAGNOSTIC_PUSH()
     JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
     JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wunused-function")
-    template <class T, int X>
+    template<class T, int X>
     struct flag
     {
       friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<T, X>);
     };
     JLN_MP_DIAGNOSTIC_POP()
 
-    template <class T, int X>
+    template<class T, int X>
     struct injecter
     {
       friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<T, X>) { return X; }
     };
 
-    template <class T = default_make_id_tag, int X = 0, auto v = []{}>
+    template<class T = default_make_id_tag, int X = 0, auto v = []{}>
     JLN_MP_CONSTEVAL_OR_CONSTEXPR auto next_id()
     {
       if constexpr (requires { f(flag<T, X+10>{}); }) {

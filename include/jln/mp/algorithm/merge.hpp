@@ -59,16 +59,16 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  template <bool, class L, class Seq1, class Seq2, class Cmp>
+  template<bool, class L, class Seq1, class Seq2, class Cmp>
   struct merge_insert;
 
-  template <class... R, class T0, class T1, class... Ts, class U, class... Us, class Cmp>
+  template<class... R, class T0, class T1, class... Ts, class U, class... Us, class Cmp>
   struct merge_insert<false, list<R...>, list<T0, T1, Ts...>, list<U, Us...>, Cmp>
   : merge_insert<bool(Cmp::template f<U, T1>::value),
                  list<R..., T0>, list<T1, Ts...>, list<U, Us...>, Cmp>
   {};
 
-  template <class... R, class T, class U, class... Us, class Cmp>
+  template<class... R, class T, class U, class... Us, class Cmp>
   struct merge_insert<false, list<R...>, list<T>, list<U, Us...>, Cmp>
   {
     template<class... xs> using out   = list<xs..., R..., T>;
@@ -76,13 +76,13 @@ namespace jln::mp::detail
     template<class... xs> using right = list<U, Us..., xs...>;
   };
 
-  template <class... R, class T, class... Ts, class U0, class U1, class... Us, class Cmp>
+  template<class... R, class T, class... Ts, class U0, class U1, class... Us, class Cmp>
   struct merge_insert<true, list<R...>, list<T, Ts...>, list<U0, U1, Us...>, Cmp>
   : merge_insert<bool(Cmp::template f<U1, T>::value),
                  list<R..., U0>, list<T, Ts...>, list<U1, Us...>, Cmp>
   {};
 
-  template <class... R, class T, class... Ts, class U, class Cmp>
+  template<class... R, class T, class... Ts, class U, class Cmp>
   struct merge_insert<true, list<R...>, list<T, Ts...>, list<U>, Cmp>
   {
     template<class... xs> using out   = list<xs..., R..., U>;
@@ -90,7 +90,7 @@ namespace jln::mp::detail
     template<class... xs> using right = list<xs...>;
   };
 
-  template <class... R, class T0, class T1, class T2, class T3, class T4, class T5,
+  template<class... R, class T0, class T1, class T2, class T3, class T4, class T5,
             class T6, class T7, class T8, class T9, class... Ts, class U0, class U1,
             class U2, class U3, class U4, class U5, class U6, class U7, class U8,
             class U9, class... Us, class Cmp>
@@ -106,7 +106,7 @@ namespace jln::mp::detail
                                      Cmp>::type;
   };
 
-  template <class... R, class T, class... Ts, class U, class... Us, class Cmp>
+  template<class... R, class T, class... Ts, class U, class... Us, class Cmp>
   struct merge_impl<list<R...>, list<T, Ts...>, list<U, Us...>, Cmp>
   : conditional_c<bool(Cmp::template f<U, T>::value)>::template f<
       merge_impl<list<R..., U>, list<T, Ts...>, list<Us...>, Cmp>,
@@ -114,19 +114,19 @@ namespace jln::mp::detail
     >
   {};
 
-  template <class... R, class... Ts, class Cmp>
+  template<class... R, class... Ts, class Cmp>
   struct merge_impl<list<R...>, list<Ts...>, list<>, Cmp>
   {
     using type = list<R..., Ts...>;
   };
 
-  template <class... R, class... Us, class Cmp>
+  template<class... R, class... Us, class Cmp>
   struct merge_impl<list<R...>, list<>, list<Us...>, Cmp>
   {
     using type = list<R..., Us...>;
   };
 
-  template <class... R, class Cmp>
+  template<class... R, class Cmp>
   struct merge_impl<list<R...>, list<>, list<>, Cmp>
   {
     using type = list<R...>;

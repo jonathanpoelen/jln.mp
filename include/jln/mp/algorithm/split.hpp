@@ -12,7 +12,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template <bool>
+    template<bool>
     struct _split;
 
     inline constexpr int_ split_keep = 0;
@@ -41,7 +41,7 @@ namespace jln::mp
   template<class Pred = identity, class C = listify>
   struct split_if
   {
-    template <class... xs>
+    template<class... xs>
     using f = typename detail::_split<sizeof...(xs) != 0>
       ::template f<detail::split_skip, C, JLN_MP_TRACE_F(Pred), xs...>;
   };
@@ -65,7 +65,7 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template <class x, class state>
+  template<class x, class state>
   struct split_state;
 
   template<class x, class... Ls, class... xs>

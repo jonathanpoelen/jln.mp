@@ -60,7 +60,7 @@ namespace jln::mp::detail
   template<class... xs>
   struct _is_set
   {
-    template <class Pack>
+    template<class Pack>
     static auto is_set(Pack pack) -> decltype((
         static_cast<basic_item<xs>*>(pack),...
     ), number<1>());

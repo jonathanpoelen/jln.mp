@@ -7,8 +7,8 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template <class C, class L, class... xs> struct _unpack {};
-    template <class C, class L, class... xs> struct _unpack_append {};
+    template<class C, class L, class... xs> struct _unpack {};
+    template<class C, class L, class... xs> struct _unpack_append {};
   }
   /// \endcond
 

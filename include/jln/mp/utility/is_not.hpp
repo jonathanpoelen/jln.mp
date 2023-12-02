@@ -10,6 +10,6 @@ namespace jln::mp
   /// \ingroup utility
 
   /// \treturn \bool
-  template <class T, class C = identity>
+  template<class T, class C = identity>
   using is_not = is<T, not_<C>>;
 } // namespace jln::mp

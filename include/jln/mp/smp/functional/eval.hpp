@@ -11,7 +11,7 @@
 
 namespace jln::mp::smp
 {
-  template <auto F, class C = identity>
+  template<auto F, class C = identity>
   using eval = try_contract<mp::eval<F, assume_unary<C>>>;
 }
 

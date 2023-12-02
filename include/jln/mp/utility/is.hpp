@@ -13,7 +13,7 @@ namespace jln::mp
   /// \ingroup utility
 
   /// \treturn \bool
-  template <class T, class C = identity>
+  template<class T, class C = identity>
   struct is
   {
     template<class x>

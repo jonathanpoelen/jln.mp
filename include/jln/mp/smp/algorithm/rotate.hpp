@@ -7,7 +7,7 @@
 
 namespace jln::mp::smp
 {
-  template <int_ n, class C = listify>
+  template<int_ n, class C = listify>
   using rotate_c = contract<mp::rotate_c<n, subcontract<C>>>;
 }
 
