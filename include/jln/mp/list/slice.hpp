@@ -13,7 +13,7 @@ namespace jln::mp
   namespace detail
   {
     template<int>
-    struct _slice;
+    struct slice_impl;
 
     constexpr unsigned slide_select(unsigned nx, unsigned size, unsigned stride);
   }
@@ -24,14 +24,13 @@ namespace jln::mp
   /// Returns a subset of elements in a \c xs picked at regular intervals in range.
   /// \pre `0 <= start <= sizeof...(xs)`
   /// \pre `0 < stride`
-  /// \pre `0 <= size`
   /// \pre `0 <= (size - 1) * stride + start + 1 <= sizeof...(xs)`
   /// \treturn \sequence
   template<unsigned start, unsigned size, unsigned stride = 1, class C = listify>
   struct slice_c
   {
     template<class... xs>
-    using f = typename detail::_slice<
+    using f = typename detail::slice_impl<
       detail::slide_select(sizeof...(xs) - start, size, stride)
     >
     ::template f<start, size, stride, C, sizeof...(xs)>
@@ -65,51 +64,56 @@ namespace jln::mp::detail
 {
   constexpr unsigned slide_select(unsigned nx, unsigned size, unsigned stride)
   {
-    return !size ? 0
-      : size == 1 ? 3
+    return size <= 1 ? size
       : stride <= 1 ? 2
       : nx < stride ? 2
-      : 1;
+      : 3;
   }
 
+  // size = 0
   template<>
-  struct _slice<2>
+  struct slice_impl<0>
+  {
+    template<unsigned start, unsigned size, unsigned stride, class C, std::size_t len>
+    using f = clear<C>;
+  };
+
+  // size = 1
+  template<>
+  struct slice_impl<1>
+  {
+    template<unsigned start, unsigned size, unsigned stride, class C, std::size_t len>
+    using f = drop_front_c<start, front<C>>;
+  };
+
+  // stride <= 1 || sizeof...(xs) < stride + start
+  template<>
+  struct slice_impl<2>
   {
     template<int_ start, int_ size, unsigned /*stride*/, class C, int_ len>
     using f = rotate_c<start + size, drop_front_c<len - size, C>>;
   };
 
   template<class, unsigned... ints>
-  struct slice_impl
+  struct slided_slice
   {
-    template<class C, unsigned size, unsigned stride>
-    struct impl : _each<join<C>, wrap_in_list_c<(ints <= size && ints % stride == 0)>...>
+    template<class C, unsigned stride>
+    struct impl : _each<join<C>, wrap_in_list_c<ints % stride == 0>...>
     {};
   };
 
+  // other
   template<>
-  struct _slice<1>
+  struct slice_impl<3>
   {
-    template<unsigned start, unsigned size, unsigned stride, class C, std::size_t len>
-    using f = drop_front_c<
-      start,
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE_T(unsigned, len - start, slice_impl)
-        ::template impl<C, size * stride - stride + 1, stride>
+    template<unsigned start, unsigned size, unsigned stride, class C, std::size_t len,
+      unsigned range_size = stride * (size - 1) + 1>
+    using f = rotate_c<range_size + start,
+      drop_front_c<len - range_size,
+        typename JLN_MP_MAKE_INTEGER_SEQUENCE_T(unsigned, range_size, slided_slice)
+          ::template impl<C, stride>
+      >
     >;
-  };
-
-  template<>
-  struct _slice<0>
-  {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, std::size_t len>
-    using f = clear<C>;
-  };
-
-  template<>
-  struct _slice<3>
-  {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, std::size_t len>
-    using f = drop_front_c<start, front<C>>;
   };
 }
 /// \endcond
