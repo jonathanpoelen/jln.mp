@@ -196,8 +196,8 @@ namespace jln::mp::detail
   struct sliding_impl<3>
   {
     template<class C, int_, int_ stride, class... xs>
-    using f = typename slice_impl<3>
-      ::template f<0, (sizeof...(xs) + stride - 1) / stride, stride, transform<listify, C>, sizeof...(xs)>
+    using f = typename slice_impl<0, sizeof...(xs) ? (sizeof...(xs) - 1) % stride : 0, true>
+      ::template f<transform<listify, C>, stride, sizeof...(xs)>
       ::template f<xs...>;
   };
 

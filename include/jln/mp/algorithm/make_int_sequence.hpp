@@ -178,7 +178,12 @@ namespace jln::mp
   #define JLN_MP_MAKE_INTEGER_SEQUENCE(n, ...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_T(::jln::mp::int_, n, __VA_ARGS__)
 
-  /// Template-dependent version of \c JLN_MP_MAKE_INTEGER_SEQUENCE_T ; Add typename when needed.
+  /// Fast initialization of template of the shape `name<class T, unsigned... ints>`.
+  /// `n` should be a template parameter.
+  #define JLN_MP_MAKE_UNSIGNED_SEQUENCE(n, ...) \
+    JLN_MP_MAKE_INTEGER_SEQUENCE_T(unsigned, n, __VA_ARGS__)
+
+  /// Template-dependent version of \c JLN_MP_MAKE_INTEGER_SEQUENCE_T ; add typename when needed.
   /// \code
   /// // typename impl<...>::template f<T, 0, 1, 2> ->
   /// JLN_MP_D_MAKE_INTEGER_SEQUENCE_T(T, n, impl<...>::template f)
@@ -186,7 +191,7 @@ namespace jln::mp
   #define JLN_MP_D_MAKE_INTEGER_SEQUENCE_T(T, n, ...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME JLN_MP_MAKE_INTEGER_SEQUENCE_T(T, n, __VA_ARGS__)
 
-  /// Template-dependent version of \c JLN_MP_MAKE_INDEX_SEQUENCE ; Add typename when needed.
+  /// Template-dependent version of \c JLN_MP_MAKE_INDEX_SEQUENCE ; add typename when needed.
   /// \code
   /// // typename impl<...>::template f<T, 0, 1, 2> ->
   /// JLN_MP_MAKE_INDEX_SEQUENCE(n, impl<...>::template f)
@@ -194,13 +199,21 @@ namespace jln::mp
   #define JLN_MP_D_MAKE_INDEX_SEQUENCE(n, ...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME JLN_MP_MAKE_INDEX_SEQUENCE(n, __VA_ARGS__)
 
-  /// Template-dependent version of \c JLN_MP_MAKE_INTEGER_SEQUENCE ; Add typename when needed.
+  /// Template-dependent version of \c JLN_MP_MAKE_INTEGER_SEQUENCE ; add typename when needed.
   /// \code
   /// // typename impl<...>::template f<T, 0, 1, 2> ->
   /// JLN_MP_D_MAKE_INTEGER_SEQUENCE(n, impl<...>::template f)
   /// \endcode
   #define JLN_MP_D_MAKE_INTEGER_SEQUENCE(n, ...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME JLN_MP_MAKE_INTEGER_SEQUENCE(n, __VA_ARGS__)
+
+  /// Template-dependent version of \c JLN_MP_MAKE_UNSIGNED_SEQUENCE ; add typename when needed.
+  /// \code
+  /// // typename impl<...>::template f<T, 0, 1, 2> ->
+  /// JLN_MP_D_MAKE_UNSIGNED_SEQUENCE(n, impl<...>::template f)
+  /// \endcode
+  #define JLN_MP_D_MAKE_UNSIGNED_SEQUENCE(n, ...) \
+    JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME JLN_MP_MAKE_UNSIGNED_SEQUENCE(n, __VA_ARGS__)
 
   /// single list of int_
   template<int_... i>

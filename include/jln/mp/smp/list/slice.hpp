@@ -16,13 +16,13 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template<unsigned start, unsigned size, unsigned stride = 1, class C = listify>
-  using slice_c = typename detail::smp_slice_select<(stride > 0)>
-    ::template f<start, size, stride, C>;
+  template<int_ start, unsigned count, unsigned step = 1, class C = listify>
+  using slice_c = typename detail::smp_slice_select<(step > 0)>
+    ::template f<start, count, step, C>;
 }
 
-JLN_MP_MAKE_REGULAR_SMP4_P(slice, (start), (size), (stride, number<1>), (C, smp::listify),
-  smp::slice_c<start::value, size::value, stride::value, C>)
+JLN_MP_MAKE_REGULAR_SMP4_P(slice, (start), (size), (step, number<1>), (C, smp::listify),
+  smp::slice_c<start::value, size::value, step::value, C>)
 
 
 /// \cond
@@ -31,31 +31,21 @@ namespace jln::mp::detail
   template<>
   struct smp_slice_select<false>
   {
-    template<unsigned start, unsigned size, unsigned stride, class C>
+    template<int_ start, unsigned count, unsigned step, class C>
     using f = bad_contract;
-  };
-
-  template<unsigned start, unsigned size, unsigned stride>
-  struct smp_slice_check
-  {
-    template<class... xs>
-    using f = mp::number<start <= sizeof...(xs)
-                      && (size - 1) * stride + start + 1 <= sizeof...(xs)>;
   };
 
   template<>
   struct smp_slice_select<true>
   {
-    template<unsigned start, unsigned size, unsigned stride, class C>
-    using f = test_contract<
-      smp_slice_check<start, size, stride>,
-      mp::slice_c<start, size, stride, subcontract<C>>>;
+    template<int_ start, unsigned count, unsigned step, class C>
+    using f = contract<mp::slice_c<start, count, step, subcontract<C>>>;
   };
 
-  template<template<class> class sfinae, unsigned start, unsigned size, unsigned stride, class C>
-  struct _sfinae<sfinae, slice_c<start, size, stride, C>>
+  template<template<class> class sfinae, int_ start, unsigned count, unsigned step, class C>
+  struct _sfinae<sfinae, slice_c<start, count, step, C>>
   {
-    using type = smp::slice_c<start, size, stride, sfinae<C>>;
+    using type = smp::slice_c<start, count, step, sfinae<C>>;
   };
 }
 /// \endcond
