@@ -249,7 +249,7 @@ namespace jln::mp::detail
   struct sliding7_impl
   {
     template<class C, int_ size, int_ stride>
-    using f = _tee<zip<C>, slice_c<i, size, stride>...>;
+    using f = _tee<zip<C>, slice_with_step_c<i, size, stride>...>;
   };
 
   // size>1  stride>1  (all list = size)
@@ -294,7 +294,7 @@ namespace jln::mp::detail
     template<class C, int_ size, int_ stride, int_ pivot>
     using f = _tee<
       zip<rotate_c<-1, adjust<C>>>,
-      slice_c<i, size - (pivot < i), stride,
+      slice_with_step_c<i, size - (pivot < i), stride,
         typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>
       >...
     >;

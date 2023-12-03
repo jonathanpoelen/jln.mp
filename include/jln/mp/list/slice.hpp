@@ -107,7 +107,7 @@ namespace jln::mp
   /// \pre `0 < step`
   /// \treturn \sequence
   template<int_ start, unsigned count, unsigned step = 1, class C = listify>
-  struct slice_c
+  struct slice_with_step_c
     : detail::strided_slice_negative_start_select<start < 0>
     ::template impl<start, count, step, C>
   {
@@ -118,15 +118,27 @@ namespace jln::mp
   };
 
   template<class start, class count, class step = number<1>, class C = listify>
-  using slice = slice_c<start::value, count::value, step::value, C>;
+  using slice_with_step = slice_with_step_c<start::value, count::value, step::value, C>;
+
+  template<int_ start, unsigned count, class C = listify>
+  using slice_c = slice_with_step_c<start, count, 1, C>;
+
+  template<class start, class count, class C = listify>
+  using slice = slice_with_step_c<start::value, count::value, 1, C>;
 
   namespace emp
   {
     template<class L, class start, class count, class step = number<1>, class C = mp::listify>
-    using slice = unpack<L, slice<start, count, step, C>>;
+    using slice_with_step = unpack<L, slice_with_step<start, count, step, C>>;
 
     template<class L, int_ start, unsigned count, unsigned step = 1, class C = mp::listify>
-    using slice_c = unpack<L, slice_c<start, count, step, C>>;
+    using slice_with_step_c = unpack<L, mp::slice_with_step_c<start, count, step, C>>;
+
+    template<class L, class start, class count, class C = mp::listify>
+    using slice = unpack<L, mp::slice_with_step_c<start::value, count::value, 1, C>>;
+
+    template<class L, int_ start, unsigned count, class C = mp::listify>
+    using slice_c = unpack<L, mp::slice_with_step_c<start, count, 1, C>>;
   }
 }
 
@@ -142,26 +154,26 @@ namespace jln::mp
 namespace jln::mp
 {
   template<int_ start, unsigned count, class C>
-  struct slice_c<start, count, 1, C>
+  struct slice_with_step_c<start, count, 1, C>
     : detail::slice_negative_start_select<start < 0>
     ::template impl<start, count, C>
   {};
 
   template<int_ start, unsigned step, class C>
-  struct slice_c<start, 0, step, C> : clear<C>
+  struct slice_with_step_c<start, 0, step, C> : clear<C>
   {};
 
   // invalid
   template<int_ start, unsigned count, class C>
-  struct slice_c<start, count, 0, C>
+  struct slice_with_step_c<start, count, 0, C>
   {};
 
   template<int_ start, class C>
-  struct slice_c<start, 0, 0, C> : clear<C>
+  struct slice_with_step_c<start, 0, 0, C> : clear<C>
   {};
 
   template<int_ start, class C>
-  struct slice_c<start, 0, 1, C> : clear<C>
+  struct slice_with_step_c<start, 0, 1, C> : clear<C>
   {};
 }
 
