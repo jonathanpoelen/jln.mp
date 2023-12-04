@@ -167,6 +167,7 @@ jobs:
           sed '
             s/clang++/nvcc -x cu -diag-suppress 177 -std=c++17/
             s/-Wall.*-fforce-emit-vtables//
+            s/-fcolor-diagnostics=always//
             s/-fcolor-diagnostics//
             s/-MD.*-fsyntax-only//
           ' build/build.ninja -i
