@@ -33,7 +33,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::enumerate_v_impl)
-      ::template f<JLN_MP_TRACE_F(F), JLN_MP_TRACE_F(C), xs...>;
+      ::template f<F, JLN_MP_TRACE_F(C), xs...>;
   };
 
   /// Returns pairs containing an index and a value.
