@@ -4,7 +4,7 @@
 
 #include <jln/mp/list/listify.hpp>
 #include <jln/mp/number/operators.hpp>
-#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/detail/sequence.hpp>
 
 namespace jln::mp
 {

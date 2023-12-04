@@ -4,7 +4,7 @@
 
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/utility/unpack.hpp>
-#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/detail/sequence.hpp>
 
 namespace jln::mp
 {

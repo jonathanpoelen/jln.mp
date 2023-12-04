@@ -3,7 +3,7 @@
 #pragma once
 
 #include <jln/mp/list/listify.hpp>
-#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/detail/sequence.hpp>
 #include <jln/mp/utility/unpack.hpp>
 
 namespace jln::mp

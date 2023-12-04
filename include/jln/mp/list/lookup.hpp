@@ -130,7 +130,7 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/detail/sequence.hpp>
 #include <jln/mp/list/list.hpp>
 
 namespace jln::mp::detail

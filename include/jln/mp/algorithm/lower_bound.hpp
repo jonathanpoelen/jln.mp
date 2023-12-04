@@ -64,7 +64,7 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/detail/sequence.hpp>
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/list/clear.hpp>
 #include <jln/mp/list/front.hpp>

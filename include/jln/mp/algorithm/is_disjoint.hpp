@@ -4,7 +4,7 @@
 
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/utility/unpack.hpp>
-#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/detail/sequence.hpp>
 
 #include <type_traits>
 

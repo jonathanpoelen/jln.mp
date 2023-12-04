@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/detail/enumerate.hpp>
+#include <jln/mp/detail/sequence.hpp>
 #include <jln/mp/list/listify.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/number/number.hpp>
