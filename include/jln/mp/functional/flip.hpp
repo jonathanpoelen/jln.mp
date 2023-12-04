@@ -11,6 +11,10 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invokes a \function with its two first arguments reversed.
+  /// \semantics
+  ///   \code
+  ///   C::f<xs[1], xs[0], ...xs[2:]>
+  ///   \endcode
   /// \treturn \sequence
   template<class C = listify>
   struct flip

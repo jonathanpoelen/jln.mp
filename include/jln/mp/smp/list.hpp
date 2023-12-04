@@ -9,6 +9,7 @@
 #include <jln/mp/smp/list/clear.hpp>
 #include <jln/mp/smp/list/drop_back.hpp>
 #include <jln/mp/smp/list/drop_front.hpp>
+#include <jln/mp/smp/list/enumerate.hpp>
 #include <jln/mp/smp/list/erase.hpp>
 #include <jln/mp/smp/list/front.hpp>
 #include <jln/mp/smp/list/indices.hpp>

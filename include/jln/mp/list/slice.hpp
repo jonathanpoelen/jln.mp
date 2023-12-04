@@ -96,7 +96,7 @@ namespace jln::mp
       e <= 0 ? -1 : i < 0 ? 0 : i,
       e <= 0 ? -1 : e
     >;
-  }
+  } // namespace jln::mp::detail
   /// \endcond
 
 
@@ -175,7 +175,7 @@ namespace jln::mp
   template<int_ start, class C>
   struct slice_with_step_c<start, 0, 1, C> : clear<C>
   {};
-}
+}// namespace jln::mp
 
 namespace jln::mp::detail
 {
@@ -313,5 +313,5 @@ namespace jln::mp::detail
       ::template impl<C, step>
     >>;
   };
-}
+} // namespace jln::mp::detail
 /// \endcond

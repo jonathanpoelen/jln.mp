@@ -137,6 +137,7 @@
 #include "src/list/clear.cpp"
 #include "src/list/drop_back.cpp"
 #include "src/list/drop_front.cpp"
+#include "src/list/enumerate.cpp"
 #include "src/list/erase.cpp"
 #include "src/list/front.cpp"
 #include "src/list/indices.cpp"
