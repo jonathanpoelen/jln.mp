@@ -24,10 +24,10 @@ namespace jln::mp
     struct positive_strided_slice_impl;
 
     template<bool>
-    struct slice_negative_start_select;
+    struct negative_slice_select;
 
     template<bool>
-    struct strided_slice_negative_start_select;
+    struct negative_strided_slice_select;
 
     // pre: start < 0
     // pre: count > 0
@@ -108,7 +108,7 @@ namespace jln::mp
   /// \treturn \sequence
   template<int_ start, unsigned count, unsigned step = 1, class C = listify>
   struct slice_with_step_c
-    : detail::strided_slice_negative_start_select<start < 0>
+    : detail::negative_strided_slice_select<start < 0>
     ::template impl<start, count, step, C>
   {
 #ifdef JLN_MP_DOXYGENATING
@@ -155,7 +155,7 @@ namespace jln::mp
 {
   template<int_ start, unsigned count, class C>
   struct slice_with_step_c<start, count, 1, C>
-    : detail::slice_negative_start_select<start < 0>
+    : detail::negative_slice_select<start < 0>
     ::template impl<start, count, C>
   {};
 
@@ -180,7 +180,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<>
-  struct slice_negative_start_select<true>
+  struct negative_slice_select<true>
   {
     template<int_ start, unsigned count, class C>
     struct impl
@@ -192,7 +192,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct slice_negative_start_select<false>
+  struct negative_slice_select<false>
   {
     template<int_ start, unsigned count, class C>
     struct impl
@@ -238,27 +238,27 @@ namespace jln::mp::detail
 
 
   template<>
-  struct strided_slice_negative_start_select<true>
+  struct negative_strided_slice_select<true>
   {
     template<int_ start, unsigned count, unsigned step, class C>
     struct impl
     {
       template<class... xs>
       using f = typename negative_strided_slice_dispatch<start, count, step, sizeof...(xs)>
-        ::template f<C, step, sizeof...(xs)>
+        ::template impl<C, step, sizeof...(xs)>
         ::template f<xs...>;
     };
   };
 
   template<>
-  struct strided_slice_negative_start_select<false>
+  struct negative_strided_slice_select<false>
   {
     template<int_ start, unsigned count, unsigned step, class C>
     struct impl
     {
       template<class... xs>
       using f = typename positive_strided_slice_dispatch<start, count, step>
-        ::template f<C, step, sizeof...(xs)>
+        ::template impl<C, step, sizeof...(xs)>
         ::template f<xs...>;
     };
   };
@@ -267,8 +267,9 @@ namespace jln::mp::detail
   template<>
   struct positive_strided_slice_impl<-1, -1>
   {
-    template<class C, unsigned /*step*/, int_ /*n*/>
-    using f = clear<C>;
+    // = 0 to be usable in range.hpp
+    template<class C, unsigned /*step*/ = 0, int_ /*n*/ = 0>
+    using impl = clear<C>;
   };
 
   template<int_ i, int_ e>
@@ -276,17 +277,14 @@ namespace jln::mp::detail
   {
     template<class C, unsigned step, int_ n,
       int_ ri = n <= i ? -1 : n - (n < e ? (n - 1 - i) / step * step + i + 1 : e)>
-    using f = typename strided_slice_impl<ri == -1 ? -1 : i, ri>
-      ::template f<C, step, n>;
+    using impl = typename strided_slice_impl<ri == -1 ? -1 : i, ri>
+      ::template impl<C, step, n>;
   };
 
 
   template<>
-  struct strided_slice_impl<-1, -1>
-  {
-    template<class C, unsigned step, std::size_t n>
-    using f = clear<C>;
-  };
+  struct strided_slice_impl<-1, -1> : positive_strided_slice_impl<-1, -1>
+  {};
 
   template<class, unsigned... ints>
   struct slided_slice
@@ -300,7 +298,7 @@ namespace jln::mp::detail
   struct strided_slice_impl<i, 0>
   {
     template<class C, unsigned step, std::size_t n>
-    using f = drop_front_c<i,
+    using impl = drop_front_c<i,
       typename JLN_MP_MAKE_UNSIGNED_SEQUENCE(n - i, slided_slice)
       ::template impl<C, step>
     >;
@@ -310,7 +308,7 @@ namespace jln::mp::detail
   struct strided_slice_impl
   {
     template<class C, unsigned step, std::size_t n>
-    using f = rotate_c<-ri, drop_front_c<i + ri,
+    using impl = rotate_c<-ri, drop_front_c<i + ri,
       typename JLN_MP_MAKE_UNSIGNED_SEQUENCE(n - i - ri, slided_slice)
       ::template impl<C, step>
     >>;

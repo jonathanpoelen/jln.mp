@@ -13,8 +13,8 @@ namespace jln::mp
   {
     template<int_ beg, int_ end,
       bool = beg < 0,
-      bool = end < 0 || beg == -1,
-      bool = beg >= end || beg == -1>
+      bool = end < 0,
+      bool = beg >= end>
     struct _range;
   }
   /// \endcond
@@ -23,7 +23,7 @@ namespace jln::mp
 
   /// Returns a contiguous subsequence of a \sequence.
   /// A negative value represents an index starting from the end.
-  /// if finally, \c end <= \c beg, then an empty \list is returned.
+  /// All indices available in the range are returned, indices outside the bounds are ignored.
   /// \treturn \sequence
   template<int_ beg, int_ end, class C = listify>
   struct range_c : detail::_range<beg, end>::template impl<C>
@@ -47,128 +47,84 @@ namespace jln::mp
   }
 }
 
-#include <jln/mp/list/clear.hpp>
-#include <jln/mp/list/drop_front.hpp>
-#include <jln/mp/algorithm/rotate.hpp>
-#include <jln/mp/detail/compiler.hpp>
+
+#include <jln/mp/list/slice.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<bool, bool>
-  struct range_impl
-  {
-    template<class C, int_ beg, int_ end, int_ n>
-    using f = clear<C>;
-  };
-
-  template<>
-  struct range_impl<true, true>
-  {
-    template<class C, int_ beg, int_ end, int_ n>
-    using f = rotate_c<end, drop_front_c<n - end + beg, C>>;
-  };
-
-  template<>
-  struct range_impl<true, false>
-  {
-    template<class C, int_ beg, int_ end, int_ n>
-    using f = drop_front_c<beg, C>;
-  };
-
-  template<class C, int_ beg, int_ end, int_ n>
-  using range_select = typename range_impl<beg < n, end < n>
-    ::template f<C, beg, end, n>;
-
-  template<>
-  struct _range<0, -1, false, true, false>
-  {
-    template<class C>
-    using impl = C;
-  };
-
-  // end >= 0 && beg >= end
-  template<int_ beg, int_ end>
-  struct _range<beg, end, false, false, true>
-  {
-    template<class C>
-    using impl = clear<C>;
-  };
-
-  // end < 0 && beg < 0 && beg >= end
-  // or
-  // beg = -1
+  // beg < 0 && end < 0 && beg >= end
   template<int_ beg, int_ end>
   struct _range<beg, end, true, true, true>
+    : positive_strided_slice_impl<-1, -1>
+  {};
+
+  // beg < 0 && end < 0 && beg < end
+  template<int_ beg, int_ end>
+  struct _range<beg, end, true, true, false>
   {
     template<class C>
-    using impl = clear<C>;
+    using impl = negative_slice_select<true>::impl<beg, end - beg, C>;
   };
 
-  // beg < 0 and end < 0
-  template<int_ beg, int_ end, bool b3>
-  struct _range<beg, end, true, true, b3>
+  // pre: beg >= 0
+  // pre: end < 0
+  template<class C, int_ beg, int_ end, int_ n,
+    bool b = n + end <= beg>
+  using negative_end_range_dispatch = slice_impl<
+    C,
+    b ? -1 : beg,
+    b ? -1 : -end
+  >;
+
+  // beg >= 0 && end < 0
+  template<int_ beg, int_ end>
+  struct _range<beg, end, false, true, true>
   {
     template<class C>
     struct impl
     {
       template<class... xs>
-      using f = typename range_select<C,
-        sizeof...(xs) <= -beg ? 0 : int_(sizeof...(xs)) + beg,
-        sizeof...(xs) <= -end ? 0 : int_(sizeof...(xs)) + end + 1,
-        sizeof...(xs)
-      >::template f<xs...>;
-    };
-  };
-
-  // beg >= 0 and end < 0
-  template<int_ beg, int_ end, bool b3>
-  struct _range<beg, end, false, true, b3>
-  {
-    template<class C>
-    struct impl
-    {
-      template<class... xs>
-      using f = typename range_select<C,
-        beg,
-        sizeof...(xs) <= -end ? 0 : int_(sizeof...(xs)) + end + 1,
-        sizeof...(xs)
-      >::template f<xs...>;
-    };
-  };
-
-  // beg < 0 and end >= 0
-  template<int_ beg, int_ end, bool b3>
-  struct _range<beg, end, true, false, b3>
-  {
-    template<class C>
-    struct impl
-    {
-      template<class... xs>
-      using f = typename range_select<C,
-        sizeof...(xs) <= -beg ? 0 : int_(sizeof...(xs)) + beg,
-        end,
-        sizeof...(xs)
-      >::template f<xs...>;
-    };
-  };
-
-  // beg >= 0 and end >= 0
-  template<int_ beg, int_ end, bool b3>
-  struct _range<beg, end, false, false, b3>
-  {
-    template<class C>
-    struct impl
-    {
-      template<class... xs>
-#if JLN_MP_GCC
-      using f = typename range_select<C, beg, end, sizeof...(xs)>
-#else
-      using f = typename range_impl<beg < sizeof...(xs), end < sizeof...(xs)>
-        ::template f<C, beg, end, sizeof...(xs)>
-#endif
+      using f = typename negative_end_range_dispatch<C, beg, end, sizeof...(xs)>
         ::template f<xs...>;
     };
   };
+
+  // pre: beg < 0
+  // pre: end >= 0
+  template<class C, int_ beg, int_ end, int_ n,
+    bool b = end <= n + beg>
+  using negative_beg_range_dispatch = slice_impl<
+    C,
+    b ? -1 : n < -beg ? 0 : n + beg,
+    b ? -1 : n < end ? 0 : n - end
+  >;
+
+  // beg < 0 && end >= 0
+  template<int_ beg, int_ end>
+  struct _range<beg, end, true, false, false>
+  {
+    template<class C>
+    struct impl
+    {
+      template<class... xs>
+      using f = typename negative_beg_range_dispatch<C, beg, end, sizeof...(xs)>
+        ::template f<xs...>;
+    };
+  };
+
+  // beg >= 0 && end >= 0 && beg < end
+  template<int_ beg, int_ end>
+  struct _range<beg, end, false, false, false>
+  {
+    template<class C>
+    using impl = negative_slice_select<false>::impl<beg, end - beg, C>;
+  };
+
+  // beg >= 0 && end >= 0 && beg >= end
+  template<int_ beg, int_ end>
+  struct _range<beg, end, false, false, true>
+    : positive_strided_slice_impl<-1, -1>
+  {};
 }
 /// \endcond

@@ -15,53 +15,134 @@ TEST()
 
   test_mulary_pack<range, _1, _2>();
 
-  ut::same<seq_0_1_2_3_4_5_6_7_8_9,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 0, 10>>();
-  ut::same<seq_0_1_2_3_4_5_6_7_8_9,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 0, -1>>();
-  ut::same<list<>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, -1, -1>>();
-  ut::same<list<>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, -1, 10>>();
-  ut::same<seq_1_2_3,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 1, 4>>();
+  test_context<range_c<0, 3>, smp::range_c<0, 3>>()
+    .test<list<_0, _1, _2>, _0, _1, _2, _3, _4, _5>()
+    .test<list<_0, _1, _2>, _0, _1, _2, _3, _4>()
+    .test<list<_0, _1, _2>, _0, _1, _2, _3>()
+    .test<list<_0, _1, _2>, _0, _1, _2>()
+    .test<list<_0, _1>, _0, _1>()
+    .test<list<_0>, _0>()
+    .test<list<>>()
+    ;
 
-  ut::same<emp::numbers<7, 8, 9>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, -3, 10>>();
-  ut::same<emp::numbers<3, 4, 5, 6, 7>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 3, -3>>();
-  ut::same<emp::numbers<1, 2, 3>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, -9, -7>>();
-  ut::same<emp::numbers<0, 1, 2, 3, 4, 5, 6, 7, 8>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, -10, -2>>();
-  ut::same<emp::numbers<0, 1, 2, 3, 4, 5, 6, 7, 8>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, -11, -2>>();
+  test_context<range_c<0, -1>, smp::range_c<0, -1>>()
+    .test<list<_0, _1, _2, _3, _4>, _0, _1, _2, _3, _4, _5>()
+    .test<list<_0, _1, _2, _3>, _0, _1, _2, _3, _4>()
+    .test<list<_0, _1, _2>, _0, _1, _2, _3>()
+    .test<list<_0, _1>, _0, _1, _2>()
+    .test<list<_0>, _0, _1>()
+    .test<list<>, _0>()
+    .test<list<>>()
+    ;
 
-  ut::same<list<>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 12, 111>>();
-  ut::same<list<>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 12, -1>>();
-  ut::same<list<>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 12, -2>>();
-  ut::same<list<>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 0, -20>>();
-  ut::same<list<>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, -22, -20>>();
-  ut::same<list<>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, -22, 0>>();
-
-  ut::same<seq_0_1,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, -22, 2>>();
-  ut::same<seq_0_1_2_3_4_5_6_7_8_9,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, -22, -1>>();
-
-  ut::same<emp::numbers<1, 2, 3, 4, 5, 6, 7, 8, 9>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 1, -1>>();
-  ut::same<emp::numbers<1, 2, 3, 4, 5, 6, 7, 8>,
-    emp::range_c<seq_0_1_2_3_4_5_6_7_8_9, 1, -2>>();
-
-  test_context<range<_2, _4>, smp::range<_2, _4>>()
+  test_context<range_c<2, 4>, smp::range_c<2, 4>>()
     .test<list<_2, _3>, _0, _1, _2, _3, _4, _5>()
+    .test<list<_2, _3>, _0, _1, _2, _3, _4>()
+    .test<list<_2, _3>, _0, _1, _2, _3>()
+    .test<list<_2>, _0, _1, _2>()
+    .test<list<>, _0, _1>()
+    .test<list<>, _0>()
+    .test<list<>>()
+    ;
+
+  test_context<range_c<4, 0>, smp::range_c<4, 0>>()
+    .test<list<>, _0, _1, _2, _3, _4, _5>()
+    .test<list<>, _0, _1, _2, _3, _4>()
+    .test<list<>, _0, _1, _2, _3>()
+    .test<list<>, _0, _1, _2>()
+    .test<list<>, _0, _1>()
+    .test<list<>, _0>()
+    .test<list<>>()
+    ;
+
+  test_context<range_c<4, 2>, smp::range_c<4, 2>>()
+    .test<list<>, _0, _1, _2, _3, _4, _5>()
+    .test<list<>, _0, _1, _2, _3, _4>()
+    .test<list<>, _0, _1, _2, _3>()
+    .test<list<>, _0, _1, _2>()
+    .test<list<>, _0, _1>()
+    .test<list<>, _0>()
+    .test<list<>>()
+    ;
+
+  test_context<range_c<2, -3>, smp::range_c<2, -3>>()
+    .test<list<_2>, _0, _1, _2, _3, _4, _5>()
+    .test<list<>, _0, _1, _2, _3, _4>()
+    .test<list<>, _0, _1, _2, _3>()
+    .test<list<>, _0, _1, _2>()
+    .test<list<>, _0, _1>()
+    .test<list<>, _0>()
+    .test<list<>>()
+    ;
+
+  test_context<range_c<1, -1>, smp::range_c<1, -1>>()
+    .test<list<_1, _2, _3, _4>, _0, _1, _2, _3, _4, _5>()
+    .test<list<_1, _2, _3>, _0, _1, _2, _3, _4>()
+    .test<list<_1, _2>, _0, _1, _2, _3>()
+    .test<list<_1>, _0, _1, _2>()
+    .test<list<>, _0, _1>()
+    .test<list<>, _0>()
+    .test<list<>>()
+    ;
+
+  test_context<range_c<-1, -1>, smp::range_c<-1, -1>>()
+    .test<list<>, _0, _1, _2, _3, _4, _5>()
+    .test<list<>, _0, _1, _2, _3, _4>()
+    .test<list<>, _0, _1, _2, _3>()
+    .test<list<>, _0, _1, _2>()
+    .test<list<>, _0, _1>()
+    .test<list<>, _0>()
+    .test<list<>>()
+    ;
+
+  test_context<range_c<-2, 0>, smp::range_c<-2, 0>>()
+    .test<list<>, _0, _1, _2, _3, _4, _5>()
+    .test<list<>, _0, _1, _2, _3, _4>()
+    .test<list<>, _0, _1, _2, _3>()
+    .test<list<>, _0, _1, _2>()
+    .test<list<>, _0, _1>()
+    .test<list<>, _0>()
+    .test<list<>>()
+    ;
+
+  test_context<range_c<-1, 3>, smp::range_c<-1, 3>>()
+    .test<list<>, _0, _1, _2, _3, _4, _5>()
+    .test<list<>, _0, _1, _2, _3, _4>()
+    .test<list<>, _0, _1, _2, _3>()
+    .test<list<_2>, _0, _1, _2>()
+    .test<list<_1>, _0, _1>()
+    .test<list<_0>, _0>()
+    .test<list<>>()
+    ;
+
+  test_context<range_c<-2, 3>, smp::range_c<-2, 3>>()
+    .test<list<>, _0, _1, _2, _3, _4, _5>()
+    .test<list<>, _0, _1, _2, _3, _4>()
+    .test<list<_2>, _0, _1, _2, _3>()
+    .test<list<_1, _2>, _0, _1, _2>()
+    .test<list<_0, _1>, _0, _1>()
+    .test<list<_0>, _0>()
+    .test<list<>>()
+    ;
+
+  test_context<range_c<-2, -4>, smp::range_c<-2, -4>>()
+    .test<list<>, _0, _1, _2, _3, _4, _5>()
+    .test<list<>, _0, _1, _2, _3, _4>()
+    .test<list<>, _0, _1, _2, _3>()
+    .test<list<>, _0, _1, _2>()
+    .test<list<>, _0, _1>()
+    .test<list<>, _0>()
+    .test<list<>>()
+    ;
+
+  test_context<range_c<-4, -2>, smp::range_c<-4, -2>>()
+    .test<list<_2, _3>, _0, _1, _2, _3, _4, _5>()
+    .test<list<_1, _2>, _0, _1, _2, _3, _4>()
+    .test<list<_0, _1>, _0, _1, _2, _3>()
+    .test<list<_0>, _0, _1, _2>()
+    .test<list<>, _0, _1>()
+    .test<list<>, _0>()
+    .test<list<>>()
     ;
 
   ut::not_invocable<smp::range<smp::always<na>, _2>, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>();

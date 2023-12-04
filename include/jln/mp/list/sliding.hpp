@@ -197,7 +197,7 @@ namespace jln::mp::detail
   {
     template<class C, int_, int_ stride, class... xs>
     using f = typename strided_slice_impl<0, sizeof...(xs) ? (sizeof...(xs) - 1) % stride : 0>
-      ::template f<transform<listify, C>, stride, sizeof...(xs)>
+      ::template impl<transform<listify, C>, stride, sizeof...(xs)>
       ::template f<xs...>;
   };
 
