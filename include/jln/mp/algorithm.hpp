@@ -37,7 +37,6 @@
 #include <jln/mp/algorithm/fold_xs.hpp>
 #include <jln/mp/algorithm/group.hpp>
 #include <jln/mp/algorithm/index.hpp>
-#include <jln/mp/algorithm/indices.hpp>
 #include <jln/mp/algorithm/intersperse.hpp>
 #include <jln/mp/algorithm/iota.hpp>
 #include <jln/mp/algorithm/is_disjoint.hpp>

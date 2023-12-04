@@ -3,7 +3,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/algorithm/indices.hpp"
+#include "jln/mp/smp/list/indices.hpp"
 #include "jln/mp/smp/utility/always.hpp"
 
 TEST_SUITE_BEGIN()

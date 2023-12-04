@@ -11,6 +11,7 @@
 #include <jln/mp/smp/list/drop_front.hpp>
 #include <jln/mp/smp/list/erase.hpp>
 #include <jln/mp/smp/list/front.hpp>
+#include <jln/mp/smp/list/indices.hpp>
 #include <jln/mp/smp/list/insert.hpp>
 #include <jln/mp/smp/list/insert_sequence.hpp>
 #include <jln/mp/smp/list/is_empty.hpp>
