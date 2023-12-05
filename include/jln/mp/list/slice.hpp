@@ -186,8 +186,9 @@ namespace jln::mp::detail
     struct impl
     {
       template<class... xs>
-      using f = typename negative_slice_dispatch<C, start, count, sizeof...(xs)>
-        ::template f<xs...>;
+      using f = typename negative_slice_dispatch<C, start, count,
+        static_cast<int_>(sizeof...(xs)) // cast is necessary for nvcc (tested with V12.3.52)
+      >::template f<xs...>;
     };
   };
 
@@ -244,7 +245,9 @@ namespace jln::mp::detail
     struct impl
     {
       template<class... xs>
-      using f = typename negative_strided_slice_dispatch<start, count, step, sizeof...(xs)>
+      using f = typename negative_strided_slice_dispatch<start, count, step,
+        static_cast<int_>(sizeof...(xs)) // cast is necessary for nvcc (tested with V12.3.52)
+      >
         ::template impl<C, step, sizeof...(xs)>
         ::template f<xs...>;
     };

@@ -85,8 +85,9 @@ namespace jln::mp::detail
     struct impl
     {
       template<class... xs>
-      using f = typename negative_end_range_dispatch<C, beg, end, sizeof...(xs)>
-        ::template f<xs...>;
+      using f = typename negative_end_range_dispatch<C, beg, end,
+        static_cast<int_>(sizeof...(xs)) // cast is necessary for nvcc (tested with V12.3.52)
+      >::template f<xs...>;
     };
   };
 
@@ -108,8 +109,9 @@ namespace jln::mp::detail
     struct impl
     {
       template<class... xs>
-      using f = typename negative_beg_range_dispatch<C, beg, end, sizeof...(xs)>
-        ::template f<xs...>;
+      using f = typename negative_beg_range_dispatch<C, beg, end,
+        static_cast<int_>(sizeof...(xs)) // cast is necessary for nvcc (tested with V12.3.52)
+      >::template f<xs...>;
     };
   };
 
