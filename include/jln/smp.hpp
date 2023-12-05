@@ -619,7 +619,7 @@ namespace jln::mp
   /// \ingroup utility
 
   /// \treturn \bool
-  template <class T, class C = identity>
+  template<class T, class C = identity>
   struct is
   {
     template<class x>
@@ -876,8 +876,8 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template <class C, class L, class... xs> struct _unpack {};
-    template <class C, class L, class... xs> struct _unpack_append {};
+    template<class C, class L, class... xs> struct _unpack {};
+    template<class C, class L, class... xs> struct _unpack_append {};
   }
   /// \endcond
 
@@ -4171,6 +4171,10 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invokes a \function with its two first arguments reversed.
+  /// \semantics
+  ///   \code
+  ///   C::f<xs[1], xs[0], ...xs[2:]>
+  ///   \endcode
   /// \treturn \sequence
   template<class C = listify>
   struct flip
@@ -4835,7 +4839,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template <unsigned n>
+    template<unsigned n>
     struct rotate_impl;
 
     constexpr unsigned rotate_size(int_ n, unsigned size);
@@ -4855,7 +4859,7 @@ namespace jln::mp
   ///     C::f<...xs[n:], ...xs[:n]>
   ///   \endcode
   /// \treturn \sequence
-  template <int_ N, class C = listify>
+  template<int_ N, class C = listify>
   struct rotate_c
   {
     template<class... xs>
@@ -4868,15 +4872,15 @@ namespace jln::mp
     >;
   };
 
-  template <class N, class C = listify>
+  template<class N, class C = listify>
   using rotate = rotate_c<N::value, C>;
 
   namespace emp
   {
-    template <class L, class n, class C = mp::listify>
+    template<class L, class n, class C = mp::listify>
     using rotate = unpack<L, mp::rotate<n, C>>;
 
-    template <class L, int_ n, class C = mp::listify>
+    template<class L, int_ n, class C = mp::listify>
     using rotate_c = unpack<L, mp::rotate_c<n, C>>;
   }
 }
@@ -4885,14 +4889,14 @@ namespace jln::mp
 /// \cond
 namespace jln::mp
 {
-  template <int_ N1, int_ N2, class C>
+  template<int_ N1, int_ N2, class C>
   struct rotate_c<N1, rotate_c<N2, C>>
     : rotate_c<N1 + N2, C>
   {};
 
 #if JLN_MP_HAS_BUILTIN(__type_pack_element)
   // back<C>
-  template <int_ N, class C>
+  template<int_ N, class C>
   struct rotate_c<N, front<C>>
   {
     template<class... xs>
@@ -4902,7 +4906,7 @@ namespace jln::mp
   };
 
   // back<>
-  template <int_ N>
+  template<int_ N>
   struct rotate_c<N, front<>>
   {
     template<class... xs>
@@ -4918,7 +4922,7 @@ namespace jln::mp::detail
     return size ? static_cast<unsigned>(n < 0 ? size + n % size : n) % size : 0;
   }
 
-  template <unsigned n>
+  template<unsigned n>
   struct rotate_impl : rotate_impl<
       n < 16 ? 8
     : n < 64 ? 16
@@ -6051,7 +6055,12 @@ namespace jln::mp
   #define JLN_MP_MAKE_INTEGER_SEQUENCE(n, ...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_T(::jln::mp::int_, n, __VA_ARGS__)
 
-  /// Template-dependent version of \c JLN_MP_MAKE_INTEGER_SEQUENCE_T ; Add typename when needed.
+  /// Fast initialization of template of the shape `name<class T, unsigned... ints>`.
+  /// `n` should be a template parameter.
+  #define JLN_MP_MAKE_UNSIGNED_SEQUENCE(n, ...) \
+    JLN_MP_MAKE_INTEGER_SEQUENCE_T(unsigned, n, __VA_ARGS__)
+
+  /// Template-dependent version of \c JLN_MP_MAKE_INTEGER_SEQUENCE_T ; add typename when needed.
   /// \code
   /// // typename impl<...>::template f<T, 0, 1, 2> ->
   /// JLN_MP_D_MAKE_INTEGER_SEQUENCE_T(T, n, impl<...>::template f)
@@ -6059,7 +6068,7 @@ namespace jln::mp
   #define JLN_MP_D_MAKE_INTEGER_SEQUENCE_T(T, n, ...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME JLN_MP_MAKE_INTEGER_SEQUENCE_T(T, n, __VA_ARGS__)
 
-  /// Template-dependent version of \c JLN_MP_MAKE_INDEX_SEQUENCE ; Add typename when needed.
+  /// Template-dependent version of \c JLN_MP_MAKE_INDEX_SEQUENCE ; add typename when needed.
   /// \code
   /// // typename impl<...>::template f<T, 0, 1, 2> ->
   /// JLN_MP_MAKE_INDEX_SEQUENCE(n, impl<...>::template f)
@@ -6067,13 +6076,21 @@ namespace jln::mp
   #define JLN_MP_D_MAKE_INDEX_SEQUENCE(n, ...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME JLN_MP_MAKE_INDEX_SEQUENCE(n, __VA_ARGS__)
 
-  /// Template-dependent version of \c JLN_MP_MAKE_INTEGER_SEQUENCE ; Add typename when needed.
+  /// Template-dependent version of \c JLN_MP_MAKE_INTEGER_SEQUENCE ; add typename when needed.
   /// \code
   /// // typename impl<...>::template f<T, 0, 1, 2> ->
   /// JLN_MP_D_MAKE_INTEGER_SEQUENCE(n, impl<...>::template f)
   /// \endcode
   #define JLN_MP_D_MAKE_INTEGER_SEQUENCE(n, ...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME JLN_MP_MAKE_INTEGER_SEQUENCE(n, __VA_ARGS__)
+
+  /// Template-dependent version of \c JLN_MP_MAKE_UNSIGNED_SEQUENCE ; add typename when needed.
+  /// \code
+  /// // typename impl<...>::template f<T, 0, 1, 2> ->
+  /// JLN_MP_D_MAKE_UNSIGNED_SEQUENCE(n, impl<...>::template f)
+  /// \endcode
+  #define JLN_MP_D_MAKE_UNSIGNED_SEQUENCE(n, ...) \
+    JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME JLN_MP_MAKE_UNSIGNED_SEQUENCE(n, __VA_ARGS__)
 
   /// single list of int_
   template<int_... i>
@@ -8758,7 +8775,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template <bool>
+    template<bool>
     struct _split;
 
     inline constexpr int_ split_keep = 0;
@@ -8787,7 +8804,7 @@ namespace jln::mp
   template<class Pred = identity, class C = listify>
   struct split_if
   {
-    template <class... xs>
+    template<class... xs>
     using f = typename detail::_split<sizeof...(xs) != 0>
       ::template f<detail::split_skip, C, JLN_MP_TRACE_F(Pred), xs...>;
   };
@@ -8808,7 +8825,7 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template <class x, class state>
+  template<class x, class state>
   struct split_state;
 
   template<class x, class... Ls, class... xs>
@@ -9806,7 +9823,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template <class C, class... Fs>
+    template<class C, class... Fs>
     struct _each;
   }
   /// \endcond
@@ -9817,14 +9834,14 @@ namespace jln::mp
   /// \treturn \value
   /// \see tee, partial
 #ifdef JLN_MP_DOXYGENATING
-  template <class... Fs, class C>
+  template<class... Fs, class C>
   struct each
   {
     template<class... xs>
     using f = C::f<Fs::f<xs>...>;
   };
 #else
-  template <class... Fs>
+  template<class... Fs>
   struct each
   : detail::rotate_impl<sizeof...(Fs)-1>
   ::template f<sizeof...(Fs)-1, lift<detail::_each>, Fs...>
@@ -9835,10 +9852,10 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template <class C, class... Fs>
+  template<class C, class... Fs>
   struct _each
   {
-    template <class... xs>
+    template<class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C, typename JLN_MP_TRACE_F(Fs)::template f<xs>...);
   };
 } // namespace jln::mp
@@ -9853,7 +9870,7 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template <class... Fs>
+  template<class... Fs>
   using each = typename detail::_smp_each_select<sizeof...(Fs) < 4 ? sizeof...(Fs) : 4>
     ::template f<Fs...>;
 }
@@ -10662,7 +10679,7 @@ namespace jln::mp
   /// \ingroup utility
 
   /// \treturn \bool
-  template <class T, class C = identity>
+  template<class T, class C = identity>
   using is_not = is<T, not_<C>>;
 } // namespace jln::mp
 namespace jln::mp::smp
@@ -10692,7 +10709,7 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template <class... Fs>
+  template<class... Fs>
   using tee = typename mp::conditional_c<sizeof...(Fs) == 0>
     ::template f<
       na,
@@ -11148,7 +11165,7 @@ namespace jln::mp::detail
   template<class... xs>
   struct _is_set
   {
-    template <class Pack>
+    template<class Pack>
     static auto is_set(Pack pack) -> decltype((
         static_cast<basic_item<xs>*>(pack),...
     ), number<1>());
@@ -14398,64 +14415,6 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-namespace jln::mp::smp
-{
-  template<class C = listify>
-  using numbers = contract<mp::numbers<assume_numbers<C>>>;
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, numbers<C>>
-  {
-    using type = smp::numbers<sfinae<C>>;
-  };
-}
-/// \endcond
-namespace jln::mp::smp
-{
-  template<class C = numbers<>>
-  using make_int_sequence_v = try_contract<
-    mp::make_int_sequence_v<subcontract<C>>>;
-
-  template<class C = listify>
-  using make_int_sequence = make_int_sequence_v<numbers<C>>;
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, make_int_sequence_v<C>>
-  {
-    using type = smp::make_int_sequence_v<sfinae<C>>;
-  };
-
-  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::positive_number, make_int_sequence_v);
-}
-/// \endcond
-namespace jln::mp
-{
-  /// \ingroup number
-
-  /// Replaces each element of a \sequence by its corresponding index.
-  /// \treturn \sequence
-  template<class C = listify>
-  using indices = size<make_int_sequence<C>>;
-
-  namespace emp
-  {
-    template<class L, class C = mp::listify>
-    using indices = unpack<L, mp::indices<C>>;
-  }
-} // namespace jln::mp
-namespace jln::mp::smp
-{
-  template<class C = listify>
-  using indices = contract<mp::indices<assume_numbers<C>>>;
-}
 namespace jln::mp
 {
   /// \cond
@@ -14519,6 +14478,22 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, intersperse<x, C>>
   {
     using type = smp::intersperse<x, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp::smp
+{
+  template<class C = listify>
+  using numbers = contract<mp::numbers<assume_numbers<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, numbers<C>>
+  {
+    using type = smp::numbers<sfinae<C>>;
   };
 }
 /// \endcond
@@ -16443,6 +16418,28 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp::smp
+{
+  template<class C = numbers<>>
+  using make_int_sequence_v = try_contract<
+    mp::make_int_sequence_v<subcontract<C>>>;
+
+  template<class C = listify>
+  using make_int_sequence = make_int_sequence_v<numbers<C>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, make_int_sequence_v<C>>
+  {
+    using type = smp::make_int_sequence_v<sfinae<C>>;
+  };
+
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::positive_number, make_int_sequence_v);
+}
+/// \endcond
 namespace jln::mp
 {
   /// \ingroup value
@@ -16887,16 +16884,16 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  template <bool, class L, class Seq1, class Seq2, class Cmp>
+  template<bool, class L, class Seq1, class Seq2, class Cmp>
   struct merge_insert;
 
-  template <class... R, class T0, class T1, class... Ts, class U, class... Us, class Cmp>
+  template<class... R, class T0, class T1, class... Ts, class U, class... Us, class Cmp>
   struct merge_insert<false, list<R...>, list<T0, T1, Ts...>, list<U, Us...>, Cmp>
   : merge_insert<bool(Cmp::template f<U, T1>::value),
                  list<R..., T0>, list<T1, Ts...>, list<U, Us...>, Cmp>
   {};
 
-  template <class... R, class T, class U, class... Us, class Cmp>
+  template<class... R, class T, class U, class... Us, class Cmp>
   struct merge_insert<false, list<R...>, list<T>, list<U, Us...>, Cmp>
   {
     template<class... xs> using out   = list<xs..., R..., T>;
@@ -16904,13 +16901,13 @@ namespace jln::mp::detail
     template<class... xs> using right = list<U, Us..., xs...>;
   };
 
-  template <class... R, class T, class... Ts, class U0, class U1, class... Us, class Cmp>
+  template<class... R, class T, class... Ts, class U0, class U1, class... Us, class Cmp>
   struct merge_insert<true, list<R...>, list<T, Ts...>, list<U0, U1, Us...>, Cmp>
   : merge_insert<bool(Cmp::template f<U1, T>::value),
                  list<R..., U0>, list<T, Ts...>, list<U1, Us...>, Cmp>
   {};
 
-  template <class... R, class T, class... Ts, class U, class Cmp>
+  template<class... R, class T, class... Ts, class U, class Cmp>
   struct merge_insert<true, list<R...>, list<T, Ts...>, list<U>, Cmp>
   {
     template<class... xs> using out   = list<xs..., R..., U>;
@@ -16918,7 +16915,7 @@ namespace jln::mp::detail
     template<class... xs> using right = list<xs...>;
   };
 
-  template <class... R, class T0, class T1, class T2, class T3, class T4, class T5,
+  template<class... R, class T0, class T1, class T2, class T3, class T4, class T5,
             class T6, class T7, class T8, class T9, class... Ts, class U0, class U1,
             class U2, class U3, class U4, class U5, class U6, class U7, class U8,
             class U9, class... Us, class Cmp>
@@ -16934,7 +16931,7 @@ namespace jln::mp::detail
                                      Cmp>::type;
   };
 
-  template <class... R, class T, class... Ts, class U, class... Us, class Cmp>
+  template<class... R, class T, class... Ts, class U, class... Us, class Cmp>
   struct merge_impl<list<R...>, list<T, Ts...>, list<U, Us...>, Cmp>
   : conditional_c<bool(Cmp::template f<U, T>::value)>::template f<
       merge_impl<list<R..., U>, list<T, Ts...>, list<Us...>, Cmp>,
@@ -16942,19 +16939,19 @@ namespace jln::mp::detail
     >
   {};
 
-  template <class... R, class... Ts, class Cmp>
+  template<class... R, class... Ts, class Cmp>
   struct merge_impl<list<R...>, list<Ts...>, list<>, Cmp>
   {
     using type = list<R..., Ts...>;
   };
 
-  template <class... R, class... Us, class Cmp>
+  template<class... R, class... Us, class Cmp>
   struct merge_impl<list<R...>, list<>, list<Us...>, Cmp>
   {
     using type = list<R..., Us...>;
   };
 
-  template <class... R, class Cmp>
+  template<class... R, class Cmp>
   struct merge_impl<list<R...>, list<>, list<>, Cmp>
   {
     using type = list<R...>;
@@ -17070,7 +17067,7 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp::smp
 {
-  template <class C>
+  template<class C>
   using memoize = contract<memoize<subcontract<C>>>;
 }
 
@@ -18571,7 +18568,7 @@ namespace jln::mp::detail
 /// \endcond
 namespace jln::mp::smp
 {
-  template <int_ n, class C = listify>
+  template<int_ n, class C = listify>
   using rotate_c = contract<mp::rotate_c<n, subcontract<C>>>;
 }
 
@@ -20876,7 +20873,7 @@ namespace jln::mp
   template<class Pred, class C = listify>
   struct split_after_if
   {
-    template <class... xs>
+    template<class... xs>
     using f = typename detail::_split<sizeof...(xs) != 0>
       ::template f<detail::split_after, C, JLN_MP_TRACE_F(Pred), xs...>;
   };
@@ -21122,7 +21119,7 @@ namespace jln::mp
   template<class Pred, class C = listify>
   struct split_before_if
   {
-    template <class... xs>
+    template<class... xs>
     using f = typename detail::_split<sizeof...(xs) != 0>
       ::template f<detail::split_before, C, JLN_MP_TRACE_F(Pred), xs...>;
   };
@@ -21272,7 +21269,7 @@ namespace jln::mp
   template<class Pred, class C = listify>
   struct split_keep_separator_if
   {
-    template <class... xs>
+    template<class... xs>
     using f = typename detail::_split<sizeof...(xs) != 0>
       ::template f<detail::split_keep_sep, C, JLN_MP_TRACE_F(Pred), xs...>;
   };
@@ -21905,7 +21902,7 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template <class... Fs>
+  template<class... Fs>
   using partial_each = typename mp::conditional_c<sizeof...(Fs) == 0>
     ::template f<
       na,
@@ -22567,7 +22564,7 @@ namespace jln::mp::smp
 }
 namespace jln::mp::smp
 {
-  template <template<class...> class F, template<class...> class... Fs>
+  template<template<class...> class F, template<class...> class... Fs>
   using compose_f = mp::detail::sfinae<
     mp::compose<mp::lift<F>, mp::lift<Fs>...>
   >;
@@ -22614,7 +22611,7 @@ namespace jln::mp
 
 namespace jln::mp::smp
 {
-  template <auto F, class C = identity>
+  template<auto F, class C = identity>
   using eval = try_contract<mp::eval<F, assume_unary<C>>>;
 }
 
@@ -22652,7 +22649,7 @@ namespace jln::mp
 }
 namespace jln::mp::smp
 {
-  template <class C>
+  template<class C>
   using fix = try_contract<fix<subcontract<C>>>;
 }
 
@@ -22711,20 +22708,20 @@ namespace jln::mp
     JLN_MP_DIAGNOSTIC_PUSH()
     JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
     JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wunused-function")
-    template <class T, int X>
+    template<class T, int X>
     struct flag
     {
       friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<T, X>);
     };
     JLN_MP_DIAGNOSTIC_POP()
 
-    template <class T, int X>
+    template<class T, int X>
     struct injecter
     {
       friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<T, X>) { return X; }
     };
 
-    template <class T = default_make_id_tag, int X = 0, auto v = []{}>
+    template<class T = default_make_id_tag, int X = 0, auto v = []{}>
     JLN_MP_CONSTEVAL_OR_CONSTEXPR auto next_id()
     {
       if constexpr (requires { f(flag<T, X+10>{}); }) {
@@ -22887,7 +22884,7 @@ namespace jln::mp::detail
 #endif
 namespace jln::mp::smp
 {
-  template <class F, class C = identity>
+  template<class F, class C = identity>
   using not_fn = contract<concepts::predicate<F, assume_positive_number<not_<C>>, violation>>;
 }
 /// \cond
@@ -22899,7 +22896,7 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template <class... Fs>
+  template<class... Fs>
   using partial = typename mp::conditional_c<sizeof...(Fs) == 0>
     ::template f<
       na,
@@ -23130,7 +23127,7 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template <class... Fs>
+  template<class... Fs>
   using partial_tee = typename mp::conditional_c<sizeof...(Fs) == 0>
     ::template f<
       na,
@@ -23166,7 +23163,7 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template <class... Fs>
+  template<class... Fs>
   using partial_xs = typename mp::conditional_c<sizeof...(Fs) == 0>
     ::template f<
       na,
@@ -23202,7 +23199,7 @@ namespace jln::mp
   {
     JLN_MP_DIAGNOSTIC_PUSH()
     JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
-    template <int X>
+    template<int X>
     struct flag
     {
       friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<X>);
@@ -23215,7 +23212,7 @@ namespace jln::mp
       unsigned w;
     };
 
-    template <int X, unsigned z, unsigned w>
+    template<int X, unsigned z, unsigned w>
     struct injecter
     {
       friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<X>) { return random_data{z,w}; }
@@ -23275,7 +23272,7 @@ namespace jln::mp
 
     /// \pre id >= 1
     /// \pre random_for_id<id-1>() must have been called
-    template <int id>
+    template<int id>
     JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned random_for_id()
     {
       constexpr auto data = f(flag<id-1>{});
@@ -23286,7 +23283,7 @@ namespace jln::mp
       return (z << 16) + w;
     }
 
-    template <auto v = []{}>
+    template<auto v = []{}>
     JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned next_random()
     {
       return random_for_id<next_id<random_data, 1, v>()>();
@@ -23635,6 +23632,145 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
+    template<class>
+    struct enumerate_impl;
+
+    template<class, int_...>
+    struct enumerate_v_impl;
+  }
+  /// \endcond
+
+
+  /// \ingroup list
+
+  /// Returns pairs containing a numeric index of type \c int_ and a value.
+  /// \semantics
+  ///   \code
+  ///   C::f<F::f<0, xs[0]>, ..., F::f<n, xs[n]>>
+  ///   \endcode
+  /// \treturn \sequence
+  template<class F, class C = listify>
+  struct enumerate_v_with
+  {
+    template<class... xs>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::enumerate_v_impl)
+      ::template f<F, JLN_MP_TRACE_F(C), xs...>;
+  };
+
+  /// Returns pairs containing an index and a value.
+  /// \semantics
+  ///   \code
+  ///   C::f<F::f<number<0>, xs[0]>, ..., F::f<number<n>, xs[n]>>
+  ///   \endcode
+  /// \treturn \sequence
+  template<class F = listify, class C = listify>
+  struct enumerate_with
+  {
+    template<class... xs>
+    using f = typename detail::enumerate_impl<emp::make_int_sequence_c<sizeof...(xs)>>
+      ::template f<JLN_MP_TRACE_F(F)::template f, JLN_MP_TRACE_F(C), xs...>;
+  };
+
+  template<class C = listify>
+  using enumerate = enumerate_with<listify, C>;
+
+  namespace emp
+  {
+    template<class L, class F, class C = mp::listify>
+    using enumerate_v_with = unpack<L, mp::enumerate_v_with<F, C>>;
+
+    template<class L, class F = mp::listify, class C = mp::listify>
+    using enumerate_with = unpack<L, mp::enumerate_with<F, C>>;
+
+    template<class L, class C = mp::listify>
+    using enumerate = unpack<L, mp::enumerate_with<mp::listify, C>>;
+  }
+} // namespace jln::mp
+
+
+/// \cond
+#if ! JLN_MP_OPTIMIZED_ALIAS
+namespace jln::mp
+{
+  template<template<class...> class F, class C>
+  struct enumerate_with<lift<F>, C>
+  {
+    template<class... xs>
+    using f = typename detail::enumerate_impl<emp::make_int_sequence_c<sizeof...(xs)>>
+      ::template f<F, JLN_MP_TRACE_F(C), xs...>;
+  };
+}
+#endif
+
+namespace jln::mp::detail
+{
+  template<class... ns>
+  struct enumerate_impl<list<ns...>>
+  {
+    template<template<class...> class F, class C, class... xs>
+    using f = typename C::template f<F<ns, xs>...>;
+  };
+
+  template<class, int_... i>
+  struct enumerate_v_impl
+  {
+    template<class F, class C, class... xs>
+    using f = typename C::template f<typename F::template f<i, xs>...>;
+  };
+}
+/// \endcond
+/// \cond
+namespace jln::mp::detail
+{
+  template<class F>
+  struct smp_enumerate_select;
+}
+/// \endcond
+
+namespace jln::mp::smp
+{
+  template<class C = listify>
+  using enumerate = contract<mp::enumerate_with<mp::listify, subcontract<C>>>;
+
+  template<class F = listify, class C = listify>
+  using enumerate_with = contract<typename detail::smp_enumerate_select<F>::template f<C>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class F>
+  struct smp_enumerate_select
+  {
+    template<class C>
+    using f = enumerate_with<assume_binary<F>, monadic_xs<subcontract<C>>>;
+  };
+
+  template<>
+  struct smp_enumerate_select<listify>
+  {
+    template<class C>
+    using f = enumerate_with<listify, subcontract<C>>;
+  };
+
+  template<>
+  struct smp_enumerate_select<smp::listify>
+    : smp_enumerate_select<listify>
+  {};
+
+
+  template<template<class> class sfinae, class F, class C>
+  struct _sfinae<sfinae, enumerate_with<F, C>>
+  {
+    using type = smp::enumerate_with<sfinae<F>, sfinae<C>>;
+  };
+}
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
     template<bool, bool>
     struct erase_values;
 
@@ -23732,6 +23868,26 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+namespace jln::mp
+{
+  /// \ingroup number
+
+  /// Replaces each element of a \sequence by its corresponding index.
+  /// \treturn \sequence
+  template<class C = listify>
+  using indices = size<make_int_sequence<C>>;
+
+  namespace emp
+  {
+    template<class L, class C = mp::listify>
+    using indices = unpack<L, mp::indices<C>>;
+  }
+} // namespace jln::mp
+namespace jln::mp::smp
+{
+  template<class C = listify>
+  using indices = contract<mp::indices<assume_numbers<C>>>;
+}
 namespace jln::mp
 {
   /// \cond
@@ -23988,18 +24144,18 @@ namespace jln::mp
   ///   size<push_front<I, sub<C>>>
   ///   \endcode
   /// \treturn \number
-  template <int_ I, class C = identity>
+  template<int_ I, class C = identity>
   struct offset_c
   {
-    template <class... xs>
+    template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, number<I - int_{sizeof...(xs)}>);
   };
 
   /// \cond
-  template <int_ I>
+  template<int_ I>
   struct offset_c<I, identity>
   {
-    template <class... xs>
+    template<class... xs>
     using f = number<I - int_{sizeof...(xs)}>;
   };
   /// \endcond
@@ -24018,7 +24174,7 @@ namespace jln::mp
 }
 namespace jln::mp::smp
 {
-  template <int_ i, class C = identity>
+  template<int_ i, class C = identity>
   using offset_c = contract<mp::offset_c<i, assume_number<C>>>;
 }
 
@@ -24080,10 +24236,315 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
+    template<class C, int_ i, int_ ri>
+    struct slice_impl;
+
+    template<int_ i, int_ ri>
+    struct strided_slice_impl;
+
+    template<class C, int_ i, int_ ri>
+    struct positive_slice_impl;
+
+    template<int_ i, int_ ri>
+    struct positive_strided_slice_impl;
+
+    template<bool>
+    struct negative_slice_select;
+
+    template<bool>
+    struct negative_strided_slice_select;
+
+    // pre: start < 0
+    // pre: count > 0
+    // pre: step > 0
+    // pre: n >= 0
+    template<int_ start, int_ count, int_ step, int_ n,
+      int_ i = n + start,
+      int_ e = i + (count - 1) * step + 1,
+      int_ ii
+        = e <= 0
+        ? -1
+        : i < 0
+        ? -i % step
+        : i,
+      int_ ri
+        = e <= 0 || n <= ii
+        ? -1
+        : n - (n < e ? (n - 1 - ii) / step * step + ii + 1 : e)
+    >
+    using negative_strided_slice_dispatch = strided_slice_impl<
+      ri == -1 ? -1 : ii,
+      ri
+    >;
+
+    // pre: i >= 0
+    // pre: count > 0
+    // pre: step > 0
+    template<int_ i, int_ count, int_ step,
+      int_ e = i + (count - 1) * step + 1
+    >
+    using positive_strided_slice_dispatch = positive_strided_slice_impl<
+      e <= 0 ? -1 : i < 0 ? -i % step : i,
+      e <= 0 ? -1 : e
+    >;
+
+    // pre: start < 0
+    // pre: count > 0
+    // pre: n >= 0
+    template<class C, int_ start, int_ count, int_ n,
+      int_ e = n + start + count,
+      int_ i
+        = e <= 0
+        ? -1
+        : n < -start
+        ? 0
+        : n + start,
+      int_ ri
+        = e <= 0 || n <= i
+        ? -1
+        : n < e
+        ? 0
+        : n - e
+    >
+    using negative_slice_dispatch = slice_impl<
+      C,
+      ri == -1 ? -1 : i,
+      ri
+    >;
+
+    // pre: i >= 0
+    // pre: count > 0
+    // pre: n >= 0
+    template<class C, int_ i, int_ count, int_ e = i + count>
+    using positive_slice_dispatch = positive_slice_impl<
+      C,
+      e <= 0 ? -1 : i < 0 ? 0 : i,
+      e <= 0 ? -1 : e
+    >;
+  } // namespace jln::mp::detail
+  /// \endcond
+
+
+  /// \ingroup list
+
+  /// Returns a subset of elements in a \c xs picked at regular intervals in range.
+  /// A negative start represents an index starting from the end.
+  /// \pre `0 < step || count == 0`
+  /// \treturn \sequence
+  template<int_ start, unsigned count, unsigned step = 1, class C = listify>
+  struct slice_with_step_c
+    : detail::negative_strided_slice_select<start < 0>
+    ::template impl<start, count, step, C>
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f;
+#endif
+  };
+
+  template<class start, class count, class step = number<1>, class C = listify>
+  using slice_with_step = slice_with_step_c<start::value, count::value, step::value, C>;
+
+  template<int_ start, unsigned count, class C = listify>
+  using slice_c = slice_with_step_c<start, count, 1, C>;
+
+  template<class start, class count, class C = listify>
+  using slice = slice_with_step_c<start::value, count::value, 1, C>;
+
+  namespace emp
+  {
+    template<class L, class start, class count, class step = number<1>, class C = mp::listify>
+    using slice_with_step = unpack<L, slice_with_step<start, count, step, C>>;
+
+    template<class L, int_ start, unsigned count, unsigned step = 1, class C = mp::listify>
+    using slice_with_step_c = unpack<L, mp::slice_with_step_c<start, count, step, C>>;
+
+    template<class L, class start, class count, class C = mp::listify>
+    using slice = unpack<L, mp::slice_with_step_c<start::value, count::value, 1, C>>;
+
+    template<class L, int_ start, unsigned count, class C = mp::listify>
+    using slice_c = unpack<L, mp::slice_with_step_c<start, count, 1, C>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp
+{
+  template<int_ start, unsigned count, class C>
+  struct slice_with_step_c<start, count, 1, C>
+    : detail::negative_slice_select<start < 0>
+    ::template impl<start, count, C>
+  {};
+
+  template<int_ start, unsigned step, class C>
+  struct slice_with_step_c<start, 0, step, C> : clear<C>
+  {};
+
+  // invalid
+  template<int_ start, unsigned count, class C>
+  struct slice_with_step_c<start, count, 0, C>
+  {};
+
+  template<int_ start, class C>
+  struct slice_with_step_c<start, 0, 0, C> : clear<C>
+  {};
+
+  template<int_ start, class C>
+  struct slice_with_step_c<start, 0, 1, C> : clear<C>
+  {};
+}// namespace jln::mp
+
+namespace jln::mp::detail
+{
+  template<>
+  struct negative_slice_select<true>
+  {
+    template<int_ start, unsigned count, class C>
+    struct impl
+    {
+      template<class... xs>
+      using f = typename negative_slice_dispatch<C, start, count,
+        static_cast<int_>(sizeof...(xs)) // cast is necessary for nvcc (tested with V12.3.52)
+      >::template f<xs...>;
+    };
+  };
+
+  template<>
+  struct negative_slice_select<false>
+  {
+    template<int_ start, unsigned count, class C>
+    struct impl
+    {
+      template<class... xs>
+      using f = typename positive_slice_dispatch<C, start, count>
+        ::template f<sizeof...(xs)>
+        ::template f<xs...>;
+    };
+  };
+
+
+  template<class C>
+  struct positive_slice_impl<C, -1, -1>
+  {
+    template<int_ /*n*/>
+    using f = clear<C>;
+  };
+
+  template<class C, int_ i, int_ e>
+  struct positive_slice_impl
+  {
+    template<int_ n, int_ ri = n <= i ? -1 : n < e ? 0 : n - e>
+    using f = slice_impl<C, ri == -1 ? -1 : i, ri>;
+  };
+
+
+  template<class C>
+  struct slice_impl<C, -1, -1> : clear<C>
+  {};
+
+  template<class C, int_ i>
+  struct slice_impl<C, i, 0> : drop_front_c<i, C>
+  {};
+
+  template<class C>
+  struct slice_impl<C, 0, 0> : C
+  {};
+
+  template<class C, int_ i, int_ ri>
+  struct slice_impl : rotate_c<-ri, drop_front_c<i + ri, C>>
+  {};
+
+
+  template<>
+  struct negative_strided_slice_select<true>
+  {
+    template<int_ start, unsigned count, unsigned step, class C>
+    struct impl
+    {
+      template<class... xs>
+      using f = typename negative_strided_slice_dispatch<start, count, step,
+        static_cast<int_>(sizeof...(xs)) // cast is necessary for nvcc (tested with V12.3.52)
+      >
+        ::template impl<C, step, sizeof...(xs)>
+        ::template f<xs...>;
+    };
+  };
+
+  template<>
+  struct negative_strided_slice_select<false>
+  {
+    template<int_ start, unsigned count, unsigned step, class C>
+    struct impl
+    {
+      template<class... xs>
+      using f = typename positive_strided_slice_dispatch<start, count, step>
+        ::template impl<C, step, sizeof...(xs)>
+        ::template f<xs...>;
+    };
+  };
+
+
+  template<>
+  struct positive_strided_slice_impl<-1, -1>
+  {
+    // = 0 to be usable in range.hpp
+    template<class C, unsigned /*step*/ = 0, int_ /*n*/ = 0>
+    using impl = clear<C>;
+  };
+
+  template<int_ i, int_ e>
+  struct positive_strided_slice_impl
+  {
+    template<class C, unsigned step, int_ n,
+      int_ ri = n <= i ? -1 : n - (n < e ? (n - 1 - i) / step * step + i + 1 : e)>
+    using impl = typename strided_slice_impl<ri == -1 ? -1 : i, ri>
+      ::template impl<C, step, n>;
+  };
+
+
+  template<>
+  struct strided_slice_impl<-1, -1> : positive_strided_slice_impl<-1, -1>
+  {};
+
+  template<class, unsigned... ints>
+  struct slided_slice
+  {
+    template<class C, unsigned step>
+    struct impl : _each<join<C>, wrap_in_list_c<ints % step == 0>...>
+    {};
+  };
+
+  template<int_ i>
+  struct strided_slice_impl<i, 0>
+  {
+    template<class C, unsigned step, std::size_t n>
+    using impl = drop_front_c<i,
+      typename JLN_MP_MAKE_UNSIGNED_SEQUENCE(n - i, slided_slice)
+      ::template impl<C, step>
+    >;
+  };
+
+  template<int_ i, int_ ri>
+  struct strided_slice_impl
+  {
+    template<class C, unsigned step, std::size_t n>
+    using impl = rotate_c<-ri, drop_front_c<i + ri,
+      typename JLN_MP_MAKE_UNSIGNED_SEQUENCE(n - i - ri, slided_slice)
+      ::template impl<C, step>
+    >>;
+  };
+} // namespace jln::mp::detail
+/// \endcond
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
     template<int_ beg, int_ end,
       bool = beg < 0,
-      bool = end < 0 || beg == -1,
-      bool = beg >= end || beg == -1>
+      bool = end < 0,
+      bool = beg >= end>
     struct _range;
   }
   /// \endcond
@@ -24092,7 +24553,7 @@ namespace jln::mp
 
   /// Returns a contiguous subsequence of a \sequence.
   /// A negative value represents an index starting from the end.
-  /// if finally, \c end <= \c beg, then an empty \list is returned.
+  /// All indices available in the range are returned, indices outside the bounds are ignored.
   /// \treturn \sequence
   template<int_ beg, int_ end, class C = listify>
   struct range_c : detail::_range<beg, end>::template impl<C>
@@ -24116,124 +24577,85 @@ namespace jln::mp
   }
 }
 
+
 /// \cond
 namespace jln::mp::detail
 {
-  template<bool, bool>
-  struct range_impl
-  {
-    template<class C, int_ beg, int_ end, int_ n>
-    using f = clear<C>;
-  };
-
-  template<>
-  struct range_impl<true, true>
-  {
-    template<class C, int_ beg, int_ end, int_ n>
-    using f = rotate_c<end, drop_front_c<n - end + beg, C>>;
-  };
-
-  template<>
-  struct range_impl<true, false>
-  {
-    template<class C, int_ beg, int_ end, int_ n>
-    using f = drop_front_c<beg, C>;
-  };
-
-  template<class C, int_ beg, int_ end, int_ n>
-  using range_select = typename range_impl<beg < n, end < n>
-    ::template f<C, beg, end, n>;
-
-  template<>
-  struct _range<0, -1, false, true, false>
-  {
-    template<class C>
-    using impl = C;
-  };
-
-  // end >= 0 && beg >= end
-  template<int_ beg, int_ end>
-  struct _range<beg, end, false, false, true>
-  {
-    template<class C>
-    using impl = clear<C>;
-  };
-
-  // end < 0 && beg < 0 && beg >= end
-  // or
-  // beg = -1
+  // beg < 0 && end < 0 && beg >= end
   template<int_ beg, int_ end>
   struct _range<beg, end, true, true, true>
+    : positive_strided_slice_impl<-1, -1>
+  {};
+
+  // beg < 0 && end < 0 && beg < end
+  template<int_ beg, int_ end>
+  struct _range<beg, end, true, true, false>
   {
     template<class C>
-    using impl = clear<C>;
+    using impl = negative_slice_select<true>::impl<beg, end - beg, C>;
   };
 
-  // beg < 0 and end < 0
-  template<int_ beg, int_ end, bool b3>
-  struct _range<beg, end, true, true, b3>
+  // pre: beg >= 0
+  // pre: end < 0
+  template<class C, int_ beg, int_ end, int_ n,
+    bool b = n + end <= beg>
+  using negative_end_range_dispatch = slice_impl<
+    C,
+    b ? -1 : beg,
+    b ? -1 : -end
+  >;
+
+  // beg >= 0 && end < 0
+  template<int_ beg, int_ end>
+  struct _range<beg, end, false, true, true>
   {
     template<class C>
     struct impl
     {
       template<class... xs>
-      using f = typename range_select<C,
-        sizeof...(xs) <= -beg ? 0 : int_(sizeof...(xs)) + beg,
-        sizeof...(xs) <= -end ? 0 : int_(sizeof...(xs)) + end + 1,
-        sizeof...(xs)
+      using f = typename negative_end_range_dispatch<C, beg, end,
+        static_cast<int_>(sizeof...(xs)) // cast is necessary for nvcc (tested with V12.3.52)
       >::template f<xs...>;
     };
   };
 
-  // beg >= 0 and end < 0
-  template<int_ beg, int_ end, bool b3>
-  struct _range<beg, end, false, true, b3>
+  // pre: beg < 0
+  // pre: end >= 0
+  template<class C, int_ beg, int_ end, int_ n,
+    bool b = end <= n + beg>
+  using negative_beg_range_dispatch = slice_impl<
+    C,
+    b ? -1 : n < -beg ? 0 : n + beg,
+    b ? -1 : n < end ? 0 : n - end
+  >;
+
+  // beg < 0 && end >= 0
+  template<int_ beg, int_ end>
+  struct _range<beg, end, true, false, false>
   {
     template<class C>
     struct impl
     {
       template<class... xs>
-      using f = typename range_select<C,
-        beg,
-        sizeof...(xs) <= -end ? 0 : int_(sizeof...(xs)) + end + 1,
-        sizeof...(xs)
+      using f = typename negative_beg_range_dispatch<C, beg, end,
+        static_cast<int_>(sizeof...(xs)) // cast is necessary for nvcc (tested with V12.3.52)
       >::template f<xs...>;
     };
   };
 
-  // beg < 0 and end >= 0
-  template<int_ beg, int_ end, bool b3>
-  struct _range<beg, end, true, false, b3>
+  // beg >= 0 && end >= 0 && beg < end
+  template<int_ beg, int_ end>
+  struct _range<beg, end, false, false, false>
   {
     template<class C>
-    struct impl
-    {
-      template<class... xs>
-      using f = typename range_select<C,
-        sizeof...(xs) <= -beg ? 0 : int_(sizeof...(xs)) + beg,
-        end,
-        sizeof...(xs)
-      >::template f<xs...>;
-    };
+    using impl = negative_slice_select<false>::impl<beg, end - beg, C>;
   };
 
-  // beg >= 0 and end >= 0
-  template<int_ beg, int_ end, bool b3>
-  struct _range<beg, end, false, false, b3>
-  {
-    template<class C>
-    struct impl
-    {
-      template<class... xs>
-#if JLN_MP_GCC
-      using f = typename range_select<C, beg, end, sizeof...(xs)>
-#else
-      using f = typename range_impl<beg < sizeof...(xs), end < sizeof...(xs)>
-        ::template f<C, beg, end, sizeof...(xs)>
-#endif
-        ::template f<xs...>;
-    };
-  };
+  // beg >= 0 && end >= 0 && beg >= end
+  template<int_ beg, int_ end>
+  struct _range<beg, end, false, false, true>
+    : positive_strided_slice_impl<-1, -1>
+  {};
 }
 /// \endcond
 namespace jln::mp::smp
@@ -24256,122 +24678,35 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<int>
-    struct _slice;
-
-    constexpr unsigned slide_select(unsigned nx, unsigned size, unsigned stride);
-  }
-  /// \endcond
-
-  /// \ingroup list
-
-  /// Returns a subset of elements in a \c xs picked at regular intervals in range.
-  /// \pre `0 <= start <= sizeof...(xs)`
-  /// \pre `0 < stride`
-  /// \pre `0 <= size`
-  /// \pre `0 <= (size - 1) * stride + start + 1 <= sizeof...(xs)`
-  /// \treturn \sequence
-  template<unsigned start, unsigned size, unsigned stride = 1, class C = listify>
-  struct slice_c
-  {
-    template<class... xs>
-    using f = typename detail::_slice<
-      detail::slide_select(sizeof...(xs) - start, size, stride)
-    >
-    ::template f<start, size, stride, C, sizeof...(xs)>
-    ::template f<xs...>;
-  };
-
-  template<class start, class size, class stride = number<1>, class C = listify>
-  using slice = slice_c<start::value, size::value, stride::value, C>;
-
-  namespace emp
-  {
-    template<class L, class start, class size, class stride = number<1>, class C = mp::listify>
-    using slice = unpack<L, slice<start, size, stride, C>>;
-
-    template<class L, unsigned start, unsigned size, unsigned stride = 1, class C = mp::listify>
-    using slice_c = unpack<L, slice_c<start, size, stride, C>>;
-  }
-}
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  constexpr unsigned slide_select(unsigned nx, unsigned size, unsigned stride)
-  {
-    return !size ? 0
-      : size == 1 ? 3
-      : stride <= 1 ? 2
-      : nx < stride ? 2
-      : 1;
-  }
-
-  template<>
-  struct _slice<2>
-  {
-    template<int_ start, int_ size, unsigned /*stride*/, class C, int_ len>
-    using f = rotate_c<start + size, drop_front_c<len - size, C>>;
-  };
-
-  template<class, unsigned... ints>
-  struct slice_impl
-  {
-    template<class C, unsigned size, unsigned stride>
-    struct impl : _each<join<C>, wrap_in_list_c<(ints <= size && ints % stride == 0)>...>
-    {};
-  };
-
-  template<>
-  struct _slice<1>
-  {
-    template<unsigned start, unsigned size, unsigned stride, class C, std::size_t len>
-    using f = drop_front_c<
-      start,
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE_T(unsigned, len - start, slice_impl)
-        ::template impl<C, size * stride - stride + 1, stride>
-    >;
-  };
-
-  template<>
-  struct _slice<0>
-  {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, std::size_t len>
-    using f = clear<C>;
-  };
-
-  template<>
-  struct _slice<3>
-  {
-    template<unsigned start, unsigned size, unsigned /*stride*/, class C, std::size_t len>
-    using f = drop_front_c<start, front<C>>;
-  };
-}
-/// \endcond
 
 /// \cond
 namespace jln::mp::detail
 {
   template<bool>
-  struct smp_slice_select;
+  struct smp_slice_select
+  {
+    template<int_ start, unsigned count, unsigned step, class C>
+    using f = contract<mp::slice_with_step_c<start, count, step, subcontract<C>>>;
+  };
 }
 /// \endcond
 
 namespace jln::mp::smp
 {
-  template<unsigned start, unsigned size, unsigned stride = 1, class C = listify>
-  using slice_c = typename detail::smp_slice_select<(stride > 0)>
-    ::template f<start, size, stride, C>;
+  template<int_ start, unsigned count, unsigned step = 1, class C = listify>
+  using slice_with_step_c = typename detail::smp_slice_select<(step > 0 || !count)>
+    ::template f<start, count, step, C>;
+
+  template<int_ start, unsigned count, class C = listify>
+  using slice_c = typename detail::smp_slice_select<true>
+    ::template f<start, count, 1, C>;
 }
 
-JLN_MP_MAKE_REGULAR_SMP4_P(slice, (start), (size), (stride, number<1>), (C, smp::listify),
-  smp::slice_c<start::value, size::value, stride::value, C>)
+JLN_MP_MAKE_REGULAR_SMP4_P(slice_with_step, (start), (size), (step, number<1>), (C, smp::listify),
+  smp::slice_with_step_c<start::value, size::value, step::value, C>)
+
+JLN_MP_MAKE_REGULAR_SMP3_P(slice, (start), (size), (C, smp::listify),
+  smp::slice_c<start::value, size::value, C>)
 
 
 /// \cond
@@ -24380,31 +24715,14 @@ namespace jln::mp::detail
   template<>
   struct smp_slice_select<false>
   {
-    template<unsigned start, unsigned size, unsigned stride, class C>
+    template<int_ start, unsigned count, unsigned step, class C>
     using f = bad_contract;
   };
 
-  template<unsigned start, unsigned size, unsigned stride>
-  struct smp_slice_check
+  template<template<class> class sfinae, int_ start, unsigned count, unsigned step, class C>
+  struct _sfinae<sfinae, slice_with_step_c<start, count, step, C>>
   {
-    template<class... xs>
-    using f = mp::number<start <= sizeof...(xs)
-                      && (size - 1) * stride + start + 1 <= sizeof...(xs)>;
-  };
-
-  template<>
-  struct smp_slice_select<true>
-  {
-    template<unsigned start, unsigned size, unsigned stride, class C>
-    using f = test_contract<
-      smp_slice_check<start, size, stride>,
-      mp::slice_c<start, size, stride, subcontract<C>>>;
-  };
-
-  template<template<class> class sfinae, unsigned start, unsigned size, unsigned stride, class C>
-  struct _sfinae<sfinae, slice_c<start, size, stride, C>>
-  {
-    using type = smp::slice_c<start, size, stride, sfinae<C>>;
+    using type = smp::slice_with_step_c<start, count, step, sfinae<C>>;
   };
 }
 /// \endcond
@@ -24426,11 +24744,22 @@ namespace jln::mp
   /// \pre `stride != 0`
   /// \pre `size >= 0`
   /// \treturn \sequence of \list
-  /// Given a sequence and a count n, place a window over the first n elements of the underlying range. Return the contents of that window as the first element of the adapted range, then slide the window forward one element at a time until hitting the end of the underlying range.
+  /// Given a sequence and a count n, place a window over the first n elements of the underlying range.
+  /// Return the contents of that window as the first element of the adapted range,
+  /// then slide the window forward one element at a time until hitting the end of the underlying range.
   /// \semantics
-  ///     If `stride < 0`, then `stride = stride + size`
-  ///     If `sizeof...(xs) < size`, then `f = C::f<xs...>`
-  ///     If `stride > 1`, the last window may be smaller than \c size
+  ///   If `stride < 0`, then `stride = stride + size`
+  ///   If `sizeof...(xs) < size`, then `f = C::f<xs...>`
+  ///   If `stride > 1`, the last window may be smaller than \c size
+  ///   \code
+  ///   sliding_with_stride_c<3, 1, C>::f<_0, _1, _2, _3, _4>
+  ///   ==
+  ///   C::f<list<_0, _1, _2>, list<_1, _2, _3>, list<_2, _3, _4>>
+  ///
+  ///   sliding_with_stride_c<3, 2, C>::f<_0, _1, _2, _3, _4>
+  ///   ==
+  ///   C::f<list<_0, _1, _2>, list<_2, _3, _4>>
+  ///   \endcode
   template<class size, class stride, class C = listify>
   using sliding_with_stride = typename detail::mk_sliding<
     size::value, stride::value,
@@ -24485,7 +24814,7 @@ namespace jln::mp::detail
   }
 
   template<int>
-  struct _sliding;
+  struct sliding_impl;
 
   constexpr int sliding_select(int n, int_ size, int_ stride);
 
@@ -24493,7 +24822,7 @@ namespace jln::mp::detail
   struct sliding_
   {
     template<class... xs>
-    using f = typename detail::_sliding<detail::sliding_select(
+    using f = typename detail::sliding_impl<detail::sliding_select(
       sizeof...(xs), size, stride)
     >::template f<C, size, stride, xs...>;
   };
@@ -24547,12 +24876,12 @@ namespace jln::mp::detail
   }
 
   template<>
-  struct _sliding<-1>
+  struct sliding_impl<-1>
   {};
 
   // sizeof...(xs) == 0
   template<>
-  struct _sliding<0>
+  struct sliding_impl<0>
   {
     template<class C, int_, int_, class...>
     using f = JLN_MP_CALL_TRACE_0_ARG(C);
@@ -24560,7 +24889,7 @@ namespace jln::mp::detail
 
   // sizeof...(xs) < size
   template<>
-  struct _sliding<1>
+  struct sliding_impl<1>
   {
     template<class C, int_, int_, class... xs>
     using f = JLN_MP_CALL_TRACE(C, list<xs...>);
@@ -24568,7 +24897,7 @@ namespace jln::mp::detail
 
   // size=1  stride=1
   template<>
-  struct _sliding<2>
+  struct sliding_impl<2>
   {
     template<class C, int_, int_, class... xs>
     using f = JLN_MP_CALL_TRACE(C, list<xs>...);
@@ -24576,17 +24905,17 @@ namespace jln::mp::detail
 
   // size=1  stride!=1
   template<>
-  struct _sliding<3>
+  struct sliding_impl<3>
   {
     template<class C, int_, int_ stride, class... xs>
-    using f = typename _slice<1>
-      ::template f<0, (sizeof...(xs) + stride - 1) / stride, stride, transform<listify, C>, sizeof...(xs)>
+    using f = typename strided_slice_impl<0, sizeof...(xs) ? (sizeof...(xs) - 1) % stride : 0>
+      ::template impl<transform<listify, C>, stride, sizeof...(xs)>
       ::template f<xs...>;
   };
 
   // stride>size
   template<>
-  struct _sliding<9>
+  struct sliding_impl<9>
   {
     template<class C, int_ size, int_, class... xs>
     using f = JLN_MP_CALL_TRACE(C,
@@ -24596,14 +24925,14 @@ namespace jln::mp::detail
 
   // size=2  stride=1  (pairwise)
   template<>
-  struct _sliding<4>
+  struct sliding_impl<4>
   {
     template<class C, int_, int_, class... xs>
     using f = typename pairwise<C>::template f<xs...>;
   };
 
   template<class, int_... i>
-  struct _sliding5_impl
+  struct sliding5_impl
   {
     template<class C, int_ size, class drop_front>
     using f = _tee<zip<C>, rotate_c<int_(i)-size, drop_front>...>;
@@ -24611,17 +24940,17 @@ namespace jln::mp::detail
 
   // size>2  stride=1
   template<>
-  struct _sliding<5>
+  struct sliding_impl<5>
   {
     template<class C, int_ size, int_, class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(size, _sliding5_impl)
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(size, sliding5_impl)
       ::template f<C, size-1, drop_front_c<size-1>>
       ::template f<xs...>;
   };
 
   // stride=size (batched)
   template<>
-  struct _sliding<6>
+  struct sliding_impl<6>
   {
     template<class C, int_ size, int_, class... xs>
     using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), _batched_impl)
@@ -24629,18 +24958,18 @@ namespace jln::mp::detail
   };
 
   template<class, int_... i>
-  struct _sliding7_impl
+  struct sliding7_impl
   {
     template<class C, int_ size, int_ stride>
-    using f = _tee<zip<C>, slice_c<i, size, stride>...>;
+    using f = _tee<zip<C>, slice_with_step_c<i, size, stride>...>;
   };
 
   // size>1  stride>1  (all list = size)
   template<>
-  struct _sliding<7>
+  struct sliding_impl<7>
   {
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(size, _sliding7_impl)
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(size, sliding7_impl)
       ::template f<C, (sizeof...(xs) - size) / stride + 1, stride>
       ::template f<xs...>;
   };
@@ -24672,12 +25001,12 @@ namespace jln::mp::detail
   };
 
   template<class, int_... i>
-  struct _sliding8_impl
+  struct sliding8_impl
   {
     template<class C, int_ size, int_ stride, int_ pivot>
     using f = _tee<
       zip<rotate_c<-1, adjust<C>>>,
-      slice_c<i, size - (pivot < i), stride,
+      slice_with_step_c<i, size - (pivot < i), stride,
         typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>
       >...
     >;
@@ -24685,10 +25014,10 @@ namespace jln::mp::detail
 
   // size>1  stride>1  (last list < size)
   template<>
-  struct _sliding<8>
+  struct sliding_impl<8>
   {
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(size, _sliding8_impl)
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(size, sliding8_impl)
       ::template f<
         C,
         (sizeof...(xs) - size) / stride + 2,
@@ -27395,7 +27724,7 @@ namespace jln::mp
 #define JLN_MP_SMP_MAKE_BASIC_TRAIT(Name)           \
   namespace smp::traits                             \
   {                                                 \
-    template <class C = identity>                   \
+    template<class C = identity>                   \
     using Name = try_contract<                      \
       mp::traits::Name<assume_unary<C>>>;           \
   }                                                 \
