@@ -21,7 +21,7 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template<int_ start, unsigned count, unsigned step = 1, class C = listify>
-  using slice_with_step_c = typename detail::smp_slice_select<(step > 0)>
+  using slice_with_step_c = typename detail::smp_slice_select<(step > 0 || !count)>
     ::template f<start, count, step, C>;
 
   template<int_ start, unsigned count, class C = listify>

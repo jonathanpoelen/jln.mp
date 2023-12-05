@@ -391,6 +391,7 @@ TEST()
     .test<list<_0>, _0, _1, _2, _3, _4>()
     ;
 
+  ut::same<list<>, smp::slice_with_step_c<2, 0, 0>::f<_0, _1, _2, _3, _4, _5>>();
   ut::not_invocable<smp::slice_with_step_c<2, 3, 0>, _0, _1, _2, _3, _4, _5>();
 
   ut::not_invocable<smp::slice_with_step<_2, _3, _2, bad_function>,

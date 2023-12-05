@@ -104,7 +104,7 @@ namespace jln::mp
 
   /// Returns a subset of elements in a \c xs picked at regular intervals in range.
   /// A negative start represents an index starting from the end.
-  /// \pre `0 < step`
+  /// \pre `0 < step || count == 0`
   /// \treturn \sequence
   template<int_ start, unsigned count, unsigned step = 1, class C = listify>
   struct slice_with_step_c
