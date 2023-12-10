@@ -80,6 +80,7 @@ namespace jln::mp
 #include <jln/mp/algorithm/batched.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/list/drop_front.hpp>
+#include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/list/slice.hpp>
 
 /// \cond
@@ -241,8 +242,7 @@ namespace jln::mp::detail
   struct sliding_impl<6>
   {
     template<class C, int_ size, int_, class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), _batched_impl)
-      ::template f<C, size, xs...>;
+    using f = typename batched_with_c<size, listify, C>::template f<xs...>;
   };
 
   template<class, int_... i>
