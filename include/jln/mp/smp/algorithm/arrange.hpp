@@ -6,6 +6,7 @@
 #include <jln/mp/algorithm/arrange.hpp>
 #include <jln/mp/algorithm/none_of.hpp>
 #include <jln/mp/functional/if.hpp>
+#include <jln/mp/utility/is.hpp>
 
 namespace jln::mp::smp
 {

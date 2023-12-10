@@ -2,78 +2,65 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/smp/functional/identity.hpp>
-#include <jln/mp/functional/if.hpp>
+#include <jln/mp/smp/contract.hpp>
 #include <jln/mp/list/lookup.hpp>
-#include <jln/mp/utility/is.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<class C>
-  struct smp_check_unindexed;
+  template<bool>
+  struct smp_build_indexed;
 }
 /// \endcond
 
 namespace jln::mp::smp
 {
-  template<class C = identity>
-  using build_indexed = contract<build_indexed<assume_unary<C>>>;
-
-  template<class Seq, class C = identity>
-  using lookup = typename mp::try_contract<mp::lookup<Seq,
-    detail::smp_check_unindexed<assume_unary<C>>
-  >>;
-
-  template<unsigned i, class C = identity>
-  using precomputed_indexes_at_c = try_contract<mp::precomputed_indexes_at_c<i,
-    detail::smp_check_unindexed<assume_unary<C>>
-  >>;
+  template<class... xs>
+  using build_indexed = typename detail::smp_build_indexed<sizeof...(xs) <= 16>
+    ::template f<xs...>;
 }
-
-JLN_MP_MAKE_REGULAR_SMP2_P(precomputed_indexes_at, (I), (C, smp::identity),
-  smp::precomputed_indexes_at_c<I::value, C>)
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, build_indexed<C>>
+  template<template<class> class sfinae, class... xs>
+  struct _sfinae<sfinae, build_indexed<xs...>>
   {
-    using type = smp::build_indexed<sfinae<C>>;
+    using type = smp::build_indexed<xs...>;
   };
 
-  template<template<class> class sfinae, unsigned i, class C>
-  struct _sfinae<sfinae, precomputed_indexes_at_c<i, C>>
+
+  template<>
+  struct smp_build_indexed<true>
   {
-    using type = smp::precomputed_indexes_at_c<i, sfinae<C>>;
+    template<class... xs>
+    using f = try_contract<mp::build_indexed<xs...>>;
   };
 
-  template<template<class> class sfinae, class Seq, class C>
-  struct _sfinae<sfinae, lookup<Seq, C>>
+  template<bool, unsigned long long n>
+  struct check_build_indexed_index2
   {
-    using type = smp::lookup<Seq, sfinae<C>>;
+    template<class i>
+    using f = number<0 <= i::value && static_cast<unsigned long long>(i::value) < n>;
   };
 
-  template<class x>
-  struct smp_check_unindexed_impl
+  template<unsigned long long n>
+  struct check_build_indexed_index2<false, n> : always<false_>
+  {};
+
+  template<unsigned long long n>
+  struct check_build_indexed_index
   {
-    template<class C>
-    using f = typename C::template f<x>;
+    template<class... i>
+    using f = typename check_build_indexed_index2<sizeof...(i) == 1, n>
+      ::template f<i...>;
   };
 
   template<>
-  struct smp_check_unindexed_impl<unindexed>
+  struct smp_build_indexed<false>
   {
-    template<class C>
-    using f = na;
-  };
-
-  template<class C>
-  struct smp_check_unindexed
-  {
-    template<class x>
-    using f = typename smp_check_unindexed_impl<x>::template f<C>;
+    template<class... xs>
+    using f = test_contract<check_build_indexed_index<sizeof...(xs)>, mp::build_indexed<xs...>>;
   };
 }
 /// \endcond

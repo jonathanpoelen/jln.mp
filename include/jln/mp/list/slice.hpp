@@ -144,6 +144,7 @@ namespace jln::mp
 
 
 #include <jln/mp/algorithm/make_int_sequence.hpp>
+#include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/functional/each.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
 #include <jln/mp/list/drop_front.hpp>

@@ -2,130 +2,96 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-// This implementation comes from kvasir.mpl
-
 #include <jln/mp/utility/unpack.hpp>
-#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/functional/lift.hpp>
 
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-    template<unsigned>
+    template<int>
     struct index;
 
     template<class...>
     struct indexed;
 
-    template<bool>
+    template<int, bool = false>
     struct indexed_builder;
+
+    template<int, class PrecomputedIndexes>
+    struct build_indexed_v_impl;
+
+#if JLN_MP_GCC
+    template<int, class PrecomputedIndexes>
+    struct build_indexed_impl;
+#endif
+
+    constexpr int build_indexed_state(std::size_t n);
   }
   /// \endcond
 
   /// \ingroup list
 
-  template<class C = identity>
+  /// Constructs an indexable sequence in O(1).
+  /// \pre 0 <= i < sizeof...(xs)
+  template<class... xs>
+  struct build_indexed_v
+  : detail::build_indexed_v_impl<
+      detail::build_indexed_state(sizeof...(xs)),
+      typename detail::indexed_builder<detail::build_indexed_state(sizeof...(xs))>
+      ::template f<xs...>
+    >
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<int i>
+    using f;
+#endif
+  };
+
+  /// Constructs an indexable sequence in O(1).
+  /// If possible prefer the use of build_indexed_v
+  /// \pre 0 <= i::value < sizeof...(xs)
+#if JLN_MP_GCC
+  template<class... xs>
+  struct build_indexed
+  : detail::build_indexed_impl<
+      detail::build_indexed_state(sizeof...(xs)),
+      typename detail::indexed_builder<detail::build_indexed_state(sizeof...(xs))>
+      ::template f<xs...>
+    >
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class i>
+    using f;
+#endif
+  };
+#else
+  template<class... xs>
   struct build_indexed
   {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, detail::indexed<
-      typename detail::indexed_builder<16 < sizeof...(xs)>
-      ::template f<xs...>
-    >);
-  };
+  private:
+    using BuildIndexedV = build_indexed_v<xs...>;
 
-  /// \cond
-  template<>
-  struct build_indexed<identity>
-  {
-    template<class... xs>
-    using f = detail::indexed<
-      typename detail::indexed_builder<16 < sizeof...(xs)>
-      ::template f<xs...>
-    >;
-  };
-  /// \endcond
-
-  template<class L, class C = identity>
-  struct lookup
-  {};
-
-  template<template<class...> class Seq, class... xs, class C>
-  struct lookup<Seq<xs...>, C>
-  {
-    using precomputed = build_indexed<>::f<xs...>;
-
+  public:
     template<class i>
-    using f = JLN_MP_CALL_TRACE(C, typename precomputed
-      ::template f<detail::index<(i::value >> 8)>>
-      ::template f<detail::index<(i::value >> 4) & 0xF>>
-      ::template f<detail::index<(i::value & 0xF)>>
-    );
+    using f = typename BuildIndexedV::template f<i::value>;
   };
-
-  /// \cond
-  template<template<class...> class Seq, class... xs>
-  struct lookup<Seq<xs...>, identity>
-  {
-    using precomputed = build_indexed<>::f<xs...>;
-
-    template<class i>
-    using f = typename precomputed
-      ::template f<detail::index<(i::value >> 8)>>
-      ::template f<detail::index<(i::value >> 4) & 0xF>>
-      ::template f<detail::index<(i::value & 0xF)>>;
-  };
-  /// \endcond
-
-  template<unsigned i, class C = identity>
-  struct precomputed_indexes_at_c
-  {
-    template<class PrecomputedIndexes>
-    using f = typename C::template f<typename PrecomputedIndexes
-      ::template f<detail::index<(i >> 8)>>
-      ::template f<detail::index<(i >> 4) & 0xF>>
-      ::template f<detail::index<(i & 0xF)>>
-    >;
-  };
-
-  /// \cond
-  template<unsigned i>
-  struct precomputed_indexes_at_c<i, identity>
-  {
-    template<class PrecomputedIndexes>
-    using f = typename PrecomputedIndexes
-      ::template f<detail::index<(i >> 8)>>
-      ::template f<detail::index<(i >> 4) & 0xF>>
-      ::template f<detail::index<(i & 0xF)>>;
-  };
-  /// \endcond
-
-  template<class I, class C = identity>
-  using precomputed_indexes_at = precomputed_indexes_at_c<I::value, C>;
+#endif
 
   namespace emp
   {
-    template<class... xs>
-    using build_indexed_for = mp::build_indexed<>::f<xs...>;
+    template<class L>
+    using build_indexed_v = unpack<L, lift<mp::build_indexed_v>>;
 
-    template<class L, class C = mp::identity>
-    using build_indexed = unpack<L, mp::build_indexed<C>>;
+    template<class L>
+    using build_indexed = unpack<L, lift<mp::build_indexed>>;
 
-    template<class PrecomputedIndexes, unsigned i>
-    using precomputed_indexes_at_c = typename PrecomputedIndexes
-      ::template f<detail::index<(i >> 8)>>
-      ::template f<detail::index<(i >> 4) & 0xF>>
-      ::template f<detail::index<(i & 0xF)>>;
-
-    template<class PrecomputedIndexes, class I>
-    using precomputed_indexes_at = precomputed_indexes_at_c<PrecomputedIndexes, I::value>;
-
-    template<class L, unsigned i>
-    using lookup_c = precomputed_indexes_at_c<unpack<L, mp::build_indexed<>>, i>;
+    template<class L, int i>
+    using lookup_c = typename unpack<L, mp::lift<mp::build_indexed_v>>::template f<i>;
 
     template<class L, class I>
-    using lookup = precomputed_indexes_at_c<unpack<L, mp::build_indexed<>>, I::value>;
+    using lookup = typename unpack<L, mp::lift<mp::build_indexed_v>>::template f<I::value>;
   }
 }
 
@@ -154,21 +120,21 @@ namespace jln::mp::detail
   class unindexed;
 
   using rlist_tail_of15 =
-    rlist<list<>,
-      rlist<list<>,
-        rlist<list<>,
-          rlist<list<>,
-            rlist<list<>,
-              rlist<list<>,
-                rlist<list<>,
-                  rlist<list<>,
-                    rlist<list<>,
-                      rlist<list<>,
-                        rlist<list<>,
-                          rlist<list<>,
-                            rlist<list<>,
-                              rlist<list<>,
-                                rlist<list<>, unindexed>>>>>>>>>>>>>>>;
+    rlist<unindexed,
+      rlist<unindexed,
+        rlist<unindexed,
+          rlist<unindexed,
+            rlist<unindexed,
+              rlist<unindexed,
+                rlist<unindexed,
+                  rlist<unindexed,
+                    rlist<unindexed,
+                      rlist<unindexed,
+                        rlist<unindexed,
+                          rlist<unindexed,
+                            rlist<unindexed,
+                              rlist<unindexed,
+                                rlist<unindexed, unindexed>>>>>>>>>>>>>>>;
 
   template<class... xs>
   struct indexed
@@ -177,11 +143,14 @@ namespace jln::mp::detail
     using f = typename F::template f<xs...>;
   };
 
+  template<class x>
+  struct rlist_to_indexed;
+
   template<
     class x0, class x1, class x2, class x3, class x4, class x5,
     class x6, class x7, class x8, class x9, class x10, class x11,
     class x12, class x13, class x14, class x15, class Tail>
-  struct indexed<
+  struct rlist_to_indexed<
     rlist<x0,
       rlist<x1,
         rlist<x2,
@@ -199,29 +168,163 @@ namespace jln::mp::detail
                                 rlist<x14,
                                   rlist<x15, Tail>>>>>>>>>>>>>>>>>
   {
-    template<class F>
-    using f = typename F::template f<
-      x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15
+    template<template<class...> class F>
+    using f = F<x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15>;
+  };
+
+
+  template<class x>
+  struct rlist_to_indexed_rlist;
+
+  template<
+    class x0, class x1, class x2, class x3, class x4, class x5,
+    class x6, class x7, class x8, class x9, class x10, class x11,
+    class x12, class x13, class x14, class x15, class Tail>
+  struct rlist_to_indexed_rlist<
+    rlist<x0,
+      rlist<x1,
+        rlist<x2,
+          rlist<x3,
+            rlist<x4,
+              rlist<x5,
+                rlist<x6,
+                  rlist<x7,
+                    rlist<x8,
+                      rlist<x9,
+                        rlist<x10,
+                          rlist<x11,
+                            rlist<x12,
+                              rlist<x13,
+                                rlist<x14,
+                                  rlist<x15, Tail>>>>>>>>>>>>>>>>>
+  {
+    using type = rlist<
+      indexed<x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15>,
+      typename rlist_to_indexed_rlist<Tail>::type
     >;
   };
 
-  template<>
-  struct indexed_builder<false>
+
+  template<
+    class x0, class x1, class x2, class x3, class x4, class x5,
+    class x6, class x7, class x8, class x9, class x10, class x11,
+    class x12, class x13, class x14, class x15, class Tail>
+  struct rlist_to_indexed_rlist<
+    rlist<x0,
+      rlist<x1,
+        rlist<x2,
+          rlist<x3,
+            rlist<x4,
+              rlist<x5,
+                rlist<x6,
+                  rlist<x7,
+                    rlist<x8,
+                      rlist<x9,
+                        rlist<x10,
+                          rlist<x11,
+                            rlist<x12,
+                              rlist<x13,
+                                rlist<x14,
+                                  rlist<x15,
+                                    rlist<unindexed, Tail>>>>>>>>>>>>>>>>>>
   {
-    template<
-      class x0 = unindexed, class x1 = unindexed, class x2 = unindexed, class x3 = unindexed,
-      class x4 = unindexed, class x5 = unindexed, class x6 = unindexed, class x7 = unindexed,
-      class x8 = unindexed, class x9 = unindexed, class x10 = unindexed, class x11 = unindexed,
-      class x12 = unindexed, class x13 = unindexed, class x14 = unindexed, class x15 = unindexed,
-      class...>
-    using f = rlist<
-      indexed<indexed<x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15>>,
+    using type = rlist<
+      indexed<x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15>,
       rlist_tail_of15
     >;
   };
 
+  template<
+    class x0, class x1, class x2, class x3, class x4, class x5,
+    class x6, class x7, class x8, class x9, class x10, class x11,
+    class x12, class x13, class x14, class x15>
+  struct rlist_to_indexed_rlist<
+    rlist<x0,
+      rlist<x1,
+        rlist<x2,
+          rlist<x3,
+            rlist<x4,
+              rlist<x5,
+                rlist<x6,
+                  rlist<x7,
+                    rlist<x8,
+                      rlist<x9,
+                        rlist<x10,
+                          rlist<x11,
+                            rlist<x12,
+                              rlist<x13,
+                                rlist<x14,
+                                  rlist<x15, unindexed>>>>>>>>>>>>>>>>>
+  {
+    using type = rlist<
+      indexed<x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15>,
+      rlist_tail_of15
+    >;
+  };
+
+
+  constexpr int build_indexed_state(std::size_t n)
+  {
+    return n <= 16 ? 0
+         : n <= 256 ? 1
+         : n <= 4096 ? 2
+         : 3;
+  }
+
+
+  // 0 <= sizeof...(xs) <= 16
   template<>
-  struct indexed_builder<true>
+  struct indexed_builder<0>
+    : listify
+  {};
+
+  // 16 < sizeof...(xs) <= 256
+  template<>
+  struct indexed_builder<1>
+  {
+    template<JLN_MP_XS_256(class, = unindexed, JLN_MP_COMMA)>
+    using f = indexed<
+      indexed<_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12,
+              _13, _14, _15, _16>,
+      indexed<_17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27,
+              _28, _29, _30, _31, _32>,
+      indexed<_33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43,
+              _44, _45, _46, _47, _48>,
+      indexed<_49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59,
+              _60, _61, _62, _63, _64>,
+
+      indexed<_65, _66, _67, _68, _69, _70, _71, _72, _73, _74, _75,
+              _76, _77, _78, _79, _80>,
+      indexed<_81, _82, _83, _84, _85, _86, _87, _88, _89, _90, _91,
+              _92, _93, _94, _95, _96>,
+      indexed<_97, _98, _99, _100, _101, _102, _103, _104, _105,
+              _106, _107, _108, _109, _110, _111, _112>,
+      indexed<_113, _114, _115, _116, _117, _118, _119, _120, _121,
+              _122, _123, _124, _125, _126, _127, _128>,
+
+      indexed<_129, _130, _131, _132, _133, _134, _135, _136, _137,
+              _138, _139, _140, _141, _142, _143, _144>,
+      indexed<_145, _146, _147, _148, _149, _150, _151, _152, _153,
+              _154, _155, _156, _157, _158, _159, _160>,
+      indexed<_161, _162, _163, _164, _165, _166, _167, _168, _169,
+              _170, _171, _172, _173, _174, _175, _176>,
+      indexed<_177, _178, _179, _180, _181, _182, _183, _184, _185,
+              _186, _187, _188, _189, _190, _191, _192>,
+
+      indexed<_193, _194, _195, _196, _197, _198, _199, _200, _201,
+              _202, _203, _204, _205, _206, _207, _208>,
+      indexed<_209, _210, _211, _212, _213, _214, _215, _216, _217,
+              _218, _219, _220, _221, _222, _223, _224>,
+      indexed<_225, _226, _227, _228, _229, _230, _231, _232, _233,
+              _234, _235, _236, _237, _238, _239, _240>,
+      indexed<_241, _242, _243, _244, _245, _246, _247, _248, _249,
+              _250, _251, _252, _253, _254, _255, _256>
+    >;
+  };
+
+  // 256 < sizeof...(xs) <= 4096
+  template<>
+  struct indexed_builder<2, false>
   {
     template<JLN_MP_XS_256(class, = unindexed, JLN_MP_COMMA), class... xs>
     using f = rlist<
@@ -260,7 +363,132 @@ namespace jln::mp::detail
                       _234, _235, _236, _237, _238, _239, _240>,
               indexed<_241, _242, _243, _244, _245, _246, _247, _248, _249,
                       _250, _251, _252, _253, _254, _255, _256>>,
-      typename indexed_builder<16 < sizeof...(xs)>::template f<xs...>
+      typename indexed_builder<2, sizeof...(xs) <= 16>::template f<xs...>
     >;
   };
+
+  // 256 < sizeof...(xs) <= 4096
+  template<>
+  struct indexed_builder<2, true>
+  {
+    template<
+      class x0 = unindexed, class x1 = unindexed, class x2 = unindexed, class x3 = unindexed,
+      class x4 = unindexed, class x5 = unindexed, class x6 = unindexed, class x7 = unindexed,
+      class x8 = unindexed, class x9 = unindexed, class x10 = unindexed, class x11 = unindexed,
+      class x12 = unindexed, class x13 = unindexed, class x14 = unindexed, class x15 = unindexed>
+    using f = rlist<
+      indexed<indexed<x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15>>,
+      rlist_tail_of15
+    >;
+  };
+
+  // 4096 < sizeof...(xs)
+  template<>
+  struct indexed_builder<3> : indexed_builder<2>
+  {};
+
+
+  // 0 <= sizeof...(xs) <= 16
+  template<class... xs>
+  struct build_indexed_v_impl<0, list<xs...>>
+  {
+    template<int i>
+    using f = typename index<i>::template f<xs...>;
+  };
+
+  // 16 < sizeof...(xs) <= 256
+  template<class PrecomputedIndexes>
+  struct build_indexed_v_impl<1, PrecomputedIndexes>
+  {
+    template<int i>
+    using f = typename PrecomputedIndexes
+      ::template f<index<(i >> 4)>>
+      ::template f<index<i & 0xf>>;
+  };
+
+  // 256 < sizeof...(xs) <= 4096
+  template<class PrecomputedIndexes>
+  class build_indexed_v_impl<2, PrecomputedIndexes>
+  {
+    using _precomputed_indexes = typename rlist_to_indexed<PrecomputedIndexes>
+      ::template f<indexed>;
+
+  public:
+    template<int i>
+    using f = typename _precomputed_indexes
+      ::template f<index<(i >> 8)>>
+      ::template f<index<(i >> 4) & 0xF>>
+      ::template f<index<(i & 0xF)>>;
+  };
+
+  // 4096 < sizeof...(xs) <= 65536
+  template<class PrecomputedIndexes>
+  class build_indexed_v_impl<3, PrecomputedIndexes>
+  {
+    using _precomputed_indexes = typename rlist_to_indexed<
+      typename rlist_to_indexed_rlist<PrecomputedIndexes>::type
+    >::template f<indexed>;
+
+  public:
+    template<int i>
+    using f = typename _precomputed_indexes
+      ::template f<index<(i >> 12)>>
+      ::template f<index<(i >> 8) & 0xF>>
+      ::template f<index<(i >> 4) & 0xF>>
+      ::template f<index<(i & 0xF)>>;
+  };
+
+
+# if JLN_MP_GCC
+  // 0 <= sizeof...(xs) <= 16
+  template<class... xs>
+  struct build_indexed_impl<0, list<xs...>>
+  {
+    template<class i>
+    using f = typename index<i::value>::template f<xs...>;
+  };
+
+  // 16 < sizeof...(xs) <= 256
+  template<class PrecomputedIndexes>
+  struct build_indexed_impl<1, PrecomputedIndexes>
+  {
+    template<class i>
+    using f = typename PrecomputedIndexes
+      ::template f<index<(i::value >> 4)>>
+      ::template f<index<i::value & 0xf>>;
+  };
+
+  // 256 < sizeof...(xs) <= 4096
+  template<class PrecomputedIndexes>
+  class build_indexed_impl<2, PrecomputedIndexes>
+  {
+    using _precomputed_indexes = typename rlist_to_indexed<PrecomputedIndexes>
+      ::template f<indexed>;
+
+  public:
+    template<class i>
+    using f = typename _precomputed_indexes
+      ::template f<index<(i::value >> 8)>>
+      ::template f<index<(i::value >> 4) & 0xF>>
+      ::template f<index<i::value & 0xF>>;
+  };
+
+  // 4096 < sizeof...(xs) <= 65536
+  template<class PrecomputedIndexes>
+  class build_indexed_impl<3, PrecomputedIndexes>
+  {
+    using _precomputed_indexes = typename rlist_to_indexed<
+      typename rlist_to_indexed_rlist<PrecomputedIndexes>::type
+    >::template f<indexed>;
+
+  public:
+    template<class i>
+    using f = typename _precomputed_indexes
+      ::template f<index<(i::value >> 12)>>
+      ::template f<index<(i::value >> 8) & 0xF>>
+      ::template f<index<(i::value >> 4) & 0xF>>
+      ::template f<index<i::value & 0xF>>;
+  };
+#endif
+
 }

@@ -28,6 +28,14 @@ TEST()
     .not_invocable<_0, _1, _2, _3>()
     ;
 
+  test_context<arrange_c<2, 1, 18>, smp::arrange_c<2, 1, 18>>()
+    .test<list<void, _1, short>,
+      int, _1, void, _3, int, _5, int, _7, int, _9, int, _11, int, _13, int, _15, int, _17, short>()
+    .not_invocable<>()
+    .not_invocable<_0>()
+    .not_invocable<_0, _1, _2, _3>()
+    ;
+
   ut::not_invocable<smp::arrange<void>, _1>();
   ut::not_invocable<smp::arrange<Ints, bad_function>, _1>();
 }
