@@ -12,7 +12,7 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_mulary_pack<arrange, int_seq_v<>>();
+  test_mulary_pack<arrange, list<>>();
 
   using Ints = emp::numbers<2, 4, 0, 4>;
 
@@ -26,6 +26,21 @@ TEST()
     .not_invocable<>()
     .not_invocable<_0>()
     .not_invocable<_0, _1, _2, _3>()
+    ;
+
+  test_context<arrange_c<>, smp::arrange_c<>>()
+    .test<list<>>()
+    .test<list<>, _0>()
+    ;
+
+  test_context<arrange_c<-1>, smp::arrange_c<-1>>()
+    .not_invocable<>()
+    .not_invocable<_0>()
+    ;
+
+  test_context<arrange_c<-4>, smp::arrange_c<-4>>()
+    .not_invocable<>()
+    .not_invocable<_0>()
     ;
 
   test_context<arrange_c<2, 1, 18>, smp::arrange_c<2, 1, 18>>()

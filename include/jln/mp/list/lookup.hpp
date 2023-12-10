@@ -101,6 +101,15 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
+  // fast propagation of lift<build_indexed_v, F> without dependency call
+  template<class F>
+  struct apply_indexed_v
+  {
+    template<class... xs>
+    using f = typename F::template f<build_indexed_v<xs...>>;
+  };
+
+
 #define JLN_MP_INDEX(n, mp_xs, mp_rxs, mp_dup)      \
   template<>                                        \
   struct index<n-1>                                 \
