@@ -361,7 +361,7 @@ namespace jln::mp::detail
   template<> struct mk_int_seq<0> { using type = int_seq_v<>; };
   template<> struct mk_int_seq<1> { using type = int_seq_v<0>; };
 
-  template<class Int, Int... ns>
+  template<int_... ns>
   struct make_int_sequence_impl<numbers<>, int_seq_v<ns...>>
   {
     using type = list<number<ns>...>;
