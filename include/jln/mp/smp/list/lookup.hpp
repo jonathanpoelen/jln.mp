@@ -10,13 +10,29 @@ namespace jln::mp::detail
 {
   template<bool>
   struct smp_build_indexed;
+
+  template<unsigned long long n>
+  struct check_build_indexed_index;
+
+  template<>
+  struct smp_build_indexed<false>
+  {
+    template<class... xs>
+    using f = test_contract<check_build_indexed_index<sizeof...(xs)>, mp::build_indexed<xs...>>;
+  };
 }
 /// \endcond
 
 namespace jln::mp::smp
 {
   template<class... xs>
-  using build_indexed = typename detail::smp_build_indexed<sizeof...(xs) <= 16>
+  using build_indexed = typename detail::smp_build_indexed<
+#if JLN_MP_MEMOIZE_BUILD_INDEXED_CALL
+    false
+#else
+    sizeof...(xs) <= 16
+#endif
+>
     ::template f<xs...>;
 }
 
@@ -54,13 +70,6 @@ namespace jln::mp::detail
     template<class... i>
     using f = typename check_build_indexed_index2<sizeof...(i) == 1, n>
       ::template f<i...>;
-  };
-
-  template<>
-  struct smp_build_indexed<false>
-  {
-    template<class... xs>
-    using f = test_contract<check_build_indexed_index<sizeof...(xs)>, mp::build_indexed<xs...>>;
   };
 }
 /// \endcond

@@ -5,6 +5,14 @@
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/functional/lift.hpp>
 
+#ifndef JLN_MP_MEMOIZE_BUILD_INDEXED_CALL
+#  if JLN_MP_CLANG
+#    define JLN_MP_MEMOIZE_BUILD_INDEXED_CALL 1
+#  else
+#    define JLN_MP_MEMOIZE_BUILD_INDEXED_CALL 0
+#  endif
+#endif
+
 namespace jln::mp
 {
   /// \cond
@@ -74,8 +82,13 @@ namespace jln::mp
     using BuildIndexedV = build_indexed_v<xs...>;
 
   public:
+#if JLN_MP_MEMOIZE_BUILD_INDEXED_CALL
+    template<class i>
+    using f = typename BuildIndexedV::template memoize_result_<i::value>::type;
+#else
     template<class i>
     using f = typename BuildIndexedV::template f<i::value>;
+#endif
   };
 #endif
 
@@ -92,6 +105,12 @@ namespace jln::mp
 
     template<class L, class I>
     using lookup = typename unpack<L, mp::lift<mp::build_indexed_v>>::template f<I::value>;
+
+    template<class IndexedV, int i>
+    using indexed_lookup_c = typename IndexedV::template f<i>;
+
+    template<class IndexedV, class I>
+    using indexed_lookup = typename IndexedV::template f<I::value>;
   }
 }
 
@@ -397,22 +416,34 @@ namespace jln::mp::detail
   {};
 
 
+#if JLN_MP_MEMOIZE_BUILD_INDEXED_CALL
+#  define JLN_MP_BUILD_INDEXED_IMPL(impl)                        \
+  template<int i> struct memoize_result_ { using type = impl; }; \
+  template<int i> using f = typename memoize_result_<i>::type
+#  define JLN_MP_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::memoize_result_<i>::type
+#  define JLN_MP_D_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::template memoize_result_<i>::type
+#else
+#  define JLN_MP_BUILD_INDEXED_IMPL(impl) template<int i> using f = impl
+#  define JLN_MP_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::f<i>
+#  define JLN_MP_D_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::template f<i>
+#endif
+
   // 0 <= sizeof...(xs) <= 16
   template<class... xs>
   struct build_indexed_v_impl<0, list<xs...>>
   {
-    template<int i>
-    using f = typename index<i>::template f<xs...>;
+    JLN_MP_BUILD_INDEXED_IMPL(typename index<i>::template f<xs...>);
   };
 
   // 16 < sizeof...(xs) <= 256
   template<class PrecomputedIndexes>
   struct build_indexed_v_impl<1, PrecomputedIndexes>
   {
-    template<int i>
-    using f = typename PrecomputedIndexes
+    JLN_MP_BUILD_INDEXED_IMPL(
+      typename PrecomputedIndexes
       ::template f<index<(i >> 4)>>
-      ::template f<index<i & 0xf>>;
+      ::template f<index<i & 0xf>>
+    );
   };
 
   // 256 < sizeof...(xs) <= 4096
@@ -423,11 +454,12 @@ namespace jln::mp::detail
       ::template f<indexed>;
 
   public:
-    template<int i>
-    using f = typename _precomputed_indexes
+    JLN_MP_BUILD_INDEXED_IMPL(
+      typename _precomputed_indexes
       ::template f<index<(i >> 8)>>
       ::template f<index<(i >> 4) & 0xF>>
-      ::template f<index<(i & 0xF)>>;
+      ::template f<index<(i & 0xF)>>
+    );
   };
 
   // 4096 < sizeof...(xs) <= 65536
@@ -439,14 +471,16 @@ namespace jln::mp::detail
     >::template f<indexed>;
 
   public:
-    template<int i>
-    using f = typename _precomputed_indexes
+    JLN_MP_BUILD_INDEXED_IMPL(
+      typename _precomputed_indexes
       ::template f<index<(i >> 12)>>
       ::template f<index<(i >> 8) & 0xF>>
       ::template f<index<(i >> 4) & 0xF>>
-      ::template f<index<(i & 0xF)>>;
+      ::template f<index<(i & 0xF)>>
+    );
   };
 
+#undef JLN_MP_BUILD_INDEXED_IMPL
 
 # if JLN_MP_GCC
   // 0 <= sizeof...(xs) <= 16
