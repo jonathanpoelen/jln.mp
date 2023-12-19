@@ -24,7 +24,7 @@ namespace jln::mp
 
   /// \ingroup reduce
 
-  /// As \c fold_xs, but stop searching at position \c OffsetEnd.
+  /// As \c fold_xs, but stop at position \c OffsetEnd.
   template<int_ OffsetEnd, class F, class C = identity>
   struct partial_fold_xs_c
   {
