@@ -80,7 +80,7 @@ namespace jln::mp
 #include <jln/mp/algorithm/batched.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/list/drop_front.hpp>
-#include <jln/mp/list/pop_front.hpp>
+#include <jln/mp/list/lookup.hpp>
 #include <jln/mp/list/slice.hpp>
 
 /// \cond
@@ -148,25 +148,21 @@ namespace jln::mp::detail
     using f = sliding_0size<C>;
   };
 
-  constexpr int_ slinding_pivot(int_ nx, int_ size, int_ stride)
-  {
-    return nx - (nx - size + stride - 1) / stride * stride - 1;
-  }
-
   constexpr int sliding_select(int n, int_ size, int_ stride)
   {
     return n <= size ? (n ? 1 : 0)         // C<list<xs...>>
       : size == 1 ? (stride == 1 ? 2 : 3)  // C<list<xs>...> / slice<0, n/stride, stride>
       : stride > n ? 9                     // take_front
-      : stride == 1 ? (size == 2 ? 4 : 5)  // common case
+      : stride == 1 ? (size == 2 ? 4 : size < 9 ? 5 : 51)  // common case
       : stride == size ? 6                 // batched
       // slice<zip_longest> / slice<zip>
-      : ((n - size) % stride) ? (slinding_pivot(n, size, stride) < 0 ? 7 : 8) : 7;
+      : (stride >= size ? (n - 1) % stride >= size - 1 : (n - size) % stride == 0) ? 7 : 8;
   }
 
   template<>
   struct sliding_impl<-1>
   {};
+
 
   // sizeof...(xs) == 0
   template<>
@@ -176,7 +172,8 @@ namespace jln::mp::detail
     using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
-  // sizeof...(xs) < size
+
+  // sizeof...(xs) <= size
   template<>
   struct sliding_impl<1>
   {
@@ -184,7 +181,8 @@ namespace jln::mp::detail
     using f = JLN_MP_CALL_TRACE(C, list<xs...>);
   };
 
-  // size=1  stride=1
+
+  // size == 1 ;  stride == 1
   template<>
   struct sliding_impl<2>
   {
@@ -192,7 +190,8 @@ namespace jln::mp::detail
     using f = JLN_MP_CALL_TRACE(C, list<xs>...);
   };
 
-  // size=1  stride!=1
+
+  // size == 1 ; stride != 1
   template<>
   struct sliding_impl<3>
   {
@@ -202,7 +201,8 @@ namespace jln::mp::detail
       ::template f<xs...>;
   };
 
-  // stride>size
+
+  // stride > size  (take_front)
   template<>
   struct sliding_impl<9>
   {
@@ -212,7 +212,8 @@ namespace jln::mp::detail
     );
   };
 
-  // size=2  stride=1  (pairwise)
+
+  // size == 2 ; stride == 1  (pairwise)
   template<>
   struct sliding_impl<4>
   {
@@ -220,24 +221,61 @@ namespace jln::mp::detail
     using f = typename pairwise<C>::template f<xs...>;
   };
 
+
+  // 2 < size < 9 ; stride == 1
   template<class, int_... i>
   struct sliding5_impl
   {
     template<class C, int_ size, class drop_front>
-    using f = _tee<zip<C>, rotate_c<int_(i)-size, drop_front>...>;
+    using impl = _tee<zip<C>,
+      rotate_c<i-size, drop_front>...,
+      drop_front
+    >;
   };
 
-  // size>2  stride=1
+
+  // size > 2 ; stride == 1
   template<>
   struct sliding_impl<5>
   {
     template<class C, int_ size, int_, class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(size, sliding5_impl)
-      ::template f<C, size-1, drop_front_c<size-1>>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(size-1, sliding5_impl)
+      ::template impl<C, size-1, drop_front_c<size-1>>
       ::template f<xs...>;
   };
 
-  // stride=size (batched)
+
+  template<class, int... ns>
+  struct sliding_inner
+  {
+    template<class C, class L, int i>
+    using f = typename C::template f<typename JLN_MP_D_BUILD_INDEXED_V_GET(ns+i, L)...>;
+  };
+
+  template<class, int... outer_index>
+  struct sliding_outer
+  {
+      template<class F, class C, class InnerC, class L>
+      using f = typename C::template f<typename F::template f<InnerC, L, outer_index>...>;
+  };
+
+  template<int_ n>
+  using make_sliding_inner = JLN_MP_MAKE_INTEGER_SEQUENCE_T(int, n, sliding_inner);
+
+  template<int_ n>
+  using make_sliding_outer = JLN_MP_MAKE_INTEGER_SEQUENCE_T(int, n, sliding_outer);
+
+  // size > 8 ; stride == 1
+  template<>
+  struct sliding_impl<51>
+  {
+    template<class C, int_ size, int_ /*stride*/, class... xs>
+    using f = typename make_sliding_outer<sizeof...(xs) - size + 1>
+      ::template f<make_sliding_inner<size>, C, listify, build_indexed_v<xs...>>;
+  };
+
+
+  // stride == size  (batched)
   template<>
   struct sliding_impl<6>
   {
@@ -245,74 +283,46 @@ namespace jln::mp::detail
     using f = typename batched_with_c<size, listify, C>::template f<xs...>;
   };
 
-  template<class, int_... i>
-  struct sliding7_impl
+
+  template<class, int... outer_index>
+  struct strided_sliding_outer
   {
-    template<class C, int_ size, int_ stride>
-    using f = _tee<zip<C>, slice_with_step_c<i, size, stride>...>;
+    template<int d>
+    struct strided
+      : sliding_outer<int, outer_index * d...>
+    {};
   };
 
-  // size>1  stride>1  (all list = size)
+  template<int_ n, int_ stride>
+  using make_strided_sliding_outer
+    = typename JLN_MP_MAKE_INTEGER_SEQUENCE_T(int, n, strided_sliding_outer)
+      ::template strided<stride>;
+
+  // size > 1 ; stride > 1  (all list = size)
   template<>
   struct sliding_impl<7>
   {
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(size, sliding7_impl)
-      ::template f<C, (sizeof...(xs) - size) / stride + 1, stride>
-      ::template f<xs...>;
+    using f = typename make_strided_sliding_outer<(sizeof...(xs) - size) / stride + 1, stride>
+      ::template f<make_sliding_inner<size>, C, listify, build_indexed_v<xs...>>;
   };
 
-  constexpr int_ slinding8_pivot(int_ nx, int_ size, int_ stride)
-  {
-    int_ r = slinding_pivot(nx, size, stride);
-    return r < 0 ? size : r;
-  }
 
-  template<class C>
-  struct adjust
-  {
-    template<class x, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C,
-      xs...,
-      typename _unpack<rotate_c<-1, pop_front<>>, x>::type
-    );
-  };
-
-  template<>
-  struct adjust<listify>
-  {
-    template<class x, class... xs>
-    using f = list<
-      xs...,
-      typename _unpack<rotate_c<-1, pop_front<>>, x>::type
-    >;
-  };
-
-  template<class, int_... i>
-  struct sliding8_impl
-  {
-    template<class C, int_ size, int_ stride, int_ pivot>
-    using f = _tee<
-      zip<rotate_c<-1, adjust<C>>>,
-      slice_with_step_c<i, size - (pivot < i), stride,
-        typename conditional_c<(pivot < i)>::template f<push_back<void>, listify>
-      >...
-    >;
-  };
-
-  // size>1  stride>1  (last list < size)
+  // size > 1 ; stride > 1  (last list < size)
   template<>
   struct sliding_impl<8>
   {
+    template<class C, int_ size, int_ stride, int_ ns, class Indexed,
+      int_ n = (ns - size) / stride + 1>
+    using impl = typename join<C>::template f<
+      typename make_strided_sliding_outer<n, stride>
+        ::template f<make_sliding_inner<size>, listify, listify, Indexed>,
+      list<typename make_sliding_inner<ns - n * stride>
+        ::template f<listify, Indexed, n * stride>>
+    >;
+
     template<class C, int_ size, int_ stride, class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(size, sliding8_impl)
-      ::template f<
-        C,
-        (sizeof...(xs) - size) / stride + 2,
-        stride,
-        slinding8_pivot(sizeof...(xs), size, stride)
-      >
-      ::template f<xs...>;
+    using f = impl<C, size, stride, sizeof...(xs), build_indexed_v<xs...>>;
   };
 }
 /// \endcond

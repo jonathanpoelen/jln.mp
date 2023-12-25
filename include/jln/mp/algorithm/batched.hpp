@@ -85,7 +85,7 @@ namespace jln::mp::detail
   };
 
   template<class... F>
-  struct extract_outer
+  struct extract_outer_index
   {
     template<class C, class InnerC, class Indexed>
     using f = typename C::template f<typename F::template f<InnerC, Indexed>...>;
@@ -94,7 +94,7 @@ namespace jln::mp::detail
     struct append
     {
       template<class, int... remaining_inner_index>
-      using f = extract_outer<F..., extract_index<(i + remaining_inner_index)...>>;
+      using f = extract_outer_index<F..., extract_index<(i + remaining_inner_index)...>>;
     };
   };
 
@@ -105,13 +105,13 @@ namespace jln::mp::detail
   struct batched_index
   {
     template<class, int... outer_index>
-    struct make : extract_outer<
+    struct make : extract_outer_index<
       make_batched_inner_index<outer_index, sizeof...(inner_index), inner_index...>...
     >
     {};
   };
 
-  // size < nx, nx % size == 0
+  // size < nx ; nx % size == 0
   template<>
   struct batched_impl<true, true>
   {
@@ -124,7 +124,7 @@ namespace jln::mp::detail
     );
   };
 
-  // size < nx, nx % size != 0
+  // size < nx ; nx % size != 0
   template<>
   struct batched_impl<true, false>
   {
