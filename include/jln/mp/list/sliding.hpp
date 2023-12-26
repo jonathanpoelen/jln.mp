@@ -32,38 +32,38 @@ namespace jln::mp
   ///   If `stride > 1`, the last window may be smaller than \c size
   ///   If `stride == 0 || size <= 0`, then the result sequence is empty
   ///   \code
-  ///   sliding_with_stride_c<3, 1, C>::f<_0, _1, _2, _3, _4>
+  ///   strided_sliding_c<3, 1, C>::f<_0, _1, _2, _3, _4>
   ///   ==
   ///   C::f<list<_0, _1, _2>, list<_1, _2, _3>, list<_2, _3, _4>>
   ///
-  ///   sliding_with_stride_c<3, 2, C>::f<_0, _1, _2, _3, _4>
+  ///   strided_sliding_c<3, 2, C>::f<_0, _1, _2, _3, _4>
   ///   ==
   ///   C::f<list<_0, _1, _2>, list<_2, _3, _4>>
   ///   \endcode
-  template<class size, class stride, class C = listify>
-  using sliding_with_stride = typename detail::mk_sliding<
+  template<class size, class stride = number<1>, class C = listify>
+  using strided_sliding = typename detail::mk_sliding<
     size::value, stride::value,
     detail::sliding_stride(size::value, stride::value)
   >::template f<C>;
 
   template<int_ size, int_ stride = 1, class C = listify>
-  using sliding_with_stride_c = typename detail::mk_sliding<size, stride,
+  using strided_sliding_c = typename detail::mk_sliding<size, stride,
     detail::sliding_stride(size, stride)
   >::template f<C>;
 
   template<class size, class C = listify>
-  using sliding = sliding_with_stride_c<size::value, 1, C>;
+  using sliding = strided_sliding_c<size::value, 1, C>;
 
   template<int_ size, class C = listify>
-  using sliding_c = sliding_with_stride_c<size, 1, C>;
+  using sliding_c = strided_sliding_c<size, 1, C>;
 
   namespace emp
   {
     template<class L, class size, class stride, class C = mp::listify>
-    using sliding_with_stride = unpack<L, mp::sliding_with_stride<size, stride, C>>;
+    using strided_sliding = unpack<L, mp::strided_sliding<size, stride, C>>;
 
     template<class L, int_ size, int_ stride, class C = mp::listify>
-    using sliding_with_stride_c = unpack<L, mp::sliding_with_stride_c<size, stride, C>>;
+    using strided_sliding_c = unpack<L, mp::strided_sliding_c<size, stride, C>>;
 
     template<class L, class size, class C = mp::listify>
     using sliding = unpack<L, mp::sliding<size, C>>;
