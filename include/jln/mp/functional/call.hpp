@@ -179,5 +179,26 @@ namespace jln::mp::detail
   // useful to work around msvc bugs
   template<class F, class... xs>
   using raw_call = typename F::template f<xs...>;
+
+
+  template<class C>
+  struct call_trace_xs_0
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
+  };
+
+  template<class C>
+  struct call_trace_xs
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
+  };
+
+  struct call_trace_c0_arg
+  {
+    template<class C, class...>
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
+  };
 }
 /// \endcond

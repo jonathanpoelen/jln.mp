@@ -59,6 +59,7 @@ namespace jln::mp
 
 #include <jln/mp/algorithm/merge.hpp>
 #include <jln/mp/list/take_front.hpp>
+#include <jln/mp/utility/always.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -68,10 +69,8 @@ namespace jln::mp::detail
 
   template<>
   struct mk_list2<false>
-  {
-    template<class... xs>
-    using f = list<xs...>;
-  };
+    : listify
+  {};
 
   template<>
   struct mk_list2<true>
@@ -93,10 +92,8 @@ namespace jln::mp::detail
 
   template<>
   struct sort_impl<0>
-  {
-    template<class Cmp>
-    using f = list<>;
-  };
+    : always<list<>>
+  {};
 
   template<>
   struct sort_impl<1>

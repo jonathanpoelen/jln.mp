@@ -107,17 +107,13 @@ namespace jln::mp::detail
 
   template<unsigned i, class C>
   struct if_valid_index
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
-  };
+    : detail::call_trace_xs<C>
+  {};
 
   template<unsigned i>
   struct if_valid_index<i, listify>
-  {
-    template<class... xs>
-    using f = list<xs...>;
-  };
+    : listify
+  {};
 
   template<>
   struct _select_swap_index<false, true>

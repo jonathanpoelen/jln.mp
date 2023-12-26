@@ -123,18 +123,11 @@ namespace jln::mp::detail
     using f = sliding_<size, stride, optimize_useless_transform_unpack_t<C>>;
   };
 
-  template<class C>
-  struct sliding_0
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
-  };
-
   template<int_ size, int_ stride>
   struct mk_sliding<size, stride, -1>
   {
     template<class C>
-    using f = sliding_0<C>;
+    using f = call_trace_xs_0<C>;
   };
 
   constexpr int sliding_select(int n, int_ size, int_ stride)

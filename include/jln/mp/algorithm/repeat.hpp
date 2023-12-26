@@ -55,10 +55,8 @@ namespace jln::mp::detail
   {
     template<class, int_...>
     struct impl
-    {
-      template<class C>
-      using f = JLN_MP_CALL_TRACE_0_ARG(C);
-    };
+      : call_trace_c0_arg
+    {};
   };
 
   template<>
@@ -88,16 +86,12 @@ namespace jln::mp
 {
   template<class C>
   struct repeat_c<0, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
-  };
+    : detail::call_trace_xs_0<C>
+  {};
 
   template<class C>
   struct repeat_c<1, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
-  };
+    : detail::call_trace_xs<C>
+  {};
 }
 /// \endcond

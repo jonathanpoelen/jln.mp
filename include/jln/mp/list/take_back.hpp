@@ -3,6 +3,7 @@
 #pragma once
 
 #include <jln/mp/list/drop_front.hpp>
+#include <jln/mp/utility/always.hpp>
 
 namespace jln::mp
 {
@@ -62,30 +63,22 @@ namespace jln::mp
   /// \cond
   template<class C>
   struct take_back_c<0, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
-  };
+    : detail::call_trace_xs_0<C>
+  {};
 
   template<class C>
   struct take_back_max_c<0, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
-  };
+    : detail::call_trace_xs_0<C>
+  {};
 
   template<>
   struct take_back_c<0, listify>
-  {
-    template<class... xs>
-    using f = list<>;
-  };
+    : always<list<>>
+  {};
 
   template<>
   struct take_back_max_c<0, listify>
-  {
-    template<class... xs>
-    using f = list<>;
-  };
+    : always<list<>>
+  {};
   /// \endcond
 }

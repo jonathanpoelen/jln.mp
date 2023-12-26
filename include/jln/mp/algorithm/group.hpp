@@ -139,9 +139,7 @@ namespace jln::mp::detail
 
   template<>
   struct _group<false>
-  {
-    template<class C, class>
-    using f = JLN_MP_CALL_TRACE_0_ARG(C);
-  };
+    : call_trace_c0_arg
+  {};
 }
 /// \endcond

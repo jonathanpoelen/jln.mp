@@ -26,7 +26,7 @@ JLN_MP_MAKE_REGULAR_SMP3_P(sliding_with_stride, (size), (stride), (C, smp::listi
 namespace jln::mp::detail
 {
   template<class C>
-  using smp_sliding_0 = try_contract<sliding_0<subcontract<C>>>;
+  using smp_sliding_0 = try_contract<call_trace_xs_0<subcontract<C>>>;
 
   template<template<class> class sfinae, int_ size, int_ stride, class C>
   struct _sfinae<sfinae, sliding_<size, stride, C>>
@@ -35,7 +35,7 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, sliding_0<C>>
+  struct _sfinae<sfinae, call_trace_xs_0<C>>
   {
     using type = smp_sliding_0<sfinae<C>>;
   };

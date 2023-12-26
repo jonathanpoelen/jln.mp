@@ -44,10 +44,8 @@ namespace jln::mp::detail
 {
   template<>
   struct _intersperse<0>
-  {
-    template<class C, class x>
-    using f = JLN_MP_CALL_TRACE_0_ARG(C);
-  };
+    : call_trace_c0_arg
+  {};
 
   template<>
   struct _intersperse<1>

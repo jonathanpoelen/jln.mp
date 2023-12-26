@@ -60,16 +60,12 @@ namespace jln::mp
   /// \cond
   template<class C>
   struct drop_back_c<0, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
-  };
+    : detail::call_trace_xs<C>
+  {};
 
   template<class C>
   struct drop_back_max_c<0, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
-  };
+    : detail::call_trace_xs<C>
+  {};
   /// \endcond
 }

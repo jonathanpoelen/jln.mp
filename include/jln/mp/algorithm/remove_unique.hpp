@@ -163,10 +163,8 @@ namespace jln::mp::detail
 
   template<>
   struct _remove_unique<true>
-  {
-    template<class C, class... xs>
-    using f = JLN_MP_CALL_TRACE_0_ARG(C);
-  };
+    : call_trace_c0_arg
+  {};
 
 
   template<class Inherit, class x>
@@ -269,10 +267,8 @@ namespace jln::mp::detail
 
   template<>
   struct remove_unique_if_impl<int_>
-  {
-    template<class C, class Cmp, class... xs>
-    using f = JLN_MP_CALL_TRACE_0_ARG(C);
-  };
+    : call_trace_c0_arg
+  {};
 
   template<int_ i>
   struct remove_unique_if_impl<int_, i>

@@ -3,6 +3,7 @@
 #pragma once
 
 #include <jln/mp/list/listify.hpp>
+#include <jln/mp/utility/always.hpp>
 
 namespace jln::mp
 {
@@ -20,9 +21,7 @@ namespace jln::mp
   /// \cond
   template<>
   struct clear<listify>
-  {
-    template<class... xs>
-    using f = list<>;
-  };
+    : always<list<>>
+  {};
   /// \endcond
 }

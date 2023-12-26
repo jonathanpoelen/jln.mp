@@ -62,10 +62,8 @@ namespace jln::mp::detail
 
   template<>
   struct _permutations<0>
-  {
-    template<class C, class...>
-    using f = JLN_MP_CALL_TRACE_0_ARG(C);
-  };
+    : call_trace_c0_arg
+  {};
 
   template<>
   struct _permutations<1>

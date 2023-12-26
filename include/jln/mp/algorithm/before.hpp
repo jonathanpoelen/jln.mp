@@ -45,9 +45,7 @@ namespace jln::mp
 
   template<class TC, class FC>
   struct before<list<>, TC, FC>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS_0(xs, TC);
-  };
+  : detail::call_trace_xs_0<TC>
+  {};
   /// \endcond
 }

@@ -17,6 +17,18 @@ TEST()
 
   ut::same<seq_1_1_1, emp::repeat_c<seq_1, 3>>();
 
+  test_context<repeat_c<0>, smp::repeat_c<0>>()
+    .test<list<>>()
+    .test<list<>, _1>()
+    .test<list<>, _1, _2>()
+    ;
+
+  test_context<repeat_c<1>, smp::repeat_c<1>>()
+    .test<list<>>()
+    .test<seq_1, _1>()
+    .test<seq_1_2, _1, _2>()
+    ;
+
   test_context<repeat_c<3>, smp::repeat_c<3>>()
     .test<list<>>()
     .test<seq_1_1_1, _1>()

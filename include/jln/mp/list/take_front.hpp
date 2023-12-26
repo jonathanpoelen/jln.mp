@@ -61,17 +61,13 @@ namespace jln::mp
   /// \cond
   template<class C>
   struct take_front_c<0, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
-  };
+    : detail::call_trace_xs_0<C>
+  {};
 
   template<class C>
   struct take_front_max_c<0, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS_0(xs, C);
-  };
+    : detail::call_trace_xs_0<C>
+  {};
 
   #define JLN_MP_TAKE_FRONT(n, mp_xs, mp_rxs, mp_dup)               \
     template<class C>                                               \
