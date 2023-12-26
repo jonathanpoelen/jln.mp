@@ -176,9 +176,25 @@ TEST()
     ;
 
   test_context<sliding_with_stride_c<1, -1>, smp::sliding_with_stride_c<1, -1>>()
-    .not_invocable<>()
-    .not_invocable<_0>()
+    .test<list<>>()
+    .test<list<>, _0>()
     ;
+
+  test_context<sliding_with_stride_c<-1, -1>, smp::sliding_with_stride_c<-1, -1>>()
+    .test<list<>>()
+    .test<list<>, _0>()
+    ;
+
+  test_context<sliding_with_stride_c<-1, 1>, smp::sliding_with_stride_c<-1, 1>>()
+    .test<list<>>()
+    .test<list<>, _0>()
+    ;
+
+  test_context<sliding_with_stride_c<-1, 2>, smp::sliding_with_stride_c<-1, 2>>()
+    .test<list<>>()
+    .test<list<>, _0>()
+    ;
+
 
   ut::not_invocable<smp::sliding_with_stride_c<1, 1, and_<>>, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10>();
   ut::not_invocable<smp::sliding_with_stride_c<1, 2, and_<>>, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10>();

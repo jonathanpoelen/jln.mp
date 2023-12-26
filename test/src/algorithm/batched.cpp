@@ -62,6 +62,10 @@ TEST()
     .not_invocable<_0, _1, _2, _3, _4, _5>()
     ;
 
+  test_context<batched_c<-1>, smp::batched_c<-1>>()
+    .test<list<>>()
+    ;
+
   ut::not_invocable<smp::batched<_3, bad_function>>();
   ut::not_invocable<smp::batched<_3, bad_function>, _1>();
   ut::not_invocable<smp::batched<_3, bad_function>, _1, _1, _1>();
