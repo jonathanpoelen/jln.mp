@@ -27,7 +27,7 @@ namespace jln::mp::smp
 {
   template<class... xs>
   using build_indexed = typename detail::smp_build_indexed<
-#if JLN_MP_MEMOIZE_BUILD_INDEXED_CALL
+#if !JLN_MP_MEMOIZED_ALIAS
     false
 #else
     sizeof...(xs) <= 16

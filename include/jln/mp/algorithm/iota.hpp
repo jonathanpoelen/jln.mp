@@ -26,7 +26,7 @@ namespace jln::mp
     template<class start, class count, class stride = number<1>>
     using f = typename detail::iota_v_c<start::value, count::value, stride::value>
       ::template f<C>
-      #if !JLN_MP_GCC
+      #if !JLN_MP_MEMOIZED_ALIAS
       ::type
       #endif
       ;
@@ -43,7 +43,7 @@ namespace jln::mp
   {
     template<int_ start, int_ count, int_ stride = 1, class C = mp::numbers<>>
     using iota_v_c = typename detail::iota_v_c<start, count, stride>::template f<C>
-      #if !JLN_MP_GCC
+      #if !JLN_MP_MEMOIZED_ALIAS
       ::type
       #endif
       ;
@@ -51,14 +51,14 @@ namespace jln::mp
     template<class start, class count, class stride = number<1>, class C = mp::numbers<>>
     using iota_v = typename detail::iota_v_c<start::value, count::value, stride::value>
       ::template f<C>
-      #if !JLN_MP_GCC
+      #if !JLN_MP_MEMOIZED_ALIAS
       ::type
       #endif
       ;
 
     template<int_ start, int_ count, int_ stride = 1, class C = mp::listify>
     using iota_c = typename detail::iota_v_c<start, count, stride>::template f<mp::numbers<C>>
-      #if !JLN_MP_GCC
+      #if !JLN_MP_MEMOIZED_ALIAS
       ::type
       #endif
       ;
@@ -66,7 +66,7 @@ namespace jln::mp
     template<class start, class count, class stride = number<1>, class C = mp::listify>
     using iota = typename detail::iota_v_c<start::value, count::value, stride::value>
       ::template f<mp::numbers<C>>
-      #if !JLN_MP_GCC
+      #if !JLN_MP_MEMOIZED_ALIAS
       ::type
       #endif
       ;
@@ -94,7 +94,7 @@ namespace jln::mp::detail
     ::template strided<start, count < 0 ? -stride : stride>
   {};
 
-#if JLN_MP_GCC
+#if JLN_MP_MEMOIZED_ALIAS
   template<int_... i>
   struct iota_c_result
   {

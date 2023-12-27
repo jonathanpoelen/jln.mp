@@ -5,14 +5,6 @@
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/functional/lift.hpp>
 
-#ifndef JLN_MP_MEMOIZE_BUILD_INDEXED_CALL
-#  if JLN_MP_CLANG
-#    define JLN_MP_MEMOIZE_BUILD_INDEXED_CALL 1
-#  else
-#    define JLN_MP_MEMOIZE_BUILD_INDEXED_CALL 0
-#  endif
-#endif
-
 namespace jln::mp
 {
   /// \cond
@@ -82,7 +74,7 @@ namespace jln::mp
     using BuildIndexedV = build_indexed_v<xs...>;
 
   public:
-#if JLN_MP_MEMOIZE_BUILD_INDEXED_CALL
+#if !JLN_MP_MEMOIZED_ALIAS
     template<class i>
     using f = typename BuildIndexedV::template memoize_result_<i::value>::type;
 #else
@@ -416,7 +408,7 @@ namespace jln::mp::detail
   {};
 
 
-#if JLN_MP_MEMOIZE_BUILD_INDEXED_CALL
+#if !JLN_MP_MEMOIZED_ALIAS
 #  define JLN_MP_BUILD_INDEXED_IMPL(impl)                        \
   template<int i> struct memoize_result_ { using type = impl; }; \
   template<int i> using f = typename memoize_result_<i>::type
@@ -482,7 +474,7 @@ namespace jln::mp::detail
 
 #undef JLN_MP_BUILD_INDEXED_IMPL
 
-# if JLN_MP_GCC
+# if JLN_MP_MEMOIZED_ALIAS
   // 0 <= sizeof...(xs) <= 16
   template<class... xs>
   struct build_indexed_impl<0, list<xs...>>

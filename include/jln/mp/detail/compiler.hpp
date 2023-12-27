@@ -39,6 +39,9 @@
 #  ifndef JLN_MP_OPTIMIZED_ALIAS
 #    define JLN_MP_OPTIMIZED_ALIAS 1
 #  endif
+#  ifndef JLN_MP_MEMOIZED_ALIAS
+#    define JLN_MP_MEMOIZED_ALIAS 1
+#  endif
 #endif
 
 #ifndef JLN_MP_CLANG_LIKE
@@ -64,6 +67,9 @@
 #endif
 #ifndef JLN_MP_OPTIMIZED_ALIAS
 #  define JLN_MP_OPTIMIZED_ALIAS 0
+#endif
+#ifndef JLN_MP_MEMOIZED_ALIAS
+#  define JLN_MP_MEMOIZED_ALIAS 0
 #endif
 //@}
 
