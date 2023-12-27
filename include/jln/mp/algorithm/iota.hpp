@@ -10,7 +10,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<int_ start, int_ stride, bool inc>
+    template<int_ start, int_ count, int_ stride, bool is_neg = 0 < count>
     struct iota_v_c;
   }
   /// \endcond
@@ -24,8 +24,12 @@ namespace jln::mp
   struct iota_v
   {
     template<class start, class count, class stride = number<1>>
-    using f = typename detail::iota_v_c<start::value, stride::value, (count::value >= 0)>
-      ::template f<C, count::value>;
+    using f = typename detail::iota_v_c<start::value, count::value, stride::value>
+      ::template f<C>
+      #if !JLN_MP_GCC
+      ::type
+      #endif
+      ;
   };
 
   /// \ingroup number
@@ -38,17 +42,34 @@ namespace jln::mp
   namespace emp
   {
     template<int_ start, int_ count, int_ stride = 1, class C = mp::numbers<>>
-    using iota_v_c = typename detail::iota_v_c<start, stride, (count >= 0)>
-      ::template f<C, count>;
+    using iota_v_c = typename detail::iota_v_c<start, count, stride>::template f<C>
+      #if !JLN_MP_GCC
+      ::type
+      #endif
+      ;
 
     template<class start, class count, class stride = number<1>, class C = mp::numbers<>>
-    using iota_v = iota_v_c<start::value, count::value, stride::value, C>;
+    using iota_v = typename detail::iota_v_c<start::value, count::value, stride::value>
+      ::template f<C>
+      #if !JLN_MP_GCC
+      ::type
+      #endif
+      ;
 
     template<int_ start, int_ count, int_ stride = 1, class C = mp::listify>
-    using iota_c = iota_v_c<start, count, stride, mp::numbers<C>>;
+    using iota_c = typename detail::iota_v_c<start, count, stride>::template f<mp::numbers<C>>
+      #if !JLN_MP_GCC
+      ::type
+      #endif
+      ;
 
     template<class start, class count, class stride = number<1>, class C = mp::listify>
-    using iota = iota_v_c<start::value, count::value, stride::value, mp::numbers<C>>;
+    using iota = typename detail::iota_v_c<start::value, count::value, stride::value>
+      ::template f<mp::numbers<C>>
+      #if !JLN_MP_GCC
+      ::type
+      #endif
+      ;
   }
 }
 
@@ -57,37 +78,60 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<int_ start, int_ stride, class C>
+  template<int_... i>
+  struct iota_c_result;
+
+  template<class, int_... i>
   struct iota_impl
   {
-    template<class, int_... ns>
-    using f = typename conditional_c<sizeof...(ns) < JLN_MP_MAX_CALL_ELEMENT>
+    template<int_ start, int_ stride>
+    using strided = iota_c_result<start + i * stride...>;
+  };
+
+  template<int_ start, int_ count, int_ stride, bool is_neg>
+  struct iota_v_c
+    : JLN_MP_MAKE_INTEGER_SEQUENCE(count < 0 ? -count : count, iota_impl)
+    ::template strided<start, count < 0 ? -stride : stride>
+  {};
+
+#if JLN_MP_GCC
+  template<int_... i>
+  struct iota_c_result
+  {
+    template<class C>
+    using f = typename conditional_c<sizeof...(i) < JLN_MP_MAX_CALL_ELEMENT>
       ::template f<JLN_MP_TRACE_F(C), detail::too_many_arguments_error>
-      ::template f<(start + ns * stride)...>;
+      ::template f<i...>;
   };
 
-  template<int_ start, int_ stride>
-  struct iota_impl<start, stride, numbers<>>
+  template<int_ count>
+  struct iota_v_c<0, count, 1, false>
   {
-    template<class, int_... ns>
-    using f = list<number<(start + ns * stride)>...>;
-  };
-
-  template<>
-  struct iota_v_c<0, 1, true>
-  {
-    template<class C, int_ count>
+    template<class C>
     using f = emp::make_int_sequence_v_c<count, C>;
   };
-
-  template<int_ start, int_ stride, bool>
-  struct iota_v_c
+#else
+  template<int_... i>
+  struct iota_c_result
   {
-    template<class C, int_ count>
-    using f = JLN_MP_D_MAKE_INTEGER_SEQUENCE(
-      count < 0 ? -count : count,
-      detail::iota_impl<start, count < 0 ? -stride : stride, C>::template f
-    );
+    template<class C>
+    struct f
+    {
+      using type = typename conditional_c<sizeof...(i) < JLN_MP_MAX_CALL_ELEMENT>
+        ::template f<JLN_MP_TRACE_F(C), detail::too_many_arguments_error>
+        ::template f<i...>;
+    };
   };
+
+  template<int_ count>
+  struct iota_v_c<0, count, 1, false>
+  {
+    template<class C>
+    struct f
+    {
+      using type = emp::make_int_sequence_v_c<count, C>;
+    };
+  };
+#endif
 }
 /// \endcond
