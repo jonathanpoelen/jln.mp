@@ -43,7 +43,7 @@ namespace jln::mp::smp
 
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class C, int_... ints>
+  template<template<class> class sfinae, class C, int... ints>
   struct _sfinae<sfinae, apply_indexed_v<arrange_impl<C, ints...>>>
   {
     using type = smp::arrange_c_with<sfinae<C>, ints...>;

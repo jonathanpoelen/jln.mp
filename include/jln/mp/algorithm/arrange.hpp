@@ -77,21 +77,21 @@ namespace jln::mp::detail
   struct make_arrange<Tpl<ints...>>
   {
     template<class C>
-    using f = detail::apply_indexed_v<detail::arrange_impl<C, ints::value...>>;
+    using f = apply_indexed_v<arrange_impl<C, ints::value...>>;
   };
 
   template<template<class T, T...> class Tpl, class T, T... ints>
   struct make_arrange<Tpl<T, ints...>>
   {
     template<class C>
-    using f = detail::apply_indexed_v<detail::arrange_impl<C, ints...>>;
+    using f = apply_indexed_v<arrange_impl<C, ints...>>;
   };
 
   template<template<int_...> class Tpl, int_... ints>
   struct make_arrange<Tpl<ints...>>
   {
     template<class C>
-    using f = detail::apply_indexed_v<detail::arrange_impl<C, ints...>>;
+    using f = apply_indexed_v<arrange_impl<C, ints...>>;
   };
 
 #if JLN_MP_ENABLE_TPL_AUTO
@@ -99,7 +99,7 @@ namespace jln::mp::detail
   struct make_arrange<Tpl<ints...>>
   {
     template<class C>
-    using f = detail::apply_indexed_v<detail::arrange_impl<C, ints...>>;
+    using f = apply_indexed_v<arrange_impl<C, ints...>>;
   };
 #endif
 }
