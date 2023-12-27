@@ -29,11 +29,14 @@ namespace jln::mp::smp
     ::template f<start, count, 1, C>;
 }
 
-JLN_MP_MAKE_REGULAR_SMP4_P(strided_slice, (start), (size), (step, number<1>), (C, smp::listify),
-  smp::strided_slice_c<start::value, size::value, step::value, C>)
+JLN_MP_MAKE_REGULAR_SMP4_P(strided_slice, (start), (count), (step, number<1>), (C, smp::listify),
+  smp::strided_slice_c<start::value, count::value, step::value, C>)
 
-JLN_MP_MAKE_REGULAR_SMP3_P(slice, (start), (size), (C, smp::listify),
-  smp::slice_c<start::value, size::value, C>)
+namespace jln::mp::smp
+{
+  template<class start, class count, class C = listify>
+  using slice = smp::strided_slice<start, count, number<1>, C>;
+}
 
 
 /// \cond

@@ -49,17 +49,21 @@ namespace jln::mp::smp
 
   template<int_ i, class C = listify>
   using split_at_c = typename detail::mk_smp_split_at<i >= 0>
-    ::template f<i, subcontract<C>, mp::split_at2_with_c, mp::listify, mp::listify>;
+    ::template f<i, assume_binary_list<C>, mp::split_at2_with_c, mp::listify, mp::listify>;
 }
 
-JLN_MP_MAKE_REGULAR_SMP2_P(split_at, (I), (C, smp::listify),
-  smp::split_at_c<I::value, C>)
-JLN_MP_MAKE_REGULAR_SMP3_P(split_at_with, (I), (F, smp::listify), (C, smp::listify),
-  smp::split_at_with_c<I::value, F, C>)
 JLN_MP_MAKE_REGULAR_SMP4_P(split_at2_with,
   (I), (SubC1, smp::listify), (SubC2, smp::listify), (C, smp::listify),
   smp::split_at2_with_c<I::value, SubC1, SubC2, C>)
 
+namespace jln::mp::smp
+{
+  template<class I, class C = listify>
+  using split_at = split_at2_with<I, listify, listify, C>;
+
+  template<class I, class F = listify, class C = listify>
+  using split_at_with = split_at2_with<I, F, F, C>;
+}
 
 #include <jln/mp/number/operators.hpp>
 

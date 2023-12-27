@@ -57,11 +57,11 @@ namespace jln::mp::smp
     FC>;
 }
 
-JLN_MP_MAKE_REGULAR_SMP3_P(partial_drop_until_xs, (OffsetEnd), (Pred), (C, smp::listify),
-  smp::partial_drop_until_xs_c<OffsetEnd::value, Pred, C>)
+JLN_MP_MAKE_REGULAR_SMP4_P(partial_drop_until_xs, (OffsetEnd), (Pred), (TC, smp::listify), (FC, smp::clear<TC>),
+  smp::partial_drop_until_xs_c<OffsetEnd::value, Pred, TC, FC>)
 
-JLN_MP_MAKE_REGULAR_SMP3_P(partial_drop_inclusive_until_xs, (OffsetEnd), (Pred), (C, smp::listify),
-  smp::partial_drop_inclusive_until_xs_c<OffsetEnd::value, Pred, C>)
+JLN_MP_MAKE_REGULAR_SMP4_P(partial_drop_inclusive_until_xs, (OffsetEnd), (Pred), (TC, smp::listify), (FC, smp::clear<TC>),
+  smp::partial_drop_inclusive_until_xs_c<OffsetEnd::value, Pred, TC, FC>)
 
 JLN_MP_MAKE_REGULAR_SMP4_P(drop_until_extended_by_n_xs,
   (ExtendedByN), (Pred), (TC, smp::listify), (FC, smp::clear<TC>),

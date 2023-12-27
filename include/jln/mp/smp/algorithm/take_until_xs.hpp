@@ -56,14 +56,6 @@ namespace jln::mp::smp
     OffsetEnd, 1, Pred, TC, FC>;
 }
 
-JLN_MP_MAKE_REGULAR_SMP4_P(partial_take_until_xs,
-  (OffsetEnd), (Pred), (TC, smp::listify), (FC, TC),
-  smp::partial_take_until_xs_c<OffsetEnd::value, Pred, TC, FC>)
-
-JLN_MP_MAKE_REGULAR_SMP4_P(partial_take_inclusive_until_xs,
-  (OffsetEnd), (Pred), (TC, smp::listify), (FC, TC),
-  smp::partial_take_inclusive_until_xs_c<OffsetEnd::value, Pred, TC, FC>)
-
 JLN_MP_MAKE_REGULAR_SMP4_P(take_until_extended_by_n_xs,
   (ExtendedByN), (Pred), (TC, smp::listify), (FC, TC),
   smp::take_until_extended_by_n_xs_c<ExtendedByN::value, Pred, TC, FC>)
@@ -71,6 +63,15 @@ JLN_MP_MAKE_REGULAR_SMP4_P(take_until_extended_by_n_xs,
 JLN_MP_MAKE_REGULAR_SMP5_P(partial_take_until_extended_by_n_xs,
   (OffsetEnd), (ExtendedByN), (Pred), (TC, smp::listify), (FC, TC),
   smp::partial_take_until_extended_by_n_xs_c<OffsetEnd::value, ExtendedByN::value, Pred, TC, FC>)
+
+namespace jln::mp::smp
+{
+  template<class OffsetEnd, class Pred, class TC = listify, class FC = TC>
+  using partial_take_until_xs = partial_take_until_extended_by_n_xs<OffsetEnd, number<0>, Pred, TC, FC>;
+
+  template<class OffsetEnd, class Pred, class TC = listify, class FC = TC>
+  using partial_take_inclusive_until_xs = partial_take_until_extended_by_n_xs<OffsetEnd, number<1>, Pred, TC, FC>;
+}
 
 
 /// \cond
