@@ -68,7 +68,6 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/drop_front.hpp>
 
@@ -98,7 +97,6 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  // std::bit_ceil (c++20)
   constexpr unsigned bit_ceil(unsigned n)
   {
     n--;
@@ -154,9 +152,7 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = F<
-      // take_front
-      typename detail::rotate_impl<(sizeof...(xs) & 0) + n>
-        ::template f<n, drop_front_c<sizeof...(xs) - n, fold_tree_impl<F, n/2>>, xs...>,
+      typename take_front_c<(sizeof...(xs) & 0) + n, fold_tree_impl<F, n/2>>::template f<xs...>,
       typename drop_front_c<n, fold_tree_impl<F, bit_ceil(sizeof...(xs)-n)/2>>::template f<xs...>
     >;
   };
@@ -208,12 +204,8 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = F<
-      // take_front
-      typename detail::rotate_impl<(sizeof...(xs) & 0) + (n+1)/2>
-      ::template f<
-        (n+1)/2,
-        drop_front_c<sizeof...(xs) - (n+1)/2, fold_balanced_tree_impl<F, (n+1)/2>>,
-        xs...>,
+      typename take_front_c<(sizeof...(xs) & 0) + (n+1)/2, fold_balanced_tree_impl<F, (n+1)/2>>
+        ::template f<xs...>,
       typename drop_front_c<(sizeof...(xs) & 0) + (n+1)/2, fold_balanced_tree_impl<F, n-(n+1)/2>>
         ::template f<xs...>
     >;

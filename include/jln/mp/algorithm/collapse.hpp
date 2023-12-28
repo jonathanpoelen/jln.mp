@@ -3,6 +3,7 @@
 #pragma once
 
 #include <jln/mp/algorithm/group.hpp>
+#include <jln/mp/list/take_front.hpp>
 
 namespace jln::mp
 {
@@ -75,9 +76,7 @@ namespace jln::mp
   template<class key, class... keys, class C>
   struct collapse<list<key, keys...>, C>
   : detail::make_collapse<
-      // take_front
-      typename detail::rotate_impl<sizeof...(keys)>
-      ::template f<sizeof...(keys), drop_front_c<1>, key, keys...>,
+      typename take_front_c<sizeof...(keys)>::template f<key, keys...>,
       keys...
     >::template f<C>
   {};

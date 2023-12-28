@@ -221,14 +221,9 @@ namespace jln::mp::detail
     {
       template<class Cmp, class C, class FC>
       using f = typename apply_index<
-        // take_front
-        typename detail::rotate_impl<!sizeof(Cmp*) + sizeof...(xs) * 2>
-        ::template f<
-          sizeof...(xs) * 2,
-          drop_front_c<
-            sizeof...(ys) - sizeof...(xs),
-            typename _mismatch_tree<Cmp, sizeof...(xs)>::type>,
-          xs..., ys...>,
+        typename take_front_c<!sizeof(Cmp*) + sizeof...(xs) * 2,
+          typename _mismatch_tree<Cmp, sizeof...(xs)>::type>
+        ::template f<xs..., ys...>,
         number<sizeof...(xs)>
       >::template f<C, FC, number<sizeof...(xs)>, number<-1>>;
     };
@@ -239,14 +234,9 @@ namespace jln::mp::detail
     {
       template<class Cmp, class C, class FC>
       using f = typename apply_index<
-        // take_front
-        typename detail::rotate_impl<!sizeof(Cmp*) + sizeof...(ys) * 2>
-        ::template f<
-          sizeof...(ys) * 2,
-          drop_front_c<
-            sizeof...(xs) - sizeof...(ys),
-            typename _mismatch_tree<Cmp, sizeof...(ys)>::type>,
-          ys..., xs...>,
+        typename take_front_c<!sizeof(Cmp*) + sizeof...(ys) * 2,
+          typename _mismatch_tree<Cmp, sizeof...(ys)>::type>
+        ::template f<ys..., xs...>,
         number<sizeof...(ys)>
       >::template f<C, FC, number<sizeof...(ys)>, number<1>>;
     };

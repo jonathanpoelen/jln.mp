@@ -43,6 +43,7 @@ namespace jln::mp
 #endif
 }
 
+#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/functional/partial.hpp>
@@ -143,12 +144,8 @@ namespace jln::mp::detail
     using f = typename drop_front_c<sizeof...(xs), lift<partial_suffix>>
       ::template f<Fs...>
       ::template f<
-        // take_front
-        typename rotate_impl<sizeof...(xs)>
-        ::template f<
-          sizeof...(xs),
-          drop_front_c<sizeof...(Fs) - sizeof...(xs), lift<partial_xs_prefix>>,
-          Fs...>
+        typename take_front_c<sizeof...(xs), lift<partial_xs_prefix>>
+        ::template f<Fs...>
         ::template f<C, xs...>
       >;
   };

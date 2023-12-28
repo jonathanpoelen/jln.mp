@@ -59,6 +59,7 @@ namespace jln::mp
 
 #include <jln/mp/algorithm/merge.hpp>
 #include <jln/mp/list/take_front.hpp>
+#include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/utility/always.hpp>
 
 /// \cond
@@ -239,18 +240,14 @@ namespace jln::mp::detail
   template<>
   struct sort_impl<128>
   {
-    template<class Cmp, class... xs>
+    template<class Cmp, JLN_MP_XS_32(class, JLN_MP_NIL, JLN_MP_COMMA), class... xs>
     using f = typename merge_impl<
       list<>,
-      // take_front
-      typename rotate_impl<sizeof...(xs) / 2>
-      ::template f<
-        sizeof...(xs) / 2,
-        drop_front_c<(sizeof...(xs) + 1) / 2, sort<Cmp>>,
-        xs...>,
-      // drop_front
-      typename drop_front_impl<sizeof...(xs) / 2>
-      ::template f<sizeof...(xs) / 2, sort<Cmp>, xs...>,
+      typename _unpack<sort<Cmp>, typename take_front_impl<(sizeof...(xs) + 32) / 2>
+        ::template f<(sizeof...(xs) + 32) / 2, list<>,
+          JLN_MP_XS_32(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...>>::type,
+      typename drop_front_impl<(sizeof...(xs) + 32) / 2 - 32>
+        ::template f<(sizeof...(xs) + 32) / 2 - 32, sort<Cmp>, xs...>,
       Cmp
     >::type;
   };
