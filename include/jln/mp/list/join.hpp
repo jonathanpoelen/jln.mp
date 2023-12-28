@@ -56,7 +56,9 @@ namespace jln::mp::detail
 {
   template<std::size_t n>
   struct _join_select : _join_select<
-      n <= 16 ? 16
+      n <= 2 ? 2
+    : n <= 8 ? 8
+    : n <= 16 ? 16
     : n <= 64 ? 64
     : n <= 256 ? 256
     : 512
@@ -83,7 +85,8 @@ namespace jln::mp::detail
     };                                            \
   };
 
-  JLN_MP_GEN_XS_16_64_256(JLN_MP_JOIN_SELECT)
+  JLN_MP_GEN_XS_8_16_64_256(JLN_MP_JOIN_SELECT)
+  JLN_MP_JOIN_SELECT(2, JLN_MP_XS_2, _, _)
 
 #undef JLN_MP_JOIN_SELECT
 
@@ -99,8 +102,9 @@ namespace jln::mp::detail
       JLN_MP_XS_512(class..., JLN_MP_NIL, JLN_MP_COMMA),
       class... tail>
     struct f<F, JLN_MP_XS_512(list<, ...>, JLN_MP_COMMA), tail...>
-    : _join_select<sizeof...(tail)+1>
-    ::template f<F, list<JLN_MP_XS_512(JLN_MP_NIL, ..., JLN_MP_COMMA)>, tail...>
+    : _join_select<2>::f<F,
+        list<JLN_MP_XS_512(JLN_MP_NIL, ..., JLN_MP_COMMA)>,
+        typename _join_select<sizeof...(tail)>::template f<list, tail...>::type>
     {};
   };
 
