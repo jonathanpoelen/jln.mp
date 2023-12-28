@@ -99,9 +99,7 @@ namespace jln::mp::detail
   struct iota_c_result
   {
     template<class C>
-    using f = typename conditional_c<sizeof...(i) < JLN_MP_MAX_CALL_ELEMENT>
-      ::template f<JLN_MP_TRACE_F(C), detail::too_many_arguments_error>
-      ::template f<i...>;
+    using f = typename JLN_MP_CALLER_TRACE_XS(i, C)::template f<i...>;
   };
 
   template<int_ count>
@@ -117,9 +115,7 @@ namespace jln::mp::detail
     template<class C>
     struct f
     {
-      using type = typename conditional_c<sizeof...(i) < JLN_MP_MAX_CALL_ELEMENT>
-        ::template f<JLN_MP_TRACE_F(C), detail::too_many_arguments_error>
-        ::template f<i...>;
+      using type = typename JLN_MP_CALLER_TRACE_XS(i, C)::template f<i...>;
     };
   };
 

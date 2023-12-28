@@ -248,6 +248,12 @@ preproc = P{
      * ')'
      / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
     )
+  + (P'JLN_MP_CALLER_TRACE_XS('
+     * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
+     * ',' * ws0 * C((1-S'()' + balancedparent)^1)
+     * ')'
+     / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
+    )
   + (P'JLN_MP_TRACE_F(' * C((1-S'()' + balancedparent)^1) * ')'
      / function(f) return preproc:match(f) end
     )
