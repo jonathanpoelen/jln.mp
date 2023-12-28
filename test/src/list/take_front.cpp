@@ -31,13 +31,28 @@ TEST()
     .not_invocable<_0>()
     ;
 
-  test_context<take_front_c<8>, smp::take_front_c<8>>()
-    .test<list<JLN_MP_XS_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>,
-          JLN_MP_XS_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>()
-    .test<list<JLN_MP_XS_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>,
-          JLN_MP_XS_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), _0, _0>()
+  test_context<take_front_c<7>, smp::take_front_c<7>>()
+    .test<list<_0, _1, _2, _3, _4, _5, _6>, _0, _1, _2, _3, _4, _5, _6>()
+    .test<list<_0, _1, _2, _3, _4, _5, _6>, _0, _1, _2, _3, _4, _5, _6, _7>()
+    .test<list<_0, _1, _2, _3, _4, _5, _6>, _0, _1, _2, _3, _4, _5, _6, _7, _8>()
     .not_invocable<_0>()
-    .not_invocable<JLN_MP_XS_7(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>()
+    .not_invocable<_0, _1, _2, _3, _4, _5>()
+    ;
+
+  test_context<take_front_c<8>, smp::take_front_c<8>>()
+    .test<list<_0, _1, _2, _3, _4, _5, _6, _7>, _0, _1, _2, _3, _4, _5, _6, _7>()
+    .test<list<_0, _1, _2, _3, _4, _5, _6, _7>, _0, _1, _2, _3, _4, _5, _6, _7, _8>()
+    .test<list<_0, _1, _2, _3, _4, _5, _6, _7>, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9>()
+    .not_invocable<_0>()
+    .not_invocable<_0, _1, _2, _3, _4, _5, _6>()
+    ;
+
+  test_context<take_front_c<9>, smp::take_front_c<9>>()
+    .test<list<_0, _1, _2, _3, _4, _5, _6, _7, _8>, _0, _1, _2, _3, _4, _5, _6, _7, _8>()
+    .test<list<_0, _1, _2, _3, _4, _5, _6, _7, _8>, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9>()
+    .test<list<_0, _1, _2, _3, _4, _5, _6, _7, _8>, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10>()
+    .not_invocable<_0>()
+    .not_invocable<_0, _1, _2, _3, _4, _5, _6, _7>()
     ;
 
   test_context<take_front_max_c<2>, smp::take_front_max_c<2>>()
