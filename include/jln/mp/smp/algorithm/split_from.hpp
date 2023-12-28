@@ -40,7 +40,10 @@ namespace jln::mp::detail
   struct smp_split_from_i
   {
     template<class position, class C1, class C2, class C, class... xs>
-    using f = split_at_impl<position::value, C1, C2, C, xs...>;
+    using f = typename detail::split_at_with_impl<C, C1, C2,
+      typename JLN_MP_CALLER_TRACE_XS(xs, detail::split_at_impl<position::value>)
+      ::template f<position::value, list<>, xs...>
+    >::type;
   };
 
   template<class SubC1, class SubC2, class C>

@@ -15,8 +15,9 @@ namespace jln::mp
   struct split_from2
   {
     template<class... xs>
-    using f = typename detail::split_at_impl<
-      JLN_MP_DCALL_V_TRACE_XS(xs, GetIndex, xs...)::value, SubC1, SubC2, C, xs...>;
+    using f = typename split_at2_with_c<
+      JLN_MP_DCALL_V_TRACE_XS(xs, GetIndex, xs...)::value, SubC1, SubC2, C
+    >::template f<xs...>;
   };
 
   template<class GetIndex, class C = listify>

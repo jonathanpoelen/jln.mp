@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/algorithm/rotate.hpp>
-#include <jln/mp/list/drop_front.hpp>
+#include <jln/mp/list/take_front.hpp>
 
 namespace jln::mp
 {
@@ -17,8 +16,8 @@ namespace jln::mp
   struct drop_back_c
   {
     template<class... xs>
-    using f = typename detail::rotate_impl<sizeof...(xs) - N>
-      ::template f<sizeof...(xs) - N, drop_front_c<N, C>, xs...>;
+    using f = typename take_front_c<sizeof...(xs) - N, C>
+      ::template f<xs...>;
   };
 
   /// Removes at most \c N elements from the end of a \sequence.
@@ -29,11 +28,8 @@ namespace jln::mp
   struct drop_back_max_c
   {
     template<class... xs>
-    using f = typename detail::rotate_impl<N < sizeof...(xs) ? sizeof...(xs) - N : 0>
-      ::template f<
-        N < sizeof...(xs) ? sizeof...(xs) - N : 0,
-        drop_front_c<N < sizeof...(xs) ? N : sizeof...(xs), C>,
-        xs...>;
+    using f = typename take_front_c<sizeof...(xs) <= N ? 0 : sizeof...(xs) - N, C>
+      ::template f<xs...>;
   };
 
   template<class N, class C = listify>

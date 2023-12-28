@@ -101,6 +101,7 @@ namespace jln::mp
 #include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/algorithm/transform.hpp>
 #include <jln/mp/functional/tee.hpp>
+#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/list/lookup.hpp>
 #include <jln/mp/list/slice.hpp>
@@ -207,13 +208,15 @@ namespace jln::mp::detail
   };
 
 
-  // stride > size  (take_front)
+  // stride > size  (take_front_max)
   template<>
   struct sliding_impl<9>
   {
-    template<class C, class F, int_ size, int_, class... xs>
+    template<class C, class F, int_ size, int_ stride, class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      typename rotate_impl<size>::template f<size, drop_front_c<sizeof...(xs)-size, F>, xs...>
+      typename conditional_c<sizeof...(xs) <= size>
+      ::template f<JLN_MP_TRACE_F(F), take_front_c<static_cast<unsigned>(size), F>>
+      ::template f<xs...>
     );
   };
 

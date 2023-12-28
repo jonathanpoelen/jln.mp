@@ -17,9 +17,8 @@ namespace jln::mp
   struct take_back_c
   {
     template<class... xs>
-    using f = typename detail::drop_front_impl<
-      sizeof...(xs) - N
-    >::template f<sizeof...(xs) - N, JLN_MP_TRACE_F(C), xs...>;
+    using f = typename drop_front_c<sizeof...(xs) - N, C>
+      ::template f<xs...>;
   };
 
   /// Extracts at most \c N elements from the end of a \sequence.
@@ -30,13 +29,8 @@ namespace jln::mp
   struct take_back_max_c
   {
     template<class... xs>
-    using f = typename detail::drop_front_impl<
-      sizeof...(xs) < N ? 0 : sizeof...(xs) - N
-    >::template f<
-      sizeof...(xs) < N ? 0 : sizeof...(xs) - N,
-      JLN_MP_TRACE_F(C),
-      xs...
-    >;
+    using f = typename drop_front_c<sizeof...(xs) <= N ? 0 : sizeof...(xs) - N, C>
+      ::template f<xs...>;
   };
 
   template<class N, class C = listify>

@@ -13,9 +13,6 @@ namespace jln::mp
   {
     template<unsigned>
     struct take_front_impl;
-
-    template<long long>
-    struct take_front_max_select;
   }
   /// \endcond
 
@@ -162,17 +159,17 @@ namespace jln::mp::detail
     using f = L;
   };
 
-#define JLN_MP_TAKE_IMPL(n, mp_xs, mp_rxs, mp_rep)       \
-  template<>                                             \
-  struct take_front_impl<n>                              \
-  {                                                      \
-    template<unsigned size,                              \
-      class L,                                           \
-      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)             \
-      class... xs>                                       \
-    using f = typename _join_select<2>::f<list, L, list< \
-      mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>       \
-    >::type;                                             \
+#define JLN_MP_TAKE_IMPL(n, mp_xs, mp_rxs, mp_rep)      \
+  template<>                                            \
+  struct take_front_impl<n>                             \
+  {                                                     \
+    template<unsigned size,                             \
+      class L,                                          \
+      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)            \
+      class... xs>                                      \
+    using f = typename _join_select<2>::f<list, L,      \
+      list<mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)> \
+    >::type;                                            \
   };
 
   JLN_MP_GEN_XS_1_TO_8(JLN_MP_TAKE_IMPL)

@@ -68,6 +68,7 @@ namespace jln::mp
 }
 
 
+#include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/drop_front.hpp>
 

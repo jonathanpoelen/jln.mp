@@ -19,11 +19,11 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template<int_ n, class C = listify>
-  using take_back_c = typename detail::mk_take_back<n >= 0>
+  using take_back_c = typename detail::mk_take_back<n >= 0 && n <= ~0u>
     ::template f<n, C>;
 
   template<int_ n, class C = listify>
-  using take_back_max_c = typename detail::mk_take_back_max<n >= 0>
+  using take_back_max_c = typename detail::mk_take_back_max<n >= 0 && n <= ~0u>
     ::template f<n, C>;
 }
 
@@ -31,23 +31,11 @@ JLN_MP_MAKE_REGULAR_SMP2_P(take_back, (N), (C, smp::listify), smp::take_back_c<N
 JLN_MP_MAKE_REGULAR_SMP2_P(take_back_max, (N), (C, smp::listify), smp::take_back_max_c<N::value, C>)
 
 
-#include <jln/mp/number/operators.hpp>
+#include <jln/mp/smp/list/drop_back.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, unsigned N, class C>
-  struct _sfinae<sfinae, take_back_c<N, C>>
-  {
-    using type = smp::take_back_c<N, sfinae<C>>;
-  };
-
-  template<template<class> class sfinae, unsigned N, class C>
-  struct _sfinae<sfinae, take_back_max_c<N, C>>
-  {
-    using type = smp::take_back_max_c<N, sfinae<C>>;
-  };
-
   template<>
   struct mk_take_back<true>
   {
@@ -59,10 +47,8 @@ namespace jln::mp::detail
 
   template<>
   struct mk_take_back<false>
-  {
-    template<int_ i, int_ start, class C>
-    using f = bad_contract;
-  };
+    : mk_drop_back<false>
+  {};
 
   template<>
   struct mk_take_back_max<true>
@@ -73,9 +59,20 @@ namespace jln::mp::detail
 
   template<>
   struct mk_take_back_max<false>
+    : mk_drop_back<false>
+  {};
+
+
+  template<template<class> class sfinae, unsigned N, class C>
+  struct _sfinae<sfinae, take_back_c<N, C>>
   {
-    template<int_ i, int_ start, class C>
-    using f = bad_contract;
+    using type = mk_take_back<true>::f<N, sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, unsigned N, class C>
+  struct _sfinae<sfinae, take_back_max_c<N, C>>
+  {
+    using type = mk_take_back_max<true>::f<N, sfinae<C>>;
   };
 }
 /// \endcond

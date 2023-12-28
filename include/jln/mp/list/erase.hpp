@@ -5,6 +5,7 @@
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/list/take_front.hpp>
+#include <jln/mp/algorithm/rotate.hpp>
 
 namespace jln::mp
 {

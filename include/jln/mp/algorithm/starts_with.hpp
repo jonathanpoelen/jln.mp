@@ -95,13 +95,11 @@ namespace jln::mp
 
 /// \cond
 
-#include <jln/mp/list/drop_front.hpp>
+#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/utility/is.hpp>
 #include <jln/mp/utility/always.hpp>
-#include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/algorithm/drop_while_xs.hpp>
 #include <jln/mp/algorithm/take_while_xs.hpp>
-#include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/algorithm/index.hpp>
 #include <jln/mp/functional/if.hpp>
 
@@ -112,8 +110,7 @@ namespace jln::mp::detail
   {
     template<unsigned n, class L, class... xs>
     using f = number<std::is_same<
-      // take_front
-      typename rotate_impl<n>::template f<n, drop_front_c<sizeof...(xs) - n>, xs...>,
+      typename take_front_c<n>::template f<xs...>,
       L
     >::value>;
   };
