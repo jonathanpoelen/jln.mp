@@ -81,7 +81,7 @@ namespace jln::mp::detail
       (sizeof...(xs) & 0) + sizeof...(Fs)
     >::template f<
       sizeof...(Fs),
-      typename take_front_c<(sizeof...(xs) & 0) + sizeof...(Fs) + 1, partial_prefix<Fs...>>
+      typename take_front_c<sizeof...(Fs) + 1, partial_prefix<Fs...>>
       ::template f<C, xs...>,
       xs...
     >;

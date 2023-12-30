@@ -132,7 +132,7 @@ using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
 
 #define JLN_MP_CALLER_TRACE_XS(xs, ...)                             \
   ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
-    ::template f<JLN_MP_TRACE_F(__VA_ARGS__), ::jln::mp::detail::too_many_arguments_error>
+    ::template f<__VA_ARGS__, ::jln::mp::detail::too_many_arguments_error>
 
 
 #if JLN_MP_MSVC

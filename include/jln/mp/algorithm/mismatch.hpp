@@ -221,7 +221,7 @@ namespace jln::mp::detail
     {
       template<class Cmp, class C, class FC>
       using f = typename apply_index<
-        typename take_front_c<!sizeof(Cmp*) + sizeof...(xs) * 2,
+        typename take_front_c<sizeof...(xs) * 2,
           typename _mismatch_tree<Cmp, sizeof...(xs)>::type>
         ::template f<xs..., ys...>,
         number<sizeof...(xs)>
@@ -234,7 +234,7 @@ namespace jln::mp::detail
     {
       template<class Cmp, class C, class FC>
       using f = typename apply_index<
-        typename take_front_c<!sizeof(Cmp*) + sizeof...(ys) * 2,
+        typename take_front_c<sizeof...(ys) * 2,
           typename _mismatch_tree<Cmp, sizeof...(ys)>::type>
         ::template f<ys..., xs...>,
         number<sizeof...(ys)>

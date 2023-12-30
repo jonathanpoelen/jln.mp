@@ -243,9 +243,9 @@ namespace jln::mp::detail
     template<class Cmp, JLN_MP_XS_32(class, JLN_MP_NIL, JLN_MP_COMMA), class... xs>
     using f = typename merge_impl<
       list<>,
-      typename _unpack<sort<Cmp>, typename take_front_impl<(sizeof...(xs) + 32) / 2>
-        ::template f<(sizeof...(xs) + 32) / 2, list<>,
-          JLN_MP_XS_32(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...>>::type,
+      typename take_front_impl<(sizeof...(xs) + 32) / 2>
+        ::template f<(sizeof...(xs) + 32) / 2, sort<Cmp>::template f,
+          JLN_MP_XS_32(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...>,
       typename drop_front_impl<(sizeof...(xs) + 32) / 2 - 32>
         ::template f<(sizeof...(xs) + 32) / 2 - 32, sort<Cmp>, xs...>,
       Cmp

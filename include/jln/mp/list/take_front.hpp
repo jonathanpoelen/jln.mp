@@ -3,6 +3,7 @@
 #pragma once
 
 #include <jln/mp/utility/conditional.hpp>
+#include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/list/join.hpp>
 
@@ -25,19 +26,9 @@ namespace jln::mp
   template<unsigned N, class C = listify>
   struct take_front_c
   {
-#ifdef JLN_MP_DOXYGENATING
     template<class... xs>
-    using f;
-#else
-    template<class _0, class _1, class _2, class _3, class _4, class _5,
-             class _6, class _7, class _8, class... xs>
-    using f = typename detail::_join_select<2>::f<
-      JLN_MP_TRACE_F(C)::template f,
-      list<_0, _1, _2, _3, _4, _5, _6, _7, _8>,
-      typename JLN_MP_CALLER_TRACE_XS(xs, detail::take_front_impl<N-9>)
-        ::template f<N-9, list<>, xs...>
-    >::type;
-#endif
+    using f = typename detail::take_front_impl<(sizeof...(xs) & 0) + N>
+      ::template f<N, JLN_MP_TRACE_F(C)::template f, xs...>;
   };
 
   /// Extracts at most \c N elements from the beginning of a \sequence.
@@ -76,65 +67,14 @@ namespace jln::mp
 
 
   /// \cond
-  template<class C>
-  struct take_front_c<0, C>
-    : detail::call_trace_xs_0<C>
-  {};
-
-  template<class C>
-  struct take_front_max_c<0, C>
-    : detail::call_trace_xs_0<C>
-  {};
-
-  #define JLN_MP_TAKE_FRONT(n, mp_xs, mp_rxs, mp_dup)               \
-    template<class C>                                               \
-    struct take_front_c<n, C>                                       \
-    {                                                               \
-      template<mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA), class... xs> \
-      using f = JLN_MP_DCALL_TRACE_XS(xs, C,                        \
-        mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA));               \
-    };                                                              \
-                                                                    \
-    template<>                                                      \
-    struct take_front_c<n, listify>                                 \
-    {                                                               \
-      template<mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA), class... xs> \
-      using f = list<mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>;  \
-    };
-
-  JLN_MP_GEN_XS_1_TO_8_INCLUDED(JLN_MP_TAKE_FRONT)
-  #undef JLN_MP_TAKE_FRONT
-
-  #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  #if ! JLN_MP_OPTIMIZED_ALIAS
   template<unsigned N, template<class...> class C>
   struct take_front_c<N, lift<C>>
   {
-    template<class _0, class _1, class _2, class _3, class _4, class _5,
-             class _6, class _7, class _8, class... xs>
-    using f = typename detail::_join_select<2>::f<
-      C,
-      list<_0, _1, _2, _3, _4, _5, _6, _7, _8>,
-      typename JLN_MP_CALLER_TRACE_XS(xs, detail::take_front_impl<N-9>)
-        ::template f<N-9, list<>, xs...>
-    >::type;
+    template<class... xs>
+    using f = typename detail::take_front_impl<(sizeof...(xs) & 0) + N>
+      ::template f<N, C, xs...>;
   };
-
-  template<template<class...> class C>
-  struct take_front_c<0, lift<C>>
-    : detail::call_trace_xs_0<lift<C>>
-  {};
-
-  #define JLN_MP_TAKE_FRONT(n, mp_xs, mp_rxs, mp_dup)               \
-    template<template<class...> class C>                            \
-    struct take_front_c<n, lift<C>>                                 \
-    {                                                               \
-      template<mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA), class... xs> \
-      using f = JLN_MP_DCALLF_XS(xs, C,                             \
-        mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA));               \
-    };
-
-  JLN_MP_GEN_XS_1_TO_8_INCLUDED(JLN_MP_TAKE_FRONT)
-  #undef JLN_MP_TAKE_FRONT
   #endif
   /// \endcond
 }
@@ -145,8 +85,7 @@ namespace jln::mp::detail
 {
   template<unsigned n>
   struct take_front_impl : take_front_impl<
-      n < 16 ? 8
-    : n < 64 ? 16
+      n < 64 ? 16
     : n < 256 ? 64
     : 256
   >
@@ -155,45 +94,38 @@ namespace jln::mp::detail
   template<>
   struct take_front_impl<0>
   {
-    template<unsigned size, class L, class... xs>
-    using f = L;
+    template<unsigned size, template<class...> class C, class... xs>
+    using f = C<>;
   };
 
-#define JLN_MP_TAKE_IMPL(n, mp_xs, mp_rxs, mp_rep)      \
-  template<>                                            \
-  struct take_front_impl<n>                             \
-  {                                                     \
-    template<unsigned size,                             \
-      class L,                                          \
-      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)            \
-      class... xs>                                      \
-    using f = typename _join_select<2>::f<list, L,      \
-      list<mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)> \
-    >::type;                                            \
+#define JLN_MP_TAKE_IMPL(n, mp_xs, mp_rxs, mp_rep)            \
+  template<>                                                  \
+  struct take_front_impl<n>                                   \
+  {                                                           \
+    template<unsigned size, template<class...> class C,       \
+      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)                  \
+      class... xs>                                            \
+    using f = C<mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>; \
   };
 
-  JLN_MP_GEN_XS_1_TO_8(JLN_MP_TAKE_IMPL)
+  JLN_MP_GEN_XS_1_TO_16(JLN_MP_TAKE_IMPL)
 
 #undef JLN_MP_TAKE_IMPL
 
-#define JLN_MP_TAKE_IMPL(n, mp_xs, mp_rxs, mp_rep)          \
-  template<>                                                \
-  struct take_front_impl<n>                                 \
-  {                                                         \
-    template<unsigned size,                                 \
-      class L,                                              \
-      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)                \
-      class... xs>                                          \
-    using f = typename take_front_impl<size-n>              \
-      ::template f<size-n,                                  \
-        typename _join_select<2>::f<list, L,                \
-          list<mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)> \
-        >::type,                                            \
-        xs...                                               \
-      >;                                                    \
+#define JLN_MP_TAKE_IMPL(n, mp_xs, mp_rxs, mp_rep)                      \
+  template<>                                                            \
+  struct take_front_impl<n>                                             \
+  {                                                                     \
+    template<unsigned size, template<class...> class C,                 \
+      mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)                            \
+      class... xs>                                                      \
+    using f = typename _join_select<2>::f<C,                            \
+      list<mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>,                \
+      typename take_front_impl<size-n>::template f<size-n, list, xs...> \
+    >::type;                                                            \
   };
 
-  JLN_MP_GEN_XS_8_16_64_256(JLN_MP_TAKE_IMPL)
+  JLN_MP_GEN_XS_16_64_256(JLN_MP_TAKE_IMPL)
 
 #undef JLN_MP_TAKE_IMPL
 }
