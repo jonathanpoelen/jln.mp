@@ -67,11 +67,9 @@ namespace jln::mp
 #include <jln/mp/detail/sequence.hpp>
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/list/clear.hpp>
-#include <jln/mp/list/front.hpp>
-#include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/functional/flip.hpp>
-#include <jln/mp/functional/try.hpp>
+#include <jln/mp/functional/try.hpp> // na
 
 /// \cond
 namespace jln::mp::detail

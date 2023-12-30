@@ -3,6 +3,7 @@
 #pragma once
 
 #include <jln/mp/algorithm/drop_while_xs.hpp>
+#include <jln/mp/list/drop_front.hpp>
 
 namespace jln::mp
 {

@@ -3,6 +3,7 @@
 #pragma once
 
 #include <jln/mp/algorithm/drop_while.hpp>
+#include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/list/listify.hpp>
 #include <jln/mp/utility/unpack.hpp>
 
@@ -100,7 +101,6 @@ namespace jln::mp
 
 
 #include <jln/mp/detail/sequence.hpp>
-#include <jln/mp/list/drop_front.hpp>
 
 /// \cond
 namespace jln::mp::detail

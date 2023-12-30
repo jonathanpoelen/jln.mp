@@ -4,6 +4,7 @@
 
 #include <jln/mp/algorithm/starts_with.hpp>
 #include <jln/mp/algorithm/index.hpp>
+#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/functional/invoke_twice.hpp>

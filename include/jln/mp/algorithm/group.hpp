@@ -3,7 +3,6 @@
 #pragma once
 
 #include <jln/mp/algorithm/same.hpp>
-#include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/functional/try.hpp>
 
 

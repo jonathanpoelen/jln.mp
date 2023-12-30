@@ -4,7 +4,6 @@
 
 #include <jln/mp/algorithm/conjunction.hpp>
 #include <jln/mp/algorithm/drop_until.hpp>
-#include <jln/mp/list/drop_front.hpp>
 
 namespace jln::mp
 {

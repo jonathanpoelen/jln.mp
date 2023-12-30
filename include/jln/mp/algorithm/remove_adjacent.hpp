@@ -3,13 +3,11 @@
 #pragma once
 
 #include <jln/mp/algorithm/pairwise_fold.hpp>
-#include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/algorithm/same.hpp>
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/functional/if.hpp>
-#include <jln/mp/functional/memoize.hpp>
 
 
 namespace jln::mp
