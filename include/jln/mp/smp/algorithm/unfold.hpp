@@ -48,11 +48,8 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct smp_unfold_next<None>
-  {
-    template<class... xs>
-    using f = stop_recursion;
-  };
+  struct smp_unfold_next<None> : always<stop_recursion>
+  {};
 
   template<class x, class next>
   struct smp_unfold_next<list<x, next>>

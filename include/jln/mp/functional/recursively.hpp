@@ -4,6 +4,7 @@
 
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/utility/always.hpp>
 #include <jln/mp/list/listify.hpp>
 
 
@@ -35,10 +36,12 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Stop the recursion, the input values will be used as result.
-  struct stop_recursion
+  struct stop_recursion : always<stop_recursion>
   {
+#ifdef JLN_MP_DOXYGENATING
     template<class...>
     using f = stop_recursion;
+#endif
   };
 
   /// Specify result values and stop recursion.

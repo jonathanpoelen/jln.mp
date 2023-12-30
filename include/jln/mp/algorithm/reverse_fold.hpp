@@ -50,6 +50,8 @@ namespace jln::mp
 
 
 /// \cond
+#include <jln/mp/algorithm/fold.hpp>
+
 namespace jln::mp
 {
   template<class F>
@@ -129,11 +131,8 @@ namespace jln::mp::detail
 #undef JLN_MP_REVERSE_FOLD_SELECT
 
   template<>
-  struct reverse_fold_impl<0>
-  {
-    template<template<class...> class, class state>
-    using f = state;
-  };
+  struct reverse_fold_impl<0> : fold_impl<0>
+  {};
 
   template<>
   struct reverse_fold_impl<-1>

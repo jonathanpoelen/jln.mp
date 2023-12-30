@@ -5,6 +5,7 @@
 #include <jln/mp/detail/sequence.hpp>
 #include <jln/mp/list/listify.hpp>
 #include <jln/mp/list/front.hpp>
+#include <jln/mp/list/lookup.hpp>
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/utility/unpack.hpp>
 
@@ -96,18 +97,15 @@ namespace jln::mp
   {};
 
   template<class C>
-  struct drop_front_c<0, front<C>> : listify
+  struct drop_front_c<0, front<C>>
   {
     template<class x, class...>
     using f = JLN_MP_CALL_TRACE(C, x);
   };
 
   template<>
-  struct drop_front_c<0, front<identity>> : listify
-  {
-    template<class x, class...>
-    using f = x;
-  };
+  struct drop_front_c<0, front<identity>> : detail::index<0>
+  {};
 
   #define JLN_MP_DROP_FRONT(n, mp_xs, mp_rxs, mp_dup)             \
     template<class C>                                             \
@@ -132,11 +130,8 @@ namespace jln::mp
     };                                                            \
                                                                   \
     template<>                                                    \
-    struct drop_front_c<n, front<identity>>                       \
-    {                                                             \
-      template<mp_dup(class, JLN_MP_COMMA), class x, class... xs> \
-      using f = x;                                                \
-    };
+    struct drop_front_c<n, front<identity>> : detail::index<n>    \
+    {};
 
   JLN_MP_GEN_XS_1_TO_8_INCLUDED(JLN_MP_DROP_FRONT)
   #undef JLN_MP_DROP_FRONT

@@ -50,11 +50,8 @@ namespace jln::mp::detail
   struct _smp_split_from
   {
     template<class i, class = void>
-    struct impl
-    {
-      template<class... xs>
-      using f = na;
-    };
+    struct impl : always<na>
+    {};
 
     template<class i>
     struct impl<i, decltype(void(unsigned{i::value}))>

@@ -26,14 +26,13 @@ namespace jln::mp
 }
 
 /// \cond
+#include <jln/mp/list/lookup.hpp>
+
 namespace jln::mp
 {
   template<>
-  struct front<identity>
-  {
-    template<class x, class...>
-    using f = x;
-  };
+  struct front<identity> : detail::index<0>
+  {};
 }
 
 // facilitates sfinae version for is_map_impl

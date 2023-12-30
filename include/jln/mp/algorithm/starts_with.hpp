@@ -4,6 +4,7 @@
 
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/call.hpp>
+#include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/list/list.hpp>
 
@@ -85,11 +86,8 @@ namespace jln::mp
   };
 
   template<>
-  struct starts_with<list<>, identity>
-  {
-    template<class... xs>
-    using f = true_;
-  };
+  struct starts_with<list<>, identity> : always<true_>
+  {};
   /// \endcond
 }
 
@@ -97,7 +95,6 @@ namespace jln::mp
 
 #include <jln/mp/list/take_front.hpp>
 #include <jln/mp/utility/is.hpp>
-#include <jln/mp/utility/always.hpp>
 #include <jln/mp/algorithm/drop_while_xs.hpp>
 #include <jln/mp/algorithm/take_while_xs.hpp>
 #include <jln/mp/algorithm/index.hpp>
@@ -130,11 +127,8 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct starts_with1_impl<false>
-  {
-    template<class T, class... xs>
-    using f = false_;
-  };
+  struct starts_with1_impl<false> : always<false_>
+  {};
 }
 
 namespace jln::mp::detail

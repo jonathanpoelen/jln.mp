@@ -2,10 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/functional/identity.hpp>
-#include <jln/mp/functional/call.hpp>
-#include <jln/mp/utility/unpack.hpp>
-#include <jln/mp/list/list.hpp>
+#include <jln/mp/algorithm/starts_with.hpp>
 
 namespace jln::mp
 {
@@ -59,16 +56,13 @@ namespace jln::mp
   };
 
   template<>
-  struct ends_with<list<>, identity>
-  {
-    template<class... xs>
-    using f = true_;
-  };
+  struct ends_with<list<>, identity> : always<true_>
+  {};
   /// \endcond
 }
 
 /// \cond
-#include <jln/mp/list/take_back.hpp>
+#include <jln/mp/list/drop_front.hpp>
 #include <type_traits>
 
 namespace jln::mp::detail
@@ -84,10 +78,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct ends_with_impl<false>
-  {
-    template<unsigned n, class L, class... xs>
-    using f = false_;
-  };
+  struct ends_with_impl<false> : starts_with_impl<false>
+  {};
 }
 /// \endcond

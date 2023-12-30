@@ -50,6 +50,8 @@ namespace jln::mp
 
 
 /// \cond
+#include <jln/mp/algorithm/fold.hpp>
+
 namespace jln::mp
 {
   template<class F>
@@ -128,11 +130,8 @@ namespace jln::mp::detail
 #undef JLN_MP_FOLD_RIGHT_SELECT
 
   template<>
-  struct fold_right_impl<0>
-  {
-    template<template<class...> class, class state>
-    using f = state;
-  };
+  struct fold_right_impl<0> : fold_impl<0>
+  {};
 
   template<>
   struct fold_right_impl<-1>

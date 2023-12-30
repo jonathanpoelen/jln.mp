@@ -54,8 +54,7 @@ namespace jln::mp::detail
   struct repat_impl<0>
   {
     template<class, int_...>
-    struct impl
-      : call_trace_c0_arg
+    struct impl : call_trace_c0_arg
     {};
   };
 

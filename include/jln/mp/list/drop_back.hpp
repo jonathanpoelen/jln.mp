@@ -16,8 +16,8 @@ namespace jln::mp
   struct drop_back_c
   {
     template<class... xs>
-    using f = typename take_front_c<sizeof...(xs) - N, C>
-      ::template f<xs...>;
+    using f = typename detail::take_front_impl<sizeof...(xs) - N>
+      ::template f<sizeof...(xs) - N, JLN_MP_TRACE_F(C)::template f, xs...>;
   };
 
   /// Removes at most \c N elements from the end of a \sequence.
@@ -54,6 +54,21 @@ namespace jln::mp
   }
 
   /// \cond
+  #if ! JLN_MP_OPTIMIZED_ALIAS
+  template<unsigned N, template<class...> class C>
+  struct drop_back_c<N, lift<C>>
+  {
+    template<class... xs>
+    using f = typename detail::take_front_impl<sizeof...(xs) - N>
+      ::template f<sizeof...(xs) - N, C, xs...>;
+  };
+
+  template<template<class...> class C>
+  struct drop_back_c<0, lift<C>>
+    : detail::call_trace_xs<lift<C>>
+  {};
+  #endif
+
   template<class C>
   struct drop_back_c<0, C>
     : detail::call_trace_xs<C>
