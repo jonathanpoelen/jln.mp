@@ -134,6 +134,8 @@ namespace jln::mp::detail
 
 #undef JLN_MP_INDEX
 
+  using index0 = index<0>;
+
   template<class Head, class Tail>
   struct rlist;
 

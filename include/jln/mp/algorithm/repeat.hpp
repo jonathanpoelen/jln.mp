@@ -45,7 +45,7 @@ namespace jln::mp
 
 
 #include <jln/mp/list/join.hpp>
-#include <jln/mp/functional/memoize.hpp> // _first
+#include <jln/mp/list/lookup.hpp> // index0
 
 /// \cond
 namespace jln::mp::detail
@@ -65,18 +65,21 @@ namespace jln::mp::detail
     struct impl
     {
       template<class C, class x>
-      using f = JLN_MP_CALL_TRACE(C, _first<x, decltype(ns)>...);
+      using f = JLN_MP_CALL_TRACE(C, index0::f<x, decltype(ns)>...);
     };
   };
 
   template<>
   struct repat_impl<2>
   {
+    template<class C, class L, class... xs>
+    using g = typename join<C>::template f<index0::f<L, xs>...>;
+
     template<class, int_... ns>
     struct impl
     {
       template<class C, class... xs>
-      using f = typename join<C>::template f<_first<list<xs...>, decltype(ns)>...>;
+      using f = g<C, list<xs...>, decltype(ns)...>;
     };
   };
 }
