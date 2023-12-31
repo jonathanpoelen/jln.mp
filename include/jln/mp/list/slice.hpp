@@ -144,9 +144,9 @@ namespace jln::mp
 
 
 #include <jln/mp/algorithm/make_int_sequence.hpp>
+#include <jln/mp/algorithm/compress.hpp>
 #include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/functional/each.hpp>
-#include <jln/mp/list/wrap_in_list.hpp>
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/list/clear.hpp>
 #include <jln/mp/list/join.hpp>
@@ -294,7 +294,7 @@ namespace jln::mp::detail
   struct slided_slice
   {
     template<class C, unsigned step>
-    struct impl : _each<join<C>, wrap_in_list_c<ints % step == 0>...>
+    struct impl : compress_c_with<C, ints % step == 0 ...>
     {};
   };
 

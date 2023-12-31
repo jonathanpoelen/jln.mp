@@ -14,18 +14,24 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
+  template<bool... selectors>
+  using compress_c = test_contract<
+    size<is<number<sizeof...(selectors)>>>,
+    compress_c_with<listify, selectors...>
+  >;
+
+  template<class C, bool... selectors>
+  using compress_c_with = test_contract<
+    size<is<number<sizeof...(selectors)>>>,
+    compress_c_with<subcontract<C>, selectors...>
+  >;
+
   template<class Selectors, class C = listify>
   using compress = typename detail::smp_compress_select<Selectors>
     ::template f<C>;
 
   template<class... Selectors>
   using compress_for = compress<mp::list<Selectors...>>;
-
-  template<bool... selectors>
-  using compress_for_c = test_contract<
-    mp::size<mp::is<mp::number<sizeof...(selectors)>>>,
-    mp::compress<mp::list<mp::number<selectors>...>>
-  >;
 }
 
 /// \cond
@@ -40,9 +46,9 @@ namespace jln::mp::detail
     using f = bad_contract;
   };
 
-  template<class... Selectors>
+  template<template<class...> class Tpl, class... Selectors>
   struct smp_compress_select<
-    list<Selectors...>,
+    Tpl<Selectors...>,
 #if JLN_MP_CUDA
     std::enable_if_t<((std::size_t{Selectors::value} <= 1) || ...) || !sizeof...(Selectors)>
 #else
@@ -51,16 +57,13 @@ namespace jln::mp::detail
   >
   {
     template<class C>
-    using f = test_contract<
-      size<is<number<sizeof...(Selectors)>>>,
-      compress<list<Selectors...>, subcontract<C>>
-    >;
+    using f = smp::compress_c_with<C, Selectors::value...>;
   };
 
-  template<template<class> class sfinae, class Selectors, class C>
-  struct _sfinae<sfinae, compress<Selectors, C>>
+  template<template<class> class sfinae, class C, bool... selectors>
+  struct _sfinae<sfinae, compress_c_with<C, selectors...>>
   {
-    using type = smp::compress<Selectors, sfinae<C>>;
+    using type = smp::compress_c_with<sfinae<C>, selectors...>;
   };
 }
 /// \endcond
