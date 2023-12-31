@@ -3,6 +3,7 @@
 #pragma once
 
 #include <jln/mp/algorithm/transform.hpp>
+#include <jln/mp/algorithm/compress.hpp>
 #include <jln/mp/utility/unpack.hpp>
 
 namespace jln::mp
@@ -10,11 +11,22 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<bool... bs>
-    struct partition_impl;
+    template<class Left, class Right>
+    struct partition_dispatch;
 
-    template<class... xs>
-    using partition_caller = partition_impl<xs::value...>;
+    template<class F, bool... bs>
+    using make_partition = partition_dispatch<
+      compress_c_with<F, bs...>,
+      compress_c_with<F, !bs...>
+    >;
+
+    template<class F>
+    struct partition_caller
+    {
+      template<class... xs>
+      struct f : make_partition<F, xs::value...>
+      {};
+    };
   }
   /// \endcond
 
@@ -28,9 +40,9 @@ namespace jln::mp
   struct partition_with
   {
     template<class... xs>
-    using f = typename transform<Pred, lift<detail::partition_caller>>
+    using f = typename transform<Pred, detail::partition_caller<F>>
       ::template f<xs...>
-      ::template f<JLN_MP_TRACE_F(C)::template f, F, xs...>;
+      ::template g<JLN_MP_TRACE_F(C)::template f, identity::f, xs...>;
   };
 
   /// Splits a \list in two according to a predicate.
@@ -52,9 +64,6 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/list/wrap_in_list.hpp>
-#include <jln/mp/list/join.hpp>
-
 /// \cond
 #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
 namespace jln::mp
@@ -63,22 +72,22 @@ namespace jln::mp
   struct partition_with<Pred, F, lift<C>>
   {
     template<class... xs>
-    using f = typename transform<Pred, lift<detail::partition_caller>>
+    using f = typename transform<Pred, detail::partition_caller<F>>
       ::template f<xs...>
-      ::template f<C, F, xs...>;
+      ::template g<C, identity::f, xs...>;
   };
 }
 #endif
 
 namespace jln::mp::detail
 {
-  template<bool... bs>
-  struct partition_impl
+  template<class Left, class Right>
+  struct partition_dispatch
   {
-    template<template<class...> class C, class F, class... xs>
-    using f = C<
-      typename mp::join<F>::template f<typename mp::wrap_in_list_c<bs>::template f<xs>...>,
-      typename mp::join<F>::template f<typename mp::wrap_in_list_c<!bs>::template f<xs>...>
+    template<template<class...> class C, template<class> class G, class... xs>
+    using g = C<
+      typename G<Left>::template f<xs...>,
+      typename G<Right>::template f<xs...>
     >;
   };
 }
