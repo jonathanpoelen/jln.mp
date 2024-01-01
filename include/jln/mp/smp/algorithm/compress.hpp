@@ -35,16 +35,14 @@ namespace jln::mp::smp
 }
 
 /// \cond
+#include <jln/mp/utility/always.hpp>
 #include <type_traits>
 
 namespace jln::mp::detail
 {
   template<class Selectors, class>
-  struct smp_compress_select
-  {
-    template<class C>
-    using f = bad_contract;
-  };
+  struct smp_compress_select : always<bad_contract>
+  {};
 
   template<template<class...> class Tpl, class... Selectors>
   struct smp_compress_select<

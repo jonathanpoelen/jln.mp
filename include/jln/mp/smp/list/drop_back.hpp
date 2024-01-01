@@ -32,6 +32,7 @@ JLN_MP_MAKE_REGULAR_SMP2_P(drop_back_max, (N), (C, smp::listify), smp::drop_back
 
 
 #include <jln/mp/number/operators.hpp>
+#include <jln/mp/smp/algorithm/repeat.hpp> // mk_repeat<false>
 
 /// \cond
 namespace jln::mp::detail
@@ -46,11 +47,8 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct mk_drop_back<false>
-  {
-    template<int_ i, class C>
-    using f = bad_contract;
-  };
+  struct mk_drop_back<false> : mk_repeat<false>
+  {};
 
   template<>
   struct mk_drop_back_max<true>
