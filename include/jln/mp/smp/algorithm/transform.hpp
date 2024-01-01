@@ -7,21 +7,45 @@
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/algorithm/transform.hpp>
 
+/// \cond
+namespace jln::mp::detail
+{
+  template<class F>
+  struct smp_transform;
+}
+/// \endcond
+
 namespace jln::mp::smp
 {
   template<class F, class C = listify>
-  using transform = contract<mp::transform<
-    assume_unary<F>, mp::monadic_xs<subcontract<C>>>>;
+  using transform = typename detail::smp_transform<assume_unary<F>>
+    ::template f<subcontract<C>>;
 }
 
 /// \cond
 namespace jln::mp::detail
 {
+  template<class F>
+  struct smp_transform
+  {
+    template<class C>
+    using f = contract<mp::transform<F, mp::monadic_xs<C>>>;
+  };
+
+  template<>
+  struct smp_transform<listify>
+  {
+    template<class C>
+    using f = contract<mp::transform<listify, C>>;
+  };
+
+
   template<template<class> class sfinae, class F, class C>
   struct _sfinae<sfinae, transform<F, C>>
   {
     using type = smp::transform<sfinae<F>, sfinae<C>>;
   };
+
 
   template<>
   struct optimize_useless_transform_unpack_impl<contract<identity>>

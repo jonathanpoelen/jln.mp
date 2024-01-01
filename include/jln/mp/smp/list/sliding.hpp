@@ -4,6 +4,7 @@
 
 #include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/algorithm/transform.hpp>
 #include <jln/mp/list/sliding.hpp>
 
 /// \cond
