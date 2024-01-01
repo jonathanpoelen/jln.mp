@@ -21,7 +21,7 @@
 
 #if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
 #  include <cstddef>
-#elif ! defined(JLN_MP_DO_NOT_USE_STD_SEQUENCE)
+#elif defined(JLN_MP_FALLBACK_TO_STD_SEQUENCE)
 #  include <utility>
 #endif
 
@@ -34,7 +34,7 @@ namespace jln::mp
 #if JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
     template<class>
     struct make_int_sequence_impl;
-#elif defined(JLN_MP_DO_NOT_USE_STD_SEQUENCE)
+#elif ! defined(JLN_MP_FALLBACK_TO_STD_SEQUENCE)
     template<unsigned n>
     struct mk_int_seq;
 
@@ -74,7 +74,7 @@ namespace jln::mp
 #elif JLN_MP_USE_INTEGER_PACK
     using f = typename detail::make_int_sequence_impl<C>
       ::template f<int_, __integer_pack(n::value)...>::type;
-#elif defined(JLN_MP_DO_NOT_USE_STD_SEQUENCE)
+#elif ! defined(JLN_MP_FALLBACK_TO_STD_SEQUENCE)
     using f = typename detail::make_int_sequence_impl<
       C, typename detail::mk_int_seq<n::value>::type>::type;
 #else
@@ -121,7 +121,7 @@ namespace jln::mp
     using make_int_sequence = typename __make_integer_seq<
       detail::make_int_sequence_impl<mp::numbers<C>>::template f, int_, n::value>::type;
 #else
-# ifdef JLN_MP_DO_NOT_USE_STD_SEQUENCE
+# if ! defined(JLN_MP_FALLBACK_TO_STD_SEQUENCE)
 #   define JLN_MK_INT_SEQ(n) typename detail::mk_int_seq<n>::type
 # else
 #   define JLN_MK_INT_SEQ(n) std::make_integer_sequence<int_, n>
@@ -335,7 +335,7 @@ namespace jln::mp::detail
     };
   };
 }
-#elif defined(JLN_MP_DO_NOT_USE_STD_SEQUENCE)
+#elif ! defined(JLN_MP_FALLBACK_TO_STD_SEQUENCE)
 namespace jln::mp::detail
 {
   template<bool, int_ n, class ns>
