@@ -50,13 +50,32 @@ namespace jln::mp
   template<class F, class FC = always<false_>>
   using try_or = try_<F, identity, FC>;
 
+  template<class F>
+  using is_callable = try_<F, always<true_>, always<false_>>;
+
+  template<class F>
+  using is_not_callable = try_<F, always<false_>, always<true_>>;
+
   namespace emp
   {
     template<class F, class TC, class FC, class... xs>
-    using try_ = typename try_<F, TC, FC>::template f<xs...>;
+    using try_ = typename mp::try_<F, TC, FC>::template f<xs...>;
 
     template<class F, class FC, class... xs>
     using try_or = typename mp::try_<F, mp::identity, FC>::template f<xs...>;
+
+    template<class F, class... xs>
+    constexpr bool is_callable_v
+      = !std::is_same_v<na, typename JLN_MP_CALL_TRY_IMPL(F, xs...)>;
+
+    template<class F, class... xs>
+    constexpr bool is_not_callable_v = !is_callable_v<F, xs...>;
+
+    template<class F, class... xs>
+    using is_callable = number<is_callable_v<F, xs...>>;
+
+    template<class F, class... xs>
+    using is_not_callable = number<!is_callable_v<F, xs...>>;
   }
 }
 
@@ -68,18 +87,14 @@ namespace jln::mp
   struct try_<F, always<true_>, always<false_>>
   {
     template<class... xs>
-    using f = number<!std::is_same<na,
-      typename detail::memoizer_impl<F, xs...>::try_type
-    >::value>;
+    using f = number<emp::is_callable_v<F, xs...>>;
   };
 
   template<class F>
   struct try_<F, always<false_>, always<true_>>
   {
     template<class... xs>
-    using f = number<std::is_same<na,
-      typename detail::memoizer_impl<F, xs...>::try_type
-    >::value>;
+    using f = number<!emp::is_callable_v<F, xs...>>;
   };
 
   template<class F>
