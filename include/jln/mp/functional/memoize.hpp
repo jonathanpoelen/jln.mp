@@ -2,38 +2,21 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/list/list.hpp>
 #include <jln/mp/detail/compiler.hpp>
 #include <jln/mp/utility/conditional.hpp>
 
 namespace jln::mp
 {
+  /// Value that is not available.
+  /// This type is used in `smp` for a contract that is not respected.
+  struct na {};
+
+#if !JLN_MP_MEMOIZED_ALIAS
   /// \cond
   namespace detail
   {
-    class uncallable_function
-    {
-      template<class... xs>
-      using f = typename conditional_c<!sizeof...(xs)>
-        ::template f<uncallable_function, uncallable_function>
-        ::template g<xs...>;
-    };
-
-    template<class Function, class Params, class Error = uncallable_function>
-    struct memoizer_impl
-    {
-      using type = typename Error::type;
-    };
-
-    template<class F, class... xs>
-    using _memoizer = memoizer_impl<F, list<xs...>>;
-
-    template<template<class...> class Function, class Params, class = void>
-    struct _memoizerf_impl
-    {};
-
-    template<template<class...> class F, class... xs>
-    using _memoizerf = _memoizerf_impl<F, list<xs...>>;
+    template<class F, class... Params>
+    struct memoizer_impl;
   }
   /// \endcond
 
@@ -41,41 +24,68 @@ namespace jln::mp
 
   /// Memoization version of \link call.
   template<class C, class... xs>
-  using memoize_call = typename detail::memoizer_impl<C, list<xs...>>::type;
+  using memoize_call = typename detail::memoizer_impl<C, xs...>::type;
 
   /// Memoize a call to \c C::f<xs...>.
   template<class C>
   struct memoize
   {
     template<class... xs>
-    using f = typename detail::memoizer_impl<C, list<xs...>>::type;
+    using f = typename detail::memoizer_impl<C, xs...>::type;
   };
 
-#if JLN_MP_CLANG_LIKE
 # define JLN_MP_MEMOIZE(...) ::jln::mp::memoize<__VA_ARGS__>
+
 #else
+  template<class C, class... xs>
+  using memoize_call = typename conditional_c<!sizeof...(xs)>
+    ::template f<C, C>
+    ::template f<xs...>;
+
+  template<class C>
+  struct memoize
+  {
+    template<class... xs>
+    using f = typename conditional_c<!sizeof...(xs)>
+      ::template f<C, C>
+      ::template f<xs...>;
+  };
+
 # define JLN_MP_MEMOIZE(...) __VA_ARGS__
 #endif
 }
 
 /// \cond
+#if !JLN_MP_MEMOIZED_ALIAS
+#include <jln/mp/list/list.hpp>
+
 namespace jln::mp::detail
 {
-  template<class x, class...>
-  using _first = x;
-
-  template<class Function, class... Params>
-  struct memoizer_impl<Function, list<Params...>,
-    _first<uncallable_function, typename Function::template f<Params...>>>
+  struct uncallable_function
   {
-    using type = typename Function::template f<Params...>;
+    using try_type = na;
   };
 
-  template<template<class...> class Function, class... Params>
-  struct _memoizerf_impl<Function, list<Params...>,
-    _first<uncallable_function, Function<Params...>>>
+  template<class T>
+  struct memoize_result
   {
-    using type = Function<Params...>;
+    using type = T;
+    using try_type = T;
   };
+
+  template<class F, class... Params>
+  memoize_result<
+    typename conditional_c<!sizeof...(Params)>
+    ::template f<F, F>
+    ::template f<Params...>
+  > memoized_call(list<Params...>*);
+
+  template<class F>
+  uncallable_function memoized_call(void*);
+
+  template<class C, class... Params>
+  struct memoizer_impl : decltype(memoized_call<C>(static_cast<list<Params...>*>(nullptr)))
+  {};
 }
+#endif
 /// \endcond

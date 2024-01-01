@@ -61,7 +61,7 @@ namespace jln::mp
   struct try_<contract<C>, TC, FC>
   {
     template<class... xs>
-    using f = typename detail::_try_dispatch<JLN_MP_DCALL_TRACE_XS(xs, C, xs...)>
+    using f = typename detail::try_dispatch<JLN_MP_DCALL_TRACE_XS(xs, C, xs...)>
       ::template f<TC, FC, xs...>;
   };
 

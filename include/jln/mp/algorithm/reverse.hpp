@@ -3,7 +3,6 @@
 #pragma once
 
 #include <jln/mp/list/listify.hpp>
-#include <jln/mp/detail/sequence.hpp>
 #include <jln/mp/utility/unpack.hpp>
 
 namespace jln::mp
@@ -36,10 +35,11 @@ namespace jln::mp
 }
 
 
+/// \cond
 #include <jln/mp/list/join.hpp>
+#include <jln/mp/detail/sequence.hpp>
 #include <jln/mp/utility/conditional.hpp>
 
-/// \cond
 namespace jln::mp::detail
 {
   template<unsigned n>
@@ -52,13 +52,22 @@ namespace jln::mp::detail
   {};
 
   template<unsigned n>
-  struct reverse_impl : reverse_impl2<
-      n < 16 ? 8
-    : n < 64 ? 16
-    : n < 256 ? 64
-    : 256
-  >
+  struct reverse_impl : reverse_impl2<n>
   {};
+
+  template<>
+  struct reverse_impl2<0>
+  {
+    template<class C, std::size_t count, class... xs>
+    using f = typename reverse<join<C>>::template f<xs...>;
+  };
+
+  template<>
+  struct reverse_impl<0>
+  {
+    template<class C, std::size_t count, class... xs>
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
+  };
 
 #define JLN_MP_REVERSE_IMPL(n, mp_xs, mp_rxs, mp_rep)    \
   template<>                                             \
@@ -81,7 +90,7 @@ namespace jln::mp::detail
       mp_rxs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA));     \
   };
 
-  JLN_MP_GEN_XS_0_TO_8(JLN_MP_REVERSE_IMPL)
+  JLN_MP_GEN_XS_1_TO_8(JLN_MP_REVERSE_IMPL)
 
 #undef JLN_MP_REVERSE_IMPL
 

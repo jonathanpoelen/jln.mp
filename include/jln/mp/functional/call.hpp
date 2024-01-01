@@ -5,9 +5,9 @@
 #include <jln/mp/config/debug.hpp>
 #include <jln/mp/config/config.hpp>
 #include <jln/mp/detail/compiler.hpp>
-#include <jln/mp/number/number.hpp>
 #include <jln/mp/functional/memoize.hpp>
 #include <jln/mp/utility/conditional.hpp>
+#include <jln/mp/number/number.hpp> // JLN_MP_TPL_AUTO_OR_INT
 
 namespace jln::mp
 {
@@ -31,26 +31,20 @@ namespace jln::mp
   #define JLN_MP_TRACE_F(...) __VA_ARGS__
   #define JLN_MP_TRACE_TYPENAME
 
-  #define JLN_MP_CALL_TRACE(C, ...) typename C ::template f<__VA_ARGS__>
-  #define JLN_MP_CALL_TRACE_T(C, ...) typename C ::template f<__VA_ARGS__>
+  #define JLN_MP_CALL_TRACE(C, ...) typename C::template f<__VA_ARGS__>
+  #define JLN_MP_CALL_TRACE_T(C, ...) typename C::template f<__VA_ARGS__>
   #define JLN_MP_CALL_TRACE_0_ARG(...) typename __VA_ARGS__::template f<>
 #else
   // does not compile with msvc...
   #define JLN_MP_TRACE_F(...) memoize<__VA_ARGS__>
   #define JLN_MP_TRACE_TYPENAME typename
 
-  #define JLN_MP_CALL_TRACE(C, ...)            \
-    typename ::jln::mp::detail::memoizer_impl< \
-      C, ::jln::mp::list<__VA_ARGS__>          \
-    >::type
-  #define JLN_MP_CALL_TRACE_T(C, ...)          \
-    typename ::jln::mp::detail::memoizer_impl< \
-      typename C, ::jln::mp::list<__VA_ARGS__> \
-    >::type
-  #define JLN_MP_CALL_TRACE_0_ARG(...)         \
-    typename ::jln::mp::detail::memoizer_impl< \
-      __VA_ARGS__, ::jln::mp::list<>           \
-    >::type
+  #define JLN_MP_CALL_TRACE(C, ...) \
+    typename ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
+  #define JLN_MP_CALL_TRACE_T(C, ...) \
+    typename ::jln::mp::detail::memoizer_impl<typename C, __VA_ARGS__>::type
+  #define JLN_MP_CALL_TRACE_0_ARG(...) \
+    typename ::jln::mp::detail::memoizer_impl<__VA_ARGS__>::type
 #endif
 
 #if JLN_MP_CLANG_LIKE
@@ -94,16 +88,16 @@ using call = C::f<xs...>;
 # if JLN_MP_MSVC
 
 template<class C, class... xs>
-using call = typename detail::memoizer_impl<C, list<xs...>>::type;
+using call = typename detail::memoizer_impl<C, xs...>::type;
 
 #  define JLN_MP_DCALL_TRACE_XS(xs, C, ...) \
-    typename ::jln::mp::detail::memoizer_impl<C, ::jln::mp::list<__VA_ARGS__>>::type
+    typename ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
 
 #  define JLN_MP_DCALL_TRACE_XS_0(xs, C) \
-    typename ::jln::mp::detail::memoizer_impl<C, ::jln::mp::list<>>::type
+    typename ::jln::mp::detail::memoizer_impl<C>::type
 
 #  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) \
-    ::jln::mp::detail::memoizer_impl<C, ::jln::mp::list<__VA_ARGS__>>::type
+    ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
 
 # else
 

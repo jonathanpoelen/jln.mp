@@ -4,6 +4,7 @@
 #include "test/is_same.hpp"
 
 #include "jln/mp/utility/wrapper.hpp"
+#include "jln/mp/list/list.hpp"
 
 TEST_SUITE_BEGIN()
 

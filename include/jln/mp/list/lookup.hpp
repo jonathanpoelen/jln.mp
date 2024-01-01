@@ -74,12 +74,12 @@ namespace jln::mp
     using BuildIndexedV = build_indexed_v<xs...>;
 
   public:
-#if !JLN_MP_MEMOIZED_ALIAS
-    template<class i>
-    using f = typename BuildIndexedV::template memoize_result_<i::value>::type;
-#else
+#if JLN_MP_MEMOIZED_ALIAS
     template<class i>
     using f = typename BuildIndexedV::template f<i::value>;
+#else
+    template<class i>
+    using f = typename BuildIndexedV::template memoize_result_<i::value>::type;
 #endif
   };
 #endif
@@ -410,16 +410,16 @@ namespace jln::mp::detail
   {};
 
 
-#if !JLN_MP_MEMOIZED_ALIAS
+#if JLN_MP_MEMOIZED_ALIAS
+#  define JLN_MP_BUILD_INDEXED_IMPL(impl) template<int i> using f = impl
+#  define JLN_MP_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::f<i>
+#  define JLN_MP_D_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::template f<i>
+#else
 #  define JLN_MP_BUILD_INDEXED_IMPL(impl)                        \
   template<int i> struct memoize_result_ { using type = impl; }; \
   template<int i> using f = typename memoize_result_<i>::type
 #  define JLN_MP_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::memoize_result_<i>::type
 #  define JLN_MP_D_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::template memoize_result_<i>::type
-#else
-#  define JLN_MP_BUILD_INDEXED_IMPL(impl) template<int i> using f = impl
-#  define JLN_MP_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::f<i>
-#  define JLN_MP_D_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::template f<i>
 #endif
 
   // 0 <= sizeof...(xs) <= 16

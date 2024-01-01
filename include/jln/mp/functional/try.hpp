@@ -3,6 +3,7 @@
 #pragma once
 
 #include <jln/mp/functional/identity.hpp>
+#include <jln/mp/functional/memoize.hpp>
 #include <jln/mp/list/list.hpp>
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/utility/always.hpp>
@@ -11,21 +12,23 @@
 
 namespace jln::mp
 {
-  /// Value that is not available.
-  /// This value is used in `smp` for a contract that is not respected.
-  struct na {};
-
   using is_na = is<na>;
   using violation = always<na>;
 
   /// \cond
   namespace detail
   {
+    template<class x>
+    struct try_dispatch;
+
+#if JLN_MP_MEMOIZED_ALIAS
     template<class, class, class = void>
     struct _try_impl;
 
-    template<class x>
-    struct _try_dispatch;
+    #define JLN_MP_CALL_TRY_IMPL(F, params) detail::_try_impl<F, list<params>>::type
+#else
+    #define JLN_MP_CALL_TRY_IMPL(F, params) detail::memoizer_impl<F, params>::try_type
+#endif
   }
   /// \endcond
 
@@ -39,8 +42,8 @@ namespace jln::mp
   struct try_
   {
     template<class... xs>
-    using f = typename detail::_try_dispatch<
-      typename detail::_try_impl<F, list<xs...>>::type
+    using f = typename detail::try_dispatch<
+      typename JLN_MP_CALL_TRY_IMPL(F, xs...)
     >::template f<TC, FC, xs...>;
   };
 
@@ -53,20 +56,20 @@ namespace jln::mp
     using try_ = typename try_<F, TC, FC>::template f<xs...>;
 
     template<class F, class FC, class... xs>
-    using try_or = typename try_<F, mp::identity, FC>::template f<xs...>;
+    using try_or = typename mp::try_<F, mp::identity, FC>::template f<xs...>;
   }
 }
 
 
+/// \cond
 namespace jln::mp
 {
-  /// \cond
   template<class F>
   struct try_<F, always<true_>, always<false_>>
   {
     template<class... xs>
     using f = number<!std::is_same<na,
-      typename detail::_try_impl<F, list<xs...>>::type
+      typename detail::memoizer_impl<F, xs...>::try_type
     >::value>;
   };
 
@@ -75,7 +78,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = number<std::is_same<na,
-      typename detail::_try_impl<F, list<xs...>>::type
+      typename detail::memoizer_impl<F, xs...>::try_type
     >::value>;
   };
 
@@ -83,13 +86,30 @@ namespace jln::mp
   struct try_<F, identity, violation>
   {
     template<class... xs>
-    using f = typename detail::_try_impl<F, list<xs...>>::type;
+    using f = typename JLN_MP_CALL_TRY_IMPL(F, xs...);
   };
-  /// \endcond
 }
 
+namespace jln::mp::detail
+{
+  template<class x>
+  struct try_dispatch
+  {
+    template<class TC, class FC, class...>
+    using f = JLN_MP_CALL_TRACE(TC, x);
+  };
 
-/// \cond
+  template<>
+  struct try_dispatch<na>
+  {
+    template<class TC, class FC, class... xs>
+    using f = JLN_MP_CALL_TRACE(FC, xs...);
+  };
+}
+
+#if JLN_MP_MEMOIZED_ALIAS
+#include <type_traits>
+
 namespace jln::mp::detail
 {
   template<class, class, class>
@@ -101,21 +121,10 @@ namespace jln::mp::detail
   template<class F, class... xs>
   struct _try_impl<F, list<xs...>, std::void_t<typename F::template f<xs...>>>
   {
-    using type = JLN_MP_CALL_TRACE(F, xs...);
-  };
-
-  template<class x>
-  struct _try_dispatch
-  {
-    template<class TC, class FC, class...>
-    using f = JLN_MP_CALL_TRACE(TC, x);
-  };
-
-  template<>
-  struct _try_dispatch<na>
-  {
-    template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE(FC, xs...);
+    using type = typename F::template f<xs...>;
   };
 }
+#endif
+
+#undef JLN_MP_CALL_TRY_IMPL
 /// \endcond
