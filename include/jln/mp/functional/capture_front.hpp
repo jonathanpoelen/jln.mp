@@ -11,7 +11,7 @@ namespace jln::mp
 {
   /// \ingroup functional
 
-  /// Invoking \c F with its first parameters bound to bound to args.
+  /// Invoking \c F with its first parameters bound to args.
   /// \semantics
   ///   \code
   ///   capture_front<a, b>::f<F, c, d> == F<a, b, c, d>

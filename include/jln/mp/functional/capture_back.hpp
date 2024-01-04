@@ -12,7 +12,7 @@ namespace jln::mp
 {
   /// \ingroup functional
 
-  /// Invoking \c F with its last parameters bound to bound to args.
+  /// Invoking \c F with its last parameters bound to args.
   /// \semantics
   ///   \code
   ///   capture_back<c, d>::f<F, a, b> == F<a, b, c, d>
