@@ -4,7 +4,6 @@
 
 #include <jln/mp/algorithm/fold_right.hpp>
 #include <jln/mp/functional/lift.hpp>
-#include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/list/at.hpp>
 

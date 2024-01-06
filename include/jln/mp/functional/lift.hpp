@@ -107,9 +107,9 @@ namespace jln::mp
   };
 
 #if JLN_MP_GCC
-#  define JLN_MP_LIFT_WRAP_IMPL(fn, fn_t) jln::mp::lift_t<fn>
+#  define JLN_MP_LIFT_WRAP_IMPL(fn, fn_t) ::jln::mp::lift_t<fn>
 #else
-#  define JLN_MP_LIFT_WRAP_IMPL(fn, fn_t) jln::mp::lift<fn_t>
+#  define JLN_MP_LIFT_WRAP_IMPL(fn, fn_t) ::jln::mp::lift<fn_t>
 #endif
 
 #define JLN_MP_LIFT_WRAP(fn) JLN_MP_LIFT_WRAP_IMPL(fn, fn##_t)
