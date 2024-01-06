@@ -16,13 +16,13 @@ namespace jln::mp
   struct to_bool
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<bool(x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_RAW_EXPR_TO_BOOL(x::value)>);
   };
 
   namespace emp
   {
     template<class x>
-    using to_bool = number<bool(x::value)>;
+    using to_bool = number<JLN_MP_RAW_EXPR_TO_BOOL(x::value)>;
   }
 
   /// \cond
@@ -30,7 +30,7 @@ namespace jln::mp
   struct to_bool<identity>
   {
     template<class x>
-    using f = number<bool(x::value)>;
+    using f = number<JLN_MP_RAW_EXPR_TO_BOOL(x::value)>;
   };
   /// \endcond
 }

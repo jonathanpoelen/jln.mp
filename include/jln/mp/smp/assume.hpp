@@ -160,10 +160,12 @@ namespace jln::mp::detail
   template<class F>                                  \
   struct _assume_##cat<try_<F, identity, violation>> \
   {                                                  \
-    using type = typename conditional_c<bool(        \
-      expected_argument<F>::value                    \
-      & _expected_argument_category::_##cat          \
-    )>::template f<F, try_<F, identity, violation>>; \
+    using type = typename conditional_c<             \
+      JLN_MP_EXPR_TO_BOOL(                           \
+        expected_argument<F>::value                  \
+        & _expected_argument_category::_##cat        \
+      )                                              \
+    >::template f<F, try_<F, identity, violation>>;  \
   }
 
   JLN_MP_MK_ASSUME(lists);

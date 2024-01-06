@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <jln/mp/detail/expr_to_bool.hpp>
+
 namespace jln::mp
 {
   /// \ingroup utility
@@ -24,12 +26,12 @@ namespace jln::mp
   };
 
   template<class bool_>
-  using conditional = conditional_c<bool(bool_::value)>;
+  using conditional = conditional_c<JLN_MP_RAW_EXPR_TO_BOOL(bool_::value)>;
 
   namespace emp
   {
     template<class bool_, class true_value, class false_value>
-    using conditional = typename mp::conditional_c<bool(bool_::value)>
+    using conditional = typename mp::conditional_c<JLN_MP_RAW_EXPR_TO_BOOL(bool_::value)>
       ::template f<true_value, false_value>;
 
     template<bool bool_, class true_value, class false_value>

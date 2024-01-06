@@ -194,7 +194,7 @@ namespace jln::mp::detail
   };
 
 #define JLN_MP_LOWER_BOUND_PRED_CALL(x) \
-  conditional_c<bool(Cmp::template f<x>::value)>
+  conditional_c<JLN_MP_RAW_EXPR_TO_BOOL(Cmp::template f<x>::value)>
 
 #define JLN_MP_LOWER_BOUND_SMP_PRED_CALL(x) \
   _smp_conditional<typename Cmp::template f<x>>

@@ -17,8 +17,10 @@ namespace jln::mp
   struct if_
   {
     template<class... xs>
-    using f = typename mp::conditional_c<bool(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, xs...)::value)>
-      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+    using f = typename mp::conditional_c<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, xs...)::value)
+    >
+      ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
       ::template f<xs...>;
   };
 

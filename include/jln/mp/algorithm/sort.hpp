@@ -69,12 +69,12 @@ namespace jln::mp::detail
   struct mk_list2;
 
   template<>
-  struct mk_list2<false>
+  struct mk_list2<true>
     : listify
   {};
 
   template<>
-  struct mk_list2<true>
+  struct mk_list2<false>
   {
     template<class x, class y>
     using f = list<y, x>;
@@ -104,7 +104,7 @@ namespace jln::mp::detail
   };
 
   template<class Cmp, class x, class y>
-  using sort_pair = typename mk_list2<bool(Cmp::template f<y, x>::value)>
+  using sort_pair = typename mk_list2<JLN_MP_RAW_EXPR_TO_BOOL_NOT(Cmp::template f<y, x>::value)>
     ::template f<x, y>;
 
   template<>

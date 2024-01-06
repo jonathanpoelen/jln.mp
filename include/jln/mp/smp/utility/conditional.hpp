@@ -12,7 +12,7 @@ namespace jln::mp::smp
   using conditional_c = try_contract<mp::conditional_c<b>>;
 }
 
-JLN_MP_MAKE_REGULAR_SMP1_P(conditional, (x), smp::conditional_c<bool(x::value)>)
+JLN_MP_MAKE_REGULAR_SMP1_P(conditional, (x), smp::conditional_c<JLN_MP_RAW_EXPR_TO_BOOL(x::value)>)
 
 /// \cond
 namespace jln::mp::detail

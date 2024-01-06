@@ -4,6 +4,7 @@
 
 #include <jln/mp/list/listify.hpp>
 #include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/detail/expr_to_bool.hpp>
 
 namespace jln::mp
 {
@@ -32,7 +33,7 @@ namespace jln::mp
   struct powerset
   {
     template<class... xs>
-    using f = typename detail::_powerset<C, bool(sizeof...(xs))>
+    using f = typename detail::_powerset<C, JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::type::template f<list<list<>>, xs...>;
   };
 
@@ -75,19 +76,19 @@ namespace jln::mp::detail
   using powerset_impl_t = typename powerset_impl<x, y>::type;
 
   template<class C>
-  struct _powerset<C, true>
+  struct _powerset<C, false>
   {
     using type = fold_right<JLN_MP_LIFT_WRAP(powerset_impl), unpack<C>>;
   };
 
   template<>
-  struct _powerset<listify, true>
+  struct _powerset<listify, false>
   {
     using type = fold_right<JLN_MP_LIFT_WRAP(powerset_impl)>;
   };
 
   template<class C>
-  struct _powerset<C, false>
+  struct _powerset<C, true>
   {
     using type = clear<C>;
   };

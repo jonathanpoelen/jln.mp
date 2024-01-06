@@ -10,7 +10,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<int, bool found = false>
+    template<int, bool found = true>
     struct _drop_until_xs;
 
     template<int_ Size, class Pred, class... xs>
@@ -161,13 +161,13 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<int n>
-  struct _drop_until_xs<n, false> : _drop_until_xs<
+  struct _drop_until_xs<n, true> : _drop_until_xs<
       n <= 16 ? 16
     : n <= 32 ? 32
     : n <= 64 ? 64
     : n <= 128 ? 128
     : 256,
-    false
+    true
   >
   {};
 
@@ -177,17 +177,18 @@ namespace jln::mp::detail
     using f = _drop_while_result<sizeof...(xs)>;
   };
 
-#define JLN_DROP_WHILE_IMPL(n, m)                                                 \
-  template<>                                                                      \
-  struct _drop_until_xs<n, false>                                                 \
-  {                                                                               \
-    template<std::size_t remaining, class Pred, class x, class... xs>             \
-    using f = typename _drop_until_xs<m, bool(Pred::template f<x, xs...>::value)> \
-            ::template f<remaining-1, Pred, xs...>;                               \
-  };                                                                              \
-                                                                                  \
-  template<>                                                                      \
-  struct _drop_until_xs<n, true> : drop_until_xs_impl_true                        \
+#define JLN_DROP_WHILE_IMPL(n, m)                                       \
+  template<>                                                            \
+  struct _drop_until_xs<n, true>                                        \
+  {                                                                     \
+    template<std::size_t remaining, class Pred, class x, class... xs>   \
+    using f = typename _drop_until_xs<                                  \
+      m, JLN_MP_RAW_EXPR_TO_BOOL_NOT(Pred::template f<x, xs...>::value) \
+    >::template f<remaining-1, Pred, xs...>;                            \
+  };                                                                    \
+                                                                        \
+  template<>                                                            \
+  struct _drop_until_xs<n, false> : drop_until_xs_impl_true              \
   {}
 
   JLN_DROP_WHILE_IMPL(7, 6);
@@ -203,29 +204,30 @@ namespace jln::mp::detail
   // _drop_until_xs<n, b> is a _search<n, !b>
 
   template<>
-  struct _drop_until_xs<0, false>
+  struct _drop_until_xs<0, true>
   {
     template<std::size_t remaining, class Pred, class... xs>
     using f = _drop_while_continue;
   };
 
   template<>
-  struct _drop_until_xs<0, true>
+  struct _drop_until_xs<0, false>
   {
     template<std::size_t remaining, class Pred, class... xs>
     using f = _drop_while_result<sizeof...(xs)>;
   };
 
   template<>
-  struct _drop_until_xs<8, false>
+  struct _drop_until_xs<8, true>
   {
     template<std::size_t remaining, class Pred, class x, class... xs>
-    using f = typename _drop_until_xs<7, bool(Pred::template f<x, xs...>::value)>
-      ::template f<remaining-8, Pred, xs...>;
+    using f = typename _drop_until_xs<
+      7, JLN_MP_RAW_EXPR_TO_BOOL_NOT(Pred::template f<x, xs...>::value)
+    >::template f<remaining-8, Pred, xs...>;
   };
 
   template<>
-  struct _drop_until_xs<16, false>
+  struct _drop_until_xs<16, true>
   {
     template<
       std::size_t remaining,
@@ -233,7 +235,7 @@ namespace jln::mp::detail
       class _1, class _2, class _3, class _4,
       class _5, class _6, class _7, class _8,
       class... xs>
-    using f = typename _drop_until_xs<7, bool(Pred::template f<
+    using f = typename _drop_until_xs<7, JLN_MP_RAW_EXPR_TO_BOOL_NOT(Pred::template f<
         _1, _2, _3, _4, _5, _6, _7, _8, xs...
       >::value)>
       ::template f<7, Pred, _2, _3, _4, _5, _6, _7, _8, xs...>
@@ -242,14 +244,14 @@ namespace jln::mp::detail
 
 #define JLN_DROP_WHILE_IMPL(n, m, xs)                                        \
   template<>                                                                 \
-  struct _drop_until_xs<n, false>                                            \
+  struct _drop_until_xs<n, true>                                             \
   {                                                                          \
     template<                                                                \
       std::size_t remaining,                                                 \
       class Pred,                                                            \
       xs(class, JLN_MP_NIL, JLN_MP_COMMA),                                   \
       class... xs>                                                           \
-    using f = typename _drop_until_xs<m, false>                              \
+    using f = typename _drop_until_xs<m, true>                               \
       ::template f<m, Pred, xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...> \
       ::template f<_drop_until_xs<remaining-m>, remaining-m, Pred, xs...>;   \
   }

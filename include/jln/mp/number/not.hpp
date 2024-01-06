@@ -72,14 +72,14 @@ namespace jln::mp
   struct to_bool<not_<>>
   {
     template<class x>
-    using f = number<!bool(x::value)>;
+    using f = number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(x::value)>;
   };
 
   template<class C>
   struct to_bool<not_<C>>
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<!bool(x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(x::value)>);
   };
 
   template<class T, class C>
