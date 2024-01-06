@@ -263,7 +263,7 @@ namespace jln::mp::detail
   struct sliding_inner
   {
     template<class C, class Indexed, int i>
-    using f = typename C::template f<typename JLN_MP_D_BUILD_INDEXED_V_GET(ns+i, Indexed)...>;
+    using f = typename C::template f<typename JLN_MP_D_INDEXED_GET(ns+i, Indexed)...>;
   };
 
   template<class, int... outer_index>

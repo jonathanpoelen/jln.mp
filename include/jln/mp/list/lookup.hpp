@@ -412,14 +412,14 @@ namespace jln::mp::detail
 
 #if JLN_MP_MEMOIZED_ALIAS
 #  define JLN_MP_BUILD_INDEXED_IMPL(impl) template<int i> using f = impl
-#  define JLN_MP_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::f<i>
-#  define JLN_MP_D_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::template f<i>
+#  define JLN_MP_INDEXED_GET(i, ...) __VA_ARGS__::f<i>
+#  define JLN_MP_D_INDEXED_GET(i, ...) __VA_ARGS__::template f<i>
 #else
 #  define JLN_MP_BUILD_INDEXED_IMPL(impl)                        \
   template<int i> struct memoize_result_ { using type = impl; }; \
   template<int i> using f = typename memoize_result_<i>::type
-#  define JLN_MP_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::memoize_result_<i>::type
-#  define JLN_MP_D_BUILD_INDEXED_V_GET(i, ...) __VA_ARGS__::template memoize_result_<i>::type
+#  define JLN_MP_INDEXED_GET(i, ...) __VA_ARGS__::memoize_result_<i>::type
+#  define JLN_MP_D_INDEXED_GET(i, ...) __VA_ARGS__::template memoize_result_<i>::type
 #endif
 
   // 0 <= sizeof...(xs) <= 16
