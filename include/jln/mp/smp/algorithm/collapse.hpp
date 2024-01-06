@@ -2,28 +2,76 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/smp/list/listify.hpp>
-#include <jln/mp/smp/assume.hpp>
+#include <jln/mp/smp/algorithm/split.hpp>
 #include <jln/mp/algorithm/collapse.hpp>
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class L>
+  struct make_smp_collapse;
+}
+/// \endcond
 
 namespace jln::mp::smp
 {
-  template<class Keys, class C = listify>
-  using collapse = try_contract<mp::collapse<Keys, assume_lists<C>>>;
+  template<class C, class F, class... keys>
+  using collapse2_with = try_contract<mp::collapse2_with<
+    typename detail::smp_split_continuation<subcontract<F>>::template f<C>,
+    subcontract<F>,
+    keys...
+  >>;
 
-  template<class... Keys>
-  using collapse_for = collapse<mp::list<Keys...>>;
+  template<class C, class F, int_... keys>
+  using collapse2_with_c = try_contract<mp::collapse2_with<
+    typename detail::smp_split_continuation<subcontract<F>>::template f<C>,
+    subcontract<F>,
+    number<keys>...
+  >>;
+
+  template<class C, class... keys>
+  using collapse2 = try_contract<mp::collapse2_with<assume_lists<C>, mp::listify, keys...>>;
+
+  template<class C, int_... keys>
+  using collapse2_c = try_contract<
+    mp::collapse2_with<assume_lists<C>, mp::listify, number<keys>...>>;
+
+
+  template<class keys, class F = listify, class C = listify>
+  using collapse_with = typename detail::make_smp_collapse<keys>
+    ::template f<F, C>;
+
+  template<class keys, class C = listify>
+  using collapse = typename detail::make_smp_collapse<keys>
+    ::template f<listify, C>;
+
+
+  template<class... keys>
+  using collapse_for = try_contract<mp::collapse2_with<mp::listify, mp::listify, keys...>>;
 
   template<bool... keys>
-  using collapse_for_c = collapse<mp::list<number<keys>...>>;
+  using collapse_for_c = try_contract<mp::collapse2_with<mp::listify, mp::listify, number<keys>...>>;
 }
 
+/// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class Keys, class C>
-  struct _sfinae<sfinae, collapse<Keys, C>>
+  template<class L>
+  struct make_smp_collapse : always<bad_contract>
+  {};
+
+  template<template<class...> class Tpl, class... keys>
+  struct make_smp_collapse<Tpl<keys...>>
   {
-    using type = smp::collapse<Keys, sfinae<C>>;
+    template<class C, class F>
+    using f = smp::collapse2_with<C, F, keys...>;
+  };
+
+
+  template<template<class> class sfinae, class C, class F, class... keys>
+  struct _sfinae<sfinae, collapse2_with<C, F, keys...>>
+  {
+    using type = smp::collapse2_with<sfinae<C>, sfinae<F>, keys...>;
   };
 }
 /// \endcond

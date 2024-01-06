@@ -6,6 +6,14 @@
 
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    template<bool... bs>
+    struct mk_split_keep_separator_indexes;
+  }
+  /// \endcond
+
   /// \ingroup group
 
   /// Splits a \sequence into multiple \lists at every point that satisfy a predicate.
@@ -23,23 +31,80 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence of \list
   /// \see split_if, split_before_if
-  template<class Pred, class C = listify>
-  struct split_keep_separator_if
+  template<class Pred = identity, class F = listify, class C = listify>
+  struct split_keep_separator_if_with
   {
     template<class... xs>
-    using f = typename detail::_split<sizeof...(xs) != 0>
-      ::template f<detail::split_keep_sep, C, JLN_MP_TRACE_F(Pred), xs...>;
+    using f = typename detail::array_int2_index_dispatcher<
+      detail::mk_split_keep_separator_indexes<JLN_MP_RAW_EXPR_TO_BOOL(
+        JLN_MP_TRACE_F(Pred)::template f<xs>::value
+      )...>
+    >::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
   };
 
+  template<class Pred = identity, class C = listify>
+  using split_keep_separator_if = split_keep_separator_if_with<Pred, listify, C>;
+
+  template<class x, class F = listify, class C = listify>
+  using split_keep_separator_with = split_keep_separator_if_with<is<x>, F, C>;
+
   template<class x, class C = listify>
-  using split_keep_separator = split_keep_separator_if<is<x>, C>;
+  using split_keep_separator = split_keep_separator_if_with<is<x>, listify, C>;
 
   namespace emp
   {
-    template<class L, class Pred, class C = mp::listify>
-    using split_keep_separator_if = unpack<L, mp::split_keep_separator_if<Pred, C>>;
+    template<class L, class Pred = mp::identity, class F = listify, class C = listify>
+    using split_keep_separator_if_with = unpack<L, mp::split_keep_separator_if_with<Pred, F, C>>;
 
-    template<class L, class x, class C = mp::listify>
-    using split_keep_separator = unpack<L, mp::split_keep_separator<x, C>>;
+    template<class L, class Pred = mp::identity, class C = listify>
+    using split_keep_separator_if = unpack<L, mp::split_keep_separator_if_with<Pred, listify, C>>;
+
+    template<class L, class x, class F = listify, class C = listify>
+    using split_keep_separator_with = unpack<L, mp::split_keep_separator_if_with<is<x>, F, C>>;
+
+    template<class L, class x, class C = listify>
+    using split_keep_separator = unpack<L, mp::split_keep_separator_if_with<is<x>, listify, C>>;
   }
 }
+
+/// \cond
+namespace jln::mp::detail
+{
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
+  template<bool... bs>
+  struct mk_split_keep_separator_indexes
+  {
+    static constexpr std::size_t result_len = (0 + ... + bs) * 2 + 1;
+
+    static constexpr auto make()
+    {
+      array_int2<result_len> a{};
+      auto* p = a.elems;
+
+      bool bools[] {bs...};
+      int i = 0;
+
+      for (bool b : bools)
+      {
+        if (b)
+        {
+          **++p = i;
+          ++(*p)[1] = 1;
+          **++p = i + 1;
+        }
+        else
+          ++(*p)[1];
+        ++i;
+      }
+
+      return a;
+    }
+  };
+  JLN_MP_DIAGNOSTIC_POP()
+
+  template<>
+  struct mk_split_keep_separator_indexes<> : mk_split_indexes<>
+  {};
+}
+/// \endcond

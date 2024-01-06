@@ -87,5 +87,11 @@ namespace jln::mp::detail
   struct memoizer_impl : decltype(memoized_call<C>(static_cast<list<Params...>*>(nullptr)))
   {};
 }
+#else
+namespace jln::mp::detail
+{
+  struct uncallable_function
+  {};
+}
 #endif
 /// \endcond

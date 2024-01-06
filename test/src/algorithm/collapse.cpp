@@ -13,8 +13,6 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_mulary_pack<collapse, emp::numbers<1, 0, 1>>();
-
   using keys = emp::numbers<0, 0, 2, 2, 2, 0, 1, 0, 2, 2>;
   using result = list<list<_0, _1>, list<_2, _3, _4>, list<_5>, list<_6>, list<_7>, list<_8, _9>>;
 
@@ -46,8 +44,10 @@ TEST()
     .not_invocable<_0>()
     ;
 
+  ut::same<list<>, smp::collapse<list<>, bad_function>::f<>>();
+
   ut::not_invocable<smp::collapse<int>>();
-  ut::not_invocable<smp::collapse<list<>, bad_function>>();
+  ut::not_invocable<smp::collapse<list<>, bad_function>, _0>();
   ut::not_invocable<smp::collapse<seq_0_1, bad_function>, _0, _1>();
 }
 

@@ -184,3 +184,13 @@
 
 #endif
 //@}
+
+// special diagnostic
+//@{
+#if JLN_MP_CLANG >= 1600
+#  define JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE() \
+  JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunsafe-buffer-usage")
+#else
+#  define JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
+#endif
+//@}

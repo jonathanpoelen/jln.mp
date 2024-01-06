@@ -2,17 +2,18 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/algorithm/same.hpp>
-#include <jln/mp/functional/try.hpp>
-
+#include <jln/mp/algorithm/split_before.hpp>
 
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
+    template<bool... bs>
+    struct mk_group_indexes;
+
     template<bool>
-    struct _group;
+    struct group_impl;
   }
   /// \endcond
 
@@ -29,114 +30,102 @@ namespace jln::mp
   ///   >
   ///   \endcode
   /// \treturn \sequence of \list
-  template<class Cmp, class C = listify>
-  struct group_by
+  template<class Cmp, class F = listify, class C = listify>
+  struct group_by_with
   {
     template<class... xs>
-    using f = typename detail::_group<sizeof...(xs) != 0>
-      ::template f<C, Cmp, xs...>;
+    using f = typename detail::group_impl<!sizeof...(xs)>
+      ::template f<JLN_MP_TRACE_F(Cmp), xs...>
+      ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
   };
 
+  template<class F = listify, class C = listify>
+  using group_with = group_by_with<same<>, F, C>;
+
+  template<class Cmp, class C = listify>
+  using group_by = group_by_with<Cmp, listify, C>;
+
   template<class C = listify>
-  using group = group_by<same<>, C>;
+  using group = group_by_with<same<>, listify, C>;
 
   namespace emp
   {
-    template<class L, class Cmp, class C = mp::listify>
-    using group_by = unpack<L, mp::group_by<Cmp, C>>;
+    template<class L, class Cmp, class F = listify, class C = listify>
+    using group_by_with = unpack<L, mp::group_by_with<Cmp, F, C>>;
 
-    template<class L, class C = mp::listify>
-    using group = unpack<L, mp::group<C>>;
+    template<class L, class F = listify, class C = listify>
+    using group_with = unpack<L, mp::group_by_with<mp::same<>, F, C>>;
+
+    template<class L, class Cmp, class C = listify>
+    using group_by = unpack<L, mp::group_by_with<Cmp, listify, C>>;
+
+    template<class L, class C = listify>
+    using group = unpack<L, mp::group_by_with<mp::same<>, listify, C>>;
   }
 }
 
 
-#include <jln/mp/algorithm/split.hpp>
-#include <jln/mp/algorithm/transform.hpp>
-#include <jln/mp/list/take_front.hpp>
-#include <jln/mp/list/push_front.hpp>
-#include <jln/mp/functional/lift.hpp>
-
 /// \cond
+#include <jln/mp/list/take_front.hpp>
+#include <jln/mp/functional/try.hpp>
+
 namespace jln::mp::detail
 {
-  template<class x, class C>
-  struct _group_insert_x
+  template<class Cmp, class x, class ys, class... xs>
+  struct mk_pairs_indexes;
+
+  template<class Cmp, class x, class... ys, class... xs>
+  struct mk_pairs_indexes<Cmp, x, list<ys...>, xs...>
+    : array_int2_index_dispatcher<
+      mk_split_before_indexes<
+        false,
+        JLN_MP_RAW_EXPR_TO_BOOL_NOT(Cmp::template f<ys, xs>::value)...
+      >
+    >
+  {};
+
+  template<class... ys>
+  struct smp_mk_pairs_indexes
   {
-    template<class seq, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(
-      xs, C,
-      typename detail::_unpack<push_front<x>, seq>::type,
-      xs...
-    );
+    template<class Cmp, class x, class... xs>
+    using f = array_int2_index_dispatcher<
+      mk_split_before_indexes<
+        false,
+        JLN_MP_RAW_EXPR_TO_BOOL_NOT(Cmp::template f<ys, xs>::value)...
+      >
+    >;
   };
 
-  template<class x>
-  struct _group_insert_x<x, listify>
+  template<class Cmp, class TC, class FC, class x, class... ys, class... xs>
+  struct mk_pairs_indexes<try_<Cmp, TC, FC>, x, list<ys...>, xs...>
+    : try_<smp_mk_pairs_indexes<ys...>>
+    ::template f<try_<Cmp, TC, FC>, x, xs...>
+  {};
+
+  // needed when JLN_MP_ENABLE_DEBUG is enabled
+  template<class Cmp, class x, class... ys, class... xs>
+  struct mk_pairs_indexes<memoize<Cmp>, x, list<ys...>, xs...>
+    : try_<smp_mk_pairs_indexes<ys...>>
+    ::template f<memoize<Cmp>, x, xs...>
+  {};
+
+  template<>
+  struct group_impl<false>
   {
-    template<class seq, class... xs>
-    using f = list<
-      typename detail::_unpack<push_front<x>, seq>::type,
+    template<class Cmp, class x, class... xs>
+    using f = mk_pairs_indexes<
+      JLN_MP_TRACE_F(Cmp),
+      x,
+      typename take_front_c<sizeof...(xs)>::template f<x, xs...>,
       xs...
     >;
   };
 
-  template<class x, class F, class C>
-  struct _group_insert_x<x, transform<unpack<F>, C>>
-  {
-    template<class seq, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(
-      xs, C,
-      typename detail::_unpack<push_front<x, F>, seq>::type,
-      typename detail::_unpack<F, xs>::type...
-    );
-  };
-
-  template<class...>
-  struct _group_impl;
-
-  template<class C, class Cmp, class x, class... xs, class... ys>
-  struct _group_impl<C, Cmp, x, list<ys...>, xs...>
-  {
-    using type = typename fold_right<JLN_MP_LIFT_WRAP(split_state), unpack<_group_insert_x<x, C>>>
-      ::template f<list<list<>>,
-                   list<number<Cmp::template f<ys, xs>::value
-                     ? split_keep : split_before>, xs>...
-      >;
-  };
-
-  template<class... ys>
-  struct _smp_group_impl
-  {
-    template<class C, class Cmp, class x, class... xs>
-    using f = typename fold_right<JLN_MP_LIFT_WRAP(split_state), unpack<_group_insert_x<x, C>>>
-      ::template f<list<list<>>,
-                   list<number<Cmp::template f<ys, xs>::value
-                     ? split_keep : split_before>, xs>...
-      >;
-  };
-
-  template<class C, class Cmp, class TC, class FC, class x, class... xs, class... ys>
-  struct _group_impl<C, try_<Cmp, TC, FC>, x, list<ys...>, xs...>
-  {
-    using type = typename try_<_smp_group_impl<ys...>>
-      ::template f<C, try_<Cmp, TC, FC>, x, xs...>;
-  };
-
   template<>
-  struct _group<true>
+  struct group_impl<true>
   {
-    template<class C, class Cmp, class x, class... xs>
-    using f = typename _group_impl<
-      C, Cmp, x,
-      typename take_front_c<sizeof...(xs)>::template f<x, xs...>,
-      xs...
-    >::type;
+    template<class Cmp, class... xs>
+    using f = call_trace_c0_arg;
   };
-
-  template<>
-  struct _group<false>
-    : call_trace_c0_arg
-  {};
 }
 /// \endcond

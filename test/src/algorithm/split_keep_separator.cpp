@@ -32,8 +32,10 @@ TEST()
   ut::same<list<e, seq_0, seq_1, seq_0, seq_2, seq_0, seq_3, seq_0, e>,
     emp::split_keep_separator<seq_0_1_0_2_0_3_0, _0>>();
 
-  test_mulary_pack<split_keep_separator_if>();
+  test_unary_pack<split_keep_separator_if>();
   test_mulary_pack<split_keep_separator_if, identity>();
+  test_unary_pack<split_keep_separator_if_with>();
+  test_mulary_pack<split_keep_separator_if_with, identity>();
 
   test_context<split_keep_separator_if<not_<>>, smp::split_keep_separator_if<smp::not_<>>>()
     .test<e>()
@@ -48,16 +50,30 @@ TEST()
     .not_invocable<bad_number>()
     ;
 
-  test_context<split_keep_separator<_2>, smp::split_keep_separator<_2>, 0>()
+  test_context<split_keep_separator<_2>, smp::split_keep_separator<_2>>()
     .test<list<>>()
     .test<list<seq_1>, _1>()
     .test<list<seq_1, seq_2, seq_3, seq_2, seq_5>, _1, _2, _3, _2, _5>()
     ;
 
+  test_context<split_keep_separator_with<_2, size<>>, smp::split_keep_separator_with<_2, smp::size<>>>()
+    .test<list<>>()
+    .test<list<_1>, _1>()
+    .test<list<_1, _1, _3>, _1, _2, _3, _4, _5>()
+    .test<list<_1, _1, _1, _1, _1>, _1, _2, _3, _2, _5>()
+    ;
+
+  ut::same<list<>, smp::split_keep_separator_if_with<smp::is<int>, bad_function>::f<>>();
+  ut::same<list<>, smp::split_keep_separator_if_with<bad_function, bad_function>::f<>>();
+
   ut::not_invocable<smp::split_keep_separator<void, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::split_keep_separator_if<bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::split_keep_separator_if<always<void>, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::split_keep_separator_if<bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::split_keep_separator_if_with<bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::split_keep_separator_if_with<smp::always<na>>, _1, _1, _1>();
+  ut::not_invocable<smp::split_keep_separator_if_with<smp::is<int>, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::split_keep_separator_if_with<smp::is<int>, smp::always<na>>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

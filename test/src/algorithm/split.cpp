@@ -30,6 +30,8 @@ TEST()
 
   test_unary_pack<split_if>();
   test_mulary_pack<split_if, identity>();
+  test_unary_pack<split_if_with>();
+  test_mulary_pack<split_if_with, identity>();
 
   test_context<split_if<not_<>>, smp::split_if<smp::not_<>>>()
     .test<list<>>()
@@ -44,17 +46,31 @@ TEST()
     .not_invocable<bad_number>()
     ;
 
-  test_context<split<_2>, smp::split<_2>, 0>()
+  test_context<split<_2>, smp::split<_2>>()
     .test<list<>>()
     .test<list<seq_1>, _1>()
     .test<list<seq_1, seq_3, seq_5>, _1, _2, _3, _2, _5>()
     ;
+
+  test_context<split_with<_2, size<>>, smp::split_with<_2, smp::size<>>>()
+    .test<list<>>()
+    .test<list<_1>, _1>()
+    .test<list<_1, _2>, _1, _2, _3, _5>()
+    .test<list<_1, _1, _1>, _1, _2, _3, _2, _5>()
+    ;
+
+  ut::same<list<>, smp::split_if_with<smp::is<int>, bad_function>::f<>>();
+  ut::same<list<>, smp::split_if_with<bad_function, bad_function>::f<>>();
 
   ut::not_invocable<smp::split<void, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::split_if<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::split_if<bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::split_if<always<void>, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::split_if<bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::split_if_with<bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::split_if_with<smp::always<na>>, _1, _1, _1>();
+  ut::not_invocable<smp::split_if_with<smp::is<int>, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::split_if_with<smp::is<int>, smp::always<na>>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

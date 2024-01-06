@@ -23,7 +23,9 @@ TEST()
   using namespace ut::ints;
 
   test_binary_pack<group_by>();
-  test_mulary_pack<group_by, listify>();
+  test_mulary_pack<group_by, identity>();
+  test_binary_pack<group_by_with>();
+  test_mulary_pack<group_by_with, identity>();
 
   ut::same<list<list<_0>, list<_1, _1>, list<_2, _2, _2>>,
     emp::group<emp::numbers<0, 1, 1, 2, 2, 2>>>();
@@ -57,16 +59,17 @@ TEST()
     .test<list<seq_0, seq_1, seq_3>, _0, _1, _3>()
     ;
 
-  test_context<
-    group<transform<unpack<size<>>>>,
-    smp::group<smp::transform<smp::unpack<smp::size<>>>>
-  >()
+  test_context<group_with<size<>>, smp::group_with<smp::size<>>>()
     .test<list<>>()
     .test<list<_3, _2, _1, _1>,
       _0, _0, _0, _1, _1, _0, _2>()
     .test<list<_3>, _1, _1, _1>()
     .test<list<_1, _1, _1>, _0, _1, _3>()
     ;
+
+  ut::same<list<>, smp::group_by_with<cmp, bad_function>::f<>>();
+  ut::same<list<>, smp::group_by_with<bad_function, bad_function>::f<>>();
+  ut::same<list<list<int>>, smp::group_by_with<bad_function>::f<int>>();
 
   ut::not_invocable<smp::group<bad_function>>();
   ut::not_invocable<smp::group<bad_function>, _1, _1, _1, _2>();
@@ -76,6 +79,10 @@ TEST()
   ut::not_invocable<smp::group_by<cmp, bad_function>, _1, _1, _1>();
   ut::not_invocable<smp::group_by<bad_function, bad_function>>();
   ut::not_invocable<smp::group_by<bad_function, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::group_by_with<smp::always<na>>, _1, _1>();
+  ut::not_invocable<smp::group_by_with<always<void>>, _1, _1>();
+  ut::not_invocable<smp::group_by_with<cmp, bad_function>, _1, _1, _1>();
+  ut::not_invocable<smp::group_by_with<bad_function, bad_function>, _1, _1, _1>();
 }
 
 TEST_SUITE_END()
