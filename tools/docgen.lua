@@ -252,7 +252,7 @@ preproc = P{
      * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
      * ',' * ws0 * C((1-S'()' + balancedparent)^1)
      * ')'
-     / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
+     / function(f) return preproc:match(f) end
     )
   + (P'JLN_MP_TRACE_F(' * C((1-S'()' + balancedparent)^1) * ')'
      / function(f) return preproc:match(f) end
@@ -279,6 +279,15 @@ preproc = P{
     )
   + (P'JLN_MP_IDENT(' * C((1-S'()' + balancedparent)^1) * ')'
      / function(f) return preproc:match(f) end
+    )
+  + (P'JLN_MP_' * P'RAW_'^0 * 'EXPR_TO_BOOL(' * C((1-S'()' + balancedparent)^1) * ')'
+     / function(f) return 'bool(' .. preproc:match(f) .. ')' end
+    )
+  + (P'JLN_MP_RAW_EXPR_TO_BOOL_NOT(' * C((1-S'()' + balancedparent)^1) * ')'
+     / function(f) return '!' .. preproc:match(f) end
+    )
+  + (P'JLN_MP_EXPR_TO_BOOL_NOT(' * C((1-S'()' + balancedparent)^1) * ')'
+     / function(f) return '!(' .. preproc:match(f) .. ')' end
     )
   + (P'JLN_MP_TPL_AUTO_OR_INT' / 'auto /*or int_*/')
   + (P'JLN_MP_TRACE_TYPENAME' / '')
