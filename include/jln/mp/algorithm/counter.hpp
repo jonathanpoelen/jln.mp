@@ -85,7 +85,6 @@ namespace jln::mp
 # include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
 #else
 # include <jln/mp/algorithm/make_int_sequence.hpp>
-# include <initializer_list>
 #endif
 
 namespace jln::mp::detail
@@ -154,14 +153,14 @@ namespace jln::mp::detail
     return i::value;
   }
 
-  template<std::size_t N>
-  constexpr array<N> count_elems(std::initializer_list<int_> l)
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
+  template<std::size_t N, class... T>
+  constexpr array<N> count_elems(T... i)
   {
     array<N> counter{};
 
-    for (auto i : l) {
-      ++counter.elems[i];
-    }
+    (..., ++counter.elems[i]);
 
     return counter;
   }
@@ -177,9 +176,7 @@ namespace jln::mp::detail
       {
         constexpr inherit<list<number<ints>, unique_xs>...>* indexed = nullptr;
 
-        constexpr auto counters = count_elems<
-          sizeof...(ints)
-        >(std::initializer_list<int_>{index_base<xs>(indexed)...});
+        constexpr auto counters = count_elems<sizeof...(ints)>(index_base<xs>(indexed)...);
 
         return always<typename C::template f<
           F<unique_xs, number<counters.elems[ints]>>...
@@ -187,6 +184,7 @@ namespace jln::mp::detail
       }
     };
   };
+  JLN_MP_DIAGNOSTIC_POP()
 
 #endif
 

@@ -6,7 +6,6 @@
 #include <jln/mp/smp/contract.hpp>
 #include <jln/mp/algorithm/arrange.hpp>
 #include <jln/mp/detail/type_identity.hpp>
-#include <initializer_list>
 
 /// \cond
 namespace jln::mp::detail
@@ -16,7 +15,8 @@ namespace jln::mp::detail
 
   struct arrange_to_smp_arrange;
 
-  constexpr int max_idx_arrange(std::initializer_list<int> l);
+  template<class... T>
+  constexpr int max_idx_arrange(T... n);
 }
 /// \endcond
 
@@ -30,11 +30,11 @@ namespace jln::mp::smp
   >::template f<C>::type;
 
   template<int... ints>
-  using arrange_c = typename detail::smp_arrange_c<detail::max_idx_arrange({ints...})>
+  using arrange_c = typename detail::smp_arrange_c<detail::max_idx_arrange(ints...)>
     ::template make<listify, ints...>;
 
   template<class C, int... ints>
-  using arrange_c_with = typename detail::smp_arrange_c<detail::max_idx_arrange({ints...})>
+  using arrange_c_with = typename detail::smp_arrange_c<detail::max_idx_arrange(ints...)>
     ::template make<C, ints...>;
 }
 
@@ -49,21 +49,24 @@ namespace jln::mp::detail
     using type = smp::arrange_c_with<sfinae<C>, ints...>;
   };
 
-  constexpr int max_idx_arrange(std::initializer_list<int> l)
+  template<class... T>
+  constexpr int max_idx_arrange(T... n)
   {
-    if (l.size() == 0) {
-      return -1; // no index
+    int r = -1; // empty list
+
+    if constexpr (sizeof...(n)) {
+      r = 0;
+      int a[]{n...};
+      for (int n : a) {
+        if (n < 0) {
+          return -2; // negative index
+        }
+        if (n > r) {
+          r = n;
+        }
+      }
     }
 
-    int r = 0;
-    for (int n : l) {
-      if (n < 0) {
-        return -2; // negative index
-      }
-      if (n > r) {
-        r = n;
-      }
-    }
     return r; // r >= 0
   }
 
@@ -107,7 +110,7 @@ namespace jln::mp::detail
     template<class C, int... ints>
     struct f<apply_indexed_v<arrange_impl<C, ints...>>>
     {
-      using type = typename detail::smp_arrange_c<detail::max_idx_arrange({ints...})>
+      using type = typename detail::smp_arrange_c<detail::max_idx_arrange(ints...)>
         ::template make<C, ints...>;
     };
   };

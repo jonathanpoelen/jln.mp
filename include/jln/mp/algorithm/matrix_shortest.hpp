@@ -7,15 +7,12 @@
 #include <jln/mp/list/take_back.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/functional/each.hpp>
-#include <initializer_list>
 
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-    constexpr int_ min_lengths(std::initializer_list<int_> l);
-
     template<
       template<unsigned, class> class Take,
       class F, class EvenSizeF, class C, int_ min, class... ns>
@@ -25,11 +22,16 @@ namespace jln::mp
       ::template f<unpack<Take<min, F>>, EvenSizeF>
     ...>;
 
+    constexpr int_ min_lengths();
+
+    template<class... Ts>
+    constexpr int_ min_lengths(int_ r, Ts... len);
+
     template<
       template<unsigned, class> class Take,
       class F, class EvenSizeF, class C, class... ns>
     using matrix_shortest_impl = matrix_shortest_each_impl<
-      Take, F, EvenSizeF, C, min_lengths({ns::value...}), ns...>;
+      Take, F, EvenSizeF, C, min_lengths(ns::value...), ns...>;
   }
   /// \endcond
 
@@ -117,23 +119,16 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  constexpr int_ min_lengths(std::initializer_list<int_> l)
+  constexpr int_ min_lengths()
   {
-    if (l.size()) {
-      auto first = l.begin();
-      auto last = l.end();
-
-      int_ r = *first++;
-      for (; first != last; ++first) {
-        if (*first < r) {
-          r = *first;
-        }
-      }
-
-      return r;
-    }
-
     return 0;
+  }
+
+  template<class... Ts>
+  constexpr int_ min_lengths(int_ r, Ts... len)
+  {
+    (..., ((len < r) ? void(r = len) : void()));
+    return r;
   }
 }
 /// \endcond

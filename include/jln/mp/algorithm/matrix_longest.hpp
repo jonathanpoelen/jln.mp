@@ -9,7 +9,6 @@
 #include <jln/mp/functional/each.hpp>
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/functional/bind_back.hpp>
-#include <initializer_list>
 
 namespace jln::mp
 {
@@ -26,11 +25,14 @@ namespace jln::mp
       >
     ...>;
 
-    constexpr int_ max_lengths(std::initializer_list<int_> l);
+    constexpr int_ max_lengths();
+
+    template<class... Ts>
+    constexpr int_ max_lengths(int_ r, Ts... len);
 
     template<class FillValue, class F, class EvenSizeF, class C, class... ns>
     using matrix_longest_impl = matrix_longest_each_impl<
-      FillValue, F, EvenSizeF, C, max_lengths({ns::value...}), ns...>;
+      FillValue, F, EvenSizeF, C, max_lengths(ns::value...), ns...>;
   }
   /// \endcond
 
@@ -119,14 +121,15 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  constexpr int_ max_lengths(std::initializer_list<int_> l)
+  constexpr int_ max_lengths()
   {
-    int_ r = 0;
-    for (int_ n : l) {
-      if (n > r) {
-        r = n;
-      }
-    }
+    return 0;
+  }
+
+  template<class... Ts>
+  constexpr int_ max_lengths(int_ r, Ts... len)
+  {
+    (..., ((len > r) ? void(r = len) : void()));
     return r;
   }
 }
