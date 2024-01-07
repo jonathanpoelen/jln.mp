@@ -33,10 +33,16 @@ namespace jln::mp
   struct counter_wrapped_with
   {
     template<class... xs>
+#if JLN_MP_GCC
     using f = typename decltype(
       unique<detail::mk_counter>::f<xs...>
       ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F)::template f, xs...>()
     )::template f<>;
+#else
+    using f = typename unique<detail::mk_counter>::f<xs...>
+      ::template counter<xs...>
+      ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F)::template f>;
+#endif
   };
 
   /// Counts all distinct elements and returns a list of pairs containing
@@ -73,10 +79,16 @@ namespace jln::mp
   struct counter_wrapped_with<lift<F>, C>
   {
     template<class... xs>
+#if JLN_MP_GCC
     using f = typename decltype(
       unique<detail::mk_counter>::f<xs...>
       ::template f<JLN_MP_TRACE_F(C), F, xs...>()
     )::template f<>;
+#else
+    using f = typename unique<detail::mk_counter>::f<xs...>
+      ::template counter<xs...>
+      ::template f<JLN_MP_TRACE_F(C), F>;
+#endif
   };
 }
 #endif
@@ -100,6 +112,29 @@ namespace jln::mp::detail
     : array<1>
   {};
 
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
+
+#if JLN_MP_GCC || (__cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L)
+  template<std::size_t N, int_... i>
+  constexpr array<N> count_elems()
+  {
+    array<N> counter{};
+    (..., ++counter.elems[i]);
+    return counter;
+  }
+#else
+  template<std::size_t N, int_... i>
+  struct count_elems
+  {
+    static constexpr auto counters = []{
+      array<N> counter {};
+      (..., ++counter.elems[i]);
+      return counter;
+    }();
+  };
+#endif
+
 #if JLN_MP_GCC
 
   template<class T, int_ i>
@@ -108,23 +143,13 @@ namespace jln::mp::detail
     return i;
   }
 
-  template<std::size_t N, int_... ints>
-  constexpr array<N> count_elems()
-  {
-    array<N> counter{};
-
-    (..., ++counter.elems[ints]);
-
-    return counter;
-  }
-
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wunused-but-set-variable")
   template<class, int_... ints>
   struct counter_impl
   {
     template<class... unique_xs>
-    struct impl
+    struct unique
     {
       template<class C, template<class...> class F, class... xs>
       static auto f()
@@ -153,46 +178,49 @@ namespace jln::mp::detail
     return i::value;
   }
 
-  JLN_MP_DIAGNOSTIC_PUSH()
-  JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
-  template<std::size_t N, class... T>
-  constexpr array<N> count_elems(T... i)
-  {
-    array<N> counter{};
-
-    (..., ++counter.elems[i]);
-
-    return counter;
-  }
-
-  template<class, int_... ints>
+ template<class, int_... ints>
   struct counter_impl
   {
     template<class... unique_xs>
-    struct impl
+    struct unique
     {
-      template<class C, template<class...> class F, class... xs>
-      static auto f()
+      static constexpr detail::inherit<list<number<ints>, unique_xs>...>* indexed = nullptr;
+
+#if __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L
+      template<auto counters>
+      struct impl
       {
-        constexpr inherit<list<number<ints>, unique_xs>...>* indexed = nullptr;
+        template<class C, template<class...> class F>
+        using f = typename C::template f<F<unique_xs, number<counters.elems[ints]>>...>;
+      };
 
-        constexpr auto counters = count_elems<sizeof...(ints)>(index_base<xs>(indexed)...);
+      template<class... xs>
+      struct counter : impl<count_elems<sizeof...(ints), index_base2<xs>(indexed)...>()>
+      {};
+#else
+      template<class S>
+      struct impl
+      {
+        template<class C, template<class...> class F>
+        using f = typename C::template f<F<unique_xs, number<S::counters.elems[ints]>>...>;
+      };
 
-        return always<typename C::template f<
-          F<unique_xs, number<counters.elems[ints]>>...
-        >>();
-      }
+      template<class... xs>
+      struct counter : impl<count_elems<sizeof...(ints), index_base<xs>(indexed)...>>
+      {};
+#endif
     };
   };
-  JLN_MP_DIAGNOSTIC_POP()
 
 #endif
+
+  JLN_MP_DIAGNOSTIC_POP()
 
   struct mk_counter
   {
     template<class... xs>
     using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), counter_impl)
-      ::template impl<xs...>;
+      ::template unique<xs...>;
   };
 }
 /// \endcond
