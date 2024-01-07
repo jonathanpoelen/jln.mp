@@ -16,7 +16,9 @@ namespace jln::mp::smp
 
   template<class F = listify, class C = listify>
   using counter_wrapped_with = contract<mp::counter_wrapped_with<
-    assume_binary<F>, detail::smp_listify_or_monadic_xs<F, C>>>;
+    assume_binary<F>,
+    typename detail::smp_listify_or_monadic_xs<F>::template f<C>
+  >>;
 }
 
 namespace jln::mp::detail

@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/smp/assume.hpp>
-#include <jln/mp/smp/contract.hpp>
-#include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/algorithm/partition.hpp>
+#include <jln/mp/detail/smp_listify_or_monadic_xs.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -26,9 +24,9 @@ namespace jln::mp::smp
 }
 
 
-#include <jln/mp/functional/monadic.hpp>
-
 /// \cond
+#include <jln/mp/detail/smp_listify_or_monadic_xs.hpp>
+
 namespace jln::mp::detail
 {
   template<class F>
@@ -44,7 +42,11 @@ namespace jln::mp::detail
     template<class... xs>
     using f = typename mp::transform<Pred, mp::try_<partition_caller_f<F>>>
       ::template f<xs...>
-      ::template g<mp::monadic_xs<C>::template f, identity::f, xs...>;
+      ::template g<
+        smp_listify_or_monadic_xs<F>::template f<C>::template f,
+        identity::f,
+        xs...
+      >;
   };
 
   template<class Pred>

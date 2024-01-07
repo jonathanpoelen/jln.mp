@@ -2,27 +2,30 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/smp/assume.hpp>
-#include <jln/mp/smp/contract.hpp>
-#include <jln/mp/smp/list/listify.hpp>
-#include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/algorithm/matrix_longest.hpp>
+#include <jln/mp/detail/smp_listify_or_monadic_xs.hpp>
 
 namespace jln::mp::smp
 {
   template<class FillValue, class F = listify, class C = listify>
-  using left_matrix_longest_with = try_contract<
-    mp::left_matrix_longest_with<FillValue, subcontract<F>, monadic_xs<subcontract<C>>>>;
+  using left_matrix_longest_with = try_contract<mp::left_matrix_longest_with<
+    FillValue, subcontract<F>,
+    typename detail::smp_listify_or_monadic_xs<F>::template f<C>
+  >>;
 
   template<class FillValue, class C = listify>
-  using left_matrix_longest = left_matrix_longest_with<FillValue, listify, C>;
+  using left_matrix_longest = try_contract<mp::left_matrix_longest_with<
+    FillValue, mp::listify, assume_lists<C>>>;
 
   template<class FillValue, class F = listify, class C = listify>
-  using right_matrix_longest_with = try_contract<
-    mp::right_matrix_longest_with<FillValue, subcontract<F>, monadic_xs<subcontract<C>>>>;
+  using right_matrix_longest_with = try_contract<mp::right_matrix_longest_with<
+    FillValue, subcontract<F>,
+    typename detail::smp_listify_or_monadic_xs<F>::template f<C>
+  >>;
 
   template<class FillValue, class C = listify>
-  using right_matrix_longest = right_matrix_longest_with<FillValue, listify, C>;
+  using right_matrix_longest = try_contract<mp::right_matrix_longest_with<
+    FillValue, mp::listify, assume_lists<C>>>;
 }
 
 /// \cond

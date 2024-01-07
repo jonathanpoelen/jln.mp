@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <jln/mp/detail/smp_listify_or_monadic_xs.hpp>
 #include <jln/mp/smp/algorithm/same.hpp>
-#include <jln/mp/smp/algorithm/split.hpp>
 #include <jln/mp/algorithm/group.hpp>
 
 /// \cond
@@ -20,7 +20,7 @@ namespace jln::mp::smp
   using group_by_with = typename detail::smp_group_contract<assume_binary<Cmp>>
     ::template f<
       subcontract<F>,
-      typename detail::smp_split_continuation<subcontract<F>>::template f<C>
+      typename detail::smp_listify_or_monadic_xs<subcontract<F>>::template f<C>
     >;
 
   template<class Cmp, class C = listify>
@@ -31,7 +31,7 @@ namespace jln::mp::smp
   using group_with = contract<mp::group_by_with<
     mp::same<>,
     subcontract<F>,
-    typename detail::smp_split_continuation<subcontract<F>>::template f<C>
+    typename detail::smp_listify_or_monadic_xs<subcontract<F>>::template f<C>
   >>;
 
   template<class C = listify>

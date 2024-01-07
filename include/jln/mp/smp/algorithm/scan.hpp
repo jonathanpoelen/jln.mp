@@ -3,16 +3,15 @@
 #pragma once
 
 #include <jln/mp/smp/concepts.hpp>
-#include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/algorithm/scan.hpp>
-#include <jln/mp/functional/monadic.hpp>
+#include <jln/mp/detail/smp_listify_or_monadic_xs.hpp>
 
 namespace jln::mp::smp
 {
   template<class F, class C = listify>
   using scan = contract<mp::scan<
     monadic_xs<assume_binary<F>>,
-    monadic_xs<subcontract<C>>
+    typename detail::smp_listify_or_monadic_xs<F>::template f<C>
   >>;
 }
 

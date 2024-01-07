@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/detail/smp_listify_or_monadic_xs.hpp>
 #include <jln/mp/smp/utility/is.hpp>
 #include <jln/mp/algorithm/split.hpp>
 
@@ -18,9 +18,6 @@ namespace jln::mp::detail
   struct smp_split_if_with;
 #endif
 
-  template<class F>
-  struct smp_split_continuation;
-
   template<class Pred>
   struct smp_split_contract;
 }
@@ -33,13 +30,13 @@ namespace jln::mp::smp
     ::template f<JLN_MP_SMP_SPLIT<
       assume_unary<Pred>,
       subcontract<F>,
-      typename detail::smp_split_continuation<subcontract<F>>::template f<C>
+      typename detail::smp_listify_or_monadic_xs<F>::template f<C>
     >>;
 
   template<class x, class F = listify, class C = listify>
   using split_with = contract<JLN_MP_SMP_SPLIT<
     mp::is<x>, subcontract<F>,
-    typename detail::smp_split_continuation<subcontract<F>>::template f<C>
+    typename detail::smp_listify_or_monadic_xs<F>::template f<C>
   >>;
 
   template<class Pred, class C = listify>
@@ -83,21 +80,6 @@ namespace jln::mp::detail
       ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
   };
 #endif
-
-
-  template<class F>
-  struct smp_split_continuation
-  {
-    template<class C>
-    using f = monadic_xs<subcontract<C>>;
-  };
-
-  template<>
-  struct smp_split_continuation<listify>
-  {
-    template<class C>
-    using f = assume_lists<C>;
-  };
 
 
   template<class Pred>

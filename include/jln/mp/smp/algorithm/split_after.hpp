@@ -25,13 +25,13 @@ namespace jln::mp::smp
   using split_after_if_with = typename detail::smp_split_contract<assume_unary<Pred>>
     ::template f<JLN_MP_SMP_SPLIT_AFTER<
       assume_unary<Pred>, subcontract<F>,
-      typename detail::smp_split_continuation<subcontract<F>>::template f<C>
+      typename detail::smp_listify_or_monadic_xs<F>::template f<C>
     >>;
 
   template<class x, class F = listify, class C = listify>
   using split_after_with = contract<JLN_MP_SMP_SPLIT_AFTER<
     mp::is<x>, subcontract<F>,
-    typename detail::smp_split_continuation<subcontract<F>>::template f<C>
+    typename detail::smp_listify_or_monadic_xs<F>::template f<C>
   >>;
 
   template<class Pred, class C = listify>

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/smp/algorithm/circulant_matrix.hpp>
+#include <jln/mp/detail/smp_listify_or_monadic_xs.hpp>
 #include <jln/mp/smp/algorithm/transform.hpp>
 #include <jln/mp/smp/utility/unpack.hpp>
 #include <jln/mp/list/size.hpp>
@@ -19,7 +19,10 @@ namespace jln::mp::smp
     mp::all_of<mp::is_list<>>,
     mp::if_<
       mp::transform<mp::unpack<mp::size<>>, mp::same<>>,
-      mp::zip_with<assume_unary_or_more<F>, detail::smp_listify_or_monadic_xs<F, C>>,
+      mp::zip_with<
+        assume_unary_or_more<F>,
+        typename detail::smp_listify_or_monadic_xs<F>::template f<C>
+      >,
       violation
     >
   >;

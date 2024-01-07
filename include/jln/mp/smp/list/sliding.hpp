@@ -55,6 +55,7 @@ namespace jln::mp::smp
 
 /// \cond
 #include <jln/mp/functional/monadic.hpp>
+
 namespace jln::mp::detail
 {
   template<class C>

@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/smp/algorithm/split.hpp>
 #include <jln/mp/algorithm/collapse.hpp>
+#include <jln/mp/detail/smp_listify_or_monadic_xs.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -17,14 +17,14 @@ namespace jln::mp::smp
 {
   template<class C, class F, class... keys>
   using collapse2_with = try_contract<mp::collapse2_with<
-    typename detail::smp_split_continuation<subcontract<F>>::template f<C>,
+    typename detail::smp_listify_or_monadic_xs<F>::template f<C>,
     subcontract<F>,
     keys...
   >>;
 
   template<class C, class F, int_... keys>
   using collapse2_with_c = try_contract<mp::collapse2_with<
-    typename detail::smp_split_continuation<subcontract<F>>::template f<C>,
+    typename detail::smp_listify_or_monadic_xs<F>::template f<C>,
     subcontract<F>,
     number<keys>...
   >>;

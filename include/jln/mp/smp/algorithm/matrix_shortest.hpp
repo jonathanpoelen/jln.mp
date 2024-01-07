@@ -2,27 +2,30 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/smp/assume.hpp>
-#include <jln/mp/smp/contract.hpp>
-#include <jln/mp/smp/list/listify.hpp>
-#include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/algorithm/matrix_shortest.hpp>
+#include <jln/mp/detail/smp_listify_or_monadic_xs.hpp>
 
 namespace jln::mp::smp
 {
   template<class F = listify, class C = listify>
-  using left_matrix_shortest_with = try_contract<
-    mp::left_matrix_shortest_with<subcontract<F>, monadic_xs<subcontract<C>>>>;
+  using left_matrix_shortest_with = try_contract<mp::left_matrix_shortest_with<
+    subcontract<F>,
+    typename detail::smp_listify_or_monadic_xs<F>::template f<C>
+  >>;
 
   template<class C = listify>
-  using left_matrix_shortest = left_matrix_shortest_with<listify, C>;
+  using left_matrix_shortest = try_contract<
+    mp::left_matrix_shortest_with<mp::listify, assume_lists<C>>>;
 
   template<class F = listify, class C = listify>
-  using right_matrix_shortest_with = try_contract<
-    mp::right_matrix_shortest_with<subcontract<F>, monadic_xs<subcontract<C>>>>;
+  using right_matrix_shortest_with = try_contract<mp::right_matrix_shortest_with<
+    subcontract<F>,
+    typename detail::smp_listify_or_monadic_xs<F>::template f<C>
+  >>;
 
   template<class C = listify>
-  using right_matrix_shortest = right_matrix_shortest_with<listify, C>;
+  using right_matrix_shortest = try_contract<
+    mp::right_matrix_shortest_with<mp::listify, assume_lists<C>>>;
 }
 
 /// \cond

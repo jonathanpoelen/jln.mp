@@ -6,6 +6,7 @@
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/list/lookup.hpp>
 #include <jln/mp/detail/expr_to_bool.hpp>
+#include <jln/mp/functional/identity.hpp>
 
 
 namespace jln::mp

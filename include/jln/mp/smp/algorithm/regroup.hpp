@@ -2,13 +2,10 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/smp/assume.hpp>
-#include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/detail/smp_listify_or_monadic_xs.hpp>
 #include <jln/mp/smp/algorithm/counter.hpp>
-#include <jln/mp/smp/algorithm/circulant_matrix.hpp>
 #include <jln/mp/smp/functional/invoke_twice.hpp>
 #include <jln/mp/smp/functional/lift.hpp>
-#include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/algorithm/regroup.hpp>
 
 /// \cond
@@ -34,8 +31,8 @@ namespace jln::mp::smp
       detail::counter_to_repeat<assume_unary_or_more<F>>,
       violation
     >,
-    detail::smp_listify_or_monadic_xs<F, C>>
-  >;
+    typename detail::smp_listify_or_monadic_xs<F>::template f<C>
+  >>;
 
   template<class Cmp = contract<mp::lift<std::is_same>>, class F = listify, class C = listify>
   using regroup_by_with = typename detail::smp_regroup_by_select<Cmp>::template f<C, F>;
@@ -44,12 +41,13 @@ namespace jln::mp::smp
   using regroup_by = regroup_by_with<Cmp, listify, C>;
 }
 
+
+/// \cond
 #include <jln/mp/smp/algorithm/copy.hpp>
 #include <jln/mp/smp/algorithm/unique.hpp>
 #include <jln/mp/smp/list/push_front.hpp>
 #include <jln/mp/functional/tee.hpp>
 
-/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>

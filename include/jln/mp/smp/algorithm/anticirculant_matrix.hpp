@@ -2,14 +2,15 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/smp/algorithm/circulant_matrix.hpp>
+#include <jln/mp/detail/smp_listify_or_monadic_xs.hpp>
 #include <jln/mp/algorithm/anticirculant_matrix.hpp>
 
 namespace jln::mp::smp
 {
   template<class F = listify, class C = listify>
   using anticirculant_matrix_with = contract<mp::anticirculant_matrix_with<
-    assume_unary_or_more<F>, detail::smp_listify_or_monadic_xs<F, C>
+    assume_unary_or_more<F>,
+    typename detail::smp_listify_or_monadic_xs<F>::template f<C>
   >>;
 
   template<class C = listify>
