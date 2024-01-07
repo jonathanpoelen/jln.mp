@@ -63,7 +63,6 @@ namespace jln::mp
 
 /// \cond
 #include <jln/mp/list/drop_front.hpp>
-#include <type_traits>
 
 namespace jln::mp::detail
 {
@@ -71,10 +70,10 @@ namespace jln::mp::detail
   struct ends_with_impl<true>
   {
     template<unsigned n, class L, class... xs>
-    using f = number<std::is_same<
+    using f = number<JLN_MP_IS_SAME(
       typename drop_front_c<sizeof...(xs) - n>::template f<xs...>,
       L
-    >::value>;
+    )>;
   };
 
   template<>

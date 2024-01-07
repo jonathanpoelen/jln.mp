@@ -124,6 +124,7 @@ namespace jln::mp
 }
 
 
+#include <jln/mp/algorithm/same_xs.hpp>
 #include <jln/mp/functional/call.hpp>
 
 #include <type_traits>
@@ -220,7 +221,7 @@ namespace jln::mp::detail
     using f = _recursively_as_much_as_possible_next;
 
     template<class... xs>
-    using g = typename recursively_next_step<std::is_same<list<x>, list<xs...>>::value>
+    using g = typename recursively_next_step<JLN_MP_IS_SAME(list<x>, list<xs...>)>
       ::template f<x>;
   };
 

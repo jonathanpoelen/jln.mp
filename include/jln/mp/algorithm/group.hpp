@@ -84,6 +84,16 @@ namespace jln::mp::detail
     >
   {};
 
+  template<class x, class... ys, class... xs>
+  struct mk_pairs_indexes<same<>, x, list<ys...>, xs...>
+    : array_int2_index_dispatcher<
+      mk_split_before_indexes<
+        false,
+        JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_IS_SAME(ys, xs))...
+      >
+    >
+  {};
+
   template<class... ys>
   struct smp_mk_pairs_indexes
   {

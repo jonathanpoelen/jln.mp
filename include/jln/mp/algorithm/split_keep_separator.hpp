@@ -68,6 +68,18 @@ namespace jln::mp
 }
 
 /// \cond
+namespace jln::mp
+{
+  template<class T, class F, class C>
+  struct split_keep_separator_if_with<is<T>, F, C>
+  {
+    template<class... xs>
+    using f = typename detail::array_int2_index_dispatcher<
+      detail::mk_split_keep_separator_indexes<JLN_MP_IS_SAME(T, xs)...>
+    >::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
+  };
+}
+
 namespace jln::mp::detail
 {
   JLN_MP_DIAGNOSTIC_PUSH()

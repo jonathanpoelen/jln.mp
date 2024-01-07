@@ -57,7 +57,7 @@ namespace jln::mp::detail
   struct substitute_if<is<T>, Replacement>
   {
     template<class x>
-    using f = typename conditional_c<std::is_same<T, x>::value>
+    using f = typename conditional_c<JLN_MP_IS_SAME(T, x)>
       ::template f<Replacement, x>;
   };
 
@@ -65,7 +65,7 @@ namespace jln::mp::detail
   struct substitute_if<is_not<T>, Replacement>
   {
     template<class x>
-    using f = typename conditional_c<std::is_same<T, x>::value>
+    using f = typename conditional_c<JLN_MP_IS_SAME(T, x)>
       ::template f<x, Replacement>;
   };
 

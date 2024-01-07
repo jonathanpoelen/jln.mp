@@ -33,6 +33,7 @@ namespace jln::mp
 
 /// \cond
 #include <jln/mp/list/size.hpp>
+#include <jln/mp/algorithm/same.hpp>
 
 namespace jln::mp
 {
@@ -40,7 +41,7 @@ namespace jln::mp
   struct if_<size<>, TC, FC>
   {
     template<class... xs>
-    using f = typename mp::conditional_c<!sizeof...(xs)>
+    using f = typename mp::conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
       ::template f<xs...>;
   };
@@ -50,6 +51,26 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename mp::conditional_c<sizeof...(xs) == i>
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+      ::template f<xs...>;
+  };
+
+  template<class TC, class FC>
+  struct if_<same<>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<emp::same_xs_v<xs...>>
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+      ::template f<xs...>;
+  };
+
+  template<class C, class TC, class FC>
+  struct if_<same<C>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<
+      JLN_MP_TRACE_F(C)::template f<number<emp::same_xs_v<xs...>>>::value
+    >
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };

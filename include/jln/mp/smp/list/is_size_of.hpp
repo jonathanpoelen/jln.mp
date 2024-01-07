@@ -6,6 +6,7 @@
 #include <jln/mp/smp/list/size.hpp>
 #include <jln/mp/smp/utility/is.hpp>
 #include <jln/mp/list/is_size_of.hpp>
+#include <type_traits> // std::void_t
 
 namespace jln::mp::smp
 {

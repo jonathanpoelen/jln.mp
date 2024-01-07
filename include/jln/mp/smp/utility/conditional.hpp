@@ -5,6 +5,7 @@
 #include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/functional/sfinaefwd.hpp>
 #include <jln/mp/utility/conditional.hpp>
+#include <type_traits> // std::void_t
 
 namespace jln::mp::smp
 {

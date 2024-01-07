@@ -4,6 +4,7 @@
 
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/list/erase.hpp>
+#include <type_traits> // std::void_t
 
 namespace jln::mp::smp
 {

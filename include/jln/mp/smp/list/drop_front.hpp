@@ -4,6 +4,7 @@
 
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/list/drop_front.hpp>
+#include <type_traits> // std::void_t
 
 /// \cond
 namespace jln::mp::detail

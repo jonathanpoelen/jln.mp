@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <jln/mp/algorithm/same_xs.hpp>
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/memoize.hpp>
 #include <jln/mp/list/list.hpp>
@@ -65,8 +66,8 @@ namespace jln::mp
     using try_or = typename mp::try_<F, mp::identity, FC>::template f<xs...>;
 
     template<class F, class... xs>
-    constexpr bool is_callable_v
-      = !std::is_same_v<na, typename JLN_MP_CALL_TRY_IMPL(F, xs...)>;
+    constexpr bool is_callable_v = JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+      JLN_MP_IS_SAME(na, typename JLN_MP_CALL_TRY_IMPL(F, xs...)));
 
     template<class F, class... xs>
     constexpr bool is_not_callable_v = !is_callable_v<F, xs...>;

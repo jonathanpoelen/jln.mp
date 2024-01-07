@@ -122,7 +122,7 @@ namespace jln::mp::detail
   struct is_unique_unpack
   {
     template<class seq, class... xs>
-    using f = typename is_unique_unpack_impl<std::is_same<seq, void>::value>
+    using f = typename is_unique_unpack_impl<JLN_MP_IS_SAME(seq, void)>
       ::template f<C, seq, xs...>;
   };
 

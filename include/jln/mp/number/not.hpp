@@ -35,6 +35,8 @@ namespace jln::mp
 #include <jln/mp/number/as_bool.hpp>
 #include <jln/mp/number/to_bool.hpp>
 #include <jln/mp/functional/if.hpp>
+#include <jln/mp/algorithm/same.hpp>
+#include <jln/mp/utility/is.hpp>
 #include <jln/mp/list/size.hpp>
 
 namespace jln::mp
@@ -86,14 +88,30 @@ namespace jln::mp
   struct is<T, not_<C>>
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<!std::is_same<T, x>::value>);
+    using f = JLN_MP_CALL_TRACE(C, number<!JLN_MP_IS_SAME(T, x)>);
   };
 
   template<class T>
   struct is<T, not_<>>
   {
     template<class x>
-    using f = number<!std::is_same<T, x>::value>;
+    using f = number<!JLN_MP_IS_SAME(T, x)>;
+  };
+
+  template<class C>
+  struct same<not_<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(emp::same_xs_v<xs...>)>
+    );
+  };
+
+  template<>
+  struct same<not_<>>
+  {
+    template<class... xs>
+    using f = number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(emp::same_xs_v<xs...>)>;
   };
 
   template<class C>
@@ -141,6 +159,27 @@ namespace jln::mp
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
+
+  template<class C, class TC, class FC>
+  struct if_<same<not_<C>>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<
+      JLN_MP_TRACE_F(C)::template f<number<
+        JLN_MP_RAW_EXPR_TO_BOOL_NOT(emp::same_xs_v<xs...>)
+      >>::value
+    >
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+      ::template f<xs...>;
+  };
+
+  template<class TC, class FC>
+  struct if_<same<not_<>>, TC, FC> : if_<same<>, FC, TC>
+  {};
+
+  template<class x, class TC, class FC>
+  struct if_<is<x, not_<>>, TC, FC> : if_<is<x>, FC, TC>
+  {};
 }
 
 /// \endcond

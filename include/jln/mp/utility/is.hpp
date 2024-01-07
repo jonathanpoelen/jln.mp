@@ -3,10 +3,9 @@
 #pragma once
 
 #include <jln/mp/number/number.hpp>
+#include <jln/mp/algorithm/same_xs.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/identity.hpp>
-
-#include <type_traits>
 
 namespace jln::mp
 {
@@ -17,7 +16,7 @@ namespace jln::mp
   struct is
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<std::is_same<T, x>::value>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_IS_SAME(T, x)>);
   };
 
   /// \cond
@@ -25,7 +24,7 @@ namespace jln::mp
   struct is<T, identity>
   {
     template<class x>
-    using f = number<std::is_same<T, x>::value>;
+    using f = number<JLN_MP_IS_SAME(T, x)>;
   };
   /// \endcond
 } // namespace jln::mp

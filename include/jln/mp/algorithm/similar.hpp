@@ -2,8 +2,14 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/algorithm/same.hpp>
+#include <jln/mp/algorithm/same_xs.hpp>
 #include <jln/mp/detail/compiler.hpp>
+#include <jln/mp/number/not.hpp>
+#include <jln/mp/number/number.hpp>
+#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/functional/call.hpp>
+#include <jln/mp/functional/identity.hpp>
+#include <type_traits>
 
 namespace jln::mp
 {

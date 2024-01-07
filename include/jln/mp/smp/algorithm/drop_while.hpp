@@ -8,6 +8,7 @@
 #include <jln/mp/algorithm/drop_while.hpp>
 #include <jln/mp/list/front.hpp>
 #include <jln/mp/functional/if.hpp>
+#include <type_traits>
 
 /// \cond
 namespace jln::mp::detail

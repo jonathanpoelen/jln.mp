@@ -106,10 +106,10 @@ namespace jln::mp::detail
   struct starts_with_impl<true>
   {
     template<unsigned n, class L, class... xs>
-    using f = number<std::is_same<
+    using f = number<JLN_MP_IS_SAME(
       typename take_front_c<n>::template f<xs...>,
       L
-    >::value>;
+    )>;
   };
 
   template<>
@@ -123,7 +123,7 @@ namespace jln::mp::detail
   struct starts_with1_impl<true>
   {
     template<class T, class x, class... xs>
-    using f = number<std::is_same<T, x>::value>;
+    using f = number<JLN_MP_IS_SAME(T, x)>;
   };
 
   template<>

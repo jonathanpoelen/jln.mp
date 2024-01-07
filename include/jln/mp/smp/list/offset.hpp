@@ -5,6 +5,7 @@
 #include <jln/mp/smp/functional/identity.hpp>
 #include <jln/mp/functional/try.hpp>
 #include <jln/mp/list/offset.hpp>
+#include <type_traits> // std::void_t
 
 namespace jln::mp::smp
 {

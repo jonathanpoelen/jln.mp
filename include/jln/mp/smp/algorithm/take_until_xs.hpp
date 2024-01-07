@@ -12,6 +12,7 @@
 #include <jln/mp/algorithm/take_until_xs.hpp>
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/functional/invoke_twice.hpp>
+#include <type_traits> // std::void_t
 
 namespace jln::mp::smp
 {

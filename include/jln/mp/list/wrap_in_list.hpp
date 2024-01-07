@@ -84,6 +84,7 @@ namespace jln::mp
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/number/not.hpp>
+#include <type_traits>
 
 /// \cond
 namespace jln::mp::detail
@@ -104,6 +105,110 @@ namespace jln::mp::detail
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, xs...)::value)
     >, x);
+  };
+
+  template<class T>
+  struct _wrap_in_list_if<is<T>>
+  {
+    template<class x, class... xs>
+    using f = typename std::enable_if_t<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
+      wrap_in_list_c<JLN_MP_IS_SAME(T, x)>
+    >::template f<x>;
+  };
+
+  template<class C, class T>
+  struct _wrap_in_list_if<is<T, C>>
+  {
+    template<class x, class... xs>
+    using f = typename std::enable_if_t<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
+      wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL(
+        JLN_MP_TRACE_F(C)::template f<number<JLN_MP_IS_SAME(T, x)>>::value
+      )>
+    >::template f<x>;
+  };
+
+  template<class C, class T>
+  struct _wrap_in_list_if<is<T, not_<C>>>
+  {
+    template<class x, class... xs>
+    using f = typename std::enable_if_t<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
+      wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL(
+        JLN_MP_TRACE_F(C)::template f<number<
+          !JLN_MP_IS_SAME(T, x)
+        >>::value
+      )>
+    >::template f<x>;
+  };
+
+  template<class T>
+  struct _wrap_in_list_if_not<is<T>>
+  {
+    template<class x, class... xs>
+    using f = typename std::enable_if_t<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
+      wrap_in_list_c<!JLN_MP_IS_SAME(T, x)>
+    >::template f<x>;
+  };
+
+  template<class C, class T>
+  struct _wrap_in_list_if_not<is<T, C>>
+  {
+    template<class x, class... xs>
+    using f = typename std::enable_if_t<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
+      wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+        JLN_MP_TRACE_F(C)::template f<number<JLN_MP_IS_SAME(T, x)>>::value
+      )>
+    >::template f<x>;
+  };
+
+  template<class C, class T>
+  struct _wrap_in_list_if_not<is<T, not_<C>>>
+  {
+    template<class x, class... xs>
+    using f = typename std::enable_if_t<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
+      wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+        JLN_MP_TRACE_F(C)::template f<number<!JLN_MP_IS_SAME(T, x)>>::value
+      )>
+    >::template f<x>;
+  };
+
+  template<>
+  struct _wrap_in_list_if<same<>>
+  {
+    template<class x, class... xs>
+    using f = typename wrap_in_list_c<emp::same_xs_v<x, xs...>>
+      ::template f<x>;
+  };
+
+  template<class C>
+  struct _wrap_in_list_if<same<C>>
+  {
+    template<class x, class... xs>
+    using f = typename wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL(
+      JLN_MP_TRACE_F(C)::template f<number<emp::same_xs_v<x, xs...>>>::value
+    )>::template f<x>;
+  };
+
+  template<>
+  struct _wrap_in_list_if_not<same<>>
+  {
+    template<class x, class... xs>
+    using f = typename wrap_in_list_c<!emp::same_xs_v<x, xs...>>
+      ::template f<x>;
+  };
+
+  template<class C>
+  struct _wrap_in_list_if_not<same<C>>
+  {
+    template<class x, class... xs>
+    using f = typename wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL(JLN_MP_TRACE_F(C)::template f<
+      number<!emp::same_xs_v<x, xs...>>
+    >::value)>::template f<x>;
   };
 
 #if ! JLN_MP_ENABLE_DEBUG

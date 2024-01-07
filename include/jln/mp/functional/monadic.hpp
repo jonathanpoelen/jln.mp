@@ -32,6 +32,6 @@ namespace jln::mp
   /// Monadify only if \c x is \c na.
   /// \treturn \value
   template<class x, template<class...> class M, class TC, class FC = violation>
-  using monadic_if_na = typename conditional_c<std::is_same<na, x>::value>
+  using monadic_if_na = typename conditional_c<JLN_MP_IS_SAME(na, x)>
     ::template f<M<TC, FC>, TC>;
 }

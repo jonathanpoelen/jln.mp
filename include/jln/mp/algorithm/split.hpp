@@ -77,6 +77,18 @@ namespace jln::mp
 /// \cond
 #include <jln/mp/list/sliding.hpp> // sliding_inner / sliding_outer
 
+namespace jln::mp
+{
+  template<class T, class F, class C>
+  struct split_if_with<is<T>, F, C>
+  {
+    template<class... xs>
+    using f = typename detail::array_int2_index_dispatcher<
+      detail::mk_split_indexes<JLN_MP_IS_SAME(T, xs)...>
+    >::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
+  };
+}
+
 namespace jln::mp::detail
 {
   template<std::size_t N>
