@@ -54,7 +54,7 @@ namespace jln::mp::detail
   {
     int r = -1; // empty list
 
-    if constexpr (sizeof...(n)) {
+    if constexpr (sizeof...(n) > 0) {
       r = 0;
       int a[]{n...};
       for (int n : a) {
