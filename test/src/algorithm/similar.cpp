@@ -3,6 +3,7 @@
 #include "test.hpp"
 
 #include "jln/mp/smp/algorithm/similar.hpp"
+#include "jln/mp/smp/number/not.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -33,6 +34,14 @@ TEST()
   ut::same<true_, emp::similar<list<int, int, int>>>();
   ut::same<true_, emp::similar<list<list<>, list<int>, list<char, short>>>>();
   ut::same<false_, emp::similar<list<int, int, void>>>();
+
+  ut::same<true_, number<emp::similar_v<list<int, int, int>>>>();
+  ut::same<true_, number<emp::similar_v<list<list<>, list<int>, list<char, short>>>>>();
+  ut::same<false_, number<emp::similar_v<list<int, int, void>>>>();
+
+  ut::same<true_, number<emp::similar_xs_v<int, int, int>>>();
+  ut::same<true_, number<emp::similar_xs_v<list<>, list<int>, list<char, short>>>>();
+  ut::same<false_, number<emp::similar_xs_v<int, int, void>>>();
 
   test_unary_pack<similar>();
 
@@ -71,6 +80,13 @@ TEST()
       , at1<1, int>, at2<1, int, int>, atx<1>, atx<1, int>, atx<1, int, int>, atx<1, int, int, int>
       , p1<int, 1>, p2<int, 1, 1>, px<int>, px<int, 1>, px<int, 1, 1>, px<int, 1, 1, 1>
     >()
+    ;
+
+  test_context<similar<not_<>>, smp::similar<smp::not_<>>>()
+    .test<false_>()
+    .test<false_, int>()
+    .test<false_, int, int>()
+    .test<true_, int, float>()
     ;
 
   ut::not_invocable<smp::similar<bad_function>>();

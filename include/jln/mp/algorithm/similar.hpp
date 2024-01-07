@@ -44,6 +44,13 @@ namespace jln::mp
 
   /// \ingroup algorithm
 
+  namespace emp
+  {
+    template<class... xs>
+    inline constexpr bool similar_xs_v
+      = same_xs_v<typename detail::normalize_similar<xs>::type...>;
+  }
+
   /// Checks whether all types are the same or instantiations of the same class template.
   /// The list of supported class templates are:
   ///   - `template<class...>`
@@ -58,10 +65,14 @@ namespace jln::mp
   struct similar
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      typename detail::same_impl<sizeof...(xs) < 3 ? sizeof...(xs) : 3>
-        ::template f<typename detail::normalize_similar<xs>::type...>
-    );
+    using f = JLN_MP_CALL_TRACE(C, number<emp::similar_xs_v<xs...>>);
+  };
+
+  template<class C = identity>
+  struct similar_v
+  {
+    template<class... xs>
+    using f = typename C::template f<emp::similar_xs_v<xs...>>;
   };
 
   namespace emp
@@ -69,16 +80,8 @@ namespace jln::mp
     template<class L, class C = mp::identity>
     using similar = unpack<L, mp::similar<C>>;
 
-#ifdef JLN_MP_DOXYGENATING
-    template<class x, class y>
-    using is_similar = similar<>::f<x, y>;
-#else
-    template<class x, class y>
-    using is_similar = detail::same_impl<2>::f<
-      typename detail::normalize_similar<x>::type,
-      typename detail::normalize_similar<y>::type
-    >;
-#endif
+    template<class L, class C = mp::identity>
+    inline constexpr bool similar_v = unpack<L, mp::similar<C>>::value;
   }
 }
 
@@ -90,8 +93,25 @@ namespace jln::mp
   struct similar<identity>
   {
     template<class... xs>
-    using f = typename detail::same_impl<sizeof...(xs) < 3 ? sizeof...(xs) : 3>
-      ::template f<typename detail::normalize_similar<xs>::type...>;
+    using f = number<emp::same_xs_v<typename detail::normalize_similar<xs>::type...>>;
+  };
+
+  template<class C>
+  struct similar<not_<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+      emp::same_xs_v<typename detail::normalize_similar<xs>::type...>
+    )>);
+  };
+
+  template<>
+  struct similar<not_<>>
+  {
+    template<class... xs>
+    using f = number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+      emp::same_xs_v<typename detail::normalize_similar<xs>::type...>
+    )>;
   };
 }
 
