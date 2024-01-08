@@ -31,7 +31,7 @@ namespace jln::mp::smp
         mp::if_<
           mp::size<>,
           mp::transform<
-            try_<mp::unpack<mp::size<>>>,
+            mp::try_<mp::unpack<mp::size<>>>,
             mp::monadic0<mp::same<>, mp::always<mp::false_>>
           >,
           mp::always<mp::true_>

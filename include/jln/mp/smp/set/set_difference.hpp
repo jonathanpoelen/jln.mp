@@ -21,7 +21,7 @@ namespace jln::mp::smp
           mp::all_of<mp::unpack<mp::is_unique<>>>
         >
       >,
-      try_<mp::set_difference<subcontract<C>>>,
+      mp::try_<mp::set_difference<subcontract<C>>>,
       violation
     >
   >;

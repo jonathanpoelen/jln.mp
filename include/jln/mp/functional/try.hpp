@@ -51,11 +51,17 @@ namespace jln::mp
   template<class F, class FC = always<false_>>
   using try_or = try_<F, identity, FC>;
 
-  template<class F>
-  using is_callable = try_<F, always<true_>, always<false_>>;
+  /// Checks whether \c F::f<xs...> is invocable.
+  /// \pre \c F::f<xs...> must be a SFINAE compatible expression
+  /// \treturn \bool
+  template<class F, class C = identity>
+  using is_invocable = try_<F, always<true_, C>, always<false_, C>>;
 
-  template<class F>
-  using is_not_callable = try_<F, always<false_>, always<true_>>;
+  /// Checks whether \c F::f<xs...> is not invocable.
+  /// \pre \c F::f<xs...> must be a SFINAE compatible expression
+  /// \treturn \bool
+  template<class F, class C = identity>
+  using is_not_invocable = try_<F, always<false_, C>, always<true_, C>>;
 
   namespace emp
   {
@@ -66,17 +72,17 @@ namespace jln::mp
     using try_or = typename mp::try_<F, mp::identity, FC>::template f<xs...>;
 
     template<class F, class... xs>
-    constexpr bool is_callable_v = JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+    constexpr bool is_invocable_v = JLN_MP_RAW_EXPR_TO_BOOL_NOT(
       JLN_MP_IS_SAME(na, typename JLN_MP_CALL_TRY_IMPL(F, xs...)));
 
     template<class F, class... xs>
-    constexpr bool is_not_callable_v = !is_callable_v<F, xs...>;
+    constexpr bool is_not_invocable_v = !is_invocable_v<F, xs...>;
 
     template<class F, class... xs>
-    using is_callable = number<is_callable_v<F, xs...>>;
+    using is_invocable = number<is_invocable_v<F, xs...>>;
 
     template<class F, class... xs>
-    using is_not_callable = number<!is_callable_v<F, xs...>>;
+    using is_not_invocable = number<!is_invocable_v<F, xs...>>;
   }
 }
 
@@ -88,14 +94,14 @@ namespace jln::mp
   struct try_<F, always<true_>, always<false_>>
   {
     template<class... xs>
-    using f = number<emp::is_callable_v<F, xs...>>;
+    using f = number<emp::is_invocable_v<F, xs...>>;
   };
 
   template<class F>
   struct try_<F, always<false_>, always<true_>>
   {
     template<class... xs>
-    using f = number<!emp::is_callable_v<F, xs...>>;
+    using f = number<!emp::is_invocable_v<F, xs...>>;
   };
 
   template<class F>

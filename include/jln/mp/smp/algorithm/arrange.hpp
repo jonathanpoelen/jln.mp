@@ -23,7 +23,7 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template<class Ints, class C = listify>
-  using arrange = typename try_<
+  using arrange = typename mp::try_<
     detail::make_arrange<Ints>,
     detail::arrange_to_smp_arrange,
     mp::always<detail::type_identity<bad_contract>>

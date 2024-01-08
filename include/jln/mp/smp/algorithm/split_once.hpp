@@ -22,7 +22,7 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template<class Pred, class TC = listify, class FC = clear<>>
-  using split_once_if = contract<invoke_twice<try_<
+  using split_once_if = contract<mp::invoke_twice<mp::try_<
     index_if<Pred, identity, always<number<-1>>>,
     detail::smp_split_once_select<assume_binary_list<TC>, subcontract<FC>>,
     mp::always<violation>

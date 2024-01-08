@@ -22,7 +22,7 @@ namespace jln::mp::smp
   using capture_front_v_c = try_contract<mp::capture_front_v_c<xs...>>;
 
   template<class... xs>
-  using capture_front_v = typename try_<
+  using capture_front_v = typename mp::try_<
     mp::lift<mp::capture_front_v, mp::lift<try_contract>>,
     mp::identity,
     always<bad_contract>

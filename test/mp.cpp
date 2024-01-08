@@ -114,7 +114,6 @@
 #include "src/functional/identity.cpp"
 #include "src/functional/if.cpp"
 #include "src/functional/invoke_twice.cpp"
-#include "src/functional/is_invocable.cpp"
 #include "src/functional/lift.cpp"
 #include "src/functional/make_id.cpp"
 #include "src/functional/memoize.cpp"

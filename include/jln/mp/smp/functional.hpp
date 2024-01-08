@@ -16,7 +16,6 @@
 #include <jln/mp/smp/functional/identity.hpp>
 #include <jln/mp/smp/functional/if.hpp>
 #include <jln/mp/smp/functional/invoke_twice.hpp>
-#include <jln/mp/smp/functional/is_invocable.hpp>
 #include <jln/mp/smp/functional/lift.hpp>
 #include <jln/mp/smp/functional/make_id.hpp>
 #include <jln/mp/smp/functional/memoize.hpp>

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include "jln/mp/functional/is_invocable.hpp"
+#include "jln/mp/functional/try.hpp"
 #include "jln/mp/detail/compiler.hpp"
 
 namespace ut

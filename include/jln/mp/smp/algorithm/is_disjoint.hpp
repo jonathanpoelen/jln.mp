@@ -58,7 +58,7 @@ namespace jln::mp::detail
 
   template<class Pred>
   using smp_is_disjoint_impl = smp::drop_while<
-    Pred, contract<mp::always<mp::false_>>, contract<mp::always<mp::true_>>
+    Pred, contract<always<false_>>, contract<always<true_>>
   >;
 
   template<class Equal, class... xs>
@@ -84,7 +84,7 @@ namespace jln::mp::detail
 
   template<>
   struct smp_is_disjoint_n<1>
-  : try_<seqs_to_list<mp::always<true_>, mp::always<true_>>>
+  : try_<seqs_to_list<always<true_>, always<true_>>>
   {};
 
   template<class Equal, class seq0>
@@ -124,7 +124,7 @@ namespace jln::mp::detail
   {
     template<class C>
     using f = contract<smp_is_disjoint_with<
-      smp::concepts::predicate<assume_binary<Equal>, mp::identity, violation>, C>>;
+      smp::concepts::predicate<assume_binary<Equal>, identity, violation>, C>>;
   };
 
   template<>
