@@ -26,9 +26,11 @@ namespace jln::mp
     template<class, class, class = void>
     struct _try_impl;
 
-    #define JLN_MP_CALL_TRY_IMPL(F, params) detail::_try_impl<F, list<params>>::type
+#   define JLN_MP_CALL_TRY_IMPL(F, params) detail::_try_impl<F, list<params>>::type
+#elif JLN_MP_CUDA
+#   define JLN_MP_CALL_TRY_IMPL(F, params) detail::memoizer_impl<void, F, params>::try_type
 #else
-    #define JLN_MP_CALL_TRY_IMPL(F, params) detail::memoizer_impl<F, params>::try_type
+#   define JLN_MP_CALL_TRY_IMPL(F, params) detail::memoizer_impl<F, params>::try_type
 #endif
   }
   /// \endcond

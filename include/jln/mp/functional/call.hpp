@@ -39,12 +39,21 @@ namespace jln::mp
   #define JLN_MP_TRACE_F(...) memoize<__VA_ARGS__>
   #define JLN_MP_TRACE_TYPENAME typename
 
+#if JLN_MP_CUDA
+  #define JLN_MP_CALL_TRACE(C, ...) \
+    typename ::jln::mp::detail::memoizer_impl<void, C, __VA_ARGS__>::type
+  #define JLN_MP_CALL_TRACE_T(C, ...) \
+    typename ::jln::mp::detail::memoizer_impl<void, typename C, __VA_ARGS__>::type
+  #define JLN_MP_CALL_TRACE_0_ARG(...) \
+    typename ::jln::mp::detail::memoizer_impl<void, __VA_ARGS__>::type
+#else // if !JLN_MP_CUDA
   #define JLN_MP_CALL_TRACE(C, ...) \
     typename ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
   #define JLN_MP_CALL_TRACE_T(C, ...) \
     typename ::jln::mp::detail::memoizer_impl<typename C, __VA_ARGS__>::type
   #define JLN_MP_CALL_TRACE_0_ARG(...) \
     typename ::jln::mp::detail::memoizer_impl<__VA_ARGS__>::type
+#endif
 #endif
 
 #if JLN_MP_CLANG_LIKE

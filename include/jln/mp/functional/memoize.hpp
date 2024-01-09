@@ -12,6 +12,8 @@ namespace jln::mp
   struct na {};
 
 #if !JLN_MP_MEMOIZED_ALIAS
+
+# if !JLN_MP_CUDA
   /// \cond
   namespace detail
   {
@@ -34,9 +36,35 @@ namespace jln::mp
     using f = typename detail::memoizer_impl<C, xs...>::type;
   };
 
+# else // if JLN_MP_CUDA
+
+  /// \cond
+  namespace detail
+  {
+    template<class dummy, class F, class... Params>
+    struct memoizer_impl;
+  }
+  /// \endcond
+
+  /// \ingroup functional
+
+  /// Memoization version of \link call.
+  template<class C, class... xs>
+  using memoize_call = typename detail::memoizer_impl<void, C, xs...>::type;
+
+  /// Memoize a call to \c C::f<xs...>.
+  template<class C>
+  struct memoize
+  {
+    template<class... xs>
+    using f = typename detail::memoizer_impl<void, C, xs...>::type;
+  };
+
+# endif
+
 # define JLN_MP_MEMOIZE(...) ::jln::mp::memoize<__VA_ARGS__>
 
-#else
+#else // if JLN_MP_MEMOIZED_ALIAS
   template<class C, class... xs>
   using memoize_call = typename conditional_c<!sizeof...(xs)>
     ::template f<C, C>
@@ -56,8 +84,11 @@ namespace jln::mp
 }
 
 /// \cond
-#if !JLN_MP_MEMOIZED_ALIAS
+// # if !JLN_MP_CUDA
 #include <jln/mp/list/list.hpp>
+// # endif
+
+#if !JLN_MP_MEMOIZED_ALIAS
 
 namespace jln::mp::detail
 {
@@ -73,6 +104,7 @@ namespace jln::mp::detail
     using try_type = T;
   };
 
+# if !JLN_MP_CUDA
   template<class F, class... Params>
   memoize_result<
     typename conditional_c<!sizeof...(Params)>
@@ -86,6 +118,18 @@ namespace jln::mp::detail
   template<class C, class... Params>
   struct memoizer_impl : decltype(memoized_call<C>(static_cast<list<Params...>*>(nullptr)))
   {};
+#else // if JLN_MP_CUDA
+  template<class dummy, class F, class... Params>
+  struct memoizer_impl : uncallable_function
+  {};
+
+  template<class> using void_t = void;
+
+  template<class F, class... Params>
+  struct memoizer_impl<void_t<typename F::template f<Params...>>, F, Params...>
+    : memoize_result<typename F::template f<Params...>>
+  {};
+# endif
 }
 #else
 namespace jln::mp::detail
