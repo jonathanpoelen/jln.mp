@@ -6,6 +6,10 @@
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/number/number.hpp>
 
+#if JLN_MP_CUDA
+# include <cstddef>
+#endif
+
 namespace jln::mp
 {
   /// \ingroup number

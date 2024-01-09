@@ -76,6 +76,7 @@ namespace jln::mp
 
 /// \cond
 #include <jln/mp/list/sliding.hpp> // sliding_inner / sliding_outer
+#include <cstddef>
 
 namespace jln::mp
 {

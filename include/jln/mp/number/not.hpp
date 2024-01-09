@@ -39,6 +39,10 @@ namespace jln::mp
 #include <jln/mp/utility/is.hpp>
 #include <jln/mp/list/size.hpp>
 
+#if JLN_MP_CUDA
+# include <cstddef>
+#endif
+
 namespace jln::mp
 {
   template<>

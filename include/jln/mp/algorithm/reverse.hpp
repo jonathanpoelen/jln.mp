@@ -39,6 +39,7 @@ namespace jln::mp
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/detail/sequence.hpp>
 #include <jln/mp/utility/conditional.hpp>
+#include <cstddef>
 
 namespace jln::mp::detail
 {

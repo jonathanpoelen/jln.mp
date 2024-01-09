@@ -4,6 +4,7 @@
 
 #include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/functional/lift.hpp>
+#include <cstddef>
 
 namespace jln::mp
 {

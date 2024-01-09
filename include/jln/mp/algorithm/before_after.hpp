@@ -8,6 +8,7 @@
 #include <jln/mp/list/drop_front.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/functional/invoke_twice.hpp>
+#include <cstddef>
 
 namespace jln::mp
 {

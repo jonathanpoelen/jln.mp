@@ -8,6 +8,10 @@
 #ifdef __cpp_generic_lambdas
 #if __cpp_generic_lambdas >= 201707L
 
+# if JLN_MP_CLANG
+#   include <cstddef>
+# endif
+
 namespace jln::mp
 {
   /// \ingroup functional
