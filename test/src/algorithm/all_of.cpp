@@ -24,12 +24,14 @@ TEST()
     .test<true_>()
     .test<false_, _0, _0>()
     .test<false_, _0, _0, _1>()
+    .test<false_, _0, void>()
     .test<true_, _3, _1>()
     ;
 
   test_context<all_of<less_than_c<3>>, smp::all_of<smp::less_than_c<3>>>()
     .test<true_, _1, _0>()
     .test<false_, _1, _0, _3>()
+    .test<false_, _1, _0, _3, void>()
     .not_invocable<list<>>()
     ;
 

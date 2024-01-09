@@ -26,11 +26,13 @@ TEST()
     .test<true_, _0, _0>()
     .test<false_, _0, _0, _1>()
     .test<false_, _3, _1>()
+    .test<false_, _3, void>()
     ;
 
   test_context<none_of<less_than_c<3>>, smp::none_of<smp::less_than_c<3>>>()
     .test<false_, _1, _0>()
     .test<false_, _1, _0, _3>()
+    .test<false_, _1, void>()
     .test<true_, _3, _3>()
     .not_invocable<list<>>()
     ;
