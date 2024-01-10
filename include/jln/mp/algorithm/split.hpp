@@ -132,8 +132,10 @@ namespace jln::mp::detail
   {
     static constexpr std::size_t result_len = 0;
 
-    static constexpr void make()
-    {}
+    static constexpr int make()
+    {
+      return 0;
+    }
   };
 
   template<class, class...>
