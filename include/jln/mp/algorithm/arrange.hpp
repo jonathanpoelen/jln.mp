@@ -53,7 +53,7 @@ namespace jln::mp
 
 /// \cond
 #include <type_traits>
-#include "jln/mp/number/number.hpp"  // JLN_MP_ENABLE_TPL_AUTO
+#include <jln/mp/number/number.hpp>  // JLN_MP_ENABLE_TPL_AUTO
 
 namespace jln::mp::detail
 {
