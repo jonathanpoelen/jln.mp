@@ -75,7 +75,8 @@ patt = Cs(
   ('/*' * (1 - P'*/')^0 * 2 * nl / process_comment)^-1 *
   ('// SPDX-FileCopyrightText:' * (1 - P'\n')^0 * 1 / process_copyright)^-1 *
   ('// SPDX-License-Identifier:' * (1 - P'\n')^0 * 1 / process_license)^-1 * (
-    '#' * ws * 'include' * ws * '<' * C(P'jln/'^-1) * C((1 - P'>')^0) * 1 * nl / process_include
+    '#' * ws * 'include' * ws * '<' * C(P'jln/'^-1) * C((1 - P'>')^0) * 1
+    * ws * (P'//' * (1 - P'\n')^0)^-1 * '\n' / process_include
   + '#pragma once' * nl / ''
   + 1
   )^0
@@ -120,8 +121,10 @@ embed = {
 
 print(tconcat(embed, ''))
 
+source = tconcat(sources, '')
+
 -- remove #if ... \n (empty) #else (empty) #endif
-patt = Cs(
+source = Cs(
   ( P'#' * ws * 'if' * (1 - P'\n')^0 * '\n'
   * (ws * '#' * ws * 'el' * (1 - P'\n')^0 * '\n')^0
   * ws * '#' * ws * 'endif\n'
@@ -129,8 +132,18 @@ patt = Cs(
   + 1
   )^0
 )
+:match(source)
 
-print(patt:match(tconcat(sources, '')))
+-- remove } // namespace jln::mp \n namespace jln::mp {
+source = Cs(
+  ( P'\n} // namespace jln::mp\n' * P'\n'^0 * 'namespace jln::mp\n{\n'
+  / '\n'
+  + 1
+  )^0
+)
+:match(source)
+
+print(source)
 
 for path,info in pairs(files) do
   if #info[1] ~= 0 then
