@@ -33,9 +33,16 @@ if get_option('standalone')
                include_directories: include_directories('standalone/include')))
 endif
 
+example_dep = declare_dependency(include_directories: include_directories('include'))
 test_dep = declare_dependency(include_directories: include_directories('test/include', 'include'))
 
 executable('mp_test', 'test/mp.cpp', dependencies: test_dep)
+
+# start examples
+example_expr = executable('expr.example', 'examples/expr.cpp', dependencies: example_dep)
+example_tuple_cat = executable('tuple_cat.example', 'examples/tuple_cat.cpp', dependencies: example_dep)
+alias_target('examples', example_expr, example_tuple_cat)
+# stop examples
 
 # start tests
 t_algorithm_accumulate = executable('accumulate', 'test/src/algorithm/accumulate.cpp', dependencies: test_dep)

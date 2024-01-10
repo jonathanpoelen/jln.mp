@@ -112,20 +112,39 @@ autogen_tests.append(f'test/autogen/main.cpp')
 
 with open('meson.build') as f:
   content = f.read()
-start_str = '# start tests\n'
-stop_str = '# stop tests\n'
-start = content.index(start_str)
-stop = content.index(stop_str, start)
+
+start_example_str = '# start examples\n'
+stop_example_str = '# stop examples\n'
+start_examples = content.index(start_example_str)
+stop_example = content.index(stop_example_str, start_examples)
+
+start_test_str = '# start tests\n'
+stop_test_str = '# stop tests\n'
+start_test = content.index(start_test_str, stop_example)
+stop_test = content.index(stop_test_str, start_test)
+
+examples = ordered_listdir('examples')
 
 with open('meson.build', 'w') as f:
-  f.write(content[:start])
-  f.write(start_str)
+  f.write(content[:start_examples + len(start_example_str)])
+
+  example_exes = '\n'.join(
+    f"example_{name[:-4]} = executable('{name[:-4]}.example', 'examples/{name}', dependencies: example_dep)"
+    for name in examples)
+  example_all = ', '.join(f'example_{name[:-4]}' for name in examples)
+
+  f.write(example_exes)
+  f.write('\n')
+  f.write(f"alias_target('examples', {example_all})\n")
+
+  f.write(content[stop_example:start_test + len(start_test_str)])
+
   f.write('\n'.join(meson_output_lines))
   f.write('\n')
   sources = "',\n  '".join(autogen_tests)
   f.write(f"executable('check_inc', [\n  '{sources}'\n], dependencies: test_dep)\n")
-  f.write(stop_str)
-  f.write(content[stop + len(stop_str):])
+
+  f.write(content[stop_test:])
 
 with open('test/mp.cpp', 'w') as f:
   f.write(LICENSE)
