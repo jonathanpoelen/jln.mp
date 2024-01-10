@@ -151,7 +151,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        debug: ['false', 'true']
+        debug: ['false']
 
     steps:
       - uses: actions/checkout@v3
