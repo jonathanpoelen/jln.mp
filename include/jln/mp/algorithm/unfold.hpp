@@ -61,7 +61,7 @@ namespace jln::mp::detail
   {};
 
   template<>
-  struct unfold_next<None> : always<stop_recursion>
+  struct unfold_next<stop_recursion> : always<stop_recursion>
   {};
 
   template<class x, class next>

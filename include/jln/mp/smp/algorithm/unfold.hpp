@@ -23,7 +23,7 @@ namespace jln::mp::smp
     mp::size<mp::is<mp::number<1>>>,
     mp::recursively<
       detail::smp_unfold_impl<try_subcontract<F>>,
-      monadic0<mp::pop_front<subcontract<C>>>
+      mp::monadic0<mp::pop_front<subcontract<C>>>
     >
   >;
 
@@ -41,14 +41,11 @@ namespace jln::mp::detail
   };
 
   template<class>
-  struct smp_unfold_next
-  {
-    template<class... xs>
-    using f = _recursion_result<na, na>;
-  };
+  struct smp_unfold_next : always<_recursion_result<na, na>>
+  {};
 
   template<>
-  struct smp_unfold_next<None> : always<stop_recursion>
+  struct smp_unfold_next<stop_recursion> : always<stop_recursion>
   {};
 
   template<class x, class next>
