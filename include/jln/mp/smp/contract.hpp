@@ -75,6 +75,13 @@ namespace jln::mp
   };
 
   template<class C>
+  struct try_<contract<C>, always<false_>, always<true_>>
+  {
+    template<class... xs>
+    using f = number<JLN_MP_IS_SAME(na, JLN_MP_DCALL_TRACE_XS(xs, C, xs...))>;
+  };
+
+  template<class C>
   struct try_<contract<C>, identity, violation>
   {
     template<class... xs>
