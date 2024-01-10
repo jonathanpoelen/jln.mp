@@ -4,27 +4,37 @@
 
 // Compiler type
 //@{
+// cuda
 #if defined(__CUDACC__)
 #  ifndef JLN_MP_CUDA
 #    define JLN_MP_CUDA (__CUDACC_VER_MAJOR__ * 100 + __CUDACC_VER_MINOR__)
 #  endif
-#elif defined(_MSC_VER) && defined(__clang__)
-#  ifndef JLN_MP_CLANG_LIKE
-#    define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
+#  if defined(__clang__)
+#    ifndef JLN_MP_HOST_COMPILER_CLANG
+#      define JLN_MP_HOST_COMPILER_CLANG (__clang_major__ * 100 + __clang_minor__)
+#    endif
+#  elif defined(__GNUC__)
+#    ifndef JLN_MP_HOST_COMPILER_GCC
+#      define JLN_MP_HOST_COMPILER_GCC (__GNUC__ * 100 + __GNUC_MINOR__)
+#    endif
 #  endif
+
+// clang-cl
+#elif defined(_MSC_VER) && defined(__clang__)
 #  ifndef JLN_MP_MSVC_LIKE
 #    define JLN_MP_MSVC_LIKE _MSC_VER
 #  endif
 #  ifndef JLN_MP_CLANG_CL
 #    define JLN_MP_CLANG_CL (__clang_major__ * 100 + __clang_minor__)
 #  endif
+
+// clang
 #elif defined(__clang__)
-#  ifndef JLN_MP_CLANG_LIKE
-#    define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
-#  endif
 #  ifndef JLN_MP_CLANG
 #    define JLN_MP_CLANG (__clang_major__ * 100 + __clang_minor__)
 #  endif
+
+// msvc
 #elif defined(_MSC_VER)
 #  ifndef JLN_MP_MSVC_LIKE
 #    define JLN_MP_MSVC_LIKE _MSC_VER
@@ -32,6 +42,8 @@
 #  ifndef JLN_MP_MSVC
 #    define JLN_MP_MSVC _MSC_VER
 #  endif
+
+// gcc
 #elif defined(__GNUC__)
 #  ifndef JLN_MP_GCC
 #    define JLN_MP_GCC (__GNUC__ * 100 + __GNUC_MINOR__)
@@ -41,6 +53,13 @@
 #  endif
 #  ifndef JLN_MP_MEMOIZED_ALIAS
 #    define JLN_MP_MEMOIZED_ALIAS 1
+#  endif
+#endif
+
+// clang like
+#if defined(__clang__)
+#  ifndef JLN_MP_CLANG_LIKE
+#    define JLN_MP_CLANG_LIKE (__clang_major__ * 100 + __clang_minor__)
 #  endif
 #endif
 
@@ -65,6 +84,13 @@
 #ifndef JLN_MP_CUDA
 #  define JLN_MP_CUDA 0
 #endif
+#ifndef JLN_MP_HOST_COMPILER_CLANG
+#  define JLN_MP_HOST_COMPILER_CLANG 0
+#endif
+#ifndef JLN_MP_HOST_COMPILER_GCC
+#  define JLN_MP_HOST_COMPILER_GCC 0
+#endif
+
 #ifndef JLN_MP_OPTIMIZED_ALIAS
 #  define JLN_MP_OPTIMIZED_ALIAS 0
 #endif

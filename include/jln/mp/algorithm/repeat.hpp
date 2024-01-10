@@ -58,6 +58,13 @@ namespace jln::mp::detail
     {};
   };
 
+#if JLN_MP_CUDA && JLN_MP_HOST_COMPILER_GCC
+  template<class x, class> using emp_index0 = x;
+#  define JLN_MP_INDEX0 emp_index0
+#else
+#  define JLN_MP_INDEX0 index0::f
+#endif
+
   template<>
   struct repat_impl<1>
   {
@@ -65,7 +72,7 @@ namespace jln::mp::detail
     struct impl
     {
       template<class C, class x>
-      using f = JLN_MP_CALL_TRACE(C, index0::f<x, decltype(ns)>...);
+      using f = JLN_MP_CALL_TRACE(C, JLN_MP_INDEX0<x, decltype(ns)>...);
     };
   };
 
@@ -73,7 +80,7 @@ namespace jln::mp::detail
   struct repat_impl<2>
   {
     template<class C, class L, class... xs>
-    using g = typename join<C>::template f<index0::f<L, xs>...>;
+    using g = typename join<C>::template f<JLN_MP_INDEX0<L, xs>...>;
 
     template<class, int_... ns>
     struct impl
@@ -82,6 +89,8 @@ namespace jln::mp::detail
       using f = g<C, list<xs...>, decltype(ns)...>;
     };
   };
+
+#undef JLN_MP_INDEX0
 }
 
 namespace jln::mp

@@ -166,7 +166,7 @@ namespace jln::mp::detail
     template<JLN_MP_INDEXES_TPL_PARAM()>
     using f = dispatch_group_index<
       sliding_outer<int, JLN_MP_INDEXES_PAIRS().elems[i][0]...>,
-#if JLN_MP_MEMOIZED_ALIAS
+#if JLN_MP_MEMOIZED_ALIAS || (JLN_MP_CUDA && JLN_MP_HOST_COMPILER_GCC)
       make_sliding_inner<JLN_MP_INDEXES_PAIRS().elems[i][1]>...
 #else
       JLN_MP_MAKE_INTEGER_SEQUENCE_T(int, JLN_MP_INDEXES_PAIRS().elems[i][1], sliding_inner)...
