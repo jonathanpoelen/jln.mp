@@ -60,7 +60,7 @@ namespace jln::mp::detail
     {};
   };
 
-#if JLN_MP_WORKAROUND(JLN_MP_MSVC_LIKE, < 1914)
+#if JLN_MP_MSVC_LIKE
   template<class... xs>
   struct _is_set
   {
@@ -84,7 +84,7 @@ namespace jln::mp
   struct is_unique_if<same<>, C>
   {
     template<class... xs>
-#if JLN_MP_WORKAROUND(JLN_MP_MSVC_LIKE, < 1914)
+#if JLN_MP_MSVC_LIKE
     // workaround for MSVC which has a broken EBO
     using f = JLN_MP_CALL_TRACE(C, typename detail::_is_set<xs...>::type);
 #else
@@ -98,7 +98,7 @@ namespace jln::mp
   struct is_unique_if<same<>, identity>
   {
     template<class... xs>
-#if JLN_MP_WORKAROUND(JLN_MP_MSVC_LIKE, < 1914)
+#if JLN_MP_MSVC_LIKE
     // workaround for MSVC which has a broken EBO
     using f = typename detail::_is_set<xs...>::type;
 #else
