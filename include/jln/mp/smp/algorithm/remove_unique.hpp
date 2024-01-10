@@ -4,6 +4,7 @@
 
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/smp/assume.hpp>
+#include <jln/mp/smp/algorithm/same.hpp>
 #include <jln/mp/algorithm/remove_unique.hpp>
 
 /// \cond
@@ -22,13 +23,13 @@ namespace jln::mp::smp
   template<class C = listify>
   using remove_unique = contract<mp::remove_unique<subcontract<C>>>;
 
-  template<class Cmp = contract<mp::lift<std::is_same>>, class C = listify>
+  template<class Cmp = same<>, class C = listify>
   using remove_unique_if = typename detail::smp_mk_remove_unique<Cmp>::template f<C>;
 
   template<class C = listify>
   using copy_unique = contract<mp::copy_unique<subcontract<C>>>;
 
-  template<class Cmp = contract<mp::lift<std::is_same>>, class C = listify>
+  template<class Cmp = same<>, class C = listify>
   using copy_unique_if = typename detail::smp_mk_copy_unique<Cmp>::template f<C>;
 }
 
@@ -105,7 +106,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct smp_mk_remove_unique<contract<lift<std::is_same>>>
+  struct smp_mk_remove_unique<smp::same<>>
   {
     template<class C>
     using f = smp::remove_unique<C>;
@@ -154,7 +155,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct smp_mk_copy_unique<contract<lift<std::is_same>>>
+  struct smp_mk_copy_unique<smp::same<>>
   {
     template<class C>
     using f = smp::copy_unique<C>;

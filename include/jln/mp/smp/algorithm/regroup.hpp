@@ -3,6 +3,7 @@
 #pragma once
 
 #include <jln/mp/detail/smp_listify_or_monadic_xs.hpp>
+#include <jln/mp/smp/algorithm/same.hpp>
 #include <jln/mp/smp/algorithm/counter.hpp>
 #include <jln/mp/smp/functional/invoke_twice.hpp>
 #include <jln/mp/smp/functional/lift.hpp>
@@ -34,10 +35,10 @@ namespace jln::mp::smp
     typename detail::smp_listify_or_monadic_xs<F>::template f<C>
   >>;
 
-  template<class Cmp = contract<mp::lift<std::is_same>>, class F = listify, class C = listify>
+  template<class Cmp = same<>, class F = listify, class C = listify>
   using regroup_by_with = typename detail::smp_regroup_by_select<Cmp>::template f<C, F>;
 
-  template<class Cmp = contract<mp::lift<std::is_same>>, class C = listify>
+  template<class Cmp = same<>, class C = listify>
   using regroup_by = regroup_by_with<Cmp, listify, C>;
 }
 
@@ -69,13 +70,13 @@ namespace jln::mp::detail
   };
 
   template<template<class> class sfinae, class F, class C>
-  struct _sfinae<sfinae, regroup_by_with<mp::lift<std::is_same>, F, C>>
+  struct _sfinae<sfinae, regroup_by_with<same<>, F, C>>
   {
     using type = smp::regroup_with<sfinae<F>, sfinae<C>>;
   };
 
   template<>
-  struct smp_regroup_by_select<contract<mp::lift<std::is_same>>>
+  struct smp_regroup_by_select<smp::same<>>
   {
     template<class C, class F>
     using f = smp::regroup_with<F, C>;

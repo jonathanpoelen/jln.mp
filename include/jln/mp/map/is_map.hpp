@@ -3,7 +3,6 @@
 #pragma once
 
 #include <jln/mp/algorithm/is_unique.hpp>
-#include <jln/mp/algorithm/all_of.hpp>
 #include <jln/mp/functional/try.hpp>
 #include <jln/mp/list/front.hpp>
 
@@ -39,7 +38,7 @@ namespace jln::mp::detail
   struct is_map_impl
   {
     template<class... xs>
-    using f = typename is_unique_impl<identity>
+    using f = typename is_unique_if<same<>, identity>
       ::template f<typename _unpack<front<>, xs>::type...>;
   };
 }

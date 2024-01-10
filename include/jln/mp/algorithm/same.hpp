@@ -47,5 +47,5 @@ namespace jln::mp
     template<class... xs>
     using f = number<emp::same_xs_v<xs...>>;
   };
-  /// \endcond
 }
+/// \endcond

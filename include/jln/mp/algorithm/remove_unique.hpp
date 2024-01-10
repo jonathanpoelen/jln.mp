@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/list/listify.hpp>
 #include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/algorithm/same.hpp>
 
-#if ! JLN_MP_GCC
-# include <jln/mp/algorithm/make_int_sequence.hpp>
-#endif
+// #if ! JLN_MP_GCC
+#include <jln/mp/algorithm/make_int_sequence.hpp>
+// #endif
 
-#include <type_traits>
 
 namespace jln::mp
 {
@@ -58,7 +58,7 @@ namespace jln::mp
   /// Remove unique elements from a \sequence.
   /// \treturn \sequence
   /// \see remove_unique, copy_unique, copy_unique_if
-  template<class Cmp = lift<std::is_same>, class C = listify>
+  template<class Cmp = same<>, class C = listify>
   using remove_unique_if = typename detail::mk_remove_unique<Cmp, C>::type;
 
   namespace emp
@@ -66,7 +66,7 @@ namespace jln::mp
     template<class L, class C = mp::listify>
     using remove_unique = unpack<L, remove_unique<C>>;
 
-    template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
+    template<class L, class Cmp = mp::same<>, class C = mp::listify>
     using remove_unique_if = unpack<L, remove_unique_if<Cmp, C>>;
   }
 
@@ -88,7 +88,7 @@ namespace jln::mp
   /// Copy unique elements from a \sequence.
   /// \treturn \sequence
   /// \see copy_unique, remove_unique, remove_unique_if
-  template<class Cmp = lift<std::is_same>, class C = listify>
+  template<class Cmp = same<>, class C = listify>
   using copy_unique_if = typename detail::mk_copy_unique<Cmp, C>::type;
 
   namespace emp
@@ -96,7 +96,7 @@ namespace jln::mp
     template<class L, class C = mp::listify>
     using copy_unique = unpack<L, copy_unique<C>>;
 
-    template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
+    template<class L, class Cmp = mp::same<>, class C = mp::listify>
     using copy_unique_if = unpack<L, copy_unique_if<Cmp, C>>;
   }
 }
@@ -109,11 +109,11 @@ namespace jln::mp
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
 
-#if JLN_MP_GCC
-# include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
-#else
-# include <jln/mp/set/set_contains.hpp> // inherit
-#endif
+// #if JLN_MP_GCC
+#include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
+// #else
+#include <jln/mp/set/set_contains.hpp> // inherit
+// #endif
 
 /// \cond
 namespace jln::mp::detail
@@ -336,33 +336,9 @@ namespace jln::mp::detail
 
 
   template<class C>
-  struct mk_remove_unique<lift<std::is_same>, C>
-  {
-    using type = mp::remove_unique<C>;
-  };
-
-  template<class C>
-  struct mk_remove_unique<lift_t<std::is_same>, C>
-  {
-    using type = mp::remove_unique<C>;
-  };
-
-  template<class C>
   struct mk_remove_unique<same<>, C>
   {
     using type = mp::remove_unique<C>;
-  };
-
-  template<class C>
-  struct mk_remove_unique<lift<std::is_same, not_<>>, C>
-  {
-    using type = mp::copy_unique<C>;
-  };
-
-  template<class C>
-  struct mk_remove_unique<lift_t<std::is_same, not_<>>, C>
-  {
-    using type = mp::copy_unique<C>;
   };
 
   template<class C>
@@ -377,33 +353,9 @@ namespace jln::mp::detail
   {};
 
   template<class C>
-  struct mk_copy_unique<lift<std::is_same>, C>
-  {
-    using type = mp::copy_unique<C>;
-  };
-
-  template<class C>
-  struct mk_copy_unique<lift_t<std::is_same>, C>
-  {
-    using type = mp::copy_unique<C>;
-  };
-
-  template<class C>
   struct mk_copy_unique<same<>, C>
   {
     using type = mp::copy_unique<C>;
-  };
-
-  template<class C>
-  struct mk_copy_unique<lift<std::is_same, not_<>>, C>
-  {
-    using type = mp::remove_unique<C>;
-  };
-
-  template<class C>
-  struct mk_copy_unique<lift_t<std::is_same, not_<>>, C>
-  {
-    using type = mp::remove_unique<C>;
   };
 
   template<class C>

@@ -23,6 +23,8 @@ namespace jln::mp::smp
 }
 
 /// \cond
+#include <jln/mp/algorithm/same_xs.hpp>
+
 namespace jln::mp::detail
 {
   template<class F>
@@ -67,7 +69,7 @@ namespace jln::mp::detail
     using type =
       typename optimize_useless_transform_unpack_impl<optimize_useless_unpack_t<F>>
       ::template f<
-        typename conditional_c<std::is_same_v<
+        typename conditional_c<emp::same_xs_v<
           optimize_useless_transform_unpack_t<transform<F>>,
           transform<F>
         >>

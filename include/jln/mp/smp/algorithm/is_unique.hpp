@@ -2,43 +2,33 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/smp/algorithm/unique.hpp>
-#include <jln/mp/smp/number/to_bool.hpp>
-#include <jln/mp/smp/functional/tee.hpp>
 #include <jln/mp/smp/algorithm/same.hpp>
 #include <jln/mp/algorithm/is_unique.hpp>
 
+/// \cond
+namespace jln::mp::detail
+{
+  template<class Cmp, class C>
+  struct mk_smp_is_unique_if;
+}
 
 namespace jln::mp::smp
 {
   template<class C = identity>
   using is_unique = contract<mp::is_unique<assume_positive_number<C>>>;
 
-  template<class Cmp = contract<mp::lift<std::is_same>>, class C = identity>
-  using is_unique_if = detail::sfinae<mp::is_unique_if<
-    assume_binary_barrier<Cmp>, assume_positive_number_barrier<C>>>;
+  template<class Cmp = same<>, class C = identity>
+  using is_unique_if = typename detail::mk_smp_is_unique_if<
+    assume_binary<Cmp>, assume_positive_number<C>>::type;
 }
 
 
 /// \cond
+#include <jln/mp/smp/algorithm/none_of.hpp>
+#include <jln/mp/smp/algorithm/fold.hpp>
+
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, is_unique_impl<C>>
-  {
-    using type = smp::is_unique<sfinae<C>>;
-  };
-
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold<
-    is_unique_unpack<is_unique_set_cmp_push_back_or_void<
-      JLN_MP_TRACE_F(contract<mp::lift<std::is_same>>)
-    >>, C
-  >>>
-  {
-    using type = smp::is_unique<sfinae<C>>;
-  };
-
   template<class Cmp>
   struct smp_is_unique_set_cmp_push_back_or_void
   {
@@ -49,18 +39,34 @@ namespace jln::mp::detail
     >::template f<list<xs..., x>, void>;
   };
 
-  template<template<class> class sfinae, class Cmp, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold<
-    is_unique_unpack<is_unique_set_cmp_push_back_or_void<JLN_MP_TRACE_F(Cmp)>>,
-    is_not<void, C>
-  >>>
+  template<class Cmp, class C>
+  struct smp_is_unique_if_impl
+    : push_front<
+        list<>,
+        smp::fold<
+          contract<is_unique_unpack<try_<smp_is_unique_set_cmp_push_back_or_void<Cmp>>>>,
+          contract<is_not<void, C>>
+        >
+      >
+  {};
+
+  template<class Cmp, class C>
+  struct mk_smp_is_unique_if
   {
-    using type = contract<push_front<list<>, smp::fold<
-      contract<is_unique_unpack<try_<smp_is_unique_set_cmp_push_back_or_void<
-        JLN_MP_TRACE_F(assume_binary<sfinae<Cmp>>)
-      >>>>,
-      contract<is_not<void, assume_unary<sfinae<C>>>>
-    >>>;
+    using type = contract<smp_is_unique_if_impl<Cmp, C>>;
+  };
+
+  template<class C>
+  struct mk_smp_is_unique_if<same<>, C>
+  {
+    using type = contract<mp::is_unique<C>>;
+  };
+
+
+  template<template<class> class sfinae, class Cmp, class C>
+  struct _sfinae<sfinae, is_unique_if<Cmp, C>>
+  {
+    using type = smp::is_unique_if<sfinae<Cmp>, sfinae<C>>;
   };
 }
 /// \endcond

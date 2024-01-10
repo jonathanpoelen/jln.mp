@@ -3,13 +3,13 @@
 #pragma once
 
 #include <jln/mp/smp/functional/identity.hpp>
-#include <jln/mp/smp/functional/lift.hpp>
+#include <jln/mp/smp/algorithm/same.hpp>
 #include <jln/mp/algorithm/is_disjoint.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<class Equal>
+  template<class Cmp>
   struct mk_smp_is_disjoint_with;
 
   template<class C, class F = listify>
@@ -22,8 +22,8 @@ namespace jln::mp::smp
   template<class C = identity>
   using is_disjoint = try_contract<detail::seqs_to_list<mp::is_disjoint<assume_positive_number<C>>>>;
 
-  template<class Equal = lift<std::is_same>, class C = identity>
-  using is_disjoint_with = typename detail::mk_smp_is_disjoint_with<Equal>
+  template<class Cmp = same<>, class C = identity>
+  using is_disjoint_with = typename detail::mk_smp_is_disjoint_with<assume_binary<Cmp>>
     ::template f<assume_positive_number<C>>;
 }
 
@@ -35,16 +35,10 @@ namespace jln::mp::smp
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class Equal, class C>
-  struct _sfinae<sfinae, is_disjoint_with<Equal, C>>
+  template<template<class> class sfinae, class Cmp, class C>
+  struct _sfinae<sfinae, is_disjoint_with<Cmp, C>>
   {
-    using type = smp::is_disjoint_with<sfinae<Equal>, sfinae<C>>;
-  };
-
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, is_disjoint_with<lift<std::is_same>, C>>
-  {
-    using type = smp::is_disjoint<sfinae<C>>;
+    using type = smp::is_disjoint_with<sfinae<Cmp>, sfinae<C>>;
   };
 
 
@@ -61,77 +55,77 @@ namespace jln::mp::detail
     Pred, contract<always<false_>>, contract<always<true_>>
   >;
 
-  template<class Equal, class... xs>
+  template<class Cmp, class... xs>
   struct smp_is_disjoint_of
   {
     template<class x>
     using f = typename smp::drop_until<
-      contract<push_back<x, Equal>>,
+      contract<push_back<x, Cmp>>,
       contract<always<false_>>,
       contract<always<true_>>
     >::template f<xs...>;
   };
 
   template<uint_>
-  struct smp_is_disjoint_n;
+  struct smp_is_disjoint_select;
 
   template<>
-  struct smp_is_disjoint_n<0>
+  struct smp_is_disjoint_select<0>
   {
-    template<class Equal, class... xs>
+    template<class Cmp, class... xs>
     using f = true_;
   };
 
   template<>
-  struct smp_is_disjoint_n<1>
+  struct smp_is_disjoint_select<1>
   : try_<seqs_to_list<always<true_>, always<true_>>>
   {};
 
-  template<class Equal, class seq0>
+  template<class Cmp, class seq0>
   using smp_to_is_disjoint_impl = smp::unpack<smp_is_disjoint_impl<
     typename smp::unpack<contract<lift<smp_is_disjoint_of>>>
-    ::template f<seq0, Equal>
+    ::template f<seq0, Cmp>
   >>;
 
   template<>
-  struct smp_is_disjoint_n<2>
+  struct smp_is_disjoint_select<2>
   {
-    template<class Equal, class seq0, class seq1>
-    using f = typename smp_to_is_disjoint_impl<Equal, seq0>
+    template<class Cmp, class seq0, class seq1>
+    using f = typename smp_to_is_disjoint_impl<Cmp, seq0>
       ::template f<seq1>;
   };
 
   template<>
-  struct smp_is_disjoint_n<3>
+  struct smp_is_disjoint_select<3>
   {
-    template<class Equal, class seq0, class... seqs>
-    using f = typename smp_is_disjoint_impl<smp_to_is_disjoint_impl<Equal, seq0>>
+    template<class Cmp, class seq0, class... seqs>
+    using f = typename smp_is_disjoint_impl<smp_to_is_disjoint_impl<Cmp, seq0>>
       ::template f<seqs...>;
   };
 
-  template<class Equal, class C>
+  template<class Cmp, class C>
   struct smp_is_disjoint_with
   {
     template<class... seqs>
     using f = typename C::template f<
-      typename smp_is_disjoint_n<sizeof...(seqs) < 3 ? sizeof...(seqs) : 3>
-      ::template f<Equal, seqs...>
+      typename smp_is_disjoint_select<sizeof...(seqs) < 3 ? sizeof...(seqs) : 3>
+      ::template f<Cmp, seqs...>
     >;
   };
 
-  template<class Equal>
+  template<class Cmp>
   struct mk_smp_is_disjoint_with
   {
     template<class C>
     using f = contract<smp_is_disjoint_with<
-      smp::concepts::predicate<assume_binary<Equal>, identity, violation>, C>>;
+      smp::concepts::predicate<Cmp, identity, violation>, C>>;
   };
 
   template<>
-  struct mk_smp_is_disjoint_with<lift<std::is_same>>
+  struct mk_smp_is_disjoint_with<same<>>
   {
     template<class C>
-    using f = smp::is_disjoint<C>;
+    using f = smp::is_disjoint<contract<C>>;
   };
 }
 /// \endcond

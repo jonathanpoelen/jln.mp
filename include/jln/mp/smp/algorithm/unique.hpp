@@ -3,6 +3,7 @@
 #pragma once
 
 #include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/algorithm/same.hpp>
 #include <jln/mp/smp/algorithm/fold.hpp>
 #include <jln/mp/smp/utility/unpack.hpp>
 #include <jln/mp/smp/functional/lift.hpp>
@@ -15,12 +16,11 @@ namespace jln::mp::smp
   template<class C = listify>
   using unique = detail::sfinae<mp::unique<subcontract_barrier<C>>>;
 
-  template<class Cmp = contract<mp::lift<std::is_same>>, class C = listify>
+  template<class Cmp = same<>, class C = listify>
   using unique_if = detail::sfinae<mp::unique_if<
     assume_binary_barrier<Cmp>, subcontract_barrier<C>>>;
 }
 
-#include <jln/mp/smp/algorithm/same.hpp>
 #include <jln/mp/smp/algorithm/none_of.hpp>
 #include <jln/mp/smp/utility/unpack.hpp>
 
@@ -34,7 +34,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct smp_unique_continuation<try_<unpack<lift<list>>>>
+  struct smp_unique_continuation<try_<unpack<listify>>>
   {
     using type = mp::identity;
   };
@@ -51,7 +51,7 @@ namespace jln::mp::detail
 
   template<template<class> class sfinae, class C>
   struct _sfinae<sfinae, push_front<list<>, fold<
-    unpack<_set_cmp_push_back<JLN_MP_TRACE_F(contract<mp::lift<std::is_same>>)>>, C
+    unpack<_set_cmp_push_back<JLN_MP_TRACE_F(smp::same<>)>>, C
   >>>
   {
     using type = contract<push_front<list<>, fold<
@@ -78,7 +78,7 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct smp_unique_if_continuation<try_<unpack<lift<list>>>>
+  struct smp_unique_if_continuation<try_<unpack<listify>>>
   {
     using type = contract<mp::identity>;
   };

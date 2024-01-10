@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <jln/mp/algorithm/same.hpp>
 #include <jln/mp/algorithm/counter.hpp>
 
 namespace jln::mp
@@ -37,7 +38,7 @@ namespace jln::mp
   template<class C = listify>
   using regroup = regroup_with<listify, C>;
 
-  template<class Cmp = lift<std::is_same>, class F = listify, class C = listify>
+  template<class Cmp = same<>, class F = listify, class C = listify>
   struct regroup_by_with
   {
     template<class... xs>
@@ -46,7 +47,7 @@ namespace jln::mp
       ::template f<C, F, Cmp, xs...>;
   };
 
-  template<class Cmp = lift<std::is_same>, class C = listify>
+  template<class Cmp = same<>, class C = listify>
   using regroup_by = regroup_by_with<Cmp, listify, C>;
 
   namespace emp
@@ -57,16 +58,16 @@ namespace jln::mp
     template<class L, class F = mp::listify, class C = mp::listify>
     using regroup_with = unpack<L, mp::regroup_with<F, C>>;
 
-    template<class L, class Cmp = lift<std::is_same>, class C = mp::listify>
+    template<class L, class Cmp = mp::same<>, class C = mp::listify>
     using regroup_by = unpack<L, mp::regroup_by<Cmp, C>>;
 
-    template<class L, class Cmp = lift<std::is_same>, class F = mp::listify, class C = mp::listify>
+    template<class L, class Cmp = mp::same<>, class F = mp::listify, class C = mp::listify>
     using regroup_by_with = unpack<L, mp::regroup_by_with<Cmp, F, C>>;
   }
 
   /// \cond
   template<class F, class C>
-  struct regroup_by_with<lift<std::is_same>, F, C> : regroup_with<F, C>
+  struct regroup_by_with<same<>, F, C> : regroup_with<F, C>
   {};
   /// \endcond
 }

@@ -32,9 +32,5 @@ namespace jln::mp::detail
   {
     using type = smp::lift<F, sfinae<C>>;
   };
-
-
-  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (lift<std::is_same, C>));
-  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::binary, (class C), (lift_t<std::is_same, C>));
 }
 /// \endcond

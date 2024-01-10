@@ -5,6 +5,8 @@
 
 #include "jln/mp/smp/algorithm/is_unique.hpp"
 #include "jln/mp/smp/functional/each.hpp"
+#include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/utility/unpack.hpp"
 #include "jln/mp/smp/list/at.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 

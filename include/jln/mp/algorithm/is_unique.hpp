@@ -2,51 +2,55 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/algorithm/unique.hpp>
+#include <jln/mp/algorithm/same.hpp>
 
 namespace jln::mp
 {
-  /// \cond
-  namespace detail
-  {
-    template<class Cmp, class C>
-    struct mk_is_unique;
-  }
-  /// \endcond
-
   /// \ingroup algorithm
 
   /// Checks whether all \values are unique.
   /// \treturn \bool
-  template<class C = identity>
-  using is_unique = typename detail::mk_is_unique<lift<std::is_same>, C>::type;
+  template<class Cmp = same<>, class C = identity>
+  struct is_unique_if
+#ifdef JLN_MP_DOXYGENATING
+  {
+    template<class... xs>
+    using f;
+  }
+#endif
+  ;
 
   /// Checks whether all \values are unique.
   /// \treturn \bool
-  template<class Cmp = lift<std::is_same>, class C = identity>
-  using is_unique_if = typename detail::mk_is_unique<Cmp, C>::type;
+  template<class C = identity>
+  using is_unique = is_unique_if<same<>, C>;
 
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using is_unique = unpack<L, is_unique<C>>;
+    using is_unique = unpack<L, mp::is_unique_if<mp::same<>, C>>;
 
-    template<class L, class Cmp = lift<std::is_same>, class C = mp::identity>
-    using is_unique_if = unpack<L, is_unique_if<Cmp, C>>;
+    template<class L, class Cmp = mp::same<>, class C = mp::identity>
+    using is_unique_if = unpack<L, mp::is_unique_if<Cmp, C>>;
   }
 }
 
 
+/// \cond
+#include <jln/mp/algorithm/make_int_sequence.hpp> // JLN_MP_MAKE_INTEGER_SEQUENCE
+#include <jln/mp/algorithm/none_of.hpp>
+#include <jln/mp/algorithm/fold.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/number/to_bool.hpp>
 #include <jln/mp/utility/is_not.hpp>
-#include <jln/mp/algorithm/make_int_sequence.hpp>
+#include <jln/mp/list/push_back.hpp>
+#include <jln/mp/set/set_contains.hpp> // basic_item
 
-/// \cond
 namespace jln::mp::detail
 {
   template<int_ i, class x>
-  struct indexed_item : basic_item<x> {};
+  struct indexed_item : basic_item<x>
+  {};
 
   template<class, int_... ints>
   struct indexed_inherit
@@ -56,7 +60,7 @@ namespace jln::mp::detail
     {};
   };
 
-#if JLN_MP_MSVC_LIKE
+#if JLN_MP_WORKAROUND(JLN_MP_MSVC_LIKE, < 1914)
   template<class... xs>
   struct _is_set
   {
@@ -72,35 +76,41 @@ namespace jln::mp::detail
     >(nullptr)));
   };
 #endif
+}
 
+namespace jln::mp
+{
   template<class C>
-  struct is_unique_impl
+  struct is_unique_if<same<>, C>
   {
     template<class... xs>
 #if JLN_MP_WORKAROUND(JLN_MP_MSVC_LIKE, < 1914)
     // workaround for MSVC which has a broken EBO
-    using f = JLN_MP_CALL_TRACE(C, typename _is_set<xs...>::type);
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_is_set<xs...>::type);
 #else
     using f = JLN_MP_CALL_TRACE(C, number<sizeof(
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)::template f<xs...>
     ) == 1>);
 #endif
   };
 
   template<>
-  struct is_unique_impl<identity>
+  struct is_unique_if<same<>, identity>
   {
     template<class... xs>
-#if JLN_MP_MSVC_LIKE
+#if JLN_MP_WORKAROUND(JLN_MP_MSVC_LIKE, < 1914)
     // workaround for MSVC which has a broken EBO
-    using f = typename _is_set<xs...>::type;
+    using f = typename detail::_is_set<xs...>::type;
 #else
     using f = number<sizeof(
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)::template f<xs...>
     ) == 1>;
 #endif
   };
+}
 
+namespace jln::mp::detail
+{
   template<bool>
   struct is_unique_unpack_impl;
 
@@ -134,30 +144,19 @@ namespace jln::mp::detail
       none_of<push_back<x, Cmp>>::template f<xs...>::value
     >::template f<list<xs..., x>, void>;
   };
+}
 
+namespace jln::mp
+{
   template<class Cmp, class C>
-  struct mk_is_unique
-  {
-    using type = push_front<list<>, fold<
-      is_unique_unpack<is_unique_set_cmp_push_back_or_void<JLN_MP_TRACE_F(Cmp)>>,
-      is_not<void, C>
-    >>;
-  };
-
-  template<class C>
-  struct mk_is_unique<lift<std::is_same>, C>
-  {
-    using type = is_unique_impl<C>;
-  };
-
-  template<class C>
-  struct mk_is_unique<lift_t<std::is_same>, C>
-  : mk_is_unique<lift<std::is_same>, C>
-  {};
-
-  template<class C>
-  struct mk_is_unique<same<>, C>
-  : mk_is_unique<lift<std::is_same>, C>
+  struct is_unique_if
+    : push_front<
+        list<>,
+        fold<
+          detail::is_unique_unpack<detail::is_unique_set_cmp_push_back_or_void<Cmp>>,
+          is_not<void, C>
+        >
+      >
   {};
 }
 /// \endcond
