@@ -10,7 +10,7 @@ jln_default_flags = {
 sys = build_machine.system()
 
 # quick compilation
-if not ['darwin', 'windows'].contains(sys)
+if not ['windows'].contains(sys)
   jln_default_flags += {
     'debug': 'off',
     'whole_program': 'strip_all',
