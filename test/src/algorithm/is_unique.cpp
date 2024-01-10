@@ -26,6 +26,10 @@ TEST()
   ut::same<_1, emp::is_unique_if<emp::numbers<0, 1, 2>, equal<>>>();
   ut::same<_0, emp::is_unique_if<emp::numbers<0, 1, 0, 2, 2>, equal<>>>();
 
+  // optimized comparator
+  ut::same<smp::is_unique_if<>, ut::sfinae<is_unique<>>>();
+
+
   test_context<is_unique<>, smp::is_unique<>>()
     .test<_1>()
     .test<_1, _0>()

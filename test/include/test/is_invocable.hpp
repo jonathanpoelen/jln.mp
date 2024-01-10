@@ -14,14 +14,16 @@ namespace
   template<class F, class... xs>
   void invocable()
   {
-    jln::mp::true_ x = jln::mp::emp::is_invocable<F, xs...>{};
+    // Cuda: emp::is_invocable fails in slice and is_unique, but mp::is_invocable does not ???
+    jln::mp::true_ x = typename jln::mp::is_invocable<F>::template f<xs...>{};
     (void)x;
   }
 
   template<class F, class... xs>
   void not_invocable()
   {
-    jln::mp::false_ x = jln::mp::emp::is_invocable<F, xs...>{};
+    // Cuda: infinite loop with emp::is_invocable ???
+    jln::mp::false_ x = typename jln::mp::is_invocable<F>::template f<xs...>{};
     (void)x;
   }
   JLN_MP_DIAGNOSTIC_POP()
