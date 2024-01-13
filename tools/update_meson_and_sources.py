@@ -68,11 +68,16 @@ def genfiles(dir_path):
   path = f'include/jln/{dir_path}'
   seppos = dir_path.find('/')
   test_prefix = '' if seppos == -1 else f'{dir_path[seppos+1:]}/'
+
+  rootfile = dir_path if seppos == -1 else dir_path[seppos+1:]
+  rootdir = '' if seppos == -1 else dir_path[:seppos]
+  gentest(test_prefix, rootdir, f'{rootfile}.hpp')
+
   with open(f'{path}.hpp', 'w') as outfile:
     outfile.write(LICENSE)
     outfile.write("#pragma once\n\n")
 
-    for d in ordered_listdir(f'{path}'):
+    for d in ordered_listdir(path):
       if d in ('smp', 'config'):
         continue
 
