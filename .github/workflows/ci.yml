@@ -16,6 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         compiler: [g++]
+        std: ['c++17', 'c++20']
         debug: ['false', 'true']
 
     steps:
@@ -27,7 +28,7 @@ jobs:
       run: |
         set CC=%CXX%
         python -m pip install ninja meson
-        meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
+        meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }} -Db_colorout=always
         type D:\a\jln.mp\jln.mp\build\meson-logs\meson-log.txt
         ninja -C build -k10
 
@@ -39,6 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         compiler: [clang-cl]
+        std: ['c++17', 'c++20']
         debug: ['false', 'true']
 
     steps:
@@ -58,7 +60,7 @@ jobs:
         CC: ${{ matrix.compiler }}
         CXX: ${{ matrix.compiler }}
       run: |
-        meson setup build -Dcpp_winlibs= -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
+        meson setup build -Dcpp_winlibs= -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }} -Db_colorout=always
         type D:\a\jln.mp\jln.mp\build\meson-logs\meson-log.txt
         ninja -C build -k10
 
@@ -93,6 +95,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        std: ['c++17', 'c++20']
         debug: ['false', 'true']
 
     steps:
@@ -102,7 +105,7 @@ jobs:
         python-version: '3.10'
     - run: |
         python -m pip install ninja meson
-        meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
+        meson setup build -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }} -Db_colorout=always
         CLICOLOR_FORCE= ninja -C build -k10
 
   linux:
@@ -151,6 +154,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        std: ['c++17', 'c++20']
         debug: ['false']
 
     steps:
@@ -163,7 +167,7 @@ jobs:
 
       - run: |
           python -m pip install ninja meson
-          CXX=clang++ meson setup build -Dmp_debug=${{ matrix.debug }}
+          CXX=clang++ meson setup build -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }}
           sed '
             s/clang++/nvcc -x cu -diag-suppress 177 -std=c++17/
             s/-Wall.*-fforce-emit-vtables//
