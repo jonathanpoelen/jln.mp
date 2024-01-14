@@ -68,7 +68,7 @@ jobs:
 
 
   windows-cl:
-    name: Windows ${{ matrix.compiler }} dbg=${{ matrix.debug }} ${{ matrix.std }} | ${{ matrix.toolset}}
+    name: Windows ${{ matrix.compiler }} dbg=${{ matrix.debug }} ${{ matrix.std }}
     runs-on: windows-latest
     timeout-minutes: 8
     strategy:
@@ -77,7 +77,6 @@ jobs:
         compiler: [cl]
         std: ['c++17', 'c++20']
         debug: ['false']  # debug is always disabled with msvc
-        toolset: ['19.37', '19.38', '']  # special case after 19.37 for JLN_MP_INTEGRAL_AS
 
     steps:
     - uses: actions/checkout@v4
@@ -93,7 +92,6 @@ jobs:
       uses: TheMrMilchmann/setup-msvc-dev@v3
       with:
         arch: x64
-        toolset: ${{ matrix.toolset }}
 
     - shell: cmd
       env:
