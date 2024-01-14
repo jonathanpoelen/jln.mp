@@ -76,7 +76,7 @@ jobs:
         compiler: [cl]
         std: ['c++17', 'c++20']
         debug: ['false']  # debug is always disabled with msvc
-        toolset: ['19.37', '19.38', '']  # special case for JLN_MP_INTEGRAL_AS
+        toolset: ['19.37', '']  # special case after 19.37 for JLN_MP_INTEGRAL_AS
 
     steps:
     - uses: actions/checkout@v4
