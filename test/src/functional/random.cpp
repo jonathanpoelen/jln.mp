@@ -23,7 +23,7 @@ TEST()
   ut::not_same<emp::random<>, emp::random<>>();
 
   using rd1 = random<>;
-  #ifdef __clang__
+  #ifdef JLN_MP_CLANG
   ut::not_same<rd1::f<int>, rd1::f<int>>();
   #else
   ut::same<rd1::f<int>, rd1::f<int>>();

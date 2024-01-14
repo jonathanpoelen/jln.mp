@@ -171,7 +171,7 @@ namespace jln::mp
 
   // other transformations:
   JLN_MP_SMP_MAKE_TRAIT(decay, 1, types::any)
-#if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref
+#if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref >= 201811L
   JLN_MP_SMP_MAKE_TRAIT(unwrap_ref_decay, 1, types::any)
   JLN_MP_SMP_MAKE_TRAIT(unwrap_reference, 1, types::any)
 #endif
