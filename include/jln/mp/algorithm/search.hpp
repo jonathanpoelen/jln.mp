@@ -4,6 +4,7 @@
 
 #include <jln/mp/algorithm/drop_until_xs.hpp>
 #include <jln/mp/algorithm/take_until_xs.hpp>
+#include <jln/mp/detail/expr_conversion.hpp>
 
 namespace jln::mp
 {
