@@ -12,7 +12,7 @@ namespace jln::mp
 #define JLN_MP_SMP_MAKE_BASIC_TRAIT(Name)           \
   namespace smp::traits                             \
   {                                                 \
-    template<class C = identity>                   \
+    template<class C = identity>                    \
     using Name = try_contract<                      \
       mp::traits::Name<assume_unary<C>>>;           \
   }                                                 \
@@ -26,7 +26,7 @@ namespace jln::mp
     };                                              \
   }
 
-#define JLN_MP_SMP_MAKE_TRAIT(Name, arity, output)     \
+#define JLN_MP_SMP_MAKE_TRAIT(Name, arity, output) \
   JLN_MP_SMP_MAKE_BASIC_TRAIT(Name)
 
 
@@ -171,7 +171,9 @@ namespace jln::mp
 
   // other transformations:
   JLN_MP_SMP_MAKE_TRAIT(decay, 1, types::any)
-#if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref >= 201811L
+#if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref \
+  /* unwrap_reference is missing from <type_traits> with libc++-15 */ \
+  && (!JLN_MP_LIBCXX || JLN_MP_LIBCXX >= 16000)
   JLN_MP_SMP_MAKE_TRAIT(unwrap_ref_decay, 1, types::any)
   JLN_MP_SMP_MAKE_TRAIT(unwrap_reference, 1, types::any)
 #endif

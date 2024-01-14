@@ -63,8 +63,18 @@
 #  endif
 #endif
 
+// apple
+#if defined(__APPLE__) && JLN_MP_CLANG
+#  ifndef JLN_MP_APPLE_CLANG
+#    define JLN_MP_APPLE_CLANG JLN_MP_CLANG
+#  endif
+#endif
+
 #ifndef JLN_MP_CLANG_LIKE
 #  define JLN_MP_CLANG_LIKE 0
+#endif
+#ifndef JLN_MP_APPLE_CLANG
+#  define JLN_MP_APPLE_CLANG 0
 #endif
 #ifndef JLN_MP_MSVC_LIKE
 #  define JLN_MP_MSVC_LIKE 0

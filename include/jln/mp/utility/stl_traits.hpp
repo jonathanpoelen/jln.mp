@@ -36,6 +36,25 @@ namespace jln::mp::traits
   }
 
 
+#if defined(_GLIBCXX_RELEASE)
+#  define JLN_MP_LIBSTDCXX _GLIBCXX_RELEASE
+#else
+#  define JLN_MP_LIBSTDCXX 0
+#endif
+
+#if defined(_LIBCPP_VERSION)
+#  define JLN_MP_LIBCXX _LIBCPP_VERSION
+#else
+#  define JLN_MP_LIBCXX 0
+#endif
+
+#if defined(_MSVC_STL_UPDATE)
+#  define JLN_MP_LIBMS _MSVC_STL_UPDATE
+#else
+#  define JLN_MP_LIBMS 0
+#endif
+
+
   // primary type categories:
 #if __cplusplus >= 201703L
   JLN_MP_MAKE_TRAIT(is_void);
@@ -221,7 +240,9 @@ namespace jln::mp::traits
 
   // other transformations:
   JLN_MP_MAKE_TRAIT(decay);
-#if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref >= 201811L
+#if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref \
+  /* unwrap_reference is missing from <type_traits> with libc++-15 */ \
+  && (!JLN_MP_LIBCXX || JLN_MP_LIBCXX >= 16000)
   JLN_MP_MAKE_TRAIT(unwrap_ref_decay);
   JLN_MP_MAKE_TRAIT(unwrap_reference);
 #endif
