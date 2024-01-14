@@ -19,15 +19,17 @@ namespace jln::mp::smp
   using search_before_extended_by_n_c = take_until_extended_by_n_xs_c<ExtendedByN, Pred, TC, FC>;
 
   template<std::size_t StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
-  using partial_search_c = partial_drop_until_xs_c<-int_{StopWhenAtLeast}-1, Pred, TC, FC>;
+  using partial_search_c = partial_drop_until_xs_c<
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast)-1, Pred, TC, FC>;
 
   template<std::size_t StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
-  using partial_search_before_c = partial_take_until_xs_c<-int_{StopWhenAtLeast}-1, Pred, TC, FC>;
+  using partial_search_before_c = partial_take_until_xs_c<
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast)-1, Pred, TC, FC>;
 
   template<std::size_t StopWhenAtLeast, std::size_t ExtendedByN, class Pred,
            class TC = listify, class FC = clear<TC>>
   using partial_search_before_extended_by_n_c = partial_take_until_extended_by_n_xs_c<
-    -int_{StopWhenAtLeast}-1, ExtendedByN, Pred, TC, FC>;
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast)-1, ExtendedByN, Pred, TC, FC>;
 
   template<class ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
   using search_before_extended_by_n = take_until_extended_by_n_xs<ExtendedByN, Pred, TC, FC>;

@@ -36,7 +36,9 @@ namespace jln::mp::smp
 
 /// \cond
 #include <jln/mp/utility/always.hpp>
-#include <type_traits>
+#if JLN_MP_CUDA
+#  include <type_traits>
+#endif
 
 namespace jln::mp::detail
 {
@@ -50,7 +52,7 @@ namespace jln::mp::detail
 #if JLN_MP_CUDA
     std::enable_if_t<((std::size_t{Selectors::value} <= 1) || ...) || !sizeof...(Selectors)>
 #else
-    std::void_t<decltype(bool{Selectors::value})...>
+    std::void_t<decltype(JLN_MP_INTEGRAL_AS(bool, Selectors::value))...>
 #endif
   >
   {

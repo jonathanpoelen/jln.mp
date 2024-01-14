@@ -7,6 +7,7 @@
 #include <jln/mp/utility/iterate.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/list/is_size_of.hpp>
+#include <jln/mp/detail/expr_conversion.hpp>
 
 namespace jln::mp::smp
 {
@@ -19,7 +20,7 @@ namespace jln::mp::smp
 }
 
 JLN_MP_MAKE_REGULAR_SMP3_P(iterate, (n), (F), (C, smp::identity),
-    smp::iterate_c<mp::uint_{n::value}, F, C>)
+    smp::iterate_c<JLN_MP_INTEGRAL_AS(uint_, n::value), F, C>)
 
 /// \cond
 namespace jln::mp::detail

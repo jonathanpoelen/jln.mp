@@ -14,14 +14,14 @@ namespace jln::mp
   struct not_
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<(!x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(x::value)>);
   };
 
   template<class C>
   struct not_<not_<C>>
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<(!int_{!x::value})>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_RAW_EXPR_TO_BOOL(x::value)>);
   };
 
   namespace emp
@@ -40,7 +40,7 @@ namespace jln::mp
 #include <jln/mp/list/size.hpp>
 
 #if JLN_MP_CUDA
-# include <cstddef>
+#  include <cstddef>
 #endif
 
 namespace jln::mp
@@ -49,13 +49,20 @@ namespace jln::mp
   struct not_<identity>
   {
     template<class x>
-    using f = number<(!x::value)>;
+    using f = number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(x::value)>;
+  };
+
+  template<>
+  struct not_<not_<identity>>
+  {
+    template<class x>
+    using f = number<JLN_MP_RAW_EXPR_TO_BOOL(x::value)>;
   };
 
 #if JLN_MP_CUDA
 #  define JLN_MP_AS_BOOL(v) std::enable_if_t<std::size_t{v} <= 1, bool>{v}
 #else
-#  define JLN_MP_AS_BOOL(v) bool{v}
+#  define JLN_MP_AS_BOOL(v) JLN_MP_INTEGRAL_AS(bool, v)
 #endif
 
   template<>

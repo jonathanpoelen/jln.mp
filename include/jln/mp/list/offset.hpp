@@ -21,7 +21,7 @@ namespace jln::mp
   struct offset_c
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<I - int_{sizeof...(xs)}>);
+    using f = JLN_MP_CALL_TRACE(C, number<I - int_(sizeof...(xs))>);
   };
 
   /// \cond
@@ -29,7 +29,7 @@ namespace jln::mp
   struct offset_c<I, identity>
   {
     template<class... xs>
-    using f = number<I - int_{sizeof...(xs)}>;
+    using f = number<I - int_(sizeof...(xs))>;
   };
   /// \endcond
 

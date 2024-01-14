@@ -54,7 +54,7 @@ namespace jln::mp::detail
   struct is_sorted_impl<2>
   {
     template<class C, class Cmp, class x, class y>
-    using f = JLN_MP_CALL_TRACE(C, number<bool{Cmp::template f<x, y>::value}>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_RAW_EXPR_TO_BOOL(Cmp::template f<x, y>::value)>);
   };
 
   template<class F>

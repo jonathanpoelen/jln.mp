@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <jln/mp/detail/expr_conversion.hpp>
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/number/number.hpp>
@@ -17,10 +18,10 @@ namespace jln::mp
 #if JLN_MP_CUDA
 #  define JLN_MP_AS_NUMBER(v) std::enable_if_t<v < 0 || std::size_t{v} <= (~0ull >> 1), int_>{v}
 #else
-#  define JLN_MP_AS_NUMBER(v) int_{v}
+#  define JLN_MP_AS_NUMBER(v) JLN_MP_INTEGRAL_AS(int_, v)
 #endif
 
-  /// Narrowing convertion from \value to \number.
+  /// Convertion without narrowing from \value to \number.
   /// \treturn \number
   template<class C = identity>
   struct as_number

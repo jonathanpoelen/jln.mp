@@ -35,7 +35,7 @@ namespace jln::mp
   #define JLN_MP_CALL_TRACE_T(C, ...) typename C::template f<__VA_ARGS__>
   #define JLN_MP_CALL_TRACE_0_ARG(...) typename __VA_ARGS__::template f<>
 #else
-  // does not compile with msvc...
+  // does not compile without memoize with msvc...
   #define JLN_MP_TRACE_F(...) memoize<__VA_ARGS__>
   #define JLN_MP_TRACE_TYPENAME typename
 

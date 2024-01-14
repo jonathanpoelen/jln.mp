@@ -36,6 +36,7 @@ namespace jln::mp::smp
 /// \cond
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/functional/monadic.hpp>
+#include <jln/mp/detail/expr_conversion.hpp>
 
 namespace jln::mp::detail
 {
@@ -56,7 +57,7 @@ namespace jln::mp::detail
     {};
 
     template<class i>
-    struct _impl<i, decltype(void(unsigned{i::value}))>
+    struct _impl<i, decltype(void(JLN_MP_INTEGRAL_AS(uint_, i::value)))>
     {
       template<class... xs>
       using f = typename conditional_c<i::value <= sizeof...(xs)>
