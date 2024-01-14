@@ -24,9 +24,9 @@ jobs:
     - uses: actions/setup-python@v5
     - shell: cmd
       env:
+        CC: ${{ matrix.compiler }}
         CXX: ${{ matrix.compiler }}
       run: |
-        set CC=%CXX%
         python -m pip install ninja meson
         meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }} -Db_colorout=always
         ninja -C build -k10
@@ -98,8 +98,8 @@ jobs:
         CC: ${{ matrix.compiler }}
         CXX: ${{ matrix.compiler }}
       run: |
-        meson setup --backend vs --vsenv -Dcpp_winlibs= -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }} -Db_colorout=always build
-        meson -v -C build
+        meson setup build -Dcpp_winlibs= -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }} -Db_colorout=always
+        ninja -C build -k10
 
 
   macos:
