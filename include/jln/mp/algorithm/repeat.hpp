@@ -11,7 +11,7 @@ namespace jln::mp
   namespace detail
   {
     template<int n>
-    struct repat_impl;
+    struct repeat_impl;
   }
   /// \endcond
 
@@ -26,7 +26,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE_T(
       int, N,
-      detail::repat_impl<sizeof...(xs) < 2 ? sizeof...(xs) : 2>::template impl
+      detail::repeat_impl<sizeof...(xs) < 2 ? sizeof...(xs) : 2>::template impl
     )::template f<C, xs...>;
   };
 
@@ -51,7 +51,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<>
-  struct repat_impl<0>
+  struct repeat_impl<0>
   {
     template<class, int...>
     struct impl : call_trace_c0_arg
@@ -66,18 +66,26 @@ namespace jln::mp::detail
 #endif
 
   template<>
-  struct repat_impl<1>
+  struct repeat_impl<1>
   {
     template<class, int... ns>
     struct impl
     {
+#if JLN_MP_MSVC
+      template<class C, class x, class... xs>
+      using g = typename C::template f<index0::f<x, xs>...>;
+
+      template<class C, class x>
+      using f = g<C, x, decltype(ns)...>;
+#else
       template<class C, class x>
       using f = JLN_MP_CALL_TRACE(C, JLN_MP_INDEX0<x, decltype(ns)>...);
+#endif
     };
   };
 
   template<>
-  struct repat_impl<2>
+  struct repeat_impl<2>
   {
     template<class C, class L, class... xs>
     using g = typename join<C>::template f<JLN_MP_INDEX0<L, xs>...>;
