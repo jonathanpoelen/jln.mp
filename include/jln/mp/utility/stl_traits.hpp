@@ -175,7 +175,7 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT(is_convertible);
 #if defined(__cpp_lib_is_nothrow_convertible) && __cpp_lib_is_nothrow_convertible
 // is_nothrow_convertible is an alias, not a strut: https://github.com/microsoft/STL/issues/4317
-# if JLN_MP_MSVC
+# if JLN_MP_LIBMS
   template<class C = identity>
   struct is_nothrow_convertible
   {
@@ -195,7 +195,7 @@ namespace jln::mp::traits
   {
     template<class... xs>
     using f = std::bool_constant<std::is_nothrow_convertible_v<xs...>>;
-  }
+  };
 # else
   JLN_MP_MAKE_TRAIT(is_nothrow_convertible);
 # endif
