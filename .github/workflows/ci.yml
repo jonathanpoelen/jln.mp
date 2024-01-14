@@ -178,7 +178,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: Jimver/cuda-toolkit@v0.2.13
-        id: cuda-toolkit
+        id: cuda-toolkit${{ matrix.std }}
         with:
           cuda: '12.3.2'
           # linux-local-args: '["--toolkit"]'
