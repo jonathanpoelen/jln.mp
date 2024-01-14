@@ -172,7 +172,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        std: ['c++17', 'c++20']
+        # std: ['c++17', 'c++20']  # Conflict: an artifact with this name already exists on the workflow run
+        std: ['c++20']
         debug: ['false']
 
     steps:
