@@ -5,6 +5,7 @@
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/number/number.hpp>
+#include <jln/mp/detail/compiler.hpp>
 
 #include <type_traits>
 
@@ -154,7 +155,31 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT(is_base_of);
   JLN_MP_MAKE_TRAIT(is_convertible);
 #if defined(__cpp_lib_is_nothrow_convertible) && __cpp_lib_is_nothrow_convertible
+// is_nothrow_convertible is an alias, not a strut: https://github.com/microsoft/STL/issues/4317
+# if JLN_MP_MSVC
+  template<class C = identity>
+  struct is_nothrow_convertible
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      std::bool_constant<std::is_nothrow_convertible_v<xs...>>);
+  };
+
+  namespace emp
+  {
+    template<class... xs>
+    using is_nothrow_convertible = std::bool_constant<std::is_nothrow_convertible_v<xs...>>;
+  }
+
+  template<>
+  struct is_nothrow_convertible<identity>
+  {
+    template<class... xs>
+    using f = std::bool_constant<std::is_nothrow_convertible_v<xs...>>;
+  }
+# else
   JLN_MP_MAKE_TRAIT(is_nothrow_convertible);
+# endif
 #endif
 #if defined(__cpp_lib_is_layout_compatible) && __cpp_lib_is_layout_compatible
   JLN_MP_MAKE_TRAIT(is_layout_compatible);
