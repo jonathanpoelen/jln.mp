@@ -59,23 +59,34 @@ namespace jln::mp
 {
   template<class C, class TC, class FC>
   struct try_<contract<C>, TC, FC>
-    : try_<C, TC, FC>
-  {};
+  {
+    template<class... xs>
+    using f = typename detail::try_dispatch<JLN_MP_DCALL_TRACE_XS(xs, C, xs...)>
+      ::template f<TC, FC, xs...>;
+  };
 
   template<class C>
   struct try_<contract<C>, always<true_>, always<false_>>
-    : try_<C, always<true_>, always<false_>>
-  {};
+  {
+    template<class... xs>
+    using f = number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+      JLN_MP_IS_SAME(na, JLN_MP_DCALL_TRACE_XS(xs, C, xs...))
+    )>;
+  };
 
   template<class C>
   struct try_<contract<C>, always<false_>, always<true_>>
-    : try_<C, always<false_>, always<true_>>
-  {};
+  {
+    template<class... xs>
+    using f = number<JLN_MP_IS_SAME(na, JLN_MP_DCALL_TRACE_XS(xs, C, xs...))>;
+  };
 
   template<class C>
   struct try_<contract<C>, identity, violation>
-    : try_<C, identity, violation>
-  {};
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
+  };
 }
 
 namespace jln::mp::detail
