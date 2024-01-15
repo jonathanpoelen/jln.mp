@@ -28,7 +28,11 @@ TEST()
   #else
   ut::same<rd1::f<int>, rd1::f<int>>();
   #endif
+  #if JLN_MP_MSVC || JLN_MP_CLANG_CL
+  ut::same<rd1::f<void>, rd1::f<int>>();
+  #else
   ut::not_same<rd1::f<void>, rd1::f<int>>();
+  #endif
 
   ut::not_same<random<>::f<int>, random<>::f<int>>();
   ut::not_same<random<>::f<void>, random<>::f<int>>();
