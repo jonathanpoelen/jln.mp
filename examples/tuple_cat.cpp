@@ -114,7 +114,7 @@ using std_tuple = std::tuple<
     int, int>;
 
 static_assert(std::is_same_v<my_tuple_type, std_tuple>);
-static_assert(my_tuple == std::tuple{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
+static_assert(my_tuple == std_tuple{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
 // @}
 
 int main() {}
