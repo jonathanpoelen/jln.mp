@@ -8,6 +8,28 @@ on: [push, pull_request]
 #     branches: [ master ]
 
 jobs:
+  windows-gcc:
+    name: Windows ${{ matrix.compiler }} dbg=${{ matrix.debug }} ${{ matrix.std }}
+    runs-on: windows-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [g++]
+        std: ['c++17', 'c++20']
+        debug: ['false', 'true']
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+    - shell: cmd
+      env:
+        CC: ${{ matrix.compiler }}
+        CXX: ${{ matrix.compiler }}
+      run: |
+        python -m pip install ninja meson
+        meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }} -Db_colorout=always
+        ninja -C build -k10
 
 
   windows-clang:
@@ -80,3 +102,177 @@ jobs:
         ninja -C build -k10
 
 
+  macos:
+    name: MacOs clang dbg=${{ matrix.debug }} ${{ matrix.std }}
+    runs-on: macOS-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        std: ['c++17', 'c++20']
+        debug: ['false', 'true']
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - run: |
+        python -m pip install ninja meson
+        meson setup build -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }} -Db_colorout=always
+        CLICOLOR_FORCE= ninja -C build -k10
+
+
+  linux:
+    name: Ubuntu ${{ matrix.cxx }} dbg=${{ matrix.debug }} ${{ matrix.std }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        std: ['c++17', 'c++20']
+        debug: ['false', 'true']
+        # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
+        cxx: ['g++-12', 'clang++-13', 'clang++-14']
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+    - run: |
+        python -m pip install ninja meson
+        CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }} -Db_colorout=always
+        CLICOLOR_FORCE= ninja -C build -k10
+
+
+  linux-old:
+    name: Ubuntu ${{ matrix.cxx }} dbg=${{ matrix.debug }} ${{ matrix.std }}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        debug: ['false', 'true']
+        cxx: ['g++-9', 'g++-10', 'clang++-10', 'clang++-11', 'clang++-12']
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+    - run: |
+        python -m pip install ninja meson
+        CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
+        CLICOLOR_FORCE= ninja -C build -k10
+
+
+  cuda-linux:
+    name: Ubuntu nvcc dbg=${{ matrix.debug }} ${{ matrix.std }}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        # std: ['c++17', 'c++20']  # Conflict: an artifact with this name already exists on the workflow run
+        std: ['c++20']
+        debug: ['false']
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Jimver/cuda-toolkit@v0.2.13
+        # id: cuda-toolkit
+        with:
+          cuda: '12.3.2'
+          # linux-local-args: '["--toolkit"]'
+
+      - run: |
+          python -m pip install ninja meson
+          CXX=clang++ meson setup build -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }}
+          sed '
+            s/clang++/nvcc -x cu -diag-suppress 177 -std=c++17/
+            s/-Wall.*-fforce-emit-vtables//
+            s/-fdiagnostics-color=always//
+            s/-fcolor-diagnostics//
+            s/-MD.*-fsyntax-only//
+          ' build/build.ninja -i
+          CLICOLOR_FORCE= ninja -C build -k10 mp
+
+
+  auto-gen:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'jonathanpoelen/jln.mp'
+    needs: [linux, linux-old, macos, windows-cl, windows-clang, windows-gcc, cuda-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leafo/gh-actions-lua@v8
+      - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Cache luarocks
+        id: cache-luarocks
+        uses: actions/cache@v2
+        with:
+          path: |
+            .luarocks
+            ~/.luarocks
+          key: ${{ runner.os }}-luarocks
+
+      - name: Install LPeg
+        if: steps.cache-luarocks.outputs.cache-hit != 'true'
+        run: luarocks install lpeg
+
+      - name: Build documentation
+        run: |
+          ./tools/docgen.lua \
+            include/jln/mp/algorithm/* \
+            include/jln/mp/functional/* \
+            include/jln/mp/list/* \
+            include/jln/mp/number/* \
+            include/jln/mp/utility/* \
+            include/jln/mp/value/* \
+            include/jln/mp/set/* \
+            include/jln/mp/map/* \
+            > index.html
+
+      - name: Build standalone header files
+        run: |
+          mkdir -p standalone/include/jln
+
+          ./tools/amalgamated.lua include/jln/mp.hpp > standalone/include/jln/mp.hpp
+          ./tools/amalgamated.lua include/jln/mp/smp.hpp > standalone/include/jln/smp.hpp
+
+          echo Compilers: /usr/bin/g++-* /usr/bin/clang++-*
+          for comp in /usr/bin/g++-* /usr/bin/clang++-* ; do
+            echo Compiler: $comp
+            for basename in mp smp ; do
+              $comp -std=c++17 -fsyntax-only -x c++ - <<<'#include "standalone/include/jln/'$basename'.hpp"'
+            done
+          done
+
+      - uses: actions/checkout@v4
+        with:
+          ref: standalone
+          path: standalone_repo
+
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: doc_repo
+
+      - name: Push changes
+        run: |
+          mv standalone_repo/include/ standalone_old
+          mv standalone/include standalone_repo/
+          mv index.html doc_repo
+          cp docs/default.css doc_repo
+
+          i=0
+          messages=('single header' 'html documentation')
+          for repo_path in standalone_repo doc_repo ; do
+            cd $repo_path
+            if ! git diff --quiet ; then
+              git config --global user.name 'Jonathan Poelen'
+              git config --global user.email 'jonathan.poelen@gmail.com'
+              git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+              git commit -am "update ${messages[$i]}"
+              git push
+            fi
+            cd ..
+            ((++i))
+          done
