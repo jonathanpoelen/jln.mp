@@ -42,6 +42,9 @@
 #  ifndef JLN_MP_MSVC
 #    define JLN_MP_MSVC _MSC_VER
 #  endif
+#  ifndef JLN_MP_MEMOIZED_ALIAS
+#    define JLN_MP_MEMOIZED_ALIAS 1
+#  endif
 
 // gcc
 #elif defined(__GNUC__)

@@ -23,7 +23,7 @@ namespace jln::mp
     template<int, class PrecomputedIndexes>
     struct build_indexed_v_impl;
 
-#if JLN_MP_GCC
+#if JLN_MP_MEMOIZED_ALIAS
     template<int, class PrecomputedIndexes>
     struct build_indexed_impl;
 #endif
@@ -53,7 +53,7 @@ namespace jln::mp
   /// Constructs an indexable sequence in O(1).
   /// If possible prefer the use of build_indexed_v
   /// \pre 0 <= i::value < sizeof...(xs)
-#if JLN_MP_GCC
+#if JLN_MP_MEMOIZED_ALIAS
   template<class... xs>
   struct build_indexed
   : detail::build_indexed_impl<
