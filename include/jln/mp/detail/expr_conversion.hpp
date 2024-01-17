@@ -14,7 +14,7 @@
 // struct A : X<int{sizeof...(T)}> // narrowing error with msvc 19.38
 // {};
 
-#if JLN_MP_WORKAROUND(JLN_MP_MSVC, >= 1938)
+#if JLN_MP_MSVC
 namespace jln::mp::detail
 {
   template<bool is_neg>
@@ -30,10 +30,8 @@ namespace jln::mp::detail
     using as_bool = integral_conversion_error;
 
     template<long long n>
-    struct as_int_
-    {
-      static constexpr int_ value = n;
-    };
+    struct as_int_ : number<n>
+    {};
 
     template<long long n>
     using as_uint_ = integral_conversion_error;
@@ -43,10 +41,8 @@ namespace jln::mp::detail
   struct integral_as_impl<false>
   {
     template<unsigned long long n, bool = n <= 1>
-    struct as_bool
-    {
-      static constexpr bool value = n;
-    };
+    struct as_bool : number<n>
+    {};
 
     template<unsigned long long n>
     struct as_bool<n, false>
@@ -54,10 +50,8 @@ namespace jln::mp::detail
 
 
     template<unsigned long long n, bool = n <= (~0ull >> 1)>
-    struct as_int_
-    {
-      static constexpr int_ value = n;
-    };
+    struct as_int_ : number<n>
+    {};
 
     template<unsigned long long n>
     struct as_int_<n, false>
@@ -65,10 +59,8 @@ namespace jln::mp::detail
 
 
     template<unsigned long long n>
-    struct as_uint_
-    {
-      static constexpr uint_ value = n;
-    };
+    struct as_uint_ : number<n>
+    {};
   };
 }
 #  define JLN_MP_INTEGRAL_AS(T, ...) \
