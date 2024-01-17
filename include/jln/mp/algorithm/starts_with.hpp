@@ -82,7 +82,7 @@ namespace jln::mp
   struct starts_with<list<>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, true_);
+    using f = JLN_MP_FORCE_DCALL_TRACE_XS(xs, C, true_);
   };
 
   template<>

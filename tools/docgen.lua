@@ -241,7 +241,7 @@ preproc = P{
   + 1
   )^0)
 
-, c=('JLN_MP_DCALL' * (P'F'^0) * (P'_V'^0) * (P'_C'^0) * (P'_TRACE'^0) * '_XS('
+, c=('JLN_MP_' * P'FORCE_'^0 * 'DCALL' * P'F'^0 * P'_V'^0 * P'_C'^0 * P'_TRACE'^0 * '_XS('
      * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
      * ',' * ws0 * cid
      * ',' * ws0 * C((1-S'()' + balancedparent)^1)

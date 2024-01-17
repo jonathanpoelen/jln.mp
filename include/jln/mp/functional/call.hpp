@@ -72,6 +72,8 @@ using call = C::f<xs...>;
 #define JLN_MP_DCALL_TRACE_XS(xs, C, ...) call<C, __VA_ARGS__>
 #define JLN_MP_DCALL_TRACE_XS_0(xs, C) call<__VA_ARGS__>
 #define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) call<C, __VA_ARGS__>
+#define JLN_MP_FORCE_DCALL_TRACE_XS(xs, C, ...) call<C, __VA_ARGS__>
+#define JLN_MP_FORCE_DCALL_V_TRACE_XS(xs, C, ...) call<C, __VA_ARGS__>
 #define JLN_MP_DCALLF_XS(xs, F, ...) F<__VA_ARGS__>
 #define JLN_MP_DCALLF_V_XS(xs, F, ...) F<__VA_ARGS__>
 #define JLN_MP_DCALLF_C_XS(xs, F, ...) F<__VA_ARGS__>
@@ -99,14 +101,24 @@ using call = C::f<xs...>;
 template<class C, class... xs>
 using call = typename detail::memoizer_impl<C, xs...>::type;
 
+#  define JLN_MP_DCALL_C(xs, C)                                              \
+  typename ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+    ::template f<C, C>
+
 #  define JLN_MP_DCALL_TRACE_XS(xs, C, ...) \
     typename ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
 
+#  define JLN_MP_FORCE_DCALL_TRACE_XS(xs, C, ...) \
+    typename ::jln::mp::detail::memoizer_impl<JLN_MP_DCALL_C(xs, C), __VA_ARGS__>::type
+
 #  define JLN_MP_DCALL_TRACE_XS_0(xs, C) \
-    typename ::jln::mp::detail::memoizer_impl<C>::type
+    typename ::jln::mp::detail::memoizer_impl<JLN_MP_DCALL_C(xs, C)>::type
 
 #  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) \
     ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
+
+#  define JLN_MP_FORCE_DCALL_V_TRACE_XS(xs, C, ...) \
+    ::jln::mp::detail::memoizer_impl<JLN_MP_DCALL_C(xs, C), __VA_ARGS__>::type
 
 # else
 
@@ -120,6 +132,8 @@ using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
       ::template f<JLN_MP_TRACE_F(C), ::jln::mp::detail::too_many_arguments_error> \
       ::template f<__VA_ARGS__>
 
+#  define JLN_MP_FORCE_DCALL_TRACE_XS JLN_MP_DCALL_TRACE_XS
+
 #  define JLN_MP_DCALL_TRACE_XS_0(xs, C)                                           \
     typename ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>     \
       ::template f<JLN_MP_TRACE_F(C), ::jln::mp::detail::too_many_arguments_error> \
@@ -129,6 +143,8 @@ using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
     ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>              \
       ::template f<JLN_MP_TRACE_F(C), ::jln::mp::detail::too_many_arguments_error> \
       ::template f<__VA_ARGS__>
+
+#  define JLN_MP_FORCE_DCALL_V_TRACE_XS JLN_MP_DCALL_V_TRACE_XS
 
 # endif
 #endif
