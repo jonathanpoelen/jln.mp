@@ -37,7 +37,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(
-      sizeof...(xs), detail::circulant_matrix_impl<C, F>::template f
+      sizeof...(xs), detail::circulant_matrix_impl<C, F>::template impl
     )::template f<xs...>;
   };
 
@@ -64,7 +64,8 @@ namespace jln::mp::detail
   struct circulant_matrix_impl
   {
     template<class, int_... i>
-    using f = _tee<C, rotate_c<-i, F>...>;
+    struct impl : _tee<C, rotate_c<-i, F>...>
+    {};
   };
 }
 /// \endcond
