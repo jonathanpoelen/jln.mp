@@ -105,7 +105,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename conditional_c<!sizeof...(xs)>
-      ::template f<C, detail::uncallable_function>
+      ::template f<JLN_MP_TRACE_F(C), detail::uncallable_function>
       ::template f<>;
   };
 

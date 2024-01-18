@@ -92,21 +92,21 @@ namespace jln::mp::detail
     static constexpr auto make()
     {
       array_int2<result_len> a{};
-      auto* p = a.elems;
 
       bool bools[] {bs...};
       int i = 0;
+      int n = 0;
 
       for (bool b : bools)
       {
         if (b)
         {
-          **++p = i;
-          ++(*p)[1] = 1;
-          **++p = i + 1;
+          a.elems[++n][0] = i;
+          ++a.elems[n][1] = 1;
+          a.elems[++n][0] = i + 1;
         }
         else
-          ++(*p)[1];
+          ++a.elems[n][1];
         ++i;
       }
 
