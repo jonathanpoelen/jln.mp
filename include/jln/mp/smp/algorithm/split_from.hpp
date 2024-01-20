@@ -11,7 +11,7 @@
 namespace jln::mp::detail
 {
   template<class SubC1, class SubC2, class C>
-  struct _smp_split_from;
+  class _smp_split_from;
 }
 /// \endcond
 
