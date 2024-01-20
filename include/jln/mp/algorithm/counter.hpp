@@ -115,7 +115,7 @@ namespace jln::mp::detail
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
 
-#if JLN_MP_GCC || (__cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L)
+#if JLN_MP_GCC || (!JLN_MP_MSVC && __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L)
   template<std::size_t N, int_... i>
   constexpr array<N> count_elems()
   {
@@ -186,7 +186,7 @@ namespace jln::mp::detail
     {
       static constexpr detail::inherit<list<number<ints>, unique_xs>...>* indexed = nullptr;
 
-#if __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L
+#if !JLN_MP_MSVC && __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L
       template<auto counters>
       struct impl
       {
