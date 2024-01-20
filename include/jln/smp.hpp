@@ -120,6 +120,9 @@ namespace jln::mp::detail
 #  ifndef JLN_MP_MSVC
 #    define JLN_MP_MSVC _MSC_VER
 #  endif
+#  ifndef JLN_MP_MEMOIZED_ALIAS
+#    define JLN_MP_MEMOIZED_ALIAS 1
+#  endif
 
 // gcc
 #elif defined(__GNUC__)
@@ -141,8 +144,18 @@ namespace jln::mp::detail
 #  endif
 #endif
 
+// apple
+#if defined(__APPLE__) && JLN_MP_CLANG
+#  ifndef JLN_MP_APPLE_CLANG
+#    define JLN_MP_APPLE_CLANG JLN_MP_CLANG
+#  endif
+#endif
+
 #ifndef JLN_MP_CLANG_LIKE
 #  define JLN_MP_CLANG_LIKE 0
+#endif
+#ifndef JLN_MP_APPLE_CLANG
+#  define JLN_MP_APPLE_CLANG 0
 #endif
 #ifndef JLN_MP_MSVC_LIKE
 #  define JLN_MP_MSVC_LIKE 0
@@ -392,7 +405,7 @@ namespace jln::mp
   /// This type is used in `smp` for a contract that is not respected.
   struct na {};
 
-#if !JLN_MP_MEMOIZED_ALIAS
+#if !JLN_MP_MEMOIZED_ALIAS || JLN_MP_MSVC
 
 # if !JLN_MP_CUDA
   /// \cond
@@ -445,7 +458,7 @@ namespace jln::mp
 
 # define JLN_MP_MEMOIZE(...) ::jln::mp::memoize<__VA_ARGS__>
 
-#else // if JLN_MP_MEMOIZED_ALIAS
+#else // if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_MSVC
   template<class C, class... xs>
   using memoize_call = typename conditional_c<!sizeof...(xs)>
     ::template f<C, C>
@@ -468,7 +481,7 @@ namespace jln::mp
 // # if !JLN_MP_CUDA
 // # endif
 
-#if !JLN_MP_MEMOIZED_ALIAS
+#if !JLN_MP_MEMOIZED_ALIAS || JLN_MP_MSVC
 
 namespace jln::mp::detail
 {
@@ -511,7 +524,7 @@ namespace jln::mp::detail
   {};
 # endif
 }
-#else
+#else // if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_MSVC
 namespace jln::mp::detail
 {
   struct uncallable_function
@@ -525,7 +538,7 @@ namespace jln::mp
   /// \ingroup number
 
   using int_ = std::intmax_t;
-  using uint_ = std::intmax_t;
+  using uint_ = std::uintmax_t;
 
   template<int_ v>
   struct number { static const int_ value = v; };
@@ -597,7 +610,7 @@ namespace jln::mp
   #define JLN_MP_CALL_TRACE_T(C, ...) typename C::template f<__VA_ARGS__>
   #define JLN_MP_CALL_TRACE_0_ARG(...) typename __VA_ARGS__::template f<>
 #else
-  // does not compile with msvc...
+  // does not compile without memoize with msvc...
   #define JLN_MP_TRACE_F(...) memoize<__VA_ARGS__>
   #define JLN_MP_TRACE_TYPENAME typename
 
@@ -634,6 +647,8 @@ using call = C::f<xs...>;
 #define JLN_MP_DCALL_TRACE_XS(xs, C, ...) call<C, __VA_ARGS__>
 #define JLN_MP_DCALL_TRACE_XS_0(xs, C) call<__VA_ARGS__>
 #define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) call<C, __VA_ARGS__>
+#define JLN_MP_FORCE_DCALL_TRACE_XS(xs, C, ...) call<C, __VA_ARGS__>
+#define JLN_MP_FORCE_DCALL_V_TRACE_XS(xs, C, ...) call<C, __VA_ARGS__>
 #define JLN_MP_DCALLF_XS(xs, F, ...) F<__VA_ARGS__>
 #define JLN_MP_DCALLF_V_XS(xs, F, ...) F<__VA_ARGS__>
 #define JLN_MP_DCALLF_C_XS(xs, F, ...) F<__VA_ARGS__>
@@ -661,14 +676,24 @@ using call = C::f<xs...>;
 template<class C, class... xs>
 using call = typename detail::memoizer_impl<C, xs...>::type;
 
+#  define JLN_MP_DCALL_C(xs, C)                                              \
+  typename ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+    ::template f<C, C>
+
 #  define JLN_MP_DCALL_TRACE_XS(xs, C, ...) \
     typename ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
 
+#  define JLN_MP_FORCE_DCALL_TRACE_XS(xs, C, ...) \
+    typename ::jln::mp::detail::memoizer_impl<JLN_MP_DCALL_C(xs, C), __VA_ARGS__>::type
+
 #  define JLN_MP_DCALL_TRACE_XS_0(xs, C) \
-    typename ::jln::mp::detail::memoizer_impl<C>::type
+    typename ::jln::mp::detail::memoizer_impl<JLN_MP_DCALL_C(xs, C)>::type
 
 #  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) \
     ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
+
+#  define JLN_MP_FORCE_DCALL_V_TRACE_XS(xs, C, ...) \
+    ::jln::mp::detail::memoizer_impl<JLN_MP_DCALL_C(xs, C), __VA_ARGS__>::type
 
 # else
 
@@ -682,6 +707,8 @@ using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
       ::template f<JLN_MP_TRACE_F(C), ::jln::mp::detail::too_many_arguments_error> \
       ::template f<__VA_ARGS__>
 
+#  define JLN_MP_FORCE_DCALL_TRACE_XS JLN_MP_DCALL_TRACE_XS
+
 #  define JLN_MP_DCALL_TRACE_XS_0(xs, C)                                           \
     typename ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>     \
       ::template f<JLN_MP_TRACE_F(C), ::jln::mp::detail::too_many_arguments_error> \
@@ -691,6 +718,8 @@ using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
     ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>              \
       ::template f<JLN_MP_TRACE_F(C), ::jln::mp::detail::too_many_arguments_error> \
       ::template f<__VA_ARGS__>
+
+#  define JLN_MP_FORCE_DCALL_V_TRACE_XS JLN_MP_DCALL_V_TRACE_XS
 
 # endif
 #endif
@@ -825,7 +854,7 @@ namespace jln::mp
     template<class x>
     struct try_dispatch;
 
-#if JLN_MP_MEMOIZED_ALIAS
+#if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_MSVC
     template<class, class, class = void>
     struct _try_impl;
 
@@ -934,7 +963,7 @@ namespace jln::mp::detail
   };
 }
 
-#if JLN_MP_MEMOIZED_ALIAS
+#if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_MSVC
 
 namespace jln::mp::detail
 {
@@ -1383,9 +1412,9 @@ namespace jln::mp
 }
 
 
+/// \cond
 namespace jln::mp
 {
-  /// \cond
   template<class C, class TC, class FC>
   struct try_<contract<C>, TC, FC>
   {
@@ -1416,10 +1445,8 @@ namespace jln::mp
     template<class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
   };
-  /// \endcond
 }
 
-/// \cond
 namespace jln::mp::detail
 {
   template<class F>
@@ -2458,7 +2485,7 @@ namespace jln::mp
     template<int, class PrecomputedIndexes>
     struct build_indexed_v_impl;
 
-#if JLN_MP_GCC
+#if JLN_MP_MEMOIZED_ALIAS
     template<int, class PrecomputedIndexes>
     struct build_indexed_impl;
 #endif
@@ -2488,7 +2515,7 @@ namespace jln::mp
   /// Constructs an indexable sequence in O(1).
   /// If possible prefer the use of build_indexed_v
   /// \pre 0 <= i::value < sizeof...(xs)
-#if JLN_MP_GCC
+#if JLN_MP_MEMOIZED_ALIAS
   template<class... xs>
   struct build_indexed
   : detail::build_indexed_impl<
@@ -3502,6 +3529,70 @@ namespace jln::mp::detail
 }
 /// \endcond
 
+// fix narrowing based on type:
+//
+// template<int>
+// struct X {};
+//
+// template<class... T>
+// struct A : X<int{sizeof...(T)}> // narrowing error with msvc 19.38
+// {};
+
+#if JLN_MP_MSVC
+namespace jln::mp::detail
+{
+  template<bool is_neg>
+  struct integral_as_impl;
+
+  struct integral_conversion_error
+  {};
+
+  template<>
+  struct integral_as_impl<true>
+  {
+    template<long long n>
+    using as_bool = integral_conversion_error;
+
+    template<long long n>
+    struct as_int_ : number<n>
+    {};
+
+    template<long long n>
+    using as_uint_ = integral_conversion_error;
+  };
+
+  template<>
+  struct integral_as_impl<false>
+  {
+    template<unsigned long long n, bool = n <= 1>
+    struct as_bool : number<n>
+    {};
+
+    template<unsigned long long n>
+    struct as_bool<n, false>
+    {};
+
+
+    template<unsigned long long n, bool = n <= (~0ull >> 1)>
+    struct as_int_ : number<n>
+    {};
+
+    template<unsigned long long n>
+    struct as_int_<n, false>
+    {};
+
+
+    template<unsigned long long n>
+    struct as_uint_ : number<n>
+    {};
+  };
+}
+#  define JLN_MP_INTEGRAL_AS(T, ...) \
+  ::jln::mp::detail::integral_as_impl<__VA_ARGS__ < 0>::template as_##T<__VA_ARGS__>::value
+#else
+#  define JLN_MP_INTEGRAL_AS(T, ...) T{__VA_ARGS__}
+#endif
+
 
 namespace jln::mp
 {
@@ -3510,10 +3601,10 @@ namespace jln::mp
 #if JLN_MP_CUDA
 #  define JLN_MP_AS_BOOL(v) std::enable_if_t<std::size_t{v} <= 1, bool>{v}
 #else
-#  define JLN_MP_AS_BOOL(v) bool{v}
+#  define JLN_MP_AS_BOOL(v) JLN_MP_INTEGRAL_AS(bool, v)
 #endif
 
-  /// Narrowing convertion from \value to \bool.
+  /// Convertion without narrowing from \value to \bool.
   /// \treturn \bool
   template<class C = identity>
   struct as_bool
@@ -3577,14 +3668,14 @@ namespace jln::mp
   struct not_
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<(!x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(x::value)>);
   };
 
   template<class C>
   struct not_<not_<C>>
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<(!int_{!x::value})>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_RAW_EXPR_TO_BOOL(x::value)>);
   };
 
   namespace emp
@@ -3603,13 +3694,20 @@ namespace jln::mp
   struct not_<identity>
   {
     template<class x>
-    using f = number<(!x::value)>;
+    using f = number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(x::value)>;
+  };
+
+  template<>
+  struct not_<not_<identity>>
+  {
+    template<class x>
+    using f = number<JLN_MP_RAW_EXPR_TO_BOOL(x::value)>;
   };
 
 #if JLN_MP_CUDA
 #  define JLN_MP_AS_BOOL(v) std::enable_if_t<std::size_t{v} <= 1, bool>{v}
 #else
-#  define JLN_MP_AS_BOOL(v) bool{v}
+#  define JLN_MP_AS_BOOL(v) JLN_MP_INTEGRAL_AS(bool, v)
 #endif
 
   template<>
@@ -6205,7 +6303,7 @@ namespace jln::mp
   struct starts_with<list<>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, true_);
+    using f = JLN_MP_FORCE_DCALL_TRACE_XS(xs, C, true_);
   };
 
   template<>
@@ -6427,7 +6525,7 @@ namespace jln::mp
 
   template<class... Ts, class TC, class FC>
   struct after<list<Ts...>, TC, FC>
-  : partial_drop_until_extended_by_n_xs_c<-int_{sizeof...(Ts)},
+  : partial_drop_until_extended_by_n_xs_c<-int_(sizeof...(Ts)),
                                           sizeof...(Ts),
                                           starts_with<list<Ts...>>,
                                           TC, FC>
@@ -7220,6 +7318,10 @@ namespace jln::mp
 #endif
 
   /// \cond
+  template<class C>
+  struct tee<C> : detail::call_trace_xs_0<C>
+  {};
+
   template<class F, class C>
   struct tee<F, C>
   {
@@ -7310,7 +7412,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(
-      sizeof...(xs), detail::anticirculant_matrix_impl<C, F>::template f
+      sizeof...(xs), detail::anticirculant_matrix_impl<C, F>::template impl
     )::template f<xs...>;
   };
 
@@ -7335,7 +7437,8 @@ namespace jln::mp::detail
   struct anticirculant_matrix_impl
   {
     template<class, int_... i>
-    using f = _tee<C, rotate_c<i, F>...>;
+    struct impl : _tee<C, rotate_c<i, F>...>
+    {};
   };
 }
 /// \endcond
@@ -8321,10 +8424,10 @@ namespace jln::mp
 #if JLN_MP_CUDA
 #  define JLN_MP_AS_NUMBER(v) std::enable_if_t<v < 0 || std::size_t{v} <= (~0ull >> 1), int_>{v}
 #else
-#  define JLN_MP_AS_NUMBER(v) int_{v}
+#  define JLN_MP_AS_NUMBER(v) JLN_MP_INTEGRAL_AS(int_, v)
 #endif
 
-  /// Narrowing convertion from \value to \number.
+  /// Convertion without narrowing from \value to \number.
   /// \treturn \number
   template<class C = identity>
   struct as_number
@@ -8573,8 +8676,8 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<int_ n>
-    struct repat_impl;
+    template<int n>
+    struct repeat_impl;
   }
   /// \endcond
 
@@ -8587,9 +8690,9 @@ namespace jln::mp
   struct repeat_c
   {
     template<class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(
-      N,
-      detail::repat_impl<sizeof...(xs) < 2 ? sizeof...(xs) : 2>::template impl
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE_T(
+      int, N,
+      detail::repeat_impl<sizeof...(xs) < 2 ? sizeof...(xs) : 2>::template impl
     )::template f<C, xs...>;
   };
 
@@ -8612,9 +8715,9 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<>
-  struct repat_impl<0>
+  struct repeat_impl<0>
   {
-    template<class, int_...>
+    template<class, int...>
     struct impl : call_trace_c0_arg
     {};
   };
@@ -8627,23 +8730,31 @@ namespace jln::mp::detail
 #endif
 
   template<>
-  struct repat_impl<1>
+  struct repeat_impl<1>
   {
-    template<class, int_... ns>
+    template<class, int... ns>
     struct impl
     {
+#if JLN_MP_MSVC
+      template<class C, class x, class... xs>
+      using g = typename C::template f<index0::f<x, xs>...>;
+
+      template<class C, class x>
+      using f = g<C, x, decltype(ns)...>;
+#else
       template<class C, class x>
       using f = JLN_MP_CALL_TRACE(C, JLN_MP_INDEX0<x, decltype(ns)>...);
+#endif
     };
   };
 
   template<>
-  struct repat_impl<2>
+  struct repeat_impl<2>
   {
     template<class C, class L, class... xs>
     using g = typename join<C>::template f<JLN_MP_INDEX0<L, xs>...>;
 
-    template<class, int_... ns>
+    template<class, int... ns>
     struct impl
     {
       template<class C, class... xs>
@@ -11428,7 +11539,7 @@ namespace jln::mp
 
   template<class... Ts, class TC, class FC>
   struct before<list<Ts...>, TC, FC>
-  : partial_take_until_xs_c<-int_{sizeof...(Ts)},
+  : partial_take_until_xs_c<-int_(sizeof...(Ts)),
                             starts_with<list<Ts...>>,
                             TC, FC>
   {
@@ -11616,7 +11727,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(
-      sizeof...(xs), detail::circulant_matrix_impl<C, F>::template f
+      sizeof...(xs), detail::circulant_matrix_impl<C, F>::template impl
     )::template f<xs...>;
   };
 
@@ -11641,7 +11752,8 @@ namespace jln::mp::detail
   struct circulant_matrix_impl
   {
     template<class, int_... i>
-    using f = _tee<C, rotate_c<-i, F>...>;
+    struct impl : _tee<C, rotate_c<-i, F>...>
+    {};
   };
 }
 /// \endcond
@@ -11768,17 +11880,17 @@ namespace jln::mp::detail
     static constexpr auto make()
     {
       array_int2<result_len> a{};
-      auto* p = a.elems;
       int i = 0;
+      int n = 0;
 
       bool bools[] {bs...};
       for (bool b : bools)
       {
         ++i;
         if (b)
-          **++p = i;
+          a.elems[++n][0] = i;
         else
-          ++(*p)[1];
+          ++a.elems[n][1];
       }
 
       return a;
@@ -11810,15 +11922,27 @@ namespace jln::mp::detail
   };
 
 #if __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L
-  #define JLN_MP_INDEXES_PAIRS() indexes_pairs
   #define JLN_MP_INDEXES_TPL_PARAM() auto indexes_pairs
   #define JLN_MP_INDEXES_TPL_VALUE() MkIndexesInt2::make()
+  #if JLN_MP_MSVC
+    #define JLN_MP_INDEXES_GET_PAIR(i) indexes_pair_v<indexes_pairs, i>
+    template<auto a, int i>
+    inline constexpr auto indexes_pair_v = a.elems[i];
+  #else
+    #define JLN_MP_INDEXES_GET_PAIR(i) indexes_pairs.elems[i]
+  #endif
 #else
-  #define JLN_MP_INDEXES_PAIRS() memoize_make_fn<MkIndexesInt2>
-  #define JLN_MP_INDEXES_TPL_PARAM() class MkIndexesInt2
-  #define JLN_MP_INDEXES_TPL_VALUE() MkIndexesInt2
   template<class T>
   inline constexpr auto memoize_make_fn = T::make();
+  #define JLN_MP_INDEXES_TPL_PARAM() class MkIndexesInt2
+  #define JLN_MP_INDEXES_TPL_VALUE() MkIndexesInt2
+  #if JLN_MP_MSVC
+    #define JLN_MP_INDEXES_GET_PAIR(i) indexes_pair_v<MkIndexesInt2, i>
+    template<class MkIndexesInt2, int i>
+    inline constexpr auto indexes_pair_v = memoize_make_fn<MkIndexesInt2>.elems[i];
+  #else
+    #define JLN_MP_INDEXES_GET_PAIR(i) memoize_make_fn<MkIndexesInt2>.elems[i]
+  #endif
 #endif
 
   template<class, int... i>
@@ -11826,11 +11950,11 @@ namespace jln::mp::detail
   {
     template<JLN_MP_INDEXES_TPL_PARAM()>
     using f = dispatch_group_index<
-      sliding_outer<int, JLN_MP_INDEXES_PAIRS().elems[i][0]...>,
+      sliding_outer<int, JLN_MP_INDEXES_GET_PAIR(i)[0]...>,
 #if JLN_MP_MEMOIZED_ALIAS || (JLN_MP_CUDA && JLN_MP_HOST_COMPILER_GCC)
-      make_sliding_inner<JLN_MP_INDEXES_PAIRS().elems[i][1]>...
+      make_sliding_inner<JLN_MP_INDEXES_GET_PAIR(i)[1]>...
 #else
-      JLN_MP_MAKE_INTEGER_SEQUENCE_T(int, JLN_MP_INDEXES_PAIRS().elems[i][1], sliding_inner)...
+      JLN_MP_MAKE_INTEGER_SEQUENCE_T(int, JLN_MP_INDEXES_GET_PAIR(i)[1], sliding_inner)...
 #endif
     >;
   };
@@ -11844,7 +11968,7 @@ namespace jln::mp::detail
       ::template f<JLN_MP_INDEXES_TPL_VALUE()>
   {};
 
-#undef JLN_MP_INDEXES_PAIRS
+#undef JLN_MP_INDEXES_GET_PAIR
 #undef JLN_MP_INDEXES_TPL_PARAM
 #undef JLN_MP_INDEXES_TPL_VALUE
 }
@@ -11937,16 +12061,16 @@ namespace jln::mp::detail
     static constexpr auto make()
     {
       array_int2<result_len> a{};
-      auto* p = a.elems;
       int i = 0;
+      int n = 0;
 
       bool bools[] {bs...};
       for (bool b : bools)
       {
         if (b)
-          **++p = i;
+          a.elems[++n][0] = i;
         ++i;
-        ++(*p)[1];
+        ++a.elems[n][1];
       }
 
       return a;
@@ -12193,7 +12317,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename conditional_c<!sizeof...(xs)>
-      ::template f<C, detail::uncallable_function>
+      ::template f<JLN_MP_TRACE_F(C), detail::uncallable_function>
       ::template f<>;
   };
 
@@ -12546,7 +12670,7 @@ namespace jln::mp::detail
 #if JLN_MP_CUDA
     std::enable_if_t<((std::size_t{Selectors::value} <= 1) || ...) || !sizeof...(Selectors)>
 #else
-    std::void_t<decltype(bool{Selectors::value})...>
+    std::void_t<decltype(JLN_MP_INTEGRAL_AS(bool, Selectors::value))...>
 #endif
   >
   {
@@ -13999,7 +14123,7 @@ namespace jln::mp::detail
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
 
-#if JLN_MP_GCC || (__cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L)
+#if JLN_MP_GCC || (!JLN_MP_MSVC && __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L)
   template<std::size_t N, int_... i>
   constexpr array<N> count_elems()
   {
@@ -14070,7 +14194,7 @@ namespace jln::mp::detail
     {
       static constexpr detail::inherit<list<number<ints>, unique_xs>...>* indexed = nullptr;
 
-#if __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L
+#if !JLN_MP_MSVC && __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L
       template<auto counters>
       struct impl
       {
@@ -14430,7 +14554,7 @@ namespace jln::mp
   struct ends_with<list<>, C>
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, true_);
+    using f = JLN_MP_FORCE_DCALL_TRACE_XS(xs, C, true_);
   };
 
   template<>
@@ -17199,7 +17323,7 @@ namespace jln::mp::detail
   struct is_sorted_impl<2>
   {
     template<class C, class Cmp, class x, class y>
-    using f = JLN_MP_CALL_TRACE(C, number<bool{Cmp::template f<x, y>::value}>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_RAW_EXPR_TO_BOOL(Cmp::template f<x, y>::value)>);
   };
 
   template<class F>
@@ -18466,7 +18590,7 @@ namespace jln::mp
 {
   /// \ingroup value
 
-#if __cplusplus >= 201703L
+#if JLN_MP_ENABLE_TPL_AUTO
 # if !JLN_MP_ENABLE_DEBUG || JLN_MP_CLANG_LIKE
   template<auto v>
   struct val
@@ -21999,10 +22123,12 @@ namespace jln::mp
   /// \see partial_search_before, partial_search_before_extended_by_n
   /// \see drop_while, drop_while_xs, take_while, take_while_xs
   template<class StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
-  using partial_search = partial_drop_until_xs_c<-int_{StopWhenAtLeast::value}-1, Pred, TC, FC>;
+  using partial_search = partial_drop_until_xs_c<
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast::value)-1, Pred, TC, FC>;
 
   template<std::size_t StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
-  using partial_search_c = partial_drop_until_xs_c<-int_{StopWhenAtLeast}-1, Pred, TC, FC>;
+  using partial_search_c = partial_drop_until_xs_c<
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast)-1, Pred, TC, FC>;
 
   /// Same \c search_before, but it stops when there is StopWhenAtLeast::value element or less.
   /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
@@ -22011,10 +22137,12 @@ namespace jln::mp
   /// \see search_before_extended_by_n, partial_search_before_extended_by_n
   /// \see drop_while, drop_while_xs, take_while, take_while_xs
   template<class StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
-  using partial_search_before = partial_take_until_xs_c<-int_{StopWhenAtLeast::value}-1, Pred, TC, FC>;
+  using partial_search_before = partial_take_until_xs_c<
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast::value)-1, Pred, TC, FC>;
 
   template<std::size_t StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
-  using partial_search_before_c = partial_take_until_xs_c<-int_{StopWhenAtLeast}-1, Pred, TC, FC>;
+  using partial_search_before_c = partial_take_until_xs_c<
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast)-1, Pred, TC, FC>;
 
   /// Same \c search_before, but it stops when there is StopWhenAtLeast::value element or less.
   /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
@@ -22025,12 +22153,12 @@ namespace jln::mp
   template<std::size_t StopWhenAtLeast, std::size_t ExtendedByN, class Pred,
            class TC = listify, class FC = clear<TC>>
   using partial_search_before_extended_by_n_c = partial_take_until_extended_by_n_xs_c<
-    -int_{StopWhenAtLeast}-1, ExtendedByN, Pred, TC, FC>;
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast)-1, ExtendedByN, Pred, TC, FC>;
 
   template<class StopWhenAtLeast, class ExtendedByN, class Pred,
            class TC = listify, class FC = clear<TC>>
   using partial_search_before_extended_by_n = partial_take_until_extended_by_n_xs_c<
-    -int_{StopWhenAtLeast::value}-1, ExtendedByN::value, Pred, TC, FC>;
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast::value)-1, ExtendedByN::value, Pred, TC, FC>;
 
   namespace emp
   {
@@ -22089,15 +22217,17 @@ namespace jln::mp::smp
   using search_before_extended_by_n_c = take_until_extended_by_n_xs_c<ExtendedByN, Pred, TC, FC>;
 
   template<std::size_t StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
-  using partial_search_c = partial_drop_until_xs_c<-int_{StopWhenAtLeast}-1, Pred, TC, FC>;
+  using partial_search_c = partial_drop_until_xs_c<
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast)-1, Pred, TC, FC>;
 
   template<std::size_t StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
-  using partial_search_before_c = partial_take_until_xs_c<-int_{StopWhenAtLeast}-1, Pred, TC, FC>;
+  using partial_search_before_c = partial_take_until_xs_c<
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast)-1, Pred, TC, FC>;
 
   template<std::size_t StopWhenAtLeast, std::size_t ExtendedByN, class Pred,
            class TC = listify, class FC = clear<TC>>
   using partial_search_before_extended_by_n_c = partial_take_until_extended_by_n_xs_c<
-    -int_{StopWhenAtLeast}-1, ExtendedByN, Pred, TC, FC>;
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast)-1, ExtendedByN, Pred, TC, FC>;
 
   template<class ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
   using search_before_extended_by_n = take_until_extended_by_n_xs<ExtendedByN, Pred, TC, FC>;
@@ -22123,7 +22253,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-#if (JLN_MP_GCC || JLN_MP_CUDA) && JLN_MP_FEATURE_CONCEPTS
+#if JLN_MP_GCC && JLN_MP_FEATURE_CONCEPTS
 #  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(name, TplType, Tpl, ...) \
      requires requires{ static_cast<TplType<Tpl>*>(nullptr); }                \
      struct name<Tpl<__VA_ARGS__>>
@@ -22247,7 +22377,7 @@ namespace jln::mp::detail
   struct tpl_type4;
 
 
-#if (JLN_MP_GCC || JLN_MP_CUDA) && JLN_MP_FEATURE_CONCEPTS
+#if JLN_MP_GCC && JLN_MP_FEATURE_CONCEPTS
 #  define JLN_MP_NORMALIZE_SIMILAR2 normalize_similar
 #  define JLN_MP_NORMALIZE_SIMILAR3 normalize_similar
 #  define JLN_MP_NORMALIZE_SIMILAR4 normalize_similar
@@ -22270,7 +22400,7 @@ namespace jln::mp::detail
     using type = T;
   };
 
-#if JLN_MP_CUDA && !JLN_MP_FEATURE_CONCEPTS
+#if JLN_MP_CUDA
   template<class T, class = void>
   struct normalize_similar3 : normalize_similar4<T>
   {};
@@ -22278,32 +22408,33 @@ namespace jln::mp::detail
   template<class T, class = void>
   struct normalize_similar2 : normalize_similar3<T>
   {};
-#else
+#elif JLN_MP_ENABLE_TPL_AUTO
   // fix ambiguous
-# if JLN_MP_ENABLE_TPL_AUTO
   template<template<auto> class Tpl, auto x>
-# else
-  template<template<auto> class Tpl, std::size_t x>
-# endif
-  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(JLN_MP_NORMALIZE_SIMILAR2, tpl_type3, Tpl, x)
+  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(
+    JLN_MP_NORMALIZE_SIMILAR2, tpl_type3, Tpl, x)
   {
     using type = tpl_type3<Tpl>;
   };
 #endif
 
-  template<class T, template<class, JLN_MP_TPL_AUTO_OR(T)...> class Tpl, JLN_MP_TPL_AUTO_OR(T)... xs>
-  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(JLN_MP_NORMALIZE_SIMILAR2, tpl_type2, Tpl, T, xs...)
+  template<class T,
+           template<class, JLN_MP_TPL_AUTO_OR(T)...>
+           class Tpl, JLN_MP_TPL_AUTO_OR(T)... xs>
+  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(
+    JLN_MP_NORMALIZE_SIMILAR2, tpl_type2, Tpl, T, xs...)
   {
     using type = tpl_type2<Tpl>;
   };
 
 #if JLN_MP_ENABLE_TPL_AUTO
-  template<template<auto...> class Tpl, auto... xs>
-  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(
-    JLN_MP_NORMALIZE_SIMILAR3, tpl_type3, Tpl, xs...)
+  template<template<auto...> class Tpl, auto v, auto... vs>
+  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(
+    JLN_MP_NORMALIZE_SIMILAR3, tpl_type3, Tpl, v, vs...)
 #else
   template<template<class, std::size_t...> class Tpl, class T, std::size_t... N>
-  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(JLN_MP_NORMALIZE_SIMILAR3, tpl_type3, Tpl, T, N...)
+  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(
+    JLN_MP_NORMALIZE_SIMILAR3, tpl_type3, Tpl, T, N...)
 #endif
   {
     using type = tpl_type3<Tpl>;
@@ -22317,7 +22448,7 @@ namespace jln::mp::detail
     using type = tpl_type4<Tpl>;
   };
 
-#if (JLN_MP_GCC || JLN_MP_CUDA) && JLN_MP_FEATURE_CONCEPTS
+#if JLN_MP_GCC && JLN_MP_FEATURE_CONCEPTS
   // fix ambiguous
   template<template<class> class Tpl, class x>
   JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(normalize_similar, tpl_type1, Tpl, x)
@@ -23208,16 +23339,16 @@ namespace jln::mp::detail
     static constexpr auto make()
     {
       array_int2<result_len> a{};
-      auto* p = a.elems;
       int i = 0;
+      int n = 0;
 
       bool bools[] {bs...};
       for (bool b : bools)
       {
-        ++(*p)[1];
+        ++a.elems[n][1];
         ++i;
         if (b)
-          **++p = i;
+          a.elems[++n][0] = i;
       }
 
       return a;
@@ -23696,7 +23827,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<class SubC1, class SubC2, class C>
-  struct _smp_split_from;
+  class _smp_split_from;
 }
 /// \endcond
 
@@ -23739,7 +23870,7 @@ namespace jln::mp::detail
     {};
 
     template<class i>
-    struct _impl<i, decltype(void(unsigned{i::value}))>
+    struct _impl<i, decltype(void(JLN_MP_INTEGRAL_AS(uint_, i::value)))>
     {
       template<class... xs>
       using f = typename conditional_c<i::value <= sizeof...(xs)>
@@ -23849,21 +23980,21 @@ namespace jln::mp::detail
     static constexpr auto make()
     {
       array_int2<result_len> a{};
-      auto* p = a.elems;
 
       bool bools[] {bs...};
       int i = 0;
+      int n = 0;
 
       for (bool b : bools)
       {
         if (b)
         {
-          **++p = i;
-          ++(*p)[1] = 1;
-          **++p = i + 1;
+          a.elems[++n][0] = i;
+          ++a.elems[n][1] = 1;
+          a.elems[++n][0] = i + 1;
         }
         else
-          ++(*p)[1];
+          ++a.elems[n][1];
         ++i;
       }
 
@@ -26759,7 +26890,7 @@ namespace jln::mp
   struct offset_c
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<I - int_{sizeof...(xs)}>);
+    using f = JLN_MP_CALL_TRACE(C, number<I - int_(sizeof...(xs))>);
   };
 
   /// \cond
@@ -26767,7 +26898,7 @@ namespace jln::mp
   struct offset_c<I, identity>
   {
     template<class... xs>
-    using f = number<I - int_{sizeof...(xs)}>;
+    using f = number<I - int_(sizeof...(xs))>;
   };
   /// \endcond
 
@@ -29342,7 +29473,7 @@ namespace jln::mp::smp
 }
 
 JLN_MP_MAKE_REGULAR_SMP3_P(iterate, (n), (F), (C, smp::identity),
-    smp::iterate_c<mp::uint_{n::value}, F, C>)
+    smp::iterate_c<JLN_MP_INTEGRAL_AS(uint_, n::value), F, C>)
 
 /// \cond
 namespace jln::mp::detail
@@ -29520,6 +29651,25 @@ namespace jln::mp::traits
   }
 
 
+#if defined(_GLIBCXX_RELEASE)
+#  define JLN_MP_LIBSTDCXX _GLIBCXX_RELEASE
+#else
+#  define JLN_MP_LIBSTDCXX 0
+#endif
+
+#if defined(_LIBCPP_VERSION)
+#  define JLN_MP_LIBCXX _LIBCPP_VERSION
+#else
+#  define JLN_MP_LIBCXX 0
+#endif
+
+#if defined(_MSVC_STL_UPDATE)
+#  define JLN_MP_LIBMS _MSVC_STL_UPDATE
+#else
+#  define JLN_MP_LIBMS 0
+#endif
+
+
   // primary type categories:
 #if __cplusplus >= 201703L
   JLN_MP_MAKE_TRAIT(is_void);
@@ -29639,7 +29789,31 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT(is_base_of);
   JLN_MP_MAKE_TRAIT(is_convertible);
 #if defined(__cpp_lib_is_nothrow_convertible) && __cpp_lib_is_nothrow_convertible
+// is_nothrow_convertible is an alias, not a class: https://github.com/microsoft/STL/issues/4317
+# if JLN_MP_WORKAROUND(JLN_MP_LIBMS, <= 202401)
+  template<class C = identity>
+  struct is_nothrow_convertible
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      std::bool_constant<std::is_nothrow_convertible_v<xs...>>);
+  };
+
+  namespace emp
+  {
+    template<class... xs>
+    using is_nothrow_convertible = std::bool_constant<std::is_nothrow_convertible_v<xs...>>;
+  }
+
+  template<>
+  struct is_nothrow_convertible<identity>
+  {
+    template<class... xs>
+    using f = std::bool_constant<std::is_nothrow_convertible_v<xs...>>;
+  };
+# else
   JLN_MP_MAKE_TRAIT(is_nothrow_convertible);
+# endif
 #endif
 #if defined(__cpp_lib_is_layout_compatible) && __cpp_lib_is_layout_compatible
   JLN_MP_MAKE_TRAIT(is_layout_compatible);
@@ -29681,7 +29855,9 @@ namespace jln::mp::traits
 
   // other transformations:
   JLN_MP_MAKE_TRAIT(decay);
-#if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref
+#if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref \
+  /* unwrap_reference is missing from <type_traits> with libc++-15 */ \
+  && (!JLN_MP_LIBCXX || JLN_MP_LIBCXX >= 16000)
   JLN_MP_MAKE_TRAIT(unwrap_ref_decay);
   JLN_MP_MAKE_TRAIT(unwrap_reference);
 #endif
@@ -29758,7 +29934,7 @@ namespace jln::mp
 #define JLN_MP_SMP_MAKE_BASIC_TRAIT(Name)           \
   namespace smp::traits                             \
   {                                                 \
-    template<class C = identity>                   \
+    template<class C = identity>                    \
     using Name = try_contract<                      \
       mp::traits::Name<assume_unary<C>>>;           \
   }                                                 \
@@ -29772,7 +29948,7 @@ namespace jln::mp
     };                                              \
   }
 
-#define JLN_MP_SMP_MAKE_TRAIT(Name, arity, output)     \
+#define JLN_MP_SMP_MAKE_TRAIT(Name, arity, output) \
   JLN_MP_SMP_MAKE_BASIC_TRAIT(Name)
 
 
@@ -29917,7 +30093,9 @@ namespace jln::mp
 
   // other transformations:
   JLN_MP_SMP_MAKE_TRAIT(decay, 1, types::any)
-#if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref
+#if defined(__cpp_lib_unwrap_ref) && __cpp_lib_unwrap_ref \
+  /* unwrap_reference is missing from <type_traits> with libc++-15 */ \
+  && (!JLN_MP_LIBCXX || JLN_MP_LIBCXX >= 16000)
   JLN_MP_SMP_MAKE_TRAIT(unwrap_ref_decay, 1, types::any)
   JLN_MP_SMP_MAKE_TRAIT(unwrap_reference, 1, types::any)
 #endif
