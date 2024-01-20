@@ -38,6 +38,10 @@ namespace jln::mp
 #endif
 
   /// \cond
+  template<class C>
+  struct tee<C> : detail::call_trace_xs_0<C>
+  {};
+
   template<class F, class C>
   struct tee<F, C>
   {
