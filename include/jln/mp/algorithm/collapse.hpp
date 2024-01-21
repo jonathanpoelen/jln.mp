@@ -81,9 +81,9 @@ namespace jln::mp
 }
 
 
-/// \cond
 #include <jln/mp/functional/memoize.hpp> // uncallable_function
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class C, class F, std::size_t n, class Dispatcher>

@@ -59,11 +59,11 @@ namespace jln::mp
 }
 
 
-/// \cond
 #include <jln/mp/algorithm/drop_until.hpp>
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/list/push_back.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class Pred>

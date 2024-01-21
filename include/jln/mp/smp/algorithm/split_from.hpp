@@ -33,11 +33,12 @@ namespace jln::mp::smp
   >>>;
 }
 
-/// \cond
+
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/detail/expr_conversion.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   struct smp_split_from_i

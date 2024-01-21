@@ -63,9 +63,9 @@ namespace jln::mp
 }
 
 
-/// \cond
 #include <jln/mp/number/not.hpp>
 
+/// \cond
 namespace jln::mp
 {
   template<>

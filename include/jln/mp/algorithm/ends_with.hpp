@@ -61,9 +61,10 @@ namespace jln::mp
   /// \endcond
 }
 
-/// \cond
+
 #include <jln/mp/list/drop_front.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<>

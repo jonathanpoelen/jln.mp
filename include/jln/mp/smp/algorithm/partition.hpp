@@ -24,9 +24,9 @@ namespace jln::mp::smp
 }
 
 
-/// \cond
 #include <jln/mp/detail/smp_listify_or_monadic_xs.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class F>

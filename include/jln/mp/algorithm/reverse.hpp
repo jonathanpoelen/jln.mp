@@ -35,12 +35,12 @@ namespace jln::mp
 }
 
 
-/// \cond
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/detail/sequence.hpp>
 #include <jln/mp/utility/conditional.hpp>
 #include <cstddef>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<unsigned n>

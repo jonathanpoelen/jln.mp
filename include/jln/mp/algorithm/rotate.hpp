@@ -60,9 +60,9 @@ namespace jln::mp
 }
 
 
-/// \cond
 #include <jln/mp/list/front.hpp>
 
+/// \cond
 namespace jln::mp
 {
   template<int_ N1, int_ N2, class C>

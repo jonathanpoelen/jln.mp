@@ -31,10 +31,11 @@ namespace jln::mp
   }
 }
 
-/// \cond
+
 #include <jln/mp/list/size.hpp>
 #include <jln/mp/algorithm/same.hpp>
 
+/// \cond
 namespace jln::mp
 {
   template<class TC, class FC>

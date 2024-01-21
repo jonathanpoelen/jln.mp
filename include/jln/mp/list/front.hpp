@@ -25,9 +25,10 @@ namespace jln::mp
   }
 }
 
-/// \cond
+
 #include <jln/mp/list/lookup.hpp>
 
+/// \cond
 namespace jln::mp
 {
   template<>

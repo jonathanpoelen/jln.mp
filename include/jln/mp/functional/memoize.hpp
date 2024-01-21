@@ -83,11 +83,12 @@ namespace jln::mp
 #endif
 }
 
-/// \cond
+
 // # if !JLN_MP_CUDA
 #include <jln/mp/list/list.hpp>
 // # endif
 
+/// \cond
 #if !JLN_MP_MEMOIZED_ALIAS || JLN_MP_MSVC
 
 namespace jln::mp::detail

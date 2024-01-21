@@ -49,9 +49,9 @@ namespace jln::mp
 }
 
 
-/// \cond
 #include <jln/mp/algorithm/fold.hpp>
 
+/// \cond
 namespace jln::mp
 {
   template<class F>

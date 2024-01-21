@@ -43,12 +43,12 @@ namespace jln::mp::smp
 }
 
 
-/// \cond
 #include <jln/mp/smp/algorithm/copy.hpp>
 #include <jln/mp/smp/algorithm/unique.hpp>
 #include <jln/mp/smp/list/push_front.hpp>
 #include <jln/mp/functional/tee.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>

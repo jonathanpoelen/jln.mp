@@ -42,9 +42,9 @@ namespace jln::mp
 }
 
 
-/// \cond
 #include <jln/mp/set/set_push_back.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<>

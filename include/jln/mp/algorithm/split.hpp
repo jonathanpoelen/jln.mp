@@ -74,10 +74,10 @@ namespace jln::mp
 }
 
 
-/// \cond
 #include <jln/mp/list/sliding.hpp> // sliding_inner / sliding_outer
 #include <cstddef>
 
+/// \cond
 namespace jln::mp
 {
   template<class T, class F, class C>

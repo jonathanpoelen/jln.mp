@@ -22,9 +22,10 @@ namespace jln::mp::smp
     ::template f<subcontract<C>>;
 }
 
-/// \cond
+
 #include <jln/mp/algorithm/same_xs.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class F>

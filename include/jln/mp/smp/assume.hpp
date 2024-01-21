@@ -85,11 +85,11 @@ namespace jln::mp
 }
 
 
-/// \cond
 #include <jln/mp/detail/unpack.hpp>
 #include <jln/mp/list/is_list.hpp>
 #include <jln/mp/algorithm/all_of.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class F>

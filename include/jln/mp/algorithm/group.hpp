@@ -65,10 +65,10 @@ namespace jln::mp
 }
 
 
-/// \cond
 #include <jln/mp/list/take_front.hpp>
 #include <jln/mp/functional/try.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class Cmp, class x, class ys, class... xs>

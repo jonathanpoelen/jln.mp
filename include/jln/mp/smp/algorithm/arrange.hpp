@@ -38,9 +38,10 @@ namespace jln::mp::smp
     ::template make<C, ints...>;
 }
 
-/// \cond
+
 #include <jln/mp/list/clear.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C, int... ints>

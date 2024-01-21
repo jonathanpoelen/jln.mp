@@ -36,7 +36,6 @@ namespace jln::mp
 }
 
 
-/// \cond
 #include <jln/mp/algorithm/make_int_sequence.hpp> // JLN_MP_MAKE_INTEGER_SEQUENCE
 #include <jln/mp/algorithm/none_of.hpp>
 #include <jln/mp/algorithm/fold.hpp>
@@ -46,6 +45,7 @@ namespace jln::mp
 #include <jln/mp/list/push_back.hpp>
 #include <jln/mp/set/set_contains.hpp> // basic_item
 
+/// \cond
 namespace jln::mp::detail
 {
   template<int_ i, class x>

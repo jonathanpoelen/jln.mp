@@ -31,7 +31,7 @@ namespace jln::mp
   }
 }
 
-/// \cond
+
 #include <jln/mp/number/as_bool.hpp>
 #include <jln/mp/number/to_bool.hpp>
 #include <jln/mp/functional/if.hpp>
@@ -43,6 +43,7 @@ namespace jln::mp
 #  include <cstddef>
 #endif
 
+/// \cond
 namespace jln::mp
 {
   template<>

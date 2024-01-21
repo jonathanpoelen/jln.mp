@@ -726,10 +726,11 @@ namespace jln::mp::emp
 
 JLN_MP_DIAGNOSTIC_POP()
 
-/// \cond
+
 #include <jln/mp/number/as_bool.hpp>
 #include <jln/mp/number/to_bool.hpp>
 
+/// \cond
 namespace jln::mp
 {
   template<>
@@ -819,5 +820,4 @@ namespace jln::mp
     using f = number<(x::value >= y::value)>;
   };
 }
-
 /// \endcond

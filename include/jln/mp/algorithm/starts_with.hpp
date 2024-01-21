@@ -91,7 +91,6 @@ namespace jln::mp
   /// \endcond
 }
 
-/// \cond
 
 #include <jln/mp/list/take_front.hpp>
 #include <jln/mp/utility/is.hpp>
@@ -100,6 +99,7 @@ namespace jln::mp
 #include <jln/mp/algorithm/index.hpp>
 #include <jln/mp/functional/if.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<>

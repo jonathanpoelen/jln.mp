@@ -71,12 +71,13 @@ namespace jln::mp
   }
 }
 
-/// \cond
+
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/functional/try.hpp>
 #include <jln/mp/detail/unpack.hpp>
 #include <cstddef>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class F, class TC, class FC>

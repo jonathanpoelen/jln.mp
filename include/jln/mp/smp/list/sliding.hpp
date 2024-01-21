@@ -53,9 +53,10 @@ namespace jln::mp::smp
   using sliding = strided_sliding_with<size, number<1>, smp::listify, C>;
 }
 
-/// \cond
+
 #include <jln/mp/functional/monadic.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class C>

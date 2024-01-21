@@ -34,12 +34,11 @@ namespace jln::mp::smp
   using compress_for = compress<mp::list<Selectors...>>;
 }
 
-/// \cond
-#include <jln/mp/utility/always.hpp>
-#if JLN_MP_CUDA
-#  include <type_traits>
-#endif
 
+#include <jln/mp/utility/always.hpp>
+#include <type_traits>
+
+/// \cond
 namespace jln::mp::detail
 {
   template<class Selectors, class>

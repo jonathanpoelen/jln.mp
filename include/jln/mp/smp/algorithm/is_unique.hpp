@@ -23,10 +23,10 @@ namespace jln::mp::smp
 }
 
 
-/// \cond
 #include <jln/mp/smp/algorithm/none_of.hpp>
 #include <jln/mp/smp/algorithm/fold.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class Cmp>

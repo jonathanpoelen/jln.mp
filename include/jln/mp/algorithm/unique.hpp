@@ -38,13 +38,13 @@ namespace jln::mp
 }
 
 
-/// \cond
 #include <jln/mp/algorithm/fold.hpp>
 #include <jln/mp/algorithm/none_of.hpp>
 #include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/list/push_back.hpp>
 #include <jln/mp/set/set_push_back.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   template<class Cmp>
