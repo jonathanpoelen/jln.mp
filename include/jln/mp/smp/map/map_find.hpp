@@ -9,7 +9,7 @@
 
 namespace jln::mp::smp
 {
-  template<class Key, class TC = identity, class FC = always<void>>
+  template<class Key, class TC = identity, class FC = always<na>>
   using map_find = test_contract<
     mp::is_map<>,
     mp::map_find<Key, assume_unary<TC>, subcontract<FC>>

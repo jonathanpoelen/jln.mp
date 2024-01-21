@@ -17,19 +17,22 @@ TEST()
   test_mulary_pack<map_find, identity, listify>();
 
   ut::same<seq_1_0, emp::map_find<list<seq_0, seq_1_0>, _1>>();
-  ut::same<void, emp::map_find<list<seq_0, seq_1_0>, _2>>();
+  ut::same<na, emp::map_find<list<seq_0, seq_1_0>, _2>>();
   ut::same<list<seq_0, seq_1_0>, emp::map_find<list<seq_0, seq_1_0>, _2, identity, listify>>();
   ut::same<list<seq_1_0>, emp::map_find<list<seq_0, seq_1_0>, _1, listify>>();
 
-  using mp1 = map_find<_2, identity, always<void>>;
-  ut::same<mp1, map_find_or_else<_2, always<void>>>();
+  using Void = always<void>;
+  using sVoid = smp::always<void>;
+
+  using mp1 = map_find<_2, identity, Void>;
+  ut::same<mp1, map_find_or_else<_2, Void>>();
   ut::same<mp1, map_find_or<_2, void>>();
 
-  using smp1 = smp::map_find<_2, smp::identity, smp::always<void>>;
-  ut::same<smp1, smp::map_find_or_else<_2, smp::always<void>>>();
+  using smp1 = smp::map_find<_2, smp::identity, sVoid>;
+  ut::same<smp1, smp::map_find_or_else<_2, sVoid>>();
   ut::same<smp1, smp::map_find_or<_2, void>>();
 
-  test_context<map_find<_0>, smp::map_find<_0>>()
+  test_context<map_find<_0, identity, Void>, smp::map_find<_0, smp::identity, sVoid>>()
     .test<void>()
     .test<seq_0, seq_0>()
     .test<seq_0, seq_1, seq_0>()
@@ -41,7 +44,7 @@ TEST()
     .not_invocable<seq_0, seq_0>()
     ;
 
-  test_context<map_find<_2>, smp::map_find<_2>>()
+  test_context<map_find<_2, identity, Void>, smp::map_find<_2, smp::identity, sVoid>>()
     .test<void>()
     .test<void, seq_0>()
     .test<void, seq_0, seq_1>()
@@ -53,7 +56,7 @@ TEST()
     .not_invocable<seq_0, seq_0>()
     ;
 
-  ut::not_invocable<smp::map_find<_0, bad_function>, seq_0>();
+  ut::not_invocable<smp::map_find<_0, bad_function, sVoid>, seq_0>();
   ut::not_invocable<smp::map_find<_0, identity, bad_function>>();
 }
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <jln/mp/functional/memoize.hpp> // na
 #include <jln/mp/set/set_contains.hpp> // inherit, basic_item
 #include <jln/mp/utility/always.hpp>
 
@@ -28,7 +29,7 @@ namespace jln::mp
   /// If no element is found, \c FC is used with the whole \map.
   /// \pre \c is_map<>::f<kvs...>
   /// \treturn \sequence
-  template<class key, class TC = identity, class FC = always<void>>
+  template<class key, class TC = identity, class FC = always<na>>
   struct map_find
   {
     template<class... kvs>
@@ -44,7 +45,7 @@ namespace jln::mp
 
   namespace emp
   {
-    template<class L, class key, class TC = mp::identity, class FC = mp::always<void>>
+    template<class L, class key, class TC = mp::identity, class FC = mp::always<na>>
     using map_find = unpack<L, mp::map_find<key, TC, FC>>;
 
     template<class L, class key, class FC>
