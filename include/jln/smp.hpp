@@ -546,17 +546,23 @@ namespace jln::mp
   using true_ = number<1>;
   using false_ = number<0>;
 
-#if defined( __cpp_nontype_template_parameter_auto)
-# if  __cpp_nontype_template_parameter_auto >= 201606L
-#  define JLN_MP_ENABLE_TPL_AUTO 1
-#  define JLN_MP_TPL_AUTO_OR_INT auto
-#  define JLN_MP_TPL_AUTO_OR(T) auto
+#ifndef JLN_MP_ENABLE_TPL_AUTO
+# if defined( __cpp_nontype_template_parameter_auto)
+#   if __cpp_nontype_template_parameter_auto >= 201606L
+#     define JLN_MP_ENABLE_TPL_AUTO 1
+#   endif
 # endif
 #endif
 
-#ifndef JLN_MP_TPL_AUTO_OR_INT
-# define JLN_MP_TPL_AUTO_OR_INT ::jln::mp::int_
+#ifndef JLN_MP_ENABLE_TPL_AUTO
 # define JLN_MP_ENABLE_TPL_AUTO 0
+#endif
+
+#if JLN_MP_ENABLE_TPL_AUTO
+# define JLN_MP_TPL_AUTO_OR_INT auto
+# define JLN_MP_TPL_AUTO_OR(T) auto
+#else
+# define JLN_MP_TPL_AUTO_OR_INT ::jln::mp::int_
 # define JLN_MP_TPL_AUTO_OR(T) T
 #endif
 }
@@ -8422,9 +8428,9 @@ namespace jln::mp
   /// \ingroup number
 
 #if JLN_MP_CUDA
-#  define JLN_MP_AS_NUMBER(v) std::enable_if_t<v < 0 || std::size_t{v} <= (~0ull >> 1), int_>{v}
+#  define JLN_MP_AS_MP_INT(v) std::enable_if_t<v < 0 || std::size_t{v} <= (~0ull >> 1), int_>{v}
 #else
-#  define JLN_MP_AS_NUMBER(v) JLN_MP_INTEGRAL_AS(int_, v)
+#  define JLN_MP_AS_MP_INT(v) JLN_MP_INTEGRAL_AS(int_, v)
 #endif
 
   /// Convertion without narrowing from \value to \number.
@@ -8433,13 +8439,13 @@ namespace jln::mp
   struct as_number
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_AS_NUMBER(x::value)>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_AS_MP_INT(x::value)>);
   };
 
   namespace emp
   {
     template<class x>
-    using as_number = number<JLN_MP_AS_NUMBER(x::value)>;
+    using as_number = number<JLN_MP_AS_MP_INT(x::value)>;
   }
 
   /// \cond
@@ -8447,7 +8453,7 @@ namespace jln::mp
   struct as_number<identity>
   {
     template<class x>
-    using f = number<JLN_MP_AS_NUMBER(x::value)>;
+    using f = number<JLN_MP_AS_MP_INT(x::value)>;
   };
   /// \endcond
 }
@@ -13088,9 +13094,13 @@ namespace jln::mp
 
   namespace emp
   {
+    /// \c true if \c x is an element of the set \c xs, \c false otherwise.
+    template<class x, class... xs>
+    constexpr bool set_contains_xs_v = JLN_MP_SET_CONTAINS(x, xs...);
+
     /// \c true if \c x is an element of the set \c Set, \c false otherwise.
     template<class Set, class x>
-    inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
+    constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
       x, typename detail::_unpack<mp::lift<detail::inherit>, Set>::type
     );
 
@@ -18599,23 +18609,26 @@ namespace jln::mp
   };
 
   template<class T, T v>
-  using typed_val = val<v>;
+  using typed_value = val<v>;
 # else
   template<class T, T v>
-  struct typed_val
+  struct typed_value
   {
     static constexpr T const value = v;
   };
 
   template<auto v>
-  using val = typed_val<std::remove_const_t<decltype(v)>, v>;
+  using val = typed_value<std::remove_const_t<decltype(v)>, v>;
 # endif
 #else
   template<class T, T v>
-  struct typed_val
+  struct typed_value
   {
     static constexpr T const value = v;
   };
+
+  template<int_ v>
+  using val = typed_value<int_, v>;
 #endif
 }
 
@@ -25155,7 +25168,7 @@ namespace jln::mp
   using capture_back_c = capture_back<val<BoundArgs>...>;
 #else
   template<int_... BoundArgs>
-  using capture_back_c = capture_back<typed_val<int_, BoundArgs>...>;
+  using capture_back_c = capture_back<typed_value<int_, BoundArgs>...>;
 #endif
 
   template<JLN_MP_TPL_AUTO_OR_INT... BoundArgs>
@@ -25191,7 +25204,7 @@ namespace jln::mp::smp
   using capture_back_c = capture_back<val<xs>...>;
 #else
   template<int_... xs>
-  using capture_back_c = capture_back<typed_val<int_, xs>...>;
+  using capture_back_c = capture_back<typed_value<int_, xs>...>;
 #endif
 
   template<JLN_MP_TPL_AUTO_OR_INT... xs>
@@ -25245,7 +25258,7 @@ namespace jln::mp
   using capture_front_c = capture_front<val<BoundArgs>...>;
 #else
   template<int_... BoundArgs>
-  using capture_front_c = capture_front<typed_val<int_, BoundArgs>...>;
+  using capture_front_c = capture_front<typed_value<int_, BoundArgs>...>;
 #endif
 
   template<JLN_MP_TPL_AUTO_OR_INT... BoundArgs>
@@ -25281,7 +25294,7 @@ namespace jln::mp::smp
   using capture_front_c = capture_front<val<xs>...>;
 #else
   template<int_... xs>
-  using capture_front_c = capture_front<typed_val<int_, xs>...>;
+  using capture_front_c = capture_front<typed_value<int_, xs>...>;
 #endif
 
   template<JLN_MP_TPL_AUTO_OR_INT... xs>
@@ -30192,7 +30205,7 @@ namespace jln::mp
   template<class C = identity>
   struct as_val
   {
-#if __cplusplus >= 201703L
+#if JLN_MP_ENABLE_TPL_AUTO
     template<class x>
     using f = JLN_MP_CALL_TRACE(C, val<x::value>);
 #else
@@ -30205,7 +30218,7 @@ namespace jln::mp
   template<>
   struct as_val<identity>
   {
-#if __cplusplus >= 201703L
+#if JLN_MP_ENABLE_TPL_AUTO
     template<class x>
     using f = val<x::value>;
 #else
@@ -30398,7 +30411,7 @@ namespace jln::mp::detail
     using type = false_;
   };
 
-#if __cplusplus >= 201703L
+#if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_ENABLE_DEBUG || JLN_MP_CLANG_LIKE)
   template<auto x>
   struct _is_val<val<x>>
 #else
@@ -31713,7 +31726,7 @@ namespace jln::mp::detail
 #undef JLN_smp_opv_without_zero_and_with_value
 /// \endcond
 
-#if __cplusplus >= 201703L
+#if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_ENABLE_DEBUG || JLN_MP_CLANG_LIKE)
 namespace jln::mp
 {
   /// \ingroup value
@@ -31748,20 +31761,20 @@ namespace jln::mp
   struct values
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, typed_val<decltype(xs::value), xs::value>...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, typed_value<decltype(xs::value), xs::value>...);
   };
 
   template<class C>
   struct typed_values
   {
     template<class T, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, typed_val<T, xs::value>...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, typed_value<T, xs::value>...);
   };
 
   namespace emp
   {
     template<class T, T... xs>
-    using typed_values = list<typed_val<T, xs>...>;
+    using typed_values = list<typed_value<T, xs>...>;
   }
 }
 #endif
