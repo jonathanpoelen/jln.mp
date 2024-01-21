@@ -3,47 +3,18 @@
 #pragma once
 
 #include <jln/mp/algorithm/same_xs.hpp>
-#include <jln/mp/detail/compiler.hpp>
-#include <jln/mp/number/not.hpp>
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/identity.hpp>
-#include <type_traits>
+#include <cstddef>
 
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-#if JLN_MP_GCC && JLN_MP_FEATURE_CONCEPTS
-#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(name, TplType, Tpl, ...) \
-     requires requires{ static_cast<TplType<Tpl>*>(nullptr); }                \
-     struct name<Tpl<__VA_ARGS__>>
-#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(name, TplType, Tpl, ...) \
-     struct name<Tpl<__VA_ARGS__>>
-
-    template<class>
-#elif JLN_MP_CUDA
-#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(name, TplType, Tpl, ...) \
-     struct name<Tpl<__VA_ARGS__>, decltype(static_cast<void(*)(TplType<Tpl>*)>(nullptr)(nullptr))>
-#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT
-
-    template<class, class = void>
-#elif JLN_MP_CLANG
-#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(name, TplType, Tpl, ...) \
-     struct name<Tpl<__VA_ARGS__>>
-#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT
-
-    template<class, class = void>
-#else
-#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(name, TplType, Tpl, ...) \
-     struct name<Tpl<__VA_ARGS__>, std::void_t<TplType<Tpl>>>
-#  define JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(name, TplType, Tpl, ...) \
-     struct name<Tpl<__VA_ARGS__>>
-
-    template<class, class = void>
-#endif
+    template<class T>
     struct normalize_similar;
   }
   /// \endcond
@@ -93,6 +64,8 @@ namespace jln::mp
 
 
 /// \cond
+#include <jln/mp/number/not.hpp>
+
 namespace jln::mp
 {
   template<>
@@ -124,116 +97,76 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<template<class...> class Tpl>
-  struct tpl_type1 {};
+  struct tpl_type1
+  {
+      using type = tpl_type1;
+  };
 
   template<template<class T, JLN_MP_TPL_AUTO_OR(T)...> class Tpl>
-  struct tpl_type2 {};
+  struct tpl_type2
+  {
+      using type = tpl_type2;
+  };
 
 #if JLN_MP_ENABLE_TPL_AUTO
   template<template<auto...> class Tpl>
 #else
   template<template<class, std::size_t...> class Tpl>
 #endif
-  struct tpl_type3;
+  struct tpl_type3
+  {
+      using type = tpl_type3;
+  };
 
   template<template<JLN_MP_TPL_AUTO_OR(std::size_t), class...> class Tpl>
-  struct tpl_type4;
+  struct tpl_type4
+  {
+      using type = tpl_type4;
+  };
 
 
-#if JLN_MP_GCC && JLN_MP_FEATURE_CONCEPTS
-#  define JLN_MP_NORMALIZE_SIMILAR2 normalize_similar
-#  define JLN_MP_NORMALIZE_SIMILAR3 normalize_similar
-#  define JLN_MP_NORMALIZE_SIMILAR4 normalize_similar
+#if !JLN_MP_ENABLE_TPL_AUTO
   template<class T>
-  struct normalize_similar
-#else
-#  if JLN_MP_CUDA
-#    define JLN_MP_NORMALIZE_SIMILAR2 normalize_similar2
-#    define JLN_MP_NORMALIZE_SIMILAR3 normalize_similar3
-#    define JLN_MP_NORMALIZE_SIMILAR4 normalize_similar4
-#  else
-#    define JLN_MP_NORMALIZE_SIMILAR2 normalize_similar2
-#    define JLN_MP_NORMALIZE_SIMILAR3 normalize_similar2
-#    define JLN_MP_NORMALIZE_SIMILAR4 normalize_similar2
-#  endif
-  template<class T, class = void>
-  struct JLN_MP_NORMALIZE_SIMILAR4
-#endif
+  struct normalize_similar3
   {
     using type = T;
   };
 
-#if JLN_MP_CUDA
-  template<class T, class = void>
-  struct normalize_similar3 : normalize_similar4<T>
+  template<template<class, std::size_t...> class Tpl, class T, std::size_t... v>
+  struct normalize_similar3<Tpl<T, v...>> : tpl_type3<Tpl>
   {};
 
-  template<class T, class = void>
+  template<class T>
   struct normalize_similar2 : normalize_similar3<T>
   {};
-#elif JLN_MP_ENABLE_TPL_AUTO
-  // fix ambiguous
-  template<template<auto> class Tpl, auto x>
-  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(
-    JLN_MP_NORMALIZE_SIMILAR2, tpl_type3, Tpl, x)
+#else // if JLN_MP_ENABLE_TPL_AUTO
+  template<class T>
+  struct normalize_similar2
   {
-    using type = tpl_type3<Tpl>;
+    using type = T;
   };
+
+  template<template<auto...> class Tpl, auto... v>
+  struct normalize_similar2<Tpl<v...>> : tpl_type3<Tpl>
+  {};
 #endif
 
-  template<class T,
-           template<class, JLN_MP_TPL_AUTO_OR(T)...>
-           class Tpl, JLN_MP_TPL_AUTO_OR(T)... xs>
-  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(
-    JLN_MP_NORMALIZE_SIMILAR2, tpl_type2, Tpl, T, xs...)
-  {
-    using type = tpl_type2<Tpl>;
-  };
+  template<template<class T, JLN_MP_TPL_AUTO_OR(T)...> class Tpl,
+           class T, JLN_MP_TPL_AUTO_OR(T)... v>
+  struct normalize_similar2<Tpl<T, v...>> : tpl_type2<Tpl>
+  {};
 
-#if JLN_MP_ENABLE_TPL_AUTO
-  template<template<auto...> class Tpl, auto v, auto... vs>
-  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(
-    JLN_MP_NORMALIZE_SIMILAR3, tpl_type3, Tpl, v, vs...)
-#else
-  template<template<class, std::size_t...> class Tpl, class T, std::size_t... N>
-  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(
-    JLN_MP_NORMALIZE_SIMILAR3, tpl_type3, Tpl, T, N...)
-#endif
-  {
-    using type = tpl_type3<Tpl>;
-  };
-
-  template<template<JLN_MP_TPL_AUTO_OR(std::size_t), class...> class Tpl,
-    JLN_MP_TPL_AUTO_OR(std::size_t) N, class... T>
-  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA(
-    JLN_MP_NORMALIZE_SIMILAR4, tpl_type4, Tpl, N, T...)
-  {
-    using type = tpl_type4<Tpl>;
-  };
-
-#if JLN_MP_GCC && JLN_MP_FEATURE_CONCEPTS
-  // fix ambiguous
-  template<template<class> class Tpl, class x>
-  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(normalize_similar, tpl_type1, Tpl, x)
-  {
-    using type = tpl_type1<Tpl>;
-  };
-
-  template<template<class...> class Tpl, class... xs>
-  struct normalize_similar<Tpl<xs...>>
-#else
-  template<class T, class>
+  template<class T>
   struct normalize_similar : normalize_similar2<T>
   {};
 
-  template<template<class...> class Tpl, class... xs>
-  JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT(normalize_similar, tpl_type1, Tpl, xs...)
-#endif
-  {
-    using type = tpl_type1<Tpl>;
-  };
+  template<template<class...> class Tpl, class... T>
+  struct normalize_similar<Tpl<T...>> : tpl_type1<Tpl>
+  {};
 
-#undef JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT
-#undef JLN_MP_NORMALIZE_SIMILAR_SPECIALIZE_STRUCT_CUDA
+  template<template<JLN_MP_TPL_AUTO_OR(std::size_t), class...> class Tpl,
+           JLN_MP_TPL_AUTO_OR(std::size_t) v, class... T>
+  struct normalize_similar<Tpl<v, T...>> : tpl_type4<Tpl>
+  {};
 }
 /// \endcond

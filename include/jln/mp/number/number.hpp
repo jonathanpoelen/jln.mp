@@ -18,7 +18,7 @@ namespace jln::mp
   using false_ = number<0>;
 
 #ifndef JLN_MP_ENABLE_TPL_AUTO
-# if defined( __cpp_nontype_template_parameter_auto)
+# if defined(__cpp_nontype_template_parameter_auto)
 #   if __cpp_nontype_template_parameter_auto >= 201606L
 #     define JLN_MP_ENABLE_TPL_AUTO 1
 #   endif

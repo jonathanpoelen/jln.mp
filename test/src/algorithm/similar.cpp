@@ -113,6 +113,7 @@ TEST()
 #endif
     .test<true_, p1<int, 1>, p1<int, 2>>()
     .test<true_, p2<int, 1, 1>, p2<int, 2, 2>>()
+    .test<true_, px<int>, px<int, 1>>()
     .test<true_, px<int, 1>, px<int, 1, 2>>()
     .test<false_
       , t1<int>, t2<int, int>, tx<>, tx<int>, tx<int, int>, tx<int, int, int>
