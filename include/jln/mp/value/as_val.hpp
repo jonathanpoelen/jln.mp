@@ -22,7 +22,7 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C, val<x::value>);
 #else
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, typed_value<decltype(x::value), x::value>);
+    using f = JLN_MP_CALL_TRACE(C, value_from<x>);
 #endif
   };
 
@@ -35,7 +35,7 @@ namespace jln::mp
     using f = val<x::value>;
 #else
     template<class x>
-    using f = typed_value<decltype(x::value), x::value>;
+    using f = value_from<x>;
 #endif
   };
   /// \endcond

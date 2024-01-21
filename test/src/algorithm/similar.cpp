@@ -81,8 +81,10 @@ TEST()
     .test<true_, t2<int, int>, t2<int, char>>()
     .test<true_, tx<>, tx<int>, tx<int, int>, tx<int, int, int>>()
     .test<true_, a1<1>, a1<2>>()
+#if JLN_MP_ENABLE_TPL_AUTO
     .test<true_, a2<1, 1>, a2<2, 2>>()
     .test<true_, ax<1>, ax<1, 2>>()
+#endif
     .test<true_, ta1<int, 1>, ta1<int, 2>>()
     .test<true_, ta2<int, 1, 1>, ta2<int, 2, 2>>()
     .test<true_, tax<int, 1, 1>, tax<int, 1>>()

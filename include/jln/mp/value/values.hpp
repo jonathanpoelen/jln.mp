@@ -38,14 +38,14 @@ namespace jln::mp
 #else
 namespace jln::mp
 {
-  template<class C>
+  template<class C = listify>
   struct values
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, typed_value<decltype(xs::value), xs::value>...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, value_from<xs>...);
   };
 
-  template<class C>
+  template<class C = listify>
   struct typed_values
   {
     template<class T, class... xs>
@@ -54,6 +54,9 @@ namespace jln::mp
 
   namespace emp
   {
+    template<int_... xs>
+    using values = list<typed_value<int_, xs>...>;
+
     template<class T, T... xs>
     using typed_values = list<typed_value<T, xs>...>;
   }
