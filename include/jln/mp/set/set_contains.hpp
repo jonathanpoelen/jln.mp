@@ -45,9 +45,13 @@ namespace jln::mp
 
   namespace emp
   {
+    /// \c true if \c x is an element of the set \c xs, \c false otherwise.
+    template<class x, class... xs>
+    constexpr bool set_contains_xs_v = JLN_MP_SET_CONTAINS(x, xs...);
+
     /// \c true if \c x is an element of the set \c Set, \c false otherwise.
     template<class Set, class x>
-    inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
+    constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
       x, typename detail::_unpack<mp::lift<detail::inherit>, Set>::type
     );
 

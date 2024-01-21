@@ -132,20 +132,21 @@ end
 
 local sanitize_struct_impl
 
-local f_type = function(ctx_tparams, k, name, spe, tparams, mem, impl)
+local f_type = function(ctx_tparams, k, cpp_type, name, spe, tparams, mem, impl)
   namespaces[ctx_namespace][name] = true
   fileinfos.firstname = fileinfos.firstname or name
   fileinfos[#fileinfos+1] = {
     i = k,
     human_tparams = human_template(ctx_tparams),
     namespace = ctx_namespace,
+    cpp_type = cpp_type,
     name = name,
     refid = torefid(ctx_namespace, name),
     fullname = ctx_ref_namespace .. name,
     impl = sanitize_struct_impl(impl),
     spe = spe,
     mem = mem,
-    humain_tparams_mem = human_template(tparams),
+    human_tparams_mem = human_template(tparams),
   }
 end
 
@@ -182,7 +183,8 @@ local ws = S' \n'^1
 local ws0 = S' \n'^0
 local unl = Until'\n' * 1
 local cunl = C(Until'\n') * 1
-local charid = R('az','09','AZ') + S':_'
+local alnum = R('az','09','AZ')
+local charid = alnum + S':_'
 local id = charid^1
 local cid = C(id)
 local balancedparent = Balanced('(', ')')
@@ -191,6 +193,8 @@ local balancedtag = P{
   '<' * (1 - S'<>()' + tagasoperator + V(1) + V(2))^0 * '>',
   '(' * (1 - S'()' + V(2))^0 * ')',
 }
+local cbalancedparent = C((1-S'()' + balancedparent)^1)
+local cbalancedparent_arg = C((1-S'(),' + balancedparent)^1)
 
 splitShortAndLongDesc = C(Until('.\n' + -P(1)) * P'.'^-1) * sp0 * C(P(1)^0)
 
@@ -216,11 +220,12 @@ local sanitize_struct_impl_patt = Cs((
     / '/*...*/'
 + 1
 )^0)
+local detect_chars = P{ alnum + 1 * V(1) }
 
 sanitize_struct_impl = function(s)
   if s then
     s = sanitize_struct_impl_patt:match(s)
-    if s == '/*...*/' then
+    if not detect_chars:match(s) then
       return nil
     end
     s = sanitize_space:match(s)
@@ -241,56 +246,78 @@ preproc = P{
   + 1
   )^0)
 
-, c=('JLN_MP_' * P'FORCE_'^0 * 'DCALL' * P'F'^0 * P'_V'^0 * P'_C'^0 * P'_TRACE'^0 * '_XS('
-     * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
-     * ',' * ws0 * cid
-     * ',' * ws0 * C((1-S'()' + balancedparent)^1)
-     * ')'
-     / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
-    )
-  + (P'JLN_MP_CALLER_TRACE_XS('
-     * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
-     * ',' * ws0 * C((1-S'()' + balancedparent)^1)
-     * ')'
-     / function(f) return preproc:match(f) end
-    )
-  + (P'JLN_MP_TRACE_F(' * C((1-S'()' + balancedparent)^1) * ')'
-     / function(f) return preproc:match(f) end
-    )
-  + (P'JLN_MP_CALL_TRACE' * P'_T'^0 * '('
-     * C((1-S'(),' + balancedparent)^1)
-     * ',' * ws0 * C((1-S'()' + balancedparent)^1)
-     * ')'
-     / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
-    )
-  + (P'JLN_MP_MSVC_FIX_CALL' * P'_T'^0 * '(' * ws0
-     * '(' * C((1-S'()' + balancedparent)^1) * '),'
-     * ws0 * C((1-S'()' + balancedparent)^1)
-     * ')'
-     / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
-    )
-  + ('JLN_MP_DCALL_TRACE_XS_0('
-     * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
-     * ')'
-     / function(f, args) return preproc:match(f) .. '::f<>' end
-    )
-  + ('JLN_MP_CALL_TRACE_0_ARGS(' * ws0 * C((1-S'()' + balancedparent)^1) * ')'
-     / function(f) return preproc:match(f) .. '::f<>' end
-    )
-  + (P'JLN_MP_IDENT(' * C((1-S'()' + balancedparent)^1) * ')'
-     / function(f) return preproc:match(f) end
-    )
-  + (P'JLN_MP_' * P'RAW_'^0 * 'EXPR_TO_BOOL(' * C((1-S'()' + balancedparent)^1) * ')'
-     / function(f) return 'bool(' .. preproc:match(f) .. ')' end
-    )
-  + (P'JLN_MP_RAW_EXPR_TO_BOOL_NOT(' * C((1-S'()' + balancedparent)^1) * ')'
-     / function(f) return '!' .. preproc:match(f) end
-    )
-  + (P'JLN_MP_EXPR_TO_BOOL_NOT(' * C((1-S'()' + balancedparent)^1) * ')'
-     / function(f) return '!(' .. preproc:match(f) .. ')' end
-    )
-  + (P'JLN_MP_TPL_AUTO_OR_INT' / 'auto /*or int_*/')
-  + (P'JLN_MP_TRACE_TYPENAME' / '')
+, c='JLN_MP_' * P'FORCE_'^0 * 'DCALL' * P'F'^0 * P'_V'^0 * P'_C'^0 * P'_TRACE'^0 * '_XS('
+    * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
+    * ',' * ws0 * cid
+    * ',' * ws0 * cbalancedparent
+    * ')'
+    / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
+
+  + P'JLN_MP_CALLER_TRACE_XS('
+    * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
+    * ',' * ws0 * cbalancedparent
+    * ')'
+    / function(f) return preproc:match(f) end
+
+  + P'JLN_MP_TRACE_F(' * cbalancedparent * ')'
+    / function(f) return preproc:match(f) end
+
+  + P'JLN_MP_CALL_TRACE' * P'_T'^0 * '('
+    * cbalancedparent_arg
+    * ',' * ws0 * cbalancedparent
+    * ')'
+    / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
+
+  + P'JLN_MP_MSVC_FIX_CALL' * P'_T'^0 * '(' * ws0
+    * '(' * cbalancedparent * '),'
+    * ws0 * cbalancedparent
+    * ')'
+    / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
+
+  + 'JLN_MP_DCALL_TRACE_XS_0('
+    * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
+    * ')'
+    / function(f, args) return preproc:match(f) .. '::f<>' end
+
+  + 'JLN_MP_CALL_TRACE_0_ARGS(' * ws0 * cbalancedparent * ')'
+    / function(f) return preproc:match(f) .. '::f<>' end
+
+  + P'JLN_MP_IDENT(' * cbalancedparent * ')'
+    / function(f) return preproc:match(f) end
+
+  + P'JLN_MP_' * P'RAW_'^0 * 'EXPR_TO_BOOL(' * cbalancedparent * ')'
+    / function(f) return 'bool(' .. preproc:match(f) .. ')' end
+
+  + P'JLN_MP_RAW_EXPR_TO_BOOL_NOT(' * cbalancedparent * ')'
+    / function(f) return '!' .. preproc:match(f) end
+
+  + P'JLN_MP_EXPR_TO_BOOL_NOT(' * cbalancedparent * ')'
+    / function(f) return '!(' .. preproc:match(f) .. ')' end
+
+  + P'JLN_MP_IS_SAME(' * ws0 * cbalancedparent_arg * ',' * ws0 * cbalancedparent * ws0 * ')'
+    / function(a, b) return 'std::is_same_v<' .. preproc:match(a) .. ', ' .. preproc:match(b) .. '>' end
+
+  + P'JLN_MP_INTEGRAL_AS(' * ws0 * cid * ',' * ws0 * cid * ws0 * ')'
+    / function(t, expr) return t .. '{' .. preproc:match(expr) .. '}' end
+
+  + P'JLN_MP_AS_BOOL(' * ws0 * cbalancedparent * ws0 * ')'
+    / function(expr) return 'bool{' .. preproc:match(expr) .. '}' end
+
+  + P'JLN_MP_AS_MP_INT(' * ws0 * cbalancedparent * ws0 * ')'
+    / function(expr) return 'int_{' .. preproc:match(expr) .. '}' end
+
+  + P'JLN_MP_SET_CONTAINS(' * cbalancedparent * ')'
+    / function(expr) return 'emp::set_contains_xs_v<' .. expr .. '>' end
+
+  + P'JLN_MP_LIFT_WRAP(' * cid * ')'
+    / function(name) return 'lift_t<' .. name .. '>' end
+
+  + P'JLN_MP_CALL_TRY_IMPL(' * cid * ws0 * ',' * ws0 * cbalancedparent * ws0 * ')'
+    / function(f, args) return 'try_<' .. preproc:match(f) .. '>::f<' .. preproc:match(args) .. '>' end
+
+  + P'JLN_MP_SET_CONTAINS_BASE' * balancedparent / '/*...*/'
+  + P'JLN_MP_TPL_AUTO_OR_INT' / 'auto /*or int_*/'
+  + P'JLN_MP_TRACE_TYPENAME' / ''
 
 , p='#' * sp0 / '' *
     ( P'ifdef JLN_MP_DOXYGENATING' / ''
@@ -366,7 +393,7 @@ local pattern = P{
       + lines / f_desc
       ) * sp0)^1
     + (template + Cc(nil)) * ws0
-      * ( (P'struct' + 'class') * ws * Cc(kwindexes.struct) * cid * Until(S':;{<')
+      * ( (P'struct' + 'class') * ws * Cc(kwindexes.struct) * Cc(nil) * cid * Until(S':;{<')
           * (C(balancedtag) * ws0 + Cc(nil))
           * (':' * ws0 * id * ws0
             * (balancedtag * ws0 * (('::template ' * id * balancedtag + id) * ws0)^0)^-1
@@ -382,16 +409,16 @@ local pattern = P{
                   )
                 )
             )
-        + 'using ' * Cc(kwindexes.using) * cid * ws0 * '='
+        + 'using ' * Cc(kwindexes.using) * Cc(nil) * cid * ws0 * '='
           * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
         -- using name;
-        + 'using ' * Cc(kwindexes.using) * (id / function(name)
+        + 'using ' * Cc(kwindexes.using) * Cc(nil) * (id / function(name)
             local i = name:find(':[a-zA-Z0-9_]+$')
             return i and name:sub(i+1) or name
           end) * ';'
           * Cc(nil) * Cc(nil) * Cc(nil) * Cc(nil)
-        + (P'static' + 'inline') * ' constexpr ' * Cc(kwindexes.static_constexpr) * id * ws * cid * ws0 * '='
-          * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
+        + (P'static ' + 'inline ')^0 * 'constexpr ' * Cc(kwindexes.static_constexpr)
+          * cid * ws * cid * ws0 * '=' * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
         ) / f_type
     + 'namespace '
       * ( ignore_namespace * ws0 * Balanced('{', '}')
@@ -777,13 +804,17 @@ for name,g in pairs(groups) do
           gtypes[#gtypes+1] = d
         end
 
-        d.human_tparams_html = tohtml(d.namespace, d.human_tparams) or ''
+        d.cpp_type_html = d.cpp_type and tohtml(d.namespace, d.cpp_type) .. ' ' or ''
         d.long_desc_html = long_desc and #long_desc > 0 and long_desc
         d.short_desc_html = short_desc and #short_desc > 0 and short_desc
         d.treturn = treturn
         d.tparams = tparams
-        d.impl_html = tohtml(d.namespace, d.impl)
-        d.inline_impl_html = d.impl and (inlinecode_begin .. d.impl_html .. inlinecode_end)
+        -- after replacing macros, set_contains_xs_v references itself,
+        -- implementation should be ignored
+        if d.i ~= i_static_constexpr or d.name ~= 'set_contains_xs_v' then
+          d.impl_html = tohtml(d.namespace, d.impl)
+          d.inline_impl_html = d.impl and (inlinecode_begin .. d.impl_html .. inlinecode_end)
+        end
 
         if #see ~= 0 then
           for k,x in pairs(see) do
@@ -797,13 +828,14 @@ for name,g in pairs(groups) do
         end
 
         d.mem_html = d.spe and tohtml(d.namespace, d.spe)
-                  or tohtml(d.namespace, d.human_tparams) or ''
+                  or tohtml(d.namespace, d.human_tparams)
+                  or ''
 
         if d.i == i_using then
           d.is_alias = true
         elseif d.mem then
           d.mem_html = d.mem_html .. '<span class="p">::</span>'
-                    .. d.mem .. (tohtml(d.namespace, d.humain_tparams_mem) or '')
+                    .. d.mem .. (tohtml(d.namespace, d.human_tparams_mem) or '')
         end
 
         reset_values()
@@ -1058,14 +1090,16 @@ for _,g in ipairs(tgroups) do
       if d.namespace == 'emp' then
         emp[#emp+1] = '<h3 class="emp"' .. refid
             .. '><a href="#' .. d.refid .. '" class="ref">¶</a>'
-            .. inlinecode_begin .. d.fullname:gsub('::', '<span class="p">::</span>')
+            .. inlinecode_begin .. d.cpp_type_html
+            .. d.fullname:gsub('::', '<span class="p">::</span>')
             .. d.mem_html .. inlinecode_end .. ' = '
             .. (d.inline_impl_html or '/*...*/')
             .. '</h3>\n'
       else
         push('<h3' .. (refcache[d.refid] and '' or ' id="' .. d.refid .. '"') .. '><a href="#'
              .. d.refid .. '" class="ref">¶</a>'
-             .. inlinecode_begin .. d.fullname .. d.mem_html .. inlinecode_end .. '</h3>\n')
+             .. inlinecode_begin .. d.cpp_type_html .. d.fullname
+             .. d.mem_html .. inlinecode_end .. '</h3>\n')
         refcache[d.refid] = true
 
         if d.treturn then push('<p>Return: ' .. d.treturn .. '</p>') end
