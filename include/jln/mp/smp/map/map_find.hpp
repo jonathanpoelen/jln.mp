@@ -14,7 +14,14 @@ namespace jln::mp::smp
     mp::is_map<>,
     mp::map_find<Key, assume_unary<TC>, subcontract<FC>>
   >;
+
+  template<class key, class FC>
+  using map_find_or_else = map_find<key, identity, FC>;
+
+  template<class key, class FT>
+  using map_find_or = map_find<key, identity, always<FT>>;
 }
+
 
 #include <jln/mp/smp/algorithm/transform.hpp>
 #include <jln/mp/functional/if.hpp>

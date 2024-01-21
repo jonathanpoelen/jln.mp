@@ -21,6 +21,14 @@ TEST()
   ut::same<list<seq_0, seq_1_0>, emp::map_find<list<seq_0, seq_1_0>, _2, identity, listify>>();
   ut::same<list<seq_1_0>, emp::map_find<list<seq_0, seq_1_0>, _1, listify>>();
 
+  using mp1 = map_find<_2, identity, always<void>>;
+  ut::same<mp1, map_find_or_else<_2, always<void>>>();
+  ut::same<mp1, map_find_or<_2, void>>();
+
+  using smp1 = smp::map_find<_2, smp::identity, smp::always<void>>;
+  ut::same<smp1, smp::map_find_or_else<_2, smp::always<void>>>();
+  ut::same<smp1, smp::map_find_or<_2, void>>();
+
   test_context<map_find<_0>, smp::map_find<_0>>()
     .test<void>()
     .test<seq_0, seq_0>()

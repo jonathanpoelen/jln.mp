@@ -36,10 +36,22 @@ namespace jln::mp
       ::template f<TC, FC, kvs...>;
   };
 
+  template<class key, class FC>
+  using map_find_or_else = map_find<key, identity, FC>;
+
+  template<class key, class FT>
+  using map_find_or = map_find<key, identity, always<FT>>;
+
   namespace emp
   {
     template<class L, class key, class TC = mp::identity, class FC = mp::always<void>>
     using map_find = unpack<L, mp::map_find<key, TC, FC>>;
+
+    template<class L, class key, class FC>
+    using map_find_or_else = unpack<L, mp::map_find<key, mp::identity, FC>>;
+
+    template<class L, class key, class FT>
+    using map_find_or = unpack<L, mp::map_find<key, mp::identity, mp::always<FT>>>;
   }
 }
 
