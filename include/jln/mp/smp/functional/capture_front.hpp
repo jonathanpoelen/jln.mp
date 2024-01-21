@@ -15,7 +15,7 @@ namespace jln::mp::smp
   using capture_front_c = capture_front<val<xs>...>;
 #else
   template<int_... xs>
-  using capture_front_c = capture_front<typed_val<int_, xs>...>;
+  using capture_front_c = capture_front<typed_value<int_, xs>...>;
 #endif
 
   template<JLN_MP_TPL_AUTO_OR_INT... xs>

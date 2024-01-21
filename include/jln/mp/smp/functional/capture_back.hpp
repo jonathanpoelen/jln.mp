@@ -15,7 +15,7 @@ namespace jln::mp::smp
   using capture_back_c = capture_back<val<xs>...>;
 #else
   template<int_... xs>
-  using capture_back_c = capture_back<typed_val<int_, xs>...>;
+  using capture_back_c = capture_back<typed_value<int_, xs>...>;
 #endif
 
   template<JLN_MP_TPL_AUTO_OR_INT... xs>

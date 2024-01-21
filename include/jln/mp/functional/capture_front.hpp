@@ -30,7 +30,7 @@ namespace jln::mp
   using capture_front_c = capture_front<val<BoundArgs>...>;
 #else
   template<int_... BoundArgs>
-  using capture_front_c = capture_front<typed_val<int_, BoundArgs>...>;
+  using capture_front_c = capture_front<typed_value<int_, BoundArgs>...>;
 #endif
 
   template<JLN_MP_TPL_AUTO_OR_INT... BoundArgs>

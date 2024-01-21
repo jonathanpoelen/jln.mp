@@ -55,7 +55,7 @@ namespace jln::mp::detail
     using type = false_;
   };
 
-#if __cplusplus >= 201703L
+#if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_ENABLE_DEBUG || JLN_MP_CLANG_LIKE)
   template<auto x>
   struct _is_val<val<x>>
 #else

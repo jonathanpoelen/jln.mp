@@ -7,7 +7,7 @@
 #include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/value/val.hpp>
 
-#if __cplusplus >= 201703L
+#if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_ENABLE_DEBUG || JLN_MP_CLANG_LIKE)
 namespace jln::mp
 {
   /// \ingroup value
@@ -42,20 +42,20 @@ namespace jln::mp
   struct values
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, typed_val<decltype(xs::value), xs::value>...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, typed_value<decltype(xs::value), xs::value>...);
   };
 
   template<class C>
   struct typed_values
   {
     template<class T, class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, typed_val<T, xs::value>...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, typed_value<T, xs::value>...);
   };
 
   namespace emp
   {
     template<class T, T... xs>
-    using typed_values = list<typed_val<T, xs>...>;
+    using typed_values = list<typed_value<T, xs>...>;
   }
 }
 #endif

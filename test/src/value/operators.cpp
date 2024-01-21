@@ -76,8 +76,8 @@ TEST()
 
   ut::invoke_r<val<0>, val_div0<>>();
   ut::invoke_r<val<int_(1)>, val_div0<>, _1>();
-  // FIX gcc7: val<0> is a typed_val<int_,0> if val<int_(0)> precedes val<0>
-  if constexpr (std::is_same_v<val<0>, typed_val<int,0>>) {
+  // FIX gcc7: val<0> is a typed_value<int_,0> if val<int_(0)> precedes val<0>
+  if constexpr (std::is_same_v<val<0>, typed_value<int,0>>) {
     ut::invoke_r<val<0>, smp::val_div0<>>();
     ut::invoke_r<val<1>, smp::val_div1<>>();
   }

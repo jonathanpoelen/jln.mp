@@ -23,20 +23,20 @@ namespace jln::mp
   };
 
   template<class T, T v>
-  using typed_val = val<v>;
+  using typed_value = val<v>;
 # else
   template<class T, T v>
-  struct typed_val
+  struct typed_value
   {
     static constexpr T const value = v;
   };
 
   template<auto v>
-  using val = typed_val<std::remove_const_t<decltype(v)>, v>;
+  using val = typed_value<std::remove_const_t<decltype(v)>, v>;
 # endif
 #else
   template<class T, T v>
-  struct typed_val
+  struct typed_value
   {
     static constexpr T const value = v;
   };

@@ -17,7 +17,7 @@ namespace jln::mp
   template<class C = identity>
   struct as_val
   {
-#if __cplusplus >= 201703L
+#if JLN_MP_ENABLE_TPL_AUTO
     template<class x>
     using f = JLN_MP_CALL_TRACE(C, val<x::value>);
 #else
@@ -30,7 +30,7 @@ namespace jln::mp
   template<>
   struct as_val<identity>
   {
-#if __cplusplus >= 201703L
+#if JLN_MP_ENABLE_TPL_AUTO
     template<class x>
     using f = val<x::value>;
 #else
