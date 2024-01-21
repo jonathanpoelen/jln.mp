@@ -40,5 +40,8 @@ namespace jln::mp
   {
     static constexpr T const value = v;
   };
+
+  template<int_ v>
+  using val = typed_value<int_, v>;
 #endif
 }
