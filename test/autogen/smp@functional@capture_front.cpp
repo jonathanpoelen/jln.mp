@@ -1,3 +1,3 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #include "jln/mp/smp/functional/capture_front.hpp"
