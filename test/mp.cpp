@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #include "src/algorithm/accumulate.cpp"
 #include "src/algorithm/after.cpp"
@@ -180,6 +180,7 @@
 #include "src/number/to_bool.cpp"
 #include "src/set/set_contains.cpp"
 #include "src/set/set_difference.cpp"
+#include "src/set/set_find.cpp"
 #include "src/set/set_intersection.cpp"
 #include "src/set/set_push_back.cpp"
 #include "src/set/set_push_back_elements.cpp"

@@ -32,7 +32,7 @@ namespace jln::mp
 namespace jln::mp
 {
   template<>
-  struct front<identity> : detail::index<0>
+  struct front<identity> : detail::index0
   {};
 }
 
