@@ -14,11 +14,6 @@ namespace jln::mp
   {
     template<class key>
     struct map_find_select;
-
-    template<class key, class... kvs>
-    using map_find_impl = decltype(detail::map_find_select<key>::f(
-      static_cast<detail::inherit<kvs...>*>(nullptr)
-    ));
   }
   /// \endcond
 
@@ -33,7 +28,9 @@ namespace jln::mp
   struct map_find
   {
     template<class... kvs>
-    using f = typename detail::map_find_impl<key, kvs...>
+    using f = typename decltype(detail::map_find_select<key>::f(
+      static_cast<detail::inherit<kvs...>*>(nullptr)
+    ))
       ::template f<TC, FC, kvs...>;
   };
 
@@ -63,7 +60,9 @@ namespace jln::mp
   struct map_find<key, identity, always<T>>
   {
     template<class... kvs>
-    using f = typename detail::map_find_impl<key, kvs...>
+    using f = typename decltype(detail::map_find_select<key>::f(
+      static_cast<detail::inherit<kvs...>*>(nullptr)
+    ))
       ::template f<identity, always<T>>;
   };
 
@@ -73,7 +72,9 @@ namespace jln::mp
   {
     template<class... kvs>
     using f = JLN_MP_CALL_TRACE(C,
-      typename detail::map_find_impl<key, kvs...>
+      typename decltype(detail::map_find_select<key>::f(
+        static_cast<detail::inherit<kvs...>*>(nullptr)
+      ))
       ::template f<always<T>, always<U>>
     );
   };
@@ -83,7 +84,9 @@ namespace jln::mp
   struct map_find<key, always<T>, always<U>>
   {
     template<class... kvs>
-    using f = typename detail::map_find_impl<key, kvs...>
+    using f = typename decltype(detail::map_find_select<key>::f(
+      static_cast<detail::inherit<kvs...>*>(nullptr)
+    ))
       ::template f<always<T>, always<U>>;
   };
 }
