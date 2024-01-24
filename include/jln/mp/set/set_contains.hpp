@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <jln/mp/number/not.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/identity.hpp>
@@ -43,6 +44,12 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_SET_CONTAINS(x, xs...)>);
   };
 
+  /// Checks if \c x is not an element of the \set whose elements are \c xs.
+  /// \treturn \bool
+  /// \pre `emp::unique<xs...> == list<xs...>`
+  template<class x, class C = identity>
+  using set_not_contains = set_contains<x, not_<C>>;
+
   namespace emp
   {
     /// \c true if \c x is an element of the set \c xs, \c false otherwise.
@@ -74,6 +81,10 @@ namespace jln::mp
     /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
     template<class Set, class x>
     using set_contains = number<set_contains_v<Set, x>>;
+
+    /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
+    template<class Set, class x>
+    using set_not_contains = number<!set_contains_v<Set, x>>;
 
     /// \c true_ if \c x is an element of all \set \c Sets, \c false_ otherwise.
     template<class x, class... Sets>
@@ -127,6 +138,20 @@ namespace jln::mp
   {
     template<class... xs>
     using f = number<JLN_MP_SET_CONTAINS(x, xs...)>;
+  };
+
+  template<class x, class C>
+  struct set_contains<x, not_<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<!JLN_MP_SET_CONTAINS(x, xs...)>);
+  };
+
+  template<class x>
+  struct set_contains<x, not_<identity>>
+  {
+    template<class... xs>
+    using f = number<!JLN_MP_SET_CONTAINS(x, xs...)>;
   };
 
   template<class x>

@@ -32,6 +32,30 @@ TEST()
   ut::not_invocable<smp::set_contains<void, bad_function>>();
 }
 
+// set_not_contains
+TEST()
+{
+  using namespace jln::mp;
+  using namespace ut::ints;
+
+  test_unary_pack<set_not_contains, void>();
+
+  ut::same<_0, emp::set_not_contains<seq_0_1, _0>>();
+  ut::same<_1, emp::set_not_contains<seq_0_1, _2>>();
+
+  test_context<set_not_contains<_2>, smp::set_not_contains<_2>>()
+    .test<_1>()
+    .test<_1, _0>()
+    .test<_1, _0, _1>()
+    .test<_0, _0, _1, _2>()
+    .test<_0, _0, _1, _2, _3>()
+    .not_invocable<_1, _1>()
+    ;
+
+  ut::not_invocable<smp::set_not_contains<void, smp::always<na>>>();
+  ut::not_invocable<smp::set_not_contains<void, bad_function>>();
+}
+
 // set_all_contains
 TEST()
 {

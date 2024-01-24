@@ -15,6 +15,12 @@ namespace jln::mp::smp
   >;
 
   template<class x, class C = identity>
+  using set_not_contains = test_contract<
+    mp::is_unique<>,
+    mp::set_not_contains<x, subcontract<C>>
+  >;
+
+  template<class x, class C = identity>
   using set_all_contains = test_contract<
     mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>>>,
     mp::set_all_contains<x, subcontract<C>>
@@ -40,6 +46,12 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, set_contains<x, C>>
   {
     using type = smp::set_contains<x, sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class x, class C>
+  struct _sfinae<sfinae, set_contains<x, not_<C>>>
+  {
+    using type = smp::set_not_contains<x, sfinae<C>>;
   };
 
   template<template<class> class sfinae, class x, class C>

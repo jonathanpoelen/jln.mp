@@ -12,4 +12,10 @@ namespace jln::mp::smp
     mp::is_map<>,
     mp::map_find<key, mp::always<true_, assume_unary<C>>, mp::always<false_, assume_unary<C>>>
   >;
+
+  template<class key, class C = identity>
+  using map_not_contains = test_contract<
+    mp::is_map<>,
+    mp::map_find<key, mp::always<false_, assume_unary<C>>, mp::always<true_, assume_unary<C>>>
+  >;
 }
