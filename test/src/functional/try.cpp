@@ -18,6 +18,7 @@ TEST()
   test_unary_pack<try_, identity>();
   test_unary_pack<try_, identity, identity>();
   test_unary_pack<try_or, identity>();
+  test_unary_pack<try_or_else, identity>();
   test_unary_pack<is_invocable>();
   test_unary_pack<is_not_invocable>();
 
@@ -39,15 +40,25 @@ TEST()
   ut::same<yes, emp::try_<identity, always<yes>, always<no>, int>>();
   ut::same<no, emp::try_<identity, always<yes>, always<no>>>();
 
+  // try_or_else
+
+  ut::invoke_r<int, try_or_else<identity>, int>();
+  ut::invoke_r<na, try_or_else<identity>>();
+  ut::invoke_r<int, try_or_else<identity, always<no>>, int>();
+  ut::invoke_r<no, try_or_else<identity, always<no>>>();
+
+  ut::same<int, emp::try_or_else<identity, always<no>, int>>();
+  ut::same<no, emp::try_or_else<identity, always<no>>>();
+
   // try_or
 
   ut::invoke_r<int, try_or<identity>, int>();
-  ut::invoke_r<false_, try_or<identity>>();
+  ut::invoke_r<na, try_or<identity>>();
   ut::invoke_r<int, try_or<identity, always<no>>, int>();
-  ut::invoke_r<no, try_or<identity, always<no>>>();
+  ut::invoke_r<always<no>, try_or<identity, always<no>>>();
 
   ut::same<int, emp::try_or<identity, always<no>, int>>();
-  ut::same<no, emp::try_or<identity, always<no>>>();
+  ut::same<always<no>, emp::try_or<identity, always<no>>>();
 
   // is_invocable
 

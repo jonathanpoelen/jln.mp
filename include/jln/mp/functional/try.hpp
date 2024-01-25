@@ -50,8 +50,11 @@ namespace jln::mp
     >::template f<TC, FC, xs...>;
   };
 
-  template<class F, class FC = always<false_>>
-  using try_or = try_<F, identity, FC>;
+  template<class F, class FC = violation>
+  using try_or_else = try_<F, identity, FC>;
+
+  template<class F, class FT = na>
+  using try_or = try_<F, identity, always<FT>>;
 
   /// Checks whether \c F::f<xs...> is invocable.
   /// \pre \c F::f<xs...> must be a SFINAE compatible expression
@@ -71,7 +74,10 @@ namespace jln::mp
     using try_ = typename mp::try_<F, TC, FC>::template f<xs...>;
 
     template<class F, class FC, class... xs>
-    using try_or = typename mp::try_<F, mp::identity, FC>::template f<xs...>;
+    using try_or_else = typename mp::try_<F, mp::identity, FC>::template f<xs...>;
+
+    template<class F, class FT, class... xs>
+    using try_or = typename mp::try_<F, mp::identity, always<FT>>::template f<xs...>;
 
     template<class F, class... xs>
     constexpr bool is_invocable_v = JLN_MP_RAW_EXPR_TO_BOOL_NOT(

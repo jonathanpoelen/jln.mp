@@ -14,7 +14,7 @@ namespace jln::mp::smp
   using sort = contract<mp::sort<
     concepts::predicate_or_else<assume_binary<Cmp>, mp::always<true_>>,
     mp::if_<
-      mp::try_or<is_sorted<Cmp>, mp::always<false_>>,
+      mp::try_or<is_sorted<Cmp>, false_>,
       subcontract<C>,
       violation
     >

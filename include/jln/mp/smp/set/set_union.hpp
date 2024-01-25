@@ -18,7 +18,7 @@ namespace jln::mp::smp
   using set_union = test_contract<
     mp::size<>,
     mp::if_<
-      mp::front<mp::try_or<mp::unpack<mp::is_unique<>>>>,
+      mp::front<mp::try_or<mp::unpack<mp::is_unique<>>, false_>>,
       mp::if_<
         mp::pop_front<mp::all_of<mp::is_list<>>>,
         mp::set_union<subcontract<C>>,

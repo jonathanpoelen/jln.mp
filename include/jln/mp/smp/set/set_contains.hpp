@@ -22,19 +22,19 @@ namespace jln::mp::smp
 
   template<class x, class C = identity>
   using set_all_contains = test_contract<
-    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>>>,
+    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>, false_>>,
     mp::set_all_contains<x, subcontract<C>>
   >;
 
   template<class x, class C = identity>
   using set_any_contains = test_contract<
-    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>>>,
+    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>, false_>>,
     mp::set_any_contains<x, subcontract<C>>
   >;
 
   template<class x, class C = identity>
   using set_none_contains = test_contract<
-    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>>>,
+    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>, false_>>,
     mp::set_none_contains<x, subcontract<C>>
   >;
 }
