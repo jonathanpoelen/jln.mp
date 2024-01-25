@@ -115,7 +115,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(emp::same_xs_v<xs...>)>
+      number<!emp::same_xs_v<xs...>>
     );
   };
 
@@ -123,21 +123,21 @@ namespace jln::mp
   struct same<not_<>>
   {
     template<class... xs>
-    using f = number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(emp::same_xs_v<xs...>)>;
+    using f = number<!emp::same_xs_v<xs...>>;
   };
 
   template<class C>
   struct size<not_<C>>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<!sizeof...(xs)>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>);
   };
 
   template<>
   struct size<not_<>>
   {
     template<class... xs>
-    using f = number<!sizeof...(xs)>;
+    using f = number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>;
   };
 
   template<int_ i, class C>
@@ -158,7 +158,7 @@ namespace jln::mp
   struct if_<size<not_<>>, TC, FC>
   {
     template<class... xs>
-    using f = typename mp::conditional_c<!sizeof...(xs)>
+    using f = typename mp::conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
@@ -178,7 +178,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename mp::conditional_c<
       JLN_MP_TRACE_F(C)::template f<number<
-        JLN_MP_RAW_EXPR_TO_BOOL_NOT(emp::same_xs_v<xs...>)
+        !emp::same_xs_v<xs...>
       >>::value
     >
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>

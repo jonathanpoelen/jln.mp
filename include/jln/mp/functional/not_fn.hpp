@@ -25,7 +25,9 @@ namespace jln::mp
   namespace emp
   {
     template<class F, class... xs>
-    using not_of = mp::number<!JLN_MP_DCALL_V_TRACE_XS(xs, F, xs...)::value>;
+    using not_of = mp::number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+      JLN_MP_DCALL_V_TRACE_XS(xs, F, xs...)::value
+    )>;
 
     template<class L, class F, class C = mp::identity>
     using not_fn = unpack<L, mp::not_fn<F, C>>;

@@ -34,7 +34,7 @@ namespace jln::mp
   struct group_by_with
   {
     template<class... xs>
-    using f = typename detail::group_impl<!sizeof...(xs)>
+    using f = typename detail::group_impl<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(Cmp), xs...>
       ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
   };

@@ -67,7 +67,7 @@ namespace jln::mp::detail
   struct smp_split_after_if_with
   {
     template<class... xs>
-    using f = typename smp_split_after_select<!sizeof...(xs)>
+    using f = typename smp_split_after_select<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(Pred), xs...>
       ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
   };
