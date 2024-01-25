@@ -5370,7 +5370,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(emp::same_xs_v<xs...>)>
+      number<!emp::same_xs_v<xs...>>
     );
   };
 
@@ -5378,21 +5378,21 @@ namespace jln::mp
   struct same<not_<>>
   {
     template<class... xs>
-    using f = number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(emp::same_xs_v<xs...>)>;
+    using f = number<!emp::same_xs_v<xs...>>;
   };
 
   template<class C>
   struct size<not_<C>>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<!sizeof...(xs)>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>);
   };
 
   template<>
   struct size<not_<>>
   {
     template<class... xs>
-    using f = number<!sizeof...(xs)>;
+    using f = number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>;
   };
 
   template<int_ i, class C>
@@ -5413,7 +5413,7 @@ namespace jln::mp
   struct if_<size<not_<>>, TC, FC>
   {
     template<class... xs>
-    using f = typename mp::conditional_c<!sizeof...(xs)>
+    using f = typename mp::conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
@@ -5433,7 +5433,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename mp::conditional_c<
       JLN_MP_TRACE_F(C)::template f<number<
-        JLN_MP_RAW_EXPR_TO_BOOL_NOT(emp::same_xs_v<xs...>)
+        !emp::same_xs_v<xs...>
       >>::value
     >
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
@@ -6612,7 +6612,9 @@ namespace jln::mp
   namespace emp
   {
     template<class F, class... xs>
-    using not_of = mp::number<!JLN_MP_DCALL_V_TRACE_XS(xs, F, xs...)::value>;
+    using not_of = mp::number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+      JLN_MP_DCALL_V_TRACE_XS(xs, F, xs...)::value
+    )>;
 
     template<class L, class F, class C = mp::identity>
     using not_fn = unpack<L, mp::not_fn<F, C>>;
@@ -8686,8 +8688,11 @@ namespace jln::mp
     >::template f<TC, FC, xs...>;
   };
 
-  template<class F, class FC = always<false_>>
-  using try_or = try_<F, identity, FC>;
+  template<class F, class FC = violation>
+  using try_or_else = try_<F, identity, FC>;
+
+  template<class F, class FT = na>
+  using try_or = try_<F, identity, always<FT>>;
 
   /// Checks whether \c F::f<xs...> is invocable.
   /// \pre \c F::f<xs...> must be a SFINAE compatible expression
@@ -8707,7 +8712,10 @@ namespace jln::mp
     using try_ = typename mp::try_<F, TC, FC>::template f<xs...>;
 
     template<class F, class FC, class... xs>
-    using try_or = typename mp::try_<F, mp::identity, FC>::template f<xs...>;
+    using try_or_else = typename mp::try_<F, mp::identity, FC>::template f<xs...>;
+
+    template<class F, class FT, class... xs>
+    using try_or = typename mp::try_<F, mp::identity, always<FT>>::template f<xs...>;
 
     template<class F, class... xs>
     constexpr bool is_invocable_v = JLN_MP_RAW_EXPR_TO_BOOL_NOT(
@@ -8818,7 +8826,7 @@ namespace jln::mp
   struct group_by_with
   {
     template<class... xs>
-    using f = typename detail::group_impl<!sizeof...(xs)>
+    using f = typename detail::group_impl<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(Cmp), xs...>
       ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
   };

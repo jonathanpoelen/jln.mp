@@ -889,8 +889,11 @@ namespace jln::mp
     >::template f<TC, FC, xs...>;
   };
 
-  template<class F, class FC = always<false_>>
-  using try_or = try_<F, identity, FC>;
+  template<class F, class FC = violation>
+  using try_or_else = try_<F, identity, FC>;
+
+  template<class F, class FT = na>
+  using try_or = try_<F, identity, always<FT>>;
 
   /// Checks whether \c F::f<xs...> is invocable.
   /// \pre \c F::f<xs...> must be a SFINAE compatible expression
@@ -910,7 +913,10 @@ namespace jln::mp
     using try_ = typename mp::try_<F, TC, FC>::template f<xs...>;
 
     template<class F, class FC, class... xs>
-    using try_or = typename mp::try_<F, mp::identity, FC>::template f<xs...>;
+    using try_or_else = typename mp::try_<F, mp::identity, FC>::template f<xs...>;
+
+    template<class F, class FT, class... xs>
+    using try_or = typename mp::try_<F, mp::identity, always<FT>>::template f<xs...>;
 
     template<class F, class... xs>
     constexpr bool is_invocable_v = JLN_MP_RAW_EXPR_TO_BOOL_NOT(
@@ -3769,7 +3775,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(emp::same_xs_v<xs...>)>
+      number<!emp::same_xs_v<xs...>>
     );
   };
 
@@ -3777,21 +3783,21 @@ namespace jln::mp
   struct same<not_<>>
   {
     template<class... xs>
-    using f = number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(emp::same_xs_v<xs...>)>;
+    using f = number<!emp::same_xs_v<xs...>>;
   };
 
   template<class C>
   struct size<not_<C>>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<!sizeof...(xs)>);
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>);
   };
 
   template<>
   struct size<not_<>>
   {
     template<class... xs>
-    using f = number<!sizeof...(xs)>;
+    using f = number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>;
   };
 
   template<int_ i, class C>
@@ -3812,7 +3818,7 @@ namespace jln::mp
   struct if_<size<not_<>>, TC, FC>
   {
     template<class... xs>
-    using f = typename mp::conditional_c<!sizeof...(xs)>
+    using f = typename mp::conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
@@ -3832,7 +3838,7 @@ namespace jln::mp
     template<class... xs>
     using f = typename mp::conditional_c<
       JLN_MP_TRACE_F(C)::template f<number<
-        JLN_MP_RAW_EXPR_TO_BOOL_NOT(emp::same_xs_v<xs...>)
+        !emp::same_xs_v<xs...>
       >>::value
     >
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
@@ -6586,7 +6592,7 @@ namespace jln::mp::smp::concepts
   using predicate = mp::try_<Pred, mp::try_<mp::to_bool<>, TC, FC>, FC>;
 
   template<class Pred, class FC>
-  using predicate_or = predicate<Pred, mp::identity, FC>;
+  using predicate_or_else = predicate<Pred, mp::identity, FC>;
 }
 
 /// \cond
@@ -9898,7 +9904,9 @@ namespace jln::mp
   namespace emp
   {
     template<class F, class... xs>
-    using not_of = mp::number<!JLN_MP_DCALL_V_TRACE_XS(xs, F, xs...)::value>;
+    using not_of = mp::number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+      JLN_MP_DCALL_V_TRACE_XS(xs, F, xs...)::value
+    )>;
 
     template<class L, class F, class C = mp::identity>
     using not_fn = unpack<L, mp::not_fn<F, C>>;
@@ -12127,7 +12135,7 @@ namespace jln::mp
   struct group_by_with
   {
     template<class... xs>
-    using f = typename detail::group_impl<!sizeof...(xs)>
+    using f = typename detail::group_impl<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(Cmp), xs...>
       ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
   };
@@ -12995,11 +13003,11 @@ namespace jln::mp::smp
 {
   template<class Pred>
   using wrap_in_list_if = try_contract<mp::wrap_in_list_if<
-    concepts::predicate_or<assume_unary_or_more<Pred>, mp::violation>>>;
+    concepts::predicate_or_else<assume_unary_or_more<Pred>, mp::violation>>>;
 
   template<class Pred>
   using wrap_in_list_if_not = try_contract<mp::wrap_in_list_if_not<
-    concepts::predicate_or<assume_unary_or_more<Pred>, mp::violation>>>;
+    concepts::predicate_or_else<assume_unary_or_more<Pred>, mp::violation>>>;
 
   template<bool b>
   using wrap_in_list_c = contract<mp::wrap_in_list_c<b>>;
@@ -18573,7 +18581,7 @@ namespace jln::mp::smp
 {
   template<class x, class Cmp, class TC = listify, class FC = TC>
   using lower_bound = contract<detail::_smp_lower_bound_impl<
-    x, concepts::predicate_or<assume_binary<Cmp>, violation>,
+    x, concepts::predicate_or_else<assume_binary<Cmp>, violation>,
     subcontract<TC>, subcontract<FC>>>;
 
   template<int_ x, class Cmp = less<>, class TC = listify, class FC = TC>
@@ -23121,9 +23129,9 @@ namespace jln::mp::smp
 {
   template<class Cmp = less<>, class C = listify>
   using sort = contract<mp::sort<
-    concepts::predicate_or<assume_binary<Cmp>, mp::always<true_>>,
+    concepts::predicate_or_else<assume_binary<Cmp>, mp::always<true_>>,
     mp::if_<
-      mp::try_or<is_sorted<Cmp>, mp::always<false_>>,
+      mp::try_or<is_sorted<Cmp>, false_>,
       subcontract<C>,
       violation
     >
@@ -23212,7 +23220,7 @@ namespace jln::mp::detail
   struct smp_split_if_with
   {
     template<class... xs>
-    using f = typename smp_split_select<!sizeof...(xs)>
+    using f = typename smp_split_select<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(Pred), xs...>
       ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
   };
@@ -23414,7 +23422,7 @@ namespace jln::mp::detail
   struct smp_split_after_if_with
   {
     template<class... xs>
-    using f = typename smp_split_after_select<!sizeof...(xs)>
+    using f = typename smp_split_after_select<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(Pred), xs...>
       ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
   };
@@ -23768,7 +23776,7 @@ namespace jln::mp::detail
   struct smp_split_before_if_with
   {
     template<class... xs>
-    using f = typename smp_split_before_select<!sizeof...(xs)>
+    using f = typename smp_split_before_select<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(Pred), xs...>
       ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
   };
@@ -24063,7 +24071,7 @@ namespace jln::mp::detail
   struct smp_split_keep_separator_if_with
   {
     template<class... xs>
-    using f = typename smp_split_keep_separator_select<!sizeof...(xs)>
+    using f = typename smp_split_keep_separator_select<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(Pred), xs...>
       ::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
   };
@@ -28537,19 +28545,19 @@ namespace jln::mp::smp
 
   template<class x, class C = identity>
   using set_all_contains = test_contract<
-    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>>>,
+    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>, false_>>,
     mp::set_all_contains<x, subcontract<C>>
   >;
 
   template<class x, class C = identity>
   using set_any_contains = test_contract<
-    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>>>,
+    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>, false_>>,
     mp::set_any_contains<x, subcontract<C>>
   >;
 
   template<class x, class C = identity>
   using set_none_contains = test_contract<
-    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>>>,
+    mp::all_of<mp::try_or<mp::unpack<mp::is_unique<>>, false_>>,
     mp::set_none_contains<x, subcontract<C>>
   >;
 }
@@ -29132,7 +29140,7 @@ namespace jln::mp::smp
   using set_union = test_contract<
     mp::size<>,
     mp::if_<
-      mp::front<mp::try_or<mp::unpack<mp::is_unique<>>>>,
+      mp::front<mp::try_or<mp::unpack<mp::is_unique<>>, false_>>,
       mp::if_<
         mp::pop_front<mp::all_of<mp::is_list<>>>,
         mp::set_union<subcontract<C>>,
