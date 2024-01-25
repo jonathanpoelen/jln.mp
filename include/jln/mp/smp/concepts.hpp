@@ -15,5 +15,5 @@ namespace jln::mp::smp::concepts
   using predicate = mp::try_<Pred, mp::try_<mp::to_bool<>, TC, FC>, FC>;
 
   template<class Pred, class FC>
-  using predicate_or = predicate<Pred, mp::identity, FC>;
+  using predicate_or_else = predicate<Pred, mp::identity, FC>;
 }

@@ -22,7 +22,7 @@ namespace jln::mp::smp
 {
   template<class x, class Cmp, class TC = listify, class FC = TC>
   using lower_bound = contract<detail::_smp_lower_bound_impl<
-    x, concepts::predicate_or<assume_binary<Cmp>, violation>,
+    x, concepts::predicate_or_else<assume_binary<Cmp>, violation>,
     subcontract<TC>, subcontract<FC>>>;
 
   template<int_ x, class Cmp = less<>, class TC = listify, class FC = TC>
