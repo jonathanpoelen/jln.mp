@@ -40,28 +40,14 @@ namespace jln::mp
   }
 
   /// \cond
-  template<class... Ts>
-  struct ends_with<list<Ts...>, identity>
-  {
-    template<class... xs>
-    using f = typename detail::ends_with_impl<sizeof...(Ts) <= sizeof...(xs)>
-      ::template f<sizeof...(Ts), list<Ts...>, xs...>;
-  };
-
   template<class C>
-  struct ends_with<list<>, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_FORCE_DCALL_TRACE_XS(xs, C, true_);
-  };
-
-  template<>
-  struct ends_with<list<>, identity> : always<true_>
+  struct ends_with<list<>, C> : starts_with<list<>, C>
   {};
   /// \endcond
 }
 
 
+#include <jln/mp/algorithm/same_xs.hpp>
 #include <jln/mp/list/drop_front.hpp>
 
 /// \cond
@@ -78,7 +64,10 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct ends_with_impl<false> : starts_with_impl<false>
-  {};
+  struct ends_with_impl<false>
+  {
+    template<unsigned n, class L, class... xs>
+    using f = false_;
+  };
 }
 /// \endcond
