@@ -68,13 +68,15 @@ namespace jln::mp::detail
   template<>
   struct repeat_impl<1>
   {
+#if JLN_MP_MSVC
+    template<class C, class x, class... xs>
+    using g = typename C::template f<index0::f<x, xs>...>;
+#endif
+
     template<class, int... ns>
     struct impl
     {
 #if JLN_MP_MSVC
-      template<class C, class x, class... xs>
-      using g = typename C::template f<index0::f<x, xs>...>;
-
       template<class C, class x>
       using f = g<C, x, decltype(ns)...>;
 #else
