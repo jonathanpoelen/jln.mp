@@ -60,6 +60,8 @@
 #include "src/algorithm/regroup.cpp"
 #include "src/algorithm/remove.cpp"
 #include "src/algorithm/remove_adjacent.cpp"
+#include "src/algorithm/remove_prefix.cpp"
+#include "src/algorithm/remove_suffix.cpp"
 #include "src/algorithm/remove_unique.cpp"
 #include "src/algorithm/repeat.cpp"
 #include "src/algorithm/replace.cpp"

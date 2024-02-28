@@ -62,6 +62,8 @@
 #include <jln/mp/algorithm/regroup.hpp>
 #include <jln/mp/algorithm/remove.hpp>
 #include <jln/mp/algorithm/remove_adjacent.hpp>
+#include <jln/mp/algorithm/remove_prefix.hpp>
+#include <jln/mp/algorithm/remove_suffix.hpp>
 #include <jln/mp/algorithm/remove_unique.hpp>
 #include <jln/mp/algorithm/repeat.hpp>
 #include <jln/mp/algorithm/replace.hpp>

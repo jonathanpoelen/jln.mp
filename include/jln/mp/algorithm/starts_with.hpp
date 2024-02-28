@@ -20,7 +20,7 @@ namespace jln::mp
 
   /// Checks if the \sequence begins with the given prefix.
   /// \treturn \bool
-  /// \see ends_with
+  /// \see ends_with, remove_suffix, remove_prefix
   template<class Seq, class C = identity>
   struct starts_with
   {};
