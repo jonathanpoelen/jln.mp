@@ -1,5 +1,4 @@
 // SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
-// SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 // Amalgamated version of https://github.com/jonathanpoelen/jln.mp
 
@@ -4831,7 +4830,7 @@ namespace jln::mp
 
   /// Checks if the \sequence begins with the given prefix.
   /// \treturn \bool
-  /// \see ends_with
+  /// \see ends_with, remove_suffix, remove_prefix
   template<class Seq, class C = identity>
   struct starts_with
   {};
@@ -4851,6 +4850,17 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C, decltype(impl(static_cast<list<xs...>*>(nullptr))));
   };
 #else
+# if JLN_MP_FEATURE_CONCEPTS
+  template<class... Ts>
+  struct starts_with<list<Ts...>, identity>
+  {
+    template<class... Us>
+    static void impl(list<Ts..., Us...>*);
+
+    template<class... xs>
+    using f = number<requires { impl(static_cast<list<xs...>*>(nullptr)); }>;
+  };
+# else
   template<class... Ts>
   struct starts_with<list<Ts...>, identity> : detail::false_fn_impl
   {
@@ -4862,6 +4872,7 @@ namespace jln::mp
     template<class... xs>
     using f = decltype(impl(static_cast<list<xs...>*>(nullptr)));
   };
+# endif
 
   template<class... Ts, class C>
   struct starts_with<list<Ts...>, C>
@@ -11331,7 +11342,7 @@ namespace jln::mp
 
   /// Checks if the \sequence ends with the given prefix.
   /// \treturn \bool
-  /// \see ends_with
+  /// \see ends_with, remove_suffix, remove_prefix
   template<class Seq, class C = identity>
   struct ends_with
   {};
@@ -15279,6 +15290,120 @@ namespace jln::mp
     template<class L, class C = mp::listify>
     using remove_adjacent = unpack<L, mp::remove_adjacent<C>>;
   }
+}
+
+namespace jln::mp
+{
+  namespace detail
+  {
+    template<class C>
+    struct continuation_fn_impl
+    {
+      template<class... Ts>
+      static typename C::template f<Ts...> impl(list<Ts...>*);
+    };
+
+    template<class C, class... Ts>
+    struct remove_prefix_impl
+    {
+      template<class... Us>
+      static typename C::template f<Us...> impl(list<Ts..., Us...>*);
+    };
+  }
+
+  /// \ingroup algorithm
+
+  /// Remove the first elements corresponding to a prefix.
+  /// Calls \c TC with the rest of sequence when the prefix is found,
+  /// otherwise calls \c FC with the whole \sequence.
+  /// \treturn \sequence
+  /// \see remove_suffix, starts_with, ends_with
+  template<class Seq, class TC = listify, class FC = TC>
+  struct remove_prefix
+  {};
+
+  template<class... Ts, class TC, class FC>
+  struct remove_prefix<list<Ts...>, TC, FC>
+      : detail::continuation_fn_impl<FC>
+      , detail::remove_prefix_impl<TC, Ts...>
+  {
+    using detail::continuation_fn_impl<FC>::impl;
+    using detail::remove_prefix_impl<TC, Ts...>::impl;
+
+    template<class... xs>
+    using f = decltype(impl(static_cast<list<xs...>*>(nullptr)));
+  };
+
+  namespace emp
+  {
+    template<class L, class Seq, class TC = mp::listify, class FC = TC>
+    using remove_prefix = unpack<remove_prefix<Seq, TC, FC>, L>;
+  }
+
+  /// \cond
+  template<class TC, class FC>
+  struct remove_prefix<list<>, TC, FC>
+  {
+    template<class... xs>
+    using f = JLN_MP_FORCE_DCALL_TRACE_XS(xs, TC, xs...);
+  };
+
+  template<class FC>
+  struct remove_prefix<list<>, listify, FC>
+  {
+    template<class... xs>
+    using f = list<xs...>;
+  };
+  /// \endcond
+}
+
+namespace jln::mp
+{
+  /// \ingroup algorithm
+
+  /// Remove the last elements corresponding to a suffix.
+  /// Calls \c TC with the rest of sequence when the suffix is found,
+  /// otherwise calls \c FC with the whole \sequence.
+  /// \treturn \sequence
+  /// \see remove_prefix, starts_with, ends_with
+  template<class Seq, class TC = listify, class FC = TC>
+  struct remove_suffix
+  {};
+
+  template<class... Ts, class TC, class FC>
+  struct remove_suffix<list<Ts...>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename conditional_c<
+      detail::ends_with_impl<sizeof...(Ts) <= sizeof...(xs)>
+      ::template f<sizeof...(Ts), list<Ts...>, xs...>
+      ::value
+    >
+      ::template f<take_front_c<static_cast<unsigned>(sizeof...(xs) - sizeof...(Ts)), TC>, FC>
+      ::template f<xs...>;
+  };
+
+  namespace emp
+  {
+    template<class L, class Seq, class TC = mp::listify, class FC = TC>
+    using remove_suffix = unpack<remove_suffix<Seq, TC, FC>, L>;
+  }
+
+  /// \cond
+  template<class TC, class FC>
+  struct remove_suffix<list<>, TC, FC>
+  {
+    template<class... xs>
+    using f = JLN_MP_FORCE_DCALL_TRACE_XS(xs, TC, xs...);
+  };
+
+  template<class FC>
+  struct remove_suffix<list<>, listify, FC>
+  {
+    template<class... xs>
+    using f = list<xs...>;
+  };
+  /// \endcond
 }
 
 namespace jln::mp
