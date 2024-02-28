@@ -4054,56 +4054,6 @@ namespace jln::mp::detail
 
 namespace jln::mp
 {
-  /// \ingroup algorithm
-
-#if JLN_MP_HAS_BUILTIN(__is_same)
-#  define JLN_MP_IS_SAME(...) __is_same(__VA_ARGS__)
-#else
-#  define JLN_MP_IS_SAME(...) ::jln::mp::emp::same_xs_v<__VA_ARGS__>
-#endif
-
-  namespace emp
-  {
-    template<class... xs>
-    inline constexpr bool same_xs_v = true;
-
-    template<class x>
-    inline constexpr bool same_xs_v<x, x> = true;
-
-    template<class x, class y>
-    inline constexpr bool same_xs_v<x, y> = false;
-
-    template<class x, class y, class z, class... xs>
-    inline constexpr bool same_xs_v<x, y, z, xs...> =
-#if JLN_MP_HAS_BUILTIN(__is_same)
-      __is_same(list<x, y, z, xs...>, list<y, z, xs..., x>)
-#else
-      same_xs_v<list<x, y, z, xs...>, list<y, z, xs..., x>>
-#endif
-    ;
-  }
-}
-
-namespace jln::mp
-{
-  /// \ingroup utility
-
-  /// \treturn \bool
-  template<class T, class C = identity>
-  struct is
-  {
-    template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_IS_SAME(T, x)>);
-  };
-
-  /// \cond
-  template<class T>
-  struct is<T, identity>
-  {
-    template<class x>
-    using f = number<JLN_MP_IS_SAME(T, x)>;
-  };
-  /// \endcond
   /// \cond
   namespace detail
   {
@@ -4563,6 +4513,56 @@ namespace jln::mp::detail
 
 namespace jln::mp
 {
+  /// \ingroup algorithm
+
+#if JLN_MP_HAS_BUILTIN(__is_same)
+#  define JLN_MP_IS_SAME(...) __is_same(__VA_ARGS__)
+#else
+#  define JLN_MP_IS_SAME(...) ::jln::mp::emp::same_xs_v<__VA_ARGS__>
+#endif
+
+  namespace emp
+  {
+    template<class... xs>
+    inline constexpr bool same_xs_v = true;
+
+    template<class x>
+    inline constexpr bool same_xs_v<x, x> = true;
+
+    template<class x, class y>
+    inline constexpr bool same_xs_v<x, y> = false;
+
+    template<class x, class y, class z, class... xs>
+    inline constexpr bool same_xs_v<x, y, z, xs...> =
+#if JLN_MP_HAS_BUILTIN(__is_same)
+      __is_same(list<x, y, z, xs...>, list<y, z, xs..., x>)
+#else
+      same_xs_v<list<x, y, z, xs...>, list<y, z, xs..., x>>
+#endif
+    ;
+  }
+}
+
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  /// \treturn \bool
+  template<class T, class C = identity>
+  struct is
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_IS_SAME(T, x)>);
+  };
+
+  /// \cond
+  template<class T>
+  struct is<T, identity>
+  {
+    template<class x>
+    using f = number<JLN_MP_IS_SAME(T, x)>;
+  };
+  /// \endcond
   /// \ingroup list
 
   /// Returns the number of elements in a \c xs.
@@ -4820,14 +4820,13 @@ namespace jln::mp
 
 namespace jln::mp
 {
-  /// \cond
   namespace detail
   {
-    template<bool>
-    struct starts_with_impl;
+    struct false_fn_impl
+    {
+      static false_ impl(...);
+    };
   }
-  /// \endcond
-
   /// \ingroup algorithm
 
   /// Checks if the \sequence begins with the given prefix.
@@ -4837,38 +4836,69 @@ namespace jln::mp
   struct starts_with
   {};
 
+  // doing a specialization with C=identity is 4% slower with clang,
+  // but 4% faster with gcc thanks to memoization
+#if !JLN_MP_GCC
+  template<class... Ts, class C>
+  struct starts_with<list<Ts...>, C> : detail::false_fn_impl
+  {
+    using false_fn_impl::impl;
+
+    template<class... Us>
+    static true_ impl(list<Ts..., Us...>*);
+
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, decltype(impl(static_cast<list<xs...>*>(nullptr))));
+  };
+#else
+  template<class... Ts>
+  struct starts_with<list<Ts...>, identity> : detail::false_fn_impl
+  {
+    using false_fn_impl::impl;
+
+    template<class... Us>
+    static true_ impl(list<Ts..., Us...>*);
+
+    template<class... xs>
+    using f = decltype(impl(static_cast<list<xs...>*>(nullptr)));
+  };
+
   template<class... Ts, class C>
   struct starts_with<list<Ts...>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      typename detail::starts_with_impl<sizeof...(Ts) <= sizeof...(xs)>
-      ::template f<sizeof...(Ts), list<Ts...>, xs...>
+      decltype(starts_with<list<Ts...>>::impl(static_cast<list<xs...>*>(nullptr)))
     );
   };
+#endif
 
   namespace emp
   {
     template<class L, class Seq, class C = mp::identity>
     using starts_with = unpack<starts_with<Seq, C>, L>;
   }
+}
 
-  /// \cond
-  template<class... Ts>
-  struct starts_with<list<Ts...>, identity>
-  {
-    template<class... xs>
-    using f = typename detail::starts_with_impl<sizeof...(Ts) <= sizeof...(xs)>
-      ::template f<sizeof...(Ts), list<Ts...>, xs...>;
-  };
 
+
+/// \cond
+namespace jln::mp
+{
   namespace detail
   {
-    class dummy;
-
     template<bool>
-    struct starts_with1_impl;
+    struct starts_with1_impl : always<false_>
+    {};
+
+    template<>
+    struct starts_with1_impl<true>
+    {
+      template<class T, class x, class... xs>
+      using f = number<JLN_MP_IS_SAME(T, x)>;
+    };
   }
+
 
   template<class T, class C>
   struct starts_with<list<T>, C>
@@ -4876,7 +4906,7 @@ namespace jln::mp
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
       typename detail::starts_with1_impl<1 <= sizeof...(xs)>
-      ::template f<T, xs..., detail::dummy>
+      ::template f<T, xs...>
     );
   };
 
@@ -4885,8 +4915,9 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::starts_with1_impl<1 <= sizeof...(xs)>
-      ::template f<T, xs..., detail::dummy>;
+      ::template f<T, xs...>;
   };
+
 
   template<class C>
   struct starts_with<list<>, C>
@@ -4897,41 +4928,6 @@ namespace jln::mp
 
   template<>
   struct starts_with<list<>, identity> : always<true_>
-  {};
-  /// \endcond
-}
-
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<>
-  struct starts_with_impl<true>
-  {
-    template<unsigned n, class L, class... xs>
-    using f = number<JLN_MP_IS_SAME(
-      typename take_front_c<n>::template f<xs...>,
-      L
-    )>;
-  };
-
-  template<>
-  struct starts_with_impl<false>
-  {
-    template<unsigned n, class L, class... xs>
-    using f = false_;
-  };
-
-  template<>
-  struct starts_with1_impl<true>
-  {
-    template<class T, class x, class... xs>
-    using f = number<JLN_MP_IS_SAME(T, x)>;
-  };
-
-  template<>
-  struct starts_with1_impl<false> : always<false_>
   {};
 }
 
@@ -9197,13 +9193,15 @@ namespace jln::mp::detail
   template<>
   struct repeat_impl<1>
   {
+#if JLN_MP_MSVC
+    template<class C, class x, class... xs>
+    using g = typename C::template f<index0::f<x, xs>...>;
+#endif
+
     template<class, int... ns>
     struct impl
     {
 #if JLN_MP_MSVC
-      template<class C, class x, class... xs>
-      using g = typename C::template f<index0::f<x, xs>...>;
-
       template<class C, class x>
       using f = g<C, x, decltype(ns)...>;
 #else
@@ -11355,23 +11353,8 @@ namespace jln::mp
   }
 
   /// \cond
-  template<class... Ts>
-  struct ends_with<list<Ts...>, identity>
-  {
-    template<class... xs>
-    using f = typename detail::ends_with_impl<sizeof...(Ts) <= sizeof...(xs)>
-      ::template f<sizeof...(Ts), list<Ts...>, xs...>;
-  };
-
   template<class C>
-  struct ends_with<list<>, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_FORCE_DCALL_TRACE_XS(xs, C, true_);
-  };
-
-  template<>
-  struct ends_with<list<>, identity> : always<true_>
+  struct ends_with<list<>, C> : starts_with<list<>, C>
   {};
   /// \endcond
 }
@@ -11392,8 +11375,11 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct ends_with_impl<false> : starts_with_impl<false>
-  {};
+  struct ends_with_impl<false>
+  {
+    template<unsigned n, class L, class... xs>
+    using f = false_;
+  };
 }
 /// \endcond
 
