@@ -40,6 +40,17 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C, decltype(impl(static_cast<list<xs...>*>(nullptr))));
   };
 #else
+# if JLN_MP_FEATURE_CONCEPTS
+  template<class... Ts>
+  struct starts_with<list<Ts...>, identity>
+  {
+    template<class... Us>
+    static void impl(list<Ts..., Us...>*);
+
+    template<class... xs>
+    using f = number<requires { impl(static_cast<list<xs...>*>(nullptr)); }>;
+  };
+# else
   template<class... Ts>
   struct starts_with<list<Ts...>, identity> : detail::false_fn_impl
   {
@@ -51,6 +62,7 @@ namespace jln::mp
     template<class... xs>
     using f = decltype(impl(static_cast<list<xs...>*>(nullptr)));
   };
+# endif
 
   template<class... Ts, class C>
   struct starts_with<list<Ts...>, C>
