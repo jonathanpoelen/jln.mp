@@ -2080,7 +2080,7 @@ JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wdeprecated-volatile")
 # if JLN_MP_USE_LIBCXX
   JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_reference, (class T), (T));
 # else
-  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(remove_reference, (class T), __remove_reference_t(T))
+  JLN_MP_MAKE_TRAIT_ST_FROM_EXPR_T(remove_reference, (class T), __remove_reference_t(T));
 # endif
 #elif ! JLN_MP_NO_STL_TRAIT
   JLN_MP_MAKE_TRAIT_ST_FROM_STD(remove_reference, (class T), (T));
