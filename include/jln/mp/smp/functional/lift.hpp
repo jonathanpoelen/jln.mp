@@ -16,8 +16,6 @@ namespace jln::mp::smp
 }
 
 
-#include <type_traits>
-
 /// \cond
 namespace jln::mp::detail
 {
