@@ -2,21 +2,35 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <jln/mp/algorithm/split_at.hpp>
 #include <jln/mp/algorithm/starts_with.hpp>
-#include <jln/mp/algorithm/index.hpp>
-#include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/drop_front.hpp>
-#include <jln/mp/functional/tee.hpp>
-#include <jln/mp/functional/invoke_twice.hpp>
-#include <cstddef>
+#include <jln/mp/list/clear.hpp>
+#include <jln/mp/utility/is.hpp>
 
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-    template<std::size_t n, class SubC1, class SubC2, class C>
-    struct before_after_defer_i;
+    struct before_after_defer_i
+    {
+      template<class I>
+      struct f
+      {
+        template<class SubC1, class SubC2, class TC, class FC>
+        using g = split_at2_with_c<I::value, SubC1, SubC2, TC>;
+      };
+
+      struct failure
+      {
+        template<class...>
+        using f = failure;
+
+        template<class SubC1, class SubC2, class TC, class FC>
+        using g = FC;
+      };
+    };
   }
   /// \endcond
 
@@ -40,14 +54,19 @@ namespace jln::mp
 
   template<class... Ts, class SubC1, class SubC2, class TC, class FC>
   struct before_after_with<list<Ts...>, SubC1, SubC2, TC, FC>
-  : invoke_twice<index_if_xs<starts_with<list<Ts...>>,
-                             detail::before_after_defer_i<sizeof...(Ts), SubC1, SubC2, TC>,
-                             mp::always<FC>>>
   {
-#ifdef JLN_MP_DOXYGENATING
     template<class... xs>
-    using f;
-#endif
+    using f = typename detail::index_if_impl<
+      typename detail::_drop_until_xs<sizeof...(xs)>
+      ::template f<sizeof...(xs), starts_with<list<Ts...>>, xs...>
+    >::template f<
+      detail::before_after_defer_i,
+      detail::before_after_defer_i::failure,
+      sizeof...(xs)
+    >
+    ::template f<xs...>
+    ::template g<SubC1, drop_front_c<sizeof...(Ts), SubC2>, TC, FC>
+    ::template f<xs...>;
   };
 
   namespace emp
@@ -64,10 +83,20 @@ namespace jln::mp
   /// \cond
   template<class T, class SubC1, class SubC2, class TC, class FC>
   struct before_after_with<list<T>, SubC1, SubC2, TC, FC>
-  : invoke_twice<index_if<is<T>,
-                          detail::before_after_defer_i<1, SubC1, SubC2, TC>,
-                          mp::always<FC>>>
-  {};
+  {
+    template<class... xs>
+    using f = typename detail::index_if_impl<
+      typename detail::_drop_until<sizeof...(xs)>
+      ::template f<0, is<T>, xs...>
+    >::template f<
+      detail::before_after_defer_i,
+      detail::before_after_defer_i::failure,
+      sizeof...(xs)
+    >
+    ::template f<xs...>
+    ::template g<SubC1, drop_front_c<1, SubC2>, TC, FC>
+    ::template f<xs...>;
+  };
 
   template<class SubC1, class SubC2, class TC, class FC>
   struct before_after_with<list<>, SubC1, SubC2, TC, FC>
@@ -80,15 +109,3 @@ namespace jln::mp
   };
   /// \endcond
 }
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<std::size_t n, class SubC1, class SubC2, class C>
-  struct before_after_defer_i
-  {
-    template<class I>
-    using f = tee<take_front<I, SubC1>, drop_front_c<I::value + n, SubC2>, C>;
-  };
-}
-/// \endcond
