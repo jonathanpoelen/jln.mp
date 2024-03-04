@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/value/val.hpp>
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/utility/unpack.hpp>
-#include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/functional/call.hpp>
 
 namespace jln::mp
@@ -26,33 +24,29 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(F, xs..., BoundArgs...);
   };
 
-#if __cplusplus >= 201703L
-  template<JLN_MP_TPL_AUTO_OR_INT... BoundArgs>
-  using capture_back_c = capture_back<val<BoundArgs>...>;
-#else
   template<int_... BoundArgs>
-  using capture_back_c = capture_back<typed_value<int_, BoundArgs>...>;
-#endif
+  using capture_back_c = capture_back<number<BoundArgs>...>;
 
-  template<JLN_MP_TPL_AUTO_OR_INT... BoundArgs>
-  struct capture_back_v_c
+#if JLN_MP_ENABLE_TPL_AUTO
+  template<auto... BoundArgs>
+  struct capture_back_v
   {
     template<class F, class... xs>
-    using f = typename F::template f<xs::value..., BoundArgs...>;
+    using f = typename F::template f<xs..., BoundArgs...>;
   };
-
-  template<class... BoundArgs>
-  using capture_back_v = capture_back_v_c<BoundArgs::value...>;
+#endif
 
   namespace emp
   {
     template<class L, class... BoundArgs>
     using capture_back = unpack<L, mp::capture_back<BoundArgs...>>;
 
-    template<class L, class... BoundArgs>
-    using capture_back_v = unpack<L, mp::capture_back_v<BoundArgs...>>;
+    template<class L, int_... BoundArgs>
+    using capture_back_c = unpack<L, mp::capture_back_c<BoundArgs...>>;
 
-    template<class L, JLN_MP_TPL_AUTO_OR_INT... BoundArgs>
-    using capture_back_v_c = unpack<L, mp::capture_back_v_c<BoundArgs...>>;
+#if JLN_MP_ENABLE_TPL_AUTO
+    template<class L, auto... BoundArgs>
+    using capture_back_v = unpack<L, mp::capture_back_v<BoundArgs...>>;
+#endif
   }
 }

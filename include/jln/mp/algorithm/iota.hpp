@@ -99,7 +99,7 @@ namespace jln::mp::detail
   struct iota_c_result
   {
     template<class C>
-    using f = typename JLN_MP_CALLER_TRACE_XS(i, C)::template f<i...>;
+    using f = typename JLN_MP_CALLER_XS(i, C)::template f<i...>;
   };
 
   template<int_ count>
@@ -115,7 +115,7 @@ namespace jln::mp::detail
     template<class C>
     struct f
     {
-      using type = typename JLN_MP_CALLER_TRACE_XS(i, C)::template f<i...>;
+      using type = typename JLN_MP_CALLER_XS(i, C)::template f<i...>;
     };
   };
 

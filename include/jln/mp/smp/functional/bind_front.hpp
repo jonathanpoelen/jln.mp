@@ -12,11 +12,6 @@ namespace jln::mp::smp
 
   template<class F, int_... BoundArgs>
   using bind_front_c = bind_front<F, number<BoundArgs>...>;
-
-#if JLN_MP_ENABLE_TPL_AUTO
-  template<class F, auto... BoundArgs>
-  using bind_front_v = bind_front<F, val<BoundArgs>...>;
-#endif
 }
 
 /// \cond

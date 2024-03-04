@@ -10,6 +10,15 @@
 
 TEST_SUITE_BEGIN()
 
+#if JLN_MP_ENABLE_TPL_AUTO
+struct foo
+{
+  template<int, class...>
+  struct f
+  {};
+};
+#endif
+
 TEST()
 {
   using namespace jln::mp;
@@ -19,6 +28,8 @@ TEST()
 
   ut::same<list<int, void, char, long>, emp::bind_front<list<char, long>, listify, int, void>>();
 
+  ut::same<bind_front<listify, _1>, bind_front_c<listify, 1>>();
+
   test_context<
     bind_front<pop_front<>, int, long>,
     smp::bind_front<smp::pop_front<>, int, long>
@@ -27,23 +38,10 @@ TEST()
     .test<list<long, void, char>, void, char>()
     ;
 
-  test_context<
-    bind_front_c<listify, 3>,
-    smp::bind_front_c<smp::listify, 3>,
-    -1
-  >()
-    .test<seq_3>()
-    .test<seq_3_1, _1>()
-    ;
-
 #if JLN_MP_ENABLE_TPL_AUTO
-  test_context<
-    bind_front_v<listify, 3>,
-    smp::bind_front_v<smp::listify, 3>,
-    -1
-  >()
-    .test<list<val<3>>>()
-    .test<list<val<3>, _1>, _1>()
+  test_context<bind_front_v<foo, 3>, void>()
+    .test<foo::f<3>>()
+    .test<foo::f<3, _1>, _1>()
     ;
 #endif
 

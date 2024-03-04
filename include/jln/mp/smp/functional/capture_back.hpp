@@ -10,23 +10,8 @@ namespace jln::mp::smp
   template<class... xs>
   using capture_back = try_contract<mp::capture_back<xs...>>;
 
-#if __cplusplus >= 201703L
-  template<JLN_MP_TPL_AUTO_OR_INT... xs>
-  using capture_back_c = capture_back<val<xs>...>;
-#else
   template<int_... xs>
-  using capture_back_c = capture_back<typed_value<int_, xs>...>;
-#endif
-
-  template<JLN_MP_TPL_AUTO_OR_INT... xs>
-  using capture_back_v_c = try_contract<mp::capture_back_v_c<xs...>>;
-
-  template<class... xs>
-  using capture_back_v = typename mp::try_<
-    mp::lift<mp::capture_back_v, mp::lift<try_contract>>,
-    mp::identity,
-    always<bad_contract>
-  >::template f<xs...>;
+  using capture_back_c = try_contract<mp::capture_back_c<xs...>>;
 }
 
 /// \cond
@@ -36,12 +21,6 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, capture_back<xs...>>
   {
     using type = smp::capture_back<xs...>;
-  };
-
-  template<template<class> class sfinae, JLN_MP_TPL_AUTO_OR_INT... xs>
-  struct _sfinae<sfinae, capture_back_v_c<xs...>>
-  {
-    using type = smp::capture_back_v_c<xs...>;
   };
 }
 /// \endcond

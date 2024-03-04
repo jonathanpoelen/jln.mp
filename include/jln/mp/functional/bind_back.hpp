@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/value/val.hpp>
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/functional/call.hpp>
@@ -30,7 +29,11 @@ namespace jln::mp
 
 #if JLN_MP_ENABLE_TPL_AUTO
   template<class F, auto... BoundArgs>
-  using bind_back_v = bind_back<F, val<BoundArgs>...>;
+  struct bind_back_v
+  {
+    template<class... xs>
+    using f = typename JLN_MP_CALLER_XS(xs, F)::template f<xs..., BoundArgs...>;
+  };
 #endif
 
   namespace emp

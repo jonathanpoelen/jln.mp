@@ -12,11 +12,6 @@ namespace jln::mp::smp
 
   template<class F, int_... BoundArgs>
   using bind_back_c = bind_back<F, number<BoundArgs>...>;
-
-#if JLN_MP_ENABLE_TPL_AUTO
-  template<class F, auto... BoundArgs>
-  using bind_back_v = bind_back<F, val<BoundArgs>...>;
-#endif
 }
 
 /// \cond

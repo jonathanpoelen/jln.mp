@@ -217,7 +217,7 @@ namespace jln::mp
 
   /// single list of int_
   template<int_... i>
-  struct int_seq_v;
+  struct int_seq_c;
 } // namespace jln::mp
 
 
@@ -342,15 +342,15 @@ namespace jln::mp::detail
   struct int_seq_expand;
 
   template<int_ n, int_... ns>
-  struct int_seq_expand<false, n, int_seq_v<ns...>>
+  struct int_seq_expand<false, n, int_seq_c<ns...>>
   {
-    using type = int_seq_v<ns..., (n+ns)...>;
+    using type = int_seq_c<ns..., (n+ns)...>;
   };
 
   template<int_ n, int_... ns>
-  struct int_seq_expand<true, n, int_seq_v<ns...>>
+  struct int_seq_expand<true, n, int_seq_c<ns...>>
   {
-    using type = int_seq_v<ns..., (n+ns)..., n * 2>;
+    using type = int_seq_c<ns..., (n+ns)..., n * 2>;
   };
 
   template<unsigned n>
@@ -358,29 +358,29 @@ namespace jln::mp::detail
   : int_seq_expand<n & 1, n / 2, typename mk_int_seq<n / 2>::type>
   {};
 
-  template<> struct mk_int_seq<0> { using type = int_seq_v<>; };
-  template<> struct mk_int_seq<1> { using type = int_seq_v<0>; };
+  template<> struct mk_int_seq<0> { using type = int_seq_c<>; };
+  template<> struct mk_int_seq<1> { using type = int_seq_c<0>; };
 
   template<int_... ns>
-  struct make_int_sequence_impl<numbers<>, int_seq_v<ns...>>
+  struct make_int_sequence_impl<numbers<>, int_seq_c<ns...>>
   {
     using type = list<number<ns>...>;
   };
 
   template<class C, int_... ns>
-  struct make_int_sequence_impl<C, int_seq_v<ns...>>
+  struct make_int_sequence_impl<C, int_seq_c<ns...>>
   {
     using type = typename C::template f<ns...>;
   };
 
   template<class C, int_... ns>
-  struct make_int_sequence_impl<numbers<C>, int_seq_v<ns...>>
+  struct make_int_sequence_impl<numbers<C>, int_seq_c<ns...>>
   {
     using type = typename C::template f<number<ns>...>;
   };
 
   template<template<class T, T...> class C, class Int, int_... ns>
-  struct make_int_pack_impl<C, Int, int_seq_v<ns...>>
+  struct make_int_pack_impl<C, Int, int_seq_c<ns...>>
   {
     using type = C<Int, ns...>;
   };
