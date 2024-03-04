@@ -19,9 +19,11 @@ struct bar
 
 class x {};
 
-struct unary_i { template<int> struct f { struct type; }; };
-struct binary_i { template<int, int> struct f { struct type; }; };
-struct mulary_i { template<int...> struct f { struct type; }; };
+using int_ = jln::mp::int_;
+
+struct unary_i { template<int_> struct f { struct type; }; };
+struct binary_i { template<int_, int_> struct f { struct type; }; };
+struct mulary_i { template<int_...> struct f { struct type; }; };
 
 TEST()
 {
@@ -82,26 +84,28 @@ TEST()
   ut::not_invocable<smp::lift_t<bar, bad_function>>();
   ut::not_invocable<smp::lift<bar, bad_function>>();
 
+  constexpr int_ a1 = 1;
+  constexpr int_ a2 = 2;
 
   test_context<lift_v<mulary_i::f>, void>()
     .test<mulary_i::f<>>()
-    .test<mulary_i::f<1>, _1>()
-    .test<mulary_i::f<1, 2>, _1, _2>()
+    .test<mulary_i::f<a1>, _1>()
+    .test<mulary_i::f<a1, a2>, _1, _2>()
     ;
 
   test_context<lift_v_t<mulary_i::f>, void>()
     .test<mulary_i::f<>::type>()
-    .test<mulary_i::f<1>::type, _1>()
-    .test<mulary_i::f<1, 2>::type, _1, _2>()
+    .test<mulary_i::f<a1>::type, _1>()
+    .test<mulary_i::f<a1, a2>::type, _1, _2>()
     ;
 
   ut::same<mulary_i::f<>, lift_v_c<mulary_i::f>::f<>>();
-  ut::same<mulary_i::f<1>, lift_v_c<mulary_i::f>::f<1>>();
-  ut::same<mulary_i::f<1, 2>, lift_v_c<mulary_i::f>::f<1, 2>>();
+  ut::same<mulary_i::f<a1>, lift_v_c<mulary_i::f>::f<a1>>();
+  ut::same<mulary_i::f<a1, a2>, lift_v_c<mulary_i::f>::f<a1, a2>>();
 
   ut::same<mulary_i::f<>::type, lift_v_c_t<mulary_i::f>::f<>>();
-  ut::same<mulary_i::f<1>::type, lift_v_c_t<mulary_i::f>::f<1>>();
-  ut::same<mulary_i::f<1, 2>::type, lift_v_c_t<mulary_i::f>::f<1, 2>>();
+  ut::same<mulary_i::f<a1>::type, lift_v_c_t<mulary_i::f>::f<a1>>();
+  ut::same<mulary_i::f<a1, a2>::type, lift_v_c_t<mulary_i::f>::f<a1, a2>>();
 }
 
 TEST_SUITE_END()
