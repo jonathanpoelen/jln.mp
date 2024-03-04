@@ -90,20 +90,20 @@ namespace jln::mp
   {
 #if JLN_MP_USE_INTEGER_PACK
     template<unsigned n, class C = mp::numbers<>>
-    using make_int_sequence_v_c = typename mp::make_int_sequence_v<C>
-      ::template f<number<n>>;
+    using make_int_sequence_v_c = typename detail::make_int_sequence_impl<C>
+      ::template f<int_, __integer_pack(n)...>::type;
 
     template<unsigned n, class C = mp::listify>
-    using make_int_sequence_c = typename mp::make_int_sequence_v<mp::numbers<C>>
-      ::template f<number<n>>;
+    using make_int_sequence_c = typename detail::make_int_sequence_impl<mp::numbers<C>>
+      ::template f<int_, __integer_pack(n)...>::type;
 
     template<class n, class C = mp::numbers<>>
-    using make_int_sequence_v = typename mp::make_int_sequence_v<C>
-      ::template f<n>;
+    using make_int_sequence_v = typename detail::make_int_sequence_impl<C>
+      ::template f<int_, __integer_pack(n::value)...>::type;
 
     template<class n, class C = mp::listify>
-    using make_int_sequence = typename mp::make_int_sequence_v<mp::numbers<C>>
-      ::template f<n>;
+    using make_int_sequence = typename detail::make_int_sequence_impl<mp::numbers<C>>
+      ::template f<int_, __integer_pack(n::value)...>::type;
 #elif JLN_MP_USE_MAKE_INTEGER_SEQ
     template<unsigned n, class C = mp::numbers<>>
     using make_int_sequence_v_c = typename __make_integer_seq<
