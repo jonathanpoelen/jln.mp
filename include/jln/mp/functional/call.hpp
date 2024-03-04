@@ -101,24 +101,22 @@ using call = C::f<xs...>;
 template<class C, class... xs>
 using call = typename detail::memoizer_impl<C, xs...>::type;
 
-#  define JLN_MP_DCALL_C(xs, C)                                              \
-  typename ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
-    ::template f<C, C>
-
 #  define JLN_MP_DCALL_TRACE_XS(xs, C, ...) \
     typename ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
 
 #  define JLN_MP_FORCE_DCALL_TRACE_XS(xs, C, ...) \
-    typename ::jln::mp::detail::memoizer_impl<JLN_MP_DCALL_C(xs, C), __VA_ARGS__>::type
+    typename JLN_MP_FORCE_DCALL_V_TRACE_XS(xs, C, __VA_ARGS__)
 
 #  define JLN_MP_DCALL_TRACE_XS_0(xs, C) \
-    typename ::jln::mp::detail::memoizer_impl<JLN_MP_DCALL_C(xs, C)>::type
+    typename ::jln::mp::detail::memoizer_impl<C>::type
 
 #  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...) \
     ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
 
-#  define JLN_MP_FORCE_DCALL_V_TRACE_XS(xs, C, ...) \
-    ::jln::mp::detail::memoizer_impl<JLN_MP_DCALL_C(xs, C), __VA_ARGS__>::type
+#  define JLN_MP_FORCE_DCALL_V_TRACE_XS(xs, C, ...)                              \
+    ::jln::mp::detail::memoizer_impl<                                            \
+      typename ::jln::mp::conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+      ::template f<C, C>, __VA_ARGS__>::type
 
 # else
 
