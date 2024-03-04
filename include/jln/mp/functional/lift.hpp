@@ -46,46 +46,21 @@ namespace jln::mp
   /// \endcond
 
 
+  /// Makes a \function from a \lazymetafunction.
+  /// \treturn \value
+  /// \see lift
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
   struct lift_v_t
-  {
-    template<JLN_MP_TPL_AUTO_OR_INT... xs>
-    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs...)::type);
-  };
-
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
-  struct lift_v
-  {
-    template<JLN_MP_TPL_AUTO_OR_INT... xs>
-    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs...));
-  };
-
-  /// \cond
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct lift_v_t<F, identity>
-  {
-    template<JLN_MP_TPL_AUTO_OR_INT... xs>
-    using f = JLN_MP_DCALLF_C_XS(xs, F, xs...)::type;
-  };
-
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct lift_v<F, identity>
-  {
-    template<JLN_MP_TPL_AUTO_OR_INT... xs>
-    using f = JLN_MP_DCALLF_C_XS(xs, F, xs...);
-  };
-  /// \endcond
-
-
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
-  struct lift_a2v_t
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs::value...)::type);
   };
 
+  /// Makes a \function from a \metafunction.
+  /// \treturn \value
+  /// \see lift_t
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
-  struct lift_a2v
+  struct lift_v
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs::value...));
@@ -93,18 +68,56 @@ namespace jln::mp
 
   /// \cond
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct lift_a2v_t<F, identity>
+  struct lift_v_t<F, identity>
   {
     template<class... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...)::type;
   };
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct lift_a2v<F, identity>
+  struct lift_v<F, identity>
   {
     template<class... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...);
   };
+
+
+  /// Makes a \function from a \lazymetafunction.
+  /// \treturn \value
+  /// \see lift_t
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
+  struct lift_v_c_t
+  {
+    template<JLN_MP_TPL_AUTO_OR_INT... xs>
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs...)::type);
+  };
+
+  /// Makes a \function from a \metafunction.
+  /// \treturn \value
+  /// \see lift_t
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
+  struct lift_v_c
+  {
+    template<JLN_MP_TPL_AUTO_OR_INT... xs>
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs...));
+  };
+
+  /// \cond
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  struct lift_v_c_t<F, identity>
+  {
+    template<JLN_MP_TPL_AUTO_OR_INT... xs>
+    using f = JLN_MP_DCALLF_C_XS(xs, F, xs...)::type;
+  };
+
+  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  struct lift_v_c<F, identity>
+  {
+    template<JLN_MP_TPL_AUTO_OR_INT... xs>
+    using f = JLN_MP_DCALLF_C_XS(xs, F, xs...);
+  };
+  /// \endcond
+
 
 #if JLN_MP_GCC
 #  define JLN_MP_LIFT_WRAP_IMPL(fn, fn_t) ::jln::mp::lift_t<fn>

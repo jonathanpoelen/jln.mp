@@ -19,9 +19,14 @@ struct bar
 
 class x {};
 
+struct unary_i { template<int> struct f { struct type; }; };
+struct binary_i { template<int, int> struct f { struct type; }; };
+struct mulary_i { template<int...> struct f { struct type; }; };
+
 TEST()
 {
   using namespace jln::mp;
+  using namespace ut::ints;
 
   (void)lift<ut::unary::f>();
   (void)lift<ut::binary::f>();
@@ -30,6 +35,22 @@ TEST()
   (void)lift_t<ut::unary::f>();
   (void)lift_t<ut::binary::f>();
   (void)lift_t<ut::listify::f>();
+
+  (void)lift_v<unary_i::f>();
+  (void)lift_v<binary_i::f>();
+  (void)lift_v<mulary_i::f>();
+
+  (void)lift_v_t<unary_i::f>();
+  (void)lift_v_t<binary_i::f>();
+  (void)lift_v_t<mulary_i::f>();
+
+  (void)lift_v_c<unary_i::f>();
+  (void)lift_v_c<binary_i::f>();
+  (void)lift_v_c<mulary_i::f>();
+
+  (void)lift_v_c_t<unary_i::f>();
+  (void)lift_v_c_t<binary_i::f>();
+  (void)lift_v_c_t<mulary_i::f>();
 
   test_context<lift<foo>, smp::lift<foo>>()
     .test<x, x>()
@@ -60,6 +81,27 @@ TEST()
   ut::not_invocable<smp::lift<foo, bad_function>>();
   ut::not_invocable<smp::lift_t<bar, bad_function>>();
   ut::not_invocable<smp::lift<bar, bad_function>>();
+
+
+  test_context<lift_v<mulary_i::f>, void>()
+    .test<mulary_i::f<>>()
+    .test<mulary_i::f<1>, _1>()
+    .test<mulary_i::f<1, 2>, _1, _2>()
+    ;
+
+  test_context<lift_v_t<mulary_i::f>, void>()
+    .test<mulary_i::f<>::type>()
+    .test<mulary_i::f<1>::type, _1>()
+    .test<mulary_i::f<1, 2>::type, _1, _2>()
+    ;
+
+  ut::same<mulary_i::f<>, lift_v_c<mulary_i::f>::f<>>();
+  ut::same<mulary_i::f<1>, lift_v_c<mulary_i::f>::f<1>>();
+  ut::same<mulary_i::f<1, 2>, lift_v_c<mulary_i::f>::f<1, 2>>();
+
+  ut::same<mulary_i::f<>::type, lift_v_c_t<mulary_i::f>::f<>>();
+  ut::same<mulary_i::f<1>::type, lift_v_c_t<mulary_i::f>::f<1>>();
+  ut::same<mulary_i::f<1, 2>::type, lift_v_c_t<mulary_i::f>::f<1, 2>>();
 }
 
 TEST_SUITE_END()
