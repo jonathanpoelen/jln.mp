@@ -181,11 +181,8 @@ namespace jln::mp::detail
 
   // sizeof...(Fs) < sizeof...(xs)
   template<class C>
-  struct _partial_select<1, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
-  };
+  struct _partial_select<1, C> : detail::call_trace_xs<C>
+  {};
 
   template<class... Fs>
   struct partial_suffix

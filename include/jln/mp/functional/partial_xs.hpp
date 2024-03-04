@@ -123,11 +123,8 @@ namespace jln::mp::detail
   };
 
   template<class C>
-  struct partial_xs_select<1, C>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
-  };
+  struct partial_xs_select<1, C> : detail::call_trace_xs<C>
+  {};
 
   template<class... Fs>
   struct partial_xs_prefix

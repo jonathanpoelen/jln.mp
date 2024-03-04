@@ -22,11 +22,8 @@ namespace jln::mp
   }
 
   template<class C>
-  struct contract
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
-  };
+  struct contract : detail::call_trace_xs<C>
+  {};
 
   template<class test, class TC, class FC = violation>
   using contract_if = typename conditional_c<test::value>::template f<TC, FC>;
@@ -82,11 +79,8 @@ namespace jln::mp
   };
 
   template<class C>
-  struct try_<contract<C>, identity, violation>
-  {
-    template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, xs...);
-  };
+  struct try_<contract<C>, identity, violation> : detail::call_trace_xs<C>
+  {};
 }
 
 namespace jln::mp::detail
