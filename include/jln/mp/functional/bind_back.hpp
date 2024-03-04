@@ -39,10 +39,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F, class... BoundArgs>
-    using bind_back = unpack<L, mp::bind_back<F, BoundArgs...>>;
+    using bind_back = unpack_append<L, F, BoundArgs...>;
 
     template<class L, class F, int_... BoundArgs>
-    using bind_back_c = unpack<L, mp::bind_back_c<F, BoundArgs...>>;
+    using bind_back_c = unpack_append<L, F, number<BoundArgs>...>;
 
 #if JLN_MP_ENABLE_TPL_AUTO
     template<class L, class F, auto... BoundArgs>
