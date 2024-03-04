@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <jln/mp/number/number.hpp>
+
 namespace jln::mp
 {
   /// \cond
@@ -9,6 +11,10 @@ namespace jln::mp
   {
     template<class C, class L, class... xs> struct _unpack {};
     template<class C, class L, class... xs> struct _unpack_append {};
+#if JLN_MP_ENABLE_TPL_AUTO
+    template<class C, class L, class... xs> struct _unpack_v {};
+    template<class C, class L, class... xs> struct _unpack_append_v {};
+#endif
   }
   /// \endcond
 
@@ -40,6 +46,34 @@ namespace jln::mp
     using f = typename detail::_unpack_append<C, seq, xs...>::type;
   };
 
+#if JLN_MP_ENABLE_TPL_AUTO
+  /// Turns a \typelist into a \sequence of those types.
+  /// \semantics
+  ///   \code
+  ///   unpack<F>::f<valuelist<xs...>, ys...> == F::f<ys..., xs...>
+  ///   \endcode
+  /// \treturn \sequence
+  template<class C>
+  struct unpack_v
+  {
+    template<class seq, class... xs>
+    using f = typename detail::_unpack_v<C, seq, xs...>::type;
+  };
+
+  /// Turns a \typelist into a \sequence of those types.
+  /// \semantics
+  ///   \code
+  ///   unpack_append<F>::f<valuelist<xs...>, ys...> == F::f<xs..., ys...>
+  ///   \endcode
+  /// \treturn \sequence
+  template<class C>
+  struct unpack_append_v
+  {
+    template<class seq, class... xs>
+    using f = typename detail::_unpack_append_v<C, seq, xs...>::type;
+  };
+#endif
+
   namespace emp
   {
     template<class L, class C, class... xs>
@@ -47,6 +81,26 @@ namespace jln::mp
 
     template<class L, class C, class... xs>
     using unpack_append = typename detail::_unpack_append<C, L, xs...>::type;
+
+    template<class L, class C, int_... xs>
+    using unpack_c = typename detail::_unpack<C, L, number<xs>...>::type;
+
+    template<class L, class C, int_... xs>
+    using unpack_append_c = typename detail::_unpack_append<C, L, number<xs>...>::type;
+
+#if JLN_MP_ENABLE_TPL_AUTO
+    template<class L, class C, class... xs>
+    using unpack_v = typename detail::_unpack_v<C, L, xs...>::type;
+
+    template<class L, class C, class... xs>
+    using unpack_append_v = typename detail::_unpack_append_v<C, L, xs...>::type;
+
+    template<class L, class C, int_... xs>
+    using unpack_c_v = typename detail::_unpack_v<C, L, number<xs>...>::type;
+
+    template<class L, class C, int_... xs>
+    using unpack_append_c_v = typename detail::_unpack_append_v<C, L, number<xs>...>::type;
+#endif
   }
 } // namespace jln::mp
 
@@ -91,6 +145,20 @@ namespace jln::mp::detail
   {
     using type = typename F<xs..., ys...>::type;
   };
+
+#if JLN_MP_ENABLE_TPL_AUTO
+  template<class C, template<auto...> class Seq, auto... ys, class... xs>
+  struct _unpack_v<C, Seq<ys...>, xs...>
+  {
+    using type = typename C::template f<xs..., ys...>;
+  };
+
+  template<class C, template<auto...> class Seq, auto... xs, class... ys>
+  struct _unpack_append_v<C, Seq<xs...>, ys...>
+  {
+    using type = typename C::template f<xs..., ys...>;
+  };
+#endif
 
   template<class C>
   struct optimize_useless_unpack

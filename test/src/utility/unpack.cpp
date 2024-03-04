@@ -24,6 +24,11 @@ TEST()
   ut::same<seq_0_1, emp::unpack_append<seq_0_1, ut::binary>>();
   ut::same<seq_0_1, emp::unpack_append<seq_0, ut::binary, _1>>();
 
+  ut::same<seq_0_1, emp::unpack_c<seq_0_1, ut::binary>>();
+  ut::same<seq_1_0, emp::unpack_c<seq_0, ut::binary, 1>>();
+  ut::same<seq_0_1, emp::unpack_append_c<seq_0_1, ut::binary>>();
+  ut::same<seq_0_1, emp::unpack_append_c<seq_0, ut::binary, 1>>();
+
   test_context<unpack<size<>>, smp::unpack<smp::size<>>>()
     .test<_0, list<>>()
     .test<_1, seq_1>()
@@ -65,5 +70,38 @@ TEST()
   ut::not_invocable<smp::unpack_append<bad_function>>();
   ut::not_invocable<smp::unpack_append<bad_function>, list<>>();
 }
+
+#if JLN_MP_ENABLE_TPL_AUTO
+struct foo_t_i { template<class, int...> struct f; };
+struct foo_i_t { template<int, class...> struct f; };
+struct foo_2t_i { template<class, class, int...> struct f; };
+struct foo_2i_t { template<int, int, class...> struct f; };
+
+template<int...>
+struct vv {};
+
+struct mk_vv { template<int... i> using f = vv<i...>; };
+
+TEST()
+{
+  using namespace jln::mp;
+  using namespace ut::ints;
+
+  using v0 = vv<>;
+  using v1 = vv<1>;
+  using v2 = vv<1, 2>;
+
+  ut::same<v0, emp::unpack_v<v0, mk_vv>>();
+  ut::same<v1, emp::unpack_v<v1, mk_vv>>();
+  ut::same<v2, emp::unpack_v<v2, mk_vv>>();
+  ut::same<foo_t_i::f<_3, 1, 2>, emp::unpack_v<v2, foo_t_i, _3>>();
+  ut::same<foo_2t_i::f<_3, _4, 1, 2>, emp::unpack_v<v2, foo_2t_i, _3, _4>>();
+
+  ut::same<v0, emp::unpack_append_v<v0, mk_vv>>();
+  ut::same<v1, emp::unpack_append_v<v1, mk_vv>>();
+  ut::same<v2, emp::unpack_append_v<v2, mk_vv>>();
+  ut::same<foo_2i_t::f<1, 2, _2, _3>, emp::unpack_append_v<v2, foo_2i_t, _2, _3>>();
+}
+#endif
 
 TEST_SUITE_END()
