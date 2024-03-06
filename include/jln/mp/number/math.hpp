@@ -51,13 +51,7 @@ namespace jln::mp
 
 
   template<class C = identity>
-  using pow = fold<lift<detail::_pow>, C>;
-
-  template<class C = identity>
-  using pow0 = if_<size<>, pow<C>, always<number<0>, C>>;
-
-  template<class C = identity>
-  using pow1 = if_<size<>, pow<C>, always<number<1>, C>>;
+  using pow = lift<detail::_pow, C>;
 
 
   namespace emp
@@ -86,14 +80,11 @@ namespace jln::mp
     template<int_ I, class Cmp = mp::less<>, class C = mp::identity>
     using abs_c = typename mp::abs<Cmp, C>::template f<number<I>>;
 
-    template<class L, class C = mp::identity>
-    using pow = unpack<L, mp::pow<C>>;
+    template<class Base, class Exponent, class C = mp::identity>
+    using pow = typename mp::pow<C>::template f<Base, Exponent>;
 
-    template<class L, class C = mp::identity>
-    using pow0 = unpack<L, mp::pow0<C>>;
-
-    template<class L, class C = mp::identity>
-    using pow1 = unpack<L, mp::pow1<C>>;
+    template<int_ Base, int_ Exponent, class C = mp::identity>
+    using pow_c = typename mp::pow<C>::template f<number<Base>, number<Exponent>>;
   }
 }
 
@@ -124,7 +115,7 @@ namespace jln::mp::detail
   };
 
   template<int_ r>
-  struct _ipow<0, -1, r>
+  struct _ipow<0, -1, r> // inf -> error
   {};
 }
 /// \endcond

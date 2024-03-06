@@ -55,22 +55,16 @@ namespace jln::mp::smp
 
 
   template<class C = identity>
-  using pow = detail::sfinae<mp::pow<subcontract_barrier<C>>>;
-
-  template<class C = identity>
-  using pow0 = if_<contract<mp::size<>>, pow<C>, always<number<0>, C>>;
-
-  template<class C = identity>
-  using pow1 = if_<contract<mp::size<>>, pow<C>, always<number<1>, C>>;
+  using pow = try_contract<pow<subcontract<C>>>;
 }
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae>
-  struct _sfinae<sfinae, lift<_pow>>
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, lift<_pow, C>>
   {
-    using type = try_contract<lift<_pow>>;
+    using type = smp::pow<sfinae<C>>;
   };
 }
 /// \endcond
