@@ -36,10 +36,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Seq, class C = mp::identity>
-    using ends_with = unpack<ends_with<Seq, C>, L>;
+    using ends_with = unpack<L, ends_with<Seq, C>>;
 
     template<class L, class Seq, class C = mp::identity>
-    constexpr bool ends_with_v = unpack<ends_with<Seq, C>, L>::value;
+    constexpr bool ends_with_v = unpack<L, ends_with<Seq, C>>::value;
   }
 
   /// \cond

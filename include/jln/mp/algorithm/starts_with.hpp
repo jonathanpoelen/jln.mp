@@ -77,10 +77,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Seq, class C = mp::identity>
-    using starts_with = unpack<starts_with<Seq, C>, L>;
+    using starts_with = unpack<L, starts_with<Seq, C>>;
 
     template<class L, class Seq, class C = mp::identity>
-    constexpr bool starts_with_v = unpack<starts_with<Seq, C>, L>::value;
+    constexpr bool starts_with_v = unpack<L, starts_with<Seq, C>>::value;
   }
 }
 
