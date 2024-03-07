@@ -74,7 +74,6 @@ namespace jln::mp
 
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/functional/try.hpp>
-#include <jln/mp/detail/unpack.hpp>
 #include <cstddef>
 
 /// \cond

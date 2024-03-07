@@ -252,3 +252,5 @@
 #define JLN_MP_NUMBER_FROM_REGULAR_VARIABLE_TEMPLATE_OR_TYPE(name, ...) \
   JLN_MP_NUMBER_FROM_VARIABLE_TEMPLATE_OR_TYPE(emp::name##_v, detail::name##_impl, __VA_ARGS__)
 //@}
+
+#define JLN_MP_UNPACK(...) __VA_ARGS__
