@@ -285,6 +285,14 @@ preproc = P{
   + P'JLN_MP_IDENT(' * cbalancedparent * ')'
     / function(f) return preproc:match(f) end
 
+  + P'JLN_MP_NUMBER_FROM_REGULAR_VARIABLE_TEMPLATE_OR_TYPE('
+    * ws0 * cid * ',' * ws0 * cbalancedparent * ws0 * ')'
+    / function(name, args) return 'number<emp::' .. name .. '_v<' .. preproc:match(args) .. '>>' end
+
+  + P'JLN_MP_NUMBER_FROM_VARIABLE_TEMPLATE_OR_TYPE('
+    * ws0 * cid * ',' * ws0 * id * ',' * ws0 * cbalancedparent * ws0 * ')'
+    / function(name_v, args) return 'number<' .. name_v .. '<' .. preproc:match(args) .. '>>' end
+
   + P'JLN_MP_' * P'RAW_'^0 * 'EXPR_TO_BOOL(' * cbalancedparent * ')'
     / function(f) return 'bool(' .. preproc:match(f) .. ')' end
 

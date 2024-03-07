@@ -43,5 +43,11 @@ namespace jln::mp
 
     template<class L, int_ i, class C = mp::identity>
     using offset_c = unpack<L, mp::offset_c<i, C>>;
+
+    template<class L, class I, class C = mp::identity>
+    constexpr int_ offset_v = unpack<L, mp::offset<I, C>>::value;
+
+    template<class L, int_ i, class C = mp::identity>
+    constexpr int_ offset_c_v = unpack<L, mp::offset_c<i, C>>::value;
   }
 }

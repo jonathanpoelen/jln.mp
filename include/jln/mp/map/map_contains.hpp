@@ -27,5 +27,23 @@ namespace jln::mp
 
     template<class L, class key, class C = mp::identity>
     using map_not_contains = unpack<L, mp::map_not_contains<key, C>>;
+
+    template<class key, class... kvs>
+    using map_contains_xs = typename mp::map_contains<key>::template f<kvs...>;
+
+    template<class key, class... kvs>
+    using map_not_contains_xs = typename mp::map_not_contains<key>::template f<kvs...>;
+
+    template<class L, class key, class C = mp::identity>
+    constexpr bool map_contains_v = unpack<L, mp::map_contains<key, C>>::value;
+
+    template<class L, class key, class C = mp::identity>
+    constexpr bool map_not_contains_v = unpack<L, mp::map_not_contains<key, C>>::value;
+
+    template<class key, class... kvs>
+    constexpr bool map_contains_xs_v = mp::map_contains<key>::template f<kvs...>::value;
+
+    template<class key, class... kvs>
+    constexpr bool map_not_contains_xs_v = !mp::map_contains<key>::template f<kvs...>::value;
   }
 }

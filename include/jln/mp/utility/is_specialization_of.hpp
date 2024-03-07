@@ -8,15 +8,26 @@
 
 namespace jln::mp
 {
+#if !JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
   /// \cond
   namespace detail
   {
     template<template<class...> class Tpl, class T>
-    struct _is_specialization_of;
+    struct is_specialization_of_impl;
   }
   /// \endcond
+#endif
 
   /// \ingroup trait
+
+  namespace emp
+  {
+    template<template<class...> class Tpl, class T>
+    constexpr bool is_specialization_of_v = false;
+
+    template<template<class...> class Tpl, class... Ts>
+    constexpr bool is_specialization_of_v<Tpl, Tpl<Ts...>> = true;
+  }
 
   /// Checks whether \c x is \c Tpl<xs...>
   /// \treturn \bool
@@ -25,13 +36,14 @@ namespace jln::mp
   {
     template<class x>
     using f = JLN_MP_CALL_TRACE(C,
-      typename detail::_is_specialization_of<Tpl, x>::type);
+      JLN_MP_NUMBER_FROM_REGULAR_VARIABLE_TEMPLATE_OR_TYPE(is_specialization_of, Tpl, x));
   };
 
   namespace emp
   {
     template<template<class...> class Tpl, class x>
-    using is_specialization_of = typename detail::_is_specialization_of<Tpl, x>::type;
+    using is_specialization_of
+      = JLN_MP_NUMBER_FROM_REGULAR_VARIABLE_TEMPLATE_OR_TYPE(is_specialization_of, Tpl, x);
   }
 
   /// \cond
@@ -39,24 +51,26 @@ namespace jln::mp
   struct is_specialization_of<Tpl, identity>
   {
     template<class x>
-    using f = typename detail::_is_specialization_of<Tpl, x>::type;
+    using f = JLN_MP_NUMBER_FROM_REGULAR_VARIABLE_TEMPLATE_OR_TYPE(is_specialization_of, Tpl, x);
   };
   /// \endcond
 }
 
+#if !JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
 /// \cond
 namespace jln::mp::detail
 {
   template<template<class...> class Tpl, class T>
-  struct _is_specialization_of
+  struct is_specialization_of_impl
   {
     using type = false_;
   };
 
   template<template<class...> class Tpl, class... Ts>
-  struct _is_specialization_of<Tpl, Tpl<Ts...>>
+  struct is_specialization_of_impl<Tpl, Tpl<Ts...>>
   {
     using type = true_;
   };
 }
 /// \endcond
+#endif

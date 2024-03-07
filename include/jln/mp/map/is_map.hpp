@@ -29,6 +29,15 @@ namespace jln::mp
   {
     template<class L, class C = mp::identity>
     using is_map = unpack<L, mp::is_map<C>>;
+
+    template<class... kvs>
+    using is_map_xs = typename mp::is_map<>::template f<kvs...>;
+
+    template<class L, class C = mp::identity>
+    constexpr bool is_map_v = unpack<L, mp::is_map<C>>::value;
+
+    template<class... kvs>
+    constexpr bool is_map_xs_v = mp::is_map<>::f<kvs...>::value;
   }
 }
 
@@ -38,7 +47,7 @@ namespace jln::mp::detail
   struct is_map_impl
   {
     template<class... xs>
-    using f = typename is_unique_if<same<>, identity>
+    using f = typename is_unique_if<>
       ::template f<typename _unpack<front<>, xs>::type...>;
   };
 }

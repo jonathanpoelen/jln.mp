@@ -18,5 +18,8 @@ namespace jln::mp
   {
     template<class L, class C = mp::identity>
     using is_not_empty = unpack<L, mp::is_not_empty<C>>;
+
+    template<class L, class C = mp::identity>
+    constexpr bool is_not_empty_v = unpack<L, mp::is_not_empty<C>>::value;
   }
 }

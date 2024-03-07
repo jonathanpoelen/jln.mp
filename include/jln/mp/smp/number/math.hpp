@@ -62,7 +62,7 @@ namespace jln::mp::smp
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, lift<_pow, C>>
+  struct _sfinae<sfinae, pow<C>>
   {
     using type = smp::pow<sfinae<C>>;
   };

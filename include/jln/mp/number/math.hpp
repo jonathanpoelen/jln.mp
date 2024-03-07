@@ -15,10 +15,19 @@ namespace jln::mp
   namespace detail
   {
     template<int_ b, int_ e, int_ r = 1>
-    struct _ipow;
+    constexpr int_ pow_impl_v = pow_impl_v<(b * b), (e / 2), (e % 2 ? b * r : r)>;
 
-    template<class base, class exponent>
-    using _pow = typename _ipow<base::value, exponent::value, 1>::type;
+    template<int_ b, int_ r>
+    constexpr int_ pow_impl_v<b, 0, r> = 1;
+
+    template<int_ b, int_ r>
+    constexpr int_ pow_impl_v<b, 1, r> = b * r;
+
+    template<int_ b, int_ r>
+    constexpr int_ pow_impl_v<b, -1, r> = 1 / (b * r);
+
+    template<int_ r>
+    constexpr int_ pow_impl_v<0, -1, r> = int_{static_cast<int>(r-r)-1}; // inf -> error
   }
   /// \endcond
 
@@ -49,10 +58,22 @@ namespace jln::mp
   template<class Cmp = less<>, class C = identity>
   using abs = tee<identity, neg<>, if_<Cmp, at1<C>, at0<C>>>;
 
-
   template<class C = identity>
-  using pow = lift<detail::_pow, C>;
+  struct pow
+  {
+    template<class base, class exponent>
+    using f = typename JLN_MP_TRACE_F(C)
+      ::template f<number<detail::pow_impl_v<base::value, exponent::value>>>;
+  };
 
+  /// \cond
+  template<>
+  struct pow<identity>
+  {
+    template<class base, class exponent>
+    using f = number<detail::pow_impl_v<base::value, exponent::value>>;
+  };
+  /// \endcond
 
   namespace emp
   {
@@ -85,37 +106,49 @@ namespace jln::mp
 
     template<int_ Base, int_ Exponent, class C = mp::identity>
     using pow_c = typename mp::pow<C>::template f<number<Base>, number<Exponent>>;
+
+
+    template<class... xs>
+    constexpr int_ min_v = mp::min<>::f<xs...>::value;
+
+    template<class... xs>
+    constexpr int_ min0_v = mp::min0<>::f<xs...>::value;
+
+    template<int_... xs>
+    constexpr int_ min_c_v = mp::min<>::f<number<xs>...>::value;
+
+    template<int_... xs>
+    constexpr int_ min0_c_v = mp::min0<>::f<number<xs>...>::value;
+
+    template<class... xs>
+    constexpr int_ max_v = mp::max<>::f<xs...>::value;
+
+    template<class... xs>
+    constexpr int_ max0_v = mp::max0<>::f<xs...>::value;
+
+    template<int_... xs>
+    constexpr int_ max_c_v = mp::max<>::f<number<xs>...>::value;
+
+    template<int_... xs>
+    constexpr int_ max0_c_v = mp::max0<>::f<number<xs>...>::value;
+
+
+    template<class I, class Min, class Max, class Cmp = mp::less<>, class C = mp::identity>
+    constexpr int_ clamp_v = mp::clamp<Min, Max, Cmp, C>::template f<I>::value;
+
+    template<int_ I, int_ min, int_ max, class Cmp = mp::less<>, class C = mp::identity>
+    constexpr int_ clamp_c_v = mp::clamp_c<min, max, Cmp, C>::template f<number<I>>::value;
+
+    template<class I, class Cmp = mp::less<>, class C = mp::identity>
+    constexpr int_ abs_v = mp::abs<Cmp, C>::template f<I>::value;
+
+    template<int_ I, class Cmp = mp::less<>, class C = mp::identity>
+    constexpr int_ abs_c_v = mp::abs<Cmp, C>::template f<number<I>>::value;
+
+    template<class Base, class Exponent>
+    constexpr int_ pow_v = detail::pow_impl_v<Base::value, Exponent::value>;
+
+    template<int_ base, int_ exponent>
+    constexpr int_ pow_c_v = detail::pow_impl_v<base, exponent>;
   }
 }
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<int_ b, int_ e, int_ r>
-  struct _ipow
-  : _ipow<(b * b), (e / 2), (e % 2 ? b * r : r)>
-  {};
-
-  template<int_ b, int_ r>
-  struct _ipow<b, 0, r>
-  {
-    using type = number<1>;
-  };
-
-  template<int_ b, int_ r>
-  struct _ipow<b, 1, r>
-  {
-    using type = number<b * r>;
-  };
-
-  template<int_ b, int_ r>
-  struct _ipow<b, -1, r>
-  {
-    using type = number<1 / (b * r)>;
-  };
-
-  template<int_ r>
-  struct _ipow<0, -1, r> // inf -> error
-  {};
-}
-/// \endcond

@@ -23,7 +23,7 @@ namespace jln::mp
   /// Calls \c TC with element found.
   /// If no element is found, \c FC is used with the whole \set.
   /// \pre `emp::unique<xs...> == list<xs...>`
-  /// \treturn \sequence
+  /// \treturn \value
   template<class x, class TC = identity, class FC = always<na>>
   struct set_find
   {

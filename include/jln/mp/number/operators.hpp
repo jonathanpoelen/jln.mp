@@ -722,6 +722,391 @@ namespace jln::mp::emp
 
   template<class x, class y, class C = mp::identity>
   using greater_equal = typename mp::greater_equal<C>::template f<x, y>;
+
+
+  template<class L, class C = mp::identity>
+  constexpr int_ or_seq_v = unpack<L, mp::or_<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ and_seq_v = unpack<L, mp::and_<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ or_left_seq_v = unpack<L, mp::left_or<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ and_left_seq_v = unpack<L, mp::left_and<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ add_seq_v = unpack<L, mp::add<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ add0_seq_v = unpack<L, mp::add0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ left_add_seq_v = unpack<L, mp::left_add<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ left_add0_seq_v = unpack<L, mp::left_add0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ sub_seq_v = unpack<L, mp::sub<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ sub0_seq_v = unpack<L, mp::sub0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ lshift_seq_v = unpack<L, mp::lshift<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ lshift0_seq_v = unpack<L, mp::lshift0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ rshift_seq_v = unpack<L, mp::rshift<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ rshift0_seq_v = unpack<L, mp::rshift0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ mul_seq_v = unpack<L, mp::mul<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ mul0_seq_v = unpack<L, mp::mul0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ mul1_seq_v = unpack<L, mp::mul1<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ left_mul_seq_v = unpack<L, mp::left_mul<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ left_mul0_seq_v = unpack<L, mp::left_mul0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ left_mul1_seq_v = unpack<L, mp::left_mul1<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ div_seq_v = unpack<L, mp::div<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ div0_seq_v = unpack<L, mp::div0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ div1_seq_v = unpack<L, mp::div1<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ mod_seq_v = unpack<L, mp::mod<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ mod0_seq_v = unpack<L, mp::mod0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ mod1_seq_v = unpack<L, mp::mod1<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ xor_seq_v = unpack<L, mp::xor_<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ xor0_seq_v = unpack<L, mp::xor0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ left_xor_seq_v = unpack<L, mp::left_xor<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ left_xor0_seq_v = unpack<L, mp::left_xor0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ bit_and_seq_v = unpack<L, mp::bit_and<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ bit_and0_seq_v = unpack<L, mp::bit_and0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ left_bit_and_seq_v = unpack<L, mp::left_bit_and<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ left_bit_and0_seq_v = unpack<L, mp::left_bit_and0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ bit_or_seq_v = unpack<L, mp::bit_or<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ bit_or0_seq_v = unpack<L, mp::bit_or0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ left_bit_or_seq_v = unpack<L, mp::left_bit_or<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr int_ left_bit_or0_seq_v = unpack<L, mp::left_bit_or0<C>>::value;
+
+
+  template<int_... xs>
+  constexpr int_ or_c_v = (xs || ... || false);
+
+  template<int_... xs>
+  constexpr int_ left_or_c_v = (false || ... || xs);
+
+  template<int_... xs>
+  constexpr int_ and_c_v = (xs && ... && true);
+
+  template<int_... xs>
+  constexpr int_ left_and_c_v = (true && ... && xs);
+
+  template<int_... xs>
+  constexpr int_ add_c_v = (xs + ...);
+
+  template<int_... xs>
+  constexpr int_ add0_c_v = add_c_v<xs..., 0>;
+
+  template<int_... xs>
+  constexpr int_ left_add_c_v = (... + xs);
+
+  template<int_... xs>
+  constexpr int_ left_add0_c_v = left_add_c_v<xs..., 0>;
+
+  template<int_... xs>
+  constexpr int_ sub_c_v = (... - xs);
+
+  template<int_... xs>
+  constexpr int_ sub0_c_v = sub_c_v<xs..., 0>;
+
+  template<int_... xs>
+  constexpr int_ lshift_c_v = (... << xs);
+
+  template<int_... xs>
+  constexpr int_ lshift0_c_v = lshift_c_v<xs..., 0>;
+
+  template<int_... xs>
+  constexpr int_ rshift_c_v = (... >> xs);
+
+  template<int_... xs>
+  constexpr int_ rshift0_c_v = rshift_c_v<xs..., 0>;
+
+  template<int_... xs>
+  constexpr int_ mul_c_v = (xs * ...);
+
+  template<int_... xs>
+  constexpr int_ mul0_c_v = mul_c_v<xs..., sizeof...(xs) ? 1 : 0>;
+
+  template<int_... xs>
+  constexpr int_ mul1_c_v = mul_c_v<xs..., 1>;
+
+  template<int_... xs>
+  constexpr int_ left_mul_c_v = (... * xs);
+
+  template<int_... xs>
+  constexpr int_ left_mul0_c_v = left_mul_c_v<xs..., sizeof...(xs) ? 1 : 0>;
+
+  template<int_... xs>
+  constexpr int_ left_mul1_c_v = left_mul_c_v<xs..., 1>;
+
+  template<int_... xs>
+  constexpr int_ div_c_v = (... / xs);
+
+  template<int_... xs>
+  constexpr int_ div0_c_v = div_c_v<xs..., sizeof...(xs) ? 1 : 0>;
+
+  template<int_... xs>
+  constexpr int_ div1_c_v = div_c_v<xs..., 1>;
+
+  template<int_... xs>
+  constexpr int_ mod_c_v = (... % xs);
+
+  template<int_... xs>
+  constexpr int_ mod0_c_v = mod_c_v<xs...,
+    sizeof...(xs) ? std::numeric_limits<int_>::min() : 0>;
+
+  template<int_... xs>
+  constexpr int_ mod1_c_v = mod_c_v<xs...,
+    sizeof...(xs) ? std::numeric_limits<int_>::min() : 1>;
+
+  template<int_... xs>
+  constexpr int_ xor_c_v = (xs ^ ...);
+
+  template<int_... xs>
+  constexpr int_ xor0_c_v = xor_c_v<xs..., 0, 0>;
+
+  template<int_... xs>
+  constexpr int_ left_xor_c_v = (... ^ xs);
+
+  template<int_... xs>
+  constexpr int_ left_xor0_c_v = left_xor_c_v<xs..., 0, 0>;
+
+  template<int_... xs>
+  constexpr int_ bit_and_c_v = (xs & ...);
+
+  template<int_... xs>
+  constexpr int_ bit_and0_c_v = bit_and_c_v<xs...,
+    sizeof...(xs) ? std::numeric_limits<int_>::max() : 0>;
+
+  template<int_... xs>
+  constexpr int_ left_bit_and_c_v = (... & xs);
+
+  template<int_... xs>
+  constexpr int_ left_bit_and0_c_v = left_bit_and_c_v<xs...,
+    sizeof...(xs) ? std::numeric_limits<int_>::max() : 0>;
+
+  template<int_... xs>
+  constexpr int_ bit_or_c_v = (xs | ...);
+
+  template<int_... xs>
+  constexpr int_ bit_or0_c_v = bit_or_c_v<xs...,
+    sizeof...(xs) ? std::numeric_limits<int_>::max() : 0>;
+
+  template<int_... xs>
+  constexpr int_ left_bit_or_c_v = (... | xs);
+
+  template<int_... xs>
+  constexpr int_ left_bit_or0_c_v = left_bit_or_c_v<xs...,
+    sizeof...(xs) ? std::numeric_limits<int_>::max() : 0>;
+
+
+  template<class... xs>
+  constexpr int_ or_v = (xs::value || ... || false);
+
+  template<class... xs>
+  constexpr int_ and_v = (xs::value && ... && true);
+
+  template<class... xs>
+  constexpr int_ left_or_v = (false || ... || xs::value);
+
+  template<class... xs>
+  constexpr int_ left_and_v = (true && ... && xs::value);
+
+  template<class... xs>
+  constexpr int_ add_v = (xs::value + ...);
+
+  template<class... xs>
+  constexpr int_ add0_v = mp::add0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ left_add_v = (... + xs::value);
+
+  template<class... xs>
+  constexpr int_ left_add0_v = mp::add0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ sub_v = (... - xs::value);
+
+  template<class... xs>
+  constexpr int_ sub0_v = mp::sub0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ lshift_v = (... << xs::value);
+
+  template<class... xs>
+  constexpr int_ lshift0_v = mp::lshift0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ rshift_v = (... >> xs::value);
+
+  template<class... xs>
+  constexpr int_ rshift0_v = mp::rshift0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ mul_v = (xs::value * ...);
+
+  template<class... xs>
+  constexpr int_ mul0_v = mp::mul0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ mul1_v = mp::mul1<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ left_mul_v = (... * xs::value);
+
+  template<class... xs>
+  constexpr int_ left_mul0_v = mp::left_mul0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ left_mul1_v = mp::left_mul1<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ div_v = (... / xs::value);
+
+  template<class... xs>
+  constexpr int_ div0_v = mp::div0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ div1_v = mp::div1<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ mod_v = (... % xs::value);
+
+  template<class... xs>
+  constexpr int_ mod0_v = mp::mod0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ mod1_v = mp::mod1<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ xor_v = (xs::value ^ ...);
+
+  template<class... xs>
+  constexpr int_ xor0_v = mp::xor0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ left_xor_v = (... ^ xs::value);
+
+  template<class... xs>
+  constexpr int_ left_xor0_v = mp::left_xor0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ bit_and_v = (xs::value & ...);
+
+  template<class... xs>
+  constexpr int_ bit_and0_v = mp::bit_and0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ left_bit_and_v = (... & xs::value);
+
+  template<class... xs>
+  constexpr int_ left_bit_and0_v = mp::left_bit_and0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ bit_or_v = (xs::value | ...);
+
+  template<class... xs>
+  constexpr int_ bit_or0_v = mp::bit_or0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr int_ left_bit_or_v = (... | xs::value);
+
+  template<class... xs>
+  constexpr int_ left_bit_or0_v = mp::left_bit_or0<>::template f<xs...>::value;
+
+
+  template<class x, class C = mp::identity>
+  constexpr int_ neg_v = mp::neg<C>::template f<x>;
+
+  template<class x, class C = mp::identity>
+  constexpr int_ unary_plus_v = mp::unary_plus<C>::template f<x>;
+
+  template<class x, class C = mp::identity>
+  constexpr int_ bit_not_v = mp::bit_not<C>::template f<x>;
+
+  template<class x, class C = mp::identity>
+  constexpr int_ inc_v = mp::inc<C>::template f<x>;
+
+  template<class x, class C = mp::identity>
+  constexpr int_ dec_v = mp::dec<C>::template f<x>;
+
+  template<class x, class y, class C = mp::identity>
+  constexpr int_ equal_v = mp::equal<C>::template f<x, y>;
+
+  template<class x, class y, class C = mp::identity>
+  constexpr int_ not_equal_v = mp::not_equal<C>::template f<x, y>;
+
+  template<class x, class y, class C = mp::identity>
+  constexpr int_ less_v = mp::less<C>::template f<x, y::value>;
+
+  template<class x, class y, class C = mp::identity>
+  constexpr int_ less_equal_v = mp::less_equal<C>::template f<x, y>;
+
+  template<class x, class y, class C = mp::identity>
+  constexpr int_ greater_v = mp::greater<C>::template f<x, y::value>;
+
+  template<class x, class y, class C = mp::identity>
+  constexpr int_ greater_equal_v = mp::greater_equal<C>::template f<x, y>;
 }
 
 JLN_MP_DIAGNOSTIC_POP()

@@ -11,7 +11,7 @@
 namespace jln::mp::smp
 {
   template<class Seq, class C = identity>
-  using starts_with = typename mp::conditional_c<detail::_is_list<Seq>::type::value>
+  using starts_with = typename mp::conditional_c<emp::is_list_v<Seq>>
     ::template f<contract<mp::starts_with<Seq, assume_positive_number<C>>>, bad_contract>;
 }
 

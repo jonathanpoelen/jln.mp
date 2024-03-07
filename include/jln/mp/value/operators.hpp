@@ -681,6 +681,346 @@ namespace jln::mp::emp
 
   template<class x, class y, class C = mp::identity>
   using val_greater_equal = typename mp::val_greater_equal<C>::template f<x, y>;
+
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_or_seq_v = unpack<L, mp::val_or<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_and_seq_v = unpack<L, mp::val_and<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_left_or_seq_v = unpack<L, mp::val_left_or<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_left_and_seq_v = unpack<L, mp::val_left_and<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_add_seq_v = unpack<L, mp::val_add<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_add0_seq_v = unpack<L, mp::val_add0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_left_add_seq_v = unpack<L, mp::val_left_add<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_left_add0_seq_v = unpack<L, mp::val_left_add0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_sub_seq_v = unpack<L, mp::val_sub<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_sub0_seq_v = unpack<L, mp::val_sub0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_lshift_seq_v = unpack<L, mp::val_lshift<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_lshift0_seq_v = unpack<L, mp::val_lshift0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_rshift_seq_v = unpack<L, mp::val_rshift<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_rshift0_seq_v = unpack<L, mp::val_rshift0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_mul_seq_v = unpack<L, mp::val_mul<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_mul0_seq_v = unpack<L, mp::val_mul0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_mul1_seq_v = unpack<L, mp::val_mul1<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_left_mul_seq_v = unpack<L, mp::val_left_mul<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_left_mul0_seq_v = unpack<L, mp::val_left_mul0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_left_mul1_seq_v = unpack<L, mp::val_left_mul1<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_div_seq_v = unpack<L, mp::val_div<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_div0_seq_v = unpack<L, mp::val_div0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_div1_seq_v = unpack<L, mp::val_div1<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_mod_seq_v = unpack<L, mp::val_mod<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_mod0_seq_v = unpack<L, mp::val_mod0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_mod1_seq_v = unpack<L, mp::val_mod1<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_xor_seq_v = unpack<L, mp::val_xor<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_xor0_seq_v = unpack<L, mp::val_xor0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_left_xor_seq_v = unpack<L, mp::val_left_xor<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_left_xor0_seq_v = unpack<L, mp::val_left_xor0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_bit_and_seq_v = unpack<L, mp::val_bit_and<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_bit_and0_seq_v = unpack<L, mp::val_bit_and0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_left_bit_and_seq_v = unpack<L, mp::val_left_bit_and<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_left_bit_and0_seq_v = unpack<L, mp::val_left_bit_and0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_bit_or_seq_v = unpack<L, mp::val_bit_or<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_bit_or0_seq_v = unpack<L, mp::val_bit_or0<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_left_bit_or_seq_v = unpack<L, mp::val_left_bit_or<C>>::value;
+
+  template<class L, class C = mp::identity>
+  constexpr auto val_left_bit_or0_seq_v = unpack<L, mp::val_left_bit_or0<C>>::value;
+
+
+  template<auto... xs>
+  constexpr auto val_or_c_v = (xs || ... || false);
+
+  template<auto... xs>
+  constexpr auto val_and_c_v = (xs && ... && true);
+
+  template<auto... xs>
+  constexpr auto val_left_or_c_v = (false || ... || xs);
+
+  template<auto... xs>
+  constexpr auto val_left_and_c_v = (true && ... && xs);
+
+  template<auto... xs>
+  constexpr auto val_add_c_v = (xs + ...);
+
+  template<auto... xs>
+  constexpr auto val_add0_c_v = val_add_c_v<xs..., 0>;
+
+  template<auto... xs>
+  constexpr auto val_left_add_c_v = (... + xs);
+
+  template<auto... xs>
+  constexpr auto val_left_add0_c_v = val_left_add_c_v<xs..., 0>;
+
+  template<auto... xs>
+  constexpr auto val_sub_c_v = (... - xs);
+
+  template<auto... xs>
+  constexpr auto val_sub0_c_v = val_sub_c_v<xs..., 0>;
+
+  template<auto... xs>
+  constexpr auto val_lshift_c_v = (... << xs);
+
+  template<auto... xs>
+  constexpr auto val_lshift0_c_v = val_lshift_c_v<xs..., 0>;
+
+  template<auto... xs>
+  constexpr auto val_rshift_c_v = (... >> xs);
+
+  template<auto... xs>
+  constexpr auto val_rshift0_c_v = val_rshift_c_v<xs..., 0>;
+
+  template<auto... xs>
+  constexpr auto val_mul_c_v = (xs * ...);
+
+  template<auto... xs>
+  constexpr auto val_mul0_c_v = val_mul_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
+
+  template<auto... xs>
+  constexpr auto val_mul1_c_v = val_mul_c_v<xs..., 1>;
+
+  template<auto... xs>
+  constexpr auto val_left_mul_c_v = (... * xs);
+
+  template<auto... xs>
+  constexpr auto val_left_mul0_c_v = val_left_mul_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
+
+  template<auto... xs>
+  constexpr auto val_left_mul1_c_v = val_left_mul_c_v<xs..., 1>;
+
+  template<auto... xs>
+  constexpr auto val_div_c_v = (... / xs);
+
+  template<auto... xs>
+  constexpr auto val_div0_c_v = val_div_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
+
+  template<auto... xs>
+  constexpr auto val_div1_c_v = val_div_c_v<xs..., 1>;
+
+  template<auto... xs>
+  constexpr auto val_mod_c_v = (... % xs);
+
+
+  template<class... xs>
+  constexpr auto val_or_v = (xs::value || ... || false);
+
+  template<class... xs>
+  constexpr auto val_and_v = (xs::value && ... && true);
+
+  template<class... xs>
+  constexpr auto val_left_or_v = (false || ... || xs::value);
+
+  template<class... xs>
+  constexpr auto val_left_and_v = (true && ... && xs::value);
+
+  template<class... xs>
+  constexpr auto val_add_v = (xs::value + ...);
+
+  template<class... xs>
+  constexpr auto val_add0_v = mp::val_add0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_left_add_v = (... + xs::value);
+
+  template<class... xs>
+  constexpr auto val_left_add0_v = mp::val_add0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_sub_v = (... - xs::value);
+
+  template<class... xs>
+  constexpr auto val_sub0_v = mp::val_sub0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_lshift_v = (... << xs::value);
+
+  template<class... xs>
+  constexpr auto val_lshift0_v = mp::val_lshift0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_rshift_v = (... >> xs::value);
+
+  template<class... xs>
+  constexpr auto val_rshift0_v = mp::val_rshift0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_mul_v = (xs::value * ...);
+
+  template<class... xs>
+  constexpr auto val_mul0_v = mp::val_mul0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_mul1_v = mp::val_mul1<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_left_mul_v = (... * xs::value);
+
+  template<class... xs>
+  constexpr auto val_left_mul0_v = mp::val_left_mul0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_left_mul1_v = mp::val_left_mul1<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_div_v = (... / xs::value);
+
+  template<class... xs>
+  constexpr auto val_div0_v = mp::val_div0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_div1_v = mp::val_div1<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_mod_v = (... % xs::value);
+
+  template<class... xs>
+  constexpr auto val_mod0_v = mp::val_mod0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_mod1_v = mp::val_mod1<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_xor_v = (xs::value ^ ...);
+
+  template<class... xs>
+  constexpr auto val_xor0_v = mp::val_xor0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_left_xor_v = (... ^ xs::value);
+
+  template<class... xs>
+  constexpr auto val_left_xor0_v = mp::val_left_xor0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_bit_and_v = (xs::value & ...);
+
+  template<class... xs>
+  constexpr auto val_bit_and0_v = mp::val_bit_and0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_left_bit_and_v = (... & xs::value);
+
+  template<class... xs>
+  constexpr auto val_left_bit_and0_v = mp::val_left_bit_and0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_bit_or_v = (xs::value | ...);
+
+  template<class... xs>
+  constexpr auto val_bit_or0_v = mp::val_bit_or0<>::template f<xs...>::value;
+
+  template<class... xs>
+  constexpr auto val_left_bit_or_v = (... | xs::value);
+
+  template<class... xs>
+  constexpr auto val_left_bit_or0_v = mp::val_left_bit_or0<>::template f<xs...>::value;
+
+
+  template<class x, class C = mp::identity>
+  constexpr auto val_neg_v = mp::val_neg<C>::template f<x>::value;
+
+  template<class x, class C = mp::identity>
+  constexpr auto val_unary_plus_v = mp::val_unary_plus<C>::template f<x>::value;
+
+  template<class x, class C = mp::identity>
+  constexpr auto val_not_v = mp::val_not<C>::template f<x>::value;
+
+  template<class x, class C = mp::identity>
+  constexpr auto val_bit_not_v = mp::val_bit_not<C>::template f<x>::value;
+
+  template<class x, class C = mp::identity>
+  constexpr auto val_inc_v = mp::val_inc<C>::template f<x>::value;
+
+  template<class x, class C = mp::identity>
+  constexpr auto val_dec_v = mp::val_dec<C>::template f<x>::value;
+
+  template<class x, class y, class C = mp::identity>
+  constexpr auto val_equal_v = mp::val_equal<C>::template f<x, y>::value;
+
+  template<class x, class y, class C = mp::identity>
+  constexpr auto val_not_equal_v = mp::val_not_equal<C>::template f<x, y>::value;
+
+  template<class x, class y, class C = mp::identity>
+  constexpr auto val_less_v = mp::val_less<C>::template f<x, y>::value;
+
+  template<class x, class y, class C = mp::identity>
+  constexpr auto val_less_equal_v = mp::val_less_equal<C>::template f<x, y>::value;
+
+  template<class x, class y, class C = mp::identity>
+  constexpr auto val_greater_v = mp::val_greater<C>::template f<x, y>::value;
+
+  template<class x, class y, class C = mp::identity>
+  constexpr auto val_greater_equal_v = mp::val_greater_equal<C>::template f<x, y>::value;
 }
 
 /// \cond
@@ -754,6 +1094,55 @@ namespace jln::mp::emp
   template<auto... xs>
   using val_left_bit_or0_c = typename detail::val_emp_op<sizeof...(xs) != 0, val_left_bit_or_c, 0>
     ::template f<xs...>;
+
+
+  template<auto... xs>
+  constexpr auto val_mod0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_mod_c, 0>
+    ::template f<xs...>();
+
+  template<auto... xs>
+  constexpr auto val_mod1_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_mod_c, 1>
+    ::template f<xs...>();
+
+  template<auto... xs>
+  constexpr auto val_xor_c_v = val<(xs ^ ...)>();
+
+  template<auto... xs>
+  constexpr auto val_xor0_c_v = val_xor_c_v<xs..., 0, 0>();
+
+  template<auto... xs>
+  constexpr auto val_left_xor_c_v = val<(... ^ xs)>();
+
+  template<auto... xs>
+  constexpr auto val_left_xor0_c_v = val_left_xor_c_v<xs..., 0, 0>();
+
+  template<auto... xs>
+  constexpr auto val_bit_and_c_v = val<(xs & ...)>();
+
+  template<auto... xs>
+  constexpr auto val_bit_and0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_bit_and_c, 0>
+    ::template f<xs...>();
+
+  template<auto... xs>
+  constexpr auto val_left_bit_and_c_v = val<(... & xs)>();
+
+  template<auto... xs>
+  constexpr auto val_left_bit_and0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_left_bit_and_c, 0>
+    ::template f<xs...>();
+
+  template<auto... xs>
+  constexpr auto val_bit_or_c_v = val<(xs | ...)>();
+
+  template<auto... xs>
+  constexpr auto val_bit_or0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_bit_or_c, 0>
+    ::template f<xs...>();
+
+  template<auto... xs>
+  constexpr auto val_left_bit_or_c_v = val<(... | xs)>();
+
+  template<auto... xs>
+  constexpr auto val_left_bit_or0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_left_bit_or_c, 0>
+    ::template f<xs...>();
 }
 
 JLN_MP_DIAGNOSTIC_POP()

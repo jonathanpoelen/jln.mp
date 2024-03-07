@@ -8,15 +8,26 @@
 
 namespace jln::mp
 {
+#if !JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
   /// \cond
   namespace detail
   {
     template<class x>
-    struct _is_number;
+    struct is_number_impl;
   }
   /// \endcond
+#endif
 
   /// \ingroup number
+
+  namespace emp
+  {
+    template<class x>
+    constexpr bool is_number_v = false;
+
+    template<int_ n>
+    constexpr bool is_number_v<number<n>> = true;
+  }
 
   /// Checks whether a \value is a \number.
   /// \treturn \bool
@@ -24,13 +35,13 @@ namespace jln::mp
   struct is_number
   {
     template<class x>
-    using f = JLN_MP_CALL_TRACE(C, typename detail::_is_number<x>::type);
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_NUMBER_FROM_REGULAR_VARIABLE_TEMPLATE_OR_TYPE(is_number, x));
   };
 
   namespace emp
   {
     template<class x>
-    using is_number = typename detail::_is_number<x>::type;
+    using is_number = JLN_MP_NUMBER_FROM_REGULAR_VARIABLE_TEMPLATE_OR_TYPE(is_number, x);
   }
 
   /// \cond
@@ -38,27 +49,26 @@ namespace jln::mp
   struct is_number<identity>
   {
     template<class x>
-    using f = typename detail::_is_number<x>::type;
+    using f = JLN_MP_NUMBER_FROM_REGULAR_VARIABLE_TEMPLATE_OR_TYPE(is_number, x);
   };
   /// \endcond
 }
 
-
-#include <jln/mp/number/number.hpp>
-
+#if !JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
 /// \cond
 namespace jln::mp::detail
 {
   template<class x>
-  struct _is_number
+  struct is_number_impl
   {
     using type = false_;
   };
 
   template<int_ x>
-  struct _is_number<number<x>>
+  struct is_number_impl<number<x>>
   {
     using type = true_;
   };
 }
 /// \endcond
+#endif

@@ -18,5 +18,8 @@ namespace jln::mp
   {
     template<class L, class x, class C = mp::identity>
     using contains = unpack<L, mp::contains<x, C>>;
+
+    template<class L, class x, class C = mp::identity>
+    constexpr bool contains_v = unpack<L, mp::contains<x, C>>::value;
   }
 }

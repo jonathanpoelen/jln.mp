@@ -36,16 +36,22 @@ namespace jln::mp
   template<class C = identity>
   using is_disjoint = is_disjoint_with<same<>, C>;
 
+#ifdef JLN_MP_DOXYGENATING
   namespace emp
   {
-#ifdef JLN_MP_DOXYGENATING
     template<class L1, class L2, class C = mp::identity>
     using is_disjoint = typename is_disjoint<C>::template f<L1, L2>;
 
     template<class L1, class L2, class Cmp = same<>, class C = mp::identity>
     using is_disjoint_with = typename is_disjoint_with<Cmp, C>::template f<L1, L2>;
-#endif
+
+    template<class L1, class L2>
+    constexpr bool is_disjoint_v = is_disjoint<>::template f<L1, L2>::value;
+
+    template<class L1, class L2, class Cmp = same<>>
+    constexpr bool is_disjoint_with_v = is_disjoint_with<Cmp>::template f<L1, L2>::value;
   }
+#endif
 
   /// \cond
   template<class Cmp>
@@ -133,6 +139,12 @@ namespace jln::mp::emp
   using is_disjoint_with = typename C::template f<
     typename detail::is_disjoint_select<2>::f<Cmp, L1, L2>
   >;
+
+  template<class L1, class L2>
+  constexpr bool is_disjoint_v = detail::is_disjoint_select<2>::f<mp::same<>, L1, L2>::value;
+
+  template<class L1, class L2, class Cmp = mp::same<>>
+  constexpr bool is_disjoint_with_v = detail::is_disjoint_select<2>::f<Cmp, L1, L2>::value;
 }
 #endif
 /// \endcond

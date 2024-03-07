@@ -28,6 +28,15 @@ namespace jln::mp
   {
     template<class L, class Pred, class C = mp::identity>
     using none_of = unpack<L, mp::none_of<Pred, C>>;
+
+    template<class Pred, class... xs>
+    using none_of_xs = typename mp::none_of<Pred>::template f<xs...>;
+
+    template<class L, class Pred, class C = mp::identity>
+    constexpr bool none_of_v = unpack<L, mp::none_of<Pred, C>>::value;
+
+    template<class Pred, class... xs>
+    constexpr bool none_of_xs_v = mp::none_of<Pred>::template f<xs...>::value;
   }
 } // namespace jln::mp
 

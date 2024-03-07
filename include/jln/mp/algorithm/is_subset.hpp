@@ -37,16 +37,22 @@ namespace jln::mp
   template<class C = identity>
   using is_subset = is_subset_with<same<>, C>;
 
+#ifdef JLN_MP_DOXYGENATING
   namespace emp
   {
-#ifdef JLN_MP_DOXYGENATING
     template<class L1, class L2, class C = mp::identity>
     using is_subset = typename is_subset<C>::template f<L1, L2>;
 
     template<class L1, class L2, class Cmp = mp::same<>, class C = mp::identity>
     using is_subset_with = typename is_subset_with<Cmp, C>::template f<L1, L2>;
-#endif
+
+    template<class L1, class L2>
+    constexpr bool is_subset = is_subset<>::template f<L1, L2>::value;
+
+    template<class L1, class L2, class Cmp = mp::same<>>
+    constexpr bool is_subset_with = is_subset_with<Cmp>::template f<L1, L2>::value;
   }
+#endif
 
   /// \cond
   template<class Cmp>
@@ -117,6 +123,12 @@ namespace jln::mp::emp
   using is_subset_with = typename C::template f<
     typename detail::_is_subset<2>::f<Cmp, L1, L2>
   >;
+
+  template<class L1, class L2>
+  constexpr bool is_subset_v = detail::_is_subset<2>::f<mp::same<>, L1, L2>::value;
+
+  template<class L1, class L2, class Cmp = mp::same<>, class C = mp::identity>
+  constexpr bool is_subset_with_v = detail::_is_subset<2>::f<Cmp, L1, L2>::value;
 }
 #endif
 /// \endcond

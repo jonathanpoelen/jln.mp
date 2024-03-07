@@ -57,6 +57,9 @@
 #  ifndef JLN_MP_MEMOIZED_ALIAS
 #    define JLN_MP_MEMOIZED_ALIAS 1
 #  endif
+#  ifndef JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
+#    define JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE 1
+#  endif
 #endif
 
 // clang like
@@ -109,6 +112,9 @@
 #endif
 #ifndef JLN_MP_MEMOIZED_ALIAS
 #  define JLN_MP_MEMOIZED_ALIAS 0
+#endif
+#ifndef JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
+#  define JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE 0
 #endif
 //@}
 
@@ -232,4 +238,17 @@
 #else
 #  define JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
 #endif
+//@}
+
+// special wrapper for specialization of variable template or struct
+//@{
+#if JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
+#  define JLN_MP_NUMBER_FROM_VARIABLE_TEMPLATE_OR_TYPE(expr_v, expr_impl, ...) \
+  number<expr_v<__VA_ARGS__>>
+#else
+#  define JLN_MP_NUMBER_FROM_VARIABLE_TEMPLATE_OR_TYPE(expr_v, expr_impl, ...) \
+  typename expr_impl<__VA_ARGS__>::type
+#endif
+#define JLN_MP_NUMBER_FROM_REGULAR_VARIABLE_TEMPLATE_OR_TYPE(name, ...) \
+  JLN_MP_NUMBER_FROM_VARIABLE_TEMPLATE_OR_TYPE(emp::name##_v, detail::name##_impl, __VA_ARGS__)
 //@}

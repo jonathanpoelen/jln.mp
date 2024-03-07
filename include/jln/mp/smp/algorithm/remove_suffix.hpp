@@ -10,7 +10,7 @@
 namespace jln::mp::smp
 {
   template<class Seq, class TC = listify, class FC = TC>
-  using remove_suffix = typename mp::conditional_c<detail::_is_list<Seq>::type::value>
+  using remove_suffix = typename mp::conditional_c<emp::is_list_v<Seq>>
     ::template f<contract<mp::remove_suffix<Seq, subcontract<TC>, subcontract<FC>>>, bad_contract>;
 }
 

@@ -91,7 +91,8 @@ jln::mp::call<to_tuple<>, int, double> == std::tuple<int, double>
 - `C`: Continuation function. Represents the function used to chain calls, typically `listify` or `identity`.
 - `TC`: True Continuation function. Represents a continuation used when something is found.
 - `FC`: False Continuation function. Represents a continuation used when something is not found.
-- `_v` suffix: `C::f` takes values. Usually `C::f<jln::mp::int_...>` (C++17) or `C::f<auto...>` (C++20).
+- `_v` suffix: `C::f` takes values. Usually `C::f<jln::mp::int_...>` (C++17) or `C::f<auto...>` (C++20). In the `emp` namespace, with a few exceptions, this corresponds to a variable template (as for the stl).
+
 - `_c` suffix: number type parameters are `jln::mp::int_`. Usually `foo_c<int_ i> = foo<number<i>>`.
 
 

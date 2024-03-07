@@ -30,6 +30,9 @@ namespace jln::mp
   {
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
     using is_sorted = unpack<L, mp::is_sorted<Cmp, C>>;
+
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    constexpr bool is_sorted_v = unpack<L, mp::is_sorted<Cmp, C>>::value;
   }
 }
 

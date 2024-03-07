@@ -37,6 +37,9 @@ namespace jln::mp
   {
     template<class L, class Seq, class C = mp::identity>
     using ends_with = unpack<ends_with<Seq, C>, L>;
+
+    template<class L, class Seq, class C = mp::identity>
+    constexpr bool ends_with_v = unpack<ends_with<Seq, C>, L>::value;
   }
 
   /// \cond

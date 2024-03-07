@@ -19,5 +19,14 @@ namespace jln::mp
   {
     template<class L, class Pred, class C = mp::identity>
     using any_of = unpack<L, mp::any_of<Pred, C>>;
+
+    template<class Pred, class... xs>
+    using any_of_xs = typename mp::any_of<Pred>::template f<xs...>;
+
+    template<class L, class Pred, class C = mp::identity>
+    constexpr bool any_of_v = unpack<L, mp::any_of<Pred, C>>::value;
+
+    template<class Pred, class... xs>
+    constexpr bool any_of_xs_v = mp::any_of<Pred>::template f<xs...>::value;
   }
 } // namespace jln::mp

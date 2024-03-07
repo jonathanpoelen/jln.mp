@@ -13,7 +13,7 @@ namespace jln::mp::smp
 {
   template<class Seq, class SubC1 = listify, class SubC2 = SubC1,
            class TC = listify, class FC = clear<TC>>
-  using before_after_with = typename mp::conditional_c<detail::_is_list<Seq>::type::value>
+  using before_after_with = typename mp::conditional_c<emp::is_list_v<Seq>>
     ::template f<
       contract<mp::before_after_with<Seq, subcontract<SubC1>, subcontract<SubC2>,
                assume_binary<TC>, subcontract<FC>>>,
