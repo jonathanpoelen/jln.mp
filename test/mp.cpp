@@ -126,6 +126,7 @@
 #include "src/functional/partial_xs.cpp"
 #include "src/functional/random.cpp"
 #include "src/functional/recursively.cpp"
+#include "src/functional/select.cpp"
 #include "src/functional/tee.cpp"
 #include "src/functional/try.cpp"
 #include "src/functional/until.cpp"

@@ -44,7 +44,8 @@ namespace jln::mp::detail
     template<int_ n>
     using f = test_contract<
       mp::size<mp::greater_equal_than_c<n>>,
-      mp::drop_front_c<n, subcontract<C>>>;
+      mp::drop_front_c<n, subcontract<C>>
+    >;
   };
 
   template<class C>
@@ -53,7 +54,8 @@ namespace jln::mp::detail
     template<int_ n>
     using f = test_contract<
       mp::size<mp::greater_than_c<n>>,
-      mp::drop_front_c<n, mp::front<assume_unary<C>>>>;
+      mp::drop_front_c<n, front<C>>
+    >;
   };
 
   template<>

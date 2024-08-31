@@ -28,6 +28,7 @@
 #include <jln/mp/functional/partial_xs.hpp>
 #include <jln/mp/functional/random.hpp>
 #include <jln/mp/functional/recursively.hpp>
+#include <jln/mp/functional/select.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/functional/try.hpp>
 #include <jln/mp/functional/until.hpp>
