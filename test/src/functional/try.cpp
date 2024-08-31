@@ -85,6 +85,9 @@ TEST()
 
 JLN_MP_DIAGNOSTIC_PUSH()
 JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunused-const-variable")
+#if JLN_MP_CLANG >= 1800
+JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunused-template")
+#endif
 struct A;
 struct B { template<class> using f = int; };
 struct C { template<int> using f = int; };

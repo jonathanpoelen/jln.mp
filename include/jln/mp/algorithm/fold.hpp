@@ -43,8 +43,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class state, class F, class C = mp::identity>
-    using fold = unpack<L,
-      mp::push_front<state, mp::fold<F, C>>>;
+    using fold = unpack<L, mp::push_front<state, mp::fold<F, C>>>;
 
     template<class L, class F, class C = mp::identity>
     using reduce = unpack<L, mp::fold<F, C>>;
