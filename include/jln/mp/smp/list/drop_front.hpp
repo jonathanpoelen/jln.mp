@@ -33,17 +33,34 @@ JLN_MP_MAKE_REGULAR_SMP2_P(drop_front_max, (N), (C, smp::listify), smp::drop_fro
 
 
 #include <jln/mp/smp/list/drop_back.hpp>
+#include <jln/mp/smp/list/front.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
+  template<class C>
+  struct mk_drop_front_or_at
+  {
+    template<int_ n>
+    using f = test_contract<
+      mp::size<mp::greater_equal_than_c<n>>,
+      mp::drop_front_c<n, subcontract<C>>>;
+  };
+
+  template<class C>
+  struct mk_drop_front_or_at<try_contract<mp::front<C>>>
+  {
+    template<int_ n>
+    using f = test_contract<
+      mp::size<mp::greater_than_c<n>>,
+      mp::drop_front_c<n, mp::front<assume_unary<C>>>>;
+  };
+
   template<>
   struct mk_drop_front<true>
   {
     template<int_ n, class C>
-    using f = test_contract<
-      mp::size<mp::greater_equal_than_c<n>>,
-      mp::drop_front_c<n, subcontract<C>>>;
+    using f = typename mk_drop_front_or_at<C>::template f<n>;
   };
 
   template<>
