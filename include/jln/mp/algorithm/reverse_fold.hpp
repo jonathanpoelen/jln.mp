@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/functional/identity.hpp>
-#include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/algorithm/rotate.hpp>
+#include <jln/mp/functional/if.hpp>
 #include <jln/mp/list/push_front.hpp>
+#include <jln/mp/list/size.hpp>
+#include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/detail/sequence.hpp>
 
 namespace jln::mp
@@ -28,7 +30,7 @@ namespace jln::mp
   ///   \endcode
   /// \pre `sizeof...(xs) >= 1`
   /// \treturn \value
-  /// \see fold, reverse_fold, fold_tree, fold_balanced_tree
+  /// \see reverse_fold_or_else, fold, reverse_fold_right, fold_tree, fold_balanced_tree
   template<class F, class C = identity>
   struct reverse_fold
   {
@@ -40,11 +42,26 @@ namespace jln::mp
     );
   };
 
+  /// Folds right over a list using a binary predicate.
+  /// Like \c reverse_fold<>, but uses \c NoStateF when \c xs is empty.
+  /// \treturn \value
+  /// \see reverse_fold, fold, reverse_fold_right, fold_tree, fold_balanced_tree
+  template<class F, class EmptyC, class C = identity>
+  using reverse_fold_or_else = if_<size<>, rotate_c<-1, reverse_fold<F, C>>, EmptyC>;
+
+  template<class F, class FallbackValue, class C = identity>
+  using reverse_fold_or = reverse_fold_or_else<F, always<FallbackValue>, C>;
+
   namespace emp
   {
     template<class L, class state, class F, class C = mp::identity>
-    using reverse_fold = unpack<L,
-      mp::push_front<state, mp::reverse_fold<F, C>>>;
+    using reverse_fold = unpack<L, mp::push_front<state, mp::reverse_fold<F, C>>>;
+
+    template<class L, class F, class FallbackValue, class C = mp::identity>
+    using reverse_fold_or = unpack<L, mp::reverse_fold_or_else<F, always<FallbackValue>, C>>;
+
+    template<class L, class F, class NoStateF = F, class C = mp::identity>
+    using reverse_fold_or_else = unpack<L, mp::reverse_fold_or_else<F, NoStateF, C>>;
   }
 }
 

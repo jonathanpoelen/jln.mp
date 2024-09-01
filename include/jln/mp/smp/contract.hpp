@@ -149,6 +149,16 @@ namespace jln::mp::detail
   : optimize_try<try_<F, TC, FC>>
   {};
 
+  template<class F, class TC, class FC>
+  struct optimize_try<try_<try_<F>, TC, FC>>
+  : optimize_try<try_<F, TC, FC>>
+  {};
+
+  template<class F>
+  struct optimize_try<try_<try_<F>>>
+  : optimize_try<try_<F>>
+  {};
+
 
   template<class F>
   typename F::type lazy_build(int);

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/functional/if.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/list/push_front.hpp>
 
@@ -50,20 +50,31 @@ namespace jln::mp
   ///   F::f<... F::f<xs[0], xs[1], ..., xs[n-1]>, xs[2], ..., xs[n-1]>, ..., xs[n-1]>, ...>
   ///   \endcode
   /// \treturn \value
-  /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
-#ifdef JLN_MP_DOXYGENATING
+  /// \see fold_xs_or_else, fold_right, fold_tree, reverse_fold, fold_balanced_tree
   template<class F, class C = identity>
   using fold_xs = partial_fold_xs_c<-1, F, C>;
-#else
-  template<class F, class C = identity>
-  struct fold_xs
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      detail::partial_fold_xs_select<JLN_MP_TRACE_F(F)::template f, sizeof...(xs), xs...>
-    );
-  };
-#endif
+
+  /// As \c fold_xs_or_else, but stop at position \c OffsetEnd.
+  template<int_ OffsetEnd, class F, class EmptyC, class C = identity>
+  using partial_fold_xs_or_else_c = if_<size<>, partial_fold_xs_c<OffsetEnd, F, C>, EmptyC>;
+
+  template<class OffsetEnd, class F, class NoStateF = F, class C = identity>
+  using partial_fold_xs_or_else = partial_fold_xs_or_else_c<OffsetEnd::value, F, NoStateF, C>;
+
+  template<int_ OffsetEnd, class F, class FallbackValue, class C = identity>
+  using partial_fold_xs_or_c = partial_fold_xs_or_else_c<OffsetEnd, F, always<FallbackValue>, C>;
+
+  template<class OffsetEnd, class F, class FallbackValue, class C = identity>
+  using partial_fold_xs_or = partial_fold_xs_or_else_c<OffsetEnd::value, F, always<FallbackValue>, C>;
+
+  /// Folds left over a list using a mulary predicate.
+  /// Like \c fold_xs<>, but uses \c NoStateF when \c xs is empty.
+  /// \see fold_xs, fold_right, fold_tree, reverse_fold, fold_balanced_tree
+  template<class F, class NoStateF = F, class C = identity>
+  using fold_xs_or_else = partial_fold_xs_or_else_c<-1, F, NoStateF, C>;
+
+  template<class F, class FallbackValue, class C = identity>
+  using fold_xs_or = partial_fold_xs_or_else_c<-1, F, always<FallbackValue>, C>;
 
   namespace emp
   {
@@ -76,8 +87,29 @@ namespace jln::mp
       mp::push_front<state, mp::partial_fold_xs_c<OffsetEnd, F, C>>>;
 
     template<class L, class state, class F, class C = mp::identity>
-    using fold_xs = unpack<L,
-      mp::push_front<state, mp::fold_xs<F, C>>>;
+    using fold_xs = unpack<L, mp::push_front<state, mp::partial_fold_xs_c<-1, F, C>>>;
+
+    template<class L, class OffsetEnd, class F, class NoStateF = F, class C = mp::identity>
+    using partial_fold_xs_or_else = unpack<L,
+      mp::partial_fold_xs_or_else<OffsetEnd, F, NoStateF, C>>;
+
+    template<class L, int_ OffsetEnd, class F, class NoStateF = F, class C = mp::identity>
+    using partial_fold_xs_or_else_c = unpack<L,
+      mp::partial_fold_xs_or_else_c<OffsetEnd, F, NoStateF, C>>;
+
+    template<class L, class F, class NoStateF = F, class C = mp::identity>
+    using fold_xs_or_else = unpack<L, mp::partial_fold_xs_or_else_c<-1, F, NoStateF, C>>;
+
+    template<class L, class OffsetEnd, class F, class FallbackValue, class C = mp::identity>
+    using partial_fold_xs_or = unpack<L,
+      mp::partial_fold_xs_or_else<OffsetEnd, F, always<FallbackValue>, C>>;
+
+    template<class L, int_ OffsetEnd, class F, class FallbackValue, class C = mp::identity>
+    using partial_fold_xs_or_c = unpack<L,
+      mp::partial_fold_xs_or_else_c<OffsetEnd, F, always<FallbackValue>, C>>;
+
+    template<class L, class F, class FallbackValue, class C = mp::identity>
+    using fold_xs_or = unpack<L, mp::partial_fold_xs_or_else_c<-1, F, always<FallbackValue>, C>>;
   }
 }
 
@@ -96,8 +128,17 @@ namespace jln::mp
     >;
   };
 
+  template<class F, class C>
+  struct partial_fold_xs_c<-1, F, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      detail::partial_fold_xs_select<JLN_MP_TRACE_F(F)::template f, sizeof...(xs), xs...>
+    );
+  };
+
   template<class F>
-  struct fold_xs<F, identity>
+  struct partial_fold_xs_c<-1, F, identity>
   {
     template<class... xs>
     using f = detail::partial_fold_xs_select<JLN_MP_TRACE_F(F)::template f, sizeof...(xs), xs...>;
@@ -129,15 +170,16 @@ namespace jln::mp
   };
 
   template<template<class...> class F, class C>
-  struct fold_xs<lift<F>, C>
+  struct partial_fold_xs_c<-1, lift<F>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
       detail::partial_fold_xs_select<F, sizeof...(xs), xs...>
     );
   };
+
   template<template<class...> class F>
-  struct fold_xs<lift<F>, identity>
+  struct partial_fold_xs_c<-1, lift<F>, identity>
   {
     template<class... xs>
     using f = detail::partial_fold_xs_select<F, sizeof...(xs), xs...>;

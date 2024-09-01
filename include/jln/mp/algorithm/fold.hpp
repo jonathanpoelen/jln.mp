@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/functional/if.hpp>
+#include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/list/push_front.hpp>
+#include <jln/mp/list/size.hpp>
 #include <jln/mp/detail/sequence.hpp>
 
 namespace jln::mp
@@ -28,7 +30,7 @@ namespace jln::mp
   ///   \endcode
   /// \pre `sizeof...(xs) >= 1`
   /// \treturn \value
-  /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
+  /// \see fold_or_else, fold_right, fold_tree, reverse_fold, fold_balanced_tree
   template<class F, class C = identity>
   struct fold
   {
@@ -40,10 +42,26 @@ namespace jln::mp
     );
   };
 
+  /// Folds left over a list using a binary predicate.
+  /// Like \c fold<>, but uses \c EmptyC when \c xs is empty.
+  /// \treturn \value
+  /// \see fold, fold_right, fold_tree, reverse_fold, fold_balanced_tree
+  template<class F, class EmptyC, class C = identity>
+  using fold_or_else = if_<size<>, fold<F, C>, EmptyC>;
+
+  template<class F, class FallbackValue, class C = identity>
+  using fold_or = if_<size<>, fold<F, C>, always<FallbackValue>>;
+
   namespace emp
   {
     template<class L, class state, class F, class C = mp::identity>
     using fold = unpack<L, mp::push_front<state, mp::fold<F, C>>>;
+
+    template<class L, class F, class FallbackValue, class C = mp::identity>
+    using fold_or = unpack<L, mp::fold_or_else<F, always<FallbackValue>, C>>;
+
+    template<class L, class F, class EmptyC = F, class C = mp::identity>
+    using fold_or_else = unpack<L, mp::fold_or_else<F, EmptyC, C>>;
 
     template<class L, class F, class C = mp::identity>
     using reduce = unpack<L, mp::fold<F, C>>;

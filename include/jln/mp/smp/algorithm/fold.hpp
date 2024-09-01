@@ -2,19 +2,29 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/smp/functional/if.hpp>
+#include <jln/mp/smp/list/size.hpp>
+#include <jln/mp/smp/utility/always.hpp>
 #include <jln/mp/algorithm/fold.hpp>
 #include <jln/mp/functional/monadic.hpp>
-#include <jln/mp/list/size.hpp>
 
 namespace jln::mp::smp
 {
-  template<class F, class C = identity>
-  using fold = test_contract<
+  template<class F, class EmptyC, class C = identity>
+  using fold_or_else = test_contract<
     mp::size<>,
     mp::fold<
       mp::monadic0<assume_binary<F>>,
-      mp::monadic<assume_unary<C>>>>;
+      mp::monadic<assume_unary<C>>
+    >,
+    subcontract<EmptyC>
+  >;
+
+  template<class F, class FallbackValue, class C = identity>
+  using fold_or = fold_or_else<F, contract<mp::always<FallbackValue>>, C>;
+
+  template<class F, class C = identity>
+  using fold = fold_or_else<F, bad_contract, C>;
 }
 
 /// \cond

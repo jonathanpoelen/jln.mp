@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/functional/identity.hpp>
+#include <jln/mp/functional/if.hpp>
+#include <jln/mp/list/size.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/detail/sequence.hpp>
 
@@ -40,6 +41,16 @@ namespace jln::mp
   };
 
   /// Folds tree over a list using a binary predicate.
+  /// Like \c fold_tree<>, but uses \c EmptyC when \c xs is empty.
+  /// \treturn \value
+  /// \see fold, fold_right, fold_tree, reverse_fold, fold_balanced_tree
+  template<class F, class EmptyC, class C = identity>
+  using fold_tree_or_else = if_<size<>, fold_tree<F, C>, EmptyC>;
+
+  template<class F, class FallbackValue, class C = identity>
+  using fold_tree_or = if_<size<>, fold_tree<F, C>, always<FallbackValue>>;
+
+  /// Folds tree over a list using a binary predicate.
   /// recursively fold (n+1)/2 value to the left and the rest to the right.
   /// \semantics
   ///   Equivalent to
@@ -57,13 +68,38 @@ namespace jln::mp
     >::template f<C, JLN_MP_TRACE_F(F), xs...>;
   };
 
+  /// Folds tree over a list using a binary predicate.
+  /// Like \c fold_balanced_tree<>, but uses \c EmptyC when \c xs is empty.
+  /// \treturn \value
+  /// \see fold, fold_right, fold_tree, reverse_fold, fold_balanced_tree
+  template<class F, class EmptyC, class C = identity>
+  using fold_balanced_tree_or_else = if_<size<>, fold_balanced_tree<F, C>, EmptyC>;
+
+  template<class F, class FallbackValue, class C = identity>
+  using fold_balanced_tree_or = if_<size<>, fold_balanced_tree<F, C>, always<FallbackValue>>;
+
   namespace emp
   {
     template<class L, class F, class C = mp::identity>
     using fold_tree = unpack<L, mp::fold_tree<F, C>>;
 
+    template<class L, class F, class FallbackValue, class C = mp::identity>
+    using fold_tree_or = unpack<L,
+      mp::fold_tree_or_else<F, always<FallbackValue>, C>>;
+
+    template<class L, class F, class EmptyC = F, class C = mp::identity>
+    using fold_tree_or_else = unpack<L, mp::fold_tree_or_else<F, EmptyC, C>>;
+
     template<class L, class F, class C = mp::identity>
     using fold_balanced_tree = unpack<L, mp::fold_balanced_tree<F, C>>;
+
+    template<class L, class F, class FallbackValue, class C = mp::identity>
+    using fold_balanced_tree_or = unpack<L,
+      mp::fold_balanced_tree_or_else<F, always<FallbackValue>, C>>;
+
+    template<class L, class F, class EmptyC = F, class C = mp::identity>
+    using fold_balanced_tree_or_else = unpack<L,
+      mp::fold_balanced_tree_or_else<F, EmptyC, C>>;
   }
 }
 

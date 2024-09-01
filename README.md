@@ -1,6 +1,6 @@
 [![CI](https://github.com/jonathanpoelen/jln.mp/actions/workflows/ci.yml/badge.svg)](https://github.com/jonathanpoelen/jln.mp/actions?query=workflow%3ACI)
 
-[Jln.mp](https://github.com/jonathanpoelen/jln.mp) is a single header C++17 metaprogramming library designed for fast compilation speed (strongly inspired by [Kvasir::mpl](https://github.com/kvasir-io/mpl)).
+[Jln.mp](https://github.com/jonathanpoelen/jln.mp) is a single header C++17 metaprogramming library designed for fast compilation speed (strongly inspired by [Kvasir::mpl](https://github.com/kvasir-io/mpl), but generally faster, with more algorithm and a debug mode to have errors with more context).
 
 Licence: MIT
 

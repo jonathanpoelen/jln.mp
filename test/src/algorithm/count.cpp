@@ -30,7 +30,7 @@ TEST()
     .test<_2, _0, _1, _2, _3>()
     ;
 
-  test_context<count_if<always<na>>, smp::count_if<smp::always<na>>, 0>()
+  test_context<count_if<always<na>>, smp::count_if<smp::always<na>>>()
     .test<_0>()
     .not_invocable<_0>()
     ;

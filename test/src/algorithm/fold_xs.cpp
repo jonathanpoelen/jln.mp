@@ -24,8 +24,18 @@ TEST()
   ut::same<list<list<list<list<_0, _1, _3, _5, _7, _9>, _3, _5, _7, _9>, _5, _7, _9>, _7, _9>,
     emp::partial_fold_xs_c<seq_1_3_5_7_9, -2, _0, listify>>();
 
+  ut::same<list<>, emp::fold_xs_or_else<list<>, listify>>();
+  ut::same<list<list<list<_0, _1, _2, _3>, _2, _3>, _3>,
+    emp::fold_xs_or_else<seq_0_1_2_3, listify>>();
+
+  ut::same<list<>, emp::partial_fold_xs_or_else_c<list<>, 2, listify>>();
+  ut::same<list<list<_1, _3, _5, _7, _9>, _5, _7, _9>,
+    emp::partial_fold_xs_or_else_c<seq_1_3_5_7_9, 2, listify>>();
+
   test_mulary_pack<fold_xs>();
   test_unary_pack<fold_xs, listify>();
+  test_mulary_pack<fold_xs_or_else>();
+  test_unary_pack<fold_xs_or_else, listify>();
 
   test_context<fold_xs<listify>, smp::fold_xs<smp::listify>>()
     .test<_0, _0>()
@@ -50,6 +60,16 @@ TEST()
     .not_invocable<_0, _1, na>()
     ;
 
+  test_context<fold_xs_or_else<listify>, smp::fold_xs_or_else<smp::listify>>()
+    .test<list<>>()
+    .test<_0, _0>()
+    .test<list<_0, _1>, _0, _1>()
+    .test<list<list<list<_0, _1, _2, _3>, _2, _3>, _3>, _0, _1, _2, _3>()
+    .test<list<list<list<list<list<_0, _1, _2, _3, _4, _5>,
+        _2, _3, _4, _5>, _3, _4, _5>, _4, _5>, _5>,
+      _0, _1, _2, _3, _4, _5>()
+    ;
+
   ut::not_invocable<smp::fold_xs<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::fold_xs<listify, bad_function>, _1>();
   ut::not_invocable<smp::fold_xs<listify, bad_function>, _1, _1, _1>();
@@ -62,6 +82,9 @@ TEST()
     _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, void>();
   ut::not_invocable<smp::fold_xs<smp::add<>>,
     void, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>();
+
+  ut::not_invocable<smp::fold_xs_or_else<smp::always<na>, smp::listify>, _1, _1, _1>();
+  ut::not_invocable<smp::fold_xs_or_else<smp::listify, smp::always<na>>>();
 }
 
 TEST_SUITE_END()

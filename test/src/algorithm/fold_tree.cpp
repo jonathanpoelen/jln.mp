@@ -39,6 +39,16 @@ TEST()
     .not_invocable<>()
     ;
 
+  test_context<
+    fold_tree_or_else<listify, listify>,
+    smp::fold_tree_or_else<smp::listify, smp::listify>
+  >()
+    .test<list<>>()
+    .test<_0, _0>()
+    .test<list<_0, _1>, _0, _1>()
+    .test<list<list<_0, _1>, _2>, _0, _1, _2>()
+    ;
+
   test_context<fold_balanced_tree<listify>, smp::fold_balanced_tree<smp::listify>>()
     .test<_0, _0>()
     .test<list<_0, _1>, _0, _1>()
@@ -58,14 +68,31 @@ TEST()
     .not_invocable<>()
     ;
 
+  test_context<
+    fold_balanced_tree_or_else<listify, listify>,
+    smp::fold_balanced_tree_or_else<smp::listify, smp::listify>
+  >()
+    .test<list<>>()
+    .test<_0, _0>()
+    .test<list<_0, _1>, _0, _1>()
+    .test<list<list<_0, _1>, _2>, _0, _1, _2>()
+    .test<list<list<_0, _1>, list<_2, _3>>, _0, _1, _2, _3>()
+    ;
+
   ut::not_invocable<smp::fold_tree<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::fold_tree<listify, bad_function>, _1>();
   ut::not_invocable<smp::fold_tree<bad_function>, _1, _2>();
   ut::not_invocable<smp::fold_tree<add<>>, _1, _2, void>();
 
+  ut::not_invocable<smp::fold_tree_or_else<smp::always<na>, smp::listify>, _1, _1, _1>();
+  ut::not_invocable<smp::fold_tree_or_else<smp::listify, smp::always<na>>>();
+
   ut::not_invocable<smp::fold_balanced_tree<listify, bad_function>, _1>();
   ut::not_invocable<smp::fold_balanced_tree<bad_function>, _1, _2>();
   ut::not_invocable<smp::fold_balanced_tree<add<>>, _1, _2, void>();
+
+  ut::not_invocable<smp::fold_balanced_tree_or_else<smp::always<na>, smp::listify>, _1, _1, _1>();
+  ut::not_invocable<smp::fold_balanced_tree_or_else<smp::listify, smp::always<na>>>();
 }
 
 TEST_SUITE_END()

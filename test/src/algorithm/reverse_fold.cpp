@@ -17,8 +17,14 @@ TEST()
   ut::same<list<list<list<_3, _2>, _1>, _0>,
     emp::reverse_fold<seq_0_1_2, _3, listify>>();
 
+  ut::same<list<>, emp::reverse_fold_or_else<list<>, listify>>();
+  ut::same<list<list<list<_3, _2>, _1>, _0>,
+    emp::reverse_fold_or_else<seq_0_1_2_3, listify, listify>>();
+
   test_binary_pack<reverse_fold>();
   test_unary_pack<reverse_fold, listify>();
+  test_binary_pack<reverse_fold_or_else, listify>();
+  test_unary_pack<reverse_fold_or_else, listify>();
 
   test_context<reverse_fold<listify>, smp::reverse_fold<smp::listify>>()
     .test<_0, _0>()
@@ -42,6 +48,18 @@ TEST()
     .not_invocable<_0, _1, na>()
     ;
 
+  test_context<
+    reverse_fold_or_else<listify, listify>,
+    smp::reverse_fold_or_else<smp::listify, smp::listify>
+  >()
+    .test<list<>>()
+    .test<_0, _0>()
+    .test<seq_1_0, _0, _1>()
+    .test<list<list<list<_3, _2>, _1>, _0>, _0, _1, _2, _3>()
+    .test<list<list<list<list<list<_5, _4>, _3>, _2>, _1>, _0>,
+      _0, _1, _2, _3, _4, _5>()
+    ;
+
   ut::not_invocable<smp::reverse_fold<smp::always<na>>, _1, _1, _1>();
   ut::not_invocable<smp::reverse_fold<listify, bad_function>, _1>();
   ut::not_invocable<smp::reverse_fold<listify, bad_function>, _1, _1, _1>();
@@ -54,6 +72,9 @@ TEST()
     _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, void>();
   ut::not_invocable<smp::reverse_fold<smp::add<>>,
     void, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1, _1>();
+
+  ut::not_invocable<smp::reverse_fold_or_else<smp::always<na>, smp::listify>, _1, _1, _1>();
+  ut::not_invocable<smp::reverse_fold_or_else<smp::listify, smp::always<na>>>();
 }
 
 TEST_SUITE_END()
