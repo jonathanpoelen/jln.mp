@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
 # SPDX-License-Identifier: MIT
+set -ex
 
 if [[ -d "$1" ]]; then
   f="$1"/build.ninja
 elif [[ -f "$1" ]]; then
   f="$1"
-elif [[ -d "$MESON_BUILD_ROOT" ]]; then
+elif [[ -f "$MESON_BUILD_ROOT/build.ninja" ]]; then
   f="$MESON_BUILD_ROOT"/build.ninja
 else
   f=build.ninja
