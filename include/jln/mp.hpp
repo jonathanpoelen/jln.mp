@@ -15,60 +15,6 @@
 #include <utility>
 
 
-namespace jln::mp
-{
-  /// \ingroup functional
-
-  /// \treturn \value
-  struct identity
-  {
-    template<class x>
-    using f = x;
-  };
-
-  namespace emp
-  {
-    template<class x>
-    using identity = x;
-  }
-  /// \ingroup number
-
-  using int_ = std::intmax_t;
-  using uint_ = std::uintmax_t;
-
-  template<int_ v>
-  struct number { static const int_ value = v; };
-
-  using true_ = number<1>;
-  using false_ = number<0>;
-
-#ifndef JLN_MP_ENABLE_TPL_AUTO
-# if defined(__cpp_nontype_template_parameter_auto)
-#   if __cpp_nontype_template_parameter_auto >= 201606L
-#     define JLN_MP_ENABLE_TPL_AUTO 1
-#   endif
-# endif
-#endif
-
-#ifndef JLN_MP_ENABLE_TPL_AUTO
-# define JLN_MP_ENABLE_TPL_AUTO 0
-#endif
-
-#if JLN_MP_ENABLE_TPL_AUTO
-# define JLN_MP_TPL_AUTO_OR_INT auto
-# define JLN_MP_TPL_AUTO_OR(T) auto
-#else
-# define JLN_MP_TPL_AUTO_OR_INT ::jln::mp::int_
-# define JLN_MP_TPL_AUTO_OR(T) T
-#endif
-}
-namespace jln::mp
-{
-  /// \ingroup list
-
-  template<class... xs>
-  class list {};
-} // namespace jln::mp
 // Compiler type
 //@{
 // cuda
@@ -322,29 +268,6 @@ namespace jln::mp
 
 #define JLN_MP_UNPACK(...) __VA_ARGS__
 
-#ifndef JLN_MP_ENABLE_DEBUG
-#  define JLN_MP_ENABLE_DEBUG 0
-#endif
-
-// useless with gcc and msvc since it displays all the transformations
-#if JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_MEMOIZED_ALIAS
-#  undef JLN_MP_ENABLE_DEBUG
-#  define JLN_MP_ENABLE_DEBUG 0
-#endif
-#ifndef JLN_MP_MAX_CALL_ELEMENT
-# define JLN_MP_MAX_CALL_ELEMENT 10000
-#endif
-
-/// \defgroup list List
-/// \defgroup algorithm Algorithm
-/// \defgroup number Number
-/// \defgroup value Value
-/// \defgroup functional Functional
-/// \defgroup utility Utility
-/// \defgroup trait Trait
-/// \defgroup search Search
-/// \defgroup group Group
-
 // Fast convertion to bool.
 // If the value is more likely to be a bool, preferred bool(expr)
 
@@ -399,6 +322,50 @@ namespace jln::mp
     using conditional_c = typename mp::conditional_c<bool_>
       ::template f<true_value, false_value>;
   }
+  /// \ingroup functional
+
+  /// \treturn \value
+  struct identity
+  {
+    template<class x>
+    using f = x;
+  };
+
+  namespace emp
+  {
+    template<class x>
+    using identity = x;
+  }
+} // namespace jln::mp
+
+#ifndef JLN_MP_ENABLE_DEBUG
+#  define JLN_MP_ENABLE_DEBUG 0
+#endif
+
+// useless with gcc and msvc since it displays all the transformations
+#if JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_MEMOIZED_ALIAS
+#  undef JLN_MP_ENABLE_DEBUG
+#  define JLN_MP_ENABLE_DEBUG 0
+#endif
+#ifndef JLN_MP_MAX_CALL_ELEMENT
+# define JLN_MP_MAX_CALL_ELEMENT 10000
+#endif
+
+/// \defgroup list List
+/// \defgroup algorithm Algorithm
+/// \defgroup number Number
+/// \defgroup value Value
+/// \defgroup functional Functional
+/// \defgroup utility Utility
+/// \defgroup trait Trait
+/// \defgroup search Search
+/// \defgroup group Group
+namespace jln::mp
+{
+  /// \ingroup list
+
+  template<class... xs>
+  class list {};
   /// Value that is not available.
   /// This type is used in `smp` for a contract that is not respected.
   struct na {};
@@ -531,6 +498,40 @@ namespace jln::mp::detail
 }
 #endif
 /// \endcond
+
+namespace jln::mp
+{
+  /// \ingroup number
+
+  using int_ = std::intmax_t;
+  using uint_ = std::uintmax_t;
+
+  template<int_ v>
+  struct number { static const int_ value = v; };
+
+  using true_ = number<1>;
+  using false_ = number<0>;
+
+#ifndef JLN_MP_ENABLE_TPL_AUTO
+# if defined(__cpp_nontype_template_parameter_auto)
+#   if __cpp_nontype_template_parameter_auto >= 201606L
+#     define JLN_MP_ENABLE_TPL_AUTO 1
+#   endif
+# endif
+#endif
+
+#ifndef JLN_MP_ENABLE_TPL_AUTO
+# define JLN_MP_ENABLE_TPL_AUTO 0
+#endif
+
+#if JLN_MP_ENABLE_TPL_AUTO
+# define JLN_MP_TPL_AUTO_OR_INT auto
+# define JLN_MP_TPL_AUTO_OR(T) auto
+#else
+# define JLN_MP_TPL_AUTO_OR_INT ::jln::mp::int_
+# define JLN_MP_TPL_AUTO_OR(T) T
+#endif
+}
 
 namespace jln::mp
 {
@@ -753,6 +754,30 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  /// Always evaluate at an arbitrary value.
+  /// \post result = x
+  /// \treturn \value
+  template<class x, class C = identity>
+  struct always
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, x);
+  };
+
+  /// \cond
+  template<class x>
+  struct always<x, identity>
+  {
+    template<class... xs>
+    using f = x;
+  };
+  /// \endcond
+}
 
 namespace jln::mp
 {
@@ -1062,6 +1087,214 @@ namespace jln::mp::detail
 
   template<class C>
   using optimize_useless_unpack_t = typename optimize_useless_unpack<C>::type;
+}
+/// \endcond
+
+namespace jln::mp
+{
+  /// \ingroup algorithm
+
+#if JLN_MP_HAS_BUILTIN(__is_same)
+#  define JLN_MP_IS_SAME(...) __is_same(__VA_ARGS__)
+#else
+#  define JLN_MP_IS_SAME(...) ::jln::mp::emp::same_xs_v<__VA_ARGS__>
+#endif
+
+  namespace emp
+  {
+    template<class... xs>
+    inline constexpr bool same_xs_v = true;
+
+    template<class x>
+    inline constexpr bool same_xs_v<x, x> = true;
+
+    template<class x, class y>
+    inline constexpr bool same_xs_v<x, y> = false;
+
+    template<class x, class y, class z, class... xs>
+    inline constexpr bool same_xs_v<x, y, z, xs...> =
+#if JLN_MP_HAS_BUILTIN(__is_same)
+      __is_same(list<x, y, z, xs...>, list<y, z, xs..., x>)
+#else
+      same_xs_v<list<x, y, z, xs...>, list<y, z, xs..., x>>
+#endif
+    ;
+  }
+}
+
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  /// \treturn \bool
+  template<class T, class C = identity>
+  struct is
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_IS_SAME(T, x)>);
+  };
+
+  /// \cond
+  template<class T>
+  struct is<T, identity>
+  {
+    template<class x>
+    using f = number<JLN_MP_IS_SAME(T, x)>;
+  };
+  /// \endcond
+  /// \ingroup list
+
+  /// Returns the number of elements in a \c xs.
+  /// \treturn \number
+  template<class C = identity>
+  struct size
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof...(xs)>);
+  };
+
+  namespace emp
+  {
+    template<class L, class C = mp::identity>
+    using size = unpack<L, mp::size<C>>;
+
+    template<class L, class C = mp::identity>
+    constexpr bool size_v = unpack<L, mp::size<C>>::value;
+  }
+
+  /// \cond
+  template<>
+  struct size<identity>
+  {
+    template<class... xs>
+    using f = number<sizeof...(xs)>;
+  };
+
+  template<int_ i>
+  struct size<is<number<i>>>
+  {
+    template<class... xs>
+    using f = number<sizeof...(xs) == i>;
+  };
+
+  template<int_ i, class C>
+  struct size<is<number<i>, C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof...(xs) == i>);
+  };
+  /// \endcond
+}
+
+namespace jln::mp
+{
+  /// \ingroup algorithm
+
+  /// Checks whether all \values are identical.
+  /// \treturn \bool
+  template<class C = identity>
+  struct same
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<emp::same_xs_v<xs...>>);
+  };
+
+  template<class C = identity>
+  struct same_v
+  {
+    template<class... xs>
+    using f = typename C::template f<emp::same_xs_v<xs...>>;
+  };
+
+  namespace emp
+  {
+    template<class L, class C = mp::identity>
+    using same = unpack<L, mp::same<C>>;
+
+    template<class L, class C = mp::identity>
+    inline constexpr bool same_v = unpack<L, mp::same<C>>::value;
+  }
+}
+
+
+/// \cond
+namespace jln::mp
+{
+  template<>
+  struct same<identity>
+  {
+    template<class... xs>
+    using f = number<emp::same_xs_v<xs...>>;
+  };
+}
+/// \endcond
+
+namespace jln::mp
+{
+  /// \ingroup functional
+
+  /// A conditional expression.
+  /// \treturn \value
+  template<class Pred, class TC, class FC = always<false_>>
+  struct if_
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, xs...)::value)
+    >
+      ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
+      ::template f<xs...>;
+  };
+
+  namespace emp
+  {
+    template<class Pred, class TC, class FC, class... xs>
+    using if_ = typename mp::if_<Pred, TC, FC>::template f<xs...>;
+  }
+}
+
+
+
+/// \cond
+namespace jln::mp
+{
+  template<class TC, class FC>
+  struct if_<size<>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
+      ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
+      ::template f<xs...>;
+  };
+
+  template<int_ i, class TC, class FC>
+  struct if_<size<is<number<i>>>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<sizeof...(xs) == i>
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+      ::template f<xs...>;
+  };
+
+  template<class TC, class FC>
+  struct if_<same<>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<emp::same_xs_v<xs...>>
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+      ::template f<xs...>;
+  };
+
+  template<class C, class TC, class FC>
+  struct if_<same<C>, TC, FC>
+  {
+    template<class... xs>
+    using f = typename mp::conditional_c<
+      JLN_MP_TRACE_F(C)::template f<number<emp::same_xs_v<xs...>>>::value
+    >
+      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
+      ::template f<xs...>;
+  };
 }
 /// \endcond
 
@@ -1810,7 +2043,7 @@ namespace jln::mp
   ///   \endcode
   /// \pre `sizeof...(xs) >= 1`
   /// \treturn \value
-  /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
+  /// \see fold_or_else, fold_right, fold_tree, reverse_fold, fold_balanced_tree
   template<class F, class C = identity>
   struct fold
   {
@@ -1822,11 +2055,26 @@ namespace jln::mp
     );
   };
 
+  /// Folds left over a list using a binary predicate.
+  /// Like \c fold<>, but uses \c EmptyC when \c xs is empty.
+  /// \treturn \value
+  /// \see fold, fold_right, fold_tree, reverse_fold, fold_balanced_tree
+  template<class F, class EmptyC, class C = identity>
+  using fold_or_else = if_<size<>, fold<F, C>, EmptyC>;
+
+  template<class F, class FallbackValue, class C = identity>
+  using fold_or = if_<size<>, fold<F, C>, always<FallbackValue>>;
+
   namespace emp
   {
     template<class L, class state, class F, class C = mp::identity>
-    using fold = unpack<L,
-      mp::push_front<state, mp::fold<F, C>>>;
+    using fold = unpack<L, mp::push_front<state, mp::fold<F, C>>>;
+
+    template<class L, class F, class FallbackValue, class C = mp::identity>
+    using fold_or = unpack<L, mp::fold_or_else<F, always<FallbackValue>, C>>;
+
+    template<class L, class F, class EmptyC = F, class C = mp::identity>
+    using fold_or_else = unpack<L, mp::fold_or_else<F, EmptyC, C>>;
 
     template<class L, class F, class C = mp::identity>
     using reduce = unpack<L, mp::fold<F, C>>;
@@ -2397,30 +2645,6 @@ namespace jln::mp
 
 namespace jln::mp
 {
-  /// \ingroup utility
-
-  /// Always evaluate at an arbitrary value.
-  /// \post result = x
-  /// \treturn \value
-  template<class x, class C = identity>
-  struct always
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, x);
-  };
-
-  /// \cond
-  template<class x>
-  struct always<x, identity>
-  {
-    template<class... xs>
-    using f = x;
-  };
-  /// \endcond
-}
-
-namespace jln::mp
-{
   /// \ingroup list
 
   /// Removes all elements from the \sequence.
@@ -2875,8 +3099,9 @@ namespace jln::mp::detail
 
   // 256 < sizeof...(xs) <= 4096
   template<class PrecomputedIndexes>
-  class build_indexed_v_impl<2, PrecomputedIndexes>
+  struct build_indexed_v_impl<2, PrecomputedIndexes>
   {
+  private:
     using _precomputed_indexes = typename rlist_to_indexed<PrecomputedIndexes>
       ::template f<indexed>;
 
@@ -2891,8 +3116,9 @@ namespace jln::mp::detail
 
   // 4096 < sizeof...(xs) <= 65536
   template<class PrecomputedIndexes>
-  class build_indexed_v_impl<3, PrecomputedIndexes>
+  struct build_indexed_v_impl<3, PrecomputedIndexes>
   {
+  private:
     using _precomputed_indexes = typename rlist_to_indexed<
       typename rlist_to_indexed_rlist<PrecomputedIndexes>::type
     >::template f<indexed>;
@@ -4617,102 +4843,6 @@ namespace jln::mp::detail
 
 namespace jln::mp
 {
-  /// \ingroup algorithm
-
-#if JLN_MP_HAS_BUILTIN(__is_same)
-#  define JLN_MP_IS_SAME(...) __is_same(__VA_ARGS__)
-#else
-#  define JLN_MP_IS_SAME(...) ::jln::mp::emp::same_xs_v<__VA_ARGS__>
-#endif
-
-  namespace emp
-  {
-    template<class... xs>
-    inline constexpr bool same_xs_v = true;
-
-    template<class x>
-    inline constexpr bool same_xs_v<x, x> = true;
-
-    template<class x, class y>
-    inline constexpr bool same_xs_v<x, y> = false;
-
-    template<class x, class y, class z, class... xs>
-    inline constexpr bool same_xs_v<x, y, z, xs...> =
-#if JLN_MP_HAS_BUILTIN(__is_same)
-      __is_same(list<x, y, z, xs...>, list<y, z, xs..., x>)
-#else
-      same_xs_v<list<x, y, z, xs...>, list<y, z, xs..., x>>
-#endif
-    ;
-  }
-}
-
-namespace jln::mp
-{
-  /// \ingroup utility
-
-  /// \treturn \bool
-  template<class T, class C = identity>
-  struct is
-  {
-    template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_IS_SAME(T, x)>);
-  };
-
-  /// \cond
-  template<class T>
-  struct is<T, identity>
-  {
-    template<class x>
-    using f = number<JLN_MP_IS_SAME(T, x)>;
-  };
-  /// \endcond
-  /// \ingroup list
-
-  /// Returns the number of elements in a \c xs.
-  /// \treturn \number
-  template<class C = identity>
-  struct size
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<sizeof...(xs)>);
-  };
-
-  namespace emp
-  {
-    template<class L, class C = mp::identity>
-    using size = unpack<L, mp::size<C>>;
-
-    template<class L, class C = mp::identity>
-    constexpr bool size_v = unpack<L, mp::size<C>>::value;
-  }
-
-  /// \cond
-  template<>
-  struct size<identity>
-  {
-    template<class... xs>
-    using f = number<sizeof...(xs)>;
-  };
-
-  template<int_ i>
-  struct size<is<number<i>>>
-  {
-    template<class... xs>
-    using f = number<sizeof...(xs) == i>;
-  };
-
-  template<int_ i, class C>
-  struct size<is<number<i>, C>>
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<sizeof...(xs) == i>);
-  };
-  /// \endcond
-}
-
-namespace jln::mp
-{
   /// \cond
   namespace detail
   {
@@ -4824,118 +4954,6 @@ namespace jln::mp::detail
   {
     template<class TC, class FC, std::size_t m>
     using f = always<JLN_MP_CALL_TRACE(TC, number<m-n-1>)>;
-  };
-}
-/// \endcond
-
-namespace jln::mp
-{
-  /// \ingroup algorithm
-
-  /// Checks whether all \values are identical.
-  /// \treturn \bool
-  template<class C = identity>
-  struct same
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<emp::same_xs_v<xs...>>);
-  };
-
-  template<class C = identity>
-  struct same_v
-  {
-    template<class... xs>
-    using f = typename C::template f<emp::same_xs_v<xs...>>;
-  };
-
-  namespace emp
-  {
-    template<class L, class C = mp::identity>
-    using same = unpack<L, mp::same<C>>;
-
-    template<class L, class C = mp::identity>
-    inline constexpr bool same_v = unpack<L, mp::same<C>>::value;
-  }
-}
-
-
-/// \cond
-namespace jln::mp
-{
-  template<>
-  struct same<identity>
-  {
-    template<class... xs>
-    using f = number<emp::same_xs_v<xs...>>;
-  };
-}
-/// \endcond
-
-namespace jln::mp
-{
-  /// \ingroup functional
-
-  /// A conditional expression.
-  /// \treturn \value
-  template<class Pred, class TC, class FC = always<false_>>
-  struct if_
-  {
-    template<class... xs>
-    using f = typename mp::conditional_c<
-      JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, xs...)::value)
-    >
-      ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
-      ::template f<xs...>;
-  };
-
-  namespace emp
-  {
-    template<class Pred, class TC, class FC, class... xs>
-    using if_ = typename mp::if_<Pred, TC, FC>::template f<xs...>;
-  }
-}
-
-
-
-/// \cond
-namespace jln::mp
-{
-  template<class TC, class FC>
-  struct if_<size<>, TC, FC>
-  {
-    template<class... xs>
-    using f = typename mp::conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
-      ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
-      ::template f<xs...>;
-  };
-
-  template<int_ i, class TC, class FC>
-  struct if_<size<is<number<i>>>, TC, FC>
-  {
-    template<class... xs>
-    using f = typename mp::conditional_c<sizeof...(xs) == i>
-      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
-      ::template f<xs...>;
-  };
-
-  template<class TC, class FC>
-  struct if_<same<>, TC, FC>
-  {
-    template<class... xs>
-    using f = typename mp::conditional_c<emp::same_xs_v<xs...>>
-      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
-      ::template f<xs...>;
-  };
-
-  template<class C, class TC, class FC>
-  struct if_<same<C>, TC, FC>
-  {
-    template<class... xs>
-    using f = typename mp::conditional_c<
-      JLN_MP_TRACE_F(C)::template f<number<emp::same_xs_v<xs...>>>::value
-    >
-      ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
-      ::template f<xs...>;
   };
 }
 /// \endcond
@@ -12802,7 +12820,7 @@ namespace jln::mp
   ///   \endcode
   /// \pre `sizeof...(xs) >= 1`
   /// \treturn \value
-  /// \see fold, fold_tree, reverse_fold_right, fold_balanced_tree
+  /// \see fold_right_or_else, fold, fold_tree, reverse_fold_right, fold_balanced_tree
   template<class F, class C = identity>
   struct fold_right
   {
@@ -12814,11 +12832,26 @@ namespace jln::mp
     );
   };
 
+  /// Folds right over a list using a binary predicate.
+  /// Like \c fold_right<>, but uses \c NoStateF when \c xs is empty.
+  /// \treturn \value
+  /// \see fold_right, fold, fold_tree, reverse_fold_right, fold_balanced_tree
+  template<class F, class EmptyC, class C = identity>
+  using fold_right_or_else = if_<size<>, rotate_c<-1, fold_right<F, C>>, EmptyC>;
+
+  template<class F, class FallbackValue, class C = identity>
+  using fold_right_or = fold_right_or_else<F, always<FallbackValue>, C>;
+
   namespace emp
   {
     template<class L, class state, class F, class C = mp::identity>
-    using fold_right = unpack<L,
-      mp::push_front<state, mp::fold_right<F, C>>>;
+    using fold_right = unpack<L, mp::push_front<state, mp::fold_right<F, C>>>;
+
+    template<class L, class F, class FallbackValue, class C = mp::identity>
+    using fold_right_or = unpack<L, mp::fold_right_or_else<F, always<FallbackValue>, C>>;
+
+    template<class L, class F, class NoStateF = F, class C = mp::identity>
+    using fold_right_or_else = unpack<L, mp::fold_right_or_else<F, NoStateF, C>>;
   }
 }
 
@@ -12946,6 +12979,16 @@ namespace jln::mp
   };
 
   /// Folds tree over a list using a binary predicate.
+  /// Like \c fold_tree<>, but uses \c EmptyC when \c xs is empty.
+  /// \treturn \value
+  /// \see fold, fold_right, fold_tree, reverse_fold, fold_balanced_tree
+  template<class F, class EmptyC, class C = identity>
+  using fold_tree_or_else = if_<size<>, fold_tree<F, C>, EmptyC>;
+
+  template<class F, class FallbackValue, class C = identity>
+  using fold_tree_or = if_<size<>, fold_tree<F, C>, always<FallbackValue>>;
+
+  /// Folds tree over a list using a binary predicate.
   /// recursively fold (n+1)/2 value to the left and the rest to the right.
   /// \semantics
   ///   Equivalent to
@@ -12963,13 +13006,38 @@ namespace jln::mp
     >::template f<C, JLN_MP_TRACE_F(F), xs...>;
   };
 
+  /// Folds tree over a list using a binary predicate.
+  /// Like \c fold_balanced_tree<>, but uses \c EmptyC when \c xs is empty.
+  /// \treturn \value
+  /// \see fold, fold_right, fold_tree, reverse_fold, fold_balanced_tree
+  template<class F, class EmptyC, class C = identity>
+  using fold_balanced_tree_or_else = if_<size<>, fold_balanced_tree<F, C>, EmptyC>;
+
+  template<class F, class FallbackValue, class C = identity>
+  using fold_balanced_tree_or = if_<size<>, fold_balanced_tree<F, C>, always<FallbackValue>>;
+
   namespace emp
   {
     template<class L, class F, class C = mp::identity>
     using fold_tree = unpack<L, mp::fold_tree<F, C>>;
 
+    template<class L, class F, class FallbackValue, class C = mp::identity>
+    using fold_tree_or = unpack<L,
+      mp::fold_tree_or_else<F, always<FallbackValue>, C>>;
+
+    template<class L, class F, class EmptyC = F, class C = mp::identity>
+    using fold_tree_or_else = unpack<L, mp::fold_tree_or_else<F, EmptyC, C>>;
+
     template<class L, class F, class C = mp::identity>
     using fold_balanced_tree = unpack<L, mp::fold_balanced_tree<F, C>>;
+
+    template<class L, class F, class FallbackValue, class C = mp::identity>
+    using fold_balanced_tree_or = unpack<L,
+      mp::fold_balanced_tree_or_else<F, always<FallbackValue>, C>>;
+
+    template<class L, class F, class EmptyC = F, class C = mp::identity>
+    using fold_balanced_tree_or_else = unpack<L,
+      mp::fold_balanced_tree_or_else<F, EmptyC, C>>;
   }
 }
 
@@ -13169,20 +13237,31 @@ namespace jln::mp
   ///   F::f<... F::f<xs[0], xs[1], ..., xs[n-1]>, xs[2], ..., xs[n-1]>, ..., xs[n-1]>, ...>
   ///   \endcode
   /// \treturn \value
-  /// \see fold_right, fold_tree, reverse_fold, fold_balanced_tree
-#ifdef JLN_MP_DOXYGENATING
+  /// \see fold_xs_or_else, fold_right, fold_tree, reverse_fold, fold_balanced_tree
   template<class F, class C = identity>
   using fold_xs = partial_fold_xs_c<-1, F, C>;
-#else
-  template<class F, class C = identity>
-  struct fold_xs
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      detail::partial_fold_xs_select<JLN_MP_TRACE_F(F)::template f, sizeof...(xs), xs...>
-    );
-  };
-#endif
+
+  /// As \c fold_xs_or_else, but stop at position \c OffsetEnd.
+  template<int_ OffsetEnd, class F, class EmptyC, class C = identity>
+  using partial_fold_xs_or_else_c = if_<size<>, partial_fold_xs_c<OffsetEnd, F, C>, EmptyC>;
+
+  template<class OffsetEnd, class F, class NoStateF = F, class C = identity>
+  using partial_fold_xs_or_else = partial_fold_xs_or_else_c<OffsetEnd::value, F, NoStateF, C>;
+
+  template<int_ OffsetEnd, class F, class FallbackValue, class C = identity>
+  using partial_fold_xs_or_c = partial_fold_xs_or_else_c<OffsetEnd, F, always<FallbackValue>, C>;
+
+  template<class OffsetEnd, class F, class FallbackValue, class C = identity>
+  using partial_fold_xs_or = partial_fold_xs_or_else_c<OffsetEnd::value, F, always<FallbackValue>, C>;
+
+  /// Folds left over a list using a mulary predicate.
+  /// Like \c fold_xs<>, but uses \c NoStateF when \c xs is empty.
+  /// \see fold_xs, fold_right, fold_tree, reverse_fold, fold_balanced_tree
+  template<class F, class NoStateF = F, class C = identity>
+  using fold_xs_or_else = partial_fold_xs_or_else_c<-1, F, NoStateF, C>;
+
+  template<class F, class FallbackValue, class C = identity>
+  using fold_xs_or = partial_fold_xs_or_else_c<-1, F, always<FallbackValue>, C>;
 
   namespace emp
   {
@@ -13195,8 +13274,29 @@ namespace jln::mp
       mp::push_front<state, mp::partial_fold_xs_c<OffsetEnd, F, C>>>;
 
     template<class L, class state, class F, class C = mp::identity>
-    using fold_xs = unpack<L,
-      mp::push_front<state, mp::fold_xs<F, C>>>;
+    using fold_xs = unpack<L, mp::push_front<state, mp::partial_fold_xs_c<-1, F, C>>>;
+
+    template<class L, class OffsetEnd, class F, class NoStateF = F, class C = mp::identity>
+    using partial_fold_xs_or_else = unpack<L,
+      mp::partial_fold_xs_or_else<OffsetEnd, F, NoStateF, C>>;
+
+    template<class L, int_ OffsetEnd, class F, class NoStateF = F, class C = mp::identity>
+    using partial_fold_xs_or_else_c = unpack<L,
+      mp::partial_fold_xs_or_else_c<OffsetEnd, F, NoStateF, C>>;
+
+    template<class L, class F, class NoStateF = F, class C = mp::identity>
+    using fold_xs_or_else = unpack<L, mp::partial_fold_xs_or_else_c<-1, F, NoStateF, C>>;
+
+    template<class L, class OffsetEnd, class F, class FallbackValue, class C = mp::identity>
+    using partial_fold_xs_or = unpack<L,
+      mp::partial_fold_xs_or_else<OffsetEnd, F, always<FallbackValue>, C>>;
+
+    template<class L, int_ OffsetEnd, class F, class FallbackValue, class C = mp::identity>
+    using partial_fold_xs_or_c = unpack<L,
+      mp::partial_fold_xs_or_else_c<OffsetEnd, F, always<FallbackValue>, C>>;
+
+    template<class L, class F, class FallbackValue, class C = mp::identity>
+    using fold_xs_or = unpack<L, mp::partial_fold_xs_or_else_c<-1, F, always<FallbackValue>, C>>;
   }
 }
 
@@ -13215,8 +13315,17 @@ namespace jln::mp
     >;
   };
 
+  template<class F, class C>
+  struct partial_fold_xs_c<-1, F, C>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      detail::partial_fold_xs_select<JLN_MP_TRACE_F(F)::template f, sizeof...(xs), xs...>
+    );
+  };
+
   template<class F>
-  struct fold_xs<F, identity>
+  struct partial_fold_xs_c<-1, F, identity>
   {
     template<class... xs>
     using f = detail::partial_fold_xs_select<JLN_MP_TRACE_F(F)::template f, sizeof...(xs), xs...>;
@@ -13248,15 +13357,16 @@ namespace jln::mp
   };
 
   template<template<class...> class F, class C>
-  struct fold_xs<lift<F>, C>
+  struct partial_fold_xs_c<-1, lift<F>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
       detail::partial_fold_xs_select<F, sizeof...(xs), xs...>
     );
   };
+
   template<template<class...> class F>
-  struct fold_xs<lift<F>, identity>
+  struct partial_fold_xs_c<-1, lift<F>, identity>
   {
     template<class... xs>
     using f = detail::partial_fold_xs_select<F, sizeof...(xs), xs...>;
@@ -16366,7 +16476,7 @@ namespace jln::mp
   ///   \endcode
   /// \pre `sizeof...(xs) >= 1`
   /// \treturn \value
-  /// \see fold, reverse_fold, fold_tree, fold_balanced_tree
+  /// \see reverse_fold_or_else, fold, reverse_fold_right, fold_tree, fold_balanced_tree
   template<class F, class C = identity>
   struct reverse_fold
   {
@@ -16378,11 +16488,26 @@ namespace jln::mp
     );
   };
 
+  /// Folds right over a list using a binary predicate.
+  /// Like \c reverse_fold<>, but uses \c NoStateF when \c xs is empty.
+  /// \treturn \value
+  /// \see reverse_fold, fold, reverse_fold_right, fold_tree, fold_balanced_tree
+  template<class F, class EmptyC, class C = identity>
+  using reverse_fold_or_else = if_<size<>, rotate_c<-1, reverse_fold<F, C>>, EmptyC>;
+
+  template<class F, class FallbackValue, class C = identity>
+  using reverse_fold_or = reverse_fold_or_else<F, always<FallbackValue>, C>;
+
   namespace emp
   {
     template<class L, class state, class F, class C = mp::identity>
-    using reverse_fold = unpack<L,
-      mp::push_front<state, mp::reverse_fold<F, C>>>;
+    using reverse_fold = unpack<L, mp::push_front<state, mp::reverse_fold<F, C>>>;
+
+    template<class L, class F, class FallbackValue, class C = mp::identity>
+    using reverse_fold_or = unpack<L, mp::reverse_fold_or_else<F, always<FallbackValue>, C>>;
+
+    template<class L, class F, class NoStateF = F, class C = mp::identity>
+    using reverse_fold_or_else = unpack<L, mp::reverse_fold_or_else<F, NoStateF, C>>;
   }
 }
 
@@ -16497,7 +16622,7 @@ namespace jln::mp
   ///   \endcode
   /// \pre `sizeof...(xs) >= 1`
   /// \treturn \value
-  /// \see fold, fold_right, fold_tree, fold_balanced_tree
+  /// \see reverse_fold_right_or_else, fold, fold_right, fold_tree, fold_balanced_tree
   template<class F, class C = identity>
   struct reverse_fold_right
   {
@@ -16508,11 +16633,29 @@ namespace jln::mp
     );
   };
 
+  /// Folds right over a list using a binary predicate.
+  /// Like \c reverse_fold_right<>, but uses \c EmptyC when \c xs is empty.
+  /// \treturn \value
+  /// \see reverse_fold_right, fold, fold_right, fold_tree, fold_balanced_tree
+  template<class F, class EmptyC, class C = identity>
+  using reverse_fold_right_or_else = if_<size<>, reverse_fold_right<F, C>, EmptyC>;
+
+  template<class F, class FallbackValue, class C = identity>
+  using reverse_fold_right_or = if_<size<>, reverse_fold_right<F, C>, always<FallbackValue>>;
+
   namespace emp
   {
     template<class L, class state, class F, class C = mp::identity>
     using reverse_fold_right = unpack<L,
       mp::push_front<state, mp::reverse_fold_right<F, C>>>;
+
+    template<class L, class F, class FallbackValue, class C = mp::identity>
+    using reverse_fold_right_or = unpack<L,
+      mp::reverse_fold_right_or_else<F, always<FallbackValue>, C>>;
+
+    template<class L, class F, class EmptyC = F, class C = mp::identity>
+    using reverse_fold_right_or_else = unpack<L,
+      mp::reverse_fold_right_or_else<F, EmptyC, C>>;
 
     template<class L, class F, class C = mp::identity>
     using reverse_reduce = unpack<L, mp::reverse_fold_right<F, C>>;
@@ -20124,6 +20267,36 @@ namespace jln::mp
 
 #endif
 #endif
+
+namespace jln::mp
+{
+  /// \ingroup functional
+
+  /// A conditional selection expression.
+  /// This is the equivalent of the ternary `Pred::f<a, b>::value ? a : b`.
+  /// \pre `sizeof...(xs) >= 2`
+  /// \treturn \value
+  /// \see if_, reverse_select
+  template<class Pred, class TC = identity, class FC = TC>
+  using select = if_<Pred, front<TC>, at1<FC>>;
+
+  /// A conditional selection expression.
+  /// This is the equivalent of the ternary `Pred::f<a, b>::value ? b : a`.
+  /// \pre `sizeof...(xs) >= 2`
+  /// \treturn \value
+  /// \see if_, select
+  template<class Pred, class TC = identity, class FC = TC>
+  using reverse_select = if_<Pred, at1<TC>, front<FC>>;
+
+  namespace emp
+  {
+    template<class Pred, class a, class b>
+    using select = typename mp::if_<Pred, mp::front<>, mp::at1<>>::template f<a, b>;
+
+    template<class Pred, class a, class b>
+    using reverse_select = typename mp::if_<Pred, mp::at1<>, mp::front<>>::template f<a, b>;
+  }
+}
 
 namespace jln::mp
 {
