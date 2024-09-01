@@ -443,8 +443,9 @@ namespace jln::mp::detail
 
   // 256 < sizeof...(xs) <= 4096
   template<class PrecomputedIndexes>
-  class build_indexed_v_impl<2, PrecomputedIndexes>
+  struct build_indexed_v_impl<2, PrecomputedIndexes>
   {
+  private:
     using _precomputed_indexes = typename rlist_to_indexed<PrecomputedIndexes>
       ::template f<indexed>;
 
@@ -459,8 +460,9 @@ namespace jln::mp::detail
 
   // 4096 < sizeof...(xs) <= 65536
   template<class PrecomputedIndexes>
-  class build_indexed_v_impl<3, PrecomputedIndexes>
+  struct build_indexed_v_impl<3, PrecomputedIndexes>
   {
+  private:
     using _precomputed_indexes = typename rlist_to_indexed<
       typename rlist_to_indexed_rlist<PrecomputedIndexes>::type
     >::template f<indexed>;
