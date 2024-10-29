@@ -51,7 +51,8 @@ constexpr R my_tuple_cat(Tuples&&... args)
     using index_by_tuple = emp::make_int_sequence_c<
         sizeof...(Tuples),
         // repeat each index by number of element
-        mp::each<mp::repeat<std::tuple_size<std::decay_t<Tuples>>>...,
+        mp::each<
+            mp::repeat<std::tuple_size<std::decay_t<Tuples>>>...,
             mp::join<>
         >
     >;
