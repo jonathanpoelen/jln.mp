@@ -24,7 +24,7 @@ namespace jln::mp
 
   /// \see find_if, find_if_not, find_last_if, find_last
   template<class T, class TC = listify, class FC = clear<TC>>
-  using find = find_if<is<T>, TC, FC>;
+  using find = drop_until<is<T>, TC, FC>;
 
   namespace emp
   {
