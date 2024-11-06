@@ -13,11 +13,12 @@ namespace jln::mp
 
   /// A conditional expression.
   /// \treturn \value
+  /// \see select, reverse_select
   template<class Pred, class TC, class FC = always<false_>>
   struct if_
   {
     template<class... xs>
-    using f = typename mp::conditional_c<
+    using f = typename conditional_c<
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, xs...)::value)
     >
       ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
@@ -42,7 +43,7 @@ namespace jln::mp
   struct if_<size<>, TC, FC>
   {
     template<class... xs>
-    using f = typename mp::conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
+    using f = typename conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
       ::template f<xs...>;
   };
@@ -51,7 +52,7 @@ namespace jln::mp
   struct if_<size<is<number<i>>>, TC, FC>
   {
     template<class... xs>
-    using f = typename mp::conditional_c<sizeof...(xs) == i>
+    using f = typename conditional_c<sizeof...(xs) == i>
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
@@ -60,7 +61,7 @@ namespace jln::mp
   struct if_<same<>, TC, FC>
   {
     template<class... xs>
-    using f = typename mp::conditional_c<emp::same_xs_v<xs...>>
+    using f = typename conditional_c<emp::same_xs_v<xs...>>
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
@@ -69,7 +70,7 @@ namespace jln::mp
   struct if_<same<C>, TC, FC>
   {
     template<class... xs>
-    using f = typename mp::conditional_c<
+    using f = typename conditional_c<
       JLN_MP_TRACE_F(C)::template f<number<emp::same_xs_v<xs...>>>::value
     >
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
