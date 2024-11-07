@@ -9,6 +9,10 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invokes a function computing the fixed point of a function.
+  /// \semantics
+  ///   \code
+  ///   fix<C>::f<xs...> = C::f<fix<C>, xs...>
+  ///   \endcode
   /// \treturn \value
   /// \see recursively
   template<class C>
