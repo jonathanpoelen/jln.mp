@@ -48,7 +48,9 @@
 #include <jln/mp/algorithm/make_int_sequence.hpp>
 #include <jln/mp/algorithm/matrix_longest.hpp>
 #include <jln/mp/algorithm/matrix_shortest.hpp>
+#include <jln/mp/algorithm/max_element.hpp>
 #include <jln/mp/algorithm/merge.hpp>
+#include <jln/mp/algorithm/min_element.hpp>
 #include <jln/mp/algorithm/mismatch.hpp>
 #include <jln/mp/algorithm/mismatch_index.hpp>
 #include <jln/mp/algorithm/none_of.hpp>
