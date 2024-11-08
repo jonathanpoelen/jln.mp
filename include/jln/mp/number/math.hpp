@@ -4,9 +4,8 @@
 
 #include <jln/mp/number/operators.hpp>
 #include <jln/mp/list/at.hpp>
-#include <jln/mp/functional/flip.hpp>
+#include <jln/mp/functional/select.hpp>
 #include <jln/mp/functional/tee.hpp>
-#include <jln/mp/algorithm/fold.hpp>
 #include <jln/mp/algorithm/replace.hpp>
 
 namespace jln::mp
@@ -33,18 +32,11 @@ namespace jln::mp
 
   /// \ingroup number
 
-  template<class Cmp = less<>, class C = identity>
-  using min = fold<if_<flip<Cmp>, at1<>, at0<>>, C>;
+  template<class C = identity>
+  using min = select<less<>, C>;
 
-  template<class Cmp = less<>, class C = identity>
-  using min0 = if_<size<>, min<Cmp, C>, always<number<0>, C>>;
-
-
-  template<class Cmp = less<>, class C = identity>
-  using max = fold<if_<Cmp, at1<>, at0<>>, C>;
-
-  template<class Cmp = less<>, class C = identity>
-  using max0 = if_<size<>, max<Cmp, C>, always<number<0>, C>>;
+  template<class C = identity>
+  using max = reverse_select<less<>, C>;
 
 
   template<class Min, class Max, class Cmp = less<>, class C = identity>
@@ -57,6 +49,7 @@ namespace jln::mp
 
   template<class Cmp = less<>, class C = identity>
   using abs = tee<identity, neg<>, if_<Cmp, at1<C>, at0<C>>>;
+
 
   template<class C = identity>
   struct pow
@@ -77,17 +70,11 @@ namespace jln::mp
 
   namespace emp
   {
-    template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using min = unpack<L, mp::min<Cmp, C>>;
+    template<class x, class y, class C = mp::identity>
+    using min = typename mp::select<mp::less<>, C>::template f<x, y>;
 
-    template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using min0 = unpack<L, mp::min0<Cmp, C>>;
-
-    template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using max = unpack<L, mp::max<Cmp, C>>;
-
-    template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using max0 = unpack<L, mp::max0<Cmp, C>>;
+    template<class x, class y, class C = mp::identity>
+    using max = typename mp::reverse_select<mp::less<>, C>::template f<x, y>;
 
     template<class I, class Min, class Max, class Cmp = mp::less<>, class C = mp::identity>
     using clamp = typename mp::clamp<Min, Max, Cmp, C>::template f<I>;
@@ -108,30 +95,19 @@ namespace jln::mp
     using pow_c = typename mp::pow<C>::template f<number<Base>, number<Exponent>>;
 
 
-    template<class... xs>
-    constexpr int_ min_v = mp::min<>::f<xs...>::value;
+    template<class x, class y, class C = mp::identity>
+    constexpr int_ min_v = mp::select<mp::less<>, C>::template f<x, y>::value;
 
-    template<class... xs>
-    constexpr int_ min0_v = mp::min0<>::f<xs...>::value;
+    template<int_ x, int_ y, class C = mp::identity>
+    constexpr int_ min_c_v = mp::select<mp::less<>, C>
+      ::template f<number<x>, number<y>>::value;
 
-    template<int_... xs>
-    constexpr int_ min_c_v = mp::min<>::f<number<xs>...>::value;
+    template<class x, class y, class C = mp::identity>
+    constexpr int_ max_v = mp::reverse_select<mp::less<>, C>::template f<x, y>::value;
 
-    template<int_... xs>
-    constexpr int_ min0_c_v = mp::min0<>::f<number<xs>...>::value;
-
-    template<class... xs>
-    constexpr int_ max_v = mp::max<>::f<xs...>::value;
-
-    template<class... xs>
-    constexpr int_ max0_v = mp::max0<>::f<xs...>::value;
-
-    template<int_... xs>
-    constexpr int_ max_c_v = mp::max<>::f<number<xs>...>::value;
-
-    template<int_... xs>
-    constexpr int_ max0_c_v = mp::max0<>::f<number<xs>...>::value;
-
+    template<int_ x, int_ y, class C = mp::identity>
+    constexpr int_ max_c_v = mp::reverse_select<mp::less<>, C>
+      ::template f<number<x>, number<y>>::value;
 
     template<class I, class Min, class Max, class Cmp = mp::less<>, class C = mp::identity>
     constexpr int_ clamp_v = mp::clamp<Min, Max, Cmp, C>::template f<I>::value;

@@ -16,9 +16,8 @@ TEST()
 
   using e = list<>;
 
-  ut::same<_0, emp::min0<e>>();
-  ut::same<_1, emp::min<seq_1_2_3>>();
-  ut::same<_3, emp::max<seq_1_2_3>>();
+  ut::same<_1, emp::min<_1, _2>>();
+  ut::same<_2, emp::max<_1, _2>>();
   ut::same<_1, emp::abs<_1>>();
   ut::same<_1, emp::abs_c<-1>>();
   ut::same<_2, emp::clamp_c<2, 0, 3>>();
@@ -38,42 +37,24 @@ TEST()
   ut::same<number<2*2*2*2*2*2*2*2>, emp::pow_c<2, 8>>();
 
   test_unary_pack<pow>();
-  test_binary_pack<min>();
+  test_unary_pack<min>();
   test_binary_pack<abs>();
-  test_unary_pack<min, less<>>();
   test_unary_pack<abs, less<>>();
 
-  auto ctx = [](auto f){
-    using g = unpack<decltype(f)>;
-    return test_context<g, detail::sfinae<g>>();
-  };
-
-  ctx(min<>())
-    .test<_1, seq_1_2_3>()
-    .test<bad_number, seq_bad>()
+  test_context<min<>, smp::min<>>()
+    .test<_1, _1, _2>()
+    .not_invocable<>()
+    .not_invocable<_1>()
+    .not_invocable<_1, _2, _3>()
     .not_invocable<e>()
-    .not_invocable<seq_bad_bad>()
     ;
 
-  ctx(min0<>())
-    .test<_1, seq_1_2_3>()
-    .test<_0, e>()
-    .test<bad_number, seq_bad>()
-    .not_invocable<seq_bad_bad>()
-    ;
-
-  ctx(max<>())
-    .test<_3, seq_1_2_3>()
-    .test<bad_number, seq_bad>()
+  test_context<max<>, smp::max<>>()
+    .test<_2, _1, _2>()
+    .not_invocable<>()
+    .not_invocable<_1>()
+    .not_invocable<_1, _2, _3>()
     .not_invocable<e>()
-    .not_invocable<seq_bad_bad>()
-    ;
-
-  ctx(max0<>())
-    .test<_3, seq_1_2_3>()
-    .test<bad_number, seq_bad>()
-    .test<_0, e>()
-    .not_invocable<seq_bad_bad>()
     ;
 
   test_context<clamp_c<-2, 5>, smp::clamp_c<-2, 5>>()
