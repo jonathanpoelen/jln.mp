@@ -22,9 +22,19 @@ TEST()
 
   ut::same<_0, emp::min_element<seq_0_1_0_2_0_3_0>>();
   ut::same<_1, emp::min_element<seq_3_2_1>>();
+  ut::same<_1, emp::min_element_xs<_3, _2, _1>>();
+  ut::same<_1, emp::min_element_c<3, 2, 1>>();
+  static_assert(1 == emp::min_element_v<seq_3_2_1>);
+  static_assert(1 == emp::min_element_xs_v<_3, _2, _1>);
+  static_assert(1 == emp::min_element_c_v<3, 2, 1>);
 
   ut::same<_0, emp::last_min_element<seq_0_1_0_2_0_3_0>>();
   ut::same<_1, emp::last_min_element<seq_3_2_1>>();
+  ut::same<_1, emp::last_min_element_xs<_3, _2, _1>>();
+  ut::same<_1, emp::last_min_element_c<3, 2, 1>>();
+  static_assert(1 == emp::last_min_element_v<seq_3_2_1>);
+  static_assert(1 == emp::last_min_element_xs_v<_3, _2, _1>);
+  static_assert(1 == emp::last_min_element_c_v<3, 2, 1>);
 
   test_context<min_element<>, smp::min_element<>>()
     .test<_0, _0, _1>()

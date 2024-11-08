@@ -58,25 +58,86 @@ namespace jln::mp
     template<class L, class C = mp::identity>
     using max_element = unpack<L, mp::max_element<C>>;
 
-    template<class L, class C = mp::identity>
-    using last_max_element = unpack<L, mp::last_max_element<C>>;
+    template<class... xs>
+    using max_element_xs = typename mp::max_element_with<>::template f<xs...>;
+
+    template<int_... xs>
+    using max_element_c = typename mp::max_element_with<>::template f<number<xs>...>;
 
     template<class L, class C = mp::identity>
     inline constexpr auto max_element_v = unpack<L, mp::max_element<C>>::value;
 
-    template<class L, class C = mp::identity>
-    inline constexpr auto last_max_element_v = unpack<L, mp::last_max_element<C>>::value;
+    template<class... xs>
+    inline constexpr auto max_element_xs_v = mp::max_element_with<>
+      ::template f<xs...>::value;
+
+    template<int_... xs>
+    inline constexpr auto max_element_c_v = mp::max_element_with<>
+      ::template f<number<xs>...>::value;
+
 
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
     using max_element_with = unpack<L, mp::max_element_with<Cmp, C>>;
 
-    template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using last_max_element_with = unpack<L, mp::last_max_element_with<Cmp, C>>;
+    template<class Cmp, class... xs>
+    using max_element_with_xs = typename mp::max_element_with<Cmp>::template f<xs...>;
+
+    template<class Cmp, int_... xs>
+    using max_element_with_c = typename mp::max_element_with<Cmp>
+      ::template f<number<xs>...>;
 
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
     inline constexpr auto max_element_with_v = unpack<L, mp::max_element_with<Cmp, C>>::value;
 
+    template<class Cmp, class... xs>
+    inline constexpr auto max_element_with_xs_v = mp::max_element_with<Cmp>
+      ::template f<xs...>::value;
+
+    template<class Cmp, int_... xs>
+    inline constexpr auto max_element_with_c_v = mp::max_element_with<Cmp>
+      ::template f<number<xs>...>::value;
+
+
+    template<class L, class C = mp::identity>
+    using last_max_element = unpack<L, mp::last_max_element<C>>;
+
+    template<class... xs>
+    using last_max_element_xs = typename mp::last_max_element_with<>::template f<xs...>;
+
+    template<int_... xs>
+    using last_max_element_c = typename mp::last_max_element_with<>::template f<number<xs>...>;
+
+    template<class L, class C = mp::identity>
+    inline constexpr auto last_max_element_v = unpack<L, mp::last_max_element<C>>::value;
+
+    template<class... xs>
+    inline constexpr auto last_max_element_xs_v = mp::last_max_element_with<>
+      ::template f<xs...>::value;
+
+    template<int_... xs>
+    inline constexpr auto last_max_element_c_v = mp::last_max_element_with<>
+      ::template f<number<xs>...>::value;
+
+
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    using last_max_element_with = unpack<L, mp::last_max_element_with<Cmp, C>>;
+
+    template<class Cmp, class... xs>
+    using last_max_element_with_xs = typename mp::last_max_element_with<Cmp>::template f<xs...>;
+
+    template<class Cmp, int_... xs>
+    using last_max_element_with_c = typename mp::last_max_element_with<Cmp>
+      ::template f<number<xs>...>;
+
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
     inline constexpr auto last_max_element_with_v = unpack<L, mp::last_max_element_with<Cmp, C>>::value;
+
+    template<class Cmp, class... xs>
+    inline constexpr auto last_max_element_with_xs_v = mp::last_max_element_with<Cmp>
+      ::template f<xs...>::value;
+
+    template<class Cmp, int_... xs>
+    inline constexpr auto last_max_element_with_c_v = mp::last_max_element_with<Cmp>
+      ::template f<number<xs>...>::value;
   }
 }

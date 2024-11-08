@@ -22,11 +22,19 @@ TEST()
 
   ut::same<_3, emp::max_element<seq_0_1_0_2_0_3_0>>();
   ut::same<_3, emp::max_element<seq_3_2_1>>();
-  static_assert(emp::max_element_v<seq_3_2_1> == 3);
+  ut::same<_3, emp::max_element_xs<_3, _2, _1>>();
+  ut::same<_3, emp::max_element_c<3, 2, 1>>();
+  static_assert(3 == emp::max_element_v<seq_3_2_1>);
+  static_assert(3 == emp::max_element_xs_v<_3, _2, _1>);
+  static_assert(3 == emp::max_element_c_v<3, 2, 1>);
 
   ut::same<_3, emp::last_max_element<emp::numbers<3, 0, 1, 2, 3>>>();
   ut::same<_3, emp::last_max_element<seq_3_2_1>>();
-  static_assert(emp::last_max_element_v<seq_3_2_1> == 3);
+  ut::same<_3, emp::last_max_element_xs<_3, _2, _1>>();
+  ut::same<_3, emp::last_max_element_c<3, 2, 1>>();
+  static_assert(3 == emp::last_max_element_v<seq_3_2_1>);
+  static_assert(3 == emp::last_max_element_xs_v<_3, _2, _1>);
+  static_assert(3 == emp::last_max_element_c_v<3, 2, 1>);
 
   test_context<max_element<>, smp::max_element<>>()
     .test<_1, _0, _1>()
