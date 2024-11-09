@@ -506,7 +506,7 @@ htmlifier_init = function()
   local patt = Cs(
     ( ( ( P'template' + 'class' + 'struct' + 'using' + 'typename'
         + 'decltype' + 'sizeof' + 'auto' + 'static_assert'
-        + 'constexpr' + 'return' + 'namespace'
+        + 'constexpr' + 'return' + 'namespace' + 'static_cast'
         ) / mk_tag'k'
       + ( P'void' + 'int' + 'unsigned' + 'long' + 'bool' + 'char' + 'short'
         + 'double' + 'float'
