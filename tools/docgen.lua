@@ -216,8 +216,10 @@ local sanitize_space = Cs(ws0 / '' * (
 
 local sanitize_struct_impl_patt = Cs((
   (P'typename ' + 'template ') / ''
-+ (P'detail::' + '__') * (id * ws0)^1 * (balancedtag * (ws0 * id)^0 * ws0)^0 * balancedparent^0 * ws0
-    / '/*...*/'
++ ( (P'detail::' + '__') * (id * ws0)^1 * (balancedtag * (ws0 * id)^0 * ws0)^0 * balancedparent^0 * ws0
+  + P'impl' * balancedparent^1 * ws0
+  )
+  / '/*...*/'
 + 1
 )^0)
 local detect_chars = P{ alnum + 1 * V(1) }
