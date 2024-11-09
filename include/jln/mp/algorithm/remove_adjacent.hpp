@@ -7,7 +7,7 @@
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/utility/always.hpp>
-#include <jln/mp/functional/if.hpp>
+#include <jln/mp/functional/select.hpp>
 
 
 namespace jln::mp
@@ -18,7 +18,7 @@ namespace jln::mp
   /// \treturn \sequence
   template<class BinaryPred, class C = listify>
   using remove_adjacent_if = pairwise_fold_and_transform_front<
-    if_<BinaryPred, always<list<>>, pop_front<>>,
+    select<BinaryPred, always<list<>>, listify>,
     listify,
     join<C>
   >;

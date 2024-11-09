@@ -9,7 +9,7 @@ namespace jln::mp::smp
 {
   template<class BinaryPred, class C = listify>
   using remove_adjacent_if = contract<mp::pairwise_fold_and_transform_front<
-    if_<assume_binary<BinaryPred>, contract<mp::always<mp::list<>>>, contract<mp::pop_front<>>>,
+    select<assume_binary<BinaryPred>, always<mp::list<>>, listify>,
     mp::listify,
     mp::monadic_xs<mp::join<subcontract<C>>>
   >>;
