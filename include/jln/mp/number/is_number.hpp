@@ -23,10 +23,10 @@ namespace jln::mp
   namespace emp
   {
     template<class x>
-    constexpr bool is_number_v = false;
+    inline constexpr bool is_number_v = false;
 
     template<int_ n>
-    constexpr bool is_number_v<number<n>> = true;
+    inline constexpr bool is_number_v<number<n>> = true;
   }
 
   /// Checks whether a \value is a \number.

@@ -80,11 +80,11 @@ namespace jln::mp
     using try_or = typename mp::try_<F, mp::identity, always<FT>>::template f<xs...>;
 
     template<class F, class... xs>
-    constexpr bool is_invocable_v = JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+    inline constexpr bool is_invocable_v = JLN_MP_RAW_EXPR_TO_BOOL_NOT(
       JLN_MP_IS_SAME(na, typename JLN_MP_CALL_TRY_IMPL(F, xs...)));
 
     template<class F, class... xs>
-    constexpr bool is_not_invocable_v = !is_invocable_v<F, xs...>;
+    inline constexpr bool is_not_invocable_v = !is_invocable_v<F, xs...>;
 
     template<class F, class... xs>
     using is_invocable = number<is_invocable_v<F, xs...>>;

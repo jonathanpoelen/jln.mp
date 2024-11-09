@@ -47,10 +47,10 @@ namespace jln::mp
     using is_subset_with = typename is_subset_with<Cmp, C>::template f<L1, L2>;
 
     template<class L1, class L2>
-    constexpr bool is_subset = is_subset<>::template f<L1, L2>::value;
+    inline constexpr bool is_subset = is_subset<>::template f<L1, L2>::value;
 
     template<class L1, class L2, class Cmp = mp::same<>>
-    constexpr bool is_subset_with = is_subset_with<Cmp>::template f<L1, L2>::value;
+    inline constexpr bool is_subset_with = is_subset_with<Cmp>::template f<L1, L2>::value;
   }
 #endif
 
@@ -125,10 +125,10 @@ namespace jln::mp::emp
   >;
 
   template<class L1, class L2>
-  constexpr bool is_subset_v = detail::_is_subset<2>::f<mp::same<>, L1, L2>::value;
+  inline constexpr bool is_subset_v = detail::_is_subset<2>::f<mp::same<>, L1, L2>::value;
 
   template<class L1, class L2, class Cmp = mp::same<>, class C = mp::identity>
-  constexpr bool is_subset_with_v = detail::_is_subset<2>::f<Cmp, L1, L2>::value;
+  inline constexpr bool is_subset_with_v = detail::_is_subset<2>::f<Cmp, L1, L2>::value;
 }
 #endif
 /// \endcond

@@ -86,7 +86,7 @@ namespace jln::mp
   namespace emp
   {
     template<class seq1, class seq2, class Cmp = mp::less<>, class C = mp::identity>
-    constexpr bool lexicographical_compare_v = lexicographical_compare<Cmp, C>
+    inline constexpr bool lexicographical_compare_v = lexicographical_compare<Cmp, C>
       ::template f<seq1, seq2>::value;
   }
 }

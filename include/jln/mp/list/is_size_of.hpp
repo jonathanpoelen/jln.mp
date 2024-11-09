@@ -24,9 +24,9 @@ namespace jln::mp
     using is_size_of_c = unpack<L, mp::is_size_of_c<n, C>>;
 
     template<class L, class N, class C = mp::identity>
-    constexpr bool is_size_of_v = unpack<L, mp::is_size_of<N, C>>::value;
+    inline constexpr bool is_size_of_v = unpack<L, mp::is_size_of<N, C>>::value;
 
     template<class L, int_ n, class C = mp::identity>
-    constexpr bool is_size_of_c_v = unpack<L, mp::is_size_of_c<n, C>>::value;
+    inline constexpr bool is_size_of_c_v = unpack<L, mp::is_size_of_c<n, C>>::value;
   }
 }

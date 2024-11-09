@@ -23,7 +23,7 @@ namespace jln::mp
     >;
 
     template<class F, class x, class y, class Cmp = mp::less<>>
-    constexpr bool compare_with_v = Cmp::template f<
+    inline constexpr bool compare_with_v = Cmp::template f<
       typename F::template f<x>,
       typename F::template f<y>
     >::value;

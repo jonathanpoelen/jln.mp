@@ -23,10 +23,10 @@ namespace jln::mp
   namespace emp
   {
     template<template<class...> class Tpl, class T>
-    constexpr bool is_specialization_of_v = false;
+    inline constexpr bool is_specialization_of_v = false;
 
     template<template<class...> class Tpl, class... Ts>
-    constexpr bool is_specialization_of_v<Tpl, Tpl<Ts...>> = true;
+    inline constexpr bool is_specialization_of_v<Tpl, Tpl<Ts...>> = true;
   }
 
   /// Checks whether \c x is \c Tpl<xs...>

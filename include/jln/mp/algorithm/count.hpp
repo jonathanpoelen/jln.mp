@@ -29,12 +29,12 @@ namespace jln::mp
     using count = unpack<L, mp::count<x, C>>;
 
     template<class L, class Pred, class C = mp::identity>
-    constexpr int_ count_if_v = unpack<L, mp::count_if<Pred, C>>::value;
+    inline constexpr int_ count_if_v = unpack<L, mp::count_if<Pred, C>>::value;
 
     template<class L, class x, class C = mp::identity>
-    constexpr int_ count_v = unpack<L, mp::count<x, C>>::value;
+    inline constexpr int_ count_v = unpack<L, mp::count<x, C>>::value;
 
     template<class x, class... xs>
-    constexpr int_ count_xs_v = (JLN_MP_IS_SAME(x, xs) + ... + 0);
+    inline constexpr int_ count_xs_v = (JLN_MP_IS_SAME(x, xs) + ... + 0);
   }
 }

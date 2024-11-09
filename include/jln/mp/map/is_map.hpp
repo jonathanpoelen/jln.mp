@@ -34,10 +34,10 @@ namespace jln::mp
     using is_map_xs = typename mp::is_map<>::template f<kvs...>;
 
     template<class L, class C = mp::identity>
-    constexpr bool is_map_v = unpack<L, mp::is_map<C>>::value;
+    inline constexpr bool is_map_v = unpack<L, mp::is_map<C>>::value;
 
     template<class... kvs>
-    constexpr bool is_map_xs_v = mp::is_map<>::f<kvs...>::value;
+    inline constexpr bool is_map_xs_v = mp::is_map<>::f<kvs...>::value;
   }
 }
 

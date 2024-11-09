@@ -30,7 +30,7 @@ namespace jln::mp
     using not_ = typename mp::not_<C>::template f<x>;
 
     template<class x, class C = mp::identity>
-    constexpr bool not_v = mp::not_<C>::template f<x>::value;
+    inline constexpr bool not_v = mp::not_<C>::template f<x>::value;
   }
 }
 

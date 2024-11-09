@@ -54,29 +54,29 @@ namespace jln::mp
   {
     /// \c true if \c x is an element of the set \c xs, \c false otherwise.
     template<class x, class... xs>
-    constexpr bool set_contains_xs_v = JLN_MP_SET_CONTAINS(x, xs...);
+    inline constexpr bool set_contains_xs_v = JLN_MP_SET_CONTAINS(x, xs...);
 
     /// \c true if \c x is an element of the set \c Set, \c false otherwise.
     template<class Set, class x>
-    constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
+    inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
       x, typename detail::_unpack<mp::lift<detail::inherit>, Set>::type
     );
 
     /// \c true if \c x is an element of all \set \c Sets, \c false otherwise.
     template<class x, class... Sets>
-    constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
+    inline constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
       x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
     ) && ...);
 
     /// \c true if \c x is an element of any \set \c Sets, \c false otherwise.
     template<class x, class... Sets>
-    constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
+    inline constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
       x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
     ) || ...);
 
     /// \c true if \c x is an element of none \set \c Sets, \c false otherwise.
     template<class x, class... Sets>
-    constexpr bool set_none_contains_v = !set_any_contains_v<x, Sets...>;
+    inline constexpr bool set_none_contains_v = !set_any_contains_v<x, Sets...>;
 
     /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
     template<class Set, class x>

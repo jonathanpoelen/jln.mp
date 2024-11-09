@@ -33,10 +33,10 @@ namespace jln::mp
     using all_of_xs = typename mp::all_of<Pred>::template f<xs...>;
 
     template<class L, class Pred, class C = mp::identity>
-    constexpr bool all_of_v = unpack<L, mp::all_of<Pred, C>>::value;
+    inline constexpr bool all_of_v = unpack<L, mp::all_of<Pred, C>>::value;
 
     template<class Pred, class... xs>
-    constexpr bool all_of_xs_v = mp::all_of<Pred>::template f<xs...>::value;
+    inline constexpr bool all_of_xs_v = mp::all_of<Pred>::template f<xs...>::value;
   }
 } // namespace jln::mp
 

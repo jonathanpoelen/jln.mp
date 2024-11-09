@@ -87,7 +87,7 @@ namespace jln::mp
     using starts_with = unpack<L, starts_with<Seq, C>>;
 
     template<class L, class Seq, class C = mp::identity>
-    constexpr bool starts_with_v = unpack<L, starts_with<Seq, C>>::value;
+    inline constexpr bool starts_with_v = unpack<L, starts_with<Seq, C>>::value;
   }
 }
 

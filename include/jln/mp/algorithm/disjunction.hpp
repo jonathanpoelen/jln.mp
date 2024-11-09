@@ -52,9 +52,9 @@ namespace jln::mp
     using disjunction = unpack<L, mp::disjunction_with<mp::identity, C>>;
 
     template<class L, class Pred, class C = mp::identity>
-    constexpr bool disjunction_with_v = unpack<L, mp::disjunction_with<Pred, C>>::value;
+    inline constexpr bool disjunction_with_v = unpack<L, mp::disjunction_with<Pred, C>>::value;
 
     template<class L, class C = mp::identity>
-    constexpr bool disjunction_v = unpack<L, mp::disjunction_with<mp::identity, C>>::value;
+    inline constexpr bool disjunction_v = unpack<L, mp::disjunction_with<mp::identity, C>>::value;
   }
 }

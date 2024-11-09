@@ -24,14 +24,14 @@ namespace jln::mp
   namespace emp
   {
     template<class x>
-    constexpr bool is_val_v = false;
+    inline constexpr bool is_val_v = false;
 
 #if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_ENABLE_DEBUG || JLN_MP_CLANG_LIKE)
     template<auto x>
-    constexpr bool is_val_v<val<x>> = true;
+    inline constexpr bool is_val_v<val<x>> = true;
 #else
     template<class T, T x>
-    constexpr bool is_val_v<typed_value<T, x>> = true;
+    inline constexpr bool is_val_v<typed_value<T, x>> = true;
 #endif
   }
 

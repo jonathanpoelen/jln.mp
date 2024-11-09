@@ -89,19 +89,19 @@ namespace jln::mp
     using partial_index_if_xs_c = unpack<L, mp::partial_index_if_xs_c<OffsetEnd, Pred, TC, FC>>;
 
     template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    constexpr bool index_if_v = unpack<L, mp::index_if<Pred, TC, FC>>::value;
+    inline constexpr bool index_if_v = unpack<L, mp::index_if<Pred, TC, FC>>::value;
 
     template<class L, class T, class TC = mp::identity, class FC = mp::size<>>
-    constexpr bool index_of_v = unpack<L, mp::index_of<T, TC, FC>>::value;
+    inline constexpr bool index_of_v = unpack<L, mp::index_of<T, TC, FC>>::value;
 
     template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    constexpr bool index_if_xs_v = unpack<L, mp::index_if_xs<Pred, TC, FC>>::value;
+    inline constexpr bool index_if_xs_v = unpack<L, mp::index_if_xs<Pred, TC, FC>>::value;
 
     template<class OffsetEnd, class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    constexpr bool partial_index_if_xs_v = unpack<L, mp::partial_index_if_xs<OffsetEnd, Pred, TC, FC>>::value;
+    inline constexpr bool partial_index_if_xs_v = unpack<L, mp::partial_index_if_xs<OffsetEnd, Pred, TC, FC>>::value;
 
     template<int_ OffsetEnd, class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    constexpr bool partial_index_if_xs_c_v = unpack<L, mp::partial_index_if_xs_c<OffsetEnd, Pred, TC, FC>>::value;
+    inline constexpr bool partial_index_if_xs_c_v = unpack<L, mp::partial_index_if_xs_c<OffsetEnd, Pred, TC, FC>>::value;
   }
 }
 

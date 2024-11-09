@@ -12,19 +12,19 @@ namespace jln::mp
   namespace detail
   {
     template<int_ b, int_ e, int_ r = 1>
-    constexpr int_ pow_impl_v = pow_impl_v<(b * b), (e / 2), (e % 2 ? b * r : r)>;
+    inline constexpr int_ pow_impl_v = pow_impl_v<(b * b), (e / 2), (e % 2 ? b * r : r)>;
 
     template<int_ b, int_ r>
-    constexpr int_ pow_impl_v<b, 0, r> = 1;
+    inline constexpr int_ pow_impl_v<b, 0, r> = 1;
 
     template<int_ b, int_ r>
-    constexpr int_ pow_impl_v<b, 1, r> = b * r;
+    inline constexpr int_ pow_impl_v<b, 1, r> = b * r;
 
     template<int_ b, int_ r>
-    constexpr int_ pow_impl_v<b, -1, r> = 1 / (b * r);
+    inline constexpr int_ pow_impl_v<b, -1, r> = 1 / (b * r);
 
     template<int_ r>
-    constexpr int_ pow_impl_v<0, -1, r> = int_{static_cast<int>(r-r)-1}; // inf -> error
+    inline constexpr int_ pow_impl_v<0, -1, r> = int_{static_cast<int>(r-r)-1}; // inf -> error
 
     template<class T>
     struct abs_impl;

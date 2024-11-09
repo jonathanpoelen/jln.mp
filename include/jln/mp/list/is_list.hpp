@@ -23,10 +23,10 @@ namespace jln::mp
   namespace emp
   {
     template<class x>
-    constexpr bool is_list_v = false;
+    inline constexpr bool is_list_v = false;
 
     template<class... xs>
-    constexpr bool is_list_v<list<xs...>> = true;
+    inline constexpr bool is_list_v<list<xs...>> = true;
   }
 
   /// Checks whether \c x is a \list.

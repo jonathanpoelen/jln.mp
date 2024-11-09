@@ -46,10 +46,10 @@ namespace jln::mp
     using is_disjoint_with = typename is_disjoint_with<Cmp, C>::template f<L1, L2>;
 
     template<class L1, class L2>
-    constexpr bool is_disjoint_v = is_disjoint<>::template f<L1, L2>::value;
+    inline constexpr bool is_disjoint_v = is_disjoint<>::template f<L1, L2>::value;
 
     template<class L1, class L2, class Cmp = same<>>
-    constexpr bool is_disjoint_with_v = is_disjoint_with<Cmp>::template f<L1, L2>::value;
+    inline constexpr bool is_disjoint_with_v = is_disjoint_with<Cmp>::template f<L1, L2>::value;
   }
 #endif
 
@@ -141,10 +141,10 @@ namespace jln::mp::emp
   >;
 
   template<class L1, class L2>
-  constexpr bool is_disjoint_v = detail::is_disjoint_select<2>::f<mp::same<>, L1, L2>::value;
+  inline constexpr bool is_disjoint_v = detail::is_disjoint_select<2>::f<mp::same<>, L1, L2>::value;
 
   template<class L1, class L2, class Cmp = mp::same<>>
-  constexpr bool is_disjoint_with_v = detail::is_disjoint_select<2>::f<Cmp, L1, L2>::value;
+  inline constexpr bool is_disjoint_with_v = detail::is_disjoint_select<2>::f<Cmp, L1, L2>::value;
 }
 #endif
 /// \endcond

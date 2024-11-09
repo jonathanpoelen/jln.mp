@@ -23,6 +23,6 @@ namespace jln::mp
     using mismatch_index = typename mismatch_index<Cmp, C>::template f<seq1, seq2>;
 
     template<class seq1, class seq2, class Cmp = mp::equal<>, class C = mp::identity>
-    constexpr bool mismatch_index_v = mismatch_index<Cmp, C>::template f<seq1, seq2>::value;
+    inline constexpr bool mismatch_index_v = mismatch_index<Cmp, C>::template f<seq1, seq2>::value;
   }
 }
