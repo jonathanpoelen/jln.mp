@@ -8,7 +8,7 @@ namespace jln::mp
 {
   /// \ingroup functional
 
-  /// Return \p TC::f<x> if \p Pred::f<x>, otherwise returns \p x.
+  /// Returns \c TC::f<x> if \c Pred::f<x>, otherwise returns \c x.
   /// \treturn \value
   template<class Pred, class TC>
   using apply_or_identity = if_<Pred, TC, identity>;
