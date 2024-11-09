@@ -6,7 +6,7 @@
 #include "test/test_case.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/functional/make_id.hpp"
+#include "jln/mp/smp/utility/make_id.hpp"
 
 #ifdef __cpp_generic_lambdas
 #if __cpp_generic_lambdas >= 201707L

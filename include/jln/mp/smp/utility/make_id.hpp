@@ -3,7 +3,7 @@
 #pragma once
 
 #include <jln/mp/smp/functional/identity.hpp>
-#include <jln/mp/functional/make_id.hpp>
+#include <jln/mp/utility/make_id.hpp>
 
 #ifdef __cpp_generic_lambdas
 #if __cpp_generic_lambdas >= 201707L

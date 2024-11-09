@@ -18,7 +18,6 @@
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/functional/invoke_twice.hpp>
 #include <jln/mp/functional/lift.hpp>
-#include <jln/mp/functional/make_id.hpp>
 #include <jln/mp/functional/memoize.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/functional/not_fn.hpp>
@@ -26,7 +25,6 @@
 #include <jln/mp/functional/partial_each.hpp>
 #include <jln/mp/functional/partial_tee.hpp>
 #include <jln/mp/functional/partial_xs.hpp>
-#include <jln/mp/functional/random.hpp>
 #include <jln/mp/functional/recursively.hpp>
 #include <jln/mp/functional/select.hpp>
 #include <jln/mp/functional/tee.hpp>

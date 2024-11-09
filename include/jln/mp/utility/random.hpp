@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/functional/make_id.hpp>
+#include <jln/mp/utility/make_id.hpp>
 #include <jln/mp/list/clear.hpp>
 
 #ifdef __cpp_generic_lambdas
@@ -14,7 +14,7 @@
 
 namespace jln::mp
 {
-  /// \ingroup functional
+  /// \ingroup utility
 
   /// \cond
   namespace detail::rand

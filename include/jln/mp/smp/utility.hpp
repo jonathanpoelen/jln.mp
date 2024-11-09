@@ -11,6 +11,8 @@
 #include <jln/mp/smp/utility/is_not.hpp>
 #include <jln/mp/smp/utility/is_specialization_of.hpp>
 #include <jln/mp/smp/utility/iterate.hpp>
+#include <jln/mp/smp/utility/make_id.hpp>
+#include <jln/mp/smp/utility/random.hpp>
 #include <jln/mp/smp/utility/rewrap_unpack.hpp>
 #include <jln/mp/smp/utility/sizeof.hpp>
 #include <jln/mp/smp/utility/stl_traits.hpp>

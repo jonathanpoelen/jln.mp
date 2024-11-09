@@ -21,7 +21,7 @@
 
 namespace jln::mp
 {
-  /// \ingroup functional
+  /// \ingroup utility
 
   class default_make_id_tag {};
 

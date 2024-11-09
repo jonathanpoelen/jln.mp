@@ -1,3 +1,3 @@
 // SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
-#include "jln/mp/smp/functional/make_id.hpp"
+#include "jln/mp/smp/utility/make_id.hpp"

@@ -1,3 +1,3 @@
 // SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
-#include "jln/mp/functional/random.hpp"
+#include "jln/mp/utility/random.hpp"

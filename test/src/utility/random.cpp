@@ -5,7 +5,7 @@
 #include "test/test_case.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/functional/random.hpp"
+#include "jln/mp/smp/utility/random.hpp"
 
 #ifdef __cpp_generic_lambdas
 #if __cpp_generic_lambdas >= 201707L
