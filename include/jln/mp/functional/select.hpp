@@ -21,7 +21,7 @@ namespace jln::mp
     using f = typename conditional_c<
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, y, xs...)::value)
     >
-      ::template f<JLN_MP_TRACE_F(at1<FC>), JLN_MP_TRACE_F(front<TC>)>
+      ::template f<at1<FC>, front<TC>>
       ::template f<x, y>;
   };
 
@@ -37,7 +37,7 @@ namespace jln::mp
     using f = typename conditional_c<
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, y, xs...)::value)
     >
-      ::template f<JLN_MP_TRACE_F(front<FC>), JLN_MP_TRACE_F(at1<TC>)>
+      ::template f<front<FC>, at1<TC>>
       ::template f<x, y>;
   };
 
@@ -109,12 +109,12 @@ namespace jln::mp
   struct select<Pred, C, C>
   {
     template<class x, class y, class... xs>
-    using f = typename C::template f<
+    using f = JLN_MP_CALL_TRACE(C,
       typename conditional_c<
         JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, y, xs...)::value)
       >
         ::template f<y, x>
-    >;
+    );
   };
 
   template<class Pred>
@@ -155,12 +155,12 @@ namespace jln::mp
   struct select_flip<Pred, C, C>
   {
     template<class x, class y, class... xs>
-    using f = typename C::template f<
+    using f = JLN_MP_CALL_TRACE(C,
       typename conditional_c<
         JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, y, x, xs...)::value)
       >
         ::template f<y, x>
-    >;
+    );
   };
 
   template<class Pred>
@@ -178,12 +178,12 @@ namespace jln::mp
   struct reverse_select_flip<Pred, C, C>
   {
     template<class x, class y, class... xs>
-    using f = typename C::template f<
+    using f = JLN_MP_CALL_TRACE(C,
       typename conditional_c<
         JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, y, x, xs...)::value)
       >
         ::template f<x, y>
-    >;
+    );
   };
 
   template<class Pred>
