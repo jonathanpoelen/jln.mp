@@ -216,22 +216,16 @@ local sanitize_space = Cs(ws0 / '' * (
 
 local sanitize_struct_impl_patt = Cs((
   (P'typename ' + 'template ') / ''
-+ ( (P'detail::' + '__') * (id * ws0)^1 * (balancedtag * (ws0 * id)^0 * ws0)^0 * balancedparent^0 * ws0
-  + P'impl' * balancedparent^1 * ws0
-  )
-  / '/*...*/'
 + 1
 )^0)
+local contains_impl = P{ (P'detail::' + '__' + 'impl') + 1 * V(1) }
 local detect_chars = P{ alnum + 1 * V(1) }
 
 sanitize_struct_impl = function(s)
-  if s then
-    s = sanitize_struct_impl_patt:match(s)
-    if not detect_chars:match(s) then
-      return nil
-    end
-    s = sanitize_space:match(s)
+  if not s or not detect_chars:match(s) or contains_impl:match(s) then
+    return nil
   end
+  s = sanitize_struct_impl_patt:match(s)
   return s
 end
 
