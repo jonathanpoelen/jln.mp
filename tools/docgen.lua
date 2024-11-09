@@ -1033,6 +1033,7 @@ for _,g in ipairs(tgroups) do
   push('<h2 id="g_' .. g.name .. '"><a href="#g_' .. g.name .. '" class="ref">¶</a>Group: ' .. g.name .. '</h2>\n')
   push('<table>\n')
   for _,f in ipairs(g) do
+    table.sort(f.types, comp_by_name)
     for _,d in ipairs(f.types) do
       if d.namespace ~= 'emp' then
         push('<tr><td>' .. inlinecode_begin .. '<a href="#' .. d.refid .. '">' .. d.fullname
