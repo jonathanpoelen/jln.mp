@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/config/debug.hpp>
-#include <jln/mp/config/config.hpp>
-#include <jln/mp/detail/compiler.hpp>
+#include <jln/mp/detail/config.hpp>
 #include <jln/mp/functional/memoize.hpp>
 #include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/number/number.hpp> // JLN_MP_TPL_AUTO_OR_INT

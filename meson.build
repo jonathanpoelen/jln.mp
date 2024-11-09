@@ -379,6 +379,7 @@ executable('check_inc', [
   'test/autogen/detail@sequence.cpp',
   'test/autogen/detail@smp_listify_or_monadic_xs.cpp',
   'test/autogen/detail@type_identity.cpp',
+  'test/autogen/detail@config.cpp',
   'test/autogen/functional@apply_or_identity.cpp',
   'test/autogen/functional@bind_back.cpp',
   'test/autogen/functional@bind_front.cpp',

@@ -27,7 +27,7 @@ namespace jln::mp
   /// \treturn \value
   /// \post If `sizeof...(xs) == 0`, `true_`
   /// \post If `sizeof...(xs) != 0`, the first type `xs[i]` for which `bool(Pred::f<xs[i]>::value) == false`, or last value if there is no such type.
-  /// \see disjunction, drop_while, take_while
+  /// \see disjunction, all_of, drop_while, take_while
   template<class Pred, class C = identity>
   struct conjunction_with
   {
@@ -48,7 +48,7 @@ namespace jln::mp
   /// \treturn \value convertible to \bool
   /// \post If `sizeof...(xs) == 0`, `true_`
   /// \post If `sizeof...(xs) != 0`, the first value for which `bool(xs[i]::value) == false`, or last value if there is no such type.
-  /// \see disjunction, drop_while, take_while
+  /// \see disjunction, all_of, drop_while, take_while
   template<class C = identity>
   using conjunction = conjunction_with<identity, C>;
 
