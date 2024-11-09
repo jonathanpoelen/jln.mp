@@ -35,6 +35,14 @@ namespace jln::mp
   struct remove_prefix
   {};
 
+#ifdef JLN_MP_DOXYGENATING
+  template<class... Ts, class TC, class FC>
+  struct remove_prefix<list<Ts...>, TC, FC>
+  {
+    template<class... xs>
+    using f;
+  };
+#else
   template<class... Ts, class TC, class FC>
   struct remove_prefix<list<Ts...>, TC, FC>
       : detail::continuation_fn_impl<FC>
@@ -46,6 +54,7 @@ namespace jln::mp
     template<class... xs>
     using f = decltype(impl(static_cast<list<xs...>*>(nullptr)));
   };
+#endif
 
   namespace emp
   {

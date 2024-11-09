@@ -25,9 +25,16 @@ namespace jln::mp
   struct starts_with
   {};
 
+#ifdef JLN_MP_DOXYGENATING
+  template<class... Ts, class C>
+  struct starts_with<list<Ts...>, C>
+  {
+    template<class... xs>
+    using f;
+  };
+#elif !JLN_MP_GCC
   // doing a specialization with C=identity is 4% slower with clang,
   // but 4% faster with gcc thanks to memoization
-#if !JLN_MP_GCC
   template<class... Ts, class C>
   struct starts_with<list<Ts...>, C> : detail::false_fn_impl
   {
