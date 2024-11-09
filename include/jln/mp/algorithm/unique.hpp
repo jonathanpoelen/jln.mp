@@ -14,7 +14,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup filter
 
   /// Returns a list with duplicate elements removed.
   /// \treturn \set

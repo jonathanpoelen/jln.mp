@@ -24,7 +24,7 @@ namespace jln::mp
     };
   }
 
-  /// \ingroup algorithm
+  /// \ingroup filter
 
   /// Remove the first elements corresponding to a prefix.
   /// Calls \c TC with the rest of sequence when the prefix is found,

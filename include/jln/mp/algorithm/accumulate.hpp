@@ -10,7 +10,7 @@
 
 namespace jln::mp
 {
-  /// \ingroup algorithm
+  /// \ingroup reduce
 
   /// Computes the recursive invocation of \c F with the result of the previous
   /// invocation and each element of one or more \lists traversed in parallel

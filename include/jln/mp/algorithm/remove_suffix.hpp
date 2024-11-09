@@ -7,7 +7,7 @@
 
 namespace jln::mp
 {
-  /// \ingroup algorithm
+  /// \ingroup filter
 
   /// Remove the last elements corresponding to a suffix.
   /// Calls \c TC with the rest of sequence when the suffix is found,
