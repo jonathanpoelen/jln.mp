@@ -4,6 +4,7 @@
 
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/call.hpp>
+#include <jln/mp/detail/first.hpp>
 
 namespace jln::mp
 {
@@ -16,7 +17,7 @@ namespace jln::mp
   struct always
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, x);
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_LAZY_PARAM_T(xs, x));
   };
 
   /// \cond
@@ -24,7 +25,7 @@ namespace jln::mp
   struct always<x, identity>
   {
     template<class... xs>
-    using f = x;
+    using f = JLN_MP_LAZY_PARAM_T(xs, x);
   };
   /// \endcond
 }

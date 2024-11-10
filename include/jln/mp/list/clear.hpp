@@ -15,13 +15,20 @@ namespace jln::mp
   struct clear
   {
     template<class... xs>
-    using f = typename C::template f<>;
+    using f = typename JLN_MP_LAZY_PARAM(xs, JLN_MP_TRACE_F(C))::template f<>;
   };
 
   /// \cond
   template<>
   struct clear<listify>
+#if JLN_MP_FORCE_LAZY_ALIAS
     : always<list<>>
   {};
+#else
+  {
+    template<class... xs>
+    using f = list<xs...>;
+  };
+#endif
   /// \endcond
 }
