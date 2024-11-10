@@ -98,7 +98,15 @@ end
 
 local i_desc = kwindexes.desc
 local f_desc = function(lines)
-  fileinfos[#fileinfos+1] = {i = i_desc, table.concat(lines)}
+  local desc = table.concat(lines)
+  -- add description lines to the fragment if one already exists
+  for _, t in ipairs(fileinfos) do
+    if t.i == i_desc then
+      t[1] = t[1] .. desc
+      return
+    end
+  end
+  fileinfos[#fileinfos+1] = {i = i_desc, desc}
 end
 
 function human_template(tparams)
@@ -555,7 +563,7 @@ htmlifier_init = function()
   htmlify = Cs((
     mdinlinecodepatt
   + P'\\c ' / '' * (Until(S' \n' + '.\n') / inlinecode)
-  + P'\\code' * C(Until(ws0 * '\\endcode')) * ws0 * '\\endcode' / blockcode
+  + P'\\code' * (sp0 * '\n')^0 * C(Until(ws0 * '\\endcode')) * ws0 * '\\endcode' / blockcode
   + P'\\ints' / ('<a href="#d_sequence">sequence</a> of ' .. inline_func('int_'))
   + (P'\\int_' + '\\int') / inline_func('int_')
   + P'\\list' / inline_func('list')
