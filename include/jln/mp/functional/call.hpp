@@ -37,21 +37,21 @@ namespace jln::mp
   #define JLN_MP_TRACE_F(...) memoize<__VA_ARGS__>
   #define JLN_MP_TRACE_TYPENAME typename
 
-#if JLN_MP_CUDA
-  #define JLN_MP_CALL_TRACE(C, ...) \
-    typename ::jln::mp::detail::memoizer_impl<void, C, __VA_ARGS__>::type
-  #define JLN_MP_CALL_TRACE_T(C, ...) \
-    typename ::jln::mp::detail::memoizer_impl<void, typename C, __VA_ARGS__>::type
-  #define JLN_MP_CALL_TRACE_0_ARG(...) \
-    typename ::jln::mp::detail::memoizer_impl<void, __VA_ARGS__>::type
-#else // if !JLN_MP_CUDA
-  #define JLN_MP_CALL_TRACE(C, ...) \
-    typename ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
-  #define JLN_MP_CALL_TRACE_T(C, ...) \
-    typename ::jln::mp::detail::memoizer_impl<typename C, __VA_ARGS__>::type
-  #define JLN_MP_CALL_TRACE_0_ARG(...) \
-    typename ::jln::mp::detail::memoizer_impl<__VA_ARGS__>::type
-#endif
+# if JLN_MP_CUDA
+    #define JLN_MP_CALL_TRACE(C, ...) \
+      typename ::jln::mp::detail::memoizer_impl<void, C, __VA_ARGS__>::type
+    #define JLN_MP_CALL_TRACE_T(C, ...) \
+      typename ::jln::mp::detail::memoizer_impl<void, typename C, __VA_ARGS__>::type
+    #define JLN_MP_CALL_TRACE_0_ARG(...) \
+      typename ::jln::mp::detail::memoizer_impl<void, __VA_ARGS__>::type
+# else // if !JLN_MP_CUDA
+    #define JLN_MP_CALL_TRACE(C, ...) \
+      typename ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
+    #define JLN_MP_CALL_TRACE_T(C, ...) \
+      typename ::jln::mp::detail::memoizer_impl<typename C, __VA_ARGS__>::type
+    #define JLN_MP_CALL_TRACE_0_ARG(...) \
+      typename ::jln::mp::detail::memoizer_impl<__VA_ARGS__>::type
+# endif
 #endif
 
 #if JLN_MP_CLANG_LIKE
@@ -123,7 +123,49 @@ using call = typename detail::memoizer_impl<C, xs...>::type;
       __VA_ARGS__                                   \
     >::type
 
-# else
+# elif JLN_MP_CUDA  // ^^^ JLN_MP_MSVC
+
+namespace detail
+{
+  template<bool>
+  struct cuda_call;
+
+  template<>
+  struct cuda_call<true>
+  {
+    template<class C, class Err, class... xs>
+    using f = typename JLN_MP_TRACE_F(C)::template f<xs...>;
+  };
+
+  template<>
+  struct cuda_call<false>
+  {
+    template<class C, class Err, class... xs>
+    using f = typename Err::template f<xs...>;
+  };
+}
+
+template<class C, class... xs>
+using call = typename detail::cuda_call<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
+  ::template f<C, detail::too_many_arguments_error, xs...>;
+
+#  define JLN_MP_DCALL_TRACE_XS(xs, C, ...)                                        \
+    typename ::jln::mp::detail::cuda_call<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+      ::template f<C, ::jln::mp::detail::too_many_arguments_error, __VA_ARGS__>
+
+#  define JLN_MP_FORCE_DCALL_TRACE_XS JLN_MP_DCALL_TRACE_XS
+
+#  define JLN_MP_DCALL_TRACE_XS_0(xs, C)                                           \
+    typename ::jln::mp::detail::cuda_call<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+      ::template f<C, ::jln::mp::detail::too_many_arguments_error>
+
+#  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...)                             \
+    ::jln::mp::detail::cuda_call<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+      ::template f<C, ::jln::mp::detail::too_many_arguments_error, __VA_ARGS__>
+
+#  define JLN_MP_FORCE_DCALL_V_TRACE_XS JLN_MP_DCALL_V_TRACE_XS
+
+# else  // ^^^ JLN_MP_CUDA
 
 template<class C, class... xs>
 using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
