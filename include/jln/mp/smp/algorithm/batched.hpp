@@ -7,11 +7,11 @@
 
 namespace jln::mp::smp
 {
-  template<int_t size, class C = listify>
+  template<int_ size, class C = listify>
   using batched_c = typename detail::smp_sliding_with_c<mp::listify, (size > 0)>
     ::template f<size, size, C>;
 
-  template<int_t size, class F = listify, class C = listify>
+  template<int_ size, class F = listify, class C = listify>
   using batched_with_c = typename detail::smp_sliding_with_c<subcontract<F>, (size > 0)>
     ::template f<size, size, C>;
 

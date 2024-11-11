@@ -22,10 +22,10 @@ namespace jln::mp
   ///   >
   ///   \endcode
   /// \treturn \sequence
-  template<int_t size, class F = listify, class C = listify>
+  template<int_ size, class F = listify, class C = listify>
   using batched_with_c = strided_sliding_with_c<size, size, F, C>;
 
-  template<int_t size, class C = listify>
+  template<int_ size, class C = listify>
   using batched_c = strided_sliding_with_c<size, size, listify, C>;
 
   template<class size, class F = listify, class C = listify>
@@ -39,13 +39,13 @@ namespace jln::mp
     template<class L, class size, class F = mp::listify, class C = mp::listify>
     using batched_with = unpack<L, mp::strided_sliding_with_c<size::value, size::value, F, C>>;
 
-    template<class L, int_t size, class F = mp::listify, class C = mp::listify>
+    template<class L, int_ size, class F = mp::listify, class C = mp::listify>
     using batched_with_c = unpack<L, mp::strided_sliding_with_c<size, size, F, C>>;
 
     template<class L, class size, class C = mp::listify>
     using batched = unpack<L, mp::strided_sliding_with_c<size::value, size::value, mp::listify, C>>;
 
-    template<class L, int_t size, class C = mp::listify>
+    template<class L, int_ size, class C = mp::listify>
     using batched_c = unpack<L, mp::strided_sliding_with_c<size, size, mp::listify, C>>;
   }
 }

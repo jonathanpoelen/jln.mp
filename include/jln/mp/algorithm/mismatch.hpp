@@ -105,7 +105,7 @@ namespace jln::mp::detail
     };
   };
 
-  constexpr int_t _mismatch_size(int n)
+  constexpr int_ _mismatch_size(int n)
   {
     // is pow 2
     if ((-n ^ n) < -n) {
@@ -137,7 +137,7 @@ namespace jln::mp::detail
     return (n > 0b1) ? (r << 1) : r;
   }
 
-  template<class Cmp, int_t n, int_t size = _mismatch_size(n)>
+  template<class Cmp, int_ n, int_ size = _mismatch_size(n)>
   struct _mismatch_tree_next
   {
     template<class i, class = void>

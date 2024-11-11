@@ -13,7 +13,7 @@ namespace jln::mp
   template<class C = listify>
   struct numbers
   {
-    template<int_t... ns>
+    template<int_... ns>
     using f = JLN_MP_DCALL_TRACE_XS(ns, C, number<ns>...);
   };
 
@@ -21,14 +21,14 @@ namespace jln::mp
   template<>
   struct numbers<listify>
   {
-    template<int_t... ns>
+    template<int_... ns>
     using f = list<number<ns>...>;
   };
   /// \endcond
 
   namespace emp
   {
-    template<int_t... vs>
+    template<int_... vs>
     using numbers = list<number<vs>...>;
   }
 }

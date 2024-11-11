@@ -16,9 +16,9 @@ namespace jln::mp
   /// \ingroup number
 
 #if JLN_MP_CUDA
-#  define JLN_MP_AS_MP_INT(v) std::enable_if_t<v < 0 || std::size_t{v} <= (~0ull >> 1), int_t>{v}
+#  define JLN_MP_AS_MP_INT(v) std::enable_if_t<v < 0 || std::size_t{v} <= (~0ull >> 1), int_>{v}
 #else
-#  define JLN_MP_AS_MP_INT(v) JLN_MP_INTEGRAL_AS(int_t, v)
+#  define JLN_MP_AS_MP_INT(v) JLN_MP_INTEGRAL_AS(int_, v)
 #endif
 
   /// Convertion without narrowing from \value to \number.

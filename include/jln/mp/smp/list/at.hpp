@@ -9,7 +9,7 @@
 
 namespace jln::mp::smp
 {
-  template<int_t n, class C = identity>
+  template<int_ n, class C = identity>
   using at_c = detail::sfinae<mp::at_c<n, subcontract_barrier<C>>>;
 
   template<class C = identity>

@@ -65,7 +65,7 @@ namespace jln::mp::smp
     >
   >>;
 
-  template<int_t OffsetEnd, class Pred, class TC = identity, class FC = size<>>
+  template<int_ OffsetEnd, class Pred, class TC = identity, class FC = size<>>
   using partial_index_if_xs_c = contract<mp::invoke_twice<
     mp::partial_drop_while_xs_c<
       OffsetEnd,
@@ -98,7 +98,7 @@ namespace jln::mp::detail
     using type = smp::index_if_xs<sfinae<Pred>, sfinae<TC>, sfinae<FC>>;
   };
 
-  template<template<class> class sfinae, int_t OffsetEnd, class Pred, class TC, class FC>
+  template<template<class> class sfinae, int_ OffsetEnd, class Pred, class TC, class FC>
   struct _sfinae<sfinae, partial_index_if_xs_c<OffsetEnd, Pred, TC, FC>>
   {
     using type = smp::partial_index_if_xs_c<OffsetEnd, sfinae<Pred>, sfinae<TC>, sfinae<FC>>;

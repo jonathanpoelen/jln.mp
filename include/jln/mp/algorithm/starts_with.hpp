@@ -163,7 +163,7 @@ namespace jln::mp::detail
   };
 
 
-  template<int_t>
+  template<int_>
   struct optimized_index_if_xs_starts_with;
 
   template<>
@@ -184,7 +184,7 @@ namespace jln::mp::detail
   struct optimized_index_if_xs_starts_with<2>
   {
     template<class C, class TC, class FC, class... Ts>
-    using f = partial_index_if_xs_c<-int_t(sizeof...(Ts)),
+    using f = partial_index_if_xs_c<-int_(sizeof...(Ts)),
       starts_with<list<Ts...>, C>, TC, FC>;
   };
 }
@@ -201,7 +201,7 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  template<int_t>
+  template<int_>
   struct optimized_drop_while_starts_with;
 
   template<>
@@ -222,7 +222,7 @@ namespace jln::mp::detail
   struct optimized_drop_while_starts_with<2>
   {
     template<class C, class TC, class FC, class... Ts>
-    using f = partial_drop_while_xs_c<-int_t(sizeof...(Ts)),
+    using f = partial_drop_while_xs_c<-int_(sizeof...(Ts)),
       starts_with<list<Ts...>, C>, TC, FC>;
   };
 }
@@ -238,7 +238,7 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  template<int_t>
+  template<int_>
   struct optimized_take_while_starts_with;
 
   template<>
@@ -259,7 +259,7 @@ namespace jln::mp::detail
   struct optimized_take_while_starts_with<2>
   {
     template<class C, class TC, class FC, class... Ts>
-    using f = partial_take_while_xs_c<-int_t(sizeof...(Ts)),
+    using f = partial_take_while_xs_c<-int_(sizeof...(Ts)),
       starts_with<list<Ts...>, C>, TC, FC>;
   };
 }
@@ -275,7 +275,7 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  template<int_t>
+  template<int_>
   struct optimized_take_while_extended_by_n_starts_with;
 
   template<>
@@ -297,7 +297,7 @@ namespace jln::mp::detail
   {
     template<std::size_t ExtendedByN, class C, class TC, class FC, class... Ts>
     using f = partial_take_while_extended_by_n_xs_c<
-      -int_t(sizeof...(Ts)), ExtendedByN, starts_with<list<Ts...>, C>, TC, FC
+      -int_(sizeof...(Ts)), ExtendedByN, starts_with<list<Ts...>, C>, TC, FC
     >;
   };
 }

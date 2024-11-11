@@ -24,7 +24,7 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(F, BoundArgs..., xs...);
   };
 
-  template<int_t... BoundArgs>
+  template<int_... BoundArgs>
   using capture_front_c = capture_front<number<BoundArgs>...>;
 
 #if JLN_MP_ENABLE_TPL_AUTO
@@ -41,7 +41,7 @@ namespace jln::mp
     template<class L, class... BoundArgs>
     using capture_front = unpack<L, mp::capture_front<BoundArgs...>>;
 
-    template<class L, int_t... BoundArgs>
+    template<class L, int_... BoundArgs>
     using capture_front_c = unpack<L, mp::capture_front_c<BoundArgs...>>;
 
 #if JLN_MP_ENABLE_TPL_AUTO

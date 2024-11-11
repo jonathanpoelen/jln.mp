@@ -10,7 +10,7 @@ namespace jln::mp::smp
   template<class... xs>
   using capture_front = try_contract<mp::capture_front<xs...>>;
 
-  template<int_t... xs>
+  template<int_... xs>
   using capture_front_c = try_contract<mp::capture_front_c<xs...>>;
 }
 

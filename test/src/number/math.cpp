@@ -17,9 +17,9 @@ struct num
 
 template<class T> struct W : T {};
 
-using int_t = jln::mp::int_t;
+using int_ = jln::mp::int_;
 
-template<int_t result, int_t a, int_t b>
+template<int_ result, int_ a, int_ b>
 static void test_min()
 {
   using namespace jln::mp;
@@ -36,7 +36,7 @@ static void test_min()
   ut::same<number<-result>, number<emp::min_c_v<a, b, c>>>();
 }
 
-template<int_t result, int_t a, int_t b>
+template<int_ result, int_ a, int_ b>
 static void test_max()
 {
   using namespace jln::mp;
@@ -53,7 +53,7 @@ static void test_max()
   ut::same<number<-result>, number<emp::max_c_v<a, b, c>>>();
 }
 
-template<int_t result, int_t base, int_t exponent>
+template<int_ result, int_ base, int_ exponent>
 static void test_pow()
 {
   using namespace jln::mp;
@@ -70,7 +70,7 @@ static void test_pow()
   ut::same<number<-result>, number<emp::pow_c_v<base, exponent, c>>>();
 }
 
-template<int_t result, int_t i>
+template<int_ result, int_ i>
 static void test_abs()
 {
   using namespace jln::mp;
@@ -223,7 +223,7 @@ TEST()
     .not_invocable<bad_number>()
     ;
 
-  using limits = std::numeric_limits<int_t>;
+  using limits = std::numeric_limits<int_>;
   using limits2 = std::numeric_limits<int>;
 
   test_context<abs<>, smp::abs<>>()

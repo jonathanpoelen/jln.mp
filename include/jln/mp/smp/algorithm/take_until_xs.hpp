@@ -32,7 +32,7 @@ namespace jln::mp::smp
   template<class Pred, class TC = listify, class FC = TC>
   using take_until_xs = take_until_extended_by_n_xs_c<0, Pred, TC, FC>;
 
-  template<int_t OffsetEnd, std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
+  template<int_ OffsetEnd, std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
   using partial_take_until_extended_by_n_xs_c = contract<mp::invoke_twice<
     mp::partial_drop_until_xs_c<
       OffsetEnd,
@@ -46,13 +46,13 @@ namespace jln::mp::smp
     >
   >>;
 
-  template<int_t OffsetEnd, class Pred, class TC = listify, class FC = TC>
+  template<int_ OffsetEnd, class Pred, class TC = listify, class FC = TC>
   using partial_take_until_xs_c = partial_take_until_extended_by_n_xs_c<OffsetEnd, 0, Pred, TC, FC>;
 
   template<class Pred, class TC = listify, class FC = TC>
   using take_inclusive_until_xs = take_until_extended_by_n_xs_c<1, Pred, TC, FC>;
 
-  template<int_t OffsetEnd, class Pred, class TC = listify, class FC = TC>
+  template<int_ OffsetEnd, class Pred, class TC = listify, class FC = TC>
   using partial_take_inclusive_until_xs_c = partial_take_until_extended_by_n_xs_c<
     OffsetEnd, 1, Pred, TC, FC>;
 }
@@ -92,7 +92,7 @@ namespace jln::mp::detail
     >;
   };
 
-  template<template<class> class sfinae, int_t OffsetEnd, std::size_t ExtendedByN,
+  template<template<class> class sfinae, int_ OffsetEnd, std::size_t ExtendedByN,
            class Pred, class TC, class FC>
   struct _sfinae<sfinae, partial_take_until_extended_by_n_xs_c<OffsetEnd, ExtendedByN, Pred, TC, FC>>
   {

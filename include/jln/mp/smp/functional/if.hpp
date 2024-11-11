@@ -52,41 +52,41 @@ namespace jln::mp::detail
   template<class x>
   constexpr int smp_if_reduce_tc_v<size<is<x>>, size<is<x>>> = 2;
 
-  template<int_t i1, int_t i2>
+  template<int_ i1, int_ i2>
   constexpr int smp_if_reduce_tc_v<size<equal_to_c<i1>>, size<equal_to_c<i2>>>
     = i2 == i1 ? 2 : 3;
 
 
-  template<int_t i1, int_t i2>
+  template<int_ i1, int_ i2>
   constexpr int smp_if_reduce_tc_v<size<less_equal_than_c<i1>>, size<less_equal_than_c<i2>>>
     = i1 <= i2 ? 1 : 2;
 
-  template<int_t i1, int_t i2>
+  template<int_ i1, int_ i2>
   constexpr int smp_if_reduce_tc_v<size<less_equal_than_c<i1>>, size<less_than_c<i2>>>
     = i1 < i2 ? 1 : 2;
 
-  template<int_t i1, int_t i2>
+  template<int_ i1, int_ i2>
   constexpr int smp_if_reduce_tc_v<size<less_than_c<i1>>, size<less_than_c<i2>>>
     = i1 <= i2 ? 1 : 2;
 
-  template<int_t i1, int_t i2>
+  template<int_ i1, int_ i2>
   constexpr int smp_if_reduce_tc_v<size<less_than_c<i1>>, size<less_equal_than_c<i2>>>
     = i2 < i1 ? 1 : 2;
 
 
-  template<int_t i1, int_t i2>
+  template<int_ i1, int_ i2>
   constexpr int smp_if_reduce_tc_v<size<greater_equal_than_c<i1>>, size<greater_equal_than_c<i2>>>
     = i1 >= i2 ? 1 : 2;
 
-  template<int_t i1, int_t i2>
+  template<int_ i1, int_ i2>
   constexpr int smp_if_reduce_tc_v<size<greater_equal_than_c<i1>>, size<greater_than_c<i2>>>
     = i1 > i2 ? 1 : 2;
 
-  template<int_t i1, int_t i2>
+  template<int_ i1, int_ i2>
   constexpr int smp_if_reduce_tc_v<size<greater_than_c<i1>>, size<greater_than_c<i2>>>
     = i1 >= i2 ? 1 : 2;
 
-  template<int_t i1, int_t i2>
+  template<int_ i1, int_ i2>
   constexpr int smp_if_reduce_tc_v<size<greater_than_c<i1>>, size<greater_equal_than_c<i2>>>
     = i2 > i1 ? 1 : 2;
 
@@ -111,11 +111,11 @@ namespace jln::mp::detail
   template<> inline constexpr bool smp_if_safe_pred_v<size<>> = true;
   template<class x> constexpr bool smp_if_safe_pred_v<size<is<x>>> = true;
   template<class x> constexpr bool smp_if_safe_pred_v<size<is<x, not_<>>>> = true;
-  template<int_t i> constexpr bool smp_if_safe_pred_v<size<less_than_c<i>>> = true;
-  template<int_t i> constexpr bool smp_if_safe_pred_v<size<less_equal_than_c<i>>> = true;
-  template<int_t i> constexpr bool smp_if_safe_pred_v<size<greater_than_c<i>>> = true;
-  template<int_t i> constexpr bool smp_if_safe_pred_v<size<greater_equal_than_c<i>>> = true;
-  template<int_t i> constexpr bool smp_if_safe_pred_v<size<equal_to_c<i>>> = true;
+  template<int_ i> constexpr bool smp_if_safe_pred_v<size<less_than_c<i>>> = true;
+  template<int_ i> constexpr bool smp_if_safe_pred_v<size<less_equal_than_c<i>>> = true;
+  template<int_ i> constexpr bool smp_if_safe_pred_v<size<greater_than_c<i>>> = true;
+  template<int_ i> constexpr bool smp_if_safe_pred_v<size<greater_equal_than_c<i>>> = true;
+  template<int_ i> constexpr bool smp_if_safe_pred_v<size<equal_to_c<i>>> = true;
   template<class F> constexpr bool smp_if_safe_pred_v<contract<F>> = smp_if_safe_pred_v<F>;
 
   template<bool>
@@ -124,14 +124,14 @@ namespace jln::mp::detail
   template<>
   struct smp_if_base<true>
   {
-    template<int_t, class Pred, class TC, class FC>
+    template<int_, class Pred, class TC, class FC>
     using f = test_contract<Pred, TC, FC>;
   };
 
   template<>
   struct smp_if_base<false>
   {
-    template<int_t, class Pred, class TC, class FC>
+    template<int_, class Pred, class TC, class FC>
     using f = contract<
       invoke_twice<
         typename optimize_try<
@@ -270,7 +270,7 @@ namespace jln::mp::detail
   template<>
   struct smp_if_select<true>
   {
-    template<int_t min_index, class Pred, class TC, class FC>
+    template<int_ min_index, class Pred, class TC, class FC>
     using f = contract<typename smp_if_simplify_pred<
       size<greater_than_c<min_index>>,
       if_<Pred, TC, FC>,
@@ -304,7 +304,7 @@ namespace jln::mp::detail
 
   // if_<pred, front, drop_front>
 
-  template<class Pred, class TC, class FC, int_t min_index, unsigned ndrop>
+  template<class Pred, class TC, class FC, int_ min_index, unsigned ndrop>
   struct smp_if_impl<
     if_<
       Pred,
@@ -327,7 +327,7 @@ namespace jln::mp::detail
 
   // if_<pred, drop_front, front>
 
-  template<class Pred, class TC, class FC, int_t min_index, unsigned ndrop>
+  template<class Pred, class TC, class FC, int_ min_index, unsigned ndrop>
   struct smp_if_impl<
     if_<
       Pred,
@@ -350,7 +350,7 @@ namespace jln::mp::detail
 
   // if_<pred, drop_front, drop_front>
 
-  template<class Pred, class TC, class FC, int_t min_indexT, int_t min_indexF, unsigned ndropT, unsigned ndropF>
+  template<class Pred, class TC, class FC, int_ min_indexT, int_ min_indexF, unsigned ndropT, unsigned ndropF>
   struct smp_if_impl<
     if_<
       Pred,
@@ -360,7 +360,7 @@ namespace jln::mp::detail
     false
   >
   {
-    static constexpr int_t max_index = min_indexT < min_indexF ? min_indexF : min_indexT;
+    static constexpr int_ max_index = min_indexT < min_indexF ? min_indexF : min_indexT;
 
     using type = typename conditional_c<max_index < ndropT || max_index < ndropF>::template f<
       bad_contract,

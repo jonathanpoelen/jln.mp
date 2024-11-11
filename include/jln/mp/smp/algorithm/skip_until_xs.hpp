@@ -13,7 +13,7 @@ namespace jln::mp::smp
   template<class OffsetEnd, class Pred, class TC = listify, class FC = TC>
   using partial_skip_until_xs = partial_drop_until_xs<OffsetEnd, Pred, TC, clear<FC>>;
 
-  template<int_t OffsetEnd, class Pred, class TC = listify, class FC = TC>
+  template<int_ OffsetEnd, class Pred, class TC = listify, class FC = TC>
   using partial_skip_until_xs_c = partial_drop_until_xs_c<OffsetEnd, Pred, TC, clear<FC>>;
 
   template<class Pred, class TC = listify, class FC = TC>
@@ -23,7 +23,7 @@ namespace jln::mp::smp
   using partial_skip_inclusive_until_xs
     = partial_drop_inclusive_until_xs<OffsetEnd, Pred, TC, clear<FC>>;
 
-  template<int_t OffsetEnd, class Pred, class TC = listify, class FC = TC>
+  template<int_ OffsetEnd, class Pred, class TC = listify, class FC = TC>
   using partial_skip_inclusive_until_xs_c
     = partial_drop_inclusive_until_xs_c<OffsetEnd, Pred, TC, clear<FC>>;
 
@@ -39,7 +39,7 @@ namespace jln::mp::smp
   using partial_skip_until_extended_by_n_xs
     = partial_drop_until_extended_by_n_xs<OffsetEnd, ExtendedByN, Pred, TC, clear<FC>>;
 
-  template<int_t OffsetEnd, std::size_t ExtendedByN,
+  template<int_ OffsetEnd, std::size_t ExtendedByN,
            class Pred, class TC = listify, class FC = TC>
   using partial_skip_until_extended_by_n_xs_c
     = partial_drop_until_extended_by_n_xs_c<OffsetEnd, ExtendedByN, Pred, TC, clear<FC>>;

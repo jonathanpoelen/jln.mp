@@ -15,17 +15,17 @@ namespace jln::mp
   {
     template<
       template<unsigned, class> class Take,
-      class F, class EvenSizeF, class C, int_t min, class... ns>
+      class F, class EvenSizeF, class C, int_ min, class... ns>
     using matrix_shortest_each_impl = _each<
       C,
       typename conditional_c<min != ns::value>
       ::template f<unpack<Take<min, F>>, EvenSizeF>
     ...>;
 
-    constexpr int_t min_lengths();
+    constexpr int_ min_lengths();
 
     template<class... Ts>
-    constexpr int_t min_lengths(int_t r, Ts... len);
+    constexpr int_ min_lengths(int_ r, Ts... len);
 
     template<
       template<unsigned, class> class Take,
@@ -119,13 +119,13 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  constexpr int_t min_lengths()
+  constexpr int_ min_lengths()
   {
     return 0;
   }
 
   template<class... Ts>
-  constexpr int_t min_lengths(int_t r, Ts... len)
+  constexpr int_ min_lengths(int_ r, Ts... len)
   {
     (..., ((len < r) ? void(r = len) : void()));
     return r;

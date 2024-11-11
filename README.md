@@ -91,9 +91,9 @@ jln::mp::call<to_tuple<>, int, double> == std::tuple<int, double>
 - `C`: Continuation function. Represents the function used to chain calls, typically `listify` or `identity`.
 - `TC`: True Continuation function. Represents a continuation used when something is found.
 - `FC`: False Continuation function. Represents a continuation used when something is not found.
-- `_v` suffix: `C::f` takes values. Usually `C::f<jln::mp::int_t...>` (C++17) or `C::f<auto...>` (C++20). In the `emp` namespace, with a few exceptions, this corresponds to a variable template (as for the stl).
+- `_v` suffix: `C::f` takes values. Usually `C::f<jln::mp::int_...>` (C++17) or `C::f<auto...>` (C++20). In the `emp` namespace, with a few exceptions, this corresponds to a variable template (as for the stl).
 
-- `_c` suffix: number type parameters are `jln::mp::int_t`. Usually `foo_c<int_t i> = foo<number<i>>`.
+- `_c` suffix: number type parameters are `jln::mp::int_`. Usually `foo_c<int_ i> = foo<number<i>>`.
 
 
 # Example of real life
@@ -135,7 +135,7 @@ using my_tuple_cat_result_type = mp::call<
     >...
 >;
 
-template<class R, mp::int_t... ituples, mp::int_t... ivalues, class Tuple>
+template<class R, mp::int_... ituples, mp::int_... ivalues, class Tuple>
 constexpr R my_tuple_cat_impl(
     emp::numbers<ituples...>, emp::numbers<ivalues...>, Tuple t)
 {

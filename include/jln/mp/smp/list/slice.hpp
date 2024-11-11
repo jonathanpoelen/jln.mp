@@ -12,7 +12,7 @@ namespace jln::mp::detail
   template<bool>
   struct smp_slice_select
   {
-    template<int_t start, unsigned count, unsigned step, class C>
+    template<int_ start, unsigned count, unsigned step, class C>
     using f = contract<mp::strided_slice_c<start, count, step, subcontract<C>>>;
   };
 }
@@ -20,11 +20,11 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template<int_t start, unsigned count, unsigned step = 1, class C = listify>
+  template<int_ start, unsigned count, unsigned step = 1, class C = listify>
   using strided_slice_c = typename detail::smp_slice_select<(step > 0 || !count)>
     ::template f<start, count, step, C>;
 
-  template<int_t start, unsigned count, class C = listify>
+  template<int_ start, unsigned count, class C = listify>
   using slice_c = typename detail::smp_slice_select<true>
     ::template f<start, count, 1, C>;
 }
@@ -45,11 +45,11 @@ namespace jln::mp::detail
   template<>
   struct smp_slice_select<false>
   {
-    template<int_t start, unsigned count, unsigned step, class C>
+    template<int_ start, unsigned count, unsigned step, class C>
     using f = bad_contract;
   };
 
-  template<template<class> class sfinae, int_t start, unsigned count, unsigned step, class C>
+  template<template<class> class sfinae, int_ start, unsigned count, unsigned step, class C>
   struct _sfinae<sfinae, strided_slice_c<start, count, step, C>>
   {
     using type = smp::strided_slice_c<start, count, step, sfinae<C>>;

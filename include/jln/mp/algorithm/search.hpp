@@ -57,11 +57,11 @@ namespace jln::mp
   /// \see drop_while, drop_while_xs, take_while, take_while_xs
   template<class StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
   using partial_search = partial_drop_until_xs_c<
-    -JLN_MP_INTEGRAL_AS(int_t, StopWhenAtLeast::value)-1, Pred, TC, FC>;
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast::value)-1, Pred, TC, FC>;
 
   template<std::size_t StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
   using partial_search_c = partial_drop_until_xs_c<
-    -JLN_MP_INTEGRAL_AS(int_t, StopWhenAtLeast)-1, Pred, TC, FC>;
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast)-1, Pred, TC, FC>;
 
   /// Same \c search_before, but it stops when there is StopWhenAtLeast::value element or less.
   /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
@@ -71,11 +71,11 @@ namespace jln::mp
   /// \see drop_while, drop_while_xs, take_while, take_while_xs
   template<class StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
   using partial_search_before = partial_take_until_xs_c<
-    -JLN_MP_INTEGRAL_AS(int_t, StopWhenAtLeast::value)-1, Pred, TC, FC>;
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast::value)-1, Pred, TC, FC>;
 
   template<std::size_t StopWhenAtLeast, class Pred, class TC = listify, class FC = clear<TC>>
   using partial_search_before_c = partial_take_until_xs_c<
-    -JLN_MP_INTEGRAL_AS(int_t, StopWhenAtLeast)-1, Pred, TC, FC>;
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast)-1, Pred, TC, FC>;
 
   /// Same \c search_before, but it stops when there is StopWhenAtLeast::value element or less.
   /// \pre \c Pred::f<ys...> must return a boolean, 1 or 0
@@ -86,12 +86,12 @@ namespace jln::mp
   template<std::size_t StopWhenAtLeast, std::size_t ExtendedByN, class Pred,
            class TC = listify, class FC = clear<TC>>
   using partial_search_before_extended_by_n_c = partial_take_until_extended_by_n_xs_c<
-    -JLN_MP_INTEGRAL_AS(int_t, StopWhenAtLeast)-1, ExtendedByN, Pred, TC, FC>;
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast)-1, ExtendedByN, Pred, TC, FC>;
 
   template<class StopWhenAtLeast, class ExtendedByN, class Pred,
            class TC = listify, class FC = clear<TC>>
   using partial_search_before_extended_by_n = partial_take_until_extended_by_n_xs_c<
-    -JLN_MP_INTEGRAL_AS(int_t, StopWhenAtLeast::value)-1, ExtendedByN::value, Pred, TC, FC>;
+    -JLN_MP_INTEGRAL_AS(int_, StopWhenAtLeast::value)-1, ExtendedByN::value, Pred, TC, FC>;
 
   namespace emp
   {

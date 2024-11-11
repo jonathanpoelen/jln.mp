@@ -16,7 +16,7 @@
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class...> class Tpl, class C, int_t i = 0>
+  template<template<class...> class Tpl, class C, int_ i = 0>
   using smp_op_default = contract<
     if_<
       size<>,
@@ -27,7 +27,7 @@ namespace jln::mp::detail
 
 // x/0 is not a substitution failure
 #if JLN_MP_MSVC || JLN_MP_CUDA
-  template<template<class...> class Tpl, class C, int_t i = 0>
+  template<template<class...> class Tpl, class C, int_ i = 0>
   using smp_op_without_zero = contract<
     if_<
       size<>,
@@ -242,22 +242,22 @@ namespace jln::mp::smp
       mp::try_<mp::greater_equal<assume_positive_number<C>>>>>;
 
 
-  template<int_t n, class C = identity>
+  template<int_ n, class C = identity>
   using equal_to_c = equal_to<number<n>, C>;
 
-  template<int_t n, class C = identity>
+  template<int_ n, class C = identity>
   using not_equal_to_c = not_equal_to<number<n>, C>;
 
-  template<int_t n, class C = identity>
+  template<int_ n, class C = identity>
   using less_than_c = less_than<number<n>, C>;
 
-  template<int_t n, class C = identity>
+  template<int_ n, class C = identity>
   using less_equal_than_c = less_equal_than<number<n>, C>;
 
-  template<int_t n, class C = identity>
+  template<int_ n, class C = identity>
   using greater_than_c = greater_than<number<n>, C>;
 
-  template<int_t n, class C = identity>
+  template<int_ n, class C = identity>
   using greater_equal_than_c = greater_equal_than<number<n>, C>;
 }
 

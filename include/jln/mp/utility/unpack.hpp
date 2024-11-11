@@ -82,10 +82,10 @@ namespace jln::mp
     template<class L, class C, class... xs>
     using unpack_append = typename detail::_unpack_append<C, L, xs...>::type;
 
-    template<class L, class C, int_t... xs>
+    template<class L, class C, int_... xs>
     using unpack_c = typename detail::_unpack<C, L, number<xs>...>::type;
 
-    template<class L, class C, int_t... xs>
+    template<class L, class C, int_... xs>
     using unpack_append_c = typename detail::_unpack_append<C, L, number<xs>...>::type;
 
 #if JLN_MP_ENABLE_TPL_AUTO
@@ -95,10 +95,10 @@ namespace jln::mp
     template<class L, class C, class... xs>
     using unpack_append_v = typename detail::_unpack_append_v<C, L, xs...>::type;
 
-    template<class L, class C, int_t... xs>
+    template<class L, class C, int_... xs>
     using unpack_c_v = typename detail::_unpack_v<C, L, number<xs>...>::type;
 
-    template<class L, class C, int_t... xs>
+    template<class L, class C, int_... xs>
     using unpack_append_c_v = typename detail::_unpack_append_v<C, L, number<xs>...>::type;
 #endif
   }

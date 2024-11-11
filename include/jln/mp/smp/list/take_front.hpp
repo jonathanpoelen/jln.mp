@@ -19,11 +19,11 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template<int_t n, class C = listify>
+  template<int_ n, class C = listify>
   using take_front_c = typename detail::mk_take_front<n >= 0 && n <= ~0u>
     ::template f<n, C>;
 
-  template<int_t n, class C = listify>
+  template<int_ n, class C = listify>
   using take_front_max_c = typename detail::mk_take_front_max<n >= 0 && n <= ~0u>
     ::template f<n, C>;
 }
@@ -40,7 +40,7 @@ namespace jln::mp::detail
   template<>
   struct mk_take_front<true>
   {
-    template<int_t n, class C>
+    template<int_ n, class C>
     using f = test_contract<
       mp::size<mp::greater_equal_than_c<n>>,
       mp::take_front_c<n, subcontract<C>>>;
@@ -54,7 +54,7 @@ namespace jln::mp::detail
   template<>
   struct mk_take_front_max<true>
   {
-    template<int_t n, class C>
+    template<int_ n, class C>
     using f = contract<mp::take_front_max_c<n, subcontract<C>>>;
   };
 

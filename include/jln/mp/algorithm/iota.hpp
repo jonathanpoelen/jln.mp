@@ -10,15 +10,15 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<int_t start, int_t count, int_t stride, bool is_neg = 0 < count>
+    template<int_ start, int_ count, int_ stride, bool is_neg = 0 < count>
     struct iota_v_c;
   }
   /// \endcond
 
   /// \ingroup number
 
-  /// Generates a sequence of \int_t.
-  /// \treturn \sequence of \int_t
+  /// Generates a sequence of \int_.
+  /// \treturn \sequence of \int_
   /// \see iota
   template<class C = numbers<>>
   struct iota_v
@@ -41,7 +41,7 @@ namespace jln::mp
 
   namespace emp
   {
-    template<int_t start, int_t count, int_t stride = 1, class C = mp::numbers<>>
+    template<int_ start, int_ count, int_ stride = 1, class C = mp::numbers<>>
     using iota_v_c = typename detail::iota_v_c<start, count, stride>::template f<C>
       #if !JLN_MP_MEMOIZED_ALIAS
       ::type
@@ -56,7 +56,7 @@ namespace jln::mp
       #endif
       ;
 
-    template<int_t start, int_t count, int_t stride = 1, class C = mp::listify>
+    template<int_ start, int_ count, int_ stride = 1, class C = mp::listify>
     using iota_c = typename detail::iota_v_c<start, count, stride>::template f<mp::numbers<C>>
       #if !JLN_MP_MEMOIZED_ALIAS
       ::type
@@ -78,38 +78,38 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<int_t... i>
+  template<int_... i>
   struct iota_c_result;
 
-  template<class, int_t... i>
+  template<class, int_... i>
   struct iota_impl
   {
-    template<int_t start, int_t stride>
+    template<int_ start, int_ stride>
     using strided = iota_c_result<start + i * stride...>;
   };
 
-  template<int_t start, int_t count, int_t stride, bool is_neg>
+  template<int_ start, int_ count, int_ stride, bool is_neg>
   struct iota_v_c
     : JLN_MP_MAKE_INTEGER_SEQUENCE(count < 0 ? -count : count, iota_impl)
     ::template strided<start, count < 0 ? -stride : stride>
   {};
 
 #if JLN_MP_MEMOIZED_ALIAS
-  template<int_t... i>
+  template<int_... i>
   struct iota_c_result
   {
     template<class C>
     using f = typename JLN_MP_CALLER_XS(i, C)::template f<i...>;
   };
 
-  template<int_t count>
+  template<int_ count>
   struct iota_v_c<0, count, 1, false>
   {
     template<class C>
     using f = emp::make_int_sequence_v_c<count, C>;
   };
 #else
-  template<int_t... i>
+  template<int_... i>
   struct iota_c_result
   {
     template<class C>
@@ -119,7 +119,7 @@ namespace jln::mp::detail
     };
   };
 
-  template<int_t count>
+  template<int_ count>
   struct iota_v_c<0, count, 1, false>
   {
     template<class C>

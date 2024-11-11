@@ -48,7 +48,7 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  template<int_t i>
+  template<int_ i>
   struct split_once_select<number<i>>
   {
     template<class TC, class FC>

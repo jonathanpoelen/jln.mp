@@ -23,7 +23,7 @@ namespace jln::mp::smp
     subcontract<FC>
   >>;
 
-  template<int_t OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
+  template<int_ OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
   using partial_drop_until_xs_c = contract<mp::partial_drop_until_xs_c<
     OffsetEnd,
     concepts::predicate<assume_unary_or_more<Pred>, mp::identity, mp::always<true_>>,
@@ -39,7 +39,7 @@ namespace jln::mp::smp
   using drop_inclusive_until_xs = drop_until_xs<
     Pred, contract<mp::drop_front_c<1, subcontract<TC>>>, FC>;
 
-  template<int_t OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
+  template<int_ OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
   using partial_drop_inclusive_until_xs_c = partial_drop_until_xs_c<
     OffsetEnd, Pred, contract<mp::drop_front_c<1, subcontract<TC>>>, FC>;
 
@@ -49,7 +49,7 @@ namespace jln::mp::smp
     contract<detail::smp_drop_front_or_drop_front_max_t<ExtendedByN, TC>>,
     FC>;
 
-  template<int_t OffsetEnd, std::size_t ExtendedByN,
+  template<int_ OffsetEnd, std::size_t ExtendedByN,
            class Pred, class TC = listify, class FC = clear<TC>>
   using partial_drop_until_extended_by_n_xs_c = partial_drop_until_xs_c<
     OffsetEnd, Pred,
@@ -86,7 +86,7 @@ namespace jln::mp::detail
     using type = smp::drop_until_extended_by_n_xs_c<ExtendedByN, sfinae<Pred>, sfinae<TC>, sfinae<FC>>;
   };
 
-  template<template<class> class sfinae, int_t OffsetEnd, std::size_t ExtendedByN,
+  template<template<class> class sfinae, int_ OffsetEnd, std::size_t ExtendedByN,
            class Pred, class TC, class FC>
   struct _sfinae<sfinae, partial_drop_until_extended_by_n_xs_c<OffsetEnd, ExtendedByN, Pred, TC, FC>>
   {

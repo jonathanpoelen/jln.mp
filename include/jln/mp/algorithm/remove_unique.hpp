@@ -23,10 +23,10 @@ namespace jln::mp
     template<bool>
     struct _copy_unique;
 #else
-    template<class, int_t... i>
+    template<class, int_... i>
     struct _remove_unique;
 
-    template<class, int_t... i>
+    template<class, int_... i>
     struct _copy_unique;
 #endif
 
@@ -217,7 +217,7 @@ namespace jln::mp::detail
     static list<x> f(...);
   };
 
-  template<class, int_t... i>
+  template<class, int_... i>
   struct _remove_unique
   {
     template<class C, class... xs>
@@ -236,7 +236,7 @@ namespace jln::mp::detail
     static list<> f(...);
   };
 
-  template<class, int_t... i>
+  template<class, int_... i>
   struct _copy_unique
   {
     template<class C, class... xs>
@@ -247,7 +247,7 @@ namespace jln::mp::detail
 #endif
 
 
-  template<class, int_t... ints>
+  template<class, int_... ints>
   struct remove_unique_if_impl
   {
     template<class C, class Cmp, class... xs>
@@ -266,13 +266,13 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct remove_unique_if_impl<int_t>
+  struct remove_unique_if_impl<int_>
     : call_trace_c0_arg
   {};
 
-  template<int_t i>
-  struct remove_unique_if_impl<int_t, i>
-  : remove_unique_if_impl<int_t>
+  template<int_ i>
+  struct remove_unique_if_impl<int_, i>
+  : remove_unique_if_impl<int_>
   {};
 
   template<class Cmp, class C>
@@ -290,7 +290,7 @@ namespace jln::mp::detail
   };
 
 
-  template<class, int_t... ints>
+  template<class, int_... ints>
   struct copy_unique_if_impl
   {
     template<class C, class Cmp, class... xs>
@@ -309,12 +309,12 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct copy_unique_if_impl<int_t>
-  : remove_unique_if_impl<int_t>
+  struct copy_unique_if_impl<int_>
+  : remove_unique_if_impl<int_>
   {};
 
-  template<int_t i>
-  struct copy_unique_if_impl<int_t, i>
+  template<int_ i>
+  struct copy_unique_if_impl<int_, i>
   {
     template<class C, class Cmp, class... xs>
     using f = JLN_MP_CALL_TRACE(C, xs...);

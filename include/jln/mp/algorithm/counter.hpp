@@ -116,7 +116,7 @@ namespace jln::mp::detail
   JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
 
 #if JLN_MP_GCC || (!JLN_MP_MSVC && __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L)
-  template<std::size_t N, int_t... i>
+  template<std::size_t N, int_... i>
   constexpr array<N> count_elems()
   {
     array<N> counter{};
@@ -124,7 +124,7 @@ namespace jln::mp::detail
     return counter;
   }
 #else
-  template<std::size_t N, int_t... i>
+  template<std::size_t N, int_... i>
   struct count_elems
   {
     static constexpr auto counters = []{
@@ -137,15 +137,15 @@ namespace jln::mp::detail
 
 #if JLN_MP_GCC
 
-  template<class T, int_t i>
-  constexpr int_t index_base(indexed_item<i, T>*)
+  template<class T, int_ i>
+  constexpr int_ index_base(indexed_item<i, T>*)
   {
     return i;
   }
 
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wunused-but-set-variable")
-  template<class, int_t... ints>
+  template<class, int_... ints>
   struct counter_impl
   {
     template<class... unique_xs>
@@ -154,7 +154,7 @@ namespace jln::mp::detail
       template<class C, template<class...> class F, class... xs>
       static auto f()
       {
-        constexpr typename indexed_inherit<int_t, ints...>::template f<unique_xs...>*
+        constexpr typename indexed_inherit<int_, ints...>::template f<unique_xs...>*
           indexed = nullptr;
 
         constexpr auto counters = count_elems<
@@ -173,12 +173,12 @@ namespace jln::mp::detail
 #else
 
   template<class T, class i>
-  constexpr int_t index_base(basic_item<list<i, T>>*)
+  constexpr int_ index_base(basic_item<list<i, T>>*)
   {
     return i::value;
   }
 
- template<class, int_t... ints>
+ template<class, int_... ints>
   struct counter_impl
   {
     template<class... unique_xs>

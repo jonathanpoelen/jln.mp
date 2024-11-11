@@ -16,7 +16,7 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template<int_t n, class C = listify>
+  template<int_ n, class C = listify>
   using repeat_c = typename detail::mk_repeat<n >= 0>
     ::template f<n, C>;
 }
@@ -35,14 +35,14 @@ namespace jln::mp::detail
   template<>
   struct mk_repeat<true>
   {
-    template<int_t n, class C>
+    template<int_ n, class C>
     using f = contract<mp::repeat_c<n, subcontract<C>>>;
   };
 
   template<>
   struct mk_repeat<false>
   {
-    template<int_t i, class C>
+    template<int_ i, class C>
     using f = bad_contract;
   };
 }

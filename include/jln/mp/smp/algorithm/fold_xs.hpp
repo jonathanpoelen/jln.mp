@@ -10,7 +10,7 @@
 
 namespace jln::mp::smp
 {
-  template<int_t OffsetEnd, class F, class EmptyC, class C = identity>
+  template<int_ OffsetEnd, class F, class EmptyC, class C = identity>
   using partial_fold_xs_or_else_c = test_contract<
     mp::size<>,
     mp::partial_fold_xs_c<
@@ -21,13 +21,13 @@ namespace jln::mp::smp
     subcontract<EmptyC>
   >;
 
-  template<int_t OffsetEnd, class F, class C = identity>
+  template<int_ OffsetEnd, class F, class C = identity>
   using partial_fold_xs_c = partial_fold_xs_or_else_c<OffsetEnd, F, bad_contract, C>;
 
   template<class F, class C = identity>
   using fold_xs = partial_fold_xs_or_else_c<-1, F, bad_contract, C>;
 
-  template<int_t OffsetEnd, class F, class FallbackValue, class C = identity>
+  template<int_ OffsetEnd, class F, class FallbackValue, class C = identity>
   using partial_fold_xs_or_c = partial_fold_xs_or_else_c<
     OffsetEnd, F, contract<mp::always<FallbackValue>>, C>;
 
@@ -52,7 +52,7 @@ JLN_MP_MAKE_REGULAR_SMP4_P(partial_fold_xs_or_else, (OffsetEnd), (F), (EmptyC), 
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, int_t OffsetEnd, class F, class C>
+  template<template<class> class sfinae, int_ OffsetEnd, class F, class C>
   struct _sfinae<sfinae, partial_fold_xs_c<OffsetEnd, F, C>>
   {
     using type = smp::partial_fold_xs_c<OffsetEnd, sfinae<F>, sfinae<C>>;

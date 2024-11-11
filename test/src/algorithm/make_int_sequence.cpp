@@ -11,7 +11,7 @@ TEST_SUITE_BEGIN()
 
 struct i1
 {
-  template<jln::mp::int_t a>
+  template<jln::mp::int_ a>
   using f = jln::mp::number<a>;
 };
 

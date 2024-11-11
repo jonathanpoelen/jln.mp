@@ -11,16 +11,16 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<class C, int_t i, int_t ri>
+    template<class C, int_ i, int_ ri>
     struct slice_impl;
 
-    template<int_t i, int_t ri>
+    template<int_ i, int_ ri>
     struct strided_slice_impl;
 
-    template<class C, int_t i, int_t ri>
+    template<class C, int_ i, int_ ri>
     struct positive_slice_impl;
 
-    template<int_t i, int_t ri>
+    template<int_ i, int_ ri>
     struct positive_strided_slice_impl;
 
     template<bool>
@@ -33,16 +33,16 @@ namespace jln::mp
     // pre: count > 0
     // pre: step > 0
     // pre: n >= 0
-    template<int_t start, int_t count, int_t step, int_t n,
-      int_t i = n + start,
-      int_t e = i + (count - 1) * step + 1,
-      int_t ii
+    template<int_ start, int_ count, int_ step, int_ n,
+      int_ i = n + start,
+      int_ e = i + (count - 1) * step + 1,
+      int_ ii
         = e <= 0
         ? -1
         : i < 0
         ? -i % step
         : i,
-      int_t ri
+      int_ ri
         = e <= 0 || n <= ii
         ? -1
         : n - (n < e ? (n - 1 - ii) / step * step + ii + 1 : e)
@@ -55,8 +55,8 @@ namespace jln::mp
     // pre: i >= 0
     // pre: count > 0
     // pre: step > 0
-    template<int_t i, int_t count, int_t step,
-      int_t e = i + (count - 1) * step + 1
+    template<int_ i, int_ count, int_ step,
+      int_ e = i + (count - 1) * step + 1
     >
     using positive_strided_slice_dispatch = positive_strided_slice_impl<
       e <= 0 ? -1 : i < 0 ? -i % step : i,
@@ -66,15 +66,15 @@ namespace jln::mp
     // pre: start < 0
     // pre: count > 0
     // pre: n >= 0
-    template<class C, int_t start, int_t count, int_t n,
-      int_t e = n + start + count,
-      int_t i
+    template<class C, int_ start, int_ count, int_ n,
+      int_ e = n + start + count,
+      int_ i
         = e <= 0
         ? -1
         : n < -start
         ? 0
         : n + start,
-      int_t ri
+      int_ ri
         = e <= 0 || n <= i
         ? -1
         : n < e
@@ -90,7 +90,7 @@ namespace jln::mp
     // pre: i >= 0
     // pre: count > 0
     // pre: n >= 0
-    template<class C, int_t i, int_t count, int_t e = i + count>
+    template<class C, int_ i, int_ count, int_ e = i + count>
     using positive_slice_dispatch = positive_slice_impl<
       C,
       e <= 0 ? -1 : i < 0 ? 0 : i,
@@ -106,7 +106,7 @@ namespace jln::mp
   /// A negative start represents an index starting from the end.
   /// \pre `0 < step || count == 0`
   /// \treturn \sequence
-  template<int_t start, unsigned count, unsigned step = 1, class C = listify>
+  template<int_ start, unsigned count, unsigned step = 1, class C = listify>
   struct strided_slice_c
     : detail::negative_strided_slice_select<start < 0>
     ::template impl<start, count, step, C>
@@ -120,7 +120,7 @@ namespace jln::mp
   template<class start, class count, class step = number<1>, class C = listify>
   using strided_slice = strided_slice_c<start::value, count::value, step::value, C>;
 
-  template<int_t start, unsigned count, class C = listify>
+  template<int_ start, unsigned count, class C = listify>
   using slice_c = strided_slice_c<start, count, 1, C>;
 
   template<class start, class count, class C = listify>
@@ -131,13 +131,13 @@ namespace jln::mp
     template<class L, class start, class count, class step = number<1>, class C = mp::listify>
     using strided_slice = unpack<L, strided_slice<start, count, step, C>>;
 
-    template<class L, int_t start, unsigned count, unsigned step = 1, class C = mp::listify>
+    template<class L, int_ start, unsigned count, unsigned step = 1, class C = mp::listify>
     using strided_slice_c = unpack<L, mp::strided_slice_c<start, count, step, C>>;
 
     template<class L, class start, class count, class C = mp::listify>
     using slice = unpack<L, mp::strided_slice_c<start::value, count::value, 1, C>>;
 
-    template<class L, int_t start, unsigned count, class C = mp::listify>
+    template<class L, int_ start, unsigned count, class C = mp::listify>
     using slice_c = unpack<L, mp::strided_slice_c<start, count, 1, C>>;
   }
 }
@@ -154,26 +154,26 @@ namespace jln::mp
 /// \cond
 namespace jln::mp
 {
-  template<int_t start, unsigned count, class C>
+  template<int_ start, unsigned count, class C>
   struct strided_slice_c<start, count, 1, C>
     : detail::negative_slice_select<start < 0>
     ::template impl<start, count, C>
   {};
 
-  template<int_t start, unsigned step, class C>
+  template<int_ start, unsigned step, class C>
   struct strided_slice_c<start, 0, step, C> : clear<C>
   {};
 
   // invalid
-  template<int_t start, unsigned count, class C>
+  template<int_ start, unsigned count, class C>
   struct strided_slice_c<start, count, 0, C>
   {};
 
-  template<int_t start, class C>
+  template<int_ start, class C>
   struct strided_slice_c<start, 0, 0, C> : clear<C>
   {};
 
-  template<int_t start, class C>
+  template<int_ start, class C>
   struct strided_slice_c<start, 0, 1, C> : clear<C>
   {};
 }// namespace jln::mp
@@ -183,12 +183,12 @@ namespace jln::mp::detail
   template<>
   struct negative_slice_select<true>
   {
-    template<int_t start, unsigned count, class C>
+    template<int_ start, unsigned count, class C>
     struct impl
     {
       template<class... xs>
       using f = typename negative_slice_dispatch<C, start, count,
-        static_cast<int_t>(sizeof...(xs)) // cast is necessary for nvcc (tested with V12.3.52)
+        static_cast<int_>(sizeof...(xs)) // cast is necessary for nvcc (tested with V12.3.52)
       >::template f<xs...>;
     };
   };
@@ -196,7 +196,7 @@ namespace jln::mp::detail
   template<>
   struct negative_slice_select<false>
   {
-    template<int_t start, unsigned count, class C>
+    template<int_ start, unsigned count, class C>
     struct impl
     {
       template<class... xs>
@@ -210,14 +210,14 @@ namespace jln::mp::detail
   template<class C>
   struct positive_slice_impl<C, -1, -1>
   {
-    template<int_t /*n*/>
+    template<int_ /*n*/>
     using f = clear<C>;
   };
 
-  template<class C, int_t i, int_t e>
+  template<class C, int_ i, int_ e>
   struct positive_slice_impl
   {
-    template<int_t n, int_t ri = n <= i ? -1 : n < e ? 0 : n - e>
+    template<int_ n, int_ ri = n <= i ? -1 : n < e ? 0 : n - e>
     using f = slice_impl<C, ri == -1 ? -1 : i, ri>;
   };
 
@@ -226,7 +226,7 @@ namespace jln::mp::detail
   struct slice_impl<C, -1, -1> : clear<C>
   {};
 
-  template<class C, int_t i>
+  template<class C, int_ i>
   struct slice_impl<C, i, 0> : drop_front_c<i, C>
   {};
 
@@ -234,7 +234,7 @@ namespace jln::mp::detail
   struct slice_impl<C, 0, 0> : C
   {};
 
-  template<class C, int_t i, int_t ri>
+  template<class C, int_ i, int_ ri>
   struct slice_impl : rotate_c<-ri, drop_front_c<i + ri, C>>
   {};
 
@@ -242,12 +242,12 @@ namespace jln::mp::detail
   template<>
   struct negative_strided_slice_select<true>
   {
-    template<int_t start, unsigned count, unsigned step, class C>
+    template<int_ start, unsigned count, unsigned step, class C>
     struct impl
     {
       template<class... xs>
       using f = typename negative_strided_slice_dispatch<start, count, step,
-        static_cast<int_t>(sizeof...(xs)) // cast is necessary for nvcc (tested with V12.3.52)
+        static_cast<int_>(sizeof...(xs)) // cast is necessary for nvcc (tested with V12.3.52)
       >
         ::template impl<C, step, sizeof...(xs)>
         ::template f<xs...>;
@@ -257,7 +257,7 @@ namespace jln::mp::detail
   template<>
   struct negative_strided_slice_select<false>
   {
-    template<int_t start, unsigned count, unsigned step, class C>
+    template<int_ start, unsigned count, unsigned step, class C>
     struct impl
     {
       template<class... xs>
@@ -272,15 +272,15 @@ namespace jln::mp::detail
   struct positive_strided_slice_impl<-1, -1>
   {
     // = 0 to be usable in range.hpp
-    template<class C, unsigned /*step*/ = 0, int_t /*n*/ = 0>
+    template<class C, unsigned /*step*/ = 0, int_ /*n*/ = 0>
     using impl = clear<C>;
   };
 
-  template<int_t i, int_t e>
+  template<int_ i, int_ e>
   struct positive_strided_slice_impl
   {
-    template<class C, unsigned step, int_t n,
-      int_t ri = n <= i ? -1 : n - (n < e ? (n - 1 - i) / step * step + i + 1 : e)>
+    template<class C, unsigned step, int_ n,
+      int_ ri = n <= i ? -1 : n - (n < e ? (n - 1 - i) / step * step + i + 1 : e)>
     using impl = typename strided_slice_impl<ri == -1 ? -1 : i, ri>
       ::template impl<C, step, n>;
   };
@@ -298,7 +298,7 @@ namespace jln::mp::detail
     {};
   };
 
-  template<int_t i>
+  template<int_ i>
   struct strided_slice_impl<i, 0>
   {
     template<class C, unsigned step, std::size_t n>
@@ -308,7 +308,7 @@ namespace jln::mp::detail
     >;
   };
 
-  template<int_t i, int_t ri>
+  template<int_ i, int_ ri>
   struct strided_slice_impl
   {
     template<class C, unsigned step, std::size_t n>

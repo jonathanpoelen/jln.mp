@@ -38,13 +38,13 @@ namespace jln::mp
       TC, FC, xs...>;
   };
 
-  template<int_t x, class Cmp = less<>, class TC = listify, class FC = TC>
+  template<int_ x, class Cmp = less<>, class TC = listify, class FC = TC>
   using lower_bound_c = lower_bound<number<x>, Cmp, TC, FC>;
 
   template<class x, class TC = listify, class FC = TC>
   using lower_bound_than = lower_bound<x, less<>, TC, FC>;
 
-  template<int_t x, class TC = listify, class FC = TC>
+  template<int_ x, class TC = listify, class FC = TC>
   using lower_bound_than_c = lower_bound<number<x>, less<>, TC, FC>;
 
   namespace emp
@@ -52,13 +52,13 @@ namespace jln::mp
     template<class L, class x, class Cmp = mp::less<>, class TC = mp::listify, class FC = TC>
     using lower_bound = unpack<L, mp::lower_bound<x, Cmp, TC, FC>>;
 
-    template<class L, int_t x, class Cmp = mp::less<>, class TC = mp::listify, class FC = TC>
+    template<class L, int_ x, class Cmp = mp::less<>, class TC = mp::listify, class FC = TC>
     using lower_bound_c = unpack<L, mp::lower_bound<mp::number<x>, Cmp, TC, FC>>;
 
     template<class L, class x, class TC = mp::listify, class FC = TC>
     using lower_bound_than = unpack<L, mp::lower_bound<x, mp::less<>, TC, FC>>;
 
-    template<class L, int_t x, class TC = mp::listify, class FC = TC>
+    template<class L, int_ x, class TC = mp::listify, class FC = TC>
     using lower_bound_than_c = unpack<L, mp::lower_bound<mp::number<x>, mp::less<>, TC, FC>>;
   }
 }

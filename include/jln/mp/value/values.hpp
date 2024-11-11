@@ -54,8 +54,8 @@ namespace jln::mp
 
   namespace emp
   {
-    template<int_t... xs>
-    using values = list<typed_value<int_t, xs>...>;
+    template<int_... xs>
+    using values = list<typed_value<int_, xs>...>;
 
     template<class T, T... xs>
     using typed_values = list<typed_value<T, xs>...>;

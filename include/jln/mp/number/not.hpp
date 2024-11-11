@@ -143,14 +143,14 @@ namespace jln::mp
     using f = number<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>;
   };
 
-  template<int_t i, class C>
+  template<int_ i, class C>
   struct size<is<number<i>, not_<C>>>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, number<sizeof...(xs) != i>);
   };
 
-  template<int_t i>
+  template<int_ i>
   struct size<is<number<i>, not_<>>>
   {
     template<class... xs>
@@ -166,7 +166,7 @@ namespace jln::mp
       ::template f<xs...>;
   };
 
-  template<int_t i, class TC, class FC>
+  template<int_ i, class TC, class FC>
   struct if_<size<is<number<i>, not_<>>>, TC, FC>
   {
     template<class... xs>

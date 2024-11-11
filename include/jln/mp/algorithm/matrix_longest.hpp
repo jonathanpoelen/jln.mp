@@ -15,7 +15,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<class FillValue, class F, class EvenSizeF, class C, int_t max, class... ns>
+    template<class FillValue, class F, class EvenSizeF, class C, int_ max, class... ns>
     using matrix_longest_each_impl = _each<
       C,
       typename conditional_c<max != ns::value>
@@ -25,10 +25,10 @@ namespace jln::mp
       >
     ...>;
 
-    constexpr int_t max_lengths();
+    constexpr int_ max_lengths();
 
     template<class... Ts>
-    constexpr int_t max_lengths(int_t r, Ts... len);
+    constexpr int_ max_lengths(int_ r, Ts... len);
 
     template<class FillValue, class F, class EvenSizeF, class C, class... ns>
     using matrix_longest_impl = matrix_longest_each_impl<
@@ -121,13 +121,13 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  constexpr int_t max_lengths()
+  constexpr int_ max_lengths()
   {
     return 0;
   }
 
   template<class... Ts>
-  constexpr int_t max_lengths(int_t r, Ts... len)
+  constexpr int_ max_lengths(int_ r, Ts... len)
   {
     (..., ((len > r) ? void(r = len) : void()));
     return r;

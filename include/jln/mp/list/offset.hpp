@@ -17,19 +17,19 @@ namespace jln::mp
   ///   size<push_front<I, sub<C>>>
   ///   \endcode
   /// \treturn \number
-  template<int_t I, class C = identity>
+  template<int_ I, class C = identity>
   struct offset_c
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<I - int_t(sizeof...(xs))>);
+    using f = JLN_MP_CALL_TRACE(C, number<I - int_(sizeof...(xs))>);
   };
 
   /// \cond
-  template<int_t I>
+  template<int_ I>
   struct offset_c<I, identity>
   {
     template<class... xs>
-    using f = number<I - int_t(sizeof...(xs))>;
+    using f = number<I - int_(sizeof...(xs))>;
   };
   /// \endcond
 
@@ -41,13 +41,13 @@ namespace jln::mp
     template<class L, class I, class C = mp::identity>
     using offset = unpack<L, mp::offset<I, C>>;
 
-    template<class L, int_t i, class C = mp::identity>
+    template<class L, int_ i, class C = mp::identity>
     using offset_c = unpack<L, mp::offset_c<i, C>>;
 
     template<class L, class I, class C = mp::identity>
-    inline constexpr int_t offset_v = unpack<L, mp::offset<I, C>>::value;
+    inline constexpr int_ offset_v = unpack<L, mp::offset<I, C>>::value;
 
-    template<class L, int_t i, class C = mp::identity>
-    inline constexpr int_t offset_c_v = unpack<L, mp::offset_c<i, C>>::value;
+    template<class L, int_ i, class C = mp::identity>
+    inline constexpr int_ offset_c_v = unpack<L, mp::offset_c<i, C>>::value;
   }
 }

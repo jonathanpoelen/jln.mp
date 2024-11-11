@@ -13,7 +13,7 @@ namespace jln::mp
     template<int, bool found = true>
     struct _drop_until_xs;
 
-    template<int_t Size, class Pred, class... xs>
+    template<int_ Size, class Pred, class... xs>
     using drop_until_xs_call = typename detail::_drop_until_xs<Size>
       ::template f<Size, Pred, xs...>;
   }
@@ -65,7 +65,7 @@ namespace jln::mp
   /// \see drop_front, drop_back, drop_until, drop_until_xs
   /// \see take_until, take_until_xs
   /// \see search, partial_search
-  template<int_t OffsetEnd, std::size_t ExtendedByN,
+  template<int_ OffsetEnd, std::size_t ExtendedByN,
            class Pred, class TC = listify, class FC = clear<TC>>
   struct partial_drop_until_extended_by_n_xs_c
   {
@@ -83,7 +83,7 @@ namespace jln::mp
   using partial_drop_until_xs =
     partial_drop_until_extended_by_n_xs_c<OffsetEnd::value, 0, Pred, TC, FC>;
 
-  template<int_t OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
+  template<int_ OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
   using partial_drop_until_xs_c =
     partial_drop_until_extended_by_n_xs_c<OffsetEnd, 0, Pred, TC, FC>;
 
@@ -119,7 +119,7 @@ namespace jln::mp
     using partial_drop_until_xs = unpack<L,
       mp::partial_drop_until_xs<OffsetEnd, Pred, TC, FC>>;
 
-    template<class L, int_t OffsetEnd, class Pred,
+    template<class L, int_ OffsetEnd, class Pred,
              class TC = mp::listify, class FC = mp::clear<TC>>
     using partial_drop_until_xs_c = unpack<L,
       mp::partial_drop_until_xs_c<OffsetEnd, Pred, TC, FC>>;
@@ -132,7 +132,7 @@ namespace jln::mp
     using partial_drop_inclusive_until_xs = unpack<L,
       mp::partial_drop_inclusive_until_xs<OffsetEnd, Pred, TC, FC>>;
 
-    template<class L, int_t OffsetEnd, class Pred,
+    template<class L, int_ OffsetEnd, class Pred,
              class TC = mp::listify, class FC = mp::clear<TC>>
     using partial_drop_inclusive_until_xs_c = unpack<L,
       mp::partial_drop_inclusive_until_xs_c<OffsetEnd, Pred, TC, FC>>;
@@ -142,7 +142,7 @@ namespace jln::mp
     using partial_drop_until_extended_by_n_xs = unpack<L,
       mp::partial_drop_until_extended_by_n_xs<OffsetEnd, ExtendedByN, Pred, TC, FC>>;
 
-    template<class L, int_t OffsetEnd, std::size_t ExtendedByN, class Pred,
+    template<class L, int_ OffsetEnd, std::size_t ExtendedByN, class Pred,
              class TC = listify, class FC = mp::clear<TC>>
     using partial_drop_until_extended_by_n_xs_c = unpack<L,
       mp::partial_drop_until_extended_by_n_xs_c<OffsetEnd, ExtendedByN, Pred, TC, FC>>;

@@ -22,7 +22,7 @@ namespace jln::mp::smp
     keys...
   >>;
 
-  template<class C, class F, int_t... keys>
+  template<class C, class F, int_... keys>
   using collapse2_with_c = try_contract<mp::collapse2_with<
     typename detail::smp_listify_or_monadic_xs<F>::template f<C>,
     subcontract<F>,
@@ -32,7 +32,7 @@ namespace jln::mp::smp
   template<class C, class... keys>
   using collapse2 = try_contract<mp::collapse2_with<assume_lists<C>, mp::listify, keys...>>;
 
-  template<class C, int_t... keys>
+  template<class C, int_... keys>
   using collapse2_c = try_contract<
     mp::collapse2_with<assume_lists<C>, mp::listify, number<keys>...>>;
 

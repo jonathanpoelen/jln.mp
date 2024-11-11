@@ -16,7 +16,7 @@ namespace jln::mp
     template<unsigned n>
     struct rotate_impl;
 
-    constexpr unsigned rotate_size(int_t n, unsigned size);
+    constexpr unsigned rotate_size(int_ n, unsigned size);
   }
   /// \endcond
 
@@ -33,7 +33,7 @@ namespace jln::mp
   ///     C::f<...xs[n:], ...xs[:n]>
   ///   \endcode
   /// \treturn \sequence
-  template<int_t N, class C = listify>
+  template<int_ N, class C = listify>
   struct rotate_c
   {
     template<class... xs>
@@ -54,7 +54,7 @@ namespace jln::mp
     template<class L, class n, class C = mp::listify>
     using rotate = unpack<L, mp::rotate<n, C>>;
 
-    template<class L, int_t n, class C = mp::listify>
+    template<class L, int_ n, class C = mp::listify>
     using rotate_c = unpack<L, mp::rotate_c<n, C>>;
   }
 }
@@ -65,14 +65,14 @@ namespace jln::mp
 /// \cond
 namespace jln::mp
 {
-  template<int_t N1, int_t N2, class C>
+  template<int_ N1, int_ N2, class C>
   struct rotate_c<N1, rotate_c<N2, C>>
     : rotate_c<N1 + N2, C>
   {};
 
 #if JLN_MP_HAS_BUILTIN(__type_pack_element)
   // back<C>
-  template<int_t N, class C>
+  template<int_ N, class C>
   struct rotate_c<N, front<C>>
   {
     template<class... xs>
@@ -82,7 +82,7 @@ namespace jln::mp
   };
 
   // back<>
-  template<int_t N>
+  template<int_ N>
   struct rotate_c<N, front<>>
   {
     template<class... xs>
@@ -93,7 +93,7 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  constexpr unsigned rotate_size(int_t n, unsigned size)
+  constexpr unsigned rotate_size(int_ n, unsigned size)
   {
     return size ? static_cast<unsigned>(n < 0 ? size + n % size : n) % size : 0;
   }
