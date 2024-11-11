@@ -99,12 +99,11 @@ end
 local i_desc = kwindexes.desc
 local f_desc = function(lines)
   local desc = table.concat(lines)
-  -- add description lines to the fragment if one already exists
-  for _, t in ipairs(fileinfos) do
-    if t.i == i_desc then
-      t[1] = t[1] .. desc
-      return
-    end
+  -- add description lines to the previous fragment if it is of type description
+  local last = fileinfos[#fileinfos]
+  if last and last.i == i_desc then
+    last[1] = last[1] .. desc
+    return
   end
   fileinfos[#fileinfos+1] = {i = i_desc, desc}
 end
