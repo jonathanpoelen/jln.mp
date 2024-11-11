@@ -338,17 +338,41 @@ namespace jln::mp
   }
 } // namespace jln::mp
 
-#ifndef JLN_MP_ENABLE_DEBUG
-#  define JLN_MP_ENABLE_DEBUG 0
-#endif
-
-// useless with gcc and msvc since it displays all the transformations
-#if JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_MEMOIZED_ALIAS
-#  undef JLN_MP_ENABLE_DEBUG
-#  define JLN_MP_ENABLE_DEBUG 0
-#endif
 #ifndef JLN_MP_MAX_CALL_ELEMENT
 # define JLN_MP_MAX_CALL_ELEMENT 10000
+#endif
+
+// Aliases are not context dependent and are resolved as soon as possible
+// which generate errors in contexts that should be lazy.
+#ifndef JLN_MP_LAZY_ALIAS
+# if JLN_MP_CLANG_LIKE
+#   define JLN_MP_LAZY_ALIAS 0
+# else
+#   define JLN_MP_LAZY_ALIAS 1
+# endif
+#endif
+
+// When 1, ignore the value of JLN_MP_LAZY_ALIAS in the implementations.
+// This allows the code to compile in an emptier way, but will fail when
+// the compiler can resolve an alias leading to a compilation error
+// (which is actually quite rare).
+#ifndef JLN_MP_FORCE_LAZY_ALIAS
+# define JLN_MP_FORCE_LAZY_ALIAS 1
+#endif
+
+#if JLN_MP_LAZY_ALIAS
+# undef JLN_MP_FORCE_LAZY_ALIAS
+# define JLN_MP_FORCE_LAZY_ALIAS 1
+#endif
+
+#ifndef JLN_MP_ENABLE_DEBUG
+# define JLN_MP_ENABLE_DEBUG 0
+#endif
+
+// Useless with gcc and msvc since it displays all the transformations.
+#if JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_MEMOIZED_ALIAS
+# undef JLN_MP_ENABLE_DEBUG
+# define JLN_MP_ENABLE_DEBUG 0
 #endif
 
 /// \defgroup list List
@@ -503,7 +527,13 @@ namespace jln::mp
 {
   /// \ingroup number
 
+  using int_t = std::intmax_t;
+  using uint_t = std::uintmax_t;
+  // old version of int_t, but keep for compatibility reasons
+  // and because msvc gives errors which make no sense when renaming the type
   using int_ = std::intmax_t;
+  // old version of uint_t, but keep for compatibility reasons
+  // and because msvc gives errors which make no sense when renaming the type
   using uint_ = std::uintmax_t;
 
   template<int_ v>
@@ -563,21 +593,21 @@ namespace jln::mp
   #define JLN_MP_TRACE_F(...) memoize<__VA_ARGS__>
   #define JLN_MP_TRACE_TYPENAME typename
 
-#if JLN_MP_CUDA
-  #define JLN_MP_CALL_TRACE(C, ...) \
-    typename ::jln::mp::detail::memoizer_impl<void, C, __VA_ARGS__>::type
-  #define JLN_MP_CALL_TRACE_T(C, ...) \
-    typename ::jln::mp::detail::memoizer_impl<void, typename C, __VA_ARGS__>::type
-  #define JLN_MP_CALL_TRACE_0_ARG(...) \
-    typename ::jln::mp::detail::memoizer_impl<void, __VA_ARGS__>::type
-#else // if !JLN_MP_CUDA
-  #define JLN_MP_CALL_TRACE(C, ...) \
-    typename ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
-  #define JLN_MP_CALL_TRACE_T(C, ...) \
-    typename ::jln::mp::detail::memoizer_impl<typename C, __VA_ARGS__>::type
-  #define JLN_MP_CALL_TRACE_0_ARG(...) \
-    typename ::jln::mp::detail::memoizer_impl<__VA_ARGS__>::type
-#endif
+# if JLN_MP_CUDA
+    #define JLN_MP_CALL_TRACE(C, ...) \
+      typename ::jln::mp::detail::memoizer_impl<void, C, __VA_ARGS__>::type
+    #define JLN_MP_CALL_TRACE_T(C, ...) \
+      typename ::jln::mp::detail::memoizer_impl<void, typename C, __VA_ARGS__>::type
+    #define JLN_MP_CALL_TRACE_0_ARG(...) \
+      typename ::jln::mp::detail::memoizer_impl<void, __VA_ARGS__>::type
+# else // if !JLN_MP_CUDA
+    #define JLN_MP_CALL_TRACE(C, ...) \
+      typename ::jln::mp::detail::memoizer_impl<C, __VA_ARGS__>::type
+    #define JLN_MP_CALL_TRACE_T(C, ...) \
+      typename ::jln::mp::detail::memoizer_impl<typename C, __VA_ARGS__>::type
+    #define JLN_MP_CALL_TRACE_0_ARG(...) \
+      typename ::jln::mp::detail::memoizer_impl<__VA_ARGS__>::type
+# endif
 #endif
 
 #if JLN_MP_CLANG_LIKE
@@ -649,7 +679,49 @@ using call = typename detail::memoizer_impl<C, xs...>::type;
       __VA_ARGS__                                   \
     >::type
 
-# else
+# elif JLN_MP_CUDA  // ^^^ JLN_MP_MSVC
+
+namespace detail
+{
+  template<bool>
+  struct cuda_call;
+
+  template<>
+  struct cuda_call<true>
+  {
+    template<class C, class Err, class... xs>
+    using f = typename JLN_MP_TRACE_F(C)::template f<xs...>;
+  };
+
+  template<>
+  struct cuda_call<false>
+  {
+    template<class C, class Err, class... xs>
+    using f = typename Err::template f<xs...>;
+  };
+}
+
+template<class C, class... xs>
+using call = typename detail::cuda_call<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
+  ::template f<C, detail::too_many_arguments_error, xs...>;
+
+#  define JLN_MP_DCALL_TRACE_XS(xs, C, ...)                                        \
+    typename ::jln::mp::detail::cuda_call<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+      ::template f<C, ::jln::mp::detail::too_many_arguments_error, __VA_ARGS__>
+
+#  define JLN_MP_FORCE_DCALL_TRACE_XS JLN_MP_DCALL_TRACE_XS
+
+#  define JLN_MP_DCALL_TRACE_XS_0(xs, C)                                           \
+    typename ::jln::mp::detail::cuda_call<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+      ::template f<C, ::jln::mp::detail::too_many_arguments_error>
+
+#  define JLN_MP_DCALL_V_TRACE_XS(xs, C, ...)                             \
+    ::jln::mp::detail::cuda_call<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
+      ::template f<C, ::jln::mp::detail::too_many_arguments_error, __VA_ARGS__>
+
+#  define JLN_MP_FORCE_DCALL_V_TRACE_XS JLN_MP_DCALL_V_TRACE_XS
+
+# else  // ^^^ JLN_MP_CUDA
 
 template<class C, class... xs>
 using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
@@ -755,6 +827,25 @@ namespace jln::mp::detail
 }
 /// \endcond
 
+namespace jln::mp::detail
+{
+  template<class x, class>
+  struct first
+  {
+    using type = x;
+  };
+
+#if JLN_MP_FORCE_LAZY_ALIAS
+# define JLN_MP_LAZY_PARAM_T(deps, ...) __VA_ARGS__
+# define JLN_MP_LAZY_PARAM(deps, ...) __VA_ARGS__
+#else
+# define JLN_MP_LAZY_PARAM(deps, ...) \
+  ::jln::mp::detail::first<__VA_ARGS__, ::jln::mp::list<deps...>>::type
+# define JLN_MP_LAZY_PARAM_T(deps, ...) \
+  typename JLN_MP_LAZY_PARAM(deps, __VA_ARGS__)
+#endif
+}
+
 namespace jln::mp
 {
   /// \ingroup utility
@@ -766,7 +857,7 @@ namespace jln::mp
   struct always
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, x);
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_LAZY_PARAM_T(xs, x));
   };
 
   /// \cond
@@ -774,7 +865,7 @@ namespace jln::mp
   struct always<x, identity>
   {
     template<class... xs>
-    using f = x;
+    using f = JLN_MP_LAZY_PARAM_T(xs, x);
   };
   /// \endcond
 }
@@ -1159,7 +1250,7 @@ namespace jln::mp
     using size = unpack<L, mp::size<C>>;
 
     template<class L, class C = mp::identity>
-    constexpr bool size_v = unpack<L, mp::size<C>>::value;
+    inline constexpr bool size_v = unpack<L, mp::size<C>>::value;
   }
 
   /// \cond
@@ -1235,11 +1326,12 @@ namespace jln::mp
 
   /// A conditional expression.
   /// \treturn \value
+  /// \see select, reverse_select
   template<class Pred, class TC, class FC = always<false_>>
   struct if_
   {
     template<class... xs>
-    using f = typename mp::conditional_c<
+    using f = typename conditional_c<
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, xs...)::value)
     >
       ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
@@ -1262,7 +1354,7 @@ namespace jln::mp
   struct if_<size<>, TC, FC>
   {
     template<class... xs>
-    using f = typename mp::conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
+    using f = typename conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs))>
       ::template f<JLN_MP_TRACE_F(FC), JLN_MP_TRACE_F(TC)>
       ::template f<xs...>;
   };
@@ -1271,7 +1363,7 @@ namespace jln::mp
   struct if_<size<is<number<i>>>, TC, FC>
   {
     template<class... xs>
-    using f = typename mp::conditional_c<sizeof...(xs) == i>
+    using f = typename conditional_c<sizeof...(xs) == i>
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
@@ -1280,7 +1372,7 @@ namespace jln::mp
   struct if_<same<>, TC, FC>
   {
     template<class... xs>
-    using f = typename mp::conditional_c<emp::same_xs_v<xs...>>
+    using f = typename conditional_c<emp::same_xs_v<xs...>>
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
       ::template f<xs...>;
   };
@@ -1289,7 +1381,7 @@ namespace jln::mp
   struct if_<same<C>, TC, FC>
   {
     template<class... xs>
-    using f = typename mp::conditional_c<
+    using f = typename conditional_c<
       JLN_MP_TRACE_F(C)::template f<number<emp::same_xs_v<xs...>>>::value
     >
       ::template f<JLN_MP_TRACE_F(TC), JLN_MP_TRACE_F(FC)>
@@ -2610,7 +2702,7 @@ namespace jln::mp
 
 namespace jln::mp
 {
-  /// \ingroup algorithm
+  /// \ingroup reduce
 
   /// Computes the recursive invocation of \c F with the result of the previous
   /// invocation and each element of one or more \lists traversed in parallel
@@ -2653,14 +2745,21 @@ namespace jln::mp
   struct clear
   {
     template<class... xs>
-    using f = typename C::template f<>;
+    using f = typename JLN_MP_LAZY_PARAM(xs, JLN_MP_TRACE_F(C))::template f<>;
   };
 
   /// \cond
   template<>
   struct clear<listify>
+#if JLN_MP_FORCE_LAZY_ALIAS
     : always<list<>>
   {};
+#else
+  {
+    template<class... xs>
+    using f = list<xs...>;
+  };
+#endif
   /// \endcond
 }
 
@@ -4923,19 +5022,19 @@ namespace jln::mp
     using partial_index_if_xs_c = unpack<L, mp::partial_index_if_xs_c<OffsetEnd, Pred, TC, FC>>;
 
     template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    constexpr bool index_if_v = unpack<L, mp::index_if<Pred, TC, FC>>::value;
+    inline constexpr bool index_if_v = unpack<L, mp::index_if<Pred, TC, FC>>::value;
 
     template<class L, class T, class TC = mp::identity, class FC = mp::size<>>
-    constexpr bool index_of_v = unpack<L, mp::index_of<T, TC, FC>>::value;
+    inline constexpr bool index_of_v = unpack<L, mp::index_of<T, TC, FC>>::value;
 
     template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    constexpr bool index_if_xs_v = unpack<L, mp::index_if_xs<Pred, TC, FC>>::value;
+    inline constexpr bool index_if_xs_v = unpack<L, mp::index_if_xs<Pred, TC, FC>>::value;
 
     template<class OffsetEnd, class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    constexpr bool partial_index_if_xs_v = unpack<L, mp::partial_index_if_xs<OffsetEnd, Pred, TC, FC>>::value;
+    inline constexpr bool partial_index_if_xs_v = unpack<L, mp::partial_index_if_xs<OffsetEnd, Pred, TC, FC>>::value;
 
     template<int_ OffsetEnd, class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    constexpr bool partial_index_if_xs_c_v = unpack<L, mp::partial_index_if_xs_c<OffsetEnd, Pred, TC, FC>>::value;
+    inline constexpr bool partial_index_if_xs_c_v = unpack<L, mp::partial_index_if_xs_c<OffsetEnd, Pred, TC, FC>>::value;
   }
 }
 
@@ -4976,9 +5075,16 @@ namespace jln::mp
   struct starts_with
   {};
 
+#ifdef JLN_MP_DOXYGENATING
+  template<class... Ts, class C>
+  struct starts_with<list<Ts...>, C>
+  {
+    template<class... xs>
+    using f;
+  };
+#elif !JLN_MP_GCC
   // doing a specialization with C=identity is 4% slower with clang,
   // but 4% faster with gcc thanks to memoization
-#if !JLN_MP_GCC
   template<class... Ts, class C>
   struct starts_with<list<Ts...>, C> : detail::false_fn_impl
   {
@@ -5031,7 +5137,7 @@ namespace jln::mp
     using starts_with = unpack<L, starts_with<Seq, C>>;
 
     template<class L, class Seq, class C = mp::identity>
-    constexpr bool starts_with_v = unpack<L, starts_with<Seq, C>>::value;
+    inline constexpr bool starts_with_v = unpack<L, starts_with<Seq, C>>::value;
   }
 }
 
@@ -5445,7 +5551,7 @@ namespace jln::mp
     using not_ = typename mp::not_<C>::template f<x>;
 
     template<class x, class C = mp::identity>
-    constexpr bool not_v = mp::not_<C>::template f<x>::value;
+    inline constexpr bool not_v = mp::not_<C>::template f<x>::value;
   }
 }
 
@@ -5634,10 +5740,10 @@ namespace jln::mp
     using all_of_xs = typename mp::all_of<Pred>::template f<xs...>;
 
     template<class L, class Pred, class C = mp::identity>
-    constexpr bool all_of_v = unpack<L, mp::all_of<Pred, C>>::value;
+    inline constexpr bool all_of_v = unpack<L, mp::all_of<Pred, C>>::value;
 
     template<class Pred, class... xs>
-    constexpr bool all_of_xs_v = mp::all_of<Pred>::template f<xs...>::value;
+    inline constexpr bool all_of_xs_v = mp::all_of<Pred>::template f<xs...>::value;
   }
 } // namespace jln::mp
 
@@ -5784,7 +5890,7 @@ namespace jln::mp
 
   /// \ingroup number
 
-  /// Generates an incremental sequence of \c n \c int_.
+  /// Generates an incremental sequence of \c n \c int_t.
   /// \treturn \sequence
   /// \see make_int_sequence, iota
   template<class C = numbers<>>
@@ -6465,10 +6571,10 @@ namespace jln::mp
     using none_of_xs = typename mp::none_of<Pred>::template f<xs...>;
 
     template<class L, class Pred, class C = mp::identity>
-    constexpr bool none_of_v = unpack<L, mp::none_of<Pred, C>>::value;
+    inline constexpr bool none_of_v = unpack<L, mp::none_of<Pred, C>>::value;
 
     template<class Pred, class... xs>
-    constexpr bool none_of_xs_v = mp::none_of<Pred>::template f<xs...>::value;
+    inline constexpr bool none_of_xs_v = mp::none_of<Pred>::template f<xs...>::value;
   }
 } // namespace jln::mp
 
@@ -6556,10 +6662,10 @@ namespace jln::mp
     using any_of_xs = typename mp::any_of<Pred>::template f<xs...>;
 
     template<class L, class Pred, class C = mp::identity>
-    constexpr bool any_of_v = unpack<L, mp::any_of<Pred, C>>::value;
+    inline constexpr bool any_of_v = unpack<L, mp::any_of<Pred, C>>::value;
 
     template<class Pred, class... xs>
-    constexpr bool any_of_xs_v = mp::any_of<Pred>::template f<xs...>::value;
+    inline constexpr bool any_of_xs_v = mp::any_of<Pred>::template f<xs...>::value;
   }
   /// \cond
   namespace detail
@@ -9070,11 +9176,11 @@ namespace jln::mp
     using try_or = typename mp::try_<F, mp::identity, always<FT>>::template f<xs...>;
 
     template<class F, class... xs>
-    constexpr bool is_invocable_v = JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+    inline constexpr bool is_invocable_v = JLN_MP_RAW_EXPR_TO_BOOL_NOT(
       JLN_MP_IS_SAME(na, typename JLN_MP_CALL_TRY_IMPL(F, xs...)));
 
     template<class F, class... xs>
-    constexpr bool is_not_invocable_v = !is_invocable_v<F, xs...>;
+    inline constexpr bool is_not_invocable_v = !is_invocable_v<F, xs...>;
 
     template<class F, class... xs>
     using is_invocable = number<is_invocable_v<F, xs...>>;
@@ -10331,388 +10437,388 @@ namespace jln::mp::emp
 
 
   template<class L, class C = mp::identity>
-  constexpr int_ or_seq_v = unpack<L, mp::or_<C>>::value;
+  inline constexpr int_ or_seq_v = unpack<L, mp::or_<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ and_seq_v = unpack<L, mp::and_<C>>::value;
+  inline constexpr int_ and_seq_v = unpack<L, mp::and_<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ or_left_seq_v = unpack<L, mp::left_or<C>>::value;
+  inline constexpr int_ or_left_seq_v = unpack<L, mp::left_or<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ and_left_seq_v = unpack<L, mp::left_and<C>>::value;
+  inline constexpr int_ and_left_seq_v = unpack<L, mp::left_and<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ add_seq_v = unpack<L, mp::add<C>>::value;
+  inline constexpr int_ add_seq_v = unpack<L, mp::add<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ add0_seq_v = unpack<L, mp::add0<C>>::value;
+  inline constexpr int_ add0_seq_v = unpack<L, mp::add0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ left_add_seq_v = unpack<L, mp::left_add<C>>::value;
+  inline constexpr int_ left_add_seq_v = unpack<L, mp::left_add<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ left_add0_seq_v = unpack<L, mp::left_add0<C>>::value;
+  inline constexpr int_ left_add0_seq_v = unpack<L, mp::left_add0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ sub_seq_v = unpack<L, mp::sub<C>>::value;
+  inline constexpr int_ sub_seq_v = unpack<L, mp::sub<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ sub0_seq_v = unpack<L, mp::sub0<C>>::value;
+  inline constexpr int_ sub0_seq_v = unpack<L, mp::sub0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ lshift_seq_v = unpack<L, mp::lshift<C>>::value;
+  inline constexpr int_ lshift_seq_v = unpack<L, mp::lshift<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ lshift0_seq_v = unpack<L, mp::lshift0<C>>::value;
+  inline constexpr int_ lshift0_seq_v = unpack<L, mp::lshift0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ rshift_seq_v = unpack<L, mp::rshift<C>>::value;
+  inline constexpr int_ rshift_seq_v = unpack<L, mp::rshift<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ rshift0_seq_v = unpack<L, mp::rshift0<C>>::value;
+  inline constexpr int_ rshift0_seq_v = unpack<L, mp::rshift0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ mul_seq_v = unpack<L, mp::mul<C>>::value;
+  inline constexpr int_ mul_seq_v = unpack<L, mp::mul<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ mul0_seq_v = unpack<L, mp::mul0<C>>::value;
+  inline constexpr int_ mul0_seq_v = unpack<L, mp::mul0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ mul1_seq_v = unpack<L, mp::mul1<C>>::value;
+  inline constexpr int_ mul1_seq_v = unpack<L, mp::mul1<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ left_mul_seq_v = unpack<L, mp::left_mul<C>>::value;
+  inline constexpr int_ left_mul_seq_v = unpack<L, mp::left_mul<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ left_mul0_seq_v = unpack<L, mp::left_mul0<C>>::value;
+  inline constexpr int_ left_mul0_seq_v = unpack<L, mp::left_mul0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ left_mul1_seq_v = unpack<L, mp::left_mul1<C>>::value;
+  inline constexpr int_ left_mul1_seq_v = unpack<L, mp::left_mul1<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ div_seq_v = unpack<L, mp::div<C>>::value;
+  inline constexpr int_ div_seq_v = unpack<L, mp::div<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ div0_seq_v = unpack<L, mp::div0<C>>::value;
+  inline constexpr int_ div0_seq_v = unpack<L, mp::div0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ div1_seq_v = unpack<L, mp::div1<C>>::value;
+  inline constexpr int_ div1_seq_v = unpack<L, mp::div1<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ mod_seq_v = unpack<L, mp::mod<C>>::value;
+  inline constexpr int_ mod_seq_v = unpack<L, mp::mod<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ mod0_seq_v = unpack<L, mp::mod0<C>>::value;
+  inline constexpr int_ mod0_seq_v = unpack<L, mp::mod0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ mod1_seq_v = unpack<L, mp::mod1<C>>::value;
+  inline constexpr int_ mod1_seq_v = unpack<L, mp::mod1<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ xor_seq_v = unpack<L, mp::xor_<C>>::value;
+  inline constexpr int_ xor_seq_v = unpack<L, mp::xor_<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ xor0_seq_v = unpack<L, mp::xor0<C>>::value;
+  inline constexpr int_ xor0_seq_v = unpack<L, mp::xor0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ left_xor_seq_v = unpack<L, mp::left_xor<C>>::value;
+  inline constexpr int_ left_xor_seq_v = unpack<L, mp::left_xor<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ left_xor0_seq_v = unpack<L, mp::left_xor0<C>>::value;
+  inline constexpr int_ left_xor0_seq_v = unpack<L, mp::left_xor0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ bit_and_seq_v = unpack<L, mp::bit_and<C>>::value;
+  inline constexpr int_ bit_and_seq_v = unpack<L, mp::bit_and<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ bit_and0_seq_v = unpack<L, mp::bit_and0<C>>::value;
+  inline constexpr int_ bit_and0_seq_v = unpack<L, mp::bit_and0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ left_bit_and_seq_v = unpack<L, mp::left_bit_and<C>>::value;
+  inline constexpr int_ left_bit_and_seq_v = unpack<L, mp::left_bit_and<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ left_bit_and0_seq_v = unpack<L, mp::left_bit_and0<C>>::value;
+  inline constexpr int_ left_bit_and0_seq_v = unpack<L, mp::left_bit_and0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ bit_or_seq_v = unpack<L, mp::bit_or<C>>::value;
+  inline constexpr int_ bit_or_seq_v = unpack<L, mp::bit_or<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ bit_or0_seq_v = unpack<L, mp::bit_or0<C>>::value;
+  inline constexpr int_ bit_or0_seq_v = unpack<L, mp::bit_or0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ left_bit_or_seq_v = unpack<L, mp::left_bit_or<C>>::value;
+  inline constexpr int_ left_bit_or_seq_v = unpack<L, mp::left_bit_or<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr int_ left_bit_or0_seq_v = unpack<L, mp::left_bit_or0<C>>::value;
+  inline constexpr int_ left_bit_or0_seq_v = unpack<L, mp::left_bit_or0<C>>::value;
 
 
   template<int_... xs>
-  constexpr int_ or_c_v = (xs || ... || false);
+  inline constexpr int_ or_c_v = (xs || ... || false);
 
   template<int_... xs>
-  constexpr int_ left_or_c_v = (false || ... || xs);
+  inline constexpr int_ left_or_c_v = (false || ... || xs);
 
   template<int_... xs>
-  constexpr int_ and_c_v = (xs && ... && true);
+  inline constexpr int_ and_c_v = (xs && ... && true);
 
   template<int_... xs>
-  constexpr int_ left_and_c_v = (true && ... && xs);
+  inline constexpr int_ left_and_c_v = (true && ... && xs);
 
   template<int_... xs>
-  constexpr int_ add_c_v = (xs + ...);
+  inline constexpr int_ add_c_v = (xs + ...);
 
   template<int_... xs>
-  constexpr int_ add0_c_v = add_c_v<xs..., 0>;
+  inline constexpr int_ add0_c_v = add_c_v<xs..., 0>;
 
   template<int_... xs>
-  constexpr int_ left_add_c_v = (... + xs);
+  inline constexpr int_ left_add_c_v = (... + xs);
 
   template<int_... xs>
-  constexpr int_ left_add0_c_v = left_add_c_v<xs..., 0>;
+  inline constexpr int_ left_add0_c_v = left_add_c_v<xs..., 0>;
 
   template<int_... xs>
-  constexpr int_ sub_c_v = (... - xs);
+  inline constexpr int_ sub_c_v = (... - xs);
 
   template<int_... xs>
-  constexpr int_ sub0_c_v = sub_c_v<xs..., 0>;
+  inline constexpr int_ sub0_c_v = sub_c_v<xs..., 0>;
 
   template<int_... xs>
-  constexpr int_ lshift_c_v = (... << xs);
+  inline constexpr int_ lshift_c_v = (... << xs);
 
   template<int_... xs>
-  constexpr int_ lshift0_c_v = lshift_c_v<xs..., 0>;
+  inline constexpr int_ lshift0_c_v = lshift_c_v<xs..., 0>;
 
   template<int_... xs>
-  constexpr int_ rshift_c_v = (... >> xs);
+  inline constexpr int_ rshift_c_v = (... >> xs);
 
   template<int_... xs>
-  constexpr int_ rshift0_c_v = rshift_c_v<xs..., 0>;
+  inline constexpr int_ rshift0_c_v = rshift_c_v<xs..., 0>;
 
   template<int_... xs>
-  constexpr int_ mul_c_v = (xs * ...);
+  inline constexpr int_ mul_c_v = (xs * ...);
 
   template<int_... xs>
-  constexpr int_ mul0_c_v = mul_c_v<xs..., sizeof...(xs) ? 1 : 0>;
+  inline constexpr int_ mul0_c_v = mul_c_v<xs..., sizeof...(xs) ? 1 : 0>;
 
   template<int_... xs>
-  constexpr int_ mul1_c_v = mul_c_v<xs..., 1>;
+  inline constexpr int_ mul1_c_v = mul_c_v<xs..., 1>;
 
   template<int_... xs>
-  constexpr int_ left_mul_c_v = (... * xs);
+  inline constexpr int_ left_mul_c_v = (... * xs);
 
   template<int_... xs>
-  constexpr int_ left_mul0_c_v = left_mul_c_v<xs..., sizeof...(xs) ? 1 : 0>;
+  inline constexpr int_ left_mul0_c_v = left_mul_c_v<xs..., sizeof...(xs) ? 1 : 0>;
 
   template<int_... xs>
-  constexpr int_ left_mul1_c_v = left_mul_c_v<xs..., 1>;
+  inline constexpr int_ left_mul1_c_v = left_mul_c_v<xs..., 1>;
 
   template<int_... xs>
-  constexpr int_ div_c_v = (... / xs);
+  inline constexpr int_ div_c_v = (... / xs);
 
   template<int_... xs>
-  constexpr int_ div0_c_v = div_c_v<xs..., sizeof...(xs) ? 1 : 0>;
+  inline constexpr int_ div0_c_v = div_c_v<xs..., sizeof...(xs) ? 1 : 0>;
 
   template<int_... xs>
-  constexpr int_ div1_c_v = div_c_v<xs..., 1>;
+  inline constexpr int_ div1_c_v = div_c_v<xs..., 1>;
 
   template<int_... xs>
-  constexpr int_ mod_c_v = (... % xs);
+  inline constexpr int_ mod_c_v = (... % xs);
 
   template<int_... xs>
-  constexpr int_ mod0_c_v = mod_c_v<xs...,
+  inline constexpr int_ mod0_c_v = mod_c_v<xs...,
     sizeof...(xs) ? std::numeric_limits<int_>::min() : 0>;
 
   template<int_... xs>
-  constexpr int_ mod1_c_v = mod_c_v<xs...,
+  inline constexpr int_ mod1_c_v = mod_c_v<xs...,
     sizeof...(xs) ? std::numeric_limits<int_>::min() : 1>;
 
   template<int_... xs>
-  constexpr int_ xor_c_v = (xs ^ ...);
+  inline constexpr int_ xor_c_v = (xs ^ ...);
 
   template<int_... xs>
-  constexpr int_ xor0_c_v = xor_c_v<xs..., 0, 0>;
+  inline constexpr int_ xor0_c_v = xor_c_v<xs..., 0, 0>;
 
   template<int_... xs>
-  constexpr int_ left_xor_c_v = (... ^ xs);
+  inline constexpr int_ left_xor_c_v = (... ^ xs);
 
   template<int_... xs>
-  constexpr int_ left_xor0_c_v = left_xor_c_v<xs..., 0, 0>;
+  inline constexpr int_ left_xor0_c_v = left_xor_c_v<xs..., 0, 0>;
 
   template<int_... xs>
-  constexpr int_ bit_and_c_v = (xs & ...);
+  inline constexpr int_ bit_and_c_v = (xs & ...);
 
   template<int_... xs>
-  constexpr int_ bit_and0_c_v = bit_and_c_v<xs...,
+  inline constexpr int_ bit_and0_c_v = bit_and_c_v<xs...,
     sizeof...(xs) ? std::numeric_limits<int_>::max() : 0>;
 
   template<int_... xs>
-  constexpr int_ left_bit_and_c_v = (... & xs);
+  inline constexpr int_ left_bit_and_c_v = (... & xs);
 
   template<int_... xs>
-  constexpr int_ left_bit_and0_c_v = left_bit_and_c_v<xs...,
+  inline constexpr int_ left_bit_and0_c_v = left_bit_and_c_v<xs...,
     sizeof...(xs) ? std::numeric_limits<int_>::max() : 0>;
 
   template<int_... xs>
-  constexpr int_ bit_or_c_v = (xs | ...);
+  inline constexpr int_ bit_or_c_v = (xs | ...);
 
   template<int_... xs>
-  constexpr int_ bit_or0_c_v = bit_or_c_v<xs...,
+  inline constexpr int_ bit_or0_c_v = bit_or_c_v<xs...,
     sizeof...(xs) ? std::numeric_limits<int_>::max() : 0>;
 
   template<int_... xs>
-  constexpr int_ left_bit_or_c_v = (... | xs);
+  inline constexpr int_ left_bit_or_c_v = (... | xs);
 
   template<int_... xs>
-  constexpr int_ left_bit_or0_c_v = left_bit_or_c_v<xs...,
+  inline constexpr int_ left_bit_or0_c_v = left_bit_or_c_v<xs...,
     sizeof...(xs) ? std::numeric_limits<int_>::max() : 0>;
 
 
   template<class... xs>
-  constexpr int_ or_v = (xs::value || ... || false);
+  inline constexpr int_ or_v = (xs::value || ... || false);
 
   template<class... xs>
-  constexpr int_ and_v = (xs::value && ... && true);
+  inline constexpr int_ and_v = (xs::value && ... && true);
 
   template<class... xs>
-  constexpr int_ left_or_v = (false || ... || xs::value);
+  inline constexpr int_ left_or_v = (false || ... || xs::value);
 
   template<class... xs>
-  constexpr int_ left_and_v = (true && ... && xs::value);
+  inline constexpr int_ left_and_v = (true && ... && xs::value);
 
   template<class... xs>
-  constexpr int_ add_v = (xs::value + ...);
+  inline constexpr int_ add_v = (xs::value + ...);
 
   template<class... xs>
-  constexpr int_ add0_v = mp::add0<>::template f<xs...>::value;
+  inline constexpr int_ add0_v = mp::add0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ left_add_v = (... + xs::value);
+  inline constexpr int_ left_add_v = (... + xs::value);
 
   template<class... xs>
-  constexpr int_ left_add0_v = mp::add0<>::template f<xs...>::value;
+  inline constexpr int_ left_add0_v = mp::add0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ sub_v = (... - xs::value);
+  inline constexpr int_ sub_v = (... - xs::value);
 
   template<class... xs>
-  constexpr int_ sub0_v = mp::sub0<>::template f<xs...>::value;
+  inline constexpr int_ sub0_v = mp::sub0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ lshift_v = (... << xs::value);
+  inline constexpr int_ lshift_v = (... << xs::value);
 
   template<class... xs>
-  constexpr int_ lshift0_v = mp::lshift0<>::template f<xs...>::value;
+  inline constexpr int_ lshift0_v = mp::lshift0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ rshift_v = (... >> xs::value);
+  inline constexpr int_ rshift_v = (... >> xs::value);
 
   template<class... xs>
-  constexpr int_ rshift0_v = mp::rshift0<>::template f<xs...>::value;
+  inline constexpr int_ rshift0_v = mp::rshift0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ mul_v = (xs::value * ...);
+  inline constexpr int_ mul_v = (xs::value * ...);
 
   template<class... xs>
-  constexpr int_ mul0_v = mp::mul0<>::template f<xs...>::value;
+  inline constexpr int_ mul0_v = mp::mul0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ mul1_v = mp::mul1<>::template f<xs...>::value;
+  inline constexpr int_ mul1_v = mp::mul1<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ left_mul_v = (... * xs::value);
+  inline constexpr int_ left_mul_v = (... * xs::value);
 
   template<class... xs>
-  constexpr int_ left_mul0_v = mp::left_mul0<>::template f<xs...>::value;
+  inline constexpr int_ left_mul0_v = mp::left_mul0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ left_mul1_v = mp::left_mul1<>::template f<xs...>::value;
+  inline constexpr int_ left_mul1_v = mp::left_mul1<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ div_v = (... / xs::value);
+  inline constexpr int_ div_v = (... / xs::value);
 
   template<class... xs>
-  constexpr int_ div0_v = mp::div0<>::template f<xs...>::value;
+  inline constexpr int_ div0_v = mp::div0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ div1_v = mp::div1<>::template f<xs...>::value;
+  inline constexpr int_ div1_v = mp::div1<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ mod_v = (... % xs::value);
+  inline constexpr int_ mod_v = (... % xs::value);
 
   template<class... xs>
-  constexpr int_ mod0_v = mp::mod0<>::template f<xs...>::value;
+  inline constexpr int_ mod0_v = mp::mod0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ mod1_v = mp::mod1<>::template f<xs...>::value;
+  inline constexpr int_ mod1_v = mp::mod1<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ xor_v = (xs::value ^ ...);
+  inline constexpr int_ xor_v = (xs::value ^ ...);
 
   template<class... xs>
-  constexpr int_ xor0_v = mp::xor0<>::template f<xs...>::value;
+  inline constexpr int_ xor0_v = mp::xor0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ left_xor_v = (... ^ xs::value);
+  inline constexpr int_ left_xor_v = (... ^ xs::value);
 
   template<class... xs>
-  constexpr int_ left_xor0_v = mp::left_xor0<>::template f<xs...>::value;
+  inline constexpr int_ left_xor0_v = mp::left_xor0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ bit_and_v = (xs::value & ...);
+  inline constexpr int_ bit_and_v = (xs::value & ...);
 
   template<class... xs>
-  constexpr int_ bit_and0_v = mp::bit_and0<>::template f<xs...>::value;
+  inline constexpr int_ bit_and0_v = mp::bit_and0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ left_bit_and_v = (... & xs::value);
+  inline constexpr int_ left_bit_and_v = (... & xs::value);
 
   template<class... xs>
-  constexpr int_ left_bit_and0_v = mp::left_bit_and0<>::template f<xs...>::value;
+  inline constexpr int_ left_bit_and0_v = mp::left_bit_and0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ bit_or_v = (xs::value | ...);
+  inline constexpr int_ bit_or_v = (xs::value | ...);
 
   template<class... xs>
-  constexpr int_ bit_or0_v = mp::bit_or0<>::template f<xs...>::value;
+  inline constexpr int_ bit_or0_v = mp::bit_or0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr int_ left_bit_or_v = (... | xs::value);
+  inline constexpr int_ left_bit_or_v = (... | xs::value);
 
   template<class... xs>
-  constexpr int_ left_bit_or0_v = mp::left_bit_or0<>::template f<xs...>::value;
+  inline constexpr int_ left_bit_or0_v = mp::left_bit_or0<>::template f<xs...>::value;
 
 
   template<class x, class C = mp::identity>
-  constexpr int_ neg_v = mp::neg<C>::template f<x>;
+  inline constexpr int_ neg_v = mp::neg<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  constexpr int_ unary_plus_v = mp::unary_plus<C>::template f<x>;
+  inline constexpr int_ unary_plus_v = mp::unary_plus<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  constexpr int_ bit_not_v = mp::bit_not<C>::template f<x>;
+  inline constexpr int_ bit_not_v = mp::bit_not<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  constexpr int_ inc_v = mp::inc<C>::template f<x>;
+  inline constexpr int_ inc_v = mp::inc<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  constexpr int_ dec_v = mp::dec<C>::template f<x>;
+  inline constexpr int_ dec_v = mp::dec<C>::template f<x>;
 
   template<class x, class y, class C = mp::identity>
-  constexpr int_ equal_v = mp::equal<C>::template f<x, y>;
+  inline constexpr int_ equal_v = mp::equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  constexpr int_ not_equal_v = mp::not_equal<C>::template f<x, y>;
+  inline constexpr int_ not_equal_v = mp::not_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  constexpr int_ less_v = mp::less<C>::template f<x, y::value>;
+  inline constexpr int_ less_v = mp::less<C>::template f<x, y::value>;
 
   template<class x, class y, class C = mp::identity>
-  constexpr int_ less_equal_v = mp::less_equal<C>::template f<x, y>;
+  inline constexpr int_ less_equal_v = mp::less_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  constexpr int_ greater_v = mp::greater<C>::template f<x, y::value>;
+  inline constexpr int_ greater_v = mp::greater<C>::template f<x, y::value>;
 
   template<class x, class y, class C = mp::identity>
-  constexpr int_ greater_equal_v = mp::greater_equal<C>::template f<x, y>;
+  inline constexpr int_ greater_equal_v = mp::greater_equal<C>::template f<x, y>;
 }
 
 JLN_MP_DIAGNOSTIC_POP()
@@ -10829,7 +10935,7 @@ namespace jln::mp
     >;
 
     template<class F, class x, class y, class Cmp = mp::less<>>
-    constexpr bool compare_with_v = Cmp::template f<
+    inline constexpr bool compare_with_v = Cmp::template f<
       typename F::template f<x>,
       typename F::template f<y>
     >::value;
@@ -10857,7 +10963,7 @@ namespace jln::mp
   /// \treturn \value
   /// \post If `sizeof...(xs) == 0`, `true_`
   /// \post If `sizeof...(xs) != 0`, the first type `xs[i]` for which `bool(Pred::f<xs[i]>::value) == false`, or last value if there is no such type.
-  /// \see disjunction, drop_while, take_while
+  /// \see disjunction, all_of, drop_while, take_while
   template<class Pred, class C = identity>
   struct conjunction_with
   {
@@ -10878,7 +10984,7 @@ namespace jln::mp
   /// \treturn \value convertible to \bool
   /// \post If `sizeof...(xs) == 0`, `true_`
   /// \post If `sizeof...(xs) != 0`, the first value for which `bool(xs[i]::value) == false`, or last value if there is no such type.
-  /// \see disjunction, drop_while, take_while
+  /// \see disjunction, all_of, drop_while, take_while
   template<class C = identity>
   using conjunction = conjunction_with<identity, C>;
 
@@ -10891,10 +10997,10 @@ namespace jln::mp
     using conjunction = unpack<L, mp::conjunction_with<mp::identity, C>>;
 
     template<class L, class Pred, class C = mp::identity>
-    constexpr bool conjunction_with_v = unpack<L, mp::conjunction_with<Pred, C>>::value;
+    inline constexpr bool conjunction_with_v = unpack<L, mp::conjunction_with<Pred, C>>::value;
 
     template<class L, class C = mp::identity>
-    constexpr bool conjunction_v = unpack<L, mp::conjunction_with<mp::identity, C>>::value;
+    inline constexpr bool conjunction_v = unpack<L, mp::conjunction_with<mp::identity, C>>::value;
   }
 }
 
@@ -10932,7 +11038,7 @@ namespace jln::mp
     using contains = unpack<L, mp::contains<x, C>>;
 
     template<class L, class x, class C = mp::identity>
-    constexpr bool contains_v = unpack<L, mp::contains<x, C>>::value;
+    inline constexpr bool contains_v = unpack<L, mp::contains<x, C>>::value;
   }
 }
 
@@ -11025,29 +11131,29 @@ namespace jln::mp
   {
     /// \c true if \c x is an element of the set \c xs, \c false otherwise.
     template<class x, class... xs>
-    constexpr bool set_contains_xs_v = JLN_MP_SET_CONTAINS(x, xs...);
+    inline constexpr bool set_contains_xs_v = JLN_MP_SET_CONTAINS(x, xs...);
 
     /// \c true if \c x is an element of the set \c Set, \c false otherwise.
     template<class Set, class x>
-    constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
+    inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
       x, typename detail::_unpack<mp::lift<detail::inherit>, Set>::type
     );
 
     /// \c true if \c x is an element of all \set \c Sets, \c false otherwise.
     template<class x, class... Sets>
-    constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
+    inline constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
       x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
     ) && ...);
 
     /// \c true if \c x is an element of any \set \c Sets, \c false otherwise.
     template<class x, class... Sets>
-    constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
+    inline constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
       x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
     ) || ...);
 
     /// \c true if \c x is an element of none \set \c Sets, \c false otherwise.
     template<class x, class... Sets>
-    constexpr bool set_none_contains_v = !set_any_contains_v<x, Sets...>;
+    inline constexpr bool set_none_contains_v = !set_any_contains_v<x, Sets...>;
 
     /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
     template<class Set, class x>
@@ -11674,13 +11780,13 @@ namespace jln::mp
     using count = unpack<L, mp::count<x, C>>;
 
     template<class L, class Pred, class C = mp::identity>
-    constexpr int_ count_if_v = unpack<L, mp::count_if<Pred, C>>::value;
+    inline constexpr int_ count_if_v = unpack<L, mp::count_if<Pred, C>>::value;
 
     template<class L, class x, class C = mp::identity>
-    constexpr int_ count_v = unpack<L, mp::count<x, C>>::value;
+    inline constexpr int_ count_v = unpack<L, mp::count<x, C>>::value;
 
     template<class x, class... xs>
-    constexpr int_ count_xs_v = (JLN_MP_IS_SAME(x, xs) + ... + 0);
+    inline constexpr int_ count_xs_v = (JLN_MP_IS_SAME(x, xs) + ... + 0);
   }
 }
 
@@ -11762,7 +11868,7 @@ namespace jln::mp
   }
   /// \endcond
 
-  /// \ingroup algorithm
+  /// \ingroup filter
 
   /// Returns a list with duplicate elements removed.
   /// \treturn \set
@@ -12047,7 +12153,7 @@ namespace jln::mp
   /// \treturn \value
   /// \post If `sizeof...(xs) == 0`, `false_`
   /// \post If `sizeof...(xs) != 0`, the first type `xs[i]` for which `bool(Pred::f<xs[i]>::value) == true`, or last value if there is no such type.
-  /// \see disjunction, drop_while, take_while
+  /// \see conjunction, any_of, drop_while, take_while
   template<class Pred, class C = identity>
   struct disjunction_with
   {
@@ -12068,7 +12174,7 @@ namespace jln::mp
   /// \treturn \value convertible to \bool
   /// \post If `sizeof...(xs) == 0`, `false_`
   /// \post If `sizeof...(xs) != 0`, the first value for which `bool(xs[i]::value) == true`, or last value if there is no such type.
-  /// \see disjunction, drop_while, take_while
+  /// \see conjunction, any_of, drop_while, take_while
   template<class C = identity>
   using disjunction = disjunction_with<identity, C>;
 
@@ -12081,10 +12187,10 @@ namespace jln::mp
     using disjunction = unpack<L, mp::disjunction_with<mp::identity, C>>;
 
     template<class L, class Pred, class C = mp::identity>
-    constexpr bool disjunction_with_v = unpack<L, mp::disjunction_with<Pred, C>>::value;
+    inline constexpr bool disjunction_with_v = unpack<L, mp::disjunction_with<Pred, C>>::value;
 
     template<class L, class C = mp::identity>
-    constexpr bool disjunction_v = unpack<L, mp::disjunction_with<mp::identity, C>>::value;
+    inline constexpr bool disjunction_v = unpack<L, mp::disjunction_with<mp::identity, C>>::value;
   }
 }
 
@@ -12123,7 +12229,7 @@ namespace jln::mp
     using ends_with = unpack<L, ends_with<Seq, C>>;
 
     template<class L, class Seq, class C = mp::identity>
-    constexpr bool ends_with_v = unpack<L, ends_with<Seq, C>>::value;
+    inline constexpr bool ends_with_v = unpack<L, ends_with<Seq, C>>::value;
   }
 
   /// \cond
@@ -12176,7 +12282,7 @@ namespace jln::mp
 
   /// \see find_if, find_if_not, find_last_if, find_last
   template<class T, class TC = listify, class FC = clear<TC>>
-  using find = find_if<is<T>, TC, FC>;
+  using find = drop_until<is<T>, TC, FC>;
 
   namespace emp
   {
@@ -13763,8 +13869,8 @@ namespace jln::mp
 
   /// \ingroup number
 
-  /// Generates a sequence of \int_.
-  /// \treturn \sequence of \int_
+  /// Generates a sequence of \int_t.
+  /// \treturn \sequence of \int_t
   /// \see iota
   template<class C = numbers<>>
   struct iota_v
@@ -13919,10 +14025,10 @@ namespace jln::mp
     using is_disjoint_with = typename is_disjoint_with<Cmp, C>::template f<L1, L2>;
 
     template<class L1, class L2>
-    constexpr bool is_disjoint_v = is_disjoint<>::template f<L1, L2>::value;
+    inline constexpr bool is_disjoint_v = is_disjoint<>::template f<L1, L2>::value;
 
     template<class L1, class L2, class Cmp = same<>>
-    constexpr bool is_disjoint_with_v = is_disjoint_with<Cmp>::template f<L1, L2>::value;
+    inline constexpr bool is_disjoint_with_v = is_disjoint_with<Cmp>::template f<L1, L2>::value;
   }
 #endif
 
@@ -14011,10 +14117,10 @@ namespace jln::mp::emp
   >;
 
   template<class L1, class L2>
-  constexpr bool is_disjoint_v = detail::is_disjoint_select<2>::f<mp::same<>, L1, L2>::value;
+  inline constexpr bool is_disjoint_v = detail::is_disjoint_select<2>::f<mp::same<>, L1, L2>::value;
 
   template<class L1, class L2, class Cmp = mp::same<>>
-  constexpr bool is_disjoint_with_v = detail::is_disjoint_select<2>::f<Cmp, L1, L2>::value;
+  inline constexpr bool is_disjoint_with_v = detail::is_disjoint_select<2>::f<Cmp, L1, L2>::value;
 }
 #endif
 /// \endcond
@@ -14137,10 +14243,10 @@ namespace jln::mp
     using is_subset_with = typename is_subset_with<Cmp, C>::template f<L1, L2>;
 
     template<class L1, class L2>
-    constexpr bool is_subset = is_subset<>::template f<L1, L2>::value;
+    inline constexpr bool is_subset = is_subset<>::template f<L1, L2>::value;
 
     template<class L1, class L2, class Cmp = mp::same<>>
-    constexpr bool is_subset_with = is_subset_with<Cmp>::template f<L1, L2>::value;
+    inline constexpr bool is_subset_with = is_subset_with<Cmp>::template f<L1, L2>::value;
   }
 #endif
 
@@ -14215,10 +14321,10 @@ namespace jln::mp::emp
   >;
 
   template<class L1, class L2>
-  constexpr bool is_subset_v = detail::_is_subset<2>::f<mp::same<>, L1, L2>::value;
+  inline constexpr bool is_subset_v = detail::_is_subset<2>::f<mp::same<>, L1, L2>::value;
 
   template<class L1, class L2, class Cmp = mp::same<>, class C = mp::identity>
-  constexpr bool is_subset_with_v = detail::_is_subset<2>::f<Cmp, L1, L2>::value;
+  inline constexpr bool is_subset_with_v = detail::_is_subset<2>::f<Cmp, L1, L2>::value;
 }
 #endif
 /// \endcond
@@ -14655,7 +14761,7 @@ namespace jln::mp
   namespace emp
   {
     template<class seq1, class seq2, class Cmp = mp::less<>, class C = mp::identity>
-    constexpr bool lexicographical_compare_v = lexicographical_compare<Cmp, C>
+    inline constexpr bool lexicographical_compare_v = lexicographical_compare<Cmp, C>
       ::template f<seq1, seq2>::value;
   }
 }
@@ -15305,6 +15411,335 @@ namespace jln::mp::detail
 }
 /// \endcond
 
+namespace jln::mp
+{
+  /// \ingroup functional
+
+  /// A conditional selection expression.
+  /// This is the equivalent of the ternary `Pred::f<a, b>::value ? a : b`.
+  /// \pre `sizeof...(xs) >= 2`
+  /// \treturn \value
+  /// \see if_, reverse_select, select_flip, reverse_select_flip
+  template<class Pred, class TC = identity, class FC = TC>
+  struct select
+  {
+    template<class x, class y, class... xs>
+    using f = typename conditional_c<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, y, xs...)::value)
+    >
+      ::template f<at1<FC>, front<TC>>
+      ::template f<x, y>;
+  };
+
+  /// A conditional selection expression.
+  /// This is the equivalent of the ternary `Pred::f<a, b>::value ? b : a`.
+  /// \pre `sizeof...(xs) >= 2`
+  /// \treturn \value
+  /// \see if_, select, select_flip, reverse_select_flip
+  template<class Pred, class TC = identity, class FC = TC>
+  struct reverse_select
+  {
+    template<class x, class y, class... xs>
+    using f = typename conditional_c<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, y, xs...)::value)
+    >
+      ::template f<front<FC>, at1<TC>>
+      ::template f<x, y>;
+  };
+
+  /// A conditional selection expression with its two first arguments reversed.
+  /// This is the equivalent of the ternary `Pred::f<b, a>::value ? a : b`.
+  /// \pre `sizeof...(xs) >= 2`
+  /// \treturn \value
+  /// \see if_, select, reverse_select, reverse_select_flip
+  template<class Pred, class TC = identity, class FC = TC>
+  struct select_flip
+  {
+    template<class x, class y, class... xs>
+    using f = typename conditional_c<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, y, x, xs...)::value)
+    >
+      ::template f<JLN_MP_TRACE_F(at1<FC>), JLN_MP_TRACE_F(front<TC>)>
+      ::template f<x, y>;
+  };
+
+  /// A conditional selection expression with its two first arguments reversed.
+  /// This is the equivalent of the ternary `Pred::f<b, a>::value ? b : a`.
+  /// \pre `sizeof...(xs) >= 2`
+  /// \treturn \value
+  /// \see if_, select, reverse_select, select_flip
+  template<class Pred, class TC = identity, class FC = TC>
+  struct reverse_select_flip
+  {
+    template<class x, class y, class... xs>
+    using f = typename conditional_c<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, y, x, xs...)::value)
+    >
+      ::template f<JLN_MP_TRACE_F(front<FC>), JLN_MP_TRACE_F(at1<TC>)>
+      ::template f<x, y>;
+  };
+
+  namespace emp
+  {
+    template<class Pred, class a, class b>
+    using select = typename mp::select<Pred>::template f<a, b>;
+
+    template<class Pred, class a, class b>
+    using reverse_select = typename mp::reverse_select<Pred>::template f<a, b>;
+
+    template<class Pred, class a, class b>
+    using select_flip = typename mp::select_flip<Pred>::template f<a, b>;
+
+    template<class Pred, class a, class b>
+    using reverse_select_flip = typename mp::reverse_select_flip<Pred>::template f<a, b>;
+
+    template<class Pred, class a, class b>
+    inline constexpr auto select_v = mp::select<Pred>::template f<a, b>::value;
+
+    template<class Pred, class a, class b>
+    inline constexpr auto reverse_select_v = mp::reverse_select<Pred>::template f<a, b>::value;
+
+    template<class Pred, class a, class b>
+    inline constexpr auto select_flip_v = mp::select_flip<Pred>::template f<a, b>::value;
+
+    template<class Pred, class a, class b>
+    inline constexpr auto reverse_select_flip_v = mp::reverse_select_flip<Pred>::template f<a, b>::value;
+  }
+}
+
+
+/// \cond
+namespace jln::mp
+{
+  template<class Pred, class C>
+  struct select<Pred, C, C>
+  {
+    template<class x, class y, class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename conditional_c<
+        JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, y, xs...)::value)
+      >
+        ::template f<y, x>
+    );
+  };
+
+  template<class Pred>
+  struct select<Pred>
+  {
+    template<class x, class y, class... xs>
+    using f = typename conditional_c<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, y, xs...)::value)
+    >
+      ::template f<y, x>;
+  };
+
+
+  template<class Pred, class C>
+  struct reverse_select<Pred, C, C>
+  {
+    template<class x, class y, class... xs>
+    using f = typename C::template f<
+      typename conditional_c<
+        JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, y, xs...)::value)
+      >
+        ::template f<x, y>
+    >;
+  };
+
+  template<class Pred>
+  struct reverse_select<Pred>
+  {
+    template<class x, class y, class... xs>
+    using f = typename conditional_c<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, x, y, xs...)::value)
+    >
+      ::template f<x, y>;
+  };
+
+
+  template<class Pred, class C>
+  struct select_flip<Pred, C, C>
+  {
+    template<class x, class y, class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename conditional_c<
+        JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, y, x, xs...)::value)
+      >
+        ::template f<y, x>
+    );
+  };
+
+  template<class Pred>
+  struct select_flip<Pred>
+  {
+    template<class x, class y, class... xs>
+    using f = typename conditional_c<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, y, x, xs...)::value)
+    >
+      ::template f<y, x>;
+  };
+
+
+  template<class Pred, class C>
+  struct reverse_select_flip<Pred, C, C>
+  {
+    template<class x, class y, class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename conditional_c<
+        JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, y, x, xs...)::value)
+      >
+        ::template f<x, y>
+    );
+  };
+
+  template<class Pred>
+  struct reverse_select_flip<Pred>
+  {
+    template<class x, class y, class... xs>
+    using f = typename conditional_c<
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_DCALL_V_TRACE_XS(xs, Pred, y, x, xs...)::value)
+    >
+      ::template f<x, y>;
+  };
+}
+/// \endcond
+
+
+namespace jln::mp
+{
+  /// \ingroup search
+
+  /// Returns the greatest element.
+  /// If several elements in the sequence are equivalent to the greatest element,
+  /// returns the element to the first such element.
+  /// \pre `sizeof...(xs) > 0`
+  /// \treturn \value
+  /// \see last_max_element, max_element, max_last_element
+  template<class Cmp = less<>, class C = identity>
+#ifdef JLN_MP_DOXYGENATING
+  struct max_element_with
+  {
+    template<class... xs>
+    using f;
+  };
+#else
+  using max_element_with = fold<reverse_select<Cmp>, C>;
+#endif
+
+  template<class C = identity>
+  using max_element = max_element_with<less<>, C>;
+
+
+  /// Returns the greatest element.
+  /// If several elements in the sequence are equivalent to the greatest element,
+  /// returns the element to the last such element.
+  /// \pre `sizeof...(xs) > 0`
+  /// \treturn \value
+  /// \see max_element, max_element, max_last_element
+  template<class Cmp = less<>, class C = identity>
+#ifdef JLN_MP_DOXYGENATING
+  struct last_max_element_with
+  {
+    template<class... xs>
+    using f;
+  };
+#else
+  using last_max_element_with = fold<select_flip<Cmp>, C>;
+#endif
+
+  template<class C = identity>
+  using last_max_element = last_max_element_with<less<>, C>;
+
+
+  namespace emp
+  {
+    template<class L, class C = mp::identity>
+    using max_element = unpack<L, mp::max_element<C>>;
+
+    template<class... xs>
+    using max_element_xs = typename mp::max_element_with<>::template f<xs...>;
+
+    template<int_... xs>
+    using max_element_c = typename mp::max_element_with<>::template f<number<xs>...>;
+
+    template<class L, class C = mp::identity>
+    inline constexpr auto max_element_v = unpack<L, mp::max_element<C>>::value;
+
+    template<class... xs>
+    inline constexpr auto max_element_xs_v = mp::max_element_with<>
+      ::template f<xs...>::value;
+
+    template<int_... xs>
+    inline constexpr auto max_element_c_v = mp::max_element_with<>
+      ::template f<number<xs>...>::value;
+
+
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    using max_element_with = unpack<L, mp::max_element_with<Cmp, C>>;
+
+    template<class Cmp, class... xs>
+    using max_element_with_xs = typename mp::max_element_with<Cmp>::template f<xs...>;
+
+    template<class Cmp, int_... xs>
+    using max_element_with_c = typename mp::max_element_with<Cmp>
+      ::template f<number<xs>...>;
+
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    inline constexpr auto max_element_with_v = unpack<L, mp::max_element_with<Cmp, C>>::value;
+
+    template<class Cmp, class... xs>
+    inline constexpr auto max_element_with_xs_v = mp::max_element_with<Cmp>
+      ::template f<xs...>::value;
+
+    template<class Cmp, int_... xs>
+    inline constexpr auto max_element_with_c_v = mp::max_element_with<Cmp>
+      ::template f<number<xs>...>::value;
+
+
+    template<class L, class C = mp::identity>
+    using last_max_element = unpack<L, mp::last_max_element<C>>;
+
+    template<class... xs>
+    using last_max_element_xs = typename mp::last_max_element_with<>::template f<xs...>;
+
+    template<int_... xs>
+    using last_max_element_c = typename mp::last_max_element_with<>::template f<number<xs>...>;
+
+    template<class L, class C = mp::identity>
+    inline constexpr auto last_max_element_v = unpack<L, mp::last_max_element<C>>::value;
+
+    template<class... xs>
+    inline constexpr auto last_max_element_xs_v = mp::last_max_element_with<>
+      ::template f<xs...>::value;
+
+    template<int_... xs>
+    inline constexpr auto last_max_element_c_v = mp::last_max_element_with<>
+      ::template f<number<xs>...>::value;
+
+
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    using last_max_element_with = unpack<L, mp::last_max_element_with<Cmp, C>>;
+
+    template<class Cmp, class... xs>
+    using last_max_element_with_xs = typename mp::last_max_element_with<Cmp>::template f<xs...>;
+
+    template<class Cmp, int_... xs>
+    using last_max_element_with_c = typename mp::last_max_element_with<Cmp>
+      ::template f<number<xs>...>;
+
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    inline constexpr auto last_max_element_with_v = unpack<L, mp::last_max_element_with<Cmp, C>>::value;
+
+    template<class Cmp, class... xs>
+    inline constexpr auto last_max_element_with_xs_v = mp::last_max_element_with<Cmp>
+      ::template f<xs...>::value;
+
+    template<class Cmp, int_... xs>
+    inline constexpr auto last_max_element_with_c_v = mp::last_max_element_with<Cmp>
+      ::template f<number<xs>...>::value;
+  }
+}
+
 
 
 namespace jln::mp
@@ -15434,19 +15869,140 @@ namespace jln::mp::detail
 }
 /// \endcond
 
+
 namespace jln::mp
 {
-  /// \ingroup functional
+  /// \ingroup search
 
-  /// Invokes twice.
+  /// Returns the smallest element.
+  /// If several elements in the sequence are equivalent to the smallest element,
+  /// returns the element to the first such element.
+  /// \pre `sizeof...(xs) > 0`
   /// \treturn \value
-  template<class F>
-  struct invoke_twice
+  /// \see last_min_element, max_element, max_last_element
+  template<class Cmp = less<>, class C = identity>
+#ifdef JLN_MP_DOXYGENATING
+  struct min_element_with
   {
     template<class... xs>
-    using f = JLN_MP_TRACE_TYPENAME JLN_MP_TRACE_F(JLN_MP_DCALL_TRACE_XS(xs, F, xs...))
-      ::template f<xs...>;
+    using f;
   };
+#else
+  using min_element_with = fold<reverse_select_flip<Cmp>, C>;
+#endif
+
+  template<class C = identity>
+  using min_element = min_element_with<less<>, C>;
+
+
+  /// Returns the smallest element.
+  /// If several elements in the sequence are equivalent to the smallest element,
+  /// returns the element to the last such element.
+  /// \pre `sizeof...(xs) > 0`
+  /// \treturn \value
+  /// \see min_element, max_element, max_last_element
+  template<class Cmp = less<>, class C = identity>
+#ifdef JLN_MP_DOXYGENATING
+  struct last_min_element_with
+  {
+    template<class... xs>
+    using f;
+  };
+#else
+  using last_min_element_with = fold<select<Cmp>, C>;
+#endif
+
+  template<class C = identity>
+  using last_min_element = last_min_element_with<less<>, C>;
+
+
+  namespace emp
+  {
+    template<class L, class C = mp::identity>
+    using min_element = unpack<L, mp::min_element<C>>;
+
+    template<class... xs>
+    using min_element_xs = typename mp::min_element_with<>::template f<xs...>;
+
+    template<int_... xs>
+    using min_element_c = typename mp::min_element_with<>::template f<number<xs>...>;
+
+    template<class L, class C = mp::identity>
+    inline constexpr auto min_element_v = unpack<L, mp::min_element<C>>::value;
+
+    template<class... xs>
+    inline constexpr auto min_element_xs_v = mp::min_element_with<>
+      ::template f<xs...>::value;
+
+    template<int_... xs>
+    inline constexpr auto min_element_c_v = mp::min_element_with<>
+      ::template f<number<xs>...>::value;
+
+
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    using min_element_with = unpack<L, mp::min_element_with<Cmp, C>>;
+
+    template<class Cmp, class... xs>
+    using min_element_with_xs = typename mp::min_element_with<Cmp>::template f<xs...>;
+
+    template<class Cmp, int_... xs>
+    using min_element_with_c = typename mp::min_element_with<Cmp>
+      ::template f<number<xs>...>;
+
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    inline constexpr auto min_element_with_v = unpack<L, mp::min_element_with<Cmp, C>>::value;
+
+    template<class Cmp, class... xs>
+    inline constexpr auto min_element_with_xs_v = mp::min_element_with<Cmp>
+      ::template f<xs...>::value;
+
+    template<class Cmp, int_... xs>
+    inline constexpr auto min_element_with_c_v = mp::min_element_with<Cmp>
+      ::template f<number<xs>...>::value;
+
+
+    template<class L, class C = mp::identity>
+    using last_min_element = unpack<L, mp::last_min_element<C>>;
+
+    template<class... xs>
+    using last_min_element_xs = typename mp::last_min_element_with<>::template f<xs...>;
+
+    template<int_... xs>
+    using last_min_element_c = typename mp::last_min_element_with<>::template f<number<xs>...>;
+
+    template<class L, class C = mp::identity>
+    inline constexpr auto last_min_element_v = unpack<L, mp::last_min_element<C>>::value;
+
+    template<class... xs>
+    inline constexpr auto last_min_element_xs_v = mp::last_min_element_with<>
+      ::template f<xs...>::value;
+
+    template<int_... xs>
+    inline constexpr auto last_min_element_c_v = mp::last_min_element_with<>
+      ::template f<number<xs>...>::value;
+
+
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    using last_min_element_with = unpack<L, mp::last_min_element_with<Cmp, C>>;
+
+    template<class Cmp, class... xs>
+    using last_min_element_with_xs = typename mp::last_min_element_with<Cmp>::template f<xs...>;
+
+    template<class Cmp, int_... xs>
+    using last_min_element_with_c = typename mp::last_min_element_with<Cmp>
+      ::template f<number<xs>...>;
+
+    template<class L, class Cmp = mp::less<>, class C = mp::identity>
+    inline constexpr auto last_min_element_with_v = unpack<L, mp::last_min_element_with<Cmp, C>>::value;
+
+    template<class Cmp, class... xs>
+    inline constexpr auto last_min_element_with_xs_v = mp::last_min_element_with<Cmp>
+      ::template f<xs...>::value;
+
+    template<class Cmp, int_... xs>
+    inline constexpr auto last_min_element_with_c_v = mp::last_min_element_with<Cmp>
+      ::template f<number<xs>...>::value;
+  }
 }
 
 namespace jln::mp
@@ -15456,7 +16012,7 @@ namespace jln::mp
   /// Returns the first mismatching index of elements from two sequences, otherwise the size of the sequences.
   /// \treturn \number
   template<class Cmp = equal<>, class C = identity>
-  using mismatch_index = mismatch<Cmp, at0<C>, if_<at0<is<number<-1>>>, at1<C>, at0<C>>>;
+  using mismatch_index = mismatch<Cmp, front<C>, reverse_select<front<is<number<-1>>>, C>>;
 
   namespace emp
   {
@@ -15464,7 +16020,7 @@ namespace jln::mp
     using mismatch_index = typename mismatch_index<Cmp, C>::template f<seq1, seq2>;
 
     template<class seq1, class seq2, class Cmp = mp::equal<>, class C = mp::identity>
-    constexpr bool mismatch_index_v = mismatch_index<Cmp, C>::template f<seq1, seq2>::value;
+    inline constexpr bool mismatch_index_v = mismatch_index<Cmp, C>::template f<seq1, seq2>::value;
   }
 }
 
@@ -16135,7 +16691,7 @@ namespace jln::mp
   /// \treturn \sequence
   template<class BinaryPred, class C = listify>
   using remove_adjacent_if = pairwise_fold_and_transform_front<
-    if_<BinaryPred, always<list<>>, pop_front<>>,
+    select<BinaryPred, always<list<>>, listify>,
     listify,
     join<C>
   >;
@@ -16174,7 +16730,7 @@ namespace jln::mp
     };
   }
 
-  /// \ingroup algorithm
+  /// \ingroup filter
 
   /// Remove the first elements corresponding to a prefix.
   /// Calls \c TC with the rest of sequence when the prefix is found,
@@ -16185,6 +16741,14 @@ namespace jln::mp
   struct remove_prefix
   {};
 
+#ifdef JLN_MP_DOXYGENATING
+  template<class... Ts, class TC, class FC>
+  struct remove_prefix<list<Ts...>, TC, FC>
+  {
+    template<class... xs>
+    using f;
+  };
+#else
   template<class... Ts, class TC, class FC>
   struct remove_prefix<list<Ts...>, TC, FC>
       : detail::continuation_fn_impl<FC>
@@ -16196,6 +16760,7 @@ namespace jln::mp
     template<class... xs>
     using f = decltype(impl(static_cast<list<xs...>*>(nullptr)));
   };
+#endif
 
   namespace emp
   {
@@ -16222,7 +16787,7 @@ namespace jln::mp
 
 namespace jln::mp
 {
-  /// \ingroup algorithm
+  /// \ingroup filter
 
   /// Remove the last elements corresponding to a suffix.
   /// Calls \c TC with the rest of sequence when the suffix is found,
@@ -19363,7 +19928,7 @@ namespace jln::mp
 {
   /// \ingroup functional
 
-  /// Return \p TC::f<x> if \p Pred::f<x>, otherwise returns \p x.
+  /// Returns \c TC::f<x> if \c Pred::f<x>, otherwise returns \c x.
   /// \treturn \value
   template<class Pred, class TC>
   using apply_or_identity = if_<Pred, TC, identity>;
@@ -19683,6 +20248,10 @@ namespace jln::mp
   /// \ingroup functional
 
   /// Invokes a function computing the fixed point of a function.
+  /// \semantics
+  ///   \code
+  ///   fix<C>::f<xs...> = C::f<fix<C>, xs...>
+  ///   \endcode
   /// \treturn \value
   /// \see recursively
   template<class C>
@@ -19699,177 +20268,20 @@ namespace jln::mp
   }
 }
 
-#ifdef __cpp_generic_lambdas
-#if __cpp_generic_lambdas >= 201707L
-
-# ifdef __cpp_consteval
-#   if __cpp_consteval >= 201811L
-#     define JLN_MP_CONSTEVAL_OR_CONSTEXPR consteval
-#   endif
-# endif
-# ifndef JLN_MP_CONSTEVAL_OR_CONSTEXPR
-#   define JLN_MP_CONSTEVAL_OR_CONSTEXPR constexpr
-# endif
-
 namespace jln::mp
 {
   /// \ingroup functional
 
-  class default_make_id_tag {};
-
-  /// \cond
-  namespace detail::mkid
+  /// Invokes twice.
+  /// \treturn \value
+  template<class F>
+  struct invoke_twice
   {
-    JLN_MP_DIAGNOSTIC_PUSH()
-    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
-    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wunused-function")
-    template<class T, int X>
-    struct flag
-    {
-      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<T, X>);
-    };
-    JLN_MP_DIAGNOSTIC_POP()
-
-    template<class T, int X>
-    struct injecter
-    {
-      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<T, X>) { return X; }
-    };
-
-    template<class T = default_make_id_tag, int X = 0, auto v = []{}>
-    JLN_MP_CONSTEVAL_OR_CONSTEXPR auto next_id()
-    {
-      if constexpr (requires { f(flag<T, X+10>{}); }) {
-        if constexpr (requires { f(flag<T, X+100>{}); }) {
-          if constexpr (requires { f(flag<T, X+1000>{}); }) {
-            if constexpr (requires { f(flag<T, X+10000>{}); }) {
-              return next_id<T, X+10001, v>();
-            }
-            else if constexpr (requires { f(flag<T, X+3000>{}); }) {
-              return next_id<T, X+3001, v>();
-            }
-            else {
-              return next_id<T, X+1001, v>();
-            }
-          }
-          else if constexpr (requires { f(flag<T, X+300>{}); }) {
-            return next_id<T, X+301, v>();
-          }
-          else {
-            return next_id<T, X+101, v>();
-          }
-        }
-        else if constexpr (requires { f(flag<T, X+30>{}); }) {
-          return next_id<T, X+31, v>();
-        }
-        else {
-          return next_id<T, X+11, v>();
-        }
-      }
-      else if constexpr (requires { f(flag<T, X>{}); }) {
-        if constexpr (requires { f(flag<T, X+2>{}); }) {
-          if constexpr (requires { f(flag<T, X+4>{}); }) {
-            return next_id<T, X+5, v>();
-          }
-          else if constexpr (requires { f(flag<T, X+3>{}); }) {
-            return next_id<T, X+4, v>();
-          }
-          else {
-            return next_id<T, X+3, v>();
-          }
-        }
-        else if constexpr (requires { f(flag<T, X+1>{}); }) {
-            return next_id<T, X+2, v>();
-        }
-        else {
-            return next_id<T, X+1, v>();
-        }
-      }
-      else {
-        void(injecter<T, X>{});
-        return f(flag<T, X>{});
-      }
-    }
-  }
-  /// \endcond
-
-  /// Generates a unique id per call for a specified tag.
-  /// Signature: `int next_id<class Tag = default_make_id_tag, start_id = 0, auto = []{}>()`
-  using detail::mkid::next_id;
-
-  /// Generates a unique id per type.
-  /// \treturn int
-  template<class T>
-  struct id_of
-  {
-    static constexpr int value = next_id<default_make_id_tag, 0, []{}>();
+    template<class... xs>
+    using f = JLN_MP_TRACE_TYPENAME JLN_MP_TRACE_F(JLN_MP_DCALL_TRACE_XS(xs, F, xs...))
+      ::template f<xs...>;
   };
-
-  template<class T>
-  static constexpr int id_of_v = id_of<T>::value;
-
-  template<class T>
-  using id_of_t = number<id_of<T>::value>;
-
-
-  /// Generates a unique id per type for a specified tag.
-  /// \treturn int
-  template<class Tag, class T>
-  struct tagged_id_of
-  {
-    static constexpr int value = next_id<Tag, 0, []{}>();
-  };
-
-  template<class Tag, class T>
-  static constexpr int tagged_id_of_v = tagged_id_of<Tag, T>::value;
-
-  template<class Tag, class T>
-  using tagged_id_of_t = number<tagged_id_of<Tag, T>::value>;
-
-
-  /// Generates a unique id per type.
-  /// \treturn \number
-  template<class Tag, class C = identity>
-  struct make_id_for
-  {
-    template<class T>
-    using f = JLN_MP_CALL_TRACE(C, tagged_id_of_t<Tag, T>);
-  };
-
-  template<class C = identity>
-  using make_id = make_id_for<default_make_id_tag, C>;
-
-  /// \cond
-  template<class T>
-  struct tagged_id_of<default_make_id_tag, T>
-  : id_of<T>
-  {};
-
-  template<>
-  struct make_id_for<default_make_id_tag, identity>
-  {
-    template<class T>
-    using f = id_of_t<T>;
-  };
-
-  template<class Tag>
-  struct make_id_for<Tag, identity>
-  {
-    template<class T>
-    using f = tagged_id_of_t<Tag, T>;
-  };
-
-  template<class C>
-  struct make_id_for<default_make_id_tag, C>
-  {
-    template<class T>
-    using f = JLN_MP_CALL_TRACE(C, id_of_t<T>);
-  };
-  /// \endcond
 }
-
-#endif
-#endif
 
 
 
@@ -20093,210 +20505,6 @@ namespace jln::mp::detail
   };
 } // namespace jln::mp
 /// \endcond
-
-#ifdef __cpp_generic_lambdas
-#if __cpp_generic_lambdas >= 201707L
-
-
-namespace jln::mp
-{
-  /// \ingroup functional
-
-  /// \cond
-  namespace detail::rand
-  {
-    JLN_MP_DIAGNOSTIC_PUSH()
-    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
-    template<int X>
-    struct flag
-    {
-      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<X>);
-    };
-    JLN_MP_DIAGNOSTIC_POP()
-
-    struct random_data
-    {
-      unsigned z;
-      unsigned w;
-    };
-
-    template<int X, unsigned z, unsigned w>
-    struct injecter
-    {
-      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<X>) { return random_data{z,w}; }
-    };
-
-    #ifndef JLN_MP_RANDOM_SEED_Z
-    #   define JLN_MP_RANDOM_SEED_Z 0
-    #endif
-    #ifndef JLN_MP_RANDOM_SEED_W
-    #   define JLN_MP_RANDOM_SEED_W 0
-    #endif
-    // -1 -> do not use __TIME__
-    // 0 -> use __TIME__
-    // >= 0 -> use value as __TIME__
-    #ifndef JLN_MP_RANDOM_SEED_TIME
-    #   define JLN_MP_RANDOM_SEED_TIME -1
-    #endif
-
-    #if JLN_MP_RANDOM_SEED_TIME >= 0
-    #  if JLN_MP_RANDOM_SEED_TIME == 0
-    JLN_MP_DIAGNOSTIC_PUSH()
-    JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wdate-time")
-    constexpr unsigned t = unsigned((__TIME__[0] * 10 + __TIME__[1]) * 3600
-                                  + (__TIME__[3] * 10 + __TIME__[4]) * 60
-                                  + (__TIME__[6] * 10 + __TIME__[7]));
-    JLN_MP_DIAGNOSTIC_POP()
-    #    undef JLN_MP_RANDOM_SEED_TIME
-    #    define JLN_MP_RANDOM_SEED_TIME t
-    #  endif
-    #  if JLN_MP_RANDOM_SEED_Z == 0
-    #    define JLN_MP_RANDOM_SEED_Z \
-           (JLN_MP_RANDOM_SEED_TIME >> 16) ? (JLN_MP_RANDOM_SEED_TIME >> 16) : 362436069
-    #  endif
-    #  if JLN_MP_RANDOM_SEED_W == 0
-    #    define JLN_MP_RANDOM_SEED_W \
-           (JLN_MP_RANDOM_SEED_TIME % 4294967296) ? (JLN_MP_RANDOM_SEED_TIME % 4294967296) : 521288629
-    #  endif
-    #else
-    #  if JLN_MP_RANDOM_SEED_Z == 0
-    #    undef JLN_MP_RANDOM_SEED_Z
-    #    define JLN_MP_RANDOM_SEED_Z 362436069
-    #  endif
-    #  if JLN_MP_RANDOM_SEED_W == 0
-    #    undef JLN_MP_RANDOM_SEED_W
-    #    define JLN_MP_RANDOM_SEED_W 521288629
-    #  endif
-    #endif
-
-    inline JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<0>)
-    {
-      return random_data{JLN_MP_RANDOM_SEED_Z, JLN_MP_RANDOM_SEED_W};
-    }
-
-    #undef JLN_MP_RANDOM_SEED_Z
-    #undef JLN_MP_RANDOM_SEED_W
-    #undef JLN_MP_RANDOM_SEED_TIME
-
-    /// \pre id >= 1
-    /// \pre random_for_id<id-1>() must have been called
-    template<int id>
-    JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned random_for_id()
-    {
-      constexpr auto data = f(flag<id-1>{});
-      // algorithm found on https://www.codeproject.com/Articles/25172/Simple-Random-Number-Generation
-      constexpr unsigned z = 36969 * (data.z & 65535) + (data.z >> 16);
-      constexpr unsigned w = 18000 * (data.w & 65535) + (data.w >> 16);
-      void(injecter<id, z, w>{});
-      return (z << 16) + w;
-    }
-
-    template<auto v = []{}>
-    JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned next_random()
-    {
-      return random_for_id<next_id<random_data, 1, v>()>();
-    }
-  }
-  /// \endcond
-
-  /// Generates a unique id per call for a specified tag.
-  /// Signature: `unsigned next_random<auto = []{}>()`
-  using detail::rand::next_random;
-
-  namespace emp
-  {
-    template<auto v = []{}>
-    using random = number<next_random<v>()>;
-
-    template<auto v = []{}>
-    static constexpr unsigned random_v = next_random<v>();
-  }
-
-  /// Generate a random number.
-  /// The seed can be configured with `JLN_MP_RANDOM_SEED_TIME`
-  /// or `JLN_MP_RANDOM_SEED_W` and `JLN_MP_RANDOM_SEED_Z`
-  /// \treturn \number
-  template<class C = identity, auto = []{}>
-  struct random
-  #ifdef JLN_MP_DOXYGENATING
-  {
-    template<class... xs>
-    using f;
-  }
-  #endif
-  ;
-
-/// \cond
-#if JLN_MP_CLANG
-  namespace detail
-  {
-    template<std::size_t, auto v = []{}>
-    using random_impl = number<next_random<v>()>;
-  }
-
-  template<class C, auto>
-  struct random
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, detail::random_impl<sizeof...(xs)>);
-  };
-
-  template<auto v>
-  struct random<identity, v>
-  {
-    template<class... xs>
-    using f = detail::random_impl<sizeof...(xs)>;
-  };
-#else
-  template<class C, auto>
-  struct random
-  {
-    template<class...>
-    using f = JLN_MP_CALL_TRACE(C, number<next_random<[]{}>()>);
-  };
-
-  template<auto v>
-  struct random<identity, v>
-  {
-    template<class...>
-    using f = number<next_random<[]{}>()>;
-  };
-#endif
-/// \endcond
-}
-
-#endif
-#endif
-
-namespace jln::mp
-{
-  /// \ingroup functional
-
-  /// A conditional selection expression.
-  /// This is the equivalent of the ternary `Pred::f<a, b>::value ? a : b`.
-  /// \pre `sizeof...(xs) >= 2`
-  /// \treturn \value
-  /// \see if_, reverse_select
-  template<class Pred, class TC = identity, class FC = TC>
-  using select = if_<Pred, front<TC>, at1<FC>>;
-
-  /// A conditional selection expression.
-  /// This is the equivalent of the ternary `Pred::f<a, b>::value ? b : a`.
-  /// \pre `sizeof...(xs) >= 2`
-  /// \treturn \value
-  /// \see if_, select
-  template<class Pred, class TC = identity, class FC = TC>
-  using reverse_select = if_<Pred, at1<TC>, front<FC>>;
-
-  namespace emp
-  {
-    template<class Pred, class a, class b>
-    using select = typename mp::if_<Pred, mp::front<>, mp::at1<>>::template f<a, b>;
-
-    template<class Pred, class a, class b>
-    using reverse_select = typename mp::if_<Pred, mp::at1<>, mp::front<>>::template f<a, b>;
-  }
-}
 
 namespace jln::mp
 {
@@ -20539,7 +20747,7 @@ namespace jln::mp
 
   /// \ingroup list
 
-  /// Returns pairs containing a numeric index of type \c int_ and a value.
+  /// Returns pairs containing a numeric index of type \c int_t and a value.
   /// \semantics
   ///   \code
   ///   C::f<F::f<0, xs[0]>, ..., F::f<n, xs[n]>>
@@ -20818,7 +21026,7 @@ namespace jln::mp
     using is_empty = unpack<L, mp::is_empty<C>>;
 
     template<class L, class C = mp::identity>
-    constexpr bool is_empty_v = unpack<L, mp::is_empty<C>>::value;
+    inline constexpr bool is_empty_v = unpack<L, mp::is_empty<C>>::value;
   }
 }
 
@@ -20839,10 +21047,10 @@ namespace jln::mp
   namespace emp
   {
     template<class x>
-    constexpr bool is_list_v = false;
+    inline constexpr bool is_list_v = false;
 
     template<class... xs>
-    constexpr bool is_list_v<list<xs...>> = true;
+    inline constexpr bool is_list_v<list<xs...>> = true;
   }
 
   /// Checks whether \c x is a \list.
@@ -20908,7 +21116,7 @@ namespace jln::mp
     using is_not_empty = unpack<L, mp::is_not_empty<C>>;
 
     template<class L, class C = mp::identity>
-    constexpr bool is_not_empty_v = unpack<L, mp::is_not_empty<C>>::value;
+    inline constexpr bool is_not_empty_v = unpack<L, mp::is_not_empty<C>>::value;
   }
 }
 
@@ -20931,10 +21139,10 @@ namespace jln::mp
     using is_size_of_c = unpack<L, mp::is_size_of_c<n, C>>;
 
     template<class L, class N, class C = mp::identity>
-    constexpr bool is_size_of_v = unpack<L, mp::is_size_of<N, C>>::value;
+    inline constexpr bool is_size_of_v = unpack<L, mp::is_size_of<N, C>>::value;
 
     template<class L, int_ n, class C = mp::identity>
-    constexpr bool is_size_of_c_v = unpack<L, mp::is_size_of_c<n, C>>::value;
+    inline constexpr bool is_size_of_c_v = unpack<L, mp::is_size_of_c<n, C>>::value;
   }
 }
 
@@ -20977,10 +21185,10 @@ namespace jln::mp
     using offset_c = unpack<L, mp::offset_c<i, C>>;
 
     template<class L, class I, class C = mp::identity>
-    constexpr int_ offset_v = unpack<L, mp::offset<I, C>>::value;
+    inline constexpr int_ offset_v = unpack<L, mp::offset<I, C>>::value;
 
     template<class L, int_ i, class C = mp::identity>
-    constexpr int_ offset_c_v = unpack<L, mp::offset_c<i, C>>::value;
+    inline constexpr int_ offset_c_v = unpack<L, mp::offset_c<i, C>>::value;
   }
 }
 
@@ -21286,10 +21494,10 @@ namespace jln::mp
     using is_map_xs = typename mp::is_map<>::template f<kvs...>;
 
     template<class L, class C = mp::identity>
-    constexpr bool is_map_v = unpack<L, mp::is_map<C>>::value;
+    inline constexpr bool is_map_v = unpack<L, mp::is_map<C>>::value;
 
     template<class... kvs>
-    constexpr bool is_map_xs_v = mp::is_map<>::f<kvs...>::value;
+    inline constexpr bool is_map_xs_v = mp::is_map<>::f<kvs...>::value;
   }
 }
 
@@ -21448,16 +21656,16 @@ namespace jln::mp
     using map_not_contains_xs = typename mp::map_not_contains<key>::template f<kvs...>;
 
     template<class L, class key, class C = mp::identity>
-    constexpr bool map_contains_v = unpack<L, mp::map_contains<key, C>>::value;
+    inline constexpr bool map_contains_v = unpack<L, mp::map_contains<key, C>>::value;
 
     template<class L, class key, class C = mp::identity>
-    constexpr bool map_not_contains_v = unpack<L, mp::map_not_contains<key, C>>::value;
+    inline constexpr bool map_not_contains_v = unpack<L, mp::map_not_contains<key, C>>::value;
 
     template<class key, class... kvs>
-    constexpr bool map_contains_xs_v = mp::map_contains<key>::template f<kvs...>::value;
+    inline constexpr bool map_contains_xs_v = mp::map_contains<key>::template f<kvs...>::value;
 
     template<class key, class... kvs>
-    constexpr bool map_not_contains_xs_v = !mp::map_contains<key>::template f<kvs...>::value;
+    inline constexpr bool map_not_contains_xs_v = !mp::map_contains<key>::template f<kvs...>::value;
   }
 }
 
@@ -21686,10 +21894,10 @@ namespace jln::mp
   namespace emp
   {
     template<class x>
-    constexpr bool is_number_v = false;
+    inline constexpr bool is_number_v = false;
 
     template<int_ n>
-    constexpr bool is_number_v<number<n>> = true;
+    inline constexpr bool is_number_v<number<n>> = true;
   }
 
   /// Checks whether a \value is a \number.
@@ -21742,48 +21950,69 @@ namespace jln::mp
   namespace detail
   {
     template<int_ b, int_ e, int_ r = 1>
-    constexpr int_ pow_impl_v = pow_impl_v<(b * b), (e / 2), (e % 2 ? b * r : r)>;
+    inline constexpr int_ pow_impl_v = pow_impl_v<(b * b), (e / 2), (e % 2 ? b * r : r)>;
 
     template<int_ b, int_ r>
-    constexpr int_ pow_impl_v<b, 0, r> = 1;
+    inline constexpr int_ pow_impl_v<b, 0, r> = 1;
 
     template<int_ b, int_ r>
-    constexpr int_ pow_impl_v<b, 1, r> = b * r;
+    inline constexpr int_ pow_impl_v<b, 1, r> = b * r;
 
     template<int_ b, int_ r>
-    constexpr int_ pow_impl_v<b, -1, r> = 1 / (b * r);
+    inline constexpr int_ pow_impl_v<b, -1, r> = 1 / (b * r);
 
     template<int_ r>
-    constexpr int_ pow_impl_v<0, -1, r> = int_{static_cast<int>(r-r)-1}; // inf -> error
+    inline constexpr int_ pow_impl_v<0, -1, r> = int_{static_cast<int>(r-r)-1}; // inf -> error
+
+    template<class T>
+    struct abs_impl;
   }
   /// \endcond
 
   /// \ingroup number
 
-  template<class Cmp = less<>, class C = identity>
-  using min = fold<if_<flip<Cmp>, at1<>, at0<>>, C>;
+  template<class C = identity>
+  using min = reverse_select_flip<less<>, C>;
 
-  template<class Cmp = less<>, class C = identity>
-  using min0 = if_<size<>, min<Cmp, C>, always<number<0>, C>>;
-
-
-  template<class Cmp = less<>, class C = identity>
-  using max = fold<if_<Cmp, at1<>, at0<>>, C>;
-
-  template<class Cmp = less<>, class C = identity>
-  using max0 = if_<size<>, max<Cmp, C>, always<number<0>, C>>;
+  template<class C = identity>
+  using max = reverse_select<less<>, C>;
 
 
   template<class Min, class Max, class Cmp = less<>, class C = identity>
-  using clamp = if_<push_back<Min, Cmp>, always<Min>,
-    detail::substitute_if<push_front<Max, Cmp>, Max>>;
+  struct clamp_with
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename conditional_c<
+        JLN_MP_TRACE_F(Cmp)::template f<x, Min>::value
+      >::template f<
+        Min,
+        typename conditional_c<
+          JLN_MP_TRACE_F(Cmp)::template f<Max, x>::value
+        >::template f<Max, x>
+      >
+    );
+  };
+
+  template<class Min, class Max, class C = identity>
+  using clamp = clamp_with<Min, Max, less<>, C>;
 
   template<int_ min, int_ max, class Cmp = less<>, class C = identity>
-  using clamp_c = clamp<number<min>, number<max>, Cmp, C>;
+  using clamp_with_c = clamp_with<number<min>, number<max>, Cmp, C>;
+
+  template<int_ min, int_ max, class C = identity>
+  using clamp_c = clamp_with<number<min>, number<max>, less<>, C>;
 
 
-  template<class Cmp = less<>, class C = identity>
-  using abs = tee<identity, neg<>, if_<Cmp, at1<C>, at0<C>>>;
+  template<class C = identity>
+  struct abs
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename detail::abs_impl<const volatile decltype(x::value)&>::template f<x>
+    );
+  };
+
 
   template<class C = identity>
   struct pow
@@ -21793,92 +22022,257 @@ namespace jln::mp
       ::template f<number<detail::pow_impl_v<base::value, exponent::value>>>;
   };
 
-  /// \cond
+  namespace emp
+  {
+    template<class x, class y, class C = mp::identity>
+    inline constexpr auto min_v = JLN_MP_TRACE_F(C)::template f<
+      typename mp::conditional_c<y::value < x::value>::template f<y, x>
+    >::value;
+
+    template<class x, class y>
+    inline constexpr auto min_v<x, y> = mp::conditional_c<y::value < x::value>
+      ::template f<y, x>::value;
+
+    template<int_ x, int_ y, class C = mp::identity>
+    inline constexpr auto min_c_v = JLN_MP_TRACE_F(C)
+      ::template f<number<y < x ? y : x>>::value;
+
+    template<int_ x, int_ y>
+    inline constexpr int_ min_c_v<x, y> = y < x ? y : x;
+
+    template<class x, class y, class C = mp::identity>
+    using min = typename mp::select<mp::less<>, C>::template f<x, y>;
+
+    template<int_ x, int_ y, class C = mp::identity>
+    using min_c = JLN_MP_CALL_TRACE(C, number<y < x ? y : x>);
+
+
+    template<class x, class y, class C = mp::identity>
+    inline constexpr auto max_v = JLN_MP_TRACE_F(C)::template f<
+      typename mp::conditional_c<x::value < y::value>::template f<y, x>
+    >::value;
+
+    template<class x, class y>
+    inline constexpr auto max_v<x, y> = mp::conditional_c<x::value < y::value>
+      ::template f<y, x>::value;
+
+    template<int_ x, int_ y, class C = mp::identity>
+    inline constexpr auto max_c_v = JLN_MP_TRACE_F(C)
+      ::template f<number<x < y ? y : x>>::value;
+
+    template<int_ x, int_ y>
+    inline constexpr int_ max_c_v<x, y> = x < y ? y : x;
+
+    template<class x, class y, class C = mp::identity>
+    using max = typename mp::reverse_select<mp::less<>, C>::template f<x, y>;
+
+    template<int_ x, int_ y, class C = mp::identity>
+    using max_c = JLN_MP_CALL_TRACE(C, number<x < y ? y : x>);
+
+
+    template<class I, class Min, class Max, class C = mp::identity>
+    inline constexpr auto clamp_v = mp::clamp_with<Min, Max, mp::less<>, C>
+      ::template f<I>::value;
+
+    template<int_ i, int_ min, int_ max, class C = mp::identity>
+    inline constexpr auto clamp_c_v = JLN_MP_TRACE_F(C)
+      ::template f<number<i < min ? min : max < i ? max : i>>::value;
+
+    template<int_ i, int_ min, int_ max>
+    inline constexpr int_ clamp_c_v<i, min, max> = i < min ? min : max < i ? max : i;
+
+    template<class I, class Min, class Max, class C = mp::identity>
+    using clamp = typename mp::clamp_with<Min, Max, mp::less<>, C>::template f<I>;
+
+    template<int_ i, int_ min, int_ max, class C = mp::identity>
+    using clamp_c = JLN_MP_CALL_TRACE(C, number<(i < min ? min : max < i ? max : i)>);
+
+
+    template<class I, class Min, class Max, class Cmp = mp::less<>, class C = mp::identity>
+    inline constexpr auto clamp_with_v = mp::clamp_with<Min, Max, Cmp, C>
+      ::template f<I>::value;
+
+    template<int_ i, int_ min, int_ max, class Cmp = mp::less<>, class C = mp::identity>
+    inline constexpr auto clamp_with_c_v = JLN_MP_TRACE_F(C)
+      ::template f<number<clamp_with_c_v<i, min, max, Cmp>>>::value;
+
+    template<int_ i, int_ min, int_ max, class Cmp>
+    inline constexpr int_ clamp_with_c_v<i, min, max, Cmp> =
+      JLN_MP_TRACE_F(Cmp)::template f<number<i>, number<min>>::value
+        ? min
+        : JLN_MP_TRACE_F(Cmp)::template f<number<max>, number<i>>::value
+          ? max
+          : i;
+
+    template<int_ i, int_ min, int_ max, class C>
+    inline constexpr auto clamp_with_c_v<i, min, max, mp::less<>, C> =
+      JLN_MP_TRACE_F(C)::template f<number<i < min ? min : max < i ? max : i>>::value;
+
+    template<int_ i, int_ min, int_ max>
+    inline constexpr int_ clamp_with_c_v<i, min, max> = i < min ? min : max < i ? max : i;
+
+    template<class I, class Min, class Max, class Cmp = mp::less<>, class C = mp::identity>
+    using clamp_with = typename mp::clamp_with<Min, Max, Cmp, C>::template f<I>;
+
+    template<int_ i, int_ min, int_ max, class Cmp = mp::less<>, class C = mp::identity>
+    using clamp_with_c = typename mp::clamp_with_c<min, max, Cmp, C>::template f<number<i>>;
+
+
+    template<class I, class C = mp::identity>
+    inline constexpr auto abs_v = mp::abs<C>::template f<I>::value;
+
+    template<int_ i, class C = mp::identity>
+    inline constexpr auto abs_c_v = JLN_MP_TRACE_F(C)
+      ::template f<number<abs_c_v<i>>>::value;
+
+    template<int_ i>
+    inline constexpr int_ abs_c_v<i> = (i < -i ? -i : i)
+      + !sizeof(int[std::numeric_limits<int_>::min() != i]); // check abs(-min)
+
+
+    template<class I, class C = mp::identity>
+    using abs = typename mp::abs<C>::template f<I>;
+
+    template<int_ i, class C = mp::identity>
+    using abs_c = JLN_MP_CALL_TRACE(C, number<abs_c_v<i>>);
+
+
+    template<class Base, class Exponent, class C = mp::identity>
+    inline constexpr int_ pow_v = JLN_MP_TRACE_F(C)
+      ::template f<number<detail::pow_impl_v<Base::value, Exponent::value>>>::value;
+
+    template<class Base, class Exponent>
+    inline constexpr int_ pow_v<Base, Exponent> = detail::pow_impl_v<Base::value, Exponent::value>;
+
+    template<int_ base, int_ exponent, class C = mp::identity>
+    inline constexpr int_ pow_c_v = JLN_MP_TRACE_F(C)
+      ::template f<number<detail::pow_impl_v<base, exponent>>>::value;
+
+    template<int_ base, int_ exponent>
+    inline constexpr int_ pow_c_v<base, exponent> = detail::pow_impl_v<base, exponent>;
+
+
+    template<class Base, class Exponent, class C = mp::identity>
+    using pow = typename mp::pow<C>::template f<Base, Exponent>;
+
+    template<int_ base, int_ exponent, class C = mp::identity>
+    using pow_c = JLN_MP_CALL_TRACE(C, number<detail::pow_impl_v<base, exponent>>);
+  }
+}
+
+/// \cond
+namespace jln::mp
+{
+  template<class Min, class Max>
+  struct clamp_with<Min, Max, less<>, identity>
+  {
+    template<class x>
+    using f =
+      typename conditional_c<x::value < Min::value>
+      ::template f<
+        Min,
+        typename conditional_c<Max::value < x::value>
+        ::template f<Max, x>
+      >
+    ;
+  };
+
+  template<class Min, class Max, class Cmp>
+  struct clamp_with<Min, Max, Cmp, identity>
+  {
+    template<class x>
+    using f =
+      typename conditional_c<
+        JLN_MP_TRACE_F(Cmp)::template f<x, Min>::value
+      >::template f<
+        Min,
+        typename conditional_c<
+          JLN_MP_TRACE_F(Cmp)::template f<Max, x>::value
+        >::template f<Max, x>
+      >;
+  };
+
+  template<class Min, class Max, class C>
+  struct clamp_with<Min, Max, less<>, C>
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename conditional_c<x::value < Min::value>::template f<
+        Min,
+        typename conditional_c<Max::value < x::value>
+        ::template f<Max, x>
+      >
+    );
+  };
+
+  template<>
+  struct abs<identity>
+  {
+    template<class x>
+    using f = typename detail::abs_impl<const volatile decltype(x::value)&>::template f<x>;
+  };
+
   template<>
   struct pow<identity>
   {
     template<class base, class exponent>
     using f = number<detail::pow_impl_v<base::value, exponent::value>>;
   };
-  /// \endcond
-
-  namespace emp
-  {
-    template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using min = unpack<L, mp::min<Cmp, C>>;
-
-    template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using min0 = unpack<L, mp::min0<Cmp, C>>;
-
-    template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using max = unpack<L, mp::max<Cmp, C>>;
-
-    template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using max0 = unpack<L, mp::max0<Cmp, C>>;
-
-    template<class I, class Min, class Max, class Cmp = mp::less<>, class C = mp::identity>
-    using clamp = typename mp::clamp<Min, Max, Cmp, C>::template f<I>;
-
-    template<int_ I, int_ min, int_ max, class Cmp = mp::less<>, class C = mp::identity>
-    using clamp_c = typename mp::clamp_c<min, max, Cmp, C>::template f<number<I>>;
-
-    template<class I, class Cmp = mp::less<>, class C = mp::identity>
-    using abs = typename mp::abs<Cmp, C>::template f<I>;
-
-    template<int_ I, class Cmp = mp::less<>, class C = mp::identity>
-    using abs_c = typename mp::abs<Cmp, C>::template f<number<I>>;
-
-    template<class Base, class Exponent, class C = mp::identity>
-    using pow = typename mp::pow<C>::template f<Base, Exponent>;
-
-    template<int_ Base, int_ Exponent, class C = mp::identity>
-    using pow_c = typename mp::pow<C>::template f<number<Base>, number<Exponent>>;
-
-
-    template<class... xs>
-    constexpr int_ min_v = mp::min<>::f<xs...>::value;
-
-    template<class... xs>
-    constexpr int_ min0_v = mp::min0<>::f<xs...>::value;
-
-    template<int_... xs>
-    constexpr int_ min_c_v = mp::min<>::f<number<xs>...>::value;
-
-    template<int_... xs>
-    constexpr int_ min0_c_v = mp::min0<>::f<number<xs>...>::value;
-
-    template<class... xs>
-    constexpr int_ max_v = mp::max<>::f<xs...>::value;
-
-    template<class... xs>
-    constexpr int_ max0_v = mp::max0<>::f<xs...>::value;
-
-    template<int_... xs>
-    constexpr int_ max_c_v = mp::max<>::f<number<xs>...>::value;
-
-    template<int_... xs>
-    constexpr int_ max0_c_v = mp::max0<>::f<number<xs>...>::value;
-
-
-    template<class I, class Min, class Max, class Cmp = mp::less<>, class C = mp::identity>
-    constexpr int_ clamp_v = mp::clamp<Min, Max, Cmp, C>::template f<I>::value;
-
-    template<int_ I, int_ min, int_ max, class Cmp = mp::less<>, class C = mp::identity>
-    constexpr int_ clamp_c_v = mp::clamp_c<min, max, Cmp, C>::template f<number<I>>::value;
-
-    template<class I, class Cmp = mp::less<>, class C = mp::identity>
-    constexpr int_ abs_v = mp::abs<Cmp, C>::template f<I>::value;
-
-    template<int_ I, class Cmp = mp::less<>, class C = mp::identity>
-    constexpr int_ abs_c_v = mp::abs<Cmp, C>::template f<number<I>>::value;
-
-    template<class Base, class Exponent>
-    constexpr int_ pow_v = detail::pow_impl_v<Base::value, Exponent::value>;
-
-    template<int_ base, int_ exponent>
-    constexpr int_ pow_c_v = detail::pow_impl_v<base, exponent>;
-  }
 }
+
+namespace jln::mp::detail
+{
+  struct abs_negate_min_value_error
+  {
+    template<int> using f = abs_negate_min_value_error;
+  };
+
+  struct abs_unspecialized_numeric_limits_error
+  {
+    template<int> using f = abs_unspecialized_numeric_limits_error;
+  };
+
+  template<class T>
+  struct abs_signed
+  {
+    template<class x>
+    using f = typename conditional_c<std::numeric_limits<T>::min() == x::value>
+      ::template f<
+        abs_negate_min_value_error,
+        conditional_c<x::value < -x::value>
+      >
+      ::template f<number<-x::value>, x>;
+  };
+
+  template<bool, bool>
+  struct abs_select_impl : always<abs_unspecialized_numeric_limits_error>
+  {};
+
+  template<>
+  struct abs_select_impl<true, true>
+  {
+    template<class T>
+    using f = abs_signed<T>;
+  };
+
+  template<>
+  struct abs_select_impl<true, false> : always<identity>
+  {};
+
+  template<class T>
+  struct abs_impl : abs_select_impl<
+    std::numeric_limits<T>::is_specialized,
+    std::numeric_limits<T>::is_signed
+  >::template f<T>
+  {};
+
+  template<class T> struct abs_impl<const volatile T> : abs_impl<T> {};
+  template<class T> struct abs_impl<const volatile T&> : abs_impl<T> {};
+  template<class T> struct abs_impl<const volatile T&&> : abs_impl<T> {};
+  template<class T> struct abs_impl<T&> : abs_impl<const volatile T> {};
+  template<class T> struct abs_impl<T&&> : abs_impl<const volatile T> {};
+}
+/// \endcond
 
 
 namespace jln::mp
@@ -22458,10 +22852,10 @@ namespace jln::mp
   namespace emp
   {
     template<template<class...> class Tpl, class T>
-    constexpr bool is_specialization_of_v = false;
+    inline constexpr bool is_specialization_of_v = false;
 
     template<template<class...> class Tpl, class... Ts>
-    constexpr bool is_specialization_of_v<Tpl, Tpl<Ts...>> = true;
+    inline constexpr bool is_specialization_of_v<Tpl, Tpl<Ts...>> = true;
   }
 
   /// Checks whether \c x is \c Tpl<xs...>
@@ -22650,6 +23044,352 @@ namespace jln::mp::detail
 #undef JLN_MP_ITERATE
 }
 /// \endcond
+
+#ifdef __cpp_generic_lambdas
+#if __cpp_generic_lambdas >= 201707L
+
+# ifdef __cpp_consteval
+#   if __cpp_consteval >= 201811L
+#     define JLN_MP_CONSTEVAL_OR_CONSTEXPR consteval
+#   endif
+# endif
+# ifndef JLN_MP_CONSTEVAL_OR_CONSTEXPR
+#   define JLN_MP_CONSTEVAL_OR_CONSTEXPR constexpr
+# endif
+
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  class default_make_id_tag {};
+
+  /// \cond
+  namespace detail::mkid
+  {
+    JLN_MP_DIAGNOSTIC_PUSH()
+    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
+    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wunused-function")
+    template<class T, int X>
+    struct flag
+    {
+      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<T, X>);
+    };
+    JLN_MP_DIAGNOSTIC_POP()
+
+    template<class T, int X>
+    struct injecter
+    {
+      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<T, X>) { return X; }
+    };
+
+    template<class T = default_make_id_tag, int X = 0, auto v = []{}>
+    JLN_MP_CONSTEVAL_OR_CONSTEXPR auto next_id()
+    {
+      if constexpr (requires { f(flag<T, X+10>{}); }) {
+        if constexpr (requires { f(flag<T, X+100>{}); }) {
+          if constexpr (requires { f(flag<T, X+1000>{}); }) {
+            if constexpr (requires { f(flag<T, X+10000>{}); }) {
+              return next_id<T, X+10001, v>();
+            }
+            else if constexpr (requires { f(flag<T, X+3000>{}); }) {
+              return next_id<T, X+3001, v>();
+            }
+            else {
+              return next_id<T, X+1001, v>();
+            }
+          }
+          else if constexpr (requires { f(flag<T, X+300>{}); }) {
+            return next_id<T, X+301, v>();
+          }
+          else {
+            return next_id<T, X+101, v>();
+          }
+        }
+        else if constexpr (requires { f(flag<T, X+30>{}); }) {
+          return next_id<T, X+31, v>();
+        }
+        else {
+          return next_id<T, X+11, v>();
+        }
+      }
+      else if constexpr (requires { f(flag<T, X>{}); }) {
+        if constexpr (requires { f(flag<T, X+2>{}); }) {
+          if constexpr (requires { f(flag<T, X+4>{}); }) {
+            return next_id<T, X+5, v>();
+          }
+          else if constexpr (requires { f(flag<T, X+3>{}); }) {
+            return next_id<T, X+4, v>();
+          }
+          else {
+            return next_id<T, X+3, v>();
+          }
+        }
+        else if constexpr (requires { f(flag<T, X+1>{}); }) {
+            return next_id<T, X+2, v>();
+        }
+        else {
+            return next_id<T, X+1, v>();
+        }
+      }
+      else {
+        void(injecter<T, X>{});
+        return f(flag<T, X>{});
+      }
+    }
+  }
+  /// \endcond
+
+  /// Generates a unique id per call for a specified tag.
+  /// Signature: `int next_id<class Tag = default_make_id_tag, start_id = 0, auto = []{}>()`
+  using detail::mkid::next_id;
+
+  /// Generates a unique id per type.
+  /// \treturn int
+  template<class T>
+  struct id_of
+  {
+    static constexpr int value = next_id<default_make_id_tag, 0, []{}>();
+  };
+
+  template<class T>
+  static constexpr int id_of_v = id_of<T>::value;
+
+  template<class T>
+  using id_of_t = number<id_of<T>::value>;
+
+
+  /// Generates a unique id per type for a specified tag.
+  /// \treturn int
+  template<class Tag, class T>
+  struct tagged_id_of
+  {
+    static constexpr int value = next_id<Tag, 0, []{}>();
+  };
+
+  template<class Tag, class T>
+  static constexpr int tagged_id_of_v = tagged_id_of<Tag, T>::value;
+
+  template<class Tag, class T>
+  using tagged_id_of_t = number<tagged_id_of<Tag, T>::value>;
+
+
+  /// Generates a unique id per type.
+  /// \treturn \number
+  template<class Tag, class C = identity>
+  struct make_id_for
+  {
+    template<class T>
+    using f = JLN_MP_CALL_TRACE(C, tagged_id_of_t<Tag, T>);
+  };
+
+  template<class C = identity>
+  using make_id = make_id_for<default_make_id_tag, C>;
+
+  /// \cond
+  template<class T>
+  struct tagged_id_of<default_make_id_tag, T>
+  : id_of<T>
+  {};
+
+  template<>
+  struct make_id_for<default_make_id_tag, identity>
+  {
+    template<class T>
+    using f = id_of_t<T>;
+  };
+
+  template<class Tag>
+  struct make_id_for<Tag, identity>
+  {
+    template<class T>
+    using f = tagged_id_of_t<Tag, T>;
+  };
+
+  template<class C>
+  struct make_id_for<default_make_id_tag, C>
+  {
+    template<class T>
+    using f = JLN_MP_CALL_TRACE(C, id_of_t<T>);
+  };
+  /// \endcond
+}
+
+#endif
+#endif
+
+#ifdef __cpp_generic_lambdas
+#if __cpp_generic_lambdas >= 201707L
+
+
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  /// \cond
+  namespace detail::rand
+  {
+    JLN_MP_DIAGNOSTIC_PUSH()
+    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
+    template<int X>
+    struct flag
+    {
+      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<X>);
+    };
+    JLN_MP_DIAGNOSTIC_POP()
+
+    struct random_data
+    {
+      unsigned z;
+      unsigned w;
+    };
+
+    template<int X, unsigned z, unsigned w>
+    struct injecter
+    {
+      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<X>) { return random_data{z,w}; }
+    };
+
+    #ifndef JLN_MP_RANDOM_SEED_Z
+    #   define JLN_MP_RANDOM_SEED_Z 0
+    #endif
+    #ifndef JLN_MP_RANDOM_SEED_W
+    #   define JLN_MP_RANDOM_SEED_W 0
+    #endif
+    // -1 -> do not use __TIME__
+    // 0 -> use __TIME__
+    // >= 0 -> use value as __TIME__
+    #ifndef JLN_MP_RANDOM_SEED_TIME
+    #   define JLN_MP_RANDOM_SEED_TIME -1
+    #endif
+
+    #if JLN_MP_RANDOM_SEED_TIME >= 0
+    #  if JLN_MP_RANDOM_SEED_TIME == 0
+    JLN_MP_DIAGNOSTIC_PUSH()
+    JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wdate-time")
+    constexpr unsigned t = unsigned((__TIME__[0] * 10 + __TIME__[1]) * 3600
+                                  + (__TIME__[3] * 10 + __TIME__[4]) * 60
+                                  + (__TIME__[6] * 10 + __TIME__[7]));
+    JLN_MP_DIAGNOSTIC_POP()
+    #    undef JLN_MP_RANDOM_SEED_TIME
+    #    define JLN_MP_RANDOM_SEED_TIME t
+    #  endif
+    #  if JLN_MP_RANDOM_SEED_Z == 0
+    #    define JLN_MP_RANDOM_SEED_Z \
+           (JLN_MP_RANDOM_SEED_TIME >> 16) ? (JLN_MP_RANDOM_SEED_TIME >> 16) : 362436069
+    #  endif
+    #  if JLN_MP_RANDOM_SEED_W == 0
+    #    define JLN_MP_RANDOM_SEED_W \
+           (JLN_MP_RANDOM_SEED_TIME % 4294967296) ? (JLN_MP_RANDOM_SEED_TIME % 4294967296) : 521288629
+    #  endif
+    #else
+    #  if JLN_MP_RANDOM_SEED_Z == 0
+    #    undef JLN_MP_RANDOM_SEED_Z
+    #    define JLN_MP_RANDOM_SEED_Z 362436069
+    #  endif
+    #  if JLN_MP_RANDOM_SEED_W == 0
+    #    undef JLN_MP_RANDOM_SEED_W
+    #    define JLN_MP_RANDOM_SEED_W 521288629
+    #  endif
+    #endif
+
+    inline JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<0>)
+    {
+      return random_data{JLN_MP_RANDOM_SEED_Z, JLN_MP_RANDOM_SEED_W};
+    }
+
+    #undef JLN_MP_RANDOM_SEED_Z
+    #undef JLN_MP_RANDOM_SEED_W
+    #undef JLN_MP_RANDOM_SEED_TIME
+
+    /// \pre id >= 1
+    /// \pre random_for_id<id-1>() must have been called
+    template<int id>
+    JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned random_for_id()
+    {
+      constexpr auto data = f(flag<id-1>{});
+      // algorithm found on https://www.codeproject.com/Articles/25172/Simple-Random-Number-Generation
+      constexpr unsigned z = 36969 * (data.z & 65535) + (data.z >> 16);
+      constexpr unsigned w = 18000 * (data.w & 65535) + (data.w >> 16);
+      void(injecter<id, z, w>{});
+      return (z << 16) + w;
+    }
+
+    template<auto v = []{}>
+    JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned next_random()
+    {
+      return random_for_id<next_id<random_data, 1, v>()>();
+    }
+  }
+  /// \endcond
+
+  /// Generates a unique id per call for a specified tag.
+  /// Signature: `unsigned next_random<auto = []{}>()`
+  using detail::rand::next_random;
+
+  namespace emp
+  {
+    template<auto v = []{}>
+    using random = number<next_random<v>()>;
+
+    template<auto v = []{}>
+    static constexpr unsigned random_v = next_random<v>();
+  }
+
+  /// Generate a random number.
+  /// The seed can be configured with `JLN_MP_RANDOM_SEED_TIME`
+  /// or `JLN_MP_RANDOM_SEED_W` and `JLN_MP_RANDOM_SEED_Z`
+  /// \treturn \number
+  template<class C = identity, auto = []{}>
+  struct random
+  #ifdef JLN_MP_DOXYGENATING
+  {
+    template<class... xs>
+    using f;
+  }
+  #endif
+  ;
+
+/// \cond
+#if JLN_MP_CLANG
+  namespace detail
+  {
+    template<std::size_t, auto v = []{}>
+    using random_impl = number<next_random<v>()>;
+  }
+
+  template<class C, auto>
+  struct random
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, detail::random_impl<sizeof...(xs)>);
+  };
+
+  template<auto v>
+  struct random<identity, v>
+  {
+    template<class... xs>
+    using f = detail::random_impl<sizeof...(xs)>;
+  };
+#else
+  template<class C, auto>
+  struct random
+  {
+    template<class...>
+    using f = JLN_MP_CALL_TRACE(C, number<next_random<[]{}>()>);
+  };
+
+  template<auto v>
+  struct random<identity, v>
+  {
+    template<class...>
+    using f = number<next_random<[]{}>()>;
+  };
+#endif
+/// \endcond
+}
+
+#endif
+#endif
 
 namespace jln::mp
 {
@@ -23104,6 +23844,39 @@ namespace jln::mp
 
 namespace jln::mp
 {
+  /// \ingroup trait
+
+  /// Equivalent to \c std::void_t, but always resolved in a lazy way.
+  /// This fixes the ambiguity encountered with clang for the following code:
+  /// \code
+  /// template<class T, class = void> struct Impl;
+  /// template<class T> struct Impl<T, emp::void_t<T::foo>> {};
+  /// template<class T> struct Impl<T, emp::void_t<T::bar>> {}; // redefinition of Impl<T, void> with std::void_t
+  /// \endcode
+  /// This behavior is also possible with \c always when
+  /// the macro \c JLN_MP_FORCE_LAZY_ALIAS is set to \c 0.
+#ifdef JLN_MP_DOXYGENATING
+  // not implemented, just for doc generating...
+  struct void_t;
+#endif
+
+  namespace emp
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using void_t = void;
+#elif JLN_MP_LAZY_ALIAS
+    using std::void_t;
+#else
+    template<class... xs>
+    using void_t = typename detail::first<void, list<xs...>>::type;
+#endif
+  }
+}
+
+
+namespace jln::mp
+{
   /// \ingroup value
 
 #if JLN_MP_ENABLE_TPL_AUTO
@@ -23296,14 +24069,14 @@ namespace jln::mp
   namespace emp
   {
     template<class x>
-    constexpr bool is_val_v = false;
+    inline constexpr bool is_val_v = false;
 
 #if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_ENABLE_DEBUG || JLN_MP_CLANG_LIKE)
     template<auto x>
-    constexpr bool is_val_v<val<x>> = true;
+    inline constexpr bool is_val_v<val<x>> = true;
 #else
     template<class T, T x>
-    constexpr bool is_val_v<typed_value<T, x>> = true;
+    inline constexpr bool is_val_v<typed_value<T, x>> = true;
 #endif
   }
 
@@ -24030,343 +24803,343 @@ namespace jln::mp::emp
 
 
   template<class L, class C = mp::identity>
-  constexpr auto val_or_seq_v = unpack<L, mp::val_or<C>>::value;
+  inline constexpr auto val_or_seq_v = unpack<L, mp::val_or<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_and_seq_v = unpack<L, mp::val_and<C>>::value;
+  inline constexpr auto val_and_seq_v = unpack<L, mp::val_and<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_left_or_seq_v = unpack<L, mp::val_left_or<C>>::value;
+  inline constexpr auto val_left_or_seq_v = unpack<L, mp::val_left_or<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_left_and_seq_v = unpack<L, mp::val_left_and<C>>::value;
+  inline constexpr auto val_left_and_seq_v = unpack<L, mp::val_left_and<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_add_seq_v = unpack<L, mp::val_add<C>>::value;
+  inline constexpr auto val_add_seq_v = unpack<L, mp::val_add<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_add0_seq_v = unpack<L, mp::val_add0<C>>::value;
+  inline constexpr auto val_add0_seq_v = unpack<L, mp::val_add0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_left_add_seq_v = unpack<L, mp::val_left_add<C>>::value;
+  inline constexpr auto val_left_add_seq_v = unpack<L, mp::val_left_add<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_left_add0_seq_v = unpack<L, mp::val_left_add0<C>>::value;
+  inline constexpr auto val_left_add0_seq_v = unpack<L, mp::val_left_add0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_sub_seq_v = unpack<L, mp::val_sub<C>>::value;
+  inline constexpr auto val_sub_seq_v = unpack<L, mp::val_sub<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_sub0_seq_v = unpack<L, mp::val_sub0<C>>::value;
+  inline constexpr auto val_sub0_seq_v = unpack<L, mp::val_sub0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_lshift_seq_v = unpack<L, mp::val_lshift<C>>::value;
+  inline constexpr auto val_lshift_seq_v = unpack<L, mp::val_lshift<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_lshift0_seq_v = unpack<L, mp::val_lshift0<C>>::value;
+  inline constexpr auto val_lshift0_seq_v = unpack<L, mp::val_lshift0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_rshift_seq_v = unpack<L, mp::val_rshift<C>>::value;
+  inline constexpr auto val_rshift_seq_v = unpack<L, mp::val_rshift<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_rshift0_seq_v = unpack<L, mp::val_rshift0<C>>::value;
+  inline constexpr auto val_rshift0_seq_v = unpack<L, mp::val_rshift0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_mul_seq_v = unpack<L, mp::val_mul<C>>::value;
+  inline constexpr auto val_mul_seq_v = unpack<L, mp::val_mul<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_mul0_seq_v = unpack<L, mp::val_mul0<C>>::value;
+  inline constexpr auto val_mul0_seq_v = unpack<L, mp::val_mul0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_mul1_seq_v = unpack<L, mp::val_mul1<C>>::value;
+  inline constexpr auto val_mul1_seq_v = unpack<L, mp::val_mul1<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_left_mul_seq_v = unpack<L, mp::val_left_mul<C>>::value;
+  inline constexpr auto val_left_mul_seq_v = unpack<L, mp::val_left_mul<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_left_mul0_seq_v = unpack<L, mp::val_left_mul0<C>>::value;
+  inline constexpr auto val_left_mul0_seq_v = unpack<L, mp::val_left_mul0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_left_mul1_seq_v = unpack<L, mp::val_left_mul1<C>>::value;
+  inline constexpr auto val_left_mul1_seq_v = unpack<L, mp::val_left_mul1<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_div_seq_v = unpack<L, mp::val_div<C>>::value;
+  inline constexpr auto val_div_seq_v = unpack<L, mp::val_div<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_div0_seq_v = unpack<L, mp::val_div0<C>>::value;
+  inline constexpr auto val_div0_seq_v = unpack<L, mp::val_div0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_div1_seq_v = unpack<L, mp::val_div1<C>>::value;
+  inline constexpr auto val_div1_seq_v = unpack<L, mp::val_div1<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_mod_seq_v = unpack<L, mp::val_mod<C>>::value;
+  inline constexpr auto val_mod_seq_v = unpack<L, mp::val_mod<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_mod0_seq_v = unpack<L, mp::val_mod0<C>>::value;
+  inline constexpr auto val_mod0_seq_v = unpack<L, mp::val_mod0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_mod1_seq_v = unpack<L, mp::val_mod1<C>>::value;
+  inline constexpr auto val_mod1_seq_v = unpack<L, mp::val_mod1<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_xor_seq_v = unpack<L, mp::val_xor<C>>::value;
+  inline constexpr auto val_xor_seq_v = unpack<L, mp::val_xor<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_xor0_seq_v = unpack<L, mp::val_xor0<C>>::value;
+  inline constexpr auto val_xor0_seq_v = unpack<L, mp::val_xor0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_left_xor_seq_v = unpack<L, mp::val_left_xor<C>>::value;
+  inline constexpr auto val_left_xor_seq_v = unpack<L, mp::val_left_xor<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_left_xor0_seq_v = unpack<L, mp::val_left_xor0<C>>::value;
+  inline constexpr auto val_left_xor0_seq_v = unpack<L, mp::val_left_xor0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_bit_and_seq_v = unpack<L, mp::val_bit_and<C>>::value;
+  inline constexpr auto val_bit_and_seq_v = unpack<L, mp::val_bit_and<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_bit_and0_seq_v = unpack<L, mp::val_bit_and0<C>>::value;
+  inline constexpr auto val_bit_and0_seq_v = unpack<L, mp::val_bit_and0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_left_bit_and_seq_v = unpack<L, mp::val_left_bit_and<C>>::value;
+  inline constexpr auto val_left_bit_and_seq_v = unpack<L, mp::val_left_bit_and<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_left_bit_and0_seq_v = unpack<L, mp::val_left_bit_and0<C>>::value;
+  inline constexpr auto val_left_bit_and0_seq_v = unpack<L, mp::val_left_bit_and0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_bit_or_seq_v = unpack<L, mp::val_bit_or<C>>::value;
+  inline constexpr auto val_bit_or_seq_v = unpack<L, mp::val_bit_or<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_bit_or0_seq_v = unpack<L, mp::val_bit_or0<C>>::value;
+  inline constexpr auto val_bit_or0_seq_v = unpack<L, mp::val_bit_or0<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_left_bit_or_seq_v = unpack<L, mp::val_left_bit_or<C>>::value;
+  inline constexpr auto val_left_bit_or_seq_v = unpack<L, mp::val_left_bit_or<C>>::value;
 
   template<class L, class C = mp::identity>
-  constexpr auto val_left_bit_or0_seq_v = unpack<L, mp::val_left_bit_or0<C>>::value;
+  inline constexpr auto val_left_bit_or0_seq_v = unpack<L, mp::val_left_bit_or0<C>>::value;
 
 
   template<auto... xs>
-  constexpr auto val_or_c_v = (xs || ... || false);
+  inline constexpr auto val_or_c_v = (xs || ... || false);
 
   template<auto... xs>
-  constexpr auto val_and_c_v = (xs && ... && true);
+  inline constexpr auto val_and_c_v = (xs && ... && true);
 
   template<auto... xs>
-  constexpr auto val_left_or_c_v = (false || ... || xs);
+  inline constexpr auto val_left_or_c_v = (false || ... || xs);
 
   template<auto... xs>
-  constexpr auto val_left_and_c_v = (true && ... && xs);
+  inline constexpr auto val_left_and_c_v = (true && ... && xs);
 
   template<auto... xs>
-  constexpr auto val_add_c_v = (xs + ...);
+  inline constexpr auto val_add_c_v = (xs + ...);
 
   template<auto... xs>
-  constexpr auto val_add0_c_v = val_add_c_v<xs..., 0>;
+  inline constexpr auto val_add0_c_v = val_add_c_v<xs..., 0>;
 
   template<auto... xs>
-  constexpr auto val_left_add_c_v = (... + xs);
+  inline constexpr auto val_left_add_c_v = (... + xs);
 
   template<auto... xs>
-  constexpr auto val_left_add0_c_v = val_left_add_c_v<xs..., 0>;
+  inline constexpr auto val_left_add0_c_v = val_left_add_c_v<xs..., 0>;
 
   template<auto... xs>
-  constexpr auto val_sub_c_v = (... - xs);
+  inline constexpr auto val_sub_c_v = (... - xs);
 
   template<auto... xs>
-  constexpr auto val_sub0_c_v = val_sub_c_v<xs..., 0>;
+  inline constexpr auto val_sub0_c_v = val_sub_c_v<xs..., 0>;
 
   template<auto... xs>
-  constexpr auto val_lshift_c_v = (... << xs);
+  inline constexpr auto val_lshift_c_v = (... << xs);
 
   template<auto... xs>
-  constexpr auto val_lshift0_c_v = val_lshift_c_v<xs..., 0>;
+  inline constexpr auto val_lshift0_c_v = val_lshift_c_v<xs..., 0>;
 
   template<auto... xs>
-  constexpr auto val_rshift_c_v = (... >> xs);
+  inline constexpr auto val_rshift_c_v = (... >> xs);
 
   template<auto... xs>
-  constexpr auto val_rshift0_c_v = val_rshift_c_v<xs..., 0>;
+  inline constexpr auto val_rshift0_c_v = val_rshift_c_v<xs..., 0>;
 
   template<auto... xs>
-  constexpr auto val_mul_c_v = (xs * ...);
+  inline constexpr auto val_mul_c_v = (xs * ...);
 
   template<auto... xs>
-  constexpr auto val_mul0_c_v = val_mul_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
+  inline constexpr auto val_mul0_c_v = val_mul_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
 
   template<auto... xs>
-  constexpr auto val_mul1_c_v = val_mul_c_v<xs..., 1>;
+  inline constexpr auto val_mul1_c_v = val_mul_c_v<xs..., 1>;
 
   template<auto... xs>
-  constexpr auto val_left_mul_c_v = (... * xs);
+  inline constexpr auto val_left_mul_c_v = (... * xs);
 
   template<auto... xs>
-  constexpr auto val_left_mul0_c_v = val_left_mul_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
+  inline constexpr auto val_left_mul0_c_v = val_left_mul_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
 
   template<auto... xs>
-  constexpr auto val_left_mul1_c_v = val_left_mul_c_v<xs..., 1>;
+  inline constexpr auto val_left_mul1_c_v = val_left_mul_c_v<xs..., 1>;
 
   template<auto... xs>
-  constexpr auto val_div_c_v = (... / xs);
+  inline constexpr auto val_div_c_v = (... / xs);
 
   template<auto... xs>
-  constexpr auto val_div0_c_v = val_div_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
+  inline constexpr auto val_div0_c_v = val_div_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
 
   template<auto... xs>
-  constexpr auto val_div1_c_v = val_div_c_v<xs..., 1>;
+  inline constexpr auto val_div1_c_v = val_div_c_v<xs..., 1>;
 
   template<auto... xs>
-  constexpr auto val_mod_c_v = (... % xs);
+  inline constexpr auto val_mod_c_v = (... % xs);
 
 
   template<class... xs>
-  constexpr auto val_or_v = (xs::value || ... || false);
+  inline constexpr auto val_or_v = (xs::value || ... || false);
 
   template<class... xs>
-  constexpr auto val_and_v = (xs::value && ... && true);
+  inline constexpr auto val_and_v = (xs::value && ... && true);
 
   template<class... xs>
-  constexpr auto val_left_or_v = (false || ... || xs::value);
+  inline constexpr auto val_left_or_v = (false || ... || xs::value);
 
   template<class... xs>
-  constexpr auto val_left_and_v = (true && ... && xs::value);
+  inline constexpr auto val_left_and_v = (true && ... && xs::value);
 
   template<class... xs>
-  constexpr auto val_add_v = (xs::value + ...);
+  inline constexpr auto val_add_v = (xs::value + ...);
 
   template<class... xs>
-  constexpr auto val_add0_v = mp::val_add0<>::template f<xs...>::value;
+  inline constexpr auto val_add0_v = mp::val_add0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_left_add_v = (... + xs::value);
+  inline constexpr auto val_left_add_v = (... + xs::value);
 
   template<class... xs>
-  constexpr auto val_left_add0_v = mp::val_add0<>::template f<xs...>::value;
+  inline constexpr auto val_left_add0_v = mp::val_add0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_sub_v = (... - xs::value);
+  inline constexpr auto val_sub_v = (... - xs::value);
 
   template<class... xs>
-  constexpr auto val_sub0_v = mp::val_sub0<>::template f<xs...>::value;
+  inline constexpr auto val_sub0_v = mp::val_sub0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_lshift_v = (... << xs::value);
+  inline constexpr auto val_lshift_v = (... << xs::value);
 
   template<class... xs>
-  constexpr auto val_lshift0_v = mp::val_lshift0<>::template f<xs...>::value;
+  inline constexpr auto val_lshift0_v = mp::val_lshift0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_rshift_v = (... >> xs::value);
+  inline constexpr auto val_rshift_v = (... >> xs::value);
 
   template<class... xs>
-  constexpr auto val_rshift0_v = mp::val_rshift0<>::template f<xs...>::value;
+  inline constexpr auto val_rshift0_v = mp::val_rshift0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_mul_v = (xs::value * ...);
+  inline constexpr auto val_mul_v = (xs::value * ...);
 
   template<class... xs>
-  constexpr auto val_mul0_v = mp::val_mul0<>::template f<xs...>::value;
+  inline constexpr auto val_mul0_v = mp::val_mul0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_mul1_v = mp::val_mul1<>::template f<xs...>::value;
+  inline constexpr auto val_mul1_v = mp::val_mul1<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_left_mul_v = (... * xs::value);
+  inline constexpr auto val_left_mul_v = (... * xs::value);
 
   template<class... xs>
-  constexpr auto val_left_mul0_v = mp::val_left_mul0<>::template f<xs...>::value;
+  inline constexpr auto val_left_mul0_v = mp::val_left_mul0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_left_mul1_v = mp::val_left_mul1<>::template f<xs...>::value;
+  inline constexpr auto val_left_mul1_v = mp::val_left_mul1<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_div_v = (... / xs::value);
+  inline constexpr auto val_div_v = (... / xs::value);
 
   template<class... xs>
-  constexpr auto val_div0_v = mp::val_div0<>::template f<xs...>::value;
+  inline constexpr auto val_div0_v = mp::val_div0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_div1_v = mp::val_div1<>::template f<xs...>::value;
+  inline constexpr auto val_div1_v = mp::val_div1<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_mod_v = (... % xs::value);
+  inline constexpr auto val_mod_v = (... % xs::value);
 
   template<class... xs>
-  constexpr auto val_mod0_v = mp::val_mod0<>::template f<xs...>::value;
+  inline constexpr auto val_mod0_v = mp::val_mod0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_mod1_v = mp::val_mod1<>::template f<xs...>::value;
+  inline constexpr auto val_mod1_v = mp::val_mod1<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_xor_v = (xs::value ^ ...);
+  inline constexpr auto val_xor_v = (xs::value ^ ...);
 
   template<class... xs>
-  constexpr auto val_xor0_v = mp::val_xor0<>::template f<xs...>::value;
+  inline constexpr auto val_xor0_v = mp::val_xor0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_left_xor_v = (... ^ xs::value);
+  inline constexpr auto val_left_xor_v = (... ^ xs::value);
 
   template<class... xs>
-  constexpr auto val_left_xor0_v = mp::val_left_xor0<>::template f<xs...>::value;
+  inline constexpr auto val_left_xor0_v = mp::val_left_xor0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_bit_and_v = (xs::value & ...);
+  inline constexpr auto val_bit_and_v = (xs::value & ...);
 
   template<class... xs>
-  constexpr auto val_bit_and0_v = mp::val_bit_and0<>::template f<xs...>::value;
+  inline constexpr auto val_bit_and0_v = mp::val_bit_and0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_left_bit_and_v = (... & xs::value);
+  inline constexpr auto val_left_bit_and_v = (... & xs::value);
 
   template<class... xs>
-  constexpr auto val_left_bit_and0_v = mp::val_left_bit_and0<>::template f<xs...>::value;
+  inline constexpr auto val_left_bit_and0_v = mp::val_left_bit_and0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_bit_or_v = (xs::value | ...);
+  inline constexpr auto val_bit_or_v = (xs::value | ...);
 
   template<class... xs>
-  constexpr auto val_bit_or0_v = mp::val_bit_or0<>::template f<xs...>::value;
+  inline constexpr auto val_bit_or0_v = mp::val_bit_or0<>::template f<xs...>::value;
 
   template<class... xs>
-  constexpr auto val_left_bit_or_v = (... | xs::value);
+  inline constexpr auto val_left_bit_or_v = (... | xs::value);
 
   template<class... xs>
-  constexpr auto val_left_bit_or0_v = mp::val_left_bit_or0<>::template f<xs...>::value;
+  inline constexpr auto val_left_bit_or0_v = mp::val_left_bit_or0<>::template f<xs...>::value;
 
 
   template<class x, class C = mp::identity>
-  constexpr auto val_neg_v = mp::val_neg<C>::template f<x>::value;
+  inline constexpr auto val_neg_v = mp::val_neg<C>::template f<x>::value;
 
   template<class x, class C = mp::identity>
-  constexpr auto val_unary_plus_v = mp::val_unary_plus<C>::template f<x>::value;
+  inline constexpr auto val_unary_plus_v = mp::val_unary_plus<C>::template f<x>::value;
 
   template<class x, class C = mp::identity>
-  constexpr auto val_not_v = mp::val_not<C>::template f<x>::value;
+  inline constexpr auto val_not_v = mp::val_not<C>::template f<x>::value;
 
   template<class x, class C = mp::identity>
-  constexpr auto val_bit_not_v = mp::val_bit_not<C>::template f<x>::value;
+  inline constexpr auto val_bit_not_v = mp::val_bit_not<C>::template f<x>::value;
 
   template<class x, class C = mp::identity>
-  constexpr auto val_inc_v = mp::val_inc<C>::template f<x>::value;
+  inline constexpr auto val_inc_v = mp::val_inc<C>::template f<x>::value;
 
   template<class x, class C = mp::identity>
-  constexpr auto val_dec_v = mp::val_dec<C>::template f<x>::value;
+  inline constexpr auto val_dec_v = mp::val_dec<C>::template f<x>::value;
 
   template<class x, class y, class C = mp::identity>
-  constexpr auto val_equal_v = mp::val_equal<C>::template f<x, y>::value;
+  inline constexpr auto val_equal_v = mp::val_equal<C>::template f<x, y>::value;
 
   template<class x, class y, class C = mp::identity>
-  constexpr auto val_not_equal_v = mp::val_not_equal<C>::template f<x, y>::value;
+  inline constexpr auto val_not_equal_v = mp::val_not_equal<C>::template f<x, y>::value;
 
   template<class x, class y, class C = mp::identity>
-  constexpr auto val_less_v = mp::val_less<C>::template f<x, y>::value;
+  inline constexpr auto val_less_v = mp::val_less<C>::template f<x, y>::value;
 
   template<class x, class y, class C = mp::identity>
-  constexpr auto val_less_equal_v = mp::val_less_equal<C>::template f<x, y>::value;
+  inline constexpr auto val_less_equal_v = mp::val_less_equal<C>::template f<x, y>::value;
 
   template<class x, class y, class C = mp::identity>
-  constexpr auto val_greater_v = mp::val_greater<C>::template f<x, y>::value;
+  inline constexpr auto val_greater_v = mp::val_greater<C>::template f<x, y>::value;
 
   template<class x, class y, class C = mp::identity>
-  constexpr auto val_greater_equal_v = mp::val_greater_equal<C>::template f<x, y>::value;
+  inline constexpr auto val_greater_equal_v = mp::val_greater_equal<C>::template f<x, y>::value;
 }
 
 /// \cond
@@ -24443,51 +25216,51 @@ namespace jln::mp::emp
 
 
   template<auto... xs>
-  constexpr auto val_mod0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_mod_c, 0>
+  inline constexpr auto val_mod0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_mod_c, 0>
     ::template f<xs...>();
 
   template<auto... xs>
-  constexpr auto val_mod1_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_mod_c, 1>
+  inline constexpr auto val_mod1_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_mod_c, 1>
     ::template f<xs...>();
 
   template<auto... xs>
-  constexpr auto val_xor_c_v = val<(xs ^ ...)>();
+  inline constexpr auto val_xor_c_v = val<(xs ^ ...)>();
 
   template<auto... xs>
-  constexpr auto val_xor0_c_v = val_xor_c_v<xs..., 0, 0>();
+  inline constexpr auto val_xor0_c_v = val_xor_c_v<xs..., 0, 0>();
 
   template<auto... xs>
-  constexpr auto val_left_xor_c_v = val<(... ^ xs)>();
+  inline constexpr auto val_left_xor_c_v = val<(... ^ xs)>();
 
   template<auto... xs>
-  constexpr auto val_left_xor0_c_v = val_left_xor_c_v<xs..., 0, 0>();
+  inline constexpr auto val_left_xor0_c_v = val_left_xor_c_v<xs..., 0, 0>();
 
   template<auto... xs>
-  constexpr auto val_bit_and_c_v = val<(xs & ...)>();
+  inline constexpr auto val_bit_and_c_v = val<(xs & ...)>();
 
   template<auto... xs>
-  constexpr auto val_bit_and0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_bit_and_c, 0>
+  inline constexpr auto val_bit_and0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_bit_and_c, 0>
     ::template f<xs...>();
 
   template<auto... xs>
-  constexpr auto val_left_bit_and_c_v = val<(... & xs)>();
+  inline constexpr auto val_left_bit_and_c_v = val<(... & xs)>();
 
   template<auto... xs>
-  constexpr auto val_left_bit_and0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_left_bit_and_c, 0>
+  inline constexpr auto val_left_bit_and0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_left_bit_and_c, 0>
     ::template f<xs...>();
 
   template<auto... xs>
-  constexpr auto val_bit_or_c_v = val<(xs | ...)>();
+  inline constexpr auto val_bit_or_c_v = val<(xs | ...)>();
 
   template<auto... xs>
-  constexpr auto val_bit_or0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_bit_or_c, 0>
+  inline constexpr auto val_bit_or0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_bit_or_c, 0>
     ::template f<xs...>();
 
   template<auto... xs>
-  constexpr auto val_left_bit_or_c_v = val<(... | xs)>();
+  inline constexpr auto val_left_bit_or_c_v = val<(... | xs)>();
 
   template<auto... xs>
-  constexpr auto val_left_bit_or0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_left_bit_or_c, 0>
+  inline constexpr auto val_left_bit_or0_c_v = detail::val_emp_op<sizeof...(xs) != 0, val_left_bit_or_c, 0>
     ::template f<xs...>();
 }
 
