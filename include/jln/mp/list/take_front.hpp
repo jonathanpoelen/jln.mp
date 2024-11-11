@@ -55,13 +55,13 @@ namespace jln::mp
     template<class L, class N, class C = mp::listify>
     using take_front = unpack<L, mp::take_front<N, C>>;
 
-    template<class L, int_ n, class C = mp::listify>
+    template<class L, int_t n, class C = mp::listify>
     using take_front_c = unpack<L, mp::take_front_c<n, C>>;
 
     template<class L, class N, class C = mp::listify>
     using take_front_max = unpack<L, mp::take_front_max<N, C>>;
 
-    template<class L, int_ n, class C = mp::listify>
+    template<class L, int_t n, class C = mp::listify>
     using take_front_max_c = unpack<L, mp::take_front_max_c<n, C>>;
   }
 

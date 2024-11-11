@@ -20,7 +20,7 @@ namespace jln::mp
 
   template<class... Ts, class TC, class FC>
   struct after<list<Ts...>, TC, FC>
-  : partial_drop_until_extended_by_n_xs_c<-int_(sizeof...(Ts)),
+  : partial_drop_until_extended_by_n_xs_c<-int_t(sizeof...(Ts)),
                                           sizeof...(Ts),
                                           starts_with<list<Ts...>>,
                                           TC, FC>

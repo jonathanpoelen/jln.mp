@@ -8,11 +8,11 @@ namespace jln::mp
 {
   /// \ingroup number
 
-  using int_ = std::intmax_t;
+  using int_t = std::intmax_t;
   using uint_ = std::uintmax_t;
 
-  template<int_ v>
-  struct number { static const int_ value = v; };
+  template<int_t v>
+  struct number { static const int_t value = v; };
 
   using true_ = number<1>;
   using false_ = number<0>;
@@ -33,7 +33,7 @@ namespace jln::mp
 # define JLN_MP_TPL_AUTO_OR_INT auto
 # define JLN_MP_TPL_AUTO_OR(T) auto
 #else
-# define JLN_MP_TPL_AUTO_OR_INT ::jln::mp::int_
+# define JLN_MP_TPL_AUTO_OR_INT ::jln::mp::int_t
 # define JLN_MP_TPL_AUTO_OR(T) T
 #endif
 }

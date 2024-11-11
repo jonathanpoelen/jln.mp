@@ -64,7 +64,7 @@ namespace jln::mp::detail
   };
 
 
-  template<class, int_... ints>
+  template<class, int_t... ints>
   struct smp_remove_unique_if_impl
   {
     template<class C, class Cmp, class... xs>
@@ -80,13 +80,13 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct smp_remove_unique_if_impl<int_>
-  : remove_unique_if_impl<int_>
+  struct smp_remove_unique_if_impl<int_t>
+  : remove_unique_if_impl<int_t>
   {};
 
-  template<int_ i>
-  struct smp_remove_unique_if_impl<int_, i>
-  : remove_unique_if_impl<int_>
+  template<int_t i>
+  struct smp_remove_unique_if_impl<int_t, i>
+  : remove_unique_if_impl<int_t>
   {};
 
   template<class Cmp, class C>
@@ -113,7 +113,7 @@ namespace jln::mp::detail
   };
 
 
-  template<class, int_... ints>
+  template<class, int_t... ints>
   struct smp_copy_unique_if_impl
   {
     template<class C, class Cmp, class... xs>
@@ -129,13 +129,13 @@ namespace jln::mp::detail
   };
 
   template<>
-  struct smp_copy_unique_if_impl<int_>
-  : remove_unique_if_impl<int_>
+  struct smp_copy_unique_if_impl<int_t>
+  : remove_unique_if_impl<int_t>
   {};
 
-  template<int_ i>
-  struct smp_copy_unique_if_impl<int_, i>
-  : copy_unique_if_impl<int_, i>
+  template<int_t i>
+  struct smp_copy_unique_if_impl<int_t, i>
+  : copy_unique_if_impl<int_t, i>
   {};
 
   template<class Cmp, class C>

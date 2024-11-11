@@ -13,7 +13,7 @@ namespace jln::mp
     template<bool>
     struct insert_sequence_index;
 
-    template<int_ index, class C, class... xs>
+    template<int_t index, class C, class... xs>
     using insert_sequence_impl = rotate_c<index, bind_front<rotate_c<-index, C>, xs...>>;
   }
   /// \endcond
@@ -23,11 +23,11 @@ namespace jln::mp
   /// Inserts all elements of \c seq at an arbitrary position.
   /// A negative value represents an index starting from the end.
   /// \treturn \sequence
-  template<int_ index, class seq, class C = listify>
+  template<int_t index, class seq, class C = listify>
   struct insert_sequence_c
   {};
 
-  template<int_ index, template<class...> class List, class... xs, class C>
+  template<int_t index, template<class...> class List, class... xs, class C>
   struct insert_sequence_c<index, List<xs...>, C>
   {
     template<class... ys>
@@ -50,7 +50,7 @@ namespace jln::mp
     template<class L, class index, class seq, class C = mp::listify>
     using insert_sequence = unpack<L, mp::insert_sequence<index, seq, C>>;
 
-    template<class L, int_ index, class seq, class C = mp::listify>
+    template<class L, int_t index, class seq, class C = mp::listify>
     using insert_sequence_c = unpack<L, mp::insert_sequence_c<index, seq, C>>;
   }
 }
@@ -61,15 +61,15 @@ namespace jln::mp::detail
   template<>
   struct insert_sequence_index<true>
   {
-    template<int_ i, int_ n>
-    static constexpr int_ index = -i < n ? n+i : 0;
+    template<int_t i, int_t n>
+    static constexpr int_t index = -i < n ? n+i : 0;
   };
 
   template<>
   struct insert_sequence_index<false>
   {
-    template<int_ i, int_ n>
-    static constexpr int_ index = i < n ? i : n;
+    template<int_t i, int_t n>
+    static constexpr int_t index = i < n ? i : n;
   };
 }
 /// \endcond

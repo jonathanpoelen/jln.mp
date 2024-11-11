@@ -36,14 +36,14 @@ namespace jln::mp
     using f = number<sizeof...(xs)>;
   };
 
-  template<int_ i>
+  template<int_t i>
   struct size<is<number<i>>>
   {
     template<class... xs>
     using f = number<sizeof...(xs) == i>;
   };
 
-  template<int_ i, class C>
+  template<int_t i, class C>
   struct size<is<number<i>, C>>
   {
     template<class... xs>

@@ -19,11 +19,11 @@ struct bar
 
 class x {};
 
-using int_ = jln::mp::int_;
+using int_t = jln::mp::int_t;
 
-struct unary_i { template<int_> struct f { struct type; }; };
-struct binary_i { template<int_, int_> struct f { struct type; }; };
-struct mulary_i { template<int_...> struct f { struct type; }; };
+struct unary_i { template<int_t> struct f { struct type; }; };
+struct binary_i { template<int_t, int_t> struct f { struct type; }; };
+struct mulary_i { template<int_t...> struct f { struct type; }; };
 
 TEST()
 {
@@ -84,8 +84,8 @@ TEST()
   ut::not_invocable<smp::lift_t<bar, bad_function>>();
   ut::not_invocable<smp::lift<bar, bad_function>>();
 
-  constexpr int_ a1 = 1;
-  constexpr int_ a2 = 2;
+  constexpr int_t a1 = 1;
+  constexpr int_t a2 = 2;
 
   test_context<lift_v<mulary_i::f>, void>()
     .test<mulary_i::f<>>()

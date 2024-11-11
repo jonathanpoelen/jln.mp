@@ -9,7 +9,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<int_>
+    template<int_t>
     struct is_sorted_impl;
   }
   /// \endcond

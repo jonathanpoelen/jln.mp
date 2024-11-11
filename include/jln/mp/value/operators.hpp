@@ -1026,17 +1026,17 @@ namespace jln::mp::emp
 /// \cond
 namespace jln::mp::detail
 {
-  template<bool, template<auto...> class f, int_ d>
+  template<bool, template<auto...> class f, int_t d>
   struct val_emp_op;
 
-  template<template<auto...> class F, int_ d>
+  template<template<auto...> class F, int_t d>
   struct val_emp_op<true, F, d>
   {
     template<auto... xs>
     using f = F<xs...>;
   };
 
-  template<template<auto...> class F, int_ d>
+  template<template<auto...> class F, int_t d>
   struct val_emp_op<false, F, d>
   {
     template<auto...>

@@ -46,8 +46,8 @@ namespace jln::mp
     static constexpr T const value = v;
   };
 
-  template<int_ v>
-  using val = typed_value<int_, v>;
+  template<int_t v>
+  using val = typed_value<int_t, v>;
 
   template<class T>
   using value_from = typed_value<std::remove_const_t<decltype(T::value)>, T::value>;

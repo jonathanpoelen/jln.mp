@@ -7,7 +7,7 @@
 
 namespace jln::mp::smp
 {
-  template<int_ index, class x, class C = listify>
+  template<int_t index, class x, class C = listify>
   using insert_c = insert_sequence_c<index, list<x>, C>;
 }
 

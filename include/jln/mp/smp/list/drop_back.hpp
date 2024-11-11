@@ -19,11 +19,11 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template<int_ n, class C = listify>
+  template<int_t n, class C = listify>
   using drop_back_c = typename detail::mk_drop_back<n >= 0 && n <= ~0u>
     ::template f<n, C>;
 
-  template<int_ n, class C = listify>
+  template<int_t n, class C = listify>
   using drop_back_max_c = typename detail::mk_drop_back_max<n >= 0 && n <= ~0u>
     ::template f<n, C>;
 }
@@ -41,7 +41,7 @@ namespace jln::mp::detail
   template<>
   struct mk_drop_back<true>
   {
-    template<int_ n, class C>
+    template<int_t n, class C>
     using f = test_contract<
       mp::size<mp::greater_equal_than_c<n>>,
       mp::drop_back_c<n, subcontract<C>>>;
@@ -54,7 +54,7 @@ namespace jln::mp::detail
   template<>
   struct mk_drop_back_max<true>
   {
-    template<int_ n, class C>
+    template<int_t n, class C>
     using f = contract<mp::drop_back_max_c<n, subcontract<C>>>;
   };
 

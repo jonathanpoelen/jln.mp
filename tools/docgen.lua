@@ -315,7 +315,7 @@ preproc = P{
     / function(expr) return 'bool{' .. preproc:match(expr) .. '}' end
 
   + P'JLN_MP_AS_MP_INT(' * ws0 * cbalancedparent * ws0 * ')'
-    / function(expr) return 'int_{' .. preproc:match(expr) .. '}' end
+    / function(expr) return 'int_t{' .. preproc:match(expr) .. '}' end
 
   + P'JLN_MP_SET_CONTAINS(' * cbalancedparent * ')'
     / function(expr) return 'emp::set_contains_xs_v<' .. expr .. '>' end
@@ -327,7 +327,7 @@ preproc = P{
     / function(f, args) return 'try_<' .. preproc:match(f) .. '>::f<' .. preproc:match(args) .. '>' end
 
   + P'JLN_MP_SET_CONTAINS_BASE' * balancedparent / '/*...*/'
-  + P'JLN_MP_TPL_AUTO_OR_INT' / 'auto /*or int_*/'
+  + P'JLN_MP_TPL_AUTO_OR_INT' / 'auto /*or int_t*/'
   + P'JLN_MP_TRACE_TYPENAME' / ''
 
 , p='#' * sp0 / '' *
@@ -560,8 +560,8 @@ htmlifier_init = function()
     mdinlinecodepatt
   + P'\\c ' / '' * (Until(S' \n' + '.\n') / inlinecode)
   + P'\\code' * (sp0 * '\n')^0 * C(Until(ws0 * '\\endcode')) * ws0 * '\\endcode' / blockcode
-  + P'\\ints' / ('<a href="#d_sequence">sequence</a> of ' .. inline_func('int_'))
-  + (P'\\int_' + '\\int') / inline_func('int_')
+  + P'\\ints' / ('<a href="#d_sequence">sequence</a> of ' .. inline_func('int_t'))
+  + (P'\\int_t' + '\\int') / inline_func('int_t')
   + P'\\list' / inline_func('list')
   + P'\\number' / inline_func('number')
   + P'\\map' / '<a href="#d_map">map</a>'

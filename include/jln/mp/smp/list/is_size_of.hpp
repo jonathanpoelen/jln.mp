@@ -10,7 +10,7 @@
 
 namespace jln::mp::smp
 {
-  template<int_ n, class C = identity>
+  template<int_t n, class C = identity>
   using is_size_of_c = contract<mp::is_size_of_c<n, assume_positive_number<C>>>;
 }
 

@@ -61,7 +61,7 @@ namespace jln::mp
     template<class... xs>
     using max_element_xs = typename mp::max_element_with<>::template f<xs...>;
 
-    template<int_... xs>
+    template<int_t... xs>
     using max_element_c = typename mp::max_element_with<>::template f<number<xs>...>;
 
     template<class L, class C = mp::identity>
@@ -71,7 +71,7 @@ namespace jln::mp
     inline constexpr auto max_element_xs_v = mp::max_element_with<>
       ::template f<xs...>::value;
 
-    template<int_... xs>
+    template<int_t... xs>
     inline constexpr auto max_element_c_v = mp::max_element_with<>
       ::template f<number<xs>...>::value;
 
@@ -82,7 +82,7 @@ namespace jln::mp
     template<class Cmp, class... xs>
     using max_element_with_xs = typename mp::max_element_with<Cmp>::template f<xs...>;
 
-    template<class Cmp, int_... xs>
+    template<class Cmp, int_t... xs>
     using max_element_with_c = typename mp::max_element_with<Cmp>
       ::template f<number<xs>...>;
 
@@ -93,7 +93,7 @@ namespace jln::mp
     inline constexpr auto max_element_with_xs_v = mp::max_element_with<Cmp>
       ::template f<xs...>::value;
 
-    template<class Cmp, int_... xs>
+    template<class Cmp, int_t... xs>
     inline constexpr auto max_element_with_c_v = mp::max_element_with<Cmp>
       ::template f<number<xs>...>::value;
 
@@ -104,7 +104,7 @@ namespace jln::mp
     template<class... xs>
     using last_max_element_xs = typename mp::last_max_element_with<>::template f<xs...>;
 
-    template<int_... xs>
+    template<int_t... xs>
     using last_max_element_c = typename mp::last_max_element_with<>::template f<number<xs>...>;
 
     template<class L, class C = mp::identity>
@@ -114,7 +114,7 @@ namespace jln::mp
     inline constexpr auto last_max_element_xs_v = mp::last_max_element_with<>
       ::template f<xs...>::value;
 
-    template<int_... xs>
+    template<int_t... xs>
     inline constexpr auto last_max_element_c_v = mp::last_max_element_with<>
       ::template f<number<xs>...>::value;
 
@@ -125,7 +125,7 @@ namespace jln::mp
     template<class Cmp, class... xs>
     using last_max_element_with_xs = typename mp::last_max_element_with<Cmp>::template f<xs...>;
 
-    template<class Cmp, int_... xs>
+    template<class Cmp, int_t... xs>
     using last_max_element_with_c = typename mp::last_max_element_with<Cmp>
       ::template f<number<xs>...>;
 
@@ -136,7 +136,7 @@ namespace jln::mp
     inline constexpr auto last_max_element_with_xs_v = mp::last_max_element_with<Cmp>
       ::template f<xs...>::value;
 
-    template<class Cmp, int_... xs>
+    template<class Cmp, int_t... xs>
     inline constexpr auto last_max_element_with_c_v = mp::last_max_element_with<Cmp>
       ::template f<number<xs>...>::value;
   }

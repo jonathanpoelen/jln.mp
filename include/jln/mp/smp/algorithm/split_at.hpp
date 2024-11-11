@@ -23,7 +23,7 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template<int_ i, class SubC1 = listify, class SubC2 = SubC1, class C = listify>
+  template<int_t i, class SubC1 = listify, class SubC2 = SubC1, class C = listify>
   using split_at2_with_c = typename detail::mk_smp_split_at<i >= 0>
     ::template f<
       i,
@@ -36,7 +36,7 @@ namespace jln::mp::smp
       subcontract<SubC2>
     >;
 
-  template<int_ i, class F = listify, class C = listify>
+  template<int_t i, class F = listify, class C = listify>
   using split_at_with_c = typename detail::mk_smp_split_at<i >= 0>
     ::template f<
       i,
@@ -48,7 +48,7 @@ namespace jln::mp::smp
       subcontract<F>
     >;
 
-  template<int_ i, class C = listify>
+  template<int_t i, class C = listify>
   using split_at_c = typename detail::mk_smp_split_at<i >= 0>
     ::template f<i, assume_binary_list<C>, mp::split_at2_with_c, mp::listify, mp::listify>;
 }
@@ -119,7 +119,7 @@ namespace jln::mp::detail
   template<>
   struct mk_smp_split_at<true>
   {
-    template<int_ i, class C, template<unsigned, class...> class Tpl, class... F>
+    template<int_t i, class C, template<unsigned, class...> class Tpl, class... F>
     using f = test_contract<
       mp::size<mp::greater_equal_than_c<i>>,
       Tpl<i, F..., C>>;
@@ -128,7 +128,7 @@ namespace jln::mp::detail
   template<>
   struct mk_smp_split_at<false>
   {
-    template<int_ i, class C, template<unsigned, class...> class Tpl, class... F>
+    template<int_t i, class C, template<unsigned, class...> class Tpl, class... F>
     using f = bad_contract;
   };
 }

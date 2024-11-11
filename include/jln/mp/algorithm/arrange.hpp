@@ -87,7 +87,7 @@ namespace jln::mp::detail
     using f = apply_indexed_v<arrange_impl<C, ints...>>;
   };
 
-  template<template<int_...> class Tpl, int_... ints>
+  template<template<int_t...> class Tpl, int_t... ints>
   struct make_arrange<Tpl<ints...>>
   {
     template<class C>

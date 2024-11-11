@@ -58,11 +58,11 @@ TEST()
     ;
 
   ctx(val_div<>())
-    .test<val<int_(42)>, list<_42>>()
-    .test<val<int_(1)>, seq_1_1_1>()
-    .test<val<int_(0)>, seq_0_1_2>()
-    .test<val<int_(0)>, seq_1_2_3>()
-    .test<val<int_(1)>, seq_3_2_1>()
+    .test<val<int_t(42)>, list<_42>>()
+    .test<val<int_t(1)>, seq_1_1_1>()
+    .test<val<int_t(0)>, seq_0_1_2>()
+    .test<val<int_t(0)>, seq_1_2_3>()
+    .test<val<int_t(1)>, seq_3_2_1>()
     .not_invocable<e>()
     .not_invocable<seq_2_1_0>()
     .not_invocable<seq_0_0_0>()
@@ -70,20 +70,20 @@ TEST()
 
   ctx(val_add0<>())
     .test<val<0>, e>()
-    .test<val<int_(0)>, seq_0_0_0>()
-    .test<val<int_(3)>, seq_1_1_1>()
+    .test<val<int_t(0)>, seq_0_0_0>()
+    .test<val<int_t(3)>, seq_1_1_1>()
     ;
 
   ut::invoke_r<val<0>, val_div0<>>();
-  ut::invoke_r<val<int_(1)>, val_div0<>, _1>();
-  // FIX gcc7: val<0> is a typed_value<int_,0> if val<int_(0)> precedes val<0>
+  ut::invoke_r<val<int_t(1)>, val_div0<>, _1>();
+  // FIX gcc7: val<0> is a typed_value<int_t,0> if val<int_t(0)> precedes val<0>
   if constexpr (std::is_same_v<val<0>, typed_value<int,0>>) {
     ut::invoke_r<val<0>, smp::val_div0<>>();
     ut::invoke_r<val<1>, smp::val_div1<>>();
   }
-  ut::invoke_r<val<int_(0)>, smp::val_div0<>, _0>();
-  ut::invoke_r<val<int_(1)>, smp::val_div0<>, _1>();
-  ut::invoke_r<val<int_(2)>, smp::val_div0<>, _2>();
+  ut::invoke_r<val<int_t(0)>, smp::val_div0<>, _0>();
+  ut::invoke_r<val<int_t(1)>, smp::val_div0<>, _1>();
+  ut::invoke_r<val<int_t(2)>, smp::val_div0<>, _2>();
   ut::not_invocable<smp::val_div0<>, _1, _0>();
   ut::invoke_r<val<1>, smp::val_div0<val_inc<>>>();
   ut::invoke_r<val<2>, smp::val_div1<val_inc<>>>();

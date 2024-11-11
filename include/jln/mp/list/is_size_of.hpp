@@ -12,7 +12,7 @@ namespace jln::mp
   template<class N, class C = identity>
   using is_size_of = size<is<N, C>>;
 
-  template<int_ n, class C = identity>
+  template<int_t n, class C = identity>
   using is_size_of_c = size<is<number<n>, C>>;
 
   namespace emp
@@ -20,13 +20,13 @@ namespace jln::mp
     template<class L, class N, class C = mp::identity>
     using is_size_of = unpack<L, mp::is_size_of<N, C>>;
 
-    template<class L, int_ n, class C = mp::identity>
+    template<class L, int_t n, class C = mp::identity>
     using is_size_of_c = unpack<L, mp::is_size_of_c<n, C>>;
 
     template<class L, class N, class C = mp::identity>
     inline constexpr bool is_size_of_v = unpack<L, mp::is_size_of<N, C>>::value;
 
-    template<class L, int_ n, class C = mp::identity>
+    template<class L, int_t n, class C = mp::identity>
     inline constexpr bool is_size_of_c_v = unpack<L, mp::is_size_of_c<n, C>>::value;
   }
 }

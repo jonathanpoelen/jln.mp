@@ -14,7 +14,7 @@ namespace jln::mp
     template<class>
     struct enumerate_impl;
 
-    template<class, int_...>
+    template<class, int_t...>
     struct enumerate_v_impl;
   }
   /// \endcond
@@ -22,7 +22,7 @@ namespace jln::mp
 
   /// \ingroup list
 
-  /// Returns pairs containing a numeric index of type \c int_ and a value.
+  /// Returns pairs containing a numeric index of type \c int_t and a value.
   /// \semantics
   ///   \code
   ///   C::f<F::f<0, xs[0]>, ..., F::f<n, xs[n]>>
@@ -90,7 +90,7 @@ namespace jln::mp::detail
     using f = typename C::template f<F<ns, xs>...>;
   };
 
-  template<class, int_... i>
+  template<class, int_t... i>
   struct enumerate_v_impl
   {
     template<class F, class C, class... xs>
