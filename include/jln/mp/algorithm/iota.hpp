@@ -17,8 +17,8 @@ namespace jln::mp
 
   /// \ingroup number
 
-  /// Generates a sequence of \int_.
-  /// \treturn \sequence of \int_
+  /// Generates a sequence of \int_t.
+  /// \treturn \sequence of \int_t
   /// \see iota
   template<class C = numbers<>>
   struct iota_v

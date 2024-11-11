@@ -34,7 +34,7 @@ using my_tuple_cat_result_type = mp::call<
     >...
 >;
 
-template<class R, mp::int_... ituples, mp::int_... ivalues, class Tuple>
+template<class R, mp::int_t... ituples, mp::int_t... ivalues, class Tuple>
 constexpr R my_tuple_cat_impl(
     emp::numbers<ituples...>, emp::numbers<ivalues...>, Tuple t)
 {

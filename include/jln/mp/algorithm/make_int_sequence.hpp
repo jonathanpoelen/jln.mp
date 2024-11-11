@@ -61,7 +61,7 @@ namespace jln::mp
 
   /// \ingroup number
 
-  /// Generates an incremental sequence of \c n \c int_.
+  /// Generates an incremental sequence of \c n \c int_t.
   /// \treturn \sequence
   /// \see make_int_sequence, iota
   template<class C = numbers<>>

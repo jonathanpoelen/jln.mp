@@ -22,7 +22,7 @@ namespace jln::mp
 
   /// \ingroup list
 
-  /// Returns pairs containing a numeric index of type \c int_ and a value.
+  /// Returns pairs containing a numeric index of type \c int_t and a value.
   /// \semantics
   ///   \code
   ///   C::f<F::f<0, xs[0]>, ..., F::f<n, xs[n]>>

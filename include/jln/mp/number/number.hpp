@@ -8,7 +8,13 @@ namespace jln::mp
 {
   /// \ingroup number
 
+  using int_t = std::intmax_t;
+  using uint_t = std::uintmax_t;
+  // old version of int_t, but keep for compatibility reasons
+  // and because msvc gives errors which make no sense when renaming the type
   using int_ = std::intmax_t;
+  // old version of uint_t, but keep for compatibility reasons
+  // and because msvc gives errors which make no sense when renaming the type
   using uint_ = std::uintmax_t;
 
   template<int_ v>

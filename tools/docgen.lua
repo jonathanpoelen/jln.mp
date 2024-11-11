@@ -140,6 +140,10 @@ end
 local sanitize_struct_impl
 
 local f_type = function(ctx_tparams, k, cpp_type, name, spe, tparams, mem, impl)
+  -- ignored, prefer int_t, uint_t
+  if name == 'int_' or name == 'uint' then
+    return
+  end
   namespaces[ctx_namespace][name] = true
   fileinfos.firstname = fileinfos.firstname or name
   fileinfos[#fileinfos+1] = {
@@ -315,7 +319,7 @@ preproc = P{
     / function(expr) return 'bool{' .. preproc:match(expr) .. '}' end
 
   + P'JLN_MP_AS_MP_INT(' * ws0 * cbalancedparent * ws0 * ')'
-    / function(expr) return 'int_{' .. preproc:match(expr) .. '}' end
+    / function(expr) return 'int_t{' .. preproc:match(expr) .. '}' end
 
   + P'JLN_MP_SET_CONTAINS(' * cbalancedparent * ')'
     / function(expr) return 'emp::set_contains_xs_v<' .. expr .. '>' end
@@ -327,7 +331,7 @@ preproc = P{
     / function(f, args) return 'try_<' .. preproc:match(f) .. '>::f<' .. preproc:match(args) .. '>' end
 
   + P'JLN_MP_SET_CONTAINS_BASE' * balancedparent / '/*...*/'
-  + P'JLN_MP_TPL_AUTO_OR_INT' / 'auto /*or int_*/'
+  + P'JLN_MP_TPL_AUTO_OR_INT' / 'auto /*or int_t*/'
   + P'JLN_MP_TRACE_TYPENAME' / ''
 
 , p='#' * sp0 / '' *
@@ -441,9 +445,17 @@ local pattern = P{
 
 preprocOnlyPattern = (ws + (P'#' + '//') * unl)^0 * -P(1)
 
+replace_old_int = Cs((
+    (P'int_' + P'uint_') * (alnum + '_')^1
+  + P'int_' / 'int_t'
+  + P'uint_' / 'uint_t'
+  + (alnum + '_')^1
+  + 1
+)^0)
+
 parseFile = function(contents)
   reset_parser()
-  pattern:match(preproc:match(contents))
+  pattern:match(replace_old_int:match(preproc:match(contents)))
   return fileinfos
 end
 
@@ -560,8 +572,8 @@ htmlifier_init = function()
     mdinlinecodepatt
   + P'\\c ' / '' * (Until(S' \n' + '.\n') / inlinecode)
   + P'\\code' * (sp0 * '\n')^0 * C(Until(ws0 * '\\endcode')) * ws0 * '\\endcode' / blockcode
-  + P'\\ints' / ('<a href="#d_sequence">sequence</a> of ' .. inline_func('int_'))
-  + (P'\\int_' + '\\int') / inline_func('int_')
+  + P'\\ints' / ('<a href="#d_sequence">sequence</a> of ' .. inline_func('int_t'))
+  + P'\\int_t' / inline_func('int_t')
   + P'\\list' / inline_func('list')
   + P'\\number' / inline_func('number')
   + P'\\map' / '<a href="#d_map">map</a>'
