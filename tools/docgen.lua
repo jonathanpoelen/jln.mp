@@ -423,10 +423,7 @@ local pattern = P{
         + 'using ' * Cc(kwindexes.using) * Cc(nil) * cid * ws0 * '='
           * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
         -- using name;
-        + 'using ' * Cc(kwindexes.using) * Cc(nil) * (id / function(name)
-            local i = name:find(':[a-zA-Z0-9_]+$')
-            return i and name:sub(i+1) or name
-          end) * ';'
+        + 'using ' * Cc(kwindexes.using) * Cc(nil) * ((alnum + S'_')^1 * '::')^0 * cid * ';'
           * Cc(nil) * Cc(nil) * Cc(nil) * Cc(nil)
         + (P'static ' + 'inline ')^0 * 'constexpr ' * Cc(kwindexes.static_constexpr)
           * cid * ws * cid * ws0 * '=' * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
