@@ -257,7 +257,7 @@ preproc = P{
     * ')'
     / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
 
-  + P'JLN_MP_FORCE_LAZY_P' * P'_T'^0 * '('
+  + P'JLN_MP_LAZY_PARAM' * P'_T'^0 * '('
     * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
     * ',' * ws0 * cbalancedparent
     * ')'
