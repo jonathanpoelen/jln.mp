@@ -1,3 +1,3 @@
 // SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
-#include "jln/mp/utility/void_t.hpp"
+#include "jln/mp/utility/lazy_void.hpp"
