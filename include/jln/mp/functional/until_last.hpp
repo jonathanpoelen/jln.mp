@@ -51,23 +51,25 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Searcher>
-    using until_last = unpack<L, mp::until_last<Searcher>>;
+    using until_last = typename detail::_unpack<mp::until_last<Searcher>, L>::type;
 
     template<
       class L, template<class...> class Tpl,
       class Pred, class TC = listify, class FC = clear<TC>>
-    using until_last_t = unpack<L, mp::until_last_t<Tpl, Pred, TC, FC>>;
+    using until_last_t = typename detail::_unpack<
+      mp::until_last_t<Tpl, Pred, TC, FC>, L>::type;
 
     template<
       class L, template<class...> class Tpl,
       class OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
-    using partial_until_last_t = unpack<L, mp::partial_until_last_t<Tpl, OffsetEnd, Pred, TC, FC>>;
+    using partial_until_last_t = typename detail::_unpack<
+      mp::partial_until_last_t<Tpl, OffsetEnd, Pred, TC, FC>, L>::type;
 
     template<
       class L, template<int_, class...> class Tpl,
       int_ OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
-    using partial_until_last_t_c = unpack<L,
-      mp::partial_until_last_t_c<Tpl, OffsetEnd, Pred, TC, FC>>;
+    using partial_until_last_t_c = typename detail::_unpack<
+      mp::partial_until_last_t_c<Tpl, OffsetEnd, Pred, TC, FC>, L>::type;
   }
 }
 

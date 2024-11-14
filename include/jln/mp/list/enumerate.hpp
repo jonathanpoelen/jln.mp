@@ -56,13 +56,13 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F, class C = mp::listify>
-    using enumerate_v_with = unpack<L, mp::enumerate_v_with<F, C>>;
+    using enumerate_v_with = typename detail::_unpack<mp::enumerate_v_with<F, C>, L>::type;
 
     template<class L, class F = mp::listify, class C = mp::listify>
-    using enumerate_with = unpack<L, mp::enumerate_with<F, C>>;
+    using enumerate_with = typename detail::_unpack<mp::enumerate_with<F, C>, L>::type;
 
     template<class L, class C = mp::listify>
-    using enumerate = unpack<L, mp::enumerate_with<mp::listify, C>>;
+    using enumerate = typename detail::_unpack<mp::enumerate_with<mp::listify, C>, L>::type;
   }
 } // namespace jln::mp
 

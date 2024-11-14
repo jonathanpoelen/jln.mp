@@ -24,9 +24,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class F, class C = mp::identity>
-    using until = unpack<L, mp::until<Pred, F, C>>;
+    using until = typename detail::_unpack<mp::until<Pred, F, C>, L>::type;
 
     template<class L, class Pred, class F, class C = mp::listify>
-    using until_xs = unpack<L, mp::until<Pred, F, C>>;
+    using until_xs = typename detail::_unpack<mp::until<Pred, F, C>, L>::type;
   }
 }

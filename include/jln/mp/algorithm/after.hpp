@@ -29,7 +29,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Seq, class TC = mp::listify, class FC = mp::clear<TC>>
-    using after = unpack<L, mp::after<Seq, TC, FC>>;
+    using after = typename detail::_unpack<mp::after<Seq, TC, FC>, L>::type;
   }
 
   /// \cond

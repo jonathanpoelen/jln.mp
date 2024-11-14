@@ -39,7 +39,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Cmp = mp::less<>, class C = listify>
-    using merge = unpack<L, mp::merge<Cmp, C>>;
+    using merge = typename detail::_unpack<mp::merge<Cmp, C>, L>::type;
   }
 }
 

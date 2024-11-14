@@ -39,14 +39,14 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class... BoundArgs>
-    using capture_back = unpack<L, mp::capture_back<BoundArgs...>>;
+    using capture_back = typename detail::_unpack<mp::capture_back<BoundArgs...>, L>::type;
 
     template<class L, int_... BoundArgs>
-    using capture_back_c = unpack<L, mp::capture_back_c<BoundArgs...>>;
+    using capture_back_c = typename detail::_unpack<mp::capture_back_c<BoundArgs...>, L>::type;
 
 #if JLN_MP_ENABLE_TPL_AUTO
     template<class L, auto... BoundArgs>
-    using capture_back_v = unpack<L, mp::capture_back_v<BoundArgs...>>;
+    using capture_back_v = typename detail::_unpack<mp::capture_back_v<BoundArgs...>, L>::type;
 #endif
   }
 }

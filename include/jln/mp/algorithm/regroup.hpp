@@ -53,16 +53,16 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using regroup = unpack<L, mp::regroup<C>>;
+    using regroup = typename detail::_unpack<mp::regroup<C>, L>::type;
 
     template<class L, class F = mp::listify, class C = mp::listify>
-    using regroup_with = unpack<L, mp::regroup_with<F, C>>;
+    using regroup_with = typename detail::_unpack<mp::regroup_with<F, C>, L>::type;
 
     template<class L, class Cmp = mp::same<>, class C = mp::listify>
-    using regroup_by = unpack<L, mp::regroup_by<Cmp, C>>;
+    using regroup_by = typename detail::_unpack<mp::regroup_by<Cmp, C>, L>::type;
 
     template<class L, class Cmp = mp::same<>, class F = mp::listify, class C = mp::listify>
-    using regroup_by_with = unpack<L, mp::regroup_by_with<Cmp, F, C>>;
+    using regroup_by_with = typename detail::_unpack<mp::regroup_by_with<Cmp, F, C>, L>::type;
   }
 
   /// \cond

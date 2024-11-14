@@ -27,9 +27,9 @@ namespace jln::mp
   {
     template<class L, class GetIndex,
       class SubC1 = mp::listify, class SubC2 = SubC1, class C = mp::listify>
-    using split_from2 = unpack<L, mp::split_from2<GetIndex, SubC1, SubC2, C>>;
+    using split_from2 = typename detail::_unpack<mp::split_from2<GetIndex, SubC1, SubC2, C>, L>::type;
 
     template<class L, class GetIndex, class C = mp::listify>
-    using split_from = unpack<L, mp::split_from2<GetIndex, mp::listify, mp::listify, C>>;
+    using split_from = typename detail::_unpack<mp::split_from2<GetIndex, mp::listify, mp::listify, C>, L>::type;
   }
 }

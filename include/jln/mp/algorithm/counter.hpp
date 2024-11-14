@@ -64,10 +64,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using counter = unpack<L, mp::counter<C>>;
+    using counter = typename detail::_unpack<mp::counter<C>, L>::type;
 
     template<class L, class F = mp::listify, class C = mp::listify>
-    using counter_wrapped_with = unpack<L, mp::counter_wrapped_with<F, C>>;
+    using counter_wrapped_with = typename detail::_unpack<mp::counter_wrapped_with<F, C>, L>::type;
   }
 }
 

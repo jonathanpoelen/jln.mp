@@ -86,18 +86,18 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class TC = mp::listify, class FC = mp::clear<TC>>
-    using drop_while = unpack<L, mp::drop_while<Pred, TC, FC>>;
+    using drop_while = typename detail::_unpack<mp::drop_while<Pred, TC, FC>, L>::type;
 
     template<class L, std::size_t ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
-    using drop_while_extended_by_n_c = unpack<L,
-      mp::drop_while_extended_by_n_c<ExtendedByN, Pred, TC, FC>>;
+    using drop_while_extended_by_n_c = typename detail::_unpack<
+      mp::drop_while_extended_by_n_c<ExtendedByN, Pred, TC, FC>, L>::type;
 
     template<class L, class ExtendedByN, class Pred, class TC = listify, class FC = clear<TC>>
-    using drop_while_extended_by_n = unpack<L,
-      mp::drop_while_extended_by_n<ExtendedByN, Pred, TC, FC>>;
+    using drop_while_extended_by_n = typename detail::_unpack<
+      mp::drop_while_extended_by_n<ExtendedByN, Pred, TC, FC>, L>::type;
 
     template<class L, class Pred, class TC = mp::listify, class FC = mp::clear<TC>>
-    using drop_inclusive_while = unpack<L, mp::drop_inclusive_while<Pred, TC, FC>>;
+    using drop_inclusive_while = typename detail::_unpack<mp::drop_inclusive_while<Pred, TC, FC>, L>::type;
   }
 
   /// \cond

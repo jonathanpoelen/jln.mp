@@ -54,10 +54,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using zip = unpack<L, mp::zip<C>>;
+    using zip = typename detail::_unpack<mp::zip<C>, L>::type;
 
     template<class L, class F = mp::listify, class C = mp::listify>
-    using zip_with = unpack<L, mp::zip_with<F, C>>;
+    using zip_with = typename detail::_unpack<mp::zip_with<F, C>, L>::type;
   }
 }
 

@@ -34,7 +34,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F, class C = mp::listify>
-    using scan_right = unpack<L, mp::scan_right<F, C>>;
+    using scan_right = typename detail::_unpack<mp::scan_right<F, C>, L>::type;
   }
 }
 

@@ -33,7 +33,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Seq, class TC = mp::listify, class FC = mp::clear<TC>>
-    using before = unpack<L, mp::before<Seq, TC, FC>>;
+    using before = typename detail::_unpack<mp::before<Seq, TC, FC>, L>::type;
   }
 
   /// \cond

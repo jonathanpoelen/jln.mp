@@ -22,7 +22,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class T, class C = mp::listify>
-    using push_front = unpack<L, mp::push_front<T, C>>;
+    using push_front = typename detail::_unpack<mp::push_front<T, C>, L>::type;
   }
 
   /// \cond

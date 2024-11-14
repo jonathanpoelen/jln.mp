@@ -17,9 +17,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class x, class C = mp::identity>
-    using contains = unpack<L, mp::contains<x, C>>;
+    using contains = typename detail::_unpack<mp::contains<x, C>, L>::type;
 
     template<class L, class x, class C = mp::identity>
-    inline constexpr bool contains_v = unpack<L, mp::contains<x, C>>::value;
+    inline constexpr bool contains_v = detail::_unpack<mp::contains<x, C>, L>::type::value;
   }
 }

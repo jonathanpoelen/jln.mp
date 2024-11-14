@@ -33,10 +33,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class I, class J, class C = mp::listify>
-    using swap_index = unpack<L, swap_index<I, J, C>>;
+    using swap_index = typename detail::_unpack<swap_index<I, J, C>, L>::type;
 
     template<class L, unsigned i, unsigned j, class C = mp::listify>
-    using swap_index_c = unpack<L, swap_index_c<i, j, C>>;
+    using swap_index_c = typename detail::_unpack<swap_index_c<i, j, C>, L>::type;
   }
 }
 

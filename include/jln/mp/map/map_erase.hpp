@@ -19,6 +19,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Key, class C = mp::listify>
-    using map_erase = unpack<L, mp::map_erase<Key, C>>;
+    using map_erase = typename detail::_unpack<mp::map_erase<Key, C>, L>::type;
   }
 }

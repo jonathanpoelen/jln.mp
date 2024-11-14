@@ -60,16 +60,16 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred = mp::identity, class F = listify, class C = listify>
-    using split_if_with = unpack<L, mp::split_if_with<Pred, F, C>>;
+    using split_if_with = typename detail::_unpack<mp::split_if_with<Pred, F, C>, L>::type;
 
     template<class L, class Pred = mp::identity, class C = listify>
-    using split_if = unpack<L, mp::split_if_with<Pred, listify, C>>;
+    using split_if = typename detail::_unpack<mp::split_if_with<Pred, listify, C>, L>::type;
 
     template<class L, class x, class F = listify, class C = listify>
-    using split_with = unpack<L, mp::split_if_with<is<x>, F, C>>;
+    using split_with = typename detail::_unpack<mp::split_if_with<is<x>, F, C>, L>::type;
 
     template<class L, class x, class C = listify>
-    using split = unpack<L, mp::split_if_with<is<x>, listify, C>>;
+    using split = typename detail::_unpack<mp::split_if_with<is<x>, listify, C>, L>::type;
   }
 }
 

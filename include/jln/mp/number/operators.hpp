@@ -340,118 +340,118 @@ namespace jln::mp
 namespace jln::mp::emp
 {
   template<class L, class C = mp::identity>
-  using or_seq = unpack<L, mp::or_<C>>;
+  using or_seq = typename detail::_unpack<mp::or_<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using and_seq = unpack<L, mp::and_<C>>;
+  using and_seq = typename detail::_unpack<mp::and_<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using or_left_seq = unpack<L, mp::left_or<C>>;
+  using or_left_seq = typename detail::_unpack<mp::left_or<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using and_left_seq = unpack<L, mp::left_and<C>>;
+  using and_left_seq = typename detail::_unpack<mp::left_and<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using add_seq = unpack<L, mp::add<C>>;
+  using add_seq = typename detail::_unpack<mp::add<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using add0_seq = unpack<L, mp::add0<C>>;
+  using add0_seq = typename detail::_unpack<mp::add0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using left_add_seq = unpack<L, mp::left_add<C>>;
+  using left_add_seq = typename detail::_unpack<mp::left_add<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using left_add0_seq = unpack<L, mp::left_add0<C>>;
+  using left_add0_seq = typename detail::_unpack<mp::left_add0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using sub_seq = unpack<L, mp::sub<C>>;
+  using sub_seq = typename detail::_unpack<mp::sub<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using sub0_seq = unpack<L, mp::sub0<C>>;
+  using sub0_seq = typename detail::_unpack<mp::sub0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using lshift_seq = unpack<L, mp::lshift<C>>;
+  using lshift_seq = typename detail::_unpack<mp::lshift<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using lshift0_seq = unpack<L, mp::lshift0<C>>;
+  using lshift0_seq = typename detail::_unpack<mp::lshift0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using rshift_seq = unpack<L, mp::rshift<C>>;
+  using rshift_seq = typename detail::_unpack<mp::rshift<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using rshift0_seq = unpack<L, mp::rshift0<C>>;
+  using rshift0_seq = typename detail::_unpack<mp::rshift0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using mul_seq = unpack<L, mp::mul<C>>;
+  using mul_seq = typename detail::_unpack<mp::mul<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using mul0_seq = unpack<L, mp::mul0<C>>;
+  using mul0_seq = typename detail::_unpack<mp::mul0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using mul1_seq = unpack<L, mp::mul1<C>>;
+  using mul1_seq = typename detail::_unpack<mp::mul1<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using left_mul_seq = unpack<L, mp::left_mul<C>>;
+  using left_mul_seq = typename detail::_unpack<mp::left_mul<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using left_mul0_seq = unpack<L, mp::left_mul0<C>>;
+  using left_mul0_seq = typename detail::_unpack<mp::left_mul0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using left_mul1_seq = unpack<L, mp::left_mul1<C>>;
+  using left_mul1_seq = typename detail::_unpack<mp::left_mul1<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using div_seq = unpack<L, mp::div<C>>;
+  using div_seq = typename detail::_unpack<mp::div<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using div0_seq = unpack<L, mp::div0<C>>;
+  using div0_seq = typename detail::_unpack<mp::div0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using div1_seq = unpack<L, mp::div1<C>>;
+  using div1_seq = typename detail::_unpack<mp::div1<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using mod_seq = unpack<L, mp::mod<C>>;
+  using mod_seq = typename detail::_unpack<mp::mod<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using mod0_seq = unpack<L, mp::mod0<C>>;
+  using mod0_seq = typename detail::_unpack<mp::mod0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using mod1_seq = unpack<L, mp::mod1<C>>;
+  using mod1_seq = typename detail::_unpack<mp::mod1<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using xor_seq = unpack<L, mp::xor_<C>>;
+  using xor_seq = typename detail::_unpack<mp::xor_<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using xor0_seq = unpack<L, mp::xor0<C>>;
+  using xor0_seq = typename detail::_unpack<mp::xor0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using left_xor_seq = unpack<L, mp::left_xor<C>>;
+  using left_xor_seq = typename detail::_unpack<mp::left_xor<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using left_xor0_seq = unpack<L, mp::left_xor0<C>>;
+  using left_xor0_seq = typename detail::_unpack<mp::left_xor0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using bit_and_seq = unpack<L, mp::bit_and<C>>;
+  using bit_and_seq = typename detail::_unpack<mp::bit_and<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using bit_and0_seq = unpack<L, mp::bit_and0<C>>;
+  using bit_and0_seq = typename detail::_unpack<mp::bit_and0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using left_bit_and_seq = unpack<L, mp::left_bit_and<C>>;
+  using left_bit_and_seq = typename detail::_unpack<mp::left_bit_and<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using left_bit_and0_seq = unpack<L, mp::left_bit_and0<C>>;
+  using left_bit_and0_seq = typename detail::_unpack<mp::left_bit_and0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using bit_or_seq = unpack<L, mp::bit_or<C>>;
+  using bit_or_seq = typename detail::_unpack<mp::bit_or<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using bit_or0_seq = unpack<L, mp::bit_or0<C>>;
+  using bit_or0_seq = typename detail::_unpack<mp::bit_or0<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using left_bit_or_seq = unpack<L, mp::left_bit_or<C>>;
+  using left_bit_or_seq = typename detail::_unpack<mp::left_bit_or<C>, L>::type;
 
   template<class L, class C = mp::identity>
-  using left_bit_or0_seq = unpack<L, mp::left_bit_or0<C>>;
+  using left_bit_or0_seq = typename detail::_unpack<mp::left_bit_or0<C>, L>::type;
 
 
   template<int_... xs>
@@ -725,118 +725,118 @@ namespace jln::mp::emp
 
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ or_seq_v = unpack<L, mp::or_<C>>::value;
+  inline constexpr int_ or_seq_v = detail::_unpack<mp::or_<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ and_seq_v = unpack<L, mp::and_<C>>::value;
+  inline constexpr int_ and_seq_v = detail::_unpack<mp::and_<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ or_left_seq_v = unpack<L, mp::left_or<C>>::value;
+  inline constexpr int_ or_left_seq_v = detail::_unpack<mp::left_or<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ and_left_seq_v = unpack<L, mp::left_and<C>>::value;
+  inline constexpr int_ and_left_seq_v = detail::_unpack<mp::left_and<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ add_seq_v = unpack<L, mp::add<C>>::value;
+  inline constexpr int_ add_seq_v = detail::_unpack<mp::add<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ add0_seq_v = unpack<L, mp::add0<C>>::value;
+  inline constexpr int_ add0_seq_v = detail::_unpack<mp::add0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_add_seq_v = unpack<L, mp::left_add<C>>::value;
+  inline constexpr int_ left_add_seq_v = detail::_unpack<mp::left_add<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_add0_seq_v = unpack<L, mp::left_add0<C>>::value;
+  inline constexpr int_ left_add0_seq_v = detail::_unpack<mp::left_add0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ sub_seq_v = unpack<L, mp::sub<C>>::value;
+  inline constexpr int_ sub_seq_v = detail::_unpack<mp::sub<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ sub0_seq_v = unpack<L, mp::sub0<C>>::value;
+  inline constexpr int_ sub0_seq_v = detail::_unpack<mp::sub0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ lshift_seq_v = unpack<L, mp::lshift<C>>::value;
+  inline constexpr int_ lshift_seq_v = detail::_unpack<mp::lshift<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ lshift0_seq_v = unpack<L, mp::lshift0<C>>::value;
+  inline constexpr int_ lshift0_seq_v = detail::_unpack<mp::lshift0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ rshift_seq_v = unpack<L, mp::rshift<C>>::value;
+  inline constexpr int_ rshift_seq_v = detail::_unpack<mp::rshift<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ rshift0_seq_v = unpack<L, mp::rshift0<C>>::value;
+  inline constexpr int_ rshift0_seq_v = detail::_unpack<mp::rshift0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ mul_seq_v = unpack<L, mp::mul<C>>::value;
+  inline constexpr int_ mul_seq_v = detail::_unpack<mp::mul<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ mul0_seq_v = unpack<L, mp::mul0<C>>::value;
+  inline constexpr int_ mul0_seq_v = detail::_unpack<mp::mul0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ mul1_seq_v = unpack<L, mp::mul1<C>>::value;
+  inline constexpr int_ mul1_seq_v = detail::_unpack<mp::mul1<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_mul_seq_v = unpack<L, mp::left_mul<C>>::value;
+  inline constexpr int_ left_mul_seq_v = detail::_unpack<mp::left_mul<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_mul0_seq_v = unpack<L, mp::left_mul0<C>>::value;
+  inline constexpr int_ left_mul0_seq_v = detail::_unpack<mp::left_mul0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_mul1_seq_v = unpack<L, mp::left_mul1<C>>::value;
+  inline constexpr int_ left_mul1_seq_v = detail::_unpack<mp::left_mul1<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ div_seq_v = unpack<L, mp::div<C>>::value;
+  inline constexpr int_ div_seq_v = detail::_unpack<mp::div<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ div0_seq_v = unpack<L, mp::div0<C>>::value;
+  inline constexpr int_ div0_seq_v = detail::_unpack<mp::div0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ div1_seq_v = unpack<L, mp::div1<C>>::value;
+  inline constexpr int_ div1_seq_v = detail::_unpack<mp::div1<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ mod_seq_v = unpack<L, mp::mod<C>>::value;
+  inline constexpr int_ mod_seq_v = detail::_unpack<mp::mod<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ mod0_seq_v = unpack<L, mp::mod0<C>>::value;
+  inline constexpr int_ mod0_seq_v = detail::_unpack<mp::mod0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ mod1_seq_v = unpack<L, mp::mod1<C>>::value;
+  inline constexpr int_ mod1_seq_v = detail::_unpack<mp::mod1<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ xor_seq_v = unpack<L, mp::xor_<C>>::value;
+  inline constexpr int_ xor_seq_v = detail::_unpack<mp::xor_<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ xor0_seq_v = unpack<L, mp::xor0<C>>::value;
+  inline constexpr int_ xor0_seq_v = detail::_unpack<mp::xor0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_xor_seq_v = unpack<L, mp::left_xor<C>>::value;
+  inline constexpr int_ left_xor_seq_v = detail::_unpack<mp::left_xor<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_xor0_seq_v = unpack<L, mp::left_xor0<C>>::value;
+  inline constexpr int_ left_xor0_seq_v = detail::_unpack<mp::left_xor0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ bit_and_seq_v = unpack<L, mp::bit_and<C>>::value;
+  inline constexpr int_ bit_and_seq_v = detail::_unpack<mp::bit_and<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ bit_and0_seq_v = unpack<L, mp::bit_and0<C>>::value;
+  inline constexpr int_ bit_and0_seq_v = detail::_unpack<mp::bit_and0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_bit_and_seq_v = unpack<L, mp::left_bit_and<C>>::value;
+  inline constexpr int_ left_bit_and_seq_v = detail::_unpack<mp::left_bit_and<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_bit_and0_seq_v = unpack<L, mp::left_bit_and0<C>>::value;
+  inline constexpr int_ left_bit_and0_seq_v = detail::_unpack<mp::left_bit_and0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ bit_or_seq_v = unpack<L, mp::bit_or<C>>::value;
+  inline constexpr int_ bit_or_seq_v = detail::_unpack<mp::bit_or<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ bit_or0_seq_v = unpack<L, mp::bit_or0<C>>::value;
+  inline constexpr int_ bit_or0_seq_v = detail::_unpack<mp::bit_or0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_bit_or_seq_v = unpack<L, mp::left_bit_or<C>>::value;
+  inline constexpr int_ left_bit_or_seq_v = detail::_unpack<mp::left_bit_or<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_bit_or0_seq_v = unpack<L, mp::left_bit_or0<C>>::value;
+  inline constexpr int_ left_bit_or0_seq_v = detail::_unpack<mp::left_bit_or0<C>, L>::type::value;
 
 
   template<int_... xs>

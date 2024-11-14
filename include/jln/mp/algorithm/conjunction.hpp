@@ -55,16 +55,18 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class C = mp::identity>
-    using conjunction_with = unpack<L, mp::conjunction_with<Pred, C>>;
+    using conjunction_with = typename detail::_unpack<mp::conjunction_with<Pred, C>, L>::type;
 
     template<class L, class C = mp::identity>
-    using conjunction = unpack<L, mp::conjunction_with<mp::identity, C>>;
+    using conjunction = typename detail::_unpack<mp::conjunction_with<mp::identity, C>, L>::type;
 
     template<class L, class Pred, class C = mp::identity>
-    inline constexpr bool conjunction_with_v = unpack<L, mp::conjunction_with<Pred, C>>::value;
+    inline constexpr bool conjunction_with_v = detail::_unpack<
+      mp::conjunction_with<Pred, C>, L>::type::value;
 
     template<class L, class C = mp::identity>
-    inline constexpr bool conjunction_v = unpack<L, mp::conjunction_with<mp::identity, C>>::value;
+    inline constexpr bool conjunction_v = detail::_unpack<
+      mp::conjunction_with<mp::identity, C>, L>::type::value;
   }
 }
 

@@ -31,7 +31,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class x, class C = mp::listify>
-    using intersperse = unpack<L, mp::intersperse<x, C>>;
+    using intersperse = typename detail::_unpack<mp::intersperse<x, C>, L>::type;
   }
 }
 

@@ -17,6 +17,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using indices = unpack<L, mp::indices<C>>;
+    using indices = typename detail::_unpack<mp::indices<C>, L>::type;
   }
 } // namespace jln::mp

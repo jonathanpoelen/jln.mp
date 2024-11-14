@@ -28,15 +28,18 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class x, class Cmp = mp::less<>, class TC = mp::listify, class FC = TC>
-    using upper_bound = unpack<L, mp::upper_bound<x, Cmp, TC, FC>>;
+    using upper_bound = typename detail::_unpack<mp::upper_bound<x, Cmp, TC, FC>, L>::type;
 
     template<class L, int_ x, class Cmp = mp::less<>, class TC = mp::listify, class FC = TC>
-    using upper_bound_c = unpack<L, mp::upper_bound<mp::number<x>, Cmp, TC, FC>>;
+    using upper_bound_c = typename detail::_unpack<
+      mp::upper_bound<mp::number<x>, Cmp, TC, FC>, L>::type;
 
     template<class L, class x, class TC = mp::listify, class FC = TC>
-    using upper_bound_than = unpack<L, mp::upper_bound<x, mp::less<>, TC, FC>>;
+    using upper_bound_than = typename detail::_unpack<
+      mp::upper_bound<x, mp::less<>, TC, FC>, L>::type;
 
     template<class L, int_ x, class TC = mp::listify, class FC = TC>
-    using upper_bound_than_c = unpack<L, mp::upper_bound<mp::number<x>, mp::less<>, TC, FC>>;
+    using upper_bound_than_c = typename detail::_unpack<
+      mp::upper_bound<mp::number<x>, mp::less<>, TC, FC>, L>::type;
   }
 }

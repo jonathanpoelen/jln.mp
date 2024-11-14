@@ -39,14 +39,14 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F, class... BoundArgs>
-    using bind_front = unpack<L, F, BoundArgs...>;
+    using bind_front = typename detail::_unpack<F, L, BoundArgs...>::type;
 
     template<class L, class F, int_... BoundArgs>
-    using bind_front_c = unpack<L, F, number<BoundArgs>...>;
+    using bind_front_c = typename detail::_unpack<F, L, number<BoundArgs>...>::type;
 
 #if JLN_MP_ENABLE_TPL_AUTO
     template<class L, class F, auto... BoundArgs>
-    using bind_front_v = unpack<L, mp::bind_front_v<F, BoundArgs...>>;
+    using bind_front_v = typename detail::_unpack<mp::bind_front_v<F, BoundArgs...>, L>::type;
 #endif
   }
 } // namespace jln::mp

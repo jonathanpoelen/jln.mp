@@ -102,50 +102,51 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class TC = mp::listify, class FC = mp::clear<TC>>
-    using drop_while_xs = unpack<L, mp::drop_while_xs<Pred, TC, FC>>;
+    using drop_while_xs = typename detail::_unpack<mp::drop_while_xs<Pred, TC, FC>, L>::type;
 
     template<class L, class ExtendedByN, class Pred,
              class TC = mp::listify, class FC = mp::clear<TC>>
-    using drop_while_extended_by_n_xs = unpack<L,
-      mp::drop_while_extended_by_n_xs<ExtendedByN, Pred, TC, FC>>;
+    using drop_while_extended_by_n_xs = typename detail::_unpack<
+      mp::drop_while_extended_by_n_xs<ExtendedByN, Pred, TC, FC>, L>::type;
 
     template<class L, std::size_t ExtendedByN, class Pred,
              class TC = mp::listify, class FC = mp::clear<TC>>
-    using drop_while_extended_by_n_xs_c = unpack<L,
-      mp::drop_while_extended_by_n_xs_c<ExtendedByN, Pred, TC, FC>>;
+    using drop_while_extended_by_n_xs_c = typename detail::_unpack<
+      mp::drop_while_extended_by_n_xs_c<ExtendedByN, Pred, TC, FC>, L>::type;
 
     template<class L, class OffsetEnd, class state, class Pred,
              class TC = mp::listify, class FC = mp::clear<TC>>
-    using partial_drop_while_xs = unpack<L,
-      mp::partial_drop_while_xs<OffsetEnd, Pred, TC, FC>>;
+    using partial_drop_while_xs = typename detail::_unpack<
+      mp::partial_drop_while_xs<OffsetEnd, Pred, TC, FC>, L>::type;
 
     template<class L, int_ OffsetEnd, class Pred,
              class TC = mp::listify, class FC = mp::clear<TC>>
-    using partial_drop_while_xs_c = unpack<L,
-      mp::partial_drop_while_xs_c<OffsetEnd, Pred, TC, FC>>;
+    using partial_drop_while_xs_c = typename detail::_unpack<
+      mp::partial_drop_while_xs_c<OffsetEnd, Pred, TC, FC>, L>::type;
 
     template<class L, class Pred, class TC = mp::listify, class FC = mp::clear<TC>>
-    using drop_inclusive_while_xs = unpack<L, mp::drop_inclusive_while_xs<Pred, TC, FC>>;
+    using drop_inclusive_while_xs = typename detail::_unpack<
+      mp::drop_inclusive_while_xs<Pred, TC, FC>, L>::type;
 
     template<class L, class OffsetEnd, class state, class Pred,
              class TC = mp::listify, class FC = mp::clear<TC>>
-    using partial_drop_inclusive_while_xs = unpack<L,
-      mp::partial_drop_inclusive_while_xs<OffsetEnd, Pred, TC, FC>>;
+    using partial_drop_inclusive_while_xs = typename detail::_unpack<
+      mp::partial_drop_inclusive_while_xs<OffsetEnd, Pred, TC, FC>, L>::type;
 
     template<class L, int_ OffsetEnd, class Pred,
              class TC = mp::listify, class FC = mp::clear<TC>>
-    using partial_drop_inclusive_while_xs_c = unpack<L,
-      mp::partial_drop_inclusive_while_xs_c<OffsetEnd, Pred, TC, FC>>;
+    using partial_drop_inclusive_while_xs_c = typename detail::_unpack<
+      mp::partial_drop_inclusive_while_xs_c<OffsetEnd, Pred, TC, FC>, L>::type;
 
     template<class L, class OffsetEnd, class ExtendedByN, class Pred,
              class TC = listify, class FC = mp::clear<TC>>
-    using partial_drop_while_extended_by_n_xs = unpack<L,
-      mp::partial_drop_while_extended_by_n_xs<OffsetEnd, ExtendedByN, Pred, TC, FC>>;
+    using partial_drop_while_extended_by_n_xs = typename detail::_unpack<
+      mp::partial_drop_while_extended_by_n_xs<OffsetEnd, ExtendedByN, Pred, TC, FC>, L>::type;
 
     template<class L, int_ OffsetEnd, std::size_t ExtendedByN, class Pred,
              class TC = listify, class FC = mp::clear<TC>>
-    using partial_drop_while_extended_by_n_xs_c = unpack<L,
-      mp::partial_drop_while_extended_by_n_xs_c<OffsetEnd, ExtendedByN, Pred, TC, FC>>;
+    using partial_drop_while_extended_by_n_xs_c = typename detail::_unpack<
+      mp::partial_drop_while_extended_by_n_xs_c<OffsetEnd, ExtendedByN, Pred, TC, FC>, L>::type;
   }
 
   /// \cond

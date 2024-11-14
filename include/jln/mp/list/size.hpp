@@ -22,10 +22,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using size = unpack<L, mp::size<C>>;
+    using size = typename detail::_unpack<mp::size<C>, L>::type;
 
     template<class L, class C = mp::identity>
-    inline constexpr bool size_v = unpack<L, mp::size<C>>::value;
+    inline constexpr bool size_v = detail::_unpack<mp::size<C>, L>::type::value;
   }
 
   /// \cond

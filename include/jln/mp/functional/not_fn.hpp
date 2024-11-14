@@ -30,7 +30,7 @@ namespace jln::mp
     )>;
 
     template<class L, class F, class C = mp::identity>
-    using not_fn = unpack<L, mp::not_fn<F, C>>;
+    using not_fn = typename detail::_unpack<mp::not_fn<F, C>, L>::type;
   }
 }
 

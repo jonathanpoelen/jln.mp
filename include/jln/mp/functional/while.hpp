@@ -24,9 +24,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class F, class C = mp::identity>
-    using while_ = unpack<L, mp::while_<Pred, F, C>>;
+    using while_ = typename detail::_unpack<mp::while_<Pred, F, C>, L>::type;
 
     template<class L, class Pred, class F, class C = mp::listify>
-    using while_xs = unpack<L, mp::while_<Pred, F, C>>;
+    using while_xs = typename detail::_unpack<mp::while_<Pred, F, C>, L>::type;
   }
 }

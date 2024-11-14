@@ -18,6 +18,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using pop_back = unpack<L, mp::pop_back<C>>;
+    using pop_back = typename detail::_unpack<mp::pop_back<C>, L>::type;
   }
 }

@@ -37,15 +37,15 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class size, class F = mp::listify, class C = mp::listify>
-    using batched_with = unpack<L, mp::strided_sliding_with_c<size::value, size::value, F, C>>;
+    using batched_with = typename detail::_unpack<mp::strided_sliding_with_c<size::value, size::value, F, C>, L>::type;
 
     template<class L, int_ size, class F = mp::listify, class C = mp::listify>
-    using batched_with_c = unpack<L, mp::strided_sliding_with_c<size, size, F, C>>;
+    using batched_with_c = typename detail::_unpack<mp::strided_sliding_with_c<size, size, F, C>, L>::type;
 
     template<class L, class size, class C = mp::listify>
-    using batched = unpack<L, mp::strided_sliding_with_c<size::value, size::value, mp::listify, C>>;
+    using batched = typename detail::_unpack<mp::strided_sliding_with_c<size::value, size::value, mp::listify, C>, L>::type;
 
     template<class L, int_ size, class C = mp::listify>
-    using batched_c = unpack<L, mp::strided_sliding_with_c<size, size, mp::listify, C>>;
+    using batched_c = typename detail::_unpack<mp::strided_sliding_with_c<size, size, mp::listify, C>, L>::type;
   }
 }

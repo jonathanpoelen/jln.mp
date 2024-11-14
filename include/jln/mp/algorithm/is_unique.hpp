@@ -28,10 +28,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using is_unique = unpack<L, mp::is_unique_if<mp::same<>, C>>;
+    using is_unique = typename detail::_unpack<mp::is_unique_if<mp::same<>, C>, L>::type;
 
     template<class L, class Cmp = mp::same<>, class C = mp::identity>
-    using is_unique_if = unpack<L, mp::is_unique_if<Cmp, C>>;
+    using is_unique_if = typename detail::_unpack<mp::is_unique_if<Cmp, C>, L>::type;
   }
 }
 

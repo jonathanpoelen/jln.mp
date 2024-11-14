@@ -129,16 +129,20 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class start, class count, class step = number<1>, class C = mp::listify>
-    using strided_slice = unpack<L, strided_slice<start, count, step, C>>;
+    using strided_slice = typename detail::_unpack<
+      strided_slice<start, count, step, C>, L>::type;
 
     template<class L, int_ start, unsigned count, unsigned step = 1, class C = mp::listify>
-    using strided_slice_c = unpack<L, mp::strided_slice_c<start, count, step, C>>;
+    using strided_slice_c = typename detail::_unpack<
+      mp::strided_slice_c<start, count, step, C>, L>::type;
 
     template<class L, class start, class count, class C = mp::listify>
-    using slice = unpack<L, mp::strided_slice_c<start::value, count::value, 1, C>>;
+    using slice = typename detail::_unpack<
+      mp::strided_slice_c<start::value, count::value, 1, C>, L>::type;
 
     template<class L, int_ start, unsigned count, class C = mp::listify>
-    using slice_c = unpack<L, mp::strided_slice_c<start, count, 1, C>>;
+    using slice_c = typename detail::_unpack<
+      mp::strided_slice_c<start, count, 1, C>, L>::type;
   }
 }
 

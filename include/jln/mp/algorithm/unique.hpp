@@ -30,10 +30,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using unique = unpack<L, unique<C>>;
+    using unique = typename detail::_unpack<unique<C>, L>::type;
 
     template<class L, class Cmp = mp::same<>, class C = mp::listify>
-    using unique_if = unpack<L, unique_if<Cmp, C>>;
+    using unique_if = typename detail::_unpack<unique_if<Cmp, C>, L>::type;
   }
 }
 

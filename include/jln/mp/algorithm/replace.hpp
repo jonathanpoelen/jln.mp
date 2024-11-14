@@ -30,10 +30,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class T, class U, class C = mp::listify>
-    using replace = unpack<L, mp::replace<T, U, C>>;
+    using replace = typename detail::_unpack<mp::replace<T, U, C>, L>::type;
 
     template<class L, class Pred, class T, class C = mp::listify>
-    using replace_if = unpack<L, mp::replace_if<Pred, T, C>>;
+    using replace_if = typename detail::_unpack<mp::replace_if<Pred, T, C>, L>::type;
   }
 }
 

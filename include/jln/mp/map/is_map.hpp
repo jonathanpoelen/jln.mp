@@ -28,13 +28,13 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using is_map = unpack<L, mp::is_map<C>>;
+    using is_map = typename detail::_unpack<mp::is_map<C>, L>::type;
 
     template<class... kvs>
     using is_map_xs = typename mp::is_map<>::template f<kvs...>;
 
     template<class L, class C = mp::identity>
-    inline constexpr bool is_map_v = unpack<L, mp::is_map<C>>::value;
+    inline constexpr bool is_map_v = detail::_unpack<mp::is_map<C>, L>::type::value;
 
     template<class... kvs>
     inline constexpr bool is_map_xs_v = mp::is_map<>::f<kvs...>::value;

@@ -27,13 +27,13 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class C = mp::identity>
-    using all_of = unpack<L, mp::all_of<Pred, C>>;
+    using all_of = typename detail::_unpack<mp::all_of<Pred, C>, L>::type;
 
     template<class Pred, class... xs>
     using all_of_xs = typename mp::all_of<Pred>::template f<xs...>;
 
     template<class L, class Pred, class C = mp::identity>
-    inline constexpr bool all_of_v = unpack<L, mp::all_of<Pred, C>>::value;
+    inline constexpr bool all_of_v = detail::_unpack<mp::all_of<Pred, C>, L>::type::value;
 
     template<class Pred, class... xs>
     inline constexpr bool all_of_xs_v = mp::all_of<Pred>::template f<xs...>::value;

@@ -88,16 +88,18 @@ namespace jln::mp
   namespace emp
   {
     template<class L>
-    using build_indexed_v = unpack<L, lift<mp::build_indexed_v>>;
+    using build_indexed_v = typename detail::_unpack<lift<mp::build_indexed_v>, L>::type;
 
     template<class L>
-    using build_indexed = unpack<L, lift<mp::build_indexed>>;
+    using build_indexed = typename detail::_unpack<lift<mp::build_indexed>, L>::type;
 
     template<class L, int i>
-    using lookup_c = typename unpack<L, mp::lift<mp::build_indexed_v>>::template f<i>;
+    using lookup_c =
+      typename detail::_unpack<mp::lift<mp::build_indexed_v>, L>::type::template f<i>;
 
     template<class L, class I>
-    using lookup = typename unpack<L, mp::lift<mp::build_indexed_v>>::template f<I::value>;
+    using lookup =
+      typename detail::_unpack<mp::lift<mp::build_indexed_v>, L>::type::template f<I::value>;
 
     template<class IndexedV, int i>
     using indexed_lookup_c = typename IndexedV::template f<i>;

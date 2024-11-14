@@ -61,7 +61,7 @@ namespace jln::mp
     using f = typename detail::matrix_shortest_impl<
       take_front_c,
       F, typename detail::optimize_useless_unpack<unpack<F>>::type,
-      C, unpack<size<>>::f<seqs>...
+      C, typename detail::_unpack<size<>, seqs>::type...
     >::template f<seqs...>;
   };
 
@@ -92,7 +92,7 @@ namespace jln::mp
     using f = typename detail::matrix_shortest_impl<
       take_back_c,
       F, typename detail::optimize_useless_unpack<unpack<F>>::type,
-      C, unpack<size<>>::f<seqs>...
+      C, typename detail::_unpack<size<>, seqs>::type...
     >::template f<seqs...>;
   };
 
@@ -103,16 +103,16 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F = mp::listify, class C = mp::listify>
-    using left_matrix_shortest_with = unpack<L, mp::left_matrix_shortest_with<F, C>>;
+    using left_matrix_shortest_with = typename detail::_unpack<mp::left_matrix_shortest_with<F, C>, L>::type;
 
     template<class L, class C = mp::listify>
-    using left_matrix_shortest = unpack<L, mp::left_matrix_shortest<C>>;
+    using left_matrix_shortest = typename detail::_unpack<mp::left_matrix_shortest<C>, L>::type;
 
     template<class L, class F = mp::listify, class C = mp::listify>
-    using right_matrix_shortest_with = unpack<L, mp::right_matrix_shortest_with<F, C>>;
+    using right_matrix_shortest_with = typename detail::_unpack<mp::right_matrix_shortest_with<F, C>, L>::type;
 
     template<class L, class C = mp::listify>
-    using right_matrix_shortest = unpack<L, mp::right_matrix_shortest<C>>;
+    using right_matrix_shortest = typename detail::_unpack<mp::right_matrix_shortest<C>, L>::type;
   }
 }
 

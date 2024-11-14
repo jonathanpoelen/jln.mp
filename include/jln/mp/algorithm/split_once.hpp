@@ -36,10 +36,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class TC = listify, class FC = clear<>>
-    using split_once_if = unpack<L, mp::split_once_if<Pred, TC, FC>>;
+    using split_once_if = typename detail::_unpack<mp::split_once_if<Pred, TC, FC>, L>::type;
 
     template<class L, class x, class TC = listify, class FC = clear<>>
-    using split_once = unpack<L, mp::split_once_if<is<x>, TC, FC>>;
+    using split_once = typename detail::_unpack<mp::split_once_if<is<x>, TC, FC>, L>::type;
   }
 }
 

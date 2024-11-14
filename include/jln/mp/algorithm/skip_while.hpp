@@ -31,17 +31,17 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class TC = mp::listify, class FC = TC>
-    using skip_while = unpack<L, mp::skip_while<Pred, TC, FC>>;
+    using skip_while = typename detail::_unpack<mp::skip_while<Pred, TC, FC>, L>::type;
 
     template<class L, class Pred, class TC = mp::listify, class FC = TC>
-    using skip_inclusive_while = unpack<L, mp::skip_inclusive_while<Pred, TC, FC>>;
+    using skip_inclusive_while = typename detail::_unpack<mp::skip_inclusive_while<Pred, TC, FC>, L>::type;
 
     template<class L, std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
-    using skip_while_extended_by_n_c = unpack<L,
-      mp::skip_while_extended_by_n_c<ExtendedByN, Pred, TC, FC>>;
+    using skip_while_extended_by_n_c = typename detail::_unpack<
+      mp::skip_while_extended_by_n_c<ExtendedByN, Pred, TC, FC>, L>::type;
 
     template<class L, class ExtendedByN, class Pred, class TC = listify, class FC = TC>
-    using skip_while_extended_by_n = unpack<L,
-      mp::skip_while_extended_by_n<ExtendedByN, Pred, TC, FC>>;
+    using skip_while_extended_by_n = typename detail::_unpack<
+      mp::skip_while_extended_by_n<ExtendedByN, Pred, TC, FC>, L>::type;
   }
 }

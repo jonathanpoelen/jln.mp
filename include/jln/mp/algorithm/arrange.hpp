@@ -40,13 +40,15 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Ints, class C = listify>
-    using arrange = unpack<L, mp::arrange<Ints, C>>;
+    using arrange = typename detail::_unpack<mp::arrange<Ints, C>, L>::type;
 
     template<class L, int... ints>
-    using arrange_c = unpack<L, detail::apply_indexed_v<detail::arrange_impl<listify, ints...>>>;
+    using arrange_c = typename detail::_unpack<
+      detail::apply_indexed_v<detail::arrange_impl<listify, ints...>>, L>::type;
 
     template<class L, class C, int... ints>
-    using arrange_with_c = unpack<L, detail::apply_indexed_v<detail::arrange_impl<C, ints...>>>;
+    using arrange_with_c = typename detail::_unpack<
+      detail::apply_indexed_v<detail::arrange_impl<C, ints...>>, L>::type;
   }
 }
 

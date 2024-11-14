@@ -67,18 +67,18 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class TC = mp::listify, class FC = clear<TC>>
-    using take_until = unpack<L, mp::take_until<Pred, TC, FC>>;
+    using take_until = typename detail::_unpack<mp::take_until<Pred, TC, FC>, L>::type;
 
     template<class L, class Pred, class TC = mp::listify, class FC = clear<TC>>
-    using take_inclusive_until = unpack<L, mp::take_until_extended_by_n_c<1, Pred, TC, FC>>;
+    using take_inclusive_until = typename detail::_unpack<mp::take_until_extended_by_n_c<1, Pred, TC, FC>, L>::type;
 
     template<class ExtendedByN, class L, class Pred, class TC = mp::listify, class FC = clear<TC>>
-    using take_until_extended_by_n
-      = unpack<L, mp::take_until_extended_by_n_c<ExtendedByN::value, Pred, TC, FC>>;
+    using take_until_extended_by_n = typename detail::_unpack<
+      mp::take_until_extended_by_n_c<ExtendedByN::value, Pred, TC, FC>, L>::type;
 
     template<std::size_t ExtendedByN,
              class L, class Pred, class TC = mp::listify, class FC = clear<TC>>
-    using take_until_extended_by_n_c
-      = unpack<L, mp::take_until_extended_by_n_c<ExtendedByN, Pred, TC, FC>>;
+    using take_until_extended_by_n_c = typename detail::_unpack<
+      mp::take_until_extended_by_n_c<ExtendedByN, Pred, TC, FC>, L>::type;
   }
 }

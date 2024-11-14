@@ -39,15 +39,15 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class I, class C = mp::identity>
-    using offset = unpack<L, mp::offset<I, C>>;
+    using offset = typename detail::_unpack<mp::offset<I, C>, L>::type;
 
     template<class L, int_ i, class C = mp::identity>
-    using offset_c = unpack<L, mp::offset_c<i, C>>;
+    using offset_c = typename detail::_unpack<mp::offset_c<i, C>, L>::type;
 
     template<class L, class I, class C = mp::identity>
-    inline constexpr int_ offset_v = unpack<L, mp::offset<I, C>>::value;
+    inline constexpr int_ offset_v = detail::_unpack<mp::offset<I, C>, L>::type::value;
 
     template<class L, int_ i, class C = mp::identity>
-    inline constexpr int_ offset_c_v = unpack<L, mp::offset_c<i, C>>::value;
+    inline constexpr int_ offset_c_v = detail::_unpack<mp::offset_c<i, C>, L>::type::value;
   }
 }

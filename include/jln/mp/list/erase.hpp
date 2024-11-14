@@ -49,10 +49,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class start, class size = mp::number<1>, class C = mp::listify>
-    using erase = unpack<L, mp::erase<start, size, C>>;
+    using erase = typename detail::_unpack<mp::erase<start, size, C>, L>::type;
 
     template<class L, int_ start, unsigned size = 1, class C = mp::listify>
-    using erase_c = unpack<L, mp::erase_c<start, size, C>>;
+    using erase_c = typename detail::_unpack<mp::erase_c<start, size, C>, L>::type;
   }
 }
 

@@ -51,16 +51,16 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Cmp, class F = listify, class C = listify>
-    using group_by_with = unpack<L, mp::group_by_with<Cmp, F, C>>;
+    using group_by_with = typename detail::_unpack<mp::group_by_with<Cmp, F, C>, L>::type;
 
     template<class L, class F = listify, class C = listify>
-    using group_with = unpack<L, mp::group_by_with<mp::same<>, F, C>>;
+    using group_with = typename detail::_unpack<mp::group_by_with<mp::same<>, F, C>, L>::type;
 
     template<class L, class Cmp, class C = listify>
-    using group_by = unpack<L, mp::group_by_with<Cmp, listify, C>>;
+    using group_by = typename detail::_unpack<mp::group_by_with<Cmp, listify, C>, L>::type;
 
     template<class L, class C = listify>
-    using group = unpack<L, mp::group_by_with<mp::same<>, listify, C>>;
+    using group = typename detail::_unpack<mp::group_by_with<mp::same<>, listify, C>, L>::type;
   }
 }
 

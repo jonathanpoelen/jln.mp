@@ -53,16 +53,16 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class N, class C = mp::listify>
-    using take_front = unpack<L, mp::take_front<N, C>>;
+    using take_front = typename detail::_unpack<mp::take_front<N, C>, L>::type;
 
     template<class L, int_ n, class C = mp::listify>
-    using take_front_c = unpack<L, mp::take_front_c<n, C>>;
+    using take_front_c = typename detail::_unpack<mp::take_front_c<n, C>, L>::type;
 
     template<class L, class N, class C = mp::listify>
-    using take_front_max = unpack<L, mp::take_front_max<N, C>>;
+    using take_front_max = typename detail::_unpack<mp::take_front_max<N, C>, L>::type;
 
     template<class L, int_ n, class C = mp::listify>
-    using take_front_max_c = unpack<L, mp::take_front_max_c<n, C>>;
+    using take_front_max_c = typename detail::_unpack<mp::take_front_max_c<n, C>, L>::type;
   }
 
 

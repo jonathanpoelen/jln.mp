@@ -55,10 +55,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using similar = unpack<L, mp::similar<C>>;
+    using similar = typename detail::_unpack<mp::similar<C>, L>::type;
 
     template<class L, class C = mp::identity>
-    inline constexpr bool similar_v = unpack<L, mp::similar<C>>::value;
+    inline constexpr bool similar_v = detail::_unpack<mp::similar<C>, L>::type::value;
   }
 }
 

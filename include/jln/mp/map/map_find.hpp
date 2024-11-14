@@ -43,13 +43,13 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class key, class TC = mp::identity, class FC = mp::always<na>>
-    using map_find = unpack<L, mp::map_find<key, TC, FC>>;
+    using map_find = typename detail::_unpack<mp::map_find<key, TC, FC>, L>::type;
 
     template<class L, class key, class FC>
-    using map_find_or_else = unpack<L, mp::map_find<key, mp::identity, FC>>;
+    using map_find_or_else = typename detail::_unpack<mp::map_find<key, mp::identity, FC>, L>::type;
 
     template<class L, class key, class FT>
-    using map_find_or = unpack<L, mp::map_find<key, mp::identity, mp::always<FT>>>;
+    using map_find_or = typename detail::_unpack<mp::map_find<key, mp::identity, mp::always<FT>>, L>::type;
   }
 }
 

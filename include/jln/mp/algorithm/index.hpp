@@ -74,34 +74,39 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    using index_if = unpack<L, mp::index_if<Pred, TC, FC>>;
+    using index_if = typename detail::_unpack<mp::index_if<Pred, TC, FC>, L>::type;
 
     template<class L, class T, class TC = mp::identity, class FC = mp::size<>>
-    using index_of = unpack<L, mp::index_of<T, TC, FC>>;
+    using index_of = typename detail::_unpack<mp::index_of<T, TC, FC>, L>::type;
 
     template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    using index_if_xs = unpack<L, mp::index_if_xs<Pred, TC, FC>>;
+    using index_if_xs = typename detail::_unpack<mp::index_if_xs<Pred, TC, FC>, L>::type;
 
     template<class OffsetEnd, class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    using partial_index_if_xs = unpack<L, mp::partial_index_if_xs<OffsetEnd, Pred, TC, FC>>;
+    using partial_index_if_xs = typename detail::_unpack<mp::partial_index_if_xs<OffsetEnd, Pred, TC, FC>, L>::type;
 
     template<int_ OffsetEnd, class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    using partial_index_if_xs_c = unpack<L, mp::partial_index_if_xs_c<OffsetEnd, Pred, TC, FC>>;
+    using partial_index_if_xs_c = typename detail::_unpack<mp::partial_index_if_xs_c<OffsetEnd, Pred, TC, FC>, L>::type;
 
     template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    inline constexpr bool index_if_v = unpack<L, mp::index_if<Pred, TC, FC>>::value;
+    inline constexpr bool index_if_v = detail::_unpack<
+      mp::index_if<Pred, TC, FC>, L>::type::value;
 
     template<class L, class T, class TC = mp::identity, class FC = mp::size<>>
-    inline constexpr bool index_of_v = unpack<L, mp::index_of<T, TC, FC>>::value;
+    inline constexpr bool index_of_v = detail::_unpack<
+      mp::index_of<T, TC, FC>, L>::type::value;
 
     template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    inline constexpr bool index_if_xs_v = unpack<L, mp::index_if_xs<Pred, TC, FC>>::value;
+    inline constexpr bool index_if_xs_v = detail::_unpack<
+      mp::index_if_xs<Pred, TC, FC>, L>::type::value;
 
     template<class OffsetEnd, class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    inline constexpr bool partial_index_if_xs_v = unpack<L, mp::partial_index_if_xs<OffsetEnd, Pred, TC, FC>>::value;
+    inline constexpr bool partial_index_if_xs_v = detail::_unpack<
+      mp::partial_index_if_xs<OffsetEnd, Pred, TC, FC>, L>::type::value;
 
     template<int_ OffsetEnd, class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
-    inline constexpr bool partial_index_if_xs_c_v = unpack<L, mp::partial_index_if_xs_c<OffsetEnd, Pred, TC, FC>>::value;
+    inline constexpr bool partial_index_if_xs_c_v = detail::_unpack<
+      mp::partial_index_if_xs_c<OffsetEnd, Pred, TC, FC>, L>::type::value;
   }
 }
 

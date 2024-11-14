@@ -55,23 +55,23 @@ namespace jln::mp
   {
     template<class L, class i, class SubC1 = mp::listify, class SubC2 = mp::listify,
              class C = mp::listify>
-    using split_at2_with = unpack<L, mp::split_at2_with_c<i::value, SubC1, SubC2, C>>;
+    using split_at2_with = typename detail::_unpack<mp::split_at2_with_c<i::value, SubC1, SubC2, C>, L>::type;
 
     template<class L, unsigned i, class SubC1 = mp::listify, class SubC2 = mp::listify,
              class C = mp::listify>
-    using split_at2_with_c = unpack<L, mp::split_at2_with_c<i, SubC1, SubC2, C>>;
+    using split_at2_with_c = typename detail::_unpack<mp::split_at2_with_c<i, SubC1, SubC2, C>, L>::type;
 
     template<class L, class i, class F = mp::listify, class C = mp::listify>
-    using split_at_with = unpack<L, mp::split_at2_with_c<i::value, F, F, C>>;
+    using split_at_with = typename detail::_unpack<mp::split_at2_with_c<i::value, F, F, C>, L>::type;
 
     template<class L, unsigned i, class F = mp::listify, class C = mp::listify>
-    using split_at_with_c = unpack<L, mp::split_at2_with_c<i, F, F, C>>;
+    using split_at_with_c = typename detail::_unpack<mp::split_at2_with_c<i, F, F, C>, L>::type;
 
     template<class L, class i, class C = mp::listify>
-    using split_at = unpack<L, mp::split_at2_with_c<i::value, listify, listify, C>>;
+    using split_at = typename detail::_unpack<mp::split_at2_with_c<i::value, listify, listify, C>, L>::type;
 
     template<class L, unsigned i, class C = mp::listify>
-    using split_at_c = unpack<L, mp::split_at2_with_c<i, listify, listify, C>>;
+    using split_at_c = typename detail::_unpack<mp::split_at2_with_c<i, listify, listify, C>, L>::type;
   }
 }
 

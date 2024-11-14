@@ -97,16 +97,14 @@ namespace jln::mp::detail
   struct smp_map_element_key_update
   {
     template<class x>
-    using f = typename unpack<partial_tee<F, monadic_xs<emp::wrapper<x>>>>
-      ::template f<x>;
+    using f = typename detail::_unpack<partial_tee<F, monadic_xs<emp::wrapper<x>>>, x>::type;
   };
 
   template<class F>
   struct smp_map_element_value_update
   {
     template<class x>
-    using f = typename unpack<tee<front<>, F, monadic_xs<emp::wrapper<x>>>>
-      ::template f<x>;
+    using f = typename detail::_unpack<tee<front<>, F, monadic_xs<emp::wrapper<x>>>, x>::type;
   };
 
   template<template<class> class sfinae, class F>

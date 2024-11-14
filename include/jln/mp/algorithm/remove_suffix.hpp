@@ -34,7 +34,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Seq, class TC = mp::listify, class FC = TC>
-    using remove_suffix = unpack<L, remove_suffix<Seq, TC, FC>>;
+    using remove_suffix = typename detail::_unpack<remove_suffix<Seq, TC, FC>, L>::type;
   }
 
   /// \cond

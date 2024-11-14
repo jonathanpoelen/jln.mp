@@ -23,16 +23,16 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class C = mp::identity>
-    using count_if = unpack<L, mp::count_if<Pred, C>>;
+    using count_if = typename detail::_unpack<mp::count_if<Pred, C>, L>::type;
 
     template<class L, class x, class C = mp::identity>
-    using count = unpack<L, mp::count<x, C>>;
+    using count = typename detail::_unpack<mp::count<x, C>, L>::type;
 
     template<class L, class Pred, class C = mp::identity>
-    inline constexpr int_ count_if_v = unpack<L, mp::count_if<Pred, C>>::value;
+    inline constexpr int_ count_if_v = detail::_unpack<mp::count_if<Pred, C>, L>::type::value;
 
     template<class L, class x, class C = mp::identity>
-    inline constexpr int_ count_v = unpack<L, mp::count<x, C>>::value;
+    inline constexpr int_ count_v = detail::_unpack<mp::count<x, C>, L>::type::value;
 
     template<class x, class... xs>
     inline constexpr int_ count_xs_v = (JLN_MP_IS_SAME(x, xs) + ... + 0);

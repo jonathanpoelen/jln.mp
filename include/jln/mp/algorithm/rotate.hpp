@@ -52,10 +52,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class n, class C = mp::listify>
-    using rotate = unpack<L, mp::rotate<n, C>>;
+    using rotate = typename detail::_unpack<mp::rotate<n, C>, L>::type;
 
     template<class L, int_ n, class C = mp::listify>
-    using rotate_c = unpack<L, mp::rotate_c<n, C>>;
+    using rotate_c = typename detail::_unpack<mp::rotate_c<n, C>, L>::type;
   }
 }
 

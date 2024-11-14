@@ -21,7 +21,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using front = unpack<L, front<C>>;
+    using front = typename detail::_unpack<front<C>, L>::type;
   }
 }
 

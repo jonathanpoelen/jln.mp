@@ -48,14 +48,12 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F, class Front = mp::identity, class C = mp::listify>
-    using pairwise_fold_and_transform_front = unpack<L,
-      mp::pairwise_fold_and_transform_front<F, Front, C>
-    >;
+    using pairwise_fold_and_transform_front = typename detail::_unpack<
+      mp::pairwise_fold_and_transform_front<F, Front, C>, L>::type;
 
     template<class L, class F, class C = mp::listify>
-    using pairwise_fold = unpack<L,
-      mp::pairwise_fold_and_transform_front<F, mp::identity, C>
-    >;
+    using pairwise_fold = typename detail::_unpack<
+      mp::pairwise_fold_and_transform_front<F, mp::identity, C>, L>::type;
   }
 }
 

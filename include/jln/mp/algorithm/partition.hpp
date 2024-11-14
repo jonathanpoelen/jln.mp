@@ -56,10 +56,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class F = mp::listify, class C = mp::listify>
-    using partition_with = unpack<L, mp::partition_with<Pred, F, C>>;
+    using partition_with = typename detail::_unpack<mp::partition_with<Pred, F, C>, L>::type;
 
     template<class L, class Pred, class C = mp::listify>
-    using partition = unpack<L, mp::partition<Pred, C>>;
+    using partition = typename detail::_unpack<mp::partition<Pred, C>, L>::type;
   }
 }
 

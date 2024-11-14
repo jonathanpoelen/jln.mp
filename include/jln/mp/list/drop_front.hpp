@@ -65,16 +65,16 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class N, class C = mp::listify>
-    using drop_front = unpack<L, mp::drop_front<N, C>>;
+    using drop_front = typename detail::_unpack<mp::drop_front<N, C>, L>::type;
 
     template<class L, unsigned n, class C = mp::listify>
-    using drop_front_c = unpack<L, mp::drop_front_c<n, C>>;
+    using drop_front_c = typename detail::_unpack<mp::drop_front_c<n, C>, L>::type;
 
     template<class L, class N, class C = mp::listify>
-    using drop_front_max = unpack<L, mp::drop_front_max<N, C>>;
+    using drop_front_max = typename detail::_unpack<mp::drop_front_max<N, C>, L>::type;
 
     template<class L, unsigned n, class C = mp::listify>
-    using drop_front_max_c = unpack<L, mp::drop_front_max_c<n, C>>;
+    using drop_front_max_c = typename detail::_unpack<mp::drop_front_max_c<n, C>, L>::type;
   }
 
   /// \cond

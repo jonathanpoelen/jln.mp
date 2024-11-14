@@ -55,13 +55,16 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class state, class F, class C = mp::identity>
-    using fold_right = unpack<L, mp::push_front<state, mp::fold_right<F, C>>>;
+    using fold_right = typename detail::_unpack<
+      mp::push_front<state, mp::fold_right<F, C>>, L>::type;
 
     template<class L, class F, class FallbackValue, class C = mp::identity>
-    using fold_right_or = unpack<L, mp::fold_right_or_else<F, always<FallbackValue>, C>>;
+    using fold_right_or = typename detail::_unpack<
+      mp::fold_right_or_else<F, always<FallbackValue>, C>, L>::type;
 
     template<class L, class F, class NoStateF = F, class C = mp::identity>
-    using fold_right_or_else = unpack<L, mp::fold_right_or_else<F, NoStateF, C>>;
+    using fold_right_or_else = typename detail::_unpack<
+      mp::fold_right_or_else<F, NoStateF, C>, L>::type;
   }
 }
 

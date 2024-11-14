@@ -24,7 +24,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class x, class C = mp::listify>
-    using prefix = unpack<L, mp::prefix<x, C>>;
+    using prefix = typename detail::_unpack<mp::prefix<x, C>, L>::type;
   }
 }
 

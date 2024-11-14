@@ -110,16 +110,16 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F, class C = mp::identity>
-    using recursively = unpack<L, mp::recursively<F, C>>;
+    using recursively = typename detail::_unpack<mp::recursively<F, C>, L>::type;
 
     template<class L, class F, class C = mp::identity>
-    using recursively_as_much_as_possible = unpack<L, mp::recursively_as_much_as_possible<F, C>>;
+    using recursively_as_much_as_possible = typename detail::_unpack<mp::recursively_as_much_as_possible<F, C>, L>::type;
 
     template<class L, class F, class C = mp::listify>
-    using recursively_xs = unpack<L, mp::recursively<F, C>>;
+    using recursively_xs = typename detail::_unpack<mp::recursively<F, C>, L>::type;
 
     template<class L, class F, class C = mp::listify>
-    using recursively_as_much_as_possible_xs = unpack<L, mp::recursively_as_much_as_possible<F, C>>;
+    using recursively_as_much_as_possible_xs = typename detail::_unpack<mp::recursively_as_much_as_possible<F, C>, L>::type;
   }
 }
 

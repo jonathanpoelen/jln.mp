@@ -70,28 +70,36 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class size, class stride = number<1>, class F = listify, class C = mp::listify>
-    using strided_sliding_with = unpack<L, mp::strided_sliding_with_c<size::value, stride::value, F, C>>;
+    using strided_sliding_with = typename detail::_unpack<
+      mp::strided_sliding_with_c<size::value, stride::value, F, C>, L>::type;
 
     template<class L, int_ size, int_ stride = 1, class F = listify, class C = mp::listify>
-    using strided_sliding_with_c = unpack<L, mp::strided_sliding_with_c<size, stride, F, C>>;
+    using strided_sliding_with_c = typename detail::_unpack<
+      mp::strided_sliding_with_c<size, stride, F, C>, L>::type;
 
     template<class L, class size, class stride = number<1>, class C = mp::listify>
-    using strided_sliding = unpack<L, mp::strided_sliding_with_c<size::value, stride::value, listify, C>>;
+    using strided_sliding = typename detail::_unpack<
+      mp::strided_sliding_with_c<size::value, stride::value, listify, C>, L>::type;
 
     template<class L, int_ size, int_ stride = 1, class C = mp::listify>
-    using strided_sliding_c = unpack<L, mp::strided_sliding_with_c<size, stride, listify, C>>;
+    using strided_sliding_c = typename detail::_unpack<
+      mp::strided_sliding_with_c<size, stride, listify, C>, L>::type;
 
     template<class L, class size, class F = listify, class C = mp::listify>
-    using sliding_with = unpack<L, mp::strided_sliding_with_c<size::value, 1, F, C>>;
+    using sliding_with = typename detail::_unpack<
+      mp::strided_sliding_with_c<size::value, 1, F, C>, L>::type;
 
     template<class L, int_ size, class F = listify, class C = mp::listify>
-    using sliding_with_c = unpack<L, mp::strided_sliding_with_c<size, 1, F, C>>;
+    using sliding_with_c = typename detail::_unpack<
+      mp::strided_sliding_with_c<size, 1, F, C>, L>::type;
 
     template<class L, class size, class C = mp::listify>
-    using sliding = unpack<L, mp::strided_sliding_with_c<size::value, 1, listify, C>>;
+    using sliding = typename detail::_unpack<
+      mp::strided_sliding_with_c<size::value, 1, listify, C>, L>::type;
 
     template<class L, int_ size, class C = mp::listify>
-    using sliding_c = unpack<L, mp::strided_sliding_with_c<size, 1, listify, C>>;
+    using sliding_c = typename detail::_unpack<
+      mp::strided_sliding_with_c<size, 1, listify, C>, L>::type;
   }
 }
 

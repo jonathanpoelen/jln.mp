@@ -35,9 +35,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class FillValue, class C = mp::listify>
-    using zip_longest = unpack<L, mp::zip_longest<FillValue, C>>;
+    using zip_longest = typename detail::_unpack<mp::zip_longest<FillValue, C>, L>::type;
 
     template<class L, class FillValue, class F = mp::listify, class C = mp::listify>
-    using zip_longest_with = unpack<L, mp::zip_longest_with<FillValue, F, C>>;
+    using zip_longest_with = typename detail::_unpack<mp::zip_longest_with<FillValue, F, C>, L>::type;
   }
 }

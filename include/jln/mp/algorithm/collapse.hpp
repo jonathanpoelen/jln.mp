@@ -67,16 +67,18 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class keys, class F = listify, class C = listify>
-    using collapse_with = unpack<L, mp::collapse_with<keys, F, C>>;
+    using collapse_with = typename detail::_unpack<mp::collapse_with<keys, F, C>, L>::type;
 
     template<class L, class keys, class C = listify>
-    using collapse = unpack<L, mp::collapse_with<keys, listify, C>>;
+    using collapse = typename detail::_unpack<mp::collapse_with<keys, listify, C>, L>::type;
 
     template<class L, class... keys>
-    using collapse_for = unpack<L, collapse2_with<listify, listify, keys...>>;
+    using collapse_for = typename detail::_unpack<
+      mp::collapse2_with<listify, listify, keys...>, L>::type;
 
     template<class L, int_... keys>
-    using collapse_for_c = unpack<L, collapse2_with<listify, listify, number<keys>...>>;
+    using collapse_for_c = typename detail::_unpack<
+      mp::collapse2_with<listify, listify, number<keys>...>, L>::type;
   }
 }
 

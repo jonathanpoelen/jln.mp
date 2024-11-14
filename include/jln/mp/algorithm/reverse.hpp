@@ -30,7 +30,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using reverse = unpack<L, mp::reverse<C>>;
+    using reverse = typename detail::_unpack<mp::reverse<C>, L>::type;
   }
 }
 

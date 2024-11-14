@@ -64,10 +64,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using remove_unique = unpack<L, remove_unique<C>>;
+    using remove_unique = typename detail::_unpack<remove_unique<C>, L>::type;
 
     template<class L, class Cmp = mp::same<>, class C = mp::listify>
-    using remove_unique_if = unpack<L, remove_unique_if<Cmp, C>>;
+    using remove_unique_if = typename detail::_unpack<remove_unique_if<Cmp, C>, L>::type;
   }
 
   /// Copy unique elements from a \sequence.
@@ -94,10 +94,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using copy_unique = unpack<L, copy_unique<C>>;
+    using copy_unique = typename detail::_unpack<copy_unique<C>, L>::type;
 
     template<class L, class Cmp = mp::same<>, class C = mp::listify>
-    using copy_unique_if = unpack<L, copy_unique_if<Cmp, C>>;
+    using copy_unique_if = typename detail::_unpack<copy_unique_if<Cmp, C>, L>::type;
   }
 }
 

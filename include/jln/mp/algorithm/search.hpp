@@ -96,44 +96,44 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class TC = mp::listify, class FC = mp::clear<TC>>
-    using search = unpack<L, mp::search<Pred, TC, FC>>;
+    using search = typename detail::_unpack<mp::search<Pred, TC, FC>, L>::type;
 
     template<class L, class Pred, class TC = mp::listify, class FC = mp::clear<TC>>
-    using search_before = unpack<L, mp::search_before<Pred, TC, FC>>;
+    using search_before = typename detail::_unpack<mp::search_before<Pred, TC, FC>, L>::type;
 
     template<class L, class ExtendedByN, class Pred,
       class TC = mp::listify, class FC = mp::clear<TC>>
-    using search_before_extended_by_n = unpack<L,
-      mp::search_before_extended_by_n<ExtendedByN, Pred, TC, FC>>;
+    using search_before_extended_by_n = typename detail::_unpack<
+      mp::search_before_extended_by_n<ExtendedByN, Pred, TC, FC>, L>::type;
 
 
     template<class L, class StopWhenAtLeast, class Pred,
       class TC = mp::listify, class FC = mp::clear<TC>>
-    using partial_search = unpack<L, mp::partial_search<Pred, StopWhenAtLeast, TC, FC>>;
+    using partial_search = typename detail::_unpack<mp::partial_search<Pred, StopWhenAtLeast, TC, FC>, L>::type;
 
     template<class L, class StopWhenAtLeast, class Pred,
       class TC = mp::listify, class FC = mp::clear<TC>>
-    using partial_search_before = unpack<L,
-      mp::partial_search_before<Pred, StopWhenAtLeast, TC, FC>>;
+    using partial_search_before = typename detail::_unpack<
+      mp::partial_search_before<Pred, StopWhenAtLeast, TC, FC>, L>::type;
 
     template<class L, class StopWhenAtLeast, class ExtendedByN, class Pred,
       class TC = mp::listify, class FC = mp::clear<TC>>
-    using partial_search_before_extended_by_n = unpack<L,
-      mp::partial_search_before_extended_by_n<StopWhenAtLeast, ExtendedByN, Pred, TC, FC>>;
+    using partial_search_before_extended_by_n = typename detail::_unpack<
+      mp::partial_search_before_extended_by_n<StopWhenAtLeast, ExtendedByN, Pred, TC, FC>, L>::type;
 
 
     template<class L, std::size_t StopWhenAtLeast, class Pred,
       class TC = mp::listify, class FC = mp::clear<TC>>
-    using partial_search_c = unpack<L, mp::partial_search_c<StopWhenAtLeast, Pred, TC, FC>>;
+    using partial_search_c = typename detail::_unpack<mp::partial_search_c<StopWhenAtLeast, Pred, TC, FC>, L>::type;
 
     template<class L, std::size_t StopWhenAtLeast, class Pred,
       class TC = mp::listify, class FC = mp::clear<TC>>
-    using partial_search_before_c = unpack<L,
-      mp::partial_search_before_c<StopWhenAtLeast, Pred, TC, FC>>;
+    using partial_search_before_c = typename detail::_unpack<
+      mp::partial_search_before_c<StopWhenAtLeast, Pred, TC, FC>, L>::type;
 
     template<class L, std::size_t StopWhenAtLeast, std::size_t ExtendedByN, class Pred,
       class TC = mp::listify, class FC = mp::clear<TC>>
-    using partial_search_before_extended_by_n_c = unpack<L,
-      mp::partial_search_before_extended_by_n_c<StopWhenAtLeast, ExtendedByN, Pred, TC, FC>>;
+    using partial_search_before_extended_by_n_c = typename detail::_unpack<
+      mp::partial_search_before_extended_by_n_c<StopWhenAtLeast, ExtendedByN, Pred, TC, FC>, L>::type;
   }
 }

@@ -79,37 +79,40 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class OffsetEnd, class state, class F, class C = mp::identity>
-    using partial_fold_xs = unpack<L,
-      mp::push_front<state, mp::partial_fold_xs<OffsetEnd, F, C>>>;
+    using partial_fold_xs = typename detail::_unpack<
+      mp::push_front<state, mp::partial_fold_xs<OffsetEnd, F, C>>, L>::type;
 
     template<class L, int_ OffsetEnd, class state, class F, class C = mp::identity>
-    using partial_fold_xs_c = unpack<L,
-      mp::push_front<state, mp::partial_fold_xs_c<OffsetEnd, F, C>>>;
+    using partial_fold_xs_c = typename detail::_unpack<
+      mp::push_front<state, mp::partial_fold_xs_c<OffsetEnd, F, C>>, L>::type;
 
     template<class L, class state, class F, class C = mp::identity>
-    using fold_xs = unpack<L, mp::push_front<state, mp::partial_fold_xs_c<-1, F, C>>>;
+    using fold_xs = typename detail::_unpack<
+      mp::push_front<state, mp::partial_fold_xs_c<-1, F, C>>, L>::type;
 
     template<class L, class OffsetEnd, class F, class NoStateF = F, class C = mp::identity>
-    using partial_fold_xs_or_else = unpack<L,
-      mp::partial_fold_xs_or_else<OffsetEnd, F, NoStateF, C>>;
+    using partial_fold_xs_or_else = typename detail::_unpack<
+      mp::partial_fold_xs_or_else<OffsetEnd, F, NoStateF, C>, L>::type;
 
     template<class L, int_ OffsetEnd, class F, class NoStateF = F, class C = mp::identity>
-    using partial_fold_xs_or_else_c = unpack<L,
-      mp::partial_fold_xs_or_else_c<OffsetEnd, F, NoStateF, C>>;
+    using partial_fold_xs_or_else_c = typename detail::_unpack<
+      mp::partial_fold_xs_or_else_c<OffsetEnd, F, NoStateF, C>, L>::type;
 
     template<class L, class F, class NoStateF = F, class C = mp::identity>
-    using fold_xs_or_else = unpack<L, mp::partial_fold_xs_or_else_c<-1, F, NoStateF, C>>;
+    using fold_xs_or_else = typename detail::_unpack<
+      mp::partial_fold_xs_or_else_c<-1, F, NoStateF, C>, L>::type;
 
     template<class L, class OffsetEnd, class F, class FallbackValue, class C = mp::identity>
-    using partial_fold_xs_or = unpack<L,
-      mp::partial_fold_xs_or_else<OffsetEnd, F, always<FallbackValue>, C>>;
+    using partial_fold_xs_or = typename detail::_unpack<
+      mp::partial_fold_xs_or_else<OffsetEnd, F, always<FallbackValue>, C>, L>::type;
 
     template<class L, int_ OffsetEnd, class F, class FallbackValue, class C = mp::identity>
-    using partial_fold_xs_or_c = unpack<L,
-      mp::partial_fold_xs_or_else_c<OffsetEnd, F, always<FallbackValue>, C>>;
+    using partial_fold_xs_or_c = typename detail::_unpack<
+      mp::partial_fold_xs_or_else_c<OffsetEnd, F, always<FallbackValue>, C>, L>::type;
 
     template<class L, class F, class FallbackValue, class C = mp::identity>
-    using fold_xs_or = unpack<L, mp::partial_fold_xs_or_else_c<-1, F, always<FallbackValue>, C>>;
+    using fold_xs_or = typename detail::_unpack<
+      mp::partial_fold_xs_or_else_c<-1, F, always<FallbackValue>, C>, L>::type;
   }
 }
 

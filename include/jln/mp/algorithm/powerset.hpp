@@ -40,7 +40,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using powerset = unpack<L, mp::powerset<C>>;
+    using powerset = typename detail::_unpack<mp::powerset<C>, L>::type;
   }
 }
 

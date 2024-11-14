@@ -45,10 +45,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F = mp::listify, class C = mp::listify>
-    using pairwise_with = unpack<L, mp::pairwise_with<F, C>>;
+    using pairwise_with = typename detail::_unpack<mp::pairwise_with<F, C>, L>::type;
 
     template<class L, class C = mp::listify>
-    using pairwise = unpack<L, mp::pairwise<C>>;
+    using pairwise = typename detail::_unpack<mp::pairwise<C>, L>::type;
   }
 
 /// \cond

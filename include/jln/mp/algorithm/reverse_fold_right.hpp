@@ -52,19 +52,19 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class state, class F, class C = mp::identity>
-    using reverse_fold_right = unpack<L,
-      mp::push_front<state, mp::reverse_fold_right<F, C>>>;
+    using reverse_fold_right = typename detail::_unpack<
+      mp::push_front<state, mp::reverse_fold_right<F, C>>, L>::type;
 
     template<class L, class F, class FallbackValue, class C = mp::identity>
-    using reverse_fold_right_or = unpack<L,
-      mp::reverse_fold_right_or_else<F, always<FallbackValue>, C>>;
+    using reverse_fold_right_or = typename detail::_unpack<
+      mp::reverse_fold_right_or_else<F, always<FallbackValue>, C>, L>::type;
 
     template<class L, class F, class EmptyC = F, class C = mp::identity>
-    using reverse_fold_right_or_else = unpack<L,
-      mp::reverse_fold_right_or_else<F, EmptyC, C>>;
+    using reverse_fold_right_or_else = typename detail::_unpack<
+      mp::reverse_fold_right_or_else<F, EmptyC, C>, L>::type;
 
     template<class L, class F, class C = mp::identity>
-    using reverse_reduce = unpack<L, mp::reverse_fold_right<F, C>>;
+    using reverse_reduce = typename detail::_unpack<mp::reverse_fold_right<F, C>, L>::type;
   }
 }
 

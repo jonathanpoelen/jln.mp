@@ -23,10 +23,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class key, class C = mp::identity>
-    using map_contains = unpack<L, mp::map_contains<key, C>>;
+    using map_contains = typename detail::_unpack<mp::map_contains<key, C>, L>::type;
 
     template<class L, class key, class C = mp::identity>
-    using map_not_contains = unpack<L, mp::map_not_contains<key, C>>;
+    using map_not_contains = typename detail::_unpack<mp::map_not_contains<key, C>, L>::type;
 
     template<class key, class... kvs>
     using map_contains_xs = typename mp::map_contains<key>::template f<kvs...>;
@@ -35,10 +35,10 @@ namespace jln::mp
     using map_not_contains_xs = typename mp::map_not_contains<key>::template f<kvs...>;
 
     template<class L, class key, class C = mp::identity>
-    inline constexpr bool map_contains_v = unpack<L, mp::map_contains<key, C>>::value;
+    inline constexpr bool map_contains_v = detail::_unpack<mp::map_contains<key, C>, L>::type::value;
 
     template<class L, class key, class C = mp::identity>
-    inline constexpr bool map_not_contains_v = unpack<L, mp::map_not_contains<key, C>>::value;
+    inline constexpr bool map_not_contains_v = detail::_unpack<mp::map_not_contains<key, C>, L>::type::value;
 
     template<class key, class... kvs>
     inline constexpr bool map_contains_xs_v = mp::map_contains<key>::template f<kvs...>::value;

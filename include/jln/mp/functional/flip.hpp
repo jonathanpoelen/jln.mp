@@ -26,7 +26,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using flip = unpack<L, mp::flip<C>>;
+    using flip = typename detail::_unpack<mp::flip<C>, L>::type;
   }
 
   /// \cond

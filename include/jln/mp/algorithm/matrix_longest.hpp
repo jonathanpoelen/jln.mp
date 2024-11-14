@@ -63,7 +63,7 @@ namespace jln::mp
       FillValue,
       push_front<unpack<F>, lift<bind_back>>,
       typename detail::optimize_useless_unpack<unpack<F>>::type,
-      C, unpack<size<>>::f<seqs>...
+      C, typename detail::_unpack<size<>, seqs>::type...
     >::template f<seqs...>;
   };
 
@@ -95,7 +95,7 @@ namespace jln::mp
       FillValue,
       push_front<unpack_append<F>, lift<bind_back>>,
       typename detail::optimize_useless_unpack<unpack<F>>::type,
-      C, unpack<size<>>::f<seqs>...
+      C, typename detail::_unpack<size<>, seqs>::type...
     >::template f<seqs...>;
   };
 
@@ -105,16 +105,16 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class FillValue, class F = mp::listify, class C = mp::listify>
-    using left_matrix_longest_with = unpack<L, mp::left_matrix_longest_with<FillValue, F, C>>;
+    using left_matrix_longest_with = typename detail::_unpack<mp::left_matrix_longest_with<FillValue, F, C>, L>::type;
 
     template<class L, class FillValue, class C = mp::listify>
-    using left_matrix_longest = unpack<L, mp::left_matrix_longest<FillValue, C>>;
+    using left_matrix_longest = typename detail::_unpack<mp::left_matrix_longest<FillValue, C>, L>::type;
 
     template<class L, class FillValue, class F = mp::listify, class C = mp::listify>
-    using right_matrix_longest_with = unpack<L, mp::right_matrix_longest_with<FillValue, F, C>>;
+    using right_matrix_longest_with = typename detail::_unpack<mp::right_matrix_longest_with<FillValue, F, C>, L>::type;
 
     template<class L, class FillValue, class C = mp::listify>
-    using right_matrix_longest = unpack<L, mp::right_matrix_longest<FillValue, C>>;
+    using right_matrix_longest = typename detail::_unpack<mp::right_matrix_longest<FillValue, C>, L>::type;
   }
 }
 

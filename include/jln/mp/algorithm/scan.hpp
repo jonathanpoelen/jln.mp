@@ -39,7 +39,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F, class C = mp::listify>
-    using scan = unpack<L, mp::scan<F, C>>;
+    using scan = typename detail::_unpack<mp::scan<F, C>, L>::type;
   }
 }
 

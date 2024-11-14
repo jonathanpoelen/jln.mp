@@ -27,13 +27,13 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class C = mp::identity>
-    using none_of = unpack<L, mp::none_of<Pred, C>>;
+    using none_of = typename detail::_unpack<mp::none_of<Pred, C>, L>::type;
 
     template<class Pred, class... xs>
     using none_of_xs = typename mp::none_of<Pred>::template f<xs...>;
 
     template<class L, class Pred, class C = mp::identity>
-    inline constexpr bool none_of_v = unpack<L, mp::none_of<Pred, C>>::value;
+    inline constexpr bool none_of_v = detail::_unpack<L, mp::none_of<Pred, C>, L>::type::value;
 
     template<class Pred, class... xs>
     inline constexpr bool none_of_xs_v = mp::none_of<Pred>::template f<xs...>::value;

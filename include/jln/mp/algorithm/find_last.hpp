@@ -29,12 +29,12 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Pred, class TC = mp::listify, class FC = clear<TC>>
-    using find_last_if = unpack<L, mp::find_last_if<Pred, TC, FC>>;
+    using find_last_if = typename detail::_unpack<mp::find_last_if<Pred, TC, FC>, L>::type;
 
     template<class L, class Pred, class TC = mp::listify, class FC = clear<TC>>
-    using find_last_if_not = unpack<L, mp::find_last_if_not<Pred, TC, FC>>;
+    using find_last_if_not = typename detail::_unpack<mp::find_last_if_not<Pred, TC, FC>, L>::type;
 
     template<class L, class T, class TC = mp::listify, class FC = clear<TC>>
-    using find_last = unpack<L, mp::find_last_if<mp::is<T>, TC, FC>>;
+    using find_last = typename detail::_unpack<mp::find_last_if<mp::is<T>, TC, FC>, L>::type;
   }
 }

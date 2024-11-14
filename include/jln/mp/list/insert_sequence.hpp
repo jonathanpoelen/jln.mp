@@ -48,10 +48,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class index, class seq, class C = mp::listify>
-    using insert_sequence = unpack<L, mp::insert_sequence<index, seq, C>>;
+    using insert_sequence = typename detail::_unpack<mp::insert_sequence<index, seq, C>, L>::type;
 
     template<class L, int_ index, class seq, class C = mp::listify>
-    using insert_sequence_c = unpack<L, mp::insert_sequence_c<index, seq, C>>;
+    using insert_sequence_c = typename detail::_unpack<mp::insert_sequence_c<index, seq, C>, L>::type;
   }
 }
 

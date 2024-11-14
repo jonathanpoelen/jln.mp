@@ -22,6 +22,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using combine = unpack<L, mp::combine<C>>;
+    using combine = typename detail::_unpack<mp::combine<C>, L>::type;
   }
 }

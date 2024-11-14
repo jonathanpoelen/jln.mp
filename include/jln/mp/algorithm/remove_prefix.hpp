@@ -59,7 +59,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Seq, class TC = mp::listify, class FC = TC>
-    using remove_prefix = unpack<L, remove_prefix<Seq, TC, FC>>;
+    using remove_prefix = typename detail::_unpack<remove_prefix<Seq, TC, FC>, L>::type;
   }
 
   /// \cond

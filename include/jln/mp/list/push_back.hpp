@@ -22,7 +22,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class T, class C = mp::listify>
-    using push_back = unpack<L, mp::push_back<T, C>>;
+    using push_back = typename detail::_unpack<mp::push_back<T, C>, L>::type;
   }
 
   /// \cond

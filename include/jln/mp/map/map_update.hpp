@@ -27,8 +27,7 @@ namespace jln::mp
   struct map_element_value_update
   {
     template<class x>
-    using f = typename unpack<tee<front<>, F, emp::wrapper<x>>>
-      ::template f<x>;
+    using f = typename detail::_unpack<tee<front<>, F, emp::wrapper<x>>, x>::type;
   };
 
   /// Update an element `L<k, v...>` with `L<F<k, v...>, v...>`.
@@ -37,8 +36,7 @@ namespace jln::mp
   struct map_element_key_update
   {
     template<class x>
-    using f = typename unpack<partial_tee<F, emp::wrapper<x>>>
-      ::template f<x>;
+    using f = typename detail::_unpack<partial_tee<F, emp::wrapper<x>>, x>::type;
   };
 
   /// If the \map contain the key \c Key, replaces the existing element `L<k, v...>` with `L<F<k, v...>, v...>`.
@@ -73,7 +71,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Key, class F, class C = mp::listify>
-    using map_update = unpack<L, mp::map_update<Key, F, C>>;
+    using map_update = typename detail::_unpack<mp::map_update<Key, F, C>, L>::type;
 
     template<class KV, class F>
     using map_element_key_update = typename mp::map_element_key_update<F>
@@ -84,15 +82,19 @@ namespace jln::mp
       ::template f<KV>;
 
     template<class L, class Key, class F, class C = mp::listify>
-    using map_update_key = unpack<L, mp::map_update_key<Key, F, C>>;
+    using map_update_key =
+      typename detail::_unpack<mp::map_update_key<Key, F, C>, L>::type;
 
     template<class L, class Key, class F, class C = mp::listify>
-    using map_update_value = unpack<L, mp::map_update_value<Key, F, C>>;
+    using map_update_value =
+      typename detail::_unpack<mp::map_update_value<Key, F, C>, L>::type;
 
     template<class L, class KV, class F, class C = mp::listify>
-    using map_update_or_insert = unpack<L, mp::map_update_or_insert<KV, F, C>>;
+    using map_update_or_insert =
+      typename detail::_unpack<mp::map_update_or_insert<KV, F, C>, L>::type;
 
     template<class L, class KV, class F, class C = mp::listify>
-    using map_update_value_or_insert = unpack<L, mp::map_update_value_or_insert<KV, F, C>>;
+    using map_update_value_or_insert =
+      typename detail::_unpack<mp::map_update_value_or_insert<KV, F, C>, L>::type;
   }
 }

@@ -24,9 +24,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using map_keys = unpack<L, mp::map_keys<C>>;
+    using map_keys = typename detail::_unpack<mp::map_keys<C>, L>::type;
 
     template<class L, class F = mp::identity, class C = mp::listify>
-    using map_keys_with = unpack<L, mp::map_keys_with<F, C>>;
+    using map_keys_with = typename detail::_unpack<mp::map_keys_with<F, C>, L>::type;
   }
 }

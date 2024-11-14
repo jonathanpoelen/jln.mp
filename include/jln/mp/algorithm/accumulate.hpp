@@ -38,7 +38,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class state, class F, class C = mp::identity>
-    using accumulate = unpack<L,
-      mp::zip<mp::push_front<state, mp::fold<mp::flip<mp::unpack<F>>, C>>>>;
+    using accumulate = typename detail::_unpack<
+      mp::zip<mp::push_front<state, mp::fold<mp::flip<mp::unpack<F>>, C>>>, L>::type;
   }
 }

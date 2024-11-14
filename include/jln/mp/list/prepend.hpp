@@ -18,6 +18,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class... xs>
-    using prepend = unpack<L, listify, xs...>;
+    using prepend = typename detail::_unpack<listify, L, xs...>::type;
   }
 }

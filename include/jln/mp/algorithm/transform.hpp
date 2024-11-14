@@ -36,7 +36,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F, class C = mp::listify>
-    using transform = unpack<L, mp::transform<F, C>>;
+    using transform = typename detail::_unpack<mp::transform<F, C>, L>::type;
   }
 
 /// \cond

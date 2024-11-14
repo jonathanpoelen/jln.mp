@@ -41,13 +41,13 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class x, class TC = mp::identity, class FC = mp::always<na>>
-    using set_find = unpack<L, mp::set_find<x, TC, FC>>;
+    using set_find = typename detail::_unpack<mp::set_find<x, TC, FC>, L>::type;
 
     template<class L, class x, class FC>
-    using set_find_or_else = unpack<L, mp::set_find<x, mp::identity, FC>>;
+    using set_find_or_else = typename detail::_unpack<mp::set_find<x, mp::identity, FC>, L>::type;
 
     template<class L, class x, class FT>
-    using set_find_or = unpack<L, mp::set_find<x, mp::identity, mp::always<FT>>>;
+    using set_find_or = typename detail::_unpack<mp::set_find<x, mp::identity, mp::always<FT>>, L>::type;
   }
 }
 

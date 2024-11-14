@@ -39,10 +39,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Cmp = mp::less<>, class C = listify>
-    using sort = unpack<L, mp::sort<Cmp, C>>;
+    using sort = typename detail::_unpack<mp::sort<Cmp, C>, L>::type;
 
     template<class L, class Cmp = mp::less<>, class C = listify>
-    using stable_sort = unpack<L, mp::sort<Cmp, C>>;
+    using stable_sort = typename detail::_unpack<mp::sort<Cmp, C>, L>::type;
   }
 
   /// \cond

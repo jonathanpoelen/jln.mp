@@ -30,10 +30,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using same = unpack<L, mp::same<C>>;
+    using same = typename detail::_unpack<mp::same<C>, L>::type;
 
     template<class L, class C = mp::identity>
-    inline constexpr bool same_v = unpack<L, mp::same<C>>::value;
+    inline constexpr bool same_v = detail::_unpack<mp::same<C>, L>::type::value;
   }
 }
 

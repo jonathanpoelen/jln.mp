@@ -31,9 +31,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class BinaryPred, class C = mp::listify>
-    using remove_adjacent_if = unpack<L, mp::remove_adjacent_if<BinaryPred, C>>;
+    using remove_adjacent_if = typename detail::_unpack<mp::remove_adjacent_if<BinaryPred, C>, L>::type;
 
     template<class L, class C = mp::listify>
-    using remove_adjacent = unpack<L, mp::remove_adjacent<C>>;
+    using remove_adjacent = typename detail::_unpack<mp::remove_adjacent<C>, L>::type;
   }
 }

@@ -20,6 +20,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class KV, class C = mp::listify>
-    using map_insert = unpack<L, mp::map_insert<KV, C>>;
+    using map_insert = typename detail::_unpack<mp::map_insert<KV, C>, L>::type;
   }
 }

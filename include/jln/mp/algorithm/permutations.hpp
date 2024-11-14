@@ -34,7 +34,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = listify>
-    using permutations = unpack<L, mp::permutations<C>>;
+    using permutations = typename detail::_unpack<mp::permutations<C>, L>::type;
   }
 }
 

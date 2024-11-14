@@ -24,7 +24,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class x, class C = mp::listify>
-    using suffix = unpack<L, mp::suffix<x, C>>;
+    using suffix = typename detail::_unpack<mp::suffix<x, C>, L>::type;
   }
 }
 

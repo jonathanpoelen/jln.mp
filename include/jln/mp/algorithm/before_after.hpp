@@ -72,12 +72,12 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Seq, class TC = mp::listify, class FC = mp::clear<TC>>
-    using before_after = unpack<L, mp::before_after<Seq, TC, FC>>;
+    using before_after = typename detail::_unpack<mp::before_after<Seq, TC, FC>, L>::type;
 
     template<class L, class Seq,
              class SubC1 = mp::listify, class SubC2 = SubC1,
              class TC = mp::listify, class FC = mp::clear<TC>>
-    using before_after_with = unpack<L, mp::before_after_with<Seq, SubC1, SubC2, TC, FC>>;
+    using before_after_with = typename detail::_unpack<mp::before_after_with<Seq, SubC1, SubC2, TC, FC>, L>::type;
   }
 
   /// \cond

@@ -18,7 +18,11 @@ namespace jln::mp
   struct set_union
   {
     template<class Set, class... Ls>
-    using f = typename unpack<set_push_back_elements<C>>::template f<emp::join<Ls...>, Set>;
+    using f = typename detail::_unpack<
+      set_push_back_elements<C>,
+      join<>::f<Ls...>,
+      Set
+    >::type;
   };
 
   namespace emp

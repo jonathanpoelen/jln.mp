@@ -17,6 +17,6 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F, class C = listify>
-    using transform_first = unpack<L, mp::partial_each<F, C>>;
+    using transform_first = typename detail::_unpack<mp::partial_each<F, C>, L>::type;
   }
 }

@@ -74,16 +74,16 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class S = wrapper<L>, class C = mp::listify>
-    using flatten_once = unpack<L, mp::flatten_once<S, C>>;
+    using flatten_once = typename detail::_unpack<mp::flatten_once<S, C>, L>::type;
 
     template<class L, class S = wrapper<L>, class C = mp::listify>
-    using flatten = unpack<L, mp::flatten<S, C>>;
+    using flatten = typename detail::_unpack<mp::flatten<S, C>, L>::type;
 
     template<class L, template<class...> class S, class C = mp::listify>
-    using flatten_once_f = unpack<L, mp::flatten_once_f<S, C>>;
+    using flatten_once_f = typename detail::_unpack<mp::flatten_once_f<S, C>, L>::type;
 
     template<class L, template<class...> class S, class C = mp::listify>
-    using flatten_f = unpack<L, mp::flatten_f<S, C>>;
+    using flatten_f = typename detail::_unpack<mp::flatten_f<S, C>, L>::type;
   }
 
 /// \cond

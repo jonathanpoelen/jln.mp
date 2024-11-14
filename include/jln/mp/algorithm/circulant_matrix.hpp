@@ -47,10 +47,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class F, class C = mp::listify>
-    using circulant_matrix_with = unpack<L, mp::circulant_matrix_with<F, C>>;
+    using circulant_matrix_with = typename detail::_unpack<mp::circulant_matrix_with<F, C>, L>::type;
 
     template<class L, class C = mp::listify>
-    using circulant_matrix = unpack<L, mp::circulant_matrix<C>>;
+    using circulant_matrix = typename detail::_unpack<mp::circulant_matrix<C>, L>::type;
   }
 }
 

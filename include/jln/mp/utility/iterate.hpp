@@ -39,10 +39,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class n, class F, class C = mp::identity>
-    using iterate = unpack<L, mp::iterate<n, F, C>>;
+    using iterate = typename detail::_unpack<mp::iterate<n, F, C>, L>::type;
 
     template<class L, uint_ n, class F, class C = mp::identity>
-    using iterate_c = unpack<L, mp::iterate_c<n, F, C>>;
+    using iterate_c = typename detail::_unpack<mp::iterate_c<n, F, C>, L>::type;
   }
 
   /// \cond

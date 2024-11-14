@@ -57,7 +57,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::listify>
-    using product = unpack<L, product<C>>;
+    using product = typename detail::_unpack<product<C>, L>::type;
   }
 
   /// \cond

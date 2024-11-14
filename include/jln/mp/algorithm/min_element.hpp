@@ -56,7 +56,7 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class C = mp::identity>
-    using min_element = unpack<L, mp::min_element<C>>;
+    using min_element = typename detail::_unpack<mp::min_element<C>, L>::type;
 
     template<class... xs>
     using min_element_xs = typename mp::min_element_with<>::template f<xs...>;
@@ -65,7 +65,7 @@ namespace jln::mp
     using min_element_c = typename mp::min_element_with<>::template f<number<xs>...>;
 
     template<class L, class C = mp::identity>
-    inline constexpr auto min_element_v = unpack<L, mp::min_element<C>>::value;
+    inline constexpr auto min_element_v = detail::_unpack<mp::min_element<C>, L>::type::value;
 
     template<class... xs>
     inline constexpr auto min_element_xs_v = mp::min_element_with<>
@@ -77,7 +77,7 @@ namespace jln::mp
 
 
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using min_element_with = unpack<L, mp::min_element_with<Cmp, C>>;
+    using min_element_with = typename detail::_unpack<mp::min_element_with<Cmp, C>, L>::type;
 
     template<class Cmp, class... xs>
     using min_element_with_xs = typename mp::min_element_with<Cmp>::template f<xs...>;
@@ -87,7 +87,7 @@ namespace jln::mp
       ::template f<number<xs>...>;
 
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    inline constexpr auto min_element_with_v = unpack<L, mp::min_element_with<Cmp, C>>::value;
+    inline constexpr auto min_element_with_v = detail::_unpack<mp::min_element_with<Cmp, C>, L>::type::value;
 
     template<class Cmp, class... xs>
     inline constexpr auto min_element_with_xs_v = mp::min_element_with<Cmp>
@@ -99,7 +99,7 @@ namespace jln::mp
 
 
     template<class L, class C = mp::identity>
-    using last_min_element = unpack<L, mp::last_min_element<C>>;
+    using last_min_element = typename detail::_unpack<mp::last_min_element<C>, L>::type;
 
     template<class... xs>
     using last_min_element_xs = typename mp::last_min_element_with<>::template f<xs...>;
@@ -108,7 +108,7 @@ namespace jln::mp
     using last_min_element_c = typename mp::last_min_element_with<>::template f<number<xs>...>;
 
     template<class L, class C = mp::identity>
-    inline constexpr auto last_min_element_v = unpack<L, mp::last_min_element<C>>::value;
+    inline constexpr auto last_min_element_v = detail::_unpack<mp::last_min_element<C>, L>::type::value;
 
     template<class... xs>
     inline constexpr auto last_min_element_xs_v = mp::last_min_element_with<>
@@ -120,7 +120,7 @@ namespace jln::mp
 
 
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using last_min_element_with = unpack<L, mp::last_min_element_with<Cmp, C>>;
+    using last_min_element_with = typename detail::_unpack<mp::last_min_element_with<Cmp, C>, L>::type;
 
     template<class Cmp, class... xs>
     using last_min_element_with_xs = typename mp::last_min_element_with<Cmp>::template f<xs...>;
@@ -130,7 +130,8 @@ namespace jln::mp
       ::template f<number<xs>...>;
 
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    inline constexpr auto last_min_element_with_v = unpack<L, mp::last_min_element_with<Cmp, C>>::value;
+    inline constexpr auto last_min_element_with_v = detail::_unpack<
+      mp::last_min_element_with<Cmp, C>, L>::type::value;
 
     template<class Cmp, class... xs>
     inline constexpr auto last_min_element_with_xs_v = mp::last_min_element_with<Cmp>

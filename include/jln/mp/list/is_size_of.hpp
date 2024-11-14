@@ -18,15 +18,15 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class N, class C = mp::identity>
-    using is_size_of = unpack<L, mp::is_size_of<N, C>>;
+    using is_size_of = typename detail::_unpack<mp::is_size_of<N, C>, L>::type;
 
     template<class L, int_ n, class C = mp::identity>
-    using is_size_of_c = unpack<L, mp::is_size_of_c<n, C>>;
+    using is_size_of_c = typename detail::_unpack<mp::is_size_of_c<n, C>, L>::type;
 
     template<class L, class N, class C = mp::identity>
-    inline constexpr bool is_size_of_v = unpack<L, mp::is_size_of<N, C>>::value;
+    inline constexpr bool is_size_of_v = detail::_unpack<mp::is_size_of<N, C>, L>::type::value;
 
     template<class L, int_ n, class C = mp::identity>
-    inline constexpr bool is_size_of_c_v = unpack<L, mp::is_size_of_c<n, C>>::value;
+    inline constexpr bool is_size_of_c_v = detail::_unpack<mp::is_size_of_c<n, C>, L>::type::value;
   }
 }

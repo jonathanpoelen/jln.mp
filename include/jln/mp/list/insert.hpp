@@ -19,9 +19,9 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class index, class x, class C = mp::listify>
-    using insert = unpack<L, mp::insert<index, x, C>>;
+    using insert = typename detail::_unpack<mp::insert<index, x, C>, L>::type;
 
     template<class L, int_ index, class x, class C = mp::listify>
-    using insert_c = unpack<L, mp::insert_c<index, x, C>>;
+    using insert_c = typename detail::_unpack<mp::insert_c<index, x, C>, L>::type;
   }
 }

@@ -29,10 +29,10 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    using is_sorted = unpack<L, mp::is_sorted<Cmp, C>>;
+    using is_sorted = typename detail::_unpack<mp::is_sorted<Cmp, C>, L>::type;
 
     template<class L, class Cmp = mp::less<>, class C = mp::identity>
-    constexpr bool is_sorted_v = unpack<L, mp::is_sorted<Cmp, C>>::value;
+    constexpr bool is_sorted_v = detail::_unpack<mp::is_sorted<Cmp, C>, L>::type::value;
   }
 }
 

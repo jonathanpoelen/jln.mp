@@ -54,16 +54,16 @@ namespace jln::mp
   namespace emp
   {
     template<class L, class Selectors, class C = mp::listify>
-    using compress = unpack<L, typename detail::make_compress<Selectors, C>::type>;
+    using compress = typename detail::_unpack<typename detail::make_compress<Selectors, C>::type, L>::type;
 
     template<class L, class... Selectors>
-    using compress_for = unpack<L, mp::compress_c_with<listify, Selectors::value...>>;
+    using compress_for = typename detail::_unpack<mp::compress_c_with<listify, Selectors::value...>, L>::type;
 
     template<class L, bool... selectors>
-    using compress_c = unpack<L, mp::compress_c_with<listify, selectors...>>;
+    using compress_c = typename detail::_unpack<mp::compress_c_with<listify, selectors...>, L>::type;
 
     template<class L, class C, bool... selectors>
-    using compress_c_with = unpack<L, mp::compress_c_with<C, selectors...>>;
+    using compress_c_with = typename detail::_unpack<mp::compress_c_with<C, selectors...>, L>::type;
   }
 }
 
