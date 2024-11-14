@@ -366,7 +366,9 @@ preproc = P{
 , ['#endif']='#' * sp0 * 'endif'
 , ['rm#endif']=V'#endif' / ''
 
-, ['\\cond']=('/// \\cond' * Until'\\endcond' * 9 + blockComment) / ''
+, ['\\cond'] = '/// \\cond' * Until'\\endcond' * 9 / ''
+             + P'///' * Until'\n' * 1
+             + blockComment / ''
 }
 
 local lines = Ct(List(C(unl) * sp0, '///' * P' '^-1 * -P'\\'))
