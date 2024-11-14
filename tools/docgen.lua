@@ -241,6 +241,7 @@ sanitize_struct_impl = function(s)
 end
 
 local blockComment = '/*' * Until'*/' * 2
+local any_param = ((1-S'()<>,' + tagasoperator + balancedparent + balancedtag)^1)
 
 local f_ident = function(s) return s end
 local preproc -- used into JLN_MP_CALL transformation
@@ -254,14 +255,14 @@ preproc = P{
   )^0)
 
 , c='JLN_MP_' * P'FORCE_'^0 * 'DCALL' * P'F'^0 * P'_V'^0 * P'_C'^0 * P'_TRACE'^0 * '_XS('
-    * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
+    * any_param
     * ',' * ws0 * cid
     * ',' * ws0 * cbalancedparent
     * ')'
     / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
 
   + P'JLN_MP_LAZY_PARAM' * P'_T'^0 * '('
-    * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
+    * any_param
     * ',' * ws0 * cbalancedparent
     * ')'
     / function(arg) return preproc:match(arg) end
@@ -282,7 +283,7 @@ preproc = P{
     / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
 
   + 'JLN_MP_DCALL_TRACE_XS_0('
-    * ((1-S'()<,' + tagasoperator + balancedparent + balancedtag)^1)
+    * any_param
     * ')'
     / function(f, args) return preproc:match(f) .. '::f<>' end
 
@@ -453,7 +454,25 @@ replace_old_int = Cs((
   + 1
 )^0)
 
+replace_unpack_suffix = ws0
+  * C(any_param) * ',' * ws0 * C(any_param)
+  * C((P',' * any_param)^0) * '>' * P'::type'
+
+replace_detail_unpack = Cs((
+    P'typename '^-1 * 'detail::_unpack<' * replace_unpack_suffix / function(a, b, c)
+      return 'emp::unpack<' .. b .. ', ' .. a .. (c or '') .. '>'
+    end
+  + P'typename '^-1 * 'detail::_unpack_append' * replace_unpack_suffix / function(a, b, c)
+      return 'emp::unpack_append<' .. b .. ', ' .. a .. (c or '') .. '>'
+    end
+  + id
+  + 1
+)^0)
+
 parseFile = function(contents)
+  if _global_filename ~= 'include/jln/mp/untility/unpack.hpp' then
+    contents = replace_detail_unpack:match(contents)
+  end
   reset_parser()
   pattern:match(replace_old_int:match(preproc:match(contents)))
   return fileinfos
