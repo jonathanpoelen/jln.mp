@@ -10,7 +10,18 @@
 #endif
 
 #if !JLN_MP_ENABLE_TPL_AUTO || JLN_MP_VAL_AS_ALIAS
-# include <type_traits>
+
+# if defined(__has_builtin) && defined(JLN_MP_VAL_USE_STD_REMOVE_CONST)
+#   if __has_builtin(__remove_const)
+#     define JLN_MP_REMOVE_CONST_T __remove_const
+#   endif
+# endif
+
+# ifndef JLN_MP_REMOVE_CONST_T
+#   define JLN_MP_REMOVE_CONST_T(x) std::remove_const_t<x>
+#   include <type_traits>
+# endif
+
 #endif
 
 namespace jln::mp
@@ -41,7 +52,7 @@ namespace jln::mp
   };
 
   template<auto v>
-  using val = typed_value<std::remove_const_t<decltype(v)>, v>;
+  using val = typed_value<JLN_MP_REMOVE_CONST_T(decltype(v)), v>;
 
   template<class T>
   using value_from = val<T::value>;
@@ -57,8 +68,12 @@ namespace jln::mp
   using val = typed_value<int_, v>;
 
   template<class T>
-  using value_from = typed_value<std::remove_const_t<decltype(T::value)>, T::value>;
+  using value_from = typed_value<JLN_MP_REMOVE_CONST_T(decltype(T::value)), T::value>;
 #endif
 }
+
+#ifdef JLN_MP_REMOVE_CONST_T
+#  undef JLN_MP_REMOVE_CONST_T
+#endif
 
 #undef JLN_MP_VAL_AS_ALIAS
