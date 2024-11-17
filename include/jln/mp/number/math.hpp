@@ -95,12 +95,14 @@ namespace jln::mp
     inline constexpr auto min_v<x, y> = mp::conditional_c<y::value < x::value>
       ::template f<y, x>::value;
 
+
     template<int_ x, int_ y, class C = mp::identity>
     inline constexpr auto min_c_v = JLN_MP_TRACE_F(C)
       ::template f<number<y < x ? y : x>>::value;
 
     template<int_ x, int_ y>
-    inline constexpr int_ min_c_v<x, y> = y < x ? y : x;
+    inline constexpr int_ min_c_v<x, y, mp::identity> = y < x ? y : x;
+
 
     template<class x, class y, class C = mp::identity>
     using min = typename mp::select<mp::less<>, C>::template f<x, y>;
@@ -115,15 +117,17 @@ namespace jln::mp
     >::value;
 
     template<class x, class y>
-    inline constexpr auto max_v<x, y> = mp::conditional_c<x::value < y::value>
+    inline constexpr auto max_v<x, y, mp::identity> = mp::conditional_c<x::value < y::value>
       ::template f<y, x>::value;
+
 
     template<int_ x, int_ y, class C = mp::identity>
     inline constexpr auto max_c_v = JLN_MP_TRACE_F(C)
       ::template f<number<x < y ? y : x>>::value;
 
     template<int_ x, int_ y>
-    inline constexpr int_ max_c_v<x, y> = x < y ? y : x;
+    inline constexpr int_ max_c_v<x, y, mp::identity> = x < y ? y : x;
+
 
     template<class x, class y, class C = mp::identity>
     using max = typename mp::reverse_select<mp::less<>, C>::template f<x, y>;
@@ -136,12 +140,15 @@ namespace jln::mp
     inline constexpr auto clamp_v = mp::clamp_with<Min, Max, mp::less<>, C>
       ::template f<I>::value;
 
+
     template<int_ i, int_ min, int_ max, class C = mp::identity>
     inline constexpr auto clamp_c_v = JLN_MP_TRACE_F(C)
       ::template f<number<i < min ? min : max < i ? max : i>>::value;
 
     template<int_ i, int_ min, int_ max>
-    inline constexpr int_ clamp_c_v<i, min, max> = i < min ? min : max < i ? max : i;
+    inline constexpr int_ clamp_c_v<i, min, max, mp::identity>
+      = i < min ? min : max < i ? max : i;
+
 
     template<class I, class Min, class Max, class C = mp::identity>
     using clamp = typename mp::clamp_with<Min, Max, mp::less<>, C>::template f<I>;
@@ -154,12 +161,13 @@ namespace jln::mp
     inline constexpr auto clamp_with_v = mp::clamp_with<Min, Max, Cmp, C>
       ::template f<I>::value;
 
+
     template<int_ i, int_ min, int_ max, class Cmp = mp::less<>, class C = mp::identity>
     inline constexpr auto clamp_with_c_v = JLN_MP_TRACE_F(C)
       ::template f<number<clamp_with_c_v<i, min, max, Cmp>>>::value;
 
     template<int_ i, int_ min, int_ max, class Cmp>
-    inline constexpr int_ clamp_with_c_v<i, min, max, Cmp> =
+    inline constexpr int_ clamp_with_c_v<i, min, max, Cmp, mp::identity> =
       JLN_MP_TRACE_F(Cmp)::template f<number<i>, number<min>>::value
         ? min
         : JLN_MP_TRACE_F(Cmp)::template f<number<max>, number<i>>::value
@@ -171,7 +179,9 @@ namespace jln::mp
       JLN_MP_TRACE_F(C)::template f<number<i < min ? min : max < i ? max : i>>::value;
 
     template<int_ i, int_ min, int_ max>
-    inline constexpr int_ clamp_with_c_v<i, min, max> = i < min ? min : max < i ? max : i;
+    inline constexpr int_ clamp_with_c_v<i, min, max, mp::less<>, mp::identity>
+      = i < min ? min : max < i ? max : i;
+
 
     template<class I, class Min, class Max, class Cmp = mp::less<>, class C = mp::identity>
     using clamp_with = typename mp::clamp_with<Min, Max, Cmp, C>::template f<I>;
@@ -183,12 +193,13 @@ namespace jln::mp
     template<class I, class C = mp::identity>
     inline constexpr auto abs_v = mp::abs<C>::template f<I>::value;
 
+
     template<int_ i, class C = mp::identity>
     inline constexpr auto abs_c_v = JLN_MP_TRACE_F(C)
       ::template f<number<abs_c_v<i>>>::value;
 
     template<int_ i>
-    inline constexpr int_ abs_c_v<i> = (i < -i ? -i : i)
+    inline constexpr int_ abs_c_v<i, mp::identity> = (i < -i ? -i : i)
       + !sizeof(int[std::numeric_limits<int_>::min() != i]); // check abs(-min)
 
 
@@ -204,14 +215,17 @@ namespace jln::mp
       ::template f<number<detail::pow_impl_v<Base::value, Exponent::value>>>::value;
 
     template<class Base, class Exponent>
-    inline constexpr int_ pow_v<Base, Exponent> = detail::pow_impl_v<Base::value, Exponent::value>;
+    inline constexpr int_ pow_v<Base, Exponent, mp::identity>
+      = detail::pow_impl_v<Base::value, Exponent::value>;
+
 
     template<int_ base, int_ exponent, class C = mp::identity>
     inline constexpr int_ pow_c_v = JLN_MP_TRACE_F(C)
       ::template f<number<detail::pow_impl_v<base, exponent>>>::value;
 
     template<int_ base, int_ exponent>
-    inline constexpr int_ pow_c_v<base, exponent> = detail::pow_impl_v<base, exponent>;
+    inline constexpr int_ pow_c_v<base, exponent, mp::identity>
+      = detail::pow_impl_v<base, exponent>;
 
 
     template<class Base, class Exponent, class C = mp::identity>

@@ -87,51 +87,46 @@ static void test_abs()
   ut::same<number<-result>, number<emp::abs_c_v<i, c>>>();
 }
 
-// bypasses msvc bug when TEST_CLAMP is a template function...
-//  predefined C++ types (compiler internal)(397,20): error C2976: '<dummy_class_template_1>': too few template arguments
-//  predefined C++ types (compiler internal)(397,20): note: see declaration of '<dummy_class_template_1>'
-//  predefined C++ types (compiler internal)(397,20): note: the template instantiation context (the oldest one first) is
-//  D:\a\jln.mp\jln.mp\test\src/number/math.cpp(155,3): note: see reference to function template instantiation 'void jln::`anonymous-namespace'::test_suite::test_jln_test_390::test_clamp<2,2,0,3>(void)' being compiled
-//    test_clamp<2, 2, 0, 3>();
-//    ^
-#define TEST_CLAMP(result, i, min, max) do {                                        \
-  using namespace jln::mp;                                                          \
-  using c = neg<>;                                                                  \
-  using I = number<i>;                                                              \
-  using Min = number<min>;                                                          \
-  using Max = number<max>;                                                          \
-  using lt = W<less<>>;                                                             \
-                                                                                    \
-  ut::same<number<result>, emp::clamp<I, Min, Max>>();                              \
-  ut::same<number<result>, emp::clamp_c<i, min, max>>();                            \
-  ut::same<number<result>, number<emp::clamp_v<I, Min, Max>>>();                    \
-  ut::same<number<result>, number<emp::clamp_c_v<i, min, max>>>();                  \
-                                                                                    \
-  ut::same<number<-result>, emp::clamp<I, Min, Max, c>>();                          \
-  ut::same<number<-result>, emp::clamp_c<i, min, max, c>>();                        \
-  ut::same<number<-result>, number<emp::clamp_v<I, Min, Max, c>>>();                \
-  ut::same<number<-result>, number<emp::clamp_c_v<i, min, max, c>>>();              \
-                                                                                    \
-  ut::same<number<result>, emp::clamp_with<I, Min, Max>>();                         \
-  ut::same<number<result>, emp::clamp_with_c<i, min, max>>();                       \
-  ut::same<number<result>, number<emp::clamp_with_v<I, Min, Max>>>();               \
-  ut::same<number<result>, number<emp::clamp_with_c_v<i, min, max>>>();             \
-                                                                                    \
-  ut::same<number<result>, emp::clamp_with<I, Min, Max, lt>>();                     \
-  ut::same<number<result>, emp::clamp_with_c<i, min, max, lt>>();                   \
-  ut::same<number<result>, number<emp::clamp_with_v<I, Min, Max, lt>>>();           \
-  ut::same<number<result>, number<emp::clamp_with_c_v<i, min, max, lt>>>();         \
-                                                                                    \
-  ut::same<number<-result>, emp::clamp_with<I, Min, Max, lt, c>>();                 \
-  ut::same<number<-result>, emp::clamp_with_c<i, min, max, lt, c>>();               \
-  ut::same<number<-result>, number<emp::clamp_with_v<I, Min, Max, lt, c>>>();       \
-  ut::same<number<-result>, number<emp::clamp_with_c_v<i, min, max, lt, c>>>();     \
-                                                                                    \
-  ut::same<number<-result>, emp::clamp_with<I, Min, Max, less<>, c>>();             \
-  ut::same<number<-result>, emp::clamp_with_c<i, min, max, less<>, c>>();           \
-  ut::same<number<-result>, number<emp::clamp_with_v<I, Min, Max, less<>, c>>>();   \
-  ut::same<number<-result>, number<emp::clamp_with_c_v<i, min, max, less<>, c>>>(); \
-} while (0)
+template<int_ result, int_ i, int_ min, int_ max>
+static void test_clamp()
+{
+  using namespace jln::mp;
+  using c = neg<>;
+  using I = number<i>;
+  using Min = number<min>;
+  using Max = number<max>;
+  using lt = W<less<>>;
+
+  ut::same<number<result>, emp::clamp<I, Min, Max>>();
+  ut::same<number<result>, emp::clamp_c<i, min, max>>();
+  ut::same<number<result>, number<emp::clamp_v<I, Min, Max>>>();
+  ut::same<number<result>, number<emp::clamp_c_v<i, min, max>>>();
+
+  ut::same<number<-result>, emp::clamp<I, Min, Max, c>>();
+  ut::same<number<-result>, emp::clamp_c<i, min, max, c>>();
+  ut::same<number<-result>, number<emp::clamp_v<I, Min, Max, c>>>();
+  ut::same<number<-result>, number<emp::clamp_c_v<i, min, max, c>>>();
+
+  ut::same<number<result>, emp::clamp_with<I, Min, Max>>();
+  ut::same<number<result>, emp::clamp_with_c<i, min, max>>();
+  ut::same<number<result>, number<emp::clamp_with_v<I, Min, Max>>>();
+  ut::same<number<result>, number<emp::clamp_with_c_v<i, min, max>>>();
+
+  ut::same<number<result>, emp::clamp_with<I, Min, Max, lt>>();
+  ut::same<number<result>, emp::clamp_with_c<i, min, max, lt>>();
+  ut::same<number<result>, number<emp::clamp_with_v<I, Min, Max, lt>>>();
+  ut::same<number<result>, number<emp::clamp_with_c_v<i, min, max, lt>>>();
+
+  ut::same<number<-result>, emp::clamp_with<I, Min, Max, lt, c>>();
+  ut::same<number<-result>, emp::clamp_with_c<i, min, max, lt, c>>();
+  ut::same<number<-result>, number<emp::clamp_with_v<I, Min, Max, lt, c>>>();
+  ut::same<number<-result>, number<emp::clamp_with_c_v<i, min, max, lt, c>>>();
+
+  ut::same<number<-result>, emp::clamp_with<I, Min, Max, less<>, c>>();
+  ut::same<number<-result>, emp::clamp_with_c<i, min, max, less<>, c>>();
+  ut::same<number<-result>, number<emp::clamp_with_v<I, Min, Max, less<>, c>>>();
+  ut::same<number<-result>, number<emp::clamp_with_c_v<i, min, max, less<>, c>>>();
+}
 
 TEST()
 {
@@ -142,9 +137,9 @@ TEST()
   test_max<2, 1, 2>();
   test_abs<1, 1>();
   test_abs<1, -1>();
-  TEST_CLAMP(2, 2, 0, 3);
-  TEST_CLAMP(3, 5, 0, 3);
-  TEST_CLAMP(0, -5, 0, 3);
+  test_clamp<2, 2, 0, 3>();
+  test_clamp<3, 5, 0, 3>();
+  test_clamp<0, -5, 0, 3>();
   test_pow<0, 0, 1>();
   test_pow<0, 0, 2>();
   test_pow<0, 0, 3>();
