@@ -159,7 +159,7 @@ namespace jln::mp
   #if JLN_MP_USE_MAKE_INTEGER_SEQ
   #  define JLN_MP_MAKE_INTEGER_SEQUENCE_T(T, n, ...) __make_integer_seq<__VA_ARGS__, T, n>
   #  define JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME
-  #elif JLN_MP_USE_MAKE_INTEGER_SEQ || JLN_MP_USE_INTEGER_PACK
+  #elif JLN_MP_USE_INTEGER_PACK
   #  define JLN_MP_MAKE_INTEGER_SEQUENCE_T(T, n, ...) __VA_ARGS__<T, __integer_pack(n)...>
   #  define JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME typename
   #else
