@@ -22,7 +22,7 @@ namespace jln::mp
     template<class x>
     struct try_dispatch;
 
-#if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_MSVC
+#if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
     template<class, class, class = void>
     struct _try_impl;
 
@@ -137,7 +137,7 @@ namespace jln::mp::detail
   };
 }
 
-#if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_MSVC
+#if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
 #include <type_traits>
 
 namespace jln::mp::detail

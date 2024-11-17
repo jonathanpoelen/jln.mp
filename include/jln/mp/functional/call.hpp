@@ -94,7 +94,7 @@ using call = C::f<xs...>;
   typename detail::dcallf_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT> \
     ::template f<C, __VA_ARGS__>
 
-# if JLN_MP_MSVC
+# if JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
 
 template<class C, class... xs>
 using call = typename detail::memoizer_impl<C, xs...>::type;
@@ -123,7 +123,7 @@ using call = typename detail::memoizer_impl<C, xs...>::type;
       __VA_ARGS__                                   \
     >::type
 
-# elif JLN_MP_CUDA  // ^^^ JLN_MP_MSVC
+# elif JLN_MP_CUDA  // ^^^ JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
 
 namespace detail
 {
