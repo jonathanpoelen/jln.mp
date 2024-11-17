@@ -199,7 +199,7 @@ using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
     ::template f<__VA_ARGS__, ::jln::mp::detail::too_many_arguments_error>
 
 
-#if JLN_MP_MSVC
+#if JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
 # define JLN_MP_MSVC_FIX_CALL(C, ...) \
   ::jln::mp::detail::raw_call<typename JLN_MP_IDENT C, __VA_ARGS__>
 
