@@ -20,7 +20,7 @@ namespace jln::mp
 
   template<class... Ts, class TC, class FC>
   struct before<list<Ts...>, TC, FC>
-  : partial_take_until_xs_c<-int_(sizeof...(Ts)),
+  : partial_take_until_xs_c<-int_t(sizeof...(Ts)),
                             starts_with<list<Ts...>>,
                             TC, FC>
   {

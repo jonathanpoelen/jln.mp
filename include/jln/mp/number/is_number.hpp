@@ -25,7 +25,7 @@ namespace jln::mp
     template<class x>
     inline constexpr bool is_number_v = false;
 
-    template<int_ n>
+    template<int_t n>
     inline constexpr bool is_number_v<number<n>> = true;
   }
 
@@ -64,7 +64,7 @@ namespace jln::mp::detail
     using type = false_;
   };
 
-  template<int_ x>
+  template<int_t x>
   struct is_number_impl<number<x>>
   {
     using type = true_;

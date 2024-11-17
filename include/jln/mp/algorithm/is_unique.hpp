@@ -48,11 +48,11 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<int_ i, class x>
+  template<int_t i, class x>
   struct indexed_item : basic_item<x>
   {};
 
-  template<class, int_... ints>
+  template<class, int_t... ints>
   struct indexed_inherit
   {
     template<class... xs>

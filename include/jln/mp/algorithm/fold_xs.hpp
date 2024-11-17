@@ -14,9 +14,9 @@ namespace jln::mp
     template<int>
     struct fold_xs_impl;
 
-    constexpr int_ partial_fold_xs_size(int_ i, int_ size);
+    constexpr int_t partial_fold_xs_size(int_t i, int_t size);
 
-    template<template<class...> class F, int_ n, class... xs>
+    template<template<class...> class F, int_t n, class... xs>
     using partial_fold_xs_select = typename detail::fold_xs_impl<n-1>
       ::template f<F, n-1, xs...>;
   }
@@ -25,7 +25,7 @@ namespace jln::mp
   /// \ingroup reduce
 
   /// As \c fold_xs, but stop at position \c OffsetEnd.
-  template<int_ OffsetEnd, class F, class C = identity>
+  template<int_t OffsetEnd, class F, class C = identity>
   struct partial_fold_xs_c
   {
     template<class... xs>
@@ -55,13 +55,13 @@ namespace jln::mp
   using fold_xs = partial_fold_xs_c<-1, F, C>;
 
   /// As \c fold_xs_or_else, but stop at position \c OffsetEnd.
-  template<int_ OffsetEnd, class F, class EmptyC, class C = identity>
+  template<int_t OffsetEnd, class F, class EmptyC, class C = identity>
   using partial_fold_xs_or_else_c = if_<size<>, partial_fold_xs_c<OffsetEnd, F, C>, EmptyC>;
 
   template<class OffsetEnd, class F, class NoStateF = F, class C = identity>
   using partial_fold_xs_or_else = partial_fold_xs_or_else_c<OffsetEnd::value, F, NoStateF, C>;
 
-  template<int_ OffsetEnd, class F, class FallbackValue, class C = identity>
+  template<int_t OffsetEnd, class F, class FallbackValue, class C = identity>
   using partial_fold_xs_or_c = partial_fold_xs_or_else_c<OffsetEnd, F, always<FallbackValue>, C>;
 
   template<class OffsetEnd, class F, class FallbackValue, class C = identity>
@@ -82,7 +82,7 @@ namespace jln::mp
     using partial_fold_xs = typename detail::_unpack<
       mp::push_front<state, mp::partial_fold_xs<OffsetEnd, F, C>>, L>::type;
 
-    template<class L, int_ OffsetEnd, class state, class F, class C = mp::identity>
+    template<class L, int_t OffsetEnd, class state, class F, class C = mp::identity>
     using partial_fold_xs_c = typename detail::_unpack<
       mp::push_front<state, mp::partial_fold_xs_c<OffsetEnd, F, C>>, L>::type;
 
@@ -94,7 +94,7 @@ namespace jln::mp
     using partial_fold_xs_or_else = typename detail::_unpack<
       mp::partial_fold_xs_or_else<OffsetEnd, F, NoStateF, C>, L>::type;
 
-    template<class L, int_ OffsetEnd, class F, class NoStateF = F, class C = mp::identity>
+    template<class L, int_t OffsetEnd, class F, class NoStateF = F, class C = mp::identity>
     using partial_fold_xs_or_else_c = typename detail::_unpack<
       mp::partial_fold_xs_or_else_c<OffsetEnd, F, NoStateF, C>, L>::type;
 
@@ -106,7 +106,7 @@ namespace jln::mp
     using partial_fold_xs_or = typename detail::_unpack<
       mp::partial_fold_xs_or_else<OffsetEnd, F, always<FallbackValue>, C>, L>::type;
 
-    template<class L, int_ OffsetEnd, class F, class FallbackValue, class C = mp::identity>
+    template<class L, int_t OffsetEnd, class F, class FallbackValue, class C = mp::identity>
     using partial_fold_xs_or_c = typename detail::_unpack<
       mp::partial_fold_xs_or_else_c<OffsetEnd, F, always<FallbackValue>, C>, L>::type;
 
@@ -120,7 +120,7 @@ namespace jln::mp
 /// \cond
 namespace jln::mp
 {
-  template<int_ OffsetEnd, class F>
+  template<int_t OffsetEnd, class F>
   struct partial_fold_xs_c<OffsetEnd, F, identity>
   {
     template<class... xs>
@@ -148,7 +148,7 @@ namespace jln::mp
   };
 
 #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
-  template<int_ OffsetEnd, template<class...> class F, class C>
+  template<int_t OffsetEnd, template<class...> class F, class C>
   struct partial_fold_xs_c<OffsetEnd, lift<F>, C>
   {
     template<class... xs>
@@ -161,7 +161,7 @@ namespace jln::mp
     );
   };
 
-  template<int_ OffsetEnd, template<class...> class F>
+  template<int_t OffsetEnd, template<class...> class F>
   struct partial_fold_xs_c<OffsetEnd, lift<F>, identity>
   {
     template<class... xs>
@@ -192,7 +192,7 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  constexpr int_ partial_fold_xs_size(int_ i, int_ size)
+  constexpr int_t partial_fold_xs_size(int_t i, int_t size)
   {
     // size contains state + xs...
     return (size == 0) ? 0

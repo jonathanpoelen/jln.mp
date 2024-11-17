@@ -140,10 +140,6 @@ end
 local sanitize_struct_impl
 
 local f_type = function(ctx_tparams, k, cpp_type, name, spe, tparams, mem, impl)
-  -- ignored, prefer int_t, uint_t
-  if name == 'int_' or name == 'uint' then
-    return
-  end
   namespaces[ctx_namespace][name] = true
   fileinfos.firstname = fileinfos.firstname or name
   fileinfos[#fileinfos+1] = {
@@ -448,14 +444,6 @@ local pattern = P{
 
 preprocOnlyPattern = (ws + (P'#' + '//') * unl)^0 * -P(1)
 
-replace_old_int = Cs((
-    (P'int_' + P'uint_') * (alnum + '_')^1
-  + P'int_' / 'int_t'
-  + P'uint_' / 'uint_t'
-  + (alnum + '_')^1
-  + 1
-)^0)
-
 replace_unpack_suffix = ws0
   * C(any_param) * ',' * ws0 * C(any_param)
   * C((P',' * any_param)^0) * '>' * P'::type'
@@ -476,7 +464,7 @@ parseFile = function(contents)
     contents = replace_detail_unpack:match(contents)
   end
   reset_parser()
-  pattern:match(replace_old_int:match(preproc:match(contents)))
+  pattern:match(preproc:match(contents))
   return fileinfos
 end
 

@@ -12,9 +12,9 @@ namespace jln::mp
     template<int, bool found = false>
     struct _drop_while_xs;
 
-    constexpr int_ partial_drop_while_xs_size(int_ i, int_ size);
+    constexpr int_t partial_drop_while_xs_size(int_t i, int_t size);
 
-    template<int_ Size, class Pred, class... xs>
+    template<int_t Size, class Pred, class... xs>
     using drop_while_xs_call = typename detail::_drop_while_xs<Size>
       ::template f<Size, Pred, xs...>;
   }
@@ -65,7 +65,7 @@ namespace jln::mp
   /// \see drop_front, drop_back, drop_while, drop_while_xs
   /// \see take_while, take_while_xs
   /// \see search, partial_search
-  template<int_ OffsetEnd, std::size_t ExtendedByN,
+  template<int_t OffsetEnd, std::size_t ExtendedByN,
            class Pred, class TC = listify, class FC = clear<TC>>
   struct partial_drop_while_extended_by_n_xs_c
   {
@@ -83,7 +83,7 @@ namespace jln::mp
   using partial_drop_while_xs =
     partial_drop_while_extended_by_n_xs_c<OffsetEnd::value, 0, Pred, TC, FC>;
 
-  template<int_ OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
+  template<int_t OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
   using partial_drop_while_xs_c =
     partial_drop_while_extended_by_n_xs_c<OffsetEnd, 0, Pred, TC, FC>;
 
@@ -119,7 +119,7 @@ namespace jln::mp
     using partial_drop_while_xs = typename detail::_unpack<
       mp::partial_drop_while_xs<OffsetEnd, Pred, TC, FC>, L>::type;
 
-    template<class L, int_ OffsetEnd, class Pred,
+    template<class L, int_t OffsetEnd, class Pred,
              class TC = mp::listify, class FC = mp::clear<TC>>
     using partial_drop_while_xs_c = typename detail::_unpack<
       mp::partial_drop_while_xs_c<OffsetEnd, Pred, TC, FC>, L>::type;
@@ -133,7 +133,7 @@ namespace jln::mp
     using partial_drop_inclusive_while_xs = typename detail::_unpack<
       mp::partial_drop_inclusive_while_xs<OffsetEnd, Pred, TC, FC>, L>::type;
 
-    template<class L, int_ OffsetEnd, class Pred,
+    template<class L, int_t OffsetEnd, class Pred,
              class TC = mp::listify, class FC = mp::clear<TC>>
     using partial_drop_inclusive_while_xs_c = typename detail::_unpack<
       mp::partial_drop_inclusive_while_xs_c<OffsetEnd, Pred, TC, FC>, L>::type;
@@ -143,7 +143,7 @@ namespace jln::mp
     using partial_drop_while_extended_by_n_xs = typename detail::_unpack<
       mp::partial_drop_while_extended_by_n_xs<OffsetEnd, ExtendedByN, Pred, TC, FC>, L>::type;
 
-    template<class L, int_ OffsetEnd, std::size_t ExtendedByN, class Pred,
+    template<class L, int_t OffsetEnd, std::size_t ExtendedByN, class Pred,
              class TC = listify, class FC = mp::clear<TC>>
     using partial_drop_while_extended_by_n_xs_c = typename detail::_unpack<
       mp::partial_drop_while_extended_by_n_xs_c<OffsetEnd, ExtendedByN, Pred, TC, FC>, L>::type;
@@ -161,7 +161,7 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  constexpr int_ partial_drop_while_xs_size(int_ i, int_ size)
+  constexpr int_t partial_drop_while_xs_size(int_t i, int_t size)
   {
     return (i >= size) ? size
          : (i >= 0) ? i

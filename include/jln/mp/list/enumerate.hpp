@@ -14,7 +14,7 @@ namespace jln::mp
     template<class>
     struct enumerate_impl;
 
-    template<class, int_...>
+    template<class, int_t...>
     struct enumerate_v_impl;
   }
   /// \endcond
@@ -90,7 +90,7 @@ namespace jln::mp::detail
     using f = typename C::template f<F<ns, xs>...>;
   };
 
-  template<class, int_... i>
+  template<class, int_t... i>
   struct enumerate_v_impl
   {
     template<class F, class C, class... xs>

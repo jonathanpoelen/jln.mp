@@ -38,7 +38,7 @@ namespace jln::mp
     template<class L, class n, class C = mp::listify>
     using repeat = typename detail::_unpack<mp::repeat<n, C>, L>::type;
 
-    template<class L, int_ n, class C = mp::listify>
+    template<class L, int_t n, class C = mp::listify>
     using repeat_c = typename detail::_unpack<mp::repeat_c<n, C>, L>::type;
   }
 }

@@ -318,22 +318,22 @@ namespace jln::mp
   using greater_equal_than = push_back<N, greater_equal<C>>;
 
 
-  template<int_ n, class C = identity>
+  template<int_t n, class C = identity>
   using equal_to_c = equal_to<number<n>, C>;
 
-  template<int_ n, class C = identity>
+  template<int_t n, class C = identity>
   using not_equal_to_c = not_equal_to<number<n>, C>;
 
-  template<int_ n, class C = identity>
+  template<int_t n, class C = identity>
   using less_than_c = less_than<number<n>, C>;
 
-  template<int_ n, class C = identity>
+  template<int_t n, class C = identity>
   using less_equal_than_c = less_equal_than<number<n>, C>;
 
-  template<int_ n, class C = identity>
+  template<int_t n, class C = identity>
   using greater_than_c = greater_than<number<n>, C>;
 
-  template<int_ n, class C = identity>
+  template<int_t n, class C = identity>
   using greater_equal_than_c = greater_equal_than<number<n>, C>;
 }
 
@@ -454,125 +454,125 @@ namespace jln::mp::emp
   using left_bit_or0_seq = typename detail::_unpack<mp::left_bit_or0<C>, L>::type;
 
 
-  template<int_... xs>
+  template<int_t... xs>
   using or_c = number<(xs || ... || false)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using left_or_c = number<(false || ... || xs)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using and_c = number<(xs && ... && true)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using left_and_c = number<(true && ... && xs)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using add_c = number<(xs + ...)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using add0_c = add_c<xs..., 0>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using left_add_c = number<(... + xs)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using left_add0_c = left_add_c<xs..., 0>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using sub_c = number<(... - xs)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using sub0_c = sub_c<xs..., 0>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using lshift_c = number<(... << xs)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using lshift0_c = lshift_c<xs..., 0>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using rshift_c = number<(... >> xs)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using rshift0_c = rshift_c<xs..., 0>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using mul_c = number<(xs * ...)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using mul0_c = mul_c<xs..., (sizeof...(xs) ? 1 : 0)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using mul1_c = mul_c<xs..., 1>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using left_mul_c = number<(... * xs)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using left_mul0_c = left_mul_c<xs..., (sizeof...(xs) ? 1 : 0)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using left_mul1_c = left_mul_c<xs..., 1>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using div_c = number<(... / xs)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using div0_c = div_c<xs..., (sizeof...(xs) ? 1 : 0)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using div1_c = div_c<xs..., 1>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using mod_c = number<(... % xs)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using mod0_c = mod_c<xs...,
-    (sizeof...(xs) ? std::numeric_limits<int_>::min() : 0)>;
+    (sizeof...(xs) ? std::numeric_limits<int_t>::min() : 0)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using mod1_c = mod_c<xs...,
-    (sizeof...(xs) ? std::numeric_limits<int_>::min() : 1)>;
+    (sizeof...(xs) ? std::numeric_limits<int_t>::min() : 1)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using xor_c = number<(xs ^ ...)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using xor0_c = xor_c<xs..., 0, 0>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using left_xor_c = number<(... ^ xs)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using left_xor0_c = left_xor_c<xs..., 0, 0>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using bit_and_c = number<(xs & ...)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using bit_and0_c = bit_and_c<xs...,
-    (sizeof...(xs) ? std::numeric_limits<int_>::max() : 0)>;
+    (sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using left_bit_and_c = number<(... & xs)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using left_bit_and0_c = left_bit_and_c<xs...,
-    (sizeof...(xs) ? std::numeric_limits<int_>::max() : 0)>;
+    (sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using bit_or_c = number<(xs | ...)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using bit_or0_c = bit_or_c<xs...,
-    (sizeof...(xs) ? std::numeric_limits<int_>::max() : 0)>;
+    (sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using left_bit_or_c = number<(... | xs)>;
 
-  template<int_... xs>
+  template<int_t... xs>
   using left_bit_or0_c = left_bit_or_c<xs...,
-    (sizeof...(xs) ? std::numeric_limits<int_>::max() : 0)>;
+    (sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0)>;
 
 
   template<class... xs>
@@ -725,388 +725,388 @@ namespace jln::mp::emp
 
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ or_seq_v = detail::_unpack<mp::or_<C>, L>::type::value;
+  inline constexpr int_t or_seq_v = detail::_unpack<mp::or_<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ and_seq_v = detail::_unpack<mp::and_<C>, L>::type::value;
+  inline constexpr int_t and_seq_v = detail::_unpack<mp::and_<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ or_left_seq_v = detail::_unpack<mp::left_or<C>, L>::type::value;
+  inline constexpr int_t or_left_seq_v = detail::_unpack<mp::left_or<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ and_left_seq_v = detail::_unpack<mp::left_and<C>, L>::type::value;
+  inline constexpr int_t and_left_seq_v = detail::_unpack<mp::left_and<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ add_seq_v = detail::_unpack<mp::add<C>, L>::type::value;
+  inline constexpr int_t add_seq_v = detail::_unpack<mp::add<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ add0_seq_v = detail::_unpack<mp::add0<C>, L>::type::value;
+  inline constexpr int_t add0_seq_v = detail::_unpack<mp::add0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_add_seq_v = detail::_unpack<mp::left_add<C>, L>::type::value;
+  inline constexpr int_t left_add_seq_v = detail::_unpack<mp::left_add<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_add0_seq_v = detail::_unpack<mp::left_add0<C>, L>::type::value;
+  inline constexpr int_t left_add0_seq_v = detail::_unpack<mp::left_add0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ sub_seq_v = detail::_unpack<mp::sub<C>, L>::type::value;
+  inline constexpr int_t sub_seq_v = detail::_unpack<mp::sub<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ sub0_seq_v = detail::_unpack<mp::sub0<C>, L>::type::value;
+  inline constexpr int_t sub0_seq_v = detail::_unpack<mp::sub0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ lshift_seq_v = detail::_unpack<mp::lshift<C>, L>::type::value;
+  inline constexpr int_t lshift_seq_v = detail::_unpack<mp::lshift<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ lshift0_seq_v = detail::_unpack<mp::lshift0<C>, L>::type::value;
+  inline constexpr int_t lshift0_seq_v = detail::_unpack<mp::lshift0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ rshift_seq_v = detail::_unpack<mp::rshift<C>, L>::type::value;
+  inline constexpr int_t rshift_seq_v = detail::_unpack<mp::rshift<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ rshift0_seq_v = detail::_unpack<mp::rshift0<C>, L>::type::value;
+  inline constexpr int_t rshift0_seq_v = detail::_unpack<mp::rshift0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ mul_seq_v = detail::_unpack<mp::mul<C>, L>::type::value;
+  inline constexpr int_t mul_seq_v = detail::_unpack<mp::mul<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ mul0_seq_v = detail::_unpack<mp::mul0<C>, L>::type::value;
+  inline constexpr int_t mul0_seq_v = detail::_unpack<mp::mul0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ mul1_seq_v = detail::_unpack<mp::mul1<C>, L>::type::value;
+  inline constexpr int_t mul1_seq_v = detail::_unpack<mp::mul1<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_mul_seq_v = detail::_unpack<mp::left_mul<C>, L>::type::value;
+  inline constexpr int_t left_mul_seq_v = detail::_unpack<mp::left_mul<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_mul0_seq_v = detail::_unpack<mp::left_mul0<C>, L>::type::value;
+  inline constexpr int_t left_mul0_seq_v = detail::_unpack<mp::left_mul0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_mul1_seq_v = detail::_unpack<mp::left_mul1<C>, L>::type::value;
+  inline constexpr int_t left_mul1_seq_v = detail::_unpack<mp::left_mul1<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ div_seq_v = detail::_unpack<mp::div<C>, L>::type::value;
+  inline constexpr int_t div_seq_v = detail::_unpack<mp::div<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ div0_seq_v = detail::_unpack<mp::div0<C>, L>::type::value;
+  inline constexpr int_t div0_seq_v = detail::_unpack<mp::div0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ div1_seq_v = detail::_unpack<mp::div1<C>, L>::type::value;
+  inline constexpr int_t div1_seq_v = detail::_unpack<mp::div1<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ mod_seq_v = detail::_unpack<mp::mod<C>, L>::type::value;
+  inline constexpr int_t mod_seq_v = detail::_unpack<mp::mod<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ mod0_seq_v = detail::_unpack<mp::mod0<C>, L>::type::value;
+  inline constexpr int_t mod0_seq_v = detail::_unpack<mp::mod0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ mod1_seq_v = detail::_unpack<mp::mod1<C>, L>::type::value;
+  inline constexpr int_t mod1_seq_v = detail::_unpack<mp::mod1<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ xor_seq_v = detail::_unpack<mp::xor_<C>, L>::type::value;
+  inline constexpr int_t xor_seq_v = detail::_unpack<mp::xor_<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ xor0_seq_v = detail::_unpack<mp::xor0<C>, L>::type::value;
+  inline constexpr int_t xor0_seq_v = detail::_unpack<mp::xor0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_xor_seq_v = detail::_unpack<mp::left_xor<C>, L>::type::value;
+  inline constexpr int_t left_xor_seq_v = detail::_unpack<mp::left_xor<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_xor0_seq_v = detail::_unpack<mp::left_xor0<C>, L>::type::value;
+  inline constexpr int_t left_xor0_seq_v = detail::_unpack<mp::left_xor0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ bit_and_seq_v = detail::_unpack<mp::bit_and<C>, L>::type::value;
+  inline constexpr int_t bit_and_seq_v = detail::_unpack<mp::bit_and<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ bit_and0_seq_v = detail::_unpack<mp::bit_and0<C>, L>::type::value;
+  inline constexpr int_t bit_and0_seq_v = detail::_unpack<mp::bit_and0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_bit_and_seq_v = detail::_unpack<mp::left_bit_and<C>, L>::type::value;
+  inline constexpr int_t left_bit_and_seq_v = detail::_unpack<mp::left_bit_and<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_bit_and0_seq_v = detail::_unpack<mp::left_bit_and0<C>, L>::type::value;
+  inline constexpr int_t left_bit_and0_seq_v = detail::_unpack<mp::left_bit_and0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ bit_or_seq_v = detail::_unpack<mp::bit_or<C>, L>::type::value;
+  inline constexpr int_t bit_or_seq_v = detail::_unpack<mp::bit_or<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ bit_or0_seq_v = detail::_unpack<mp::bit_or0<C>, L>::type::value;
+  inline constexpr int_t bit_or0_seq_v = detail::_unpack<mp::bit_or0<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_bit_or_seq_v = detail::_unpack<mp::left_bit_or<C>, L>::type::value;
+  inline constexpr int_t left_bit_or_seq_v = detail::_unpack<mp::left_bit_or<C>, L>::type::value;
 
   template<class L, class C = mp::identity>
-  inline constexpr int_ left_bit_or0_seq_v = detail::_unpack<mp::left_bit_or0<C>, L>::type::value;
+  inline constexpr int_t left_bit_or0_seq_v = detail::_unpack<mp::left_bit_or0<C>, L>::type::value;
 
 
-  template<int_... xs>
-  inline constexpr int_ or_c_v = (xs || ... || false);
+  template<int_t... xs>
+  inline constexpr int_t or_c_v = (xs || ... || false);
 
-  template<int_... xs>
-  inline constexpr int_ left_or_c_v = (false || ... || xs);
+  template<int_t... xs>
+  inline constexpr int_t left_or_c_v = (false || ... || xs);
 
-  template<int_... xs>
-  inline constexpr int_ and_c_v = (xs && ... && true);
+  template<int_t... xs>
+  inline constexpr int_t and_c_v = (xs && ... && true);
 
-  template<int_... xs>
-  inline constexpr int_ left_and_c_v = (true && ... && xs);
+  template<int_t... xs>
+  inline constexpr int_t left_and_c_v = (true && ... && xs);
 
-  template<int_... xs>
-  inline constexpr int_ add_c_v = (xs + ...);
+  template<int_t... xs>
+  inline constexpr int_t add_c_v = (xs + ...);
 
-  template<int_... xs>
-  inline constexpr int_ add0_c_v = add_c_v<xs..., 0>;
+  template<int_t... xs>
+  inline constexpr int_t add0_c_v = add_c_v<xs..., 0>;
 
-  template<int_... xs>
-  inline constexpr int_ left_add_c_v = (... + xs);
+  template<int_t... xs>
+  inline constexpr int_t left_add_c_v = (... + xs);
 
-  template<int_... xs>
-  inline constexpr int_ left_add0_c_v = left_add_c_v<xs..., 0>;
+  template<int_t... xs>
+  inline constexpr int_t left_add0_c_v = left_add_c_v<xs..., 0>;
 
-  template<int_... xs>
-  inline constexpr int_ sub_c_v = (... - xs);
+  template<int_t... xs>
+  inline constexpr int_t sub_c_v = (... - xs);
 
-  template<int_... xs>
-  inline constexpr int_ sub0_c_v = sub_c_v<xs..., 0>;
+  template<int_t... xs>
+  inline constexpr int_t sub0_c_v = sub_c_v<xs..., 0>;
 
-  template<int_... xs>
-  inline constexpr int_ lshift_c_v = (... << xs);
+  template<int_t... xs>
+  inline constexpr int_t lshift_c_v = (... << xs);
 
-  template<int_... xs>
-  inline constexpr int_ lshift0_c_v = lshift_c_v<xs..., 0>;
+  template<int_t... xs>
+  inline constexpr int_t lshift0_c_v = lshift_c_v<xs..., 0>;
 
-  template<int_... xs>
-  inline constexpr int_ rshift_c_v = (... >> xs);
+  template<int_t... xs>
+  inline constexpr int_t rshift_c_v = (... >> xs);
 
-  template<int_... xs>
-  inline constexpr int_ rshift0_c_v = rshift_c_v<xs..., 0>;
+  template<int_t... xs>
+  inline constexpr int_t rshift0_c_v = rshift_c_v<xs..., 0>;
 
-  template<int_... xs>
-  inline constexpr int_ mul_c_v = (xs * ...);
+  template<int_t... xs>
+  inline constexpr int_t mul_c_v = (xs * ...);
 
-  template<int_... xs>
-  inline constexpr int_ mul0_c_v = mul_c_v<xs..., sizeof...(xs) ? 1 : 0>;
+  template<int_t... xs>
+  inline constexpr int_t mul0_c_v = mul_c_v<xs..., sizeof...(xs) ? 1 : 0>;
 
-  template<int_... xs>
-  inline constexpr int_ mul1_c_v = mul_c_v<xs..., 1>;
+  template<int_t... xs>
+  inline constexpr int_t mul1_c_v = mul_c_v<xs..., 1>;
 
-  template<int_... xs>
-  inline constexpr int_ left_mul_c_v = (... * xs);
+  template<int_t... xs>
+  inline constexpr int_t left_mul_c_v = (... * xs);
 
-  template<int_... xs>
-  inline constexpr int_ left_mul0_c_v = left_mul_c_v<xs..., sizeof...(xs) ? 1 : 0>;
+  template<int_t... xs>
+  inline constexpr int_t left_mul0_c_v = left_mul_c_v<xs..., sizeof...(xs) ? 1 : 0>;
 
-  template<int_... xs>
-  inline constexpr int_ left_mul1_c_v = left_mul_c_v<xs..., 1>;
+  template<int_t... xs>
+  inline constexpr int_t left_mul1_c_v = left_mul_c_v<xs..., 1>;
 
-  template<int_... xs>
-  inline constexpr int_ div_c_v = (... / xs);
+  template<int_t... xs>
+  inline constexpr int_t div_c_v = (... / xs);
 
-  template<int_... xs>
-  inline constexpr int_ div0_c_v = div_c_v<xs..., sizeof...(xs) ? 1 : 0>;
+  template<int_t... xs>
+  inline constexpr int_t div0_c_v = div_c_v<xs..., sizeof...(xs) ? 1 : 0>;
 
-  template<int_... xs>
-  inline constexpr int_ div1_c_v = div_c_v<xs..., 1>;
+  template<int_t... xs>
+  inline constexpr int_t div1_c_v = div_c_v<xs..., 1>;
 
-  template<int_... xs>
-  inline constexpr int_ mod_c_v = (... % xs);
+  template<int_t... xs>
+  inline constexpr int_t mod_c_v = (... % xs);
 
-  template<int_... xs>
-  inline constexpr int_ mod0_c_v = mod_c_v<xs...,
-    sizeof...(xs) ? std::numeric_limits<int_>::min() : 0>;
+  template<int_t... xs>
+  inline constexpr int_t mod0_c_v = mod_c_v<xs...,
+    sizeof...(xs) ? std::numeric_limits<int_t>::min() : 0>;
 
-  template<int_... xs>
-  inline constexpr int_ mod1_c_v = mod_c_v<xs...,
-    sizeof...(xs) ? std::numeric_limits<int_>::min() : 1>;
+  template<int_t... xs>
+  inline constexpr int_t mod1_c_v = mod_c_v<xs...,
+    sizeof...(xs) ? std::numeric_limits<int_t>::min() : 1>;
 
-  template<int_... xs>
-  inline constexpr int_ xor_c_v = (xs ^ ...);
+  template<int_t... xs>
+  inline constexpr int_t xor_c_v = (xs ^ ...);
 
-  template<int_... xs>
-  inline constexpr int_ xor0_c_v = xor_c_v<xs..., 0, 0>;
+  template<int_t... xs>
+  inline constexpr int_t xor0_c_v = xor_c_v<xs..., 0, 0>;
 
-  template<int_... xs>
-  inline constexpr int_ left_xor_c_v = (... ^ xs);
+  template<int_t... xs>
+  inline constexpr int_t left_xor_c_v = (... ^ xs);
 
-  template<int_... xs>
-  inline constexpr int_ left_xor0_c_v = left_xor_c_v<xs..., 0, 0>;
+  template<int_t... xs>
+  inline constexpr int_t left_xor0_c_v = left_xor_c_v<xs..., 0, 0>;
 
-  template<int_... xs>
-  inline constexpr int_ bit_and_c_v = (xs & ...);
+  template<int_t... xs>
+  inline constexpr int_t bit_and_c_v = (xs & ...);
 
-  template<int_... xs>
-  inline constexpr int_ bit_and0_c_v = bit_and_c_v<xs...,
-    sizeof...(xs) ? std::numeric_limits<int_>::max() : 0>;
+  template<int_t... xs>
+  inline constexpr int_t bit_and0_c_v = bit_and_c_v<xs...,
+    sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0>;
 
-  template<int_... xs>
-  inline constexpr int_ left_bit_and_c_v = (... & xs);
+  template<int_t... xs>
+  inline constexpr int_t left_bit_and_c_v = (... & xs);
 
-  template<int_... xs>
-  inline constexpr int_ left_bit_and0_c_v = left_bit_and_c_v<xs...,
-    sizeof...(xs) ? std::numeric_limits<int_>::max() : 0>;
+  template<int_t... xs>
+  inline constexpr int_t left_bit_and0_c_v = left_bit_and_c_v<xs...,
+    sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0>;
 
-  template<int_... xs>
-  inline constexpr int_ bit_or_c_v = (xs | ...);
+  template<int_t... xs>
+  inline constexpr int_t bit_or_c_v = (xs | ...);
 
-  template<int_... xs>
-  inline constexpr int_ bit_or0_c_v = bit_or_c_v<xs...,
-    sizeof...(xs) ? std::numeric_limits<int_>::max() : 0>;
+  template<int_t... xs>
+  inline constexpr int_t bit_or0_c_v = bit_or_c_v<xs...,
+    sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0>;
 
-  template<int_... xs>
-  inline constexpr int_ left_bit_or_c_v = (... | xs);
+  template<int_t... xs>
+  inline constexpr int_t left_bit_or_c_v = (... | xs);
 
-  template<int_... xs>
-  inline constexpr int_ left_bit_or0_c_v = left_bit_or_c_v<xs...,
-    sizeof...(xs) ? std::numeric_limits<int_>::max() : 0>;
+  template<int_t... xs>
+  inline constexpr int_t left_bit_or0_c_v = left_bit_or_c_v<xs...,
+    sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0>;
 
 
   template<class... xs>
-  inline constexpr int_ or_v = (xs::value || ... || false);
+  inline constexpr int_t or_v = (xs::value || ... || false);
 
   template<class... xs>
-  inline constexpr int_ and_v = (xs::value && ... && true);
+  inline constexpr int_t and_v = (xs::value && ... && true);
 
   template<class... xs>
-  inline constexpr int_ left_or_v = (false || ... || xs::value);
+  inline constexpr int_t left_or_v = (false || ... || xs::value);
 
   template<class... xs>
-  inline constexpr int_ left_and_v = (true && ... && xs::value);
+  inline constexpr int_t left_and_v = (true && ... && xs::value);
 
   template<class... xs>
-  inline constexpr int_ add_v = (xs::value + ...);
+  inline constexpr int_t add_v = (xs::value + ...);
 
   template<class... xs>
-  inline constexpr int_ add0_v = mp::add0<>::template f<xs...>::value;
+  inline constexpr int_t add0_v = mp::add0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ left_add_v = (... + xs::value);
+  inline constexpr int_t left_add_v = (... + xs::value);
 
   template<class... xs>
-  inline constexpr int_ left_add0_v = mp::add0<>::template f<xs...>::value;
+  inline constexpr int_t left_add0_v = mp::add0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ sub_v = (... - xs::value);
+  inline constexpr int_t sub_v = (... - xs::value);
 
   template<class... xs>
-  inline constexpr int_ sub0_v = mp::sub0<>::template f<xs...>::value;
+  inline constexpr int_t sub0_v = mp::sub0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ lshift_v = (... << xs::value);
+  inline constexpr int_t lshift_v = (... << xs::value);
 
   template<class... xs>
-  inline constexpr int_ lshift0_v = mp::lshift0<>::template f<xs...>::value;
+  inline constexpr int_t lshift0_v = mp::lshift0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ rshift_v = (... >> xs::value);
+  inline constexpr int_t rshift_v = (... >> xs::value);
 
   template<class... xs>
-  inline constexpr int_ rshift0_v = mp::rshift0<>::template f<xs...>::value;
+  inline constexpr int_t rshift0_v = mp::rshift0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ mul_v = (xs::value * ...);
+  inline constexpr int_t mul_v = (xs::value * ...);
 
   template<class... xs>
-  inline constexpr int_ mul0_v = mp::mul0<>::template f<xs...>::value;
+  inline constexpr int_t mul0_v = mp::mul0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ mul1_v = mp::mul1<>::template f<xs...>::value;
+  inline constexpr int_t mul1_v = mp::mul1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ left_mul_v = (... * xs::value);
+  inline constexpr int_t left_mul_v = (... * xs::value);
 
   template<class... xs>
-  inline constexpr int_ left_mul0_v = mp::left_mul0<>::template f<xs...>::value;
+  inline constexpr int_t left_mul0_v = mp::left_mul0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ left_mul1_v = mp::left_mul1<>::template f<xs...>::value;
+  inline constexpr int_t left_mul1_v = mp::left_mul1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ div_v = (... / xs::value);
+  inline constexpr int_t div_v = (... / xs::value);
 
   template<class... xs>
-  inline constexpr int_ div0_v = mp::div0<>::template f<xs...>::value;
+  inline constexpr int_t div0_v = mp::div0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ div1_v = mp::div1<>::template f<xs...>::value;
+  inline constexpr int_t div1_v = mp::div1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ mod_v = (... % xs::value);
+  inline constexpr int_t mod_v = (... % xs::value);
 
   template<class... xs>
-  inline constexpr int_ mod0_v = mp::mod0<>::template f<xs...>::value;
+  inline constexpr int_t mod0_v = mp::mod0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ mod1_v = mp::mod1<>::template f<xs...>::value;
+  inline constexpr int_t mod1_v = mp::mod1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ xor_v = (xs::value ^ ...);
+  inline constexpr int_t xor_v = (xs::value ^ ...);
 
   template<class... xs>
-  inline constexpr int_ xor0_v = mp::xor0<>::template f<xs...>::value;
+  inline constexpr int_t xor0_v = mp::xor0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ left_xor_v = (... ^ xs::value);
+  inline constexpr int_t left_xor_v = (... ^ xs::value);
 
   template<class... xs>
-  inline constexpr int_ left_xor0_v = mp::left_xor0<>::template f<xs...>::value;
+  inline constexpr int_t left_xor0_v = mp::left_xor0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ bit_and_v = (xs::value & ...);
+  inline constexpr int_t bit_and_v = (xs::value & ...);
 
   template<class... xs>
-  inline constexpr int_ bit_and0_v = mp::bit_and0<>::template f<xs...>::value;
+  inline constexpr int_t bit_and0_v = mp::bit_and0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ left_bit_and_v = (... & xs::value);
+  inline constexpr int_t left_bit_and_v = (... & xs::value);
 
   template<class... xs>
-  inline constexpr int_ left_bit_and0_v = mp::left_bit_and0<>::template f<xs...>::value;
+  inline constexpr int_t left_bit_and0_v = mp::left_bit_and0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ bit_or_v = (xs::value | ...);
+  inline constexpr int_t bit_or_v = (xs::value | ...);
 
   template<class... xs>
-  inline constexpr int_ bit_or0_v = mp::bit_or0<>::template f<xs...>::value;
+  inline constexpr int_t bit_or0_v = mp::bit_or0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_ left_bit_or_v = (... | xs::value);
+  inline constexpr int_t left_bit_or_v = (... | xs::value);
 
   template<class... xs>
-  inline constexpr int_ left_bit_or0_v = mp::left_bit_or0<>::template f<xs...>::value;
+  inline constexpr int_t left_bit_or0_v = mp::left_bit_or0<>::template f<xs...>::value;
 
 
   template<class x, class C = mp::identity>
-  inline constexpr int_ neg_v = mp::neg<C>::template f<x>;
+  inline constexpr int_t neg_v = mp::neg<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  inline constexpr int_ unary_plus_v = mp::unary_plus<C>::template f<x>;
+  inline constexpr int_t unary_plus_v = mp::unary_plus<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  inline constexpr int_ bit_not_v = mp::bit_not<C>::template f<x>;
+  inline constexpr int_t bit_not_v = mp::bit_not<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  inline constexpr int_ inc_v = mp::inc<C>::template f<x>;
+  inline constexpr int_t inc_v = mp::inc<C>::template f<x>;
 
   template<class x, class C = mp::identity>
-  inline constexpr int_ dec_v = mp::dec<C>::template f<x>;
+  inline constexpr int_t dec_v = mp::dec<C>::template f<x>;
 
   template<class x, class y, class C = mp::identity>
-  inline constexpr int_ equal_v = mp::equal<C>::template f<x, y>;
+  inline constexpr int_t equal_v = mp::equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  inline constexpr int_ not_equal_v = mp::not_equal<C>::template f<x, y>;
+  inline constexpr int_t not_equal_v = mp::not_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  inline constexpr int_ less_v = mp::less<C>::template f<x, y::value>;
+  inline constexpr int_t less_v = mp::less<C>::template f<x, y::value>;
 
   template<class x, class y, class C = mp::identity>
-  inline constexpr int_ less_equal_v = mp::less_equal<C>::template f<x, y>;
+  inline constexpr int_t less_equal_v = mp::less_equal<C>::template f<x, y>;
 
   template<class x, class y, class C = mp::identity>
-  inline constexpr int_ greater_v = mp::greater<C>::template f<x, y::value>;
+  inline constexpr int_t greater_v = mp::greater<C>::template f<x, y::value>;
 
   template<class x, class y, class C = mp::identity>
-  inline constexpr int_ greater_equal_v = mp::greater_equal<C>::template f<x, y>;
+  inline constexpr int_t greater_equal_v = mp::greater_equal<C>::template f<x, y>;
 }
 
 JLN_MP_DIAGNOSTIC_POP()

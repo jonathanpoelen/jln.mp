@@ -35,8 +35,8 @@ namespace jln::mp::smp
   >, FC>;
 
   template<
-    template<int_, class...> class Tpl,
-    int_ OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
+    template<int_t, class...> class Tpl,
+    int_t OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
   using partial_until_last_t_c = Tpl<OffsetEnd, Pred, recursively<
     pop_front<Tpl<OffsetEnd, Pred, next_recursion, stop_recursion>>,
     TC

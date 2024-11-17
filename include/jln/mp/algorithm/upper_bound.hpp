@@ -16,13 +16,13 @@ namespace jln::mp
   template<class x, class Cmp = less<>, class TC = listify, class FC = TC>
   using upper_bound = lower_bound<x, flip<tee<Cmp, not_<>>>, TC, FC>;
 
-  template<int_ x, class Cmp = less<>, class TC = listify, class FC = TC>
+  template<int_t x, class Cmp = less<>, class TC = listify, class FC = TC>
   using upper_bound_c = upper_bound<number<x>, Cmp, TC, FC>;
 
   template<class x, class TC = listify, class FC = TC>
   using upper_bound_than = upper_bound<x, less<>, TC, FC>;
 
-  template<int_ x, class TC = listify, class FC = TC>
+  template<int_t x, class TC = listify, class FC = TC>
   using upper_bound_than_c = upper_bound<number<x>, less<>, TC, FC>;
 
   namespace emp
@@ -30,7 +30,7 @@ namespace jln::mp
     template<class L, class x, class Cmp = mp::less<>, class TC = mp::listify, class FC = TC>
     using upper_bound = typename detail::_unpack<mp::upper_bound<x, Cmp, TC, FC>, L>::type;
 
-    template<class L, int_ x, class Cmp = mp::less<>, class TC = mp::listify, class FC = TC>
+    template<class L, int_t x, class Cmp = mp::less<>, class TC = mp::listify, class FC = TC>
     using upper_bound_c = typename detail::_unpack<
       mp::upper_bound<mp::number<x>, Cmp, TC, FC>, L>::type;
 
@@ -38,7 +38,7 @@ namespace jln::mp
     using upper_bound_than = typename detail::_unpack<
       mp::upper_bound<x, mp::less<>, TC, FC>, L>::type;
 
-    template<class L, int_ x, class TC = mp::listify, class FC = TC>
+    template<class L, int_t x, class TC = mp::listify, class FC = TC>
     using upper_bound_than_c = typename detail::_unpack<
       mp::upper_bound<mp::number<x>, mp::less<>, TC, FC>, L>::type;
   }

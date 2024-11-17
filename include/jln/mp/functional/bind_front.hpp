@@ -24,7 +24,7 @@ namespace jln::mp
     using f = JLN_MP_DCALL_TRACE_XS(xs, F, BoundArgs..., xs...);
   };
 
-  template<class F, int_... BoundArgs>
+  template<class F, int_t... BoundArgs>
   using bind_front_c = bind_front<F, number<BoundArgs>...>;
 
 #if JLN_MP_ENABLE_TPL_AUTO
@@ -41,7 +41,7 @@ namespace jln::mp
     template<class L, class F, class... BoundArgs>
     using bind_front = typename detail::_unpack<F, L, BoundArgs...>::type;
 
-    template<class L, class F, int_... BoundArgs>
+    template<class L, class F, int_t... BoundArgs>
     using bind_front_c = typename detail::_unpack<F, L, number<BoundArgs>...>::type;
 
 #if JLN_MP_ENABLE_TPL_AUTO

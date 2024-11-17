@@ -18,13 +18,13 @@ namespace jln::mp::smp
   template<class Min, class Max, class Cmp = less<>, class C = identity>
   using clamp_with = try_contract<mp::clamp_with<Min, Max, assume_binary<Cmp>, assume_unary<C>>>;
 
-  template<int_ min, int_ max, class Cmp = less<>, class C = identity>
+  template<int_t min, int_t max, class Cmp = less<>, class C = identity>
   using clamp_with_c = try_contract<mp::clamp_with<number<min>, number<max>, assume_binary<Cmp>, assume_unary<C>>>;
 
   template<class Min, class Max, class Cmp = less<>, class C = identity>
   using clamp = clamp_with<Min, Max, less<>, C>;
 
-  template<int_ min, int_ max, class Cmp = less<>, class C = identity>
+  template<int_t min, int_t max, class Cmp = less<>, class C = identity>
   using clamp_c = clamp_with<number<min>, number<max>, Cmp, C>;
 
 

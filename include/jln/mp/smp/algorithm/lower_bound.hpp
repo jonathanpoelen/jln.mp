@@ -25,13 +25,13 @@ namespace jln::mp::smp
     x, concepts::predicate_or_else<assume_binary<Cmp>, violation>,
     subcontract<TC>, subcontract<FC>>>;
 
-  template<int_ x, class Cmp = less<>, class TC = listify, class FC = TC>
+  template<int_t x, class Cmp = less<>, class TC = listify, class FC = TC>
   using lower_bound_c = lower_bound<number<x>, Cmp, TC, FC>;
 
   template<class x, class TC = listify, class FC = TC>
   using lower_bound_than = lower_bound<x, less<>, TC, FC>;
 
-  template<int_ x, class TC = listify, class FC = TC>
+  template<int_t x, class TC = listify, class FC = TC>
   using lower_bound_than_c = lower_bound<number<x>, less<>, TC, FC>;
 }
 

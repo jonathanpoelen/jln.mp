@@ -40,10 +40,10 @@ namespace jln::mp
 #endif
   };
 
-  template<class C, class F, int_... keys>
+  template<class C, class F, int_t... keys>
   using collapse2_with_c = collapse2_with<C, F, number<keys>...>;
 
-  template<class C, int_... keys>
+  template<class C, int_t... keys>
   using collapse2_c = collapse2_with<C, listify, number<keys>...>;
 
   template<class C, class... keys>
@@ -60,7 +60,7 @@ namespace jln::mp
   template<class... keys>
   using collapse_for = collapse2_with<listify, listify, keys...>;
 
-  template<int_... keys>
+  template<int_t... keys>
   using collapse_for_c = collapse2_with<listify, listify, number<keys>...>;
 
 
@@ -76,7 +76,7 @@ namespace jln::mp
     using collapse_for = typename detail::_unpack<
       mp::collapse2_with<listify, listify, keys...>, L>::type;
 
-    template<class L, int_... keys>
+    template<class L, int_t... keys>
     using collapse_for_c = typename detail::_unpack<
       mp::collapse2_with<listify, listify, number<keys>...>, L>::type;
   }

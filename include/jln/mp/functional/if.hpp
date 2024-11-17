@@ -48,7 +48,7 @@ namespace jln::mp
       ::template f<xs...>;
   };
 
-  template<int_ i, class TC, class FC>
+  template<int_t i, class TC, class FC>
   struct if_<size<is<number<i>>>, TC, FC>
   {
     template<class... xs>

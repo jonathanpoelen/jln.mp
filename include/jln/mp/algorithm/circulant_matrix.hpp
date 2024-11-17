@@ -63,7 +63,7 @@ namespace jln::mp::detail
   template<class C, class F>
   struct circulant_matrix_impl
   {
-    template<class, int_... i>
+    template<class, int_t... i>
     struct impl : _tee<C, rotate_c<-i, F>...>
     {};
   };

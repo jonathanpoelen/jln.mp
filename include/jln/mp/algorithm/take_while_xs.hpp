@@ -50,7 +50,7 @@ namespace jln::mp
   /// \see drop_front, drop_back, drop_while, drop_while_xs
   /// \see take_while, take_while_xs
   /// \see search, partial_search
-  template<int_ OffsetEnd, std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
+  template<int_t OffsetEnd, std::size_t ExtendedByN, class Pred, class TC = listify, class FC = TC>
   struct partial_take_while_extended_by_n_xs_c
   {
     template<class... xs>
@@ -67,7 +67,7 @@ namespace jln::mp
   using partial_take_while_xs =
     partial_take_while_extended_by_n_xs_c<OffsetEnd::value, 0, Pred, TC, FC>;
 
-  template<int_ OffsetEnd, class Pred, class TC = listify, class FC = TC>
+  template<int_t OffsetEnd, class Pred, class TC = listify, class FC = TC>
   using partial_take_while_xs_c =
     partial_take_while_extended_by_n_xs_c<OffsetEnd, 0, Pred, TC, FC>;
 
@@ -100,7 +100,7 @@ namespace jln::mp
     using partial_take_while_xs = typename detail::_unpack<
       mp::partial_take_while_xs<OffsetEnd, Pred, TC, FC>, L>::type;
 
-    template<class L, int_ OffsetEnd, class Pred, class TC = mp::listify, class FC = TC>
+    template<class L, int_t OffsetEnd, class Pred, class TC = mp::listify, class FC = TC>
     using partial_take_while_xs_c = typename detail::_unpack<
       mp::partial_take_while_xs_c<OffsetEnd, Pred, TC, FC>, L>::type;
 
@@ -113,7 +113,7 @@ namespace jln::mp
     using partial_take_inclusive_while_xs = typename detail::_unpack<
       mp::partial_take_inclusive_while_xs<OffsetEnd, Pred, TC, FC>, L>::type;
 
-    template<class L, int_ OffsetEnd, class Pred,
+    template<class L, int_t OffsetEnd, class Pred,
              class TC = mp::listify, class FC = TC>
     using partial_take_inclusive_while_xs_c = typename detail::_unpack<
       mp::partial_take_inclusive_while_xs_c<OffsetEnd, Pred, TC, FC>, L>::type;
@@ -123,7 +123,7 @@ namespace jln::mp
     using partial_take_while_extended_by_n_xs = typename detail::_unpack<
       mp::partial_take_while_extended_by_n_xs<OffsetEnd, ExtendedByN, Pred, TC, FC>, L>::type;
 
-    template<class L, int_ OffsetEnd, std::size_t ExtendedByN, class Pred,
+    template<class L, int_t OffsetEnd, std::size_t ExtendedByN, class Pred,
              class TC = listify, class FC = TC>
     using partial_take_while_extended_by_n_xs_c = typename detail::_unpack<
       mp::partial_take_while_extended_by_n_xs_c<OffsetEnd, ExtendedByN, Pred, TC, FC>, L>::type;

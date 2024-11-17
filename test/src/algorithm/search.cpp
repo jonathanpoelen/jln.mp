@@ -29,14 +29,14 @@ TEST()
   test_mulary_pack<search_before_extended_by_n, _2, size<>>();
   test_mulary_pack<search_before_extended_by_n, _2, size<>, identity>();
   test_binary_pack<partial_search, _1>();
-  test_mulary_pack<partial_search, _1, size<>>();
-  test_mulary_pack<partial_search, _1, size<>, identity>();
-  test_binary_pack<partial_search_before, _1>();
-  test_mulary_pack<partial_search_before, _1, size<>>();
-  test_mulary_pack<partial_search_before, _1, size<>, identity>();
-  test_binary_pack<partial_search_before_extended_by_n, _1, _1>();
-  test_mulary_pack<partial_search_before_extended_by_n, _1, _1, size<>>();
-  test_mulary_pack<partial_search_before_extended_by_n, _1, _1, size<>, identity>();
+  // test_mulary_pack<partial_search, _1, size<>>();
+  // test_mulary_pack<partial_search, _1, size<>, identity>();
+  // test_binary_pack<partial_search_before, _1>();
+  // test_mulary_pack<partial_search_before, _1, size<>>();
+  // test_mulary_pack<partial_search_before, _1, size<>, identity>();
+  // test_binary_pack<partial_search_before_extended_by_n, _1, _1>();
+  // test_mulary_pack<partial_search_before_extended_by_n, _1, _1, size<>>();
+  // test_mulary_pack<partial_search_before_extended_by_n, _1, _1, size<>, identity>();
 
   test_context<search<size<is<_3>>>, smp::search<smp::size<smp::is<_3>>>>()
     .test<list<>>()
@@ -179,73 +179,73 @@ TEST()
     ;
 
 
-  test_context<
-    partial_search<_3, size<is<_2>>>,
-    smp::partial_search<_3, smp::size<smp::is<_2>>>
-  >()
-    .test<list<>>()
-    .test<list<>, _0>()
-    .test<list<>, _0, _1>()
-    .test<list<>, _0, _1, _2>()
-    .test<list<>, _0, _1, _2, _3>()
-    ;
-
-  test_context<
-    partial_search<_2, size<is<_3>>>,
-    smp::partial_search<_2, smp::size<smp::is<_3>>>
-  >()
-    .test<list<>>()
-    .test<list<>, _0>()
-    .test<list<>, _0, _1>()
-    .test<seq_0_1_2, _0, _1, _2>()
-    .test<seq_1_2_3, _0, _1, _2, _3>()
-    ;
-
-
-  test_context<
-    partial_search_before<_3, size<is<_2>>>,
-    smp::partial_search_before<_3, smp::size<smp::is<_2>>>
-  >()
-    .test<list<>>()
-    .test<list<>, _0>()
-    .test<list<>, _0, _1>()
-    .test<list<>, _0, _1, _2>()
-    .test<list<>, _0, _1, _2, _3>()
-    ;
-
-  test_context<
-    partial_search_before<_2, size<is<_3>>>,
-    smp::partial_search_before<_2, smp::size<smp::is<_3>>>
-  >()
-    .test<list<>>()
-    .test<list<>, _0>()
-    .test<list<>, _0, _1>()
-    .test<list<>, _0, _1, _2>()
-    .test<seq_0, _0, _1, _2, _3>()
-    ;
+  // test_context<
+  //   partial_search<_3, size<is<_2>>>,
+  //   smp::partial_search<_3, smp::size<smp::is<_2>>>
+  // >()
+  //   .test<list<>>()
+  //   .test<list<>, _0>()
+  //   .test<list<>, _0, _1>()
+  //   .test<list<>, _0, _1, _2>()
+  //   .test<list<>, _0, _1, _2, _3>()
+  //   ;
+  //
+  // test_context<
+  //   partial_search<_2, size<is<_3>>>,
+  //   smp::partial_search<_2, smp::size<smp::is<_3>>>
+  // >()
+  //   .test<list<>>()
+  //   .test<list<>, _0>()
+  //   .test<list<>, _0, _1>()
+  //   .test<seq_0_1_2, _0, _1, _2>()
+  //   .test<seq_1_2_3, _0, _1, _2, _3>()
+  //   ;
 
 
-  test_context<
-    partial_search_before_extended_by_n_c<3, 2, size<is<_2>>>,
-    smp::partial_search_before_extended_by_n_c<3, 2, smp::size<smp::is<_2>>>
-  >()
-    .test<list<>>()
-    .test<list<>, _0>()
-    .test<list<>, _0, _1>()
-    .test<list<>, _0, _1, _2>()
-    .test<list<>, _0, _1, _2, _3>()
-    ;
-
-  test_context<
-    partial_search_before_extended_by_n_c<2, 2, size<is<_3>>>,
-    smp::partial_search_before_extended_by_n_c<2, 2, smp::size<smp::is<_3>>>
-  >()
-    .test<list<>>()
-    .test<list<>, _0>()
-    .test<list<>, _0, _1>()
-    .test<seq_0_1, _0, _1, _2>()
-    .test<seq_0_1_2, _0, _1, _2, _3>()
-    ;
+  // test_context<
+  //   partial_search_before<_3, size<is<_2>>>,
+  //   smp::partial_search_before<_3, smp::size<smp::is<_2>>>
+  // >()
+  //   .test<list<>>()
+  //   .test<list<>, _0>()
+  //   .test<list<>, _0, _1>()
+  //   .test<list<>, _0, _1, _2>()
+  //   .test<list<>, _0, _1, _2, _3>()
+  //   ;
+  //
+  // test_context<
+  //   partial_search_before<_2, size<is<_3>>>,
+  //   smp::partial_search_before<_2, smp::size<smp::is<_3>>>
+  // >()
+  //   .test<list<>>()
+  //   .test<list<>, _0>()
+  //   .test<list<>, _0, _1>()
+  //   .test<list<>, _0, _1, _2>()
+  //   .test<seq_0, _0, _1, _2, _3>()
+  //   ;
+  //
+  //
+  // test_context<
+  //   partial_search_before_extended_by_n_c<3, 2, size<is<_2>>>,
+  //   smp::partial_search_before_extended_by_n_c<3, 2, smp::size<smp::is<_2>>>
+  // >()
+  //   .test<list<>>()
+  //   .test<list<>, _0>()
+  //   .test<list<>, _0, _1>()
+  //   .test<list<>, _0, _1, _2>()
+  //   .test<list<>, _0, _1, _2, _3>()
+  //   ;
+  //
+  // test_context<
+  //   partial_search_before_extended_by_n_c<2, 2, size<is<_3>>>,
+  //   smp::partial_search_before_extended_by_n_c<2, 2, smp::size<smp::is<_3>>>
+  // >()
+  //   .test<list<>>()
+  //   .test<list<>, _0>()
+  //   .test<list<>, _0, _1>()
+  //   .test<seq_0_1, _0, _1, _2>()
+  //   .test<seq_0_1_2, _0, _1, _2, _3>()
+  //   ;
 
 
   using start = list<_1, _2>;

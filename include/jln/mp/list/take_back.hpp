@@ -44,13 +44,13 @@ namespace jln::mp
     template<class L, class N, class C = mp::listify>
     using take_back = typename detail::_unpack<mp::take_back<N, C>, L>::type;
 
-    template<class L, int_ n, class C = mp::listify>
+    template<class L, int_t n, class C = mp::listify>
     using take_back_c = typename detail::_unpack<mp::take_back_c<n, C>, L>::type;
 
     template<class L, class N, class C = mp::listify>
     using take_back_max = typename detail::_unpack<mp::take_back_max<N, C>, L>::type;
 
-    template<class L, int_ n, class C = mp::listify>
+    template<class L, int_t n, class C = mp::listify>
     using take_back_max_c = typename detail::_unpack<mp::take_back_max_c<n, C>, L>::type;
   }
 

@@ -58,7 +58,7 @@ namespace jln::mp::detail
     {};
 
     template<class i>
-    struct _impl<i, decltype(void(JLN_MP_INTEGRAL_AS(uint_, i::value)))>
+    struct _impl<i, decltype(void(JLN_MP_INTEGRAL_AS(uint_t, i::value)))>
     {
       template<class... xs>
       using f = typename conditional_c<i::value <= sizeof...(xs)>

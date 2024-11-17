@@ -10,7 +10,7 @@ namespace jln::mp::smp
   template<class F, class... BoundArgs>
   using bind_front = contract<mp::bind_front<subcontract<F>, BoundArgs...>>;
 
-  template<class F, int_... BoundArgs>
+  template<class F, int_t... BoundArgs>
   using bind_front_c = bind_front<F, number<BoundArgs>...>;
 }
 

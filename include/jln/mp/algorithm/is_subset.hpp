@@ -9,7 +9,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<uint_>
+    template<uint_t>
     struct _is_subset;
   }
   /// \endcond

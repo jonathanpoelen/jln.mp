@@ -66,7 +66,7 @@ namespace jln::mp::detail
     >::template f<xs...>;
   };
 
-  template<uint_>
+  template<uint_t>
   struct smp_is_disjoint_select;
 
   template<>

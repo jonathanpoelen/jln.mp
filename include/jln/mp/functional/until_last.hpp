@@ -41,8 +41,8 @@ namespace jln::mp
   >, FC>;
 
   template<
-    template<int_, class...> class Tpl,
-    int_ OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
+    template<int_t, class...> class Tpl,
+    int_t OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
   using partial_until_last_t_c = Tpl<OffsetEnd, Pred, recursively<
     pop_front<Tpl<OffsetEnd, Pred, next_recursion, stop_recursion>>,
     TC
@@ -66,8 +66,8 @@ namespace jln::mp
       mp::partial_until_last_t<Tpl, OffsetEnd, Pred, TC, FC>, L>::type;
 
     template<
-      class L, template<int_, class...> class Tpl,
-      int_ OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
+      class L, template<int_t, class...> class Tpl,
+      int_t OffsetEnd, class Pred, class TC = listify, class FC = clear<TC>>
     using partial_until_last_t_c = typename detail::_unpack<
       mp::partial_until_last_t_c<Tpl, OffsetEnd, Pred, TC, FC>, L>::type;
   }
@@ -122,13 +122,13 @@ namespace jln::mp::detail
   JLN_MP_MK_UNTIL_LAST_IMPL((class Data1, class Data2, class Data3, class Pred),
                             (Data1, Data2, Data3, Pred));
 
-  JLN_MP_MK_UNTIL_LAST_IMPL((int_ Data1, class Pred), (Data1, Pred));
-  JLN_MP_MK_UNTIL_LAST_IMPL((int_ Data1, class Data2, class Pred),
+  JLN_MP_MK_UNTIL_LAST_IMPL((int_t Data1, class Pred), (Data1, Pred));
+  JLN_MP_MK_UNTIL_LAST_IMPL((int_t Data1, class Data2, class Pred),
                             (Data1, Data2, Pred));
 
-  JLN_MP_MK_UNTIL_LAST_IMPL((int_ Data1, int_ Data2, class Pred),
+  JLN_MP_MK_UNTIL_LAST_IMPL((int_t Data1, int_t Data2, class Pred),
                             (Data1, Data2, Pred));
-  JLN_MP_MK_UNTIL_LAST_IMPL((int_ Data1, int_ Data2, class Data3, class Pred),
+  JLN_MP_MK_UNTIL_LAST_IMPL((int_t Data1, int_t Data2, class Data3, class Pred),
                             (Data1, Data2, Data3, Pred));
 
   JLN_MP_MK_UNTIL_LAST_IMPL((std::size_t Data1, class Pred), (Data1, Pred));
@@ -140,9 +140,9 @@ namespace jln::mp::detail
   JLN_MP_MK_UNTIL_LAST_IMPL((std::size_t Data1, std::size_t Data2, class Data3, class Pred),
                             (Data1, Data2, Data3, Pred));
 
-  JLN_MP_MK_UNTIL_LAST_IMPL((int_ Data1, std::size_t Data2, class Pred),
+  JLN_MP_MK_UNTIL_LAST_IMPL((int_t Data1, std::size_t Data2, class Pred),
                             (Data1, Data2, Pred));
-  JLN_MP_MK_UNTIL_LAST_IMPL((int_ Data1, std::size_t Data2, class Data3, class Pred),
+  JLN_MP_MK_UNTIL_LAST_IMPL((int_t Data1, std::size_t Data2, class Data3, class Pred),
                             (Data1, Data2, Data3, Pred));
 
 #undef JLN_MP_MK_UNTIL_LAST_IMPL

@@ -209,7 +209,7 @@ namespace jln::mp::detail
   struct fold_balanced_tree_select<2> : fold_tree_select<2>
   {};
 
-  template<class F, uint_>
+  template<class F, uint_t>
   struct fold_balanced_tree_impl;
 
   template<class F>
@@ -224,7 +224,7 @@ namespace jln::mp::detail
   struct fold_balanced_tree_impl<F, 3> : fold_tree_impl<F, 2>
   {};
 
-  template<class F, uint_ n>
+  template<class F, uint_t n>
   struct fold_balanced_tree_impl
   {
 #if JLN_MP_MEMOIZED_ALIAS

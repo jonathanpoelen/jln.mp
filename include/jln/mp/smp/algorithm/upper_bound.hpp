@@ -15,12 +15,12 @@ namespace jln::mp::smp
     subcontract<TC>, subcontract<FC>
   >>;
 
-  template<int_ x, class Cmp = less<>, class TC = listify, class FC = TC>
+  template<int_t x, class Cmp = less<>, class TC = listify, class FC = TC>
   using upper_bound_c = upper_bound<number<x>, Cmp, TC, FC>;
 
   template<class x, class TC = listify, class FC = TC>
   using upper_bound_than = upper_bound<x, less<>, TC, FC>;
 
-  template<int_ x, class TC = listify, class FC = TC>
+  template<int_t x, class TC = listify, class FC = TC>
   using upper_bound_than_c = upper_bound<number<x>, less<>, TC, FC>;
 }

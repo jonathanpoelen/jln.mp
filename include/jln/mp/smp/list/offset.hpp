@@ -9,7 +9,7 @@
 
 namespace jln::mp::smp
 {
-  template<int_ i, class C = identity>
+  template<int_t i, class C = identity>
   using offset_c = contract<mp::offset_c<i, assume_number<C>>>;
 }
 
@@ -18,7 +18,7 @@ JLN_MP_MAKE_REGULAR_SMP2_P(offset, (N), (C, smp::identity), smp::offset_c<N::val
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, int_ I, class C>
+  template<template<class> class sfinae, int_t I, class C>
   struct _sfinae<sfinae, offset_c<I, C>>
   {
     using type = smp::offset_c<I, sfinae<C>>;

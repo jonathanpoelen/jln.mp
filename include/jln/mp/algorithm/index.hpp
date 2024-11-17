@@ -55,7 +55,7 @@ namespace jln::mp
 
   /// Same as \c index_if_xs, but stop searching at position \c OffsetEnd.
   /// \tparam OffsetEnd  a negative value start to end of sequence.
-  template<int_ OffsetEnd, class Pred, class TC = identity, class FC = size<>>
+  template<int_t OffsetEnd, class Pred, class TC = identity, class FC = size<>>
   struct partial_index_if_xs_c
   {
     template<class... xs>
@@ -85,7 +85,7 @@ namespace jln::mp
     template<class OffsetEnd, class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
     using partial_index_if_xs = typename detail::_unpack<mp::partial_index_if_xs<OffsetEnd, Pred, TC, FC>, L>::type;
 
-    template<int_ OffsetEnd, class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
+    template<int_t OffsetEnd, class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
     using partial_index_if_xs_c = typename detail::_unpack<mp::partial_index_if_xs_c<OffsetEnd, Pred, TC, FC>, L>::type;
 
     template<class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
@@ -104,7 +104,7 @@ namespace jln::mp
     inline constexpr bool partial_index_if_xs_v = detail::_unpack<
       mp::partial_index_if_xs<OffsetEnd, Pred, TC, FC>, L>::type::value;
 
-    template<int_ OffsetEnd, class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
+    template<int_t OffsetEnd, class L, class Pred, class TC = mp::identity, class FC = mp::size<>>
     inline constexpr bool partial_index_if_xs_c_v = detail::_unpack<
       mp::partial_index_if_xs_c<OffsetEnd, Pred, TC, FC>, L>::type::value;
   }

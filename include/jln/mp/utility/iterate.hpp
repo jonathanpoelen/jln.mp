@@ -13,7 +13,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<uint_>
+    template<uint_t>
     struct iterate_impl;
   }
   /// \endcond
@@ -22,7 +22,7 @@ namespace jln::mp
 
   /// Apply a function \c n times to its argument.
   /// \treturn \value
-  template<uint_ n, class F, class C = identity>
+  template<uint_t n, class F, class C = identity>
   struct iterate_c
   {
     template<class x>
@@ -41,12 +41,12 @@ namespace jln::mp
     template<class L, class n, class F, class C = mp::identity>
     using iterate = typename detail::_unpack<mp::iterate<n, F, C>, L>::type;
 
-    template<class L, uint_ n, class F, class C = mp::identity>
+    template<class L, uint_t n, class F, class C = mp::identity>
     using iterate_c = typename detail::_unpack<mp::iterate_c<n, F, C>, L>::type;
   }
 
   /// \cond
-  template<uint_ n, class F>
+  template<uint_t n, class F>
   struct iterate_c<n, F, identity>
   {
     template<class x>
@@ -60,7 +60,7 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<uint_ n>
+  template<uint_t n>
   struct iterate_impl : iterate_impl<
       n <= 16 ? 8
     : n <= 32 ? 16
@@ -74,7 +74,7 @@ namespace jln::mp::detail
   template<>
   struct iterate_impl<0>
   {
-    template<uint_ i, class F, class x>
+    template<uint_t i, class F, class x>
     using f = x;
   };
 
@@ -82,7 +82,7 @@ namespace jln::mp::detail
   template<>                                      \
   struct iterate_impl<n>                          \
   {                                               \
-    template<uint_ i, class F, class x>           \
+    template<uint_t i, class F, class x>           \
     using f =                                     \
       mp_rep(typename F::template f<, JLN_MP_NIL) \
       x                                           \
@@ -112,7 +112,7 @@ namespace jln::mp::detail
   template<>
   struct iterate_impl<8>
   {
-    template<uint_ i, class F, class x>
+    template<uint_t i, class F, class x>
     using f = typename iterate_impl<i-8>
       ::template f<i-8, F, typename iterate8_impl<F, x>::type>;
   };
@@ -120,7 +120,7 @@ namespace jln::mp::detail
   template<>
   struct iterate_impl<16>
   {
-    template<uint_ i, class F, class x>
+    template<uint_t i, class F, class x>
     using f = typename iterate_impl<i-16>
       ::template f<i-16, F, typename iterate8_impl<
         F, typename iterate8_impl<F, x>::type
@@ -131,7 +131,7 @@ namespace jln::mp::detail
   template<>                                                \
   struct iterate_impl<n>                                    \
   {                                                         \
-    template<uint_ i, class F, class x>                     \
+    template<uint_t i, class F, class x>                     \
     using f = typename iterate_impl<i-n>                    \
       ::template f<i-n, F,                                  \
         typename iterate_impl<n/2>::template f<n/2, F,      \

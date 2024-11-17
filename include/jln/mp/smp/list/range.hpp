@@ -7,7 +7,7 @@
 
 namespace jln::mp::smp
 {
-  template<int_ beg, int_ end, class C = listify>
+  template<int_t beg, int_t end, class C = listify>
   using range_c = contract<mp::range_c<
     beg, end, subcontract<C>>>;
 }
@@ -18,7 +18,7 @@ JLN_MP_MAKE_REGULAR_SMP3_P(range, (beg), (end), (C, smp::listify),
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, int_ beg, int_ end, class C>
+  template<template<class> class sfinae, int_t beg, int_t end, class C>
   struct _sfinae<sfinae, range_c<beg, end, C>>
   {
     using type = smp::range_c<beg, end, sfinae<C>>;
