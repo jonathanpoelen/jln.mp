@@ -1,4 +1,4 @@
-project('jln.mp', 'cpp', default_options : ['cpp_std=c++17'])
+project('jln.mp', 'cpp', default_options : ['cpp_std=c++17', 'warning_level=3'])
 
 if get_option('mp_debug')
   add_global_arguments('-DJLN_MP_ENABLE_DEBUG=1', language : 'cpp')

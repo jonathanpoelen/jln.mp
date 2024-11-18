@@ -23,7 +23,6 @@ fi
 if [[ "$comp" = 'msvc' ]]; then
   patt='
     s#^\( command = .*\) /Fo\$out /c \$in#\1 /Zs $in \&\& :>$out#;t
-    s#/W2 \(.* /W4 \)#\1#g;t
   '
 else
   patt='
