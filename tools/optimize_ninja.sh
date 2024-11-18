@@ -3,6 +3,12 @@
 # SPDX-License-Identifier: MIT
 set -ex
 
+comp='linux'
+if [[ "$1" = '-c'* ]]; then
+  comp="${1:2}"
+  shift
+fi
+
 if [[ -d "$1" ]]; then
   f="$1"/build.ninja
 elif [[ -f "$1" ]]; then
@@ -13,8 +19,17 @@ else
   f=build.ninja
 fi
 
-sed -i '
-  s/^\( command = .*\) -o \$out -c \$in/\1 -fsyntax-only $in \&\& :>$out/;t
-  s/-g[0-9]\? \|-O[1-3] //g;t
-  s/^\(build [^:]\+\): cpp_LINKER\(_RSP\)\?/\1: phony/;Ta;n;d;:a
-' "$f"
+
+if [[ "$comp" = 'msvc' ]]; then
+  patt='
+    s#^\( command = .*\) /Fo\$out /c \$in#\1 /Zs $in \&\& :>$out#;t
+    s#/W2 \(.* /W4 \)#\1#g;t
+  '
+else
+  patt='
+    s/^\( command = .*\) -o \$out -c \$in/\1 -fsyntax-only $in \&\& :>$out/;t
+    s/-g[0-9]\? \|-O[1-3] //g;t
+  '
+fi
+
+sed -i "$patt"'s/^\(build [^:]\+\): cpp_LINKER\(_RSP\)\?/\1: phony/;Ta;n;d;:a' "$f"

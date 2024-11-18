@@ -17,8 +17,8 @@ if sys == 'linux'
   }
 
   comp = meson.get_compiler('cpp').get_id()
-  if ['clang', 'gcc', 'intel'].contains(comp)
-    meson.add_postconf_script('./tools/optimize_ninja.sh')
+  if ['clang', 'gcc', 'intel', 'msvc'].contains(comp)
+    meson.add_postconf_script('./tools/optimize_ninja.sh', '-c' + comp)
   endif
 endif
 
