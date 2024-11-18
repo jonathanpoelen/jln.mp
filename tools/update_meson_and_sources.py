@@ -5,47 +5,35 @@
 import os
 import shutil
 
-all_targets = set()
-cpp_test_paths = []
-meson_output_lines = []
-
-def ordered_listdir(path):
+def ordered_listdir(path: str) -> list[str]:
   l = os.listdir(path)
   l.sort()
   return l
 
-def new_target(name):
+all_targets = set()
+def new_target(name: str) -> str:
   while name in all_targets:
     name += '_'
   all_targets.add(name)
   return name
 
-def new_executable(name, path, prefix, i):
-  target = f'{prefix}{i}'
-  meson_output_lines.append(f"{target} = executable('{name}', '{path}', dependencies: test_dep)")
-  return target
-
-def new_alias(name, targets):
-  deps = ", ".join(targets)
-  meson_output_lines.append(f"alias_target('{name}', {deps})")
-
-def make_targets(path, prefix, target_prefix='t'):
+def make_targets(path: str, prefix_alias_name: str, suffix_target_name: str,
+                 deps: str, output_targets: list[str], prefix: str = '  ') -> str:
   l = []
   for f in ordered_listdir(path):
     newpath = os.path.join(path, f)
     if os.path.isfile(newpath):
       if f.endswith('.cpp'):
-        basename = f[:-4]
-        cpp_test_paths.append(f'{path}/{f}')
-        name = new_target(basename)
-        l.append(new_executable(name, newpath, target_prefix, f'_{basename}'))
+        output_targets.append(newpath)
+        name = new_target(f'{f[:-4]}{suffix_target_name}')
+        l.append(f"{prefix}executable('{name}', '{newpath}', dependencies: {deps}),")
     else:
-      dirtarget = f'{prefix}.{f}'
-      targets = make_targets(newpath, dirtarget, f'{target_prefix}_{f}')
-      name = new_target(dirtarget)
-      new_alias(name, targets)
-      l += targets
-  return l
+      alias_name = new_target(f'{prefix_alias_name}.{f}')
+      l.append(f"{prefix}alias_target('{alias_name}',")
+      l.append(make_targets(newpath, alias_name, suffix_target_name,
+                            deps, output_targets, prefix + '  '))
+      l.append(f'{prefix}),')
+  return '\n'.join(l)
 
 
 LICENSE = (
@@ -106,7 +94,11 @@ if os.path.isdir('test/autogen/'):
   shutil.rmtree('test/autogen/')
 os.mkdir('test/autogen')
 
-new_alias('mp', make_targets('test/src', 'mp'))
+cpp_test_paths = []
+tests = make_targets('test/src', new_target('mp'), '', 'test_dep', cpp_test_paths)
+
+examples = make_targets('examples', new_target('examples'), '.example', 'example_dep', [])
+
 genfiles('mp')
 genfiles('mp/smp')
 with open(f'test/autogen/main.cpp', 'w') as f:
@@ -128,27 +120,13 @@ stop_test_str = '# stop tests\n'
 start_test = content.index(start_test_str, stop_example)
 stop_test = content.index(stop_test_str, start_test)
 
-examples = ordered_listdir('examples')
-
 with open('meson.build', 'w') as f:
   f.write(content[:start_examples + len(start_example_str)])
-
-  example_exes = '\n'.join(
-    f"example_{name[:-4]} = executable('{name[:-4]}.example', 'examples/{name}', dependencies: example_dep)"
-    for name in examples)
-  example_all = ', '.join(f'example_{name[:-4]}' for name in examples)
-
-  f.write(example_exes)
-  f.write('\n')
-  f.write(f"alias_target('examples', {example_all})\n")
-
+  f.write(f"alias_target('examples', \n{examples}\n)\n")
   f.write(content[stop_example:start_test + len(start_test_str)])
-
-  f.write('\n'.join(meson_output_lines))
-  f.write('\n')
+  f.write(f"alias_target('mp', \n{tests}\n)\n")
   sources = "',\n  '".join(autogen_tests)
   f.write(f"executable('check_inc', [\n  '{sources}'\n], dependencies: test_dep)\n")
-
   f.write(content[stop_test:])
 
 with open('test/mp.cpp', 'w') as f:

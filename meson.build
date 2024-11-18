@@ -39,235 +39,245 @@ test_dep = declare_dependency(include_directories: include_directories('test/inc
 executable('mp_test', 'test/mp.cpp', dependencies: test_dep)
 
 # start examples
-example_expr = executable('expr.example', 'examples/expr.cpp', dependencies: example_dep)
-example_tuple_cat = executable('tuple_cat.example', 'examples/tuple_cat.cpp', dependencies: example_dep)
-alias_target('examples', example_expr, example_tuple_cat)
+alias_target('examples', 
+  executable('expr.example', 'examples/expr.cpp', dependencies: example_dep),
+  executable('tuple_cat.example', 'examples/tuple_cat.cpp', dependencies: example_dep),
+)
 # stop examples
 
 # start tests
-t_algorithm_accumulate = executable('accumulate', 'test/src/algorithm/accumulate.cpp', dependencies: test_dep)
-t_algorithm_after = executable('after', 'test/src/algorithm/after.cpp', dependencies: test_dep)
-t_algorithm_all_of = executable('all_of', 'test/src/algorithm/all_of.cpp', dependencies: test_dep)
-t_algorithm_anticirculant_matrix = executable('anticirculant_matrix', 'test/src/algorithm/anticirculant_matrix.cpp', dependencies: test_dep)
-t_algorithm_any_of = executable('any_of', 'test/src/algorithm/any_of.cpp', dependencies: test_dep)
-t_algorithm_arrange = executable('arrange', 'test/src/algorithm/arrange.cpp', dependencies: test_dep)
-t_algorithm_batched = executable('batched', 'test/src/algorithm/batched.cpp', dependencies: test_dep)
-t_algorithm_before = executable('before', 'test/src/algorithm/before.cpp', dependencies: test_dep)
-t_algorithm_before_after = executable('before_after', 'test/src/algorithm/before_after.cpp', dependencies: test_dep)
-t_algorithm_circulant_matrix = executable('circulant_matrix', 'test/src/algorithm/circulant_matrix.cpp', dependencies: test_dep)
-t_algorithm_collapse = executable('collapse', 'test/src/algorithm/collapse.cpp', dependencies: test_dep)
-t_algorithm_combine = executable('combine', 'test/src/algorithm/combine.cpp', dependencies: test_dep)
-t_algorithm_compare_with = executable('compare_with', 'test/src/algorithm/compare_with.cpp', dependencies: test_dep)
-t_algorithm_compress = executable('compress', 'test/src/algorithm/compress.cpp', dependencies: test_dep)
-t_algorithm_conjunction = executable('conjunction', 'test/src/algorithm/conjunction.cpp', dependencies: test_dep)
-t_algorithm_contains = executable('contains', 'test/src/algorithm/contains.cpp', dependencies: test_dep)
-t_algorithm_copy = executable('copy', 'test/src/algorithm/copy.cpp', dependencies: test_dep)
-t_algorithm_copy_unique = executable('copy_unique', 'test/src/algorithm/copy_unique.cpp', dependencies: test_dep)
-t_algorithm_count = executable('count', 'test/src/algorithm/count.cpp', dependencies: test_dep)
-t_algorithm_counter = executable('counter', 'test/src/algorithm/counter.cpp', dependencies: test_dep)
-t_algorithm_disjunction = executable('disjunction', 'test/src/algorithm/disjunction.cpp', dependencies: test_dep)
-t_algorithm_drop_until = executable('drop_until', 'test/src/algorithm/drop_until.cpp', dependencies: test_dep)
-t_algorithm_drop_until_xs = executable('drop_until_xs', 'test/src/algorithm/drop_until_xs.cpp', dependencies: test_dep)
-t_algorithm_drop_while = executable('drop_while', 'test/src/algorithm/drop_while.cpp', dependencies: test_dep)
-t_algorithm_drop_while_xs = executable('drop_while_xs', 'test/src/algorithm/drop_while_xs.cpp', dependencies: test_dep)
-t_algorithm_ends_with = executable('ends_with', 'test/src/algorithm/ends_with.cpp', dependencies: test_dep)
-t_algorithm_find = executable('find', 'test/src/algorithm/find.cpp', dependencies: test_dep)
-t_algorithm_find_last = executable('find_last', 'test/src/algorithm/find_last.cpp', dependencies: test_dep)
-t_algorithm_flatten = executable('flatten', 'test/src/algorithm/flatten.cpp', dependencies: test_dep)
-t_algorithm_fold = executable('fold', 'test/src/algorithm/fold.cpp', dependencies: test_dep)
-t_algorithm_fold_right = executable('fold_right', 'test/src/algorithm/fold_right.cpp', dependencies: test_dep)
-t_algorithm_fold_tree = executable('fold_tree', 'test/src/algorithm/fold_tree.cpp', dependencies: test_dep)
-t_algorithm_fold_xs = executable('fold_xs', 'test/src/algorithm/fold_xs.cpp', dependencies: test_dep)
-t_algorithm_group = executable('group', 'test/src/algorithm/group.cpp', dependencies: test_dep)
-t_algorithm_index = executable('index', 'test/src/algorithm/index.cpp', dependencies: test_dep)
-t_algorithm_intersperse = executable('intersperse', 'test/src/algorithm/intersperse.cpp', dependencies: test_dep)
-t_algorithm_iota = executable('iota', 'test/src/algorithm/iota.cpp', dependencies: test_dep)
-t_algorithm_is_disjoint = executable('is_disjoint', 'test/src/algorithm/is_disjoint.cpp', dependencies: test_dep)
-t_algorithm_is_sorted = executable('is_sorted', 'test/src/algorithm/is_sorted.cpp', dependencies: test_dep)
-t_algorithm_is_subset = executable('is_subset', 'test/src/algorithm/is_subset.cpp', dependencies: test_dep)
-t_algorithm_is_unique = executable('is_unique', 'test/src/algorithm/is_unique.cpp', dependencies: test_dep)
-t_algorithm_lexicographical_compare = executable('lexicographical_compare', 'test/src/algorithm/lexicographical_compare.cpp', dependencies: test_dep)
-t_algorithm_lower_bound = executable('lower_bound', 'test/src/algorithm/lower_bound.cpp', dependencies: test_dep)
-t_algorithm_make_int_sequence = executable('make_int_sequence', 'test/src/algorithm/make_int_sequence.cpp', dependencies: test_dep)
-t_algorithm_matrix_longest = executable('matrix_longest', 'test/src/algorithm/matrix_longest.cpp', dependencies: test_dep)
-t_algorithm_matrix_shortest = executable('matrix_shortest', 'test/src/algorithm/matrix_shortest.cpp', dependencies: test_dep)
-t_algorithm_max_element = executable('max_element', 'test/src/algorithm/max_element.cpp', dependencies: test_dep)
-t_algorithm_merge = executable('merge', 'test/src/algorithm/merge.cpp', dependencies: test_dep)
-t_algorithm_min_element = executable('min_element', 'test/src/algorithm/min_element.cpp', dependencies: test_dep)
-t_algorithm_mismatch = executable('mismatch', 'test/src/algorithm/mismatch.cpp', dependencies: test_dep)
-t_algorithm_mismatch_index = executable('mismatch_index', 'test/src/algorithm/mismatch_index.cpp', dependencies: test_dep)
-t_algorithm_none_of = executable('none_of', 'test/src/algorithm/none_of.cpp', dependencies: test_dep)
-t_algorithm_pairwise = executable('pairwise', 'test/src/algorithm/pairwise.cpp', dependencies: test_dep)
-t_algorithm_pairwise_fold = executable('pairwise_fold', 'test/src/algorithm/pairwise_fold.cpp', dependencies: test_dep)
-t_algorithm_partition = executable('partition', 'test/src/algorithm/partition.cpp', dependencies: test_dep)
-t_algorithm_permutations = executable('permutations', 'test/src/algorithm/permutations.cpp', dependencies: test_dep)
-t_algorithm_powerset = executable('powerset', 'test/src/algorithm/powerset.cpp', dependencies: test_dep)
-t_algorithm_prefix = executable('prefix', 'test/src/algorithm/prefix.cpp', dependencies: test_dep)
-t_algorithm_product = executable('product', 'test/src/algorithm/product.cpp', dependencies: test_dep)
-t_algorithm_regroup = executable('regroup', 'test/src/algorithm/regroup.cpp', dependencies: test_dep)
-t_algorithm_remove = executable('remove', 'test/src/algorithm/remove.cpp', dependencies: test_dep)
-t_algorithm_remove_adjacent = executable('remove_adjacent', 'test/src/algorithm/remove_adjacent.cpp', dependencies: test_dep)
-t_algorithm_remove_prefix = executable('remove_prefix', 'test/src/algorithm/remove_prefix.cpp', dependencies: test_dep)
-t_algorithm_remove_suffix = executable('remove_suffix', 'test/src/algorithm/remove_suffix.cpp', dependencies: test_dep)
-t_algorithm_remove_unique = executable('remove_unique', 'test/src/algorithm/remove_unique.cpp', dependencies: test_dep)
-t_algorithm_repeat = executable('repeat', 'test/src/algorithm/repeat.cpp', dependencies: test_dep)
-t_algorithm_replace = executable('replace', 'test/src/algorithm/replace.cpp', dependencies: test_dep)
-t_algorithm_reverse = executable('reverse', 'test/src/algorithm/reverse.cpp', dependencies: test_dep)
-t_algorithm_reverse_fold = executable('reverse_fold', 'test/src/algorithm/reverse_fold.cpp', dependencies: test_dep)
-t_algorithm_reverse_fold_right = executable('reverse_fold_right', 'test/src/algorithm/reverse_fold_right.cpp', dependencies: test_dep)
-t_algorithm_rotate = executable('rotate', 'test/src/algorithm/rotate.cpp', dependencies: test_dep)
-t_algorithm_same = executable('same', 'test/src/algorithm/same.cpp', dependencies: test_dep)
-t_algorithm_scan = executable('scan', 'test/src/algorithm/scan.cpp', dependencies: test_dep)
-t_algorithm_scan_right = executable('scan_right', 'test/src/algorithm/scan_right.cpp', dependencies: test_dep)
-t_algorithm_search = executable('search', 'test/src/algorithm/search.cpp', dependencies: test_dep)
-t_algorithm_similar = executable('similar', 'test/src/algorithm/similar.cpp', dependencies: test_dep)
-t_algorithm_skip_until = executable('skip_until', 'test/src/algorithm/skip_until.cpp', dependencies: test_dep)
-t_algorithm_skip_until_xs = executable('skip_until_xs', 'test/src/algorithm/skip_until_xs.cpp', dependencies: test_dep)
-t_algorithm_skip_while = executable('skip_while', 'test/src/algorithm/skip_while.cpp', dependencies: test_dep)
-t_algorithm_skip_while_xs = executable('skip_while_xs', 'test/src/algorithm/skip_while_xs.cpp', dependencies: test_dep)
-t_algorithm_sort = executable('sort', 'test/src/algorithm/sort.cpp', dependencies: test_dep)
-t_algorithm_split = executable('split', 'test/src/algorithm/split.cpp', dependencies: test_dep)
-t_algorithm_split_after = executable('split_after', 'test/src/algorithm/split_after.cpp', dependencies: test_dep)
-t_algorithm_split_at = executable('split_at', 'test/src/algorithm/split_at.cpp', dependencies: test_dep)
-t_algorithm_split_before = executable('split_before', 'test/src/algorithm/split_before.cpp', dependencies: test_dep)
-t_algorithm_split_from = executable('split_from', 'test/src/algorithm/split_from.cpp', dependencies: test_dep)
-t_algorithm_split_keep_separator = executable('split_keep_separator', 'test/src/algorithm/split_keep_separator.cpp', dependencies: test_dep)
-t_algorithm_split_once = executable('split_once', 'test/src/algorithm/split_once.cpp', dependencies: test_dep)
-t_algorithm_starts_with = executable('starts_with', 'test/src/algorithm/starts_with.cpp', dependencies: test_dep)
-t_algorithm_suffix = executable('suffix', 'test/src/algorithm/suffix.cpp', dependencies: test_dep)
-t_algorithm_take_until = executable('take_until', 'test/src/algorithm/take_until.cpp', dependencies: test_dep)
-t_algorithm_take_until_xs = executable('take_until_xs', 'test/src/algorithm/take_until_xs.cpp', dependencies: test_dep)
-t_algorithm_take_while = executable('take_while', 'test/src/algorithm/take_while.cpp', dependencies: test_dep)
-t_algorithm_take_while_xs = executable('take_while_xs', 'test/src/algorithm/take_while_xs.cpp', dependencies: test_dep)
-t_algorithm_transform = executable('transform', 'test/src/algorithm/transform.cpp', dependencies: test_dep)
-t_algorithm_transform_first = executable('transform_first', 'test/src/algorithm/transform_first.cpp', dependencies: test_dep)
-t_algorithm_transform_second = executable('transform_second', 'test/src/algorithm/transform_second.cpp', dependencies: test_dep)
-t_algorithm_transform_third = executable('transform_third', 'test/src/algorithm/transform_third.cpp', dependencies: test_dep)
-t_algorithm_unfold = executable('unfold', 'test/src/algorithm/unfold.cpp', dependencies: test_dep)
-t_algorithm_unique = executable('unique', 'test/src/algorithm/unique.cpp', dependencies: test_dep)
-t_algorithm_upper_bound = executable('upper_bound', 'test/src/algorithm/upper_bound.cpp', dependencies: test_dep)
-t_algorithm_zip = executable('zip', 'test/src/algorithm/zip.cpp', dependencies: test_dep)
-t_algorithm_zip_longest = executable('zip_longest', 'test/src/algorithm/zip_longest.cpp', dependencies: test_dep)
-alias_target('mp.algorithm', t_algorithm_accumulate, t_algorithm_after, t_algorithm_all_of, t_algorithm_anticirculant_matrix, t_algorithm_any_of, t_algorithm_arrange, t_algorithm_batched, t_algorithm_before, t_algorithm_before_after, t_algorithm_circulant_matrix, t_algorithm_collapse, t_algorithm_combine, t_algorithm_compare_with, t_algorithm_compress, t_algorithm_conjunction, t_algorithm_contains, t_algorithm_copy, t_algorithm_copy_unique, t_algorithm_count, t_algorithm_counter, t_algorithm_disjunction, t_algorithm_drop_until, t_algorithm_drop_until_xs, t_algorithm_drop_while, t_algorithm_drop_while_xs, t_algorithm_ends_with, t_algorithm_find, t_algorithm_find_last, t_algorithm_flatten, t_algorithm_fold, t_algorithm_fold_right, t_algorithm_fold_tree, t_algorithm_fold_xs, t_algorithm_group, t_algorithm_index, t_algorithm_intersperse, t_algorithm_iota, t_algorithm_is_disjoint, t_algorithm_is_sorted, t_algorithm_is_subset, t_algorithm_is_unique, t_algorithm_lexicographical_compare, t_algorithm_lower_bound, t_algorithm_make_int_sequence, t_algorithm_matrix_longest, t_algorithm_matrix_shortest, t_algorithm_max_element, t_algorithm_merge, t_algorithm_min_element, t_algorithm_mismatch, t_algorithm_mismatch_index, t_algorithm_none_of, t_algorithm_pairwise, t_algorithm_pairwise_fold, t_algorithm_partition, t_algorithm_permutations, t_algorithm_powerset, t_algorithm_prefix, t_algorithm_product, t_algorithm_regroup, t_algorithm_remove, t_algorithm_remove_adjacent, t_algorithm_remove_prefix, t_algorithm_remove_suffix, t_algorithm_remove_unique, t_algorithm_repeat, t_algorithm_replace, t_algorithm_reverse, t_algorithm_reverse_fold, t_algorithm_reverse_fold_right, t_algorithm_rotate, t_algorithm_same, t_algorithm_scan, t_algorithm_scan_right, t_algorithm_search, t_algorithm_similar, t_algorithm_skip_until, t_algorithm_skip_until_xs, t_algorithm_skip_while, t_algorithm_skip_while_xs, t_algorithm_sort, t_algorithm_split, t_algorithm_split_after, t_algorithm_split_at, t_algorithm_split_before, t_algorithm_split_from, t_algorithm_split_keep_separator, t_algorithm_split_once, t_algorithm_starts_with, t_algorithm_suffix, t_algorithm_take_until, t_algorithm_take_until_xs, t_algorithm_take_while, t_algorithm_take_while_xs, t_algorithm_transform, t_algorithm_transform_first, t_algorithm_transform_second, t_algorithm_transform_third, t_algorithm_unfold, t_algorithm_unique, t_algorithm_upper_bound, t_algorithm_zip, t_algorithm_zip_longest)
-t_assume = executable('assume', 'test/src/assume.cpp', dependencies: test_dep)
-t_functional_apply_or_identity = executable('apply_or_identity', 'test/src/functional/apply_or_identity.cpp', dependencies: test_dep)
-t_functional_bind_back = executable('bind_back', 'test/src/functional/bind_back.cpp', dependencies: test_dep)
-t_functional_bind_front = executable('bind_front', 'test/src/functional/bind_front.cpp', dependencies: test_dep)
-t_functional_capture_back = executable('capture_back', 'test/src/functional/capture_back.cpp', dependencies: test_dep)
-t_functional_capture_front = executable('capture_front', 'test/src/functional/capture_front.cpp', dependencies: test_dep)
-t_functional_cascade = executable('cascade', 'test/src/functional/cascade.cpp', dependencies: test_dep)
-t_functional_compose = executable('compose', 'test/src/functional/compose.cpp', dependencies: test_dep)
-t_functional_each = executable('each', 'test/src/functional/each.cpp', dependencies: test_dep)
-t_functional_eval = executable('eval', 'test/src/functional/eval.cpp', dependencies: test_dep)
-t_functional_fix = executable('fix', 'test/src/functional/fix.cpp', dependencies: test_dep)
-t_functional_flip = executable('flip', 'test/src/functional/flip.cpp', dependencies: test_dep)
-t_functional_identity = executable('identity', 'test/src/functional/identity.cpp', dependencies: test_dep)
-t_functional_if = executable('if', 'test/src/functional/if.cpp', dependencies: test_dep)
-t_functional_invoke_twice = executable('invoke_twice', 'test/src/functional/invoke_twice.cpp', dependencies: test_dep)
-t_functional_lift = executable('lift', 'test/src/functional/lift.cpp', dependencies: test_dep)
-t_functional_memoize = executable('memoize', 'test/src/functional/memoize.cpp', dependencies: test_dep)
-t_functional_not_fn = executable('not_fn', 'test/src/functional/not_fn.cpp', dependencies: test_dep)
-t_functional_partial = executable('partial', 'test/src/functional/partial.cpp', dependencies: test_dep)
-t_functional_partial_each = executable('partial_each', 'test/src/functional/partial_each.cpp', dependencies: test_dep)
-t_functional_partial_tee = executable('partial_tee', 'test/src/functional/partial_tee.cpp', dependencies: test_dep)
-t_functional_partial_xs = executable('partial_xs', 'test/src/functional/partial_xs.cpp', dependencies: test_dep)
-t_functional_recursively = executable('recursively', 'test/src/functional/recursively.cpp', dependencies: test_dep)
-t_functional_select = executable('select', 'test/src/functional/select.cpp', dependencies: test_dep)
-t_functional_tee = executable('tee', 'test/src/functional/tee.cpp', dependencies: test_dep)
-t_functional_try = executable('try', 'test/src/functional/try.cpp', dependencies: test_dep)
-t_functional_until = executable('until', 'test/src/functional/until.cpp', dependencies: test_dep)
-t_functional_until_last = executable('until_last', 'test/src/functional/until_last.cpp', dependencies: test_dep)
-t_functional_while = executable('while', 'test/src/functional/while.cpp', dependencies: test_dep)
-alias_target('mp.functional', t_functional_apply_or_identity, t_functional_bind_back, t_functional_bind_front, t_functional_capture_back, t_functional_capture_front, t_functional_cascade, t_functional_compose, t_functional_each, t_functional_eval, t_functional_fix, t_functional_flip, t_functional_identity, t_functional_if, t_functional_invoke_twice, t_functional_lift, t_functional_memoize, t_functional_not_fn, t_functional_partial, t_functional_partial_each, t_functional_partial_tee, t_functional_partial_xs, t_functional_recursively, t_functional_select, t_functional_tee, t_functional_try, t_functional_until, t_functional_until_last, t_functional_while)
-t_list_append = executable('append', 'test/src/list/append.cpp', dependencies: test_dep)
-t_list_as_list = executable('as_list', 'test/src/list/as_list.cpp', dependencies: test_dep)
-t_list_at = executable('at', 'test/src/list/at.cpp', dependencies: test_dep)
-t_list_back = executable('back', 'test/src/list/back.cpp', dependencies: test_dep)
-t_list_clear = executable('clear', 'test/src/list/clear.cpp', dependencies: test_dep)
-t_list_drop_back = executable('drop_back', 'test/src/list/drop_back.cpp', dependencies: test_dep)
-t_list_drop_front = executable('drop_front', 'test/src/list/drop_front.cpp', dependencies: test_dep)
-t_list_enumerate = executable('enumerate', 'test/src/list/enumerate.cpp', dependencies: test_dep)
-t_list_erase = executable('erase', 'test/src/list/erase.cpp', dependencies: test_dep)
-t_list_front = executable('front', 'test/src/list/front.cpp', dependencies: test_dep)
-t_list_indices = executable('indices', 'test/src/list/indices.cpp', dependencies: test_dep)
-t_list_insert = executable('insert', 'test/src/list/insert.cpp', dependencies: test_dep)
-t_list_insert_sequence = executable('insert_sequence', 'test/src/list/insert_sequence.cpp', dependencies: test_dep)
-t_list_is_empty = executable('is_empty', 'test/src/list/is_empty.cpp', dependencies: test_dep)
-t_list_is_list = executable('is_list', 'test/src/list/is_list.cpp', dependencies: test_dep)
-t_list_is_not_empty = executable('is_not_empty', 'test/src/list/is_not_empty.cpp', dependencies: test_dep)
-t_list_is_size_of = executable('is_size_of', 'test/src/list/is_size_of.cpp', dependencies: test_dep)
-t_list_join = executable('join', 'test/src/list/join.cpp', dependencies: test_dep)
-t_list_list = executable('list', 'test/src/list/list.cpp', dependencies: test_dep)
-t_list_lookup = executable('lookup', 'test/src/list/lookup.cpp', dependencies: test_dep)
-t_list_offset = executable('offset', 'test/src/list/offset.cpp', dependencies: test_dep)
-t_list_pop_back = executable('pop_back', 'test/src/list/pop_back.cpp', dependencies: test_dep)
-t_list_pop_front = executable('pop_front', 'test/src/list/pop_front.cpp', dependencies: test_dep)
-t_list_prepend = executable('prepend', 'test/src/list/prepend.cpp', dependencies: test_dep)
-t_list_push_back = executable('push_back', 'test/src/list/push_back.cpp', dependencies: test_dep)
-t_list_push_front = executable('push_front', 'test/src/list/push_front.cpp', dependencies: test_dep)
-t_list_range = executable('range', 'test/src/list/range.cpp', dependencies: test_dep)
-t_list_size = executable('size', 'test/src/list/size.cpp', dependencies: test_dep)
-t_list_slice = executable('slice', 'test/src/list/slice.cpp', dependencies: test_dep)
-t_list_sliding = executable('sliding', 'test/src/list/sliding.cpp', dependencies: test_dep)
-t_list_swap_index = executable('swap_index', 'test/src/list/swap_index.cpp', dependencies: test_dep)
-t_list_take_back = executable('take_back', 'test/src/list/take_back.cpp', dependencies: test_dep)
-t_list_take_front = executable('take_front', 'test/src/list/take_front.cpp', dependencies: test_dep)
-t_list_wrap_in_list = executable('wrap_in_list', 'test/src/list/wrap_in_list.cpp', dependencies: test_dep)
-alias_target('mp.list', t_list_append, t_list_as_list, t_list_at, t_list_back, t_list_clear, t_list_drop_back, t_list_drop_front, t_list_enumerate, t_list_erase, t_list_front, t_list_indices, t_list_insert, t_list_insert_sequence, t_list_is_empty, t_list_is_list, t_list_is_not_empty, t_list_is_size_of, t_list_join, t_list_list, t_list_lookup, t_list_offset, t_list_pop_back, t_list_pop_front, t_list_prepend, t_list_push_back, t_list_push_front, t_list_range, t_list_size, t_list_slice, t_list_sliding, t_list_swap_index, t_list_take_back, t_list_take_front, t_list_wrap_in_list)
-t_map_is_map = executable('is_map', 'test/src/map/is_map.cpp', dependencies: test_dep)
-t_map_map_contains = executable('map_contains', 'test/src/map/map_contains.cpp', dependencies: test_dep)
-t_map_map_erase = executable('map_erase', 'test/src/map/map_erase.cpp', dependencies: test_dep)
-t_map_map_find = executable('map_find', 'test/src/map/map_find.cpp', dependencies: test_dep)
-t_map_map_insert = executable('map_insert', 'test/src/map/map_insert.cpp', dependencies: test_dep)
-t_map_map_keys = executable('map_keys', 'test/src/map/map_keys.cpp', dependencies: test_dep)
-t_map_map_replace = executable('map_replace', 'test/src/map/map_replace.cpp', dependencies: test_dep)
-t_map_map_update = executable('map_update', 'test/src/map/map_update.cpp', dependencies: test_dep)
-alias_target('mp.map', t_map_is_map, t_map_map_contains, t_map_map_erase, t_map_map_find, t_map_map_insert, t_map_map_keys, t_map_map_replace, t_map_map_update)
-t_number_as_bool = executable('as_bool', 'test/src/number/as_bool.cpp', dependencies: test_dep)
-t_number_as_number = executable('as_number', 'test/src/number/as_number.cpp', dependencies: test_dep)
-t_number_is_number = executable('is_number', 'test/src/number/is_number.cpp', dependencies: test_dep)
-t_number_math = executable('math', 'test/src/number/math.cpp', dependencies: test_dep)
-t_number_numbers = executable('numbers', 'test/src/number/numbers.cpp', dependencies: test_dep)
-t_number_operators = executable('operators', 'test/src/number/operators.cpp', dependencies: test_dep)
-t_number_to_bool = executable('to_bool', 'test/src/number/to_bool.cpp', dependencies: test_dep)
-alias_target('mp.number', t_number_as_bool, t_number_as_number, t_number_is_number, t_number_math, t_number_numbers, t_number_operators, t_number_to_bool)
-t_set_set_contains = executable('set_contains', 'test/src/set/set_contains.cpp', dependencies: test_dep)
-t_set_set_difference = executable('set_difference', 'test/src/set/set_difference.cpp', dependencies: test_dep)
-t_set_set_find = executable('set_find', 'test/src/set/set_find.cpp', dependencies: test_dep)
-t_set_set_intersection = executable('set_intersection', 'test/src/set/set_intersection.cpp', dependencies: test_dep)
-t_set_set_push_back = executable('set_push_back', 'test/src/set/set_push_back.cpp', dependencies: test_dep)
-t_set_set_push_back_elements = executable('set_push_back_elements', 'test/src/set/set_push_back_elements.cpp', dependencies: test_dep)
-t_set_set_push_front = executable('set_push_front', 'test/src/set/set_push_front.cpp', dependencies: test_dep)
-t_set_set_push_front_elements = executable('set_push_front_elements', 'test/src/set/set_push_front_elements.cpp', dependencies: test_dep)
-t_set_set_union = executable('set_union', 'test/src/set/set_union.cpp', dependencies: test_dep)
-alias_target('mp.set', t_set_set_contains, t_set_set_difference, t_set_set_find, t_set_set_intersection, t_set_set_push_back, t_set_set_push_back_elements, t_set_set_push_front, t_set_set_push_front_elements, t_set_set_union)
-t_utility_alignof = executable('alignof', 'test/src/utility/alignof.cpp', dependencies: test_dep)
-t_utility_always = executable('always', 'test/src/utility/always.cpp', dependencies: test_dep)
-t_utility_conditional = executable('conditional', 'test/src/utility/conditional.cpp', dependencies: test_dep)
-t_utility_has_type = executable('has_type', 'test/src/utility/has_type.cpp', dependencies: test_dep)
-t_utility_has_value_type = executable('has_value_type', 'test/src/utility/has_value_type.cpp', dependencies: test_dep)
-t_utility_is = executable('is', 'test/src/utility/is.cpp', dependencies: test_dep)
-t_utility_is_not = executable('is_not', 'test/src/utility/is_not.cpp', dependencies: test_dep)
-t_utility_is_specialization_of = executable('is_specialization_of', 'test/src/utility/is_specialization_of.cpp', dependencies: test_dep)
-t_utility_iterate = executable('iterate', 'test/src/utility/iterate.cpp', dependencies: test_dep)
-t_utility_lazy_void = executable('lazy_void', 'test/src/utility/lazy_void.cpp', dependencies: test_dep)
-t_utility_make_id = executable('make_id', 'test/src/utility/make_id.cpp', dependencies: test_dep)
-t_utility_random = executable('random', 'test/src/utility/random.cpp', dependencies: test_dep)
-t_utility_rewrap_unpack = executable('rewrap_unpack', 'test/src/utility/rewrap_unpack.cpp', dependencies: test_dep)
-t_utility_sizeof = executable('sizeof', 'test/src/utility/sizeof.cpp', dependencies: test_dep)
-t_utility_stl_traits = executable('stl_traits', 'test/src/utility/stl_traits.cpp', dependencies: test_dep)
-t_utility_type = executable('type', 'test/src/utility/type.cpp', dependencies: test_dep)
-t_utility_unpack = executable('unpack', 'test/src/utility/unpack.cpp', dependencies: test_dep)
-t_utility_value_type = executable('value_type', 'test/src/utility/value_type.cpp', dependencies: test_dep)
-t_utility_wrapper = executable('wrapper', 'test/src/utility/wrapper.cpp', dependencies: test_dep)
-alias_target('mp.utility', t_utility_alignof, t_utility_always, t_utility_conditional, t_utility_has_type, t_utility_has_value_type, t_utility_is, t_utility_is_not, t_utility_is_specialization_of, t_utility_iterate, t_utility_lazy_void, t_utility_make_id, t_utility_random, t_utility_rewrap_unpack, t_utility_sizeof, t_utility_stl_traits, t_utility_type, t_utility_unpack, t_utility_value_type, t_utility_wrapper)
-t_value_as_val = executable('as_val', 'test/src/value/as_val.cpp', dependencies: test_dep)
-t_value_has_value = executable('has_value', 'test/src/value/has_value.cpp', dependencies: test_dep)
-t_value_is_val = executable('is_val', 'test/src/value/is_val.cpp', dependencies: test_dep)
-t_value_operators = executable('operators_', 'test/src/value/operators.cpp', dependencies: test_dep)
-t_value_values = executable('values', 'test/src/value/values.cpp', dependencies: test_dep)
-alias_target('mp.value', t_value_as_val, t_value_has_value, t_value_is_val, t_value_operators, t_value_values)
-alias_target('mp', t_algorithm_accumulate, t_algorithm_after, t_algorithm_all_of, t_algorithm_anticirculant_matrix, t_algorithm_any_of, t_algorithm_arrange, t_algorithm_batched, t_algorithm_before, t_algorithm_before_after, t_algorithm_circulant_matrix, t_algorithm_collapse, t_algorithm_combine, t_algorithm_compare_with, t_algorithm_compress, t_algorithm_conjunction, t_algorithm_contains, t_algorithm_copy, t_algorithm_copy_unique, t_algorithm_count, t_algorithm_counter, t_algorithm_disjunction, t_algorithm_drop_until, t_algorithm_drop_until_xs, t_algorithm_drop_while, t_algorithm_drop_while_xs, t_algorithm_ends_with, t_algorithm_find, t_algorithm_find_last, t_algorithm_flatten, t_algorithm_fold, t_algorithm_fold_right, t_algorithm_fold_tree, t_algorithm_fold_xs, t_algorithm_group, t_algorithm_index, t_algorithm_intersperse, t_algorithm_iota, t_algorithm_is_disjoint, t_algorithm_is_sorted, t_algorithm_is_subset, t_algorithm_is_unique, t_algorithm_lexicographical_compare, t_algorithm_lower_bound, t_algorithm_make_int_sequence, t_algorithm_matrix_longest, t_algorithm_matrix_shortest, t_algorithm_max_element, t_algorithm_merge, t_algorithm_min_element, t_algorithm_mismatch, t_algorithm_mismatch_index, t_algorithm_none_of, t_algorithm_pairwise, t_algorithm_pairwise_fold, t_algorithm_partition, t_algorithm_permutations, t_algorithm_powerset, t_algorithm_prefix, t_algorithm_product, t_algorithm_regroup, t_algorithm_remove, t_algorithm_remove_adjacent, t_algorithm_remove_prefix, t_algorithm_remove_suffix, t_algorithm_remove_unique, t_algorithm_repeat, t_algorithm_replace, t_algorithm_reverse, t_algorithm_reverse_fold, t_algorithm_reverse_fold_right, t_algorithm_rotate, t_algorithm_same, t_algorithm_scan, t_algorithm_scan_right, t_algorithm_search, t_algorithm_similar, t_algorithm_skip_until, t_algorithm_skip_until_xs, t_algorithm_skip_while, t_algorithm_skip_while_xs, t_algorithm_sort, t_algorithm_split, t_algorithm_split_after, t_algorithm_split_at, t_algorithm_split_before, t_algorithm_split_from, t_algorithm_split_keep_separator, t_algorithm_split_once, t_algorithm_starts_with, t_algorithm_suffix, t_algorithm_take_until, t_algorithm_take_until_xs, t_algorithm_take_while, t_algorithm_take_while_xs, t_algorithm_transform, t_algorithm_transform_first, t_algorithm_transform_second, t_algorithm_transform_third, t_algorithm_unfold, t_algorithm_unique, t_algorithm_upper_bound, t_algorithm_zip, t_algorithm_zip_longest, t_assume, t_functional_apply_or_identity, t_functional_bind_back, t_functional_bind_front, t_functional_capture_back, t_functional_capture_front, t_functional_cascade, t_functional_compose, t_functional_each, t_functional_eval, t_functional_fix, t_functional_flip, t_functional_identity, t_functional_if, t_functional_invoke_twice, t_functional_lift, t_functional_memoize, t_functional_not_fn, t_functional_partial, t_functional_partial_each, t_functional_partial_tee, t_functional_partial_xs, t_functional_recursively, t_functional_select, t_functional_tee, t_functional_try, t_functional_until, t_functional_until_last, t_functional_while, t_list_append, t_list_as_list, t_list_at, t_list_back, t_list_clear, t_list_drop_back, t_list_drop_front, t_list_enumerate, t_list_erase, t_list_front, t_list_indices, t_list_insert, t_list_insert_sequence, t_list_is_empty, t_list_is_list, t_list_is_not_empty, t_list_is_size_of, t_list_join, t_list_list, t_list_lookup, t_list_offset, t_list_pop_back, t_list_pop_front, t_list_prepend, t_list_push_back, t_list_push_front, t_list_range, t_list_size, t_list_slice, t_list_sliding, t_list_swap_index, t_list_take_back, t_list_take_front, t_list_wrap_in_list, t_map_is_map, t_map_map_contains, t_map_map_erase, t_map_map_find, t_map_map_insert, t_map_map_keys, t_map_map_replace, t_map_map_update, t_number_as_bool, t_number_as_number, t_number_is_number, t_number_math, t_number_numbers, t_number_operators, t_number_to_bool, t_set_set_contains, t_set_set_difference, t_set_set_find, t_set_set_intersection, t_set_set_push_back, t_set_set_push_back_elements, t_set_set_push_front, t_set_set_push_front_elements, t_set_set_union, t_utility_alignof, t_utility_always, t_utility_conditional, t_utility_has_type, t_utility_has_value_type, t_utility_is, t_utility_is_not, t_utility_is_specialization_of, t_utility_iterate, t_utility_lazy_void, t_utility_make_id, t_utility_random, t_utility_rewrap_unpack, t_utility_sizeof, t_utility_stl_traits, t_utility_type, t_utility_unpack, t_utility_value_type, t_utility_wrapper, t_value_as_val, t_value_has_value, t_value_is_val, t_value_operators, t_value_values)
+alias_target('mp', 
+  alias_target('mp.algorithm',
+    executable('accumulate', 'test/src/algorithm/accumulate.cpp', dependencies: test_dep),
+    executable('after', 'test/src/algorithm/after.cpp', dependencies: test_dep),
+    executable('all_of', 'test/src/algorithm/all_of.cpp', dependencies: test_dep),
+    executable('anticirculant_matrix', 'test/src/algorithm/anticirculant_matrix.cpp', dependencies: test_dep),
+    executable('any_of', 'test/src/algorithm/any_of.cpp', dependencies: test_dep),
+    executable('arrange', 'test/src/algorithm/arrange.cpp', dependencies: test_dep),
+    executable('batched', 'test/src/algorithm/batched.cpp', dependencies: test_dep),
+    executable('before', 'test/src/algorithm/before.cpp', dependencies: test_dep),
+    executable('before_after', 'test/src/algorithm/before_after.cpp', dependencies: test_dep),
+    executable('circulant_matrix', 'test/src/algorithm/circulant_matrix.cpp', dependencies: test_dep),
+    executable('collapse', 'test/src/algorithm/collapse.cpp', dependencies: test_dep),
+    executable('combine', 'test/src/algorithm/combine.cpp', dependencies: test_dep),
+    executable('compare_with', 'test/src/algorithm/compare_with.cpp', dependencies: test_dep),
+    executable('compress', 'test/src/algorithm/compress.cpp', dependencies: test_dep),
+    executable('conjunction', 'test/src/algorithm/conjunction.cpp', dependencies: test_dep),
+    executable('contains', 'test/src/algorithm/contains.cpp', dependencies: test_dep),
+    executable('copy', 'test/src/algorithm/copy.cpp', dependencies: test_dep),
+    executable('copy_unique', 'test/src/algorithm/copy_unique.cpp', dependencies: test_dep),
+    executable('count', 'test/src/algorithm/count.cpp', dependencies: test_dep),
+    executable('counter', 'test/src/algorithm/counter.cpp', dependencies: test_dep),
+    executable('disjunction', 'test/src/algorithm/disjunction.cpp', dependencies: test_dep),
+    executable('drop_until', 'test/src/algorithm/drop_until.cpp', dependencies: test_dep),
+    executable('drop_until_xs', 'test/src/algorithm/drop_until_xs.cpp', dependencies: test_dep),
+    executable('drop_while', 'test/src/algorithm/drop_while.cpp', dependencies: test_dep),
+    executable('drop_while_xs', 'test/src/algorithm/drop_while_xs.cpp', dependencies: test_dep),
+    executable('ends_with', 'test/src/algorithm/ends_with.cpp', dependencies: test_dep),
+    executable('find', 'test/src/algorithm/find.cpp', dependencies: test_dep),
+    executable('find_last', 'test/src/algorithm/find_last.cpp', dependencies: test_dep),
+    executable('flatten', 'test/src/algorithm/flatten.cpp', dependencies: test_dep),
+    executable('fold', 'test/src/algorithm/fold.cpp', dependencies: test_dep),
+    executable('fold_right', 'test/src/algorithm/fold_right.cpp', dependencies: test_dep),
+    executable('fold_tree', 'test/src/algorithm/fold_tree.cpp', dependencies: test_dep),
+    executable('fold_xs', 'test/src/algorithm/fold_xs.cpp', dependencies: test_dep),
+    executable('group', 'test/src/algorithm/group.cpp', dependencies: test_dep),
+    executable('index', 'test/src/algorithm/index.cpp', dependencies: test_dep),
+    executable('intersperse', 'test/src/algorithm/intersperse.cpp', dependencies: test_dep),
+    executable('iota', 'test/src/algorithm/iota.cpp', dependencies: test_dep),
+    executable('is_disjoint', 'test/src/algorithm/is_disjoint.cpp', dependencies: test_dep),
+    executable('is_sorted', 'test/src/algorithm/is_sorted.cpp', dependencies: test_dep),
+    executable('is_subset', 'test/src/algorithm/is_subset.cpp', dependencies: test_dep),
+    executable('is_unique', 'test/src/algorithm/is_unique.cpp', dependencies: test_dep),
+    executable('lexicographical_compare', 'test/src/algorithm/lexicographical_compare.cpp', dependencies: test_dep),
+    executable('lower_bound', 'test/src/algorithm/lower_bound.cpp', dependencies: test_dep),
+    executable('make_int_sequence', 'test/src/algorithm/make_int_sequence.cpp', dependencies: test_dep),
+    executable('matrix_longest', 'test/src/algorithm/matrix_longest.cpp', dependencies: test_dep),
+    executable('matrix_shortest', 'test/src/algorithm/matrix_shortest.cpp', dependencies: test_dep),
+    executable('max_element', 'test/src/algorithm/max_element.cpp', dependencies: test_dep),
+    executable('merge', 'test/src/algorithm/merge.cpp', dependencies: test_dep),
+    executable('min_element', 'test/src/algorithm/min_element.cpp', dependencies: test_dep),
+    executable('mismatch', 'test/src/algorithm/mismatch.cpp', dependencies: test_dep),
+    executable('mismatch_index', 'test/src/algorithm/mismatch_index.cpp', dependencies: test_dep),
+    executable('none_of', 'test/src/algorithm/none_of.cpp', dependencies: test_dep),
+    executable('pairwise', 'test/src/algorithm/pairwise.cpp', dependencies: test_dep),
+    executable('pairwise_fold', 'test/src/algorithm/pairwise_fold.cpp', dependencies: test_dep),
+    executable('partition', 'test/src/algorithm/partition.cpp', dependencies: test_dep),
+    executable('permutations', 'test/src/algorithm/permutations.cpp', dependencies: test_dep),
+    executable('powerset', 'test/src/algorithm/powerset.cpp', dependencies: test_dep),
+    executable('prefix', 'test/src/algorithm/prefix.cpp', dependencies: test_dep),
+    executable('product', 'test/src/algorithm/product.cpp', dependencies: test_dep),
+    executable('regroup', 'test/src/algorithm/regroup.cpp', dependencies: test_dep),
+    executable('remove', 'test/src/algorithm/remove.cpp', dependencies: test_dep),
+    executable('remove_adjacent', 'test/src/algorithm/remove_adjacent.cpp', dependencies: test_dep),
+    executable('remove_prefix', 'test/src/algorithm/remove_prefix.cpp', dependencies: test_dep),
+    executable('remove_suffix', 'test/src/algorithm/remove_suffix.cpp', dependencies: test_dep),
+    executable('remove_unique', 'test/src/algorithm/remove_unique.cpp', dependencies: test_dep),
+    executable('repeat', 'test/src/algorithm/repeat.cpp', dependencies: test_dep),
+    executable('replace', 'test/src/algorithm/replace.cpp', dependencies: test_dep),
+    executable('reverse', 'test/src/algorithm/reverse.cpp', dependencies: test_dep),
+    executable('reverse_fold', 'test/src/algorithm/reverse_fold.cpp', dependencies: test_dep),
+    executable('reverse_fold_right', 'test/src/algorithm/reverse_fold_right.cpp', dependencies: test_dep),
+    executable('rotate', 'test/src/algorithm/rotate.cpp', dependencies: test_dep),
+    executable('same', 'test/src/algorithm/same.cpp', dependencies: test_dep),
+    executable('scan', 'test/src/algorithm/scan.cpp', dependencies: test_dep),
+    executable('scan_right', 'test/src/algorithm/scan_right.cpp', dependencies: test_dep),
+    executable('search', 'test/src/algorithm/search.cpp', dependencies: test_dep),
+    executable('similar', 'test/src/algorithm/similar.cpp', dependencies: test_dep),
+    executable('skip_until', 'test/src/algorithm/skip_until.cpp', dependencies: test_dep),
+    executable('skip_until_xs', 'test/src/algorithm/skip_until_xs.cpp', dependencies: test_dep),
+    executable('skip_while', 'test/src/algorithm/skip_while.cpp', dependencies: test_dep),
+    executable('skip_while_xs', 'test/src/algorithm/skip_while_xs.cpp', dependencies: test_dep),
+    executable('sort', 'test/src/algorithm/sort.cpp', dependencies: test_dep),
+    executable('split', 'test/src/algorithm/split.cpp', dependencies: test_dep),
+    executable('split_after', 'test/src/algorithm/split_after.cpp', dependencies: test_dep),
+    executable('split_at', 'test/src/algorithm/split_at.cpp', dependencies: test_dep),
+    executable('split_before', 'test/src/algorithm/split_before.cpp', dependencies: test_dep),
+    executable('split_from', 'test/src/algorithm/split_from.cpp', dependencies: test_dep),
+    executable('split_keep_separator', 'test/src/algorithm/split_keep_separator.cpp', dependencies: test_dep),
+    executable('split_once', 'test/src/algorithm/split_once.cpp', dependencies: test_dep),
+    executable('starts_with', 'test/src/algorithm/starts_with.cpp', dependencies: test_dep),
+    executable('suffix', 'test/src/algorithm/suffix.cpp', dependencies: test_dep),
+    executable('take_until', 'test/src/algorithm/take_until.cpp', dependencies: test_dep),
+    executable('take_until_xs', 'test/src/algorithm/take_until_xs.cpp', dependencies: test_dep),
+    executable('take_while', 'test/src/algorithm/take_while.cpp', dependencies: test_dep),
+    executable('take_while_xs', 'test/src/algorithm/take_while_xs.cpp', dependencies: test_dep),
+    executable('transform', 'test/src/algorithm/transform.cpp', dependencies: test_dep),
+    executable('transform_first', 'test/src/algorithm/transform_first.cpp', dependencies: test_dep),
+    executable('transform_second', 'test/src/algorithm/transform_second.cpp', dependencies: test_dep),
+    executable('transform_third', 'test/src/algorithm/transform_third.cpp', dependencies: test_dep),
+    executable('unfold', 'test/src/algorithm/unfold.cpp', dependencies: test_dep),
+    executable('unique', 'test/src/algorithm/unique.cpp', dependencies: test_dep),
+    executable('upper_bound', 'test/src/algorithm/upper_bound.cpp', dependencies: test_dep),
+    executable('zip', 'test/src/algorithm/zip.cpp', dependencies: test_dep),
+    executable('zip_longest', 'test/src/algorithm/zip_longest.cpp', dependencies: test_dep),
+  ),
+  executable('assume', 'test/src/assume.cpp', dependencies: test_dep),
+  alias_target('mp.functional',
+    executable('apply_or_identity', 'test/src/functional/apply_or_identity.cpp', dependencies: test_dep),
+    executable('bind_back', 'test/src/functional/bind_back.cpp', dependencies: test_dep),
+    executable('bind_front', 'test/src/functional/bind_front.cpp', dependencies: test_dep),
+    executable('capture_back', 'test/src/functional/capture_back.cpp', dependencies: test_dep),
+    executable('capture_front', 'test/src/functional/capture_front.cpp', dependencies: test_dep),
+    executable('cascade', 'test/src/functional/cascade.cpp', dependencies: test_dep),
+    executable('compose', 'test/src/functional/compose.cpp', dependencies: test_dep),
+    executable('each', 'test/src/functional/each.cpp', dependencies: test_dep),
+    executable('eval', 'test/src/functional/eval.cpp', dependencies: test_dep),
+    executable('fix', 'test/src/functional/fix.cpp', dependencies: test_dep),
+    executable('flip', 'test/src/functional/flip.cpp', dependencies: test_dep),
+    executable('identity', 'test/src/functional/identity.cpp', dependencies: test_dep),
+    executable('if', 'test/src/functional/if.cpp', dependencies: test_dep),
+    executable('invoke_twice', 'test/src/functional/invoke_twice.cpp', dependencies: test_dep),
+    executable('lift', 'test/src/functional/lift.cpp', dependencies: test_dep),
+    executable('memoize', 'test/src/functional/memoize.cpp', dependencies: test_dep),
+    executable('not_fn', 'test/src/functional/not_fn.cpp', dependencies: test_dep),
+    executable('partial', 'test/src/functional/partial.cpp', dependencies: test_dep),
+    executable('partial_each', 'test/src/functional/partial_each.cpp', dependencies: test_dep),
+    executable('partial_tee', 'test/src/functional/partial_tee.cpp', dependencies: test_dep),
+    executable('partial_xs', 'test/src/functional/partial_xs.cpp', dependencies: test_dep),
+    executable('recursively', 'test/src/functional/recursively.cpp', dependencies: test_dep),
+    executable('select', 'test/src/functional/select.cpp', dependencies: test_dep),
+    executable('tee', 'test/src/functional/tee.cpp', dependencies: test_dep),
+    executable('try', 'test/src/functional/try.cpp', dependencies: test_dep),
+    executable('until', 'test/src/functional/until.cpp', dependencies: test_dep),
+    executable('until_last', 'test/src/functional/until_last.cpp', dependencies: test_dep),
+    executable('while', 'test/src/functional/while.cpp', dependencies: test_dep),
+  ),
+  alias_target('mp.list',
+    executable('append', 'test/src/list/append.cpp', dependencies: test_dep),
+    executable('as_list', 'test/src/list/as_list.cpp', dependencies: test_dep),
+    executable('at', 'test/src/list/at.cpp', dependencies: test_dep),
+    executable('back', 'test/src/list/back.cpp', dependencies: test_dep),
+    executable('clear', 'test/src/list/clear.cpp', dependencies: test_dep),
+    executable('drop_back', 'test/src/list/drop_back.cpp', dependencies: test_dep),
+    executable('drop_front', 'test/src/list/drop_front.cpp', dependencies: test_dep),
+    executable('enumerate', 'test/src/list/enumerate.cpp', dependencies: test_dep),
+    executable('erase', 'test/src/list/erase.cpp', dependencies: test_dep),
+    executable('front', 'test/src/list/front.cpp', dependencies: test_dep),
+    executable('indices', 'test/src/list/indices.cpp', dependencies: test_dep),
+    executable('insert', 'test/src/list/insert.cpp', dependencies: test_dep),
+    executable('insert_sequence', 'test/src/list/insert_sequence.cpp', dependencies: test_dep),
+    executable('is_empty', 'test/src/list/is_empty.cpp', dependencies: test_dep),
+    executable('is_list', 'test/src/list/is_list.cpp', dependencies: test_dep),
+    executable('is_not_empty', 'test/src/list/is_not_empty.cpp', dependencies: test_dep),
+    executable('is_size_of', 'test/src/list/is_size_of.cpp', dependencies: test_dep),
+    executable('join', 'test/src/list/join.cpp', dependencies: test_dep),
+    executable('list', 'test/src/list/list.cpp', dependencies: test_dep),
+    executable('lookup', 'test/src/list/lookup.cpp', dependencies: test_dep),
+    executable('offset', 'test/src/list/offset.cpp', dependencies: test_dep),
+    executable('pop_back', 'test/src/list/pop_back.cpp', dependencies: test_dep),
+    executable('pop_front', 'test/src/list/pop_front.cpp', dependencies: test_dep),
+    executable('prepend', 'test/src/list/prepend.cpp', dependencies: test_dep),
+    executable('push_back', 'test/src/list/push_back.cpp', dependencies: test_dep),
+    executable('push_front', 'test/src/list/push_front.cpp', dependencies: test_dep),
+    executable('range', 'test/src/list/range.cpp', dependencies: test_dep),
+    executable('size', 'test/src/list/size.cpp', dependencies: test_dep),
+    executable('slice', 'test/src/list/slice.cpp', dependencies: test_dep),
+    executable('sliding', 'test/src/list/sliding.cpp', dependencies: test_dep),
+    executable('swap_index', 'test/src/list/swap_index.cpp', dependencies: test_dep),
+    executable('take_back', 'test/src/list/take_back.cpp', dependencies: test_dep),
+    executable('take_front', 'test/src/list/take_front.cpp', dependencies: test_dep),
+    executable('wrap_in_list', 'test/src/list/wrap_in_list.cpp', dependencies: test_dep),
+  ),
+  alias_target('mp.map',
+    executable('is_map', 'test/src/map/is_map.cpp', dependencies: test_dep),
+    executable('map_contains', 'test/src/map/map_contains.cpp', dependencies: test_dep),
+    executable('map_erase', 'test/src/map/map_erase.cpp', dependencies: test_dep),
+    executable('map_find', 'test/src/map/map_find.cpp', dependencies: test_dep),
+    executable('map_insert', 'test/src/map/map_insert.cpp', dependencies: test_dep),
+    executable('map_keys', 'test/src/map/map_keys.cpp', dependencies: test_dep),
+    executable('map_replace', 'test/src/map/map_replace.cpp', dependencies: test_dep),
+    executable('map_update', 'test/src/map/map_update.cpp', dependencies: test_dep),
+  ),
+  alias_target('mp.number',
+    executable('as_bool', 'test/src/number/as_bool.cpp', dependencies: test_dep),
+    executable('as_number', 'test/src/number/as_number.cpp', dependencies: test_dep),
+    executable('is_number', 'test/src/number/is_number.cpp', dependencies: test_dep),
+    executable('math', 'test/src/number/math.cpp', dependencies: test_dep),
+    executable('numbers', 'test/src/number/numbers.cpp', dependencies: test_dep),
+    executable('operators', 'test/src/number/operators.cpp', dependencies: test_dep),
+    executable('to_bool', 'test/src/number/to_bool.cpp', dependencies: test_dep),
+  ),
+  alias_target('mp.set',
+    executable('set_contains', 'test/src/set/set_contains.cpp', dependencies: test_dep),
+    executable('set_difference', 'test/src/set/set_difference.cpp', dependencies: test_dep),
+    executable('set_find', 'test/src/set/set_find.cpp', dependencies: test_dep),
+    executable('set_intersection', 'test/src/set/set_intersection.cpp', dependencies: test_dep),
+    executable('set_push_back', 'test/src/set/set_push_back.cpp', dependencies: test_dep),
+    executable('set_push_back_elements', 'test/src/set/set_push_back_elements.cpp', dependencies: test_dep),
+    executable('set_push_front', 'test/src/set/set_push_front.cpp', dependencies: test_dep),
+    executable('set_push_front_elements', 'test/src/set/set_push_front_elements.cpp', dependencies: test_dep),
+    executable('set_union', 'test/src/set/set_union.cpp', dependencies: test_dep),
+  ),
+  alias_target('mp.utility',
+    executable('alignof', 'test/src/utility/alignof.cpp', dependencies: test_dep),
+    executable('always', 'test/src/utility/always.cpp', dependencies: test_dep),
+    executable('conditional', 'test/src/utility/conditional.cpp', dependencies: test_dep),
+    executable('has_type', 'test/src/utility/has_type.cpp', dependencies: test_dep),
+    executable('has_value_type', 'test/src/utility/has_value_type.cpp', dependencies: test_dep),
+    executable('is', 'test/src/utility/is.cpp', dependencies: test_dep),
+    executable('is_not', 'test/src/utility/is_not.cpp', dependencies: test_dep),
+    executable('is_specialization_of', 'test/src/utility/is_specialization_of.cpp', dependencies: test_dep),
+    executable('iterate', 'test/src/utility/iterate.cpp', dependencies: test_dep),
+    executable('lazy_void', 'test/src/utility/lazy_void.cpp', dependencies: test_dep),
+    executable('make_id', 'test/src/utility/make_id.cpp', dependencies: test_dep),
+    executable('random', 'test/src/utility/random.cpp', dependencies: test_dep),
+    executable('rewrap_unpack', 'test/src/utility/rewrap_unpack.cpp', dependencies: test_dep),
+    executable('sizeof', 'test/src/utility/sizeof.cpp', dependencies: test_dep),
+    executable('stl_traits', 'test/src/utility/stl_traits.cpp', dependencies: test_dep),
+    executable('type', 'test/src/utility/type.cpp', dependencies: test_dep),
+    executable('unpack', 'test/src/utility/unpack.cpp', dependencies: test_dep),
+    executable('value_type', 'test/src/utility/value_type.cpp', dependencies: test_dep),
+    executable('wrapper', 'test/src/utility/wrapper.cpp', dependencies: test_dep),
+  ),
+  alias_target('mp.value',
+    executable('as_val', 'test/src/value/as_val.cpp', dependencies: test_dep),
+    executable('has_value', 'test/src/value/has_value.cpp', dependencies: test_dep),
+    executable('is_val', 'test/src/value/is_val.cpp', dependencies: test_dep),
+    executable('operators_', 'test/src/value/operators.cpp', dependencies: test_dep),
+    executable('values', 'test/src/value/values.cpp', dependencies: test_dep),
+  ),
+)
 executable('check_inc', [
   'test/autogen/mp.cpp',
   'test/autogen/algorithm@accumulate.cpp',
@@ -376,12 +386,12 @@ executable('check_inc', [
   'test/autogen/algorithm@zip_longest.cpp',
   'test/autogen/detail@compiler.cpp',
   'test/autogen/detail@config.cpp',
-  'test/autogen/detail@expr_conversion.cpp',
   'test/autogen/detail@expr_to_bool.cpp',
   'test/autogen/detail@first.cpp',
   'test/autogen/detail@sequence.cpp',
   'test/autogen/detail@smp_listify_or_monadic_xs.cpp',
   'test/autogen/detail@type_identity.cpp',
+  'test/autogen/detail@expr_conversion.cpp',
   'test/autogen/functional@apply_or_identity.cpp',
   'test/autogen/functional@bind_back.cpp',
   'test/autogen/functional@bind_front.cpp',
