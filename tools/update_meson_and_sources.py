@@ -26,7 +26,7 @@ def make_targets(path: str, prefix_alias_name: str, suffix_target_name: str,
       if f.endswith('.cpp'):
         output_targets.append(newpath)
         name = new_target(f'{f[:-4]}{suffix_target_name}')
-        l.append(f"{prefix}executable('{name}', '{newpath}', dependencies: {deps}),")
+        l.append(f"{prefix}executable('{name}', '{newpath}', dependencies: {deps}, implicit_include_directories: false),")
     else:
       alias_name = new_target(f'{prefix_alias_name}.{f}')
       l.append(f"{prefix}alias_target('{alias_name}',")
@@ -126,7 +126,7 @@ with open('meson.build', 'w') as f:
   f.write(content[stop_example:start_test + len(start_test_str)])
   f.write(f"alias_target('mp', \n{tests}\n)\n")
   sources = "',\n  '".join(autogen_tests)
-  f.write(f"executable('check_inc', [\n  '{sources}'\n], dependencies: test_dep)\n")
+  f.write(f"executable('check_inc', [\n  '{sources}'\n], dependencies: test_dep, implicit_include_directories: false)\n")
   f.write(content[stop_test:])
 
 with open('test/mp.cpp', 'w') as f:
