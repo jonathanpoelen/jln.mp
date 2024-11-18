@@ -1,0 +1,8 @@
+# meson setup --cross-file msvc-linux-toolchain.txt [<sourcedid>] <builddir>
+[binaries]
+c = '/opt/msvc/bin/x86/cl'
+cpp = '/opt/msvc/bin/x86/cl'
+c_ld = '/opt/msvc/bin/x86/link'
+cpp_ld = '/opt/msvc/bin/x86/link'
+ar = '/opt/msvc/bin/x86/lib'
+windres = '/opt/msvc/bin/x86/rc'
