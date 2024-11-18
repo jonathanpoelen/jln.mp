@@ -122,9 +122,9 @@ stop_test = content.index(stop_test_str, start_test)
 
 with open('meson.build', 'w') as f:
   f.write(content[:start_examples + len(start_example_str)])
-  f.write(f"alias_target('examples', \n{examples}\n)\n")
+  f.write(f"alias_target('examples',\n{examples}\n)\n")
   f.write(content[stop_example:start_test + len(start_test_str)])
-  f.write(f"alias_target('mp', \n{tests}\n)\n")
+  f.write(f"alias_target('mp',\n{tests}\n)\n")
   sources = "',\n  '".join(autogen_tests)
   f.write(f"executable('check_inc', [\n  '{sources}'\n], dependencies: test_dep, implicit_include_directories: false)\n")
   f.write(content[stop_test:])

@@ -40,14 +40,14 @@ test_dep = declare_dependency(include_directories: include_directories('test/inc
 executable('mp_test', 'test/mp.cpp', dependencies: test_dep, implicit_include_directories: false)
 
 # start examples
-alias_target('examples', 
+alias_target('examples',
   executable('expr.example', 'examples/expr.cpp', dependencies: example_dep, implicit_include_directories: false),
   executable('tuple_cat.example', 'examples/tuple_cat.cpp', dependencies: example_dep, implicit_include_directories: false),
 )
 # stop examples
 
 # start tests
-alias_target('mp', 
+alias_target('mp',
   alias_target('mp.algorithm',
     executable('accumulate', 'test/src/algorithm/accumulate.cpp', dependencies: test_dep, implicit_include_directories: false),
     executable('after', 'test/src/algorithm/after.cpp', dependencies: test_dep, implicit_include_directories: false),
