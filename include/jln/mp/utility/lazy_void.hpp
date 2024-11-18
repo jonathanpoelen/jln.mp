@@ -12,10 +12,10 @@ namespace jln::mp
   /// This fixes the ambiguity encountered with clang for the following code:
   /// \code
   /// template<class T, class = void> struct Impl;
-  /// template<class T> struct Impl<T, emp::lazy_void<T::foo>> {};
-  /// template<class T> struct Impl<T, emp::lazy_void<T::bar>> {}; // redefinition of Impl<T, void> with std::void_t
+  /// template<class T> struct Impl<T, std::void_t<typename T::foo>> {};
+  /// template<class T> struct Impl<T, std::void_t<typename T::bar>> {}; // redefinition of Impl<T, void>
   /// \endcode
-  /// This behavior is also possible with \c always when
+  /// \c lazy_void can be replaced with \c always<void>::f when
   /// the macro \c JLN_MP_FORCE_LAZY_ALIAS is set to \c 0.
 #ifdef JLN_MP_DOXYGENATING
   // not implemented, just for doc generating...
