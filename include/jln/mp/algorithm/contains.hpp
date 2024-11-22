@@ -9,7 +9,7 @@ namespace jln::mp
 {
   /// \ingroup algorithm
 
-  /// Checks whether a \value is contained in a \list.
+  /// Checks whether a \value is contained in a \sequence.
   /// \treturn \bool
   template<class x, class C = identity>
   using contains = any_of<is<x>, C>;
