@@ -61,6 +61,9 @@
 #  ifndef JLN_MP_MEMOIZED_ALIAS
 #    define JLN_MP_MEMOIZED_ALIAS 1
 #  endif
+#  ifndef JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
+#    define JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE 1
+#  endif
 #endif
 
 // clang like
