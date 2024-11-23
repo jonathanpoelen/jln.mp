@@ -3,7 +3,22 @@
 #pragma once
 
 
-// Compiler type
+// Features
+//@{
+#ifndef JLN_MP_FEATURE_CONCEPTS
+#  ifdef __cpp_concepts
+#    if __cpp_concepts >= 201907L
+#      define JLN_MP_FEATURE_CONCEPTS 1
+#    endif
+#  endif
+#  ifndef JLN_MP_FEATURE_CONCEPTS
+#      define JLN_MP_FEATURE_CONCEPTS 0
+#  endif
+#endif
+//@}
+
+
+// Compiler type and properties
 //@{
 // cuda
 #if defined(__CUDACC__)
@@ -63,6 +78,11 @@
 #  endif
 #  ifndef JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
 #    define JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE 1
+#  endif
+#  if JLN_MP_FEATURE_CONCEPTS
+#    ifndef JLN_MP_REQUIRES_AS_FAST_SFINAE
+#      define JLN_MP_REQUIRES_AS_FAST_SFINAE 1
+#    endif
 #  endif
 #endif
 
@@ -139,6 +159,15 @@
 #  define JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE 0
 #endif
 
+/// When 1, `requires` keyword is faster than traditional use of SFINAE.
+#ifndef JLN_MP_REQUIRES_AS_FAST_SFINAE
+#  define JLN_MP_REQUIRES_AS_FAST_SFINAE 0
+#endif
+#if !JLN_MP_FEATURE_CONCEPTS
+#  undef JLN_MP_REQUIRES_AS_FAST_SFINAE
+#  define JLN_MP_REQUIRES_AS_FAST_SFINAE 0
+#endif
+
 /// When 0, aliases are not context dependent and are resolved as soon as
 /// possible which generate errors in contexts that should be lazy.
 #ifndef JLN_MP_LAZY_ALIAS
@@ -151,18 +180,6 @@
 //@}
 
 
-/// Checks that a value respects a condition and is different from 0.
-/// ex `JLN_MP_WORKAROUND(JLN_MP_GCC, < 1200)`.
-#define JLN_MP_WORKAROUND(symbol, test) ((symbol) != 0 && ((symbol) test))
-
-/// Check that a builtin exists.
-#if defined(__has_builtin)
-#  define JLN_MP_HAS_BUILTIN(name) __has_builtin(name)
-#else
-#  define JLN_MP_HAS_BUILTIN(name) 0
-#endif
-
-
 // Pragma
 //@{
 #define JLN_MP_PRAGMA(x) JLN_MP_PRAGMA_I(x)
@@ -171,21 +188,6 @@
 #  define JLN_MP_PRAGMA_I(x) __pragma(x)
 #else
 #  define JLN_MP_PRAGMA_I(x) _Pragma(#x)
-#endif
-//@}
-
-
-// Features
-//@{
-#ifndef JLN_MP_FEATURE_CONCEPTS
-#  ifdef __cpp_concepts
-#    if __cpp_concepts >= 201907L
-#      define JLN_MP_FEATURE_CONCEPTS 1
-#    endif
-#  endif
-#  ifndef JLN_MP_FEATURE_CONCEPTS
-#      define JLN_MP_FEATURE_CONCEPTS 0
-#  endif
 #endif
 //@}
 
@@ -294,6 +296,17 @@
   JLN_MP_NUMBER_FROM_VARIABLE_TEMPLATE_OR_TYPE(emp::name##_v, detail::name##_impl, __VA_ARGS__)
 //@}
 
+
+/// Checks that a value respects a condition and is different from 0.
+/// ex `JLN_MP_WORKAROUND(JLN_MP_GCC, < 1200)`.
+#define JLN_MP_WORKAROUND(symbol, test) ((symbol) != 0 && ((symbol) test))
+
+/// Check that a builtin exists.
+#if defined(__has_builtin)
+#  define JLN_MP_HAS_BUILTIN(name) __has_builtin(name)
+#else
+#  define JLN_MP_HAS_BUILTIN(name) 0
+#endif
 
 /// Displays parameters. Useful in a macro to remove parentheses from a value.
 #define JLN_MP_UNPACK(...) __VA_ARGS__
