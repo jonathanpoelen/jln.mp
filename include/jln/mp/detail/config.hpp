@@ -4,24 +4,17 @@
 
 #include <jln/mp/detail/compiler.hpp>
 
+
+/// Maximum pack size that can be passed to the call function.
+/// If the pack is larger, there will be a compilation error.
 #ifndef JLN_MP_MAX_CALL_ELEMENT
 # define JLN_MP_MAX_CALL_ELEMENT 10000
 #endif
 
-// Aliases are not context dependent and are resolved as soon as possible
-// which generate errors in contexts that should be lazy.
-#ifndef JLN_MP_LAZY_ALIAS
-# if JLN_MP_CLANG_LIKE
-#   define JLN_MP_LAZY_ALIAS 0
-# else
-#   define JLN_MP_LAZY_ALIAS 1
-# endif
-#endif
-
-// When 1, ignore the value of JLN_MP_LAZY_ALIAS in the implementations.
-// This allows the code to compile in an emptier way, but will fail when
-// the compiler can resolve an alias leading to a compilation error
-// (which is actually quite rare).
+/// When 1, ignore the value of JLN_MP_LAZY_ALIAS in the implementations.
+/// This allows the code to compile in an emptier way, but will fail when
+/// the compiler can resolve an alias leading to a compilation error
+/// (which is actually quite rare).
 #ifndef JLN_MP_FORCE_LAZY_ALIAS
 # define JLN_MP_FORCE_LAZY_ALIAS 1
 #endif
@@ -31,6 +24,9 @@
 # define JLN_MP_FORCE_LAZY_ALIAS 1
 #endif
 
+/// When 1, uses a memoization version of call to keep better track of calls
+/// in the case of compilation error. This is especially useful with clang,
+/// which doesn't display aliases.
 #ifndef JLN_MP_ENABLE_DEBUG
 # define JLN_MP_ENABLE_DEBUG 0
 #endif

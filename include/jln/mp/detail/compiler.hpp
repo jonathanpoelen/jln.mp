@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+
 // Compiler type
 //@{
 // cuda
@@ -45,6 +46,9 @@
 #  ifndef JLN_MP_MEMOIZED_ALIAS
 #    define JLN_MP_MEMOIZED_ALIAS 1
 #  endif
+#  ifndef JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
+#    define JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE 1
+#  endif
 
 // gcc
 #elif defined(__GNUC__)
@@ -56,9 +60,6 @@
 #  endif
 #  ifndef JLN_MP_MEMOIZED_ALIAS
 #    define JLN_MP_MEMOIZED_ALIAS 1
-#  endif
-#  ifndef JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
-#    define JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE 1
 #  endif
 #endif
 
@@ -76,55 +77,88 @@
 #  endif
 #endif
 
+/// The compiler presents itself as a clang without necessarily being so.
 #ifndef JLN_MP_CLANG_LIKE
 #  define JLN_MP_CLANG_LIKE 0
 #endif
+/// Is clang on MacOS.
 #ifndef JLN_MP_APPLE_CLANG
 #  define JLN_MP_APPLE_CLANG 0
 #endif
+/// The compiler presents itself as a msvc without necessarily being so.
 #ifndef JLN_MP_MSVC_LIKE
 #  define JLN_MP_MSVC_LIKE 0
 #endif
+/// The compiler is clang-cl.
 #ifndef JLN_MP_CLANG_CL
 #  define JLN_MP_CLANG_CL 0
 #endif
+/// The compiler is clang.
 #ifndef JLN_MP_CLANG
 #  define JLN_MP_CLANG 0
 #endif
+/// The compiler is cl.
 #ifndef JLN_MP_MSVC
 #  define JLN_MP_MSVC 0
 #endif
+/// The compiler is gcc.
 #ifndef JLN_MP_GCC
 #  define JLN_MP_GCC 0
 #endif
+/// The compiler is nvcc.
 #ifndef JLN_MP_CUDA
 #  define JLN_MP_CUDA 0
 #endif
+/// The host compiler is clang (in the case of nvcc).
 #ifndef JLN_MP_HOST_COMPILER_CLANG
 #  define JLN_MP_HOST_COMPILER_CLANG 0
 #endif
+/// The host compiler is gcc (in the case of nvcc).
 #ifndef JLN_MP_HOST_COMPILER_GCC
 #  define JLN_MP_HOST_COMPILER_GCC 0
 #endif
 
+/// When 1, the compiler considers an alias that makes
+/// `alias<xs...>` = `F<xs...>` identical to `F`.
+/// Therefore, `lift<alias>` and `lift<F>` will be the same.
 #ifndef JLN_MP_OPTIMIZED_ALIAS
 #  define JLN_MP_OPTIMIZED_ALIAS 0
 #endif
+
+/// When 1, aliases are memoized. This means that calling a "slow" alias
+/// a second time and with the same parameters will be fast.
 #ifndef JLN_MP_MEMOIZED_ALIAS
 #  define JLN_MP_MEMOIZED_ALIAS 0
 #endif
+
+/// When 1, `number<f_v<xs...>>` is faster than `f<xs...>::type`.
 #ifndef JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
 #  define JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE 0
 #endif
+
+/// When 0, aliases are not context dependent and are resolved as soon as
+/// possible which generate errors in contexts that should be lazy.
+#ifndef JLN_MP_LAZY_ALIAS
+# if JLN_MP_CLANG_LIKE
+#   define JLN_MP_LAZY_ALIAS 0
+# else
+#   define JLN_MP_LAZY_ALIAS 1
+# endif
+#endif
 //@}
 
+
+/// Checks that a value respects a condition and is different from 0.
+/// ex `JLN_MP_WORKAROUND(JLN_MP_GCC, < 1200)`.
 #define JLN_MP_WORKAROUND(symbol, test) ((symbol) != 0 && ((symbol) test))
 
+/// Check that a builtin exists.
 #if defined(__has_builtin)
 #  define JLN_MP_HAS_BUILTIN(name) __has_builtin(name)
 #else
 #  define JLN_MP_HAS_BUILTIN(name) 0
 #endif
+
 
 // Pragma
 //@{
@@ -136,6 +170,7 @@
 #  define JLN_MP_PRAGMA_I(x) _Pragma(#x)
 #endif
 //@}
+
 
 // Features
 //@{
@@ -150,6 +185,7 @@
 #  endif
 #endif
 //@}
+
 
 // Diagnostic
 //@{
@@ -230,6 +266,7 @@
 #endif
 //@}
 
+
 // special diagnostic
 //@{
 #if JLN_MP_CLANG >= 1600
@@ -239,6 +276,7 @@
 #  define JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
 #endif
 //@}
+
 
 // special wrapper for specialization of variable template or struct
 //@{
@@ -253,4 +291,6 @@
   JLN_MP_NUMBER_FROM_VARIABLE_TEMPLATE_OR_TYPE(emp::name##_v, detail::name##_impl, __VA_ARGS__)
 //@}
 
+
+/// Displays parameters. Useful in a macro to remove parentheses from a value.
 #define JLN_MP_UNPACK(...) __VA_ARGS__
