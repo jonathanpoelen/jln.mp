@@ -29,7 +29,7 @@ namespace jln::mp
     using lazy_void = void;
 #else
     template<class... xs>
-    using lazy_void = typename detail::first<void, list<xs...>>::type;
+    using lazy_void = typename detail::first<void, sizeof(list<xs...>)>::type;
 #endif
   }
 }

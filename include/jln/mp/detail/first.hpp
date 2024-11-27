@@ -5,9 +5,12 @@
 #include <jln/mp/detail/config.hpp>
 #include <jln/mp/list/list.hpp>
 
+#include <cstddef>
+
+
 namespace jln::mp::detail
 {
-  template<class x, class>
+  template<class x, std::size_t>
   struct first
   {
     using type = x;
@@ -18,7 +21,7 @@ namespace jln::mp::detail
 # define JLN_MP_LAZY_PARAM(deps, ...) __VA_ARGS__
 #else
 # define JLN_MP_LAZY_PARAM(deps, ...) \
-  ::jln::mp::detail::first<__VA_ARGS__, ::jln::mp::list<deps...>>::type
+  ::jln::mp::detail::first<__VA_ARGS__, sizeof(::jln::mp::list<deps...>)>::type
 # define JLN_MP_LAZY_PARAM_T(deps, ...) \
   typename JLN_MP_LAZY_PARAM(deps, __VA_ARGS__)
 #endif
