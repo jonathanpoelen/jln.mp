@@ -114,7 +114,7 @@ namespace jln::mp
   template<class C, class F, class key, class... keys>
   struct collapse2_with<C, F, key, keys...> : detail::collapse_impl<
     C, F, sizeof...(keys) + 1,
-    detail::mk_pairs_indexes<
+    detail::mk_pairs_indices<
       same<>,
       key,
       typename take_front_c<sizeof...(keys)>::template f<key, keys...>,

@@ -53,7 +53,7 @@ namespace jln::mp::detail
   {
     template<class Pred, class... xs>
     using f = detail::array_int2_index_dispatcher<
-      detail::mk_split_keep_separator_indexes<JLN_MP_RAW_EXPR_TO_BOOL(
+      detail::mk_split_keep_separator_indices<JLN_MP_RAW_EXPR_TO_BOOL(
         Pred::template f<xs>::value
       )...>
     >;

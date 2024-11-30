@@ -10,7 +10,7 @@ namespace jln::mp
   namespace detail
   {
     template<bool... bs>
-    struct mk_split_before_indexes;
+    struct mk_split_before_indices;
   }
   /// \endcond
 
@@ -34,7 +34,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::array_int2_index_dispatcher<
-      detail::mk_split_before_indexes<JLN_MP_RAW_EXPR_TO_BOOL(
+      detail::mk_split_before_indices<JLN_MP_RAW_EXPR_TO_BOOL(
         JLN_MP_TRACE_F(Pred)::template f<xs>::value
       )...>
     >::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
@@ -74,7 +74,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::array_int2_index_dispatcher<
-      detail::mk_split_before_indexes<JLN_MP_IS_SAME(T, xs)...>
+      detail::mk_split_before_indices<JLN_MP_IS_SAME(T, xs)...>
     >::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
   };
 }
@@ -84,7 +84,7 @@ namespace jln::mp::detail
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
   template<bool... bs>
-  struct mk_split_before_indexes
+  struct mk_split_before_indices
   {
     static constexpr std::size_t result_len = (1 + ... + bs);
 
@@ -109,7 +109,7 @@ namespace jln::mp::detail
   JLN_MP_DIAGNOSTIC_POP()
 
   template<>
-  struct mk_split_before_indexes<> : mk_split_indexes<>
+  struct mk_split_before_indices<> : mk_split_indices<>
   {};
 }
 /// \endcond

@@ -81,7 +81,7 @@ namespace jln::mp::detail
   struct swap_index_builder
   {
     template<class, int... ns>
-    struct indexes : swap_index_build_seq<
+    struct indices : swap_index_build_seq<
       JLN_MP_FN_LIST_TYPE<JLN_MP_FN_VALUE(conditional_c<ns == i>)...>,
       JLN_MP_FN_LIST_TYPE<JLN_MP_FN_VALUE(conditional_c<ns == j>)...>
     >
@@ -95,7 +95,7 @@ namespace jln::mp::detail
   template<unsigned i, unsigned j, int n>
   struct make_swap_index_builder : JLN_MP_MAKE_INTEGER_SEQUENCE_T(
     int, n,
-    swap_index_builder<i,j>::template indexes
+    swap_index_builder<i,j>::template indices
   )
   {};
 

@@ -21,7 +21,7 @@ namespace jln::mp
 
   /// \ingroup algorithm
 
-  /// Uses a list of indexes to reorder a sequence.
+  /// Uses a list of indices to reorder a sequence.
   /// \semantics
   ///   Equivalent to
   ///   \code

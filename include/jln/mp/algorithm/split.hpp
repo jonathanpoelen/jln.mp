@@ -18,7 +18,7 @@ namespace jln::mp
     struct array_int2_index_dispatcher;
 
     template<bool... bs>
-    struct mk_split_indexes;
+    struct mk_split_indices;
   }
   /// \endcond
 
@@ -42,7 +42,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::array_int2_index_dispatcher<
-      detail::mk_split_indexes<JLN_MP_RAW_EXPR_TO_BOOL(
+      detail::mk_split_indices<JLN_MP_RAW_EXPR_TO_BOOL(
         JLN_MP_TRACE_F(Pred)::template f<xs>::value
       )...>
     >::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
@@ -85,7 +85,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::array_int2_index_dispatcher<
-      detail::mk_split_indexes<JLN_MP_IS_SAME(T, xs)...>
+      detail::mk_split_indices<JLN_MP_IS_SAME(T, xs)...>
     >::template f<JLN_MP_TRACE_F(C), JLN_MP_TRACE_F(F), build_indexed_v<xs...>>;
   };
 }
@@ -102,7 +102,7 @@ namespace jln::mp::detail
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
   template<bool... bs>
-  struct mk_split_indexes
+  struct mk_split_indices
   {
     static constexpr std::size_t result_len = (1 + ... + bs);
 
@@ -128,7 +128,7 @@ namespace jln::mp::detail
   JLN_MP_DIAGNOSTIC_POP()
 
   template<>
-  struct mk_split_indexes<>
+  struct mk_split_indices<>
   {
     static constexpr std::size_t result_len = 0;
 
@@ -151,14 +151,14 @@ namespace jln::mp::detail
   };
 
 #if __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L
-  #define JLN_MP_INDEXES_TPL_PARAM() auto indexes_pairs
+  #define JLN_MP_INDEXES_TPL_PARAM() auto indices_pairs
   #define JLN_MP_INDEXES_TPL_VALUE() MkIndexesInt2::make()
   #if JLN_MP_MSVC
-    #define JLN_MP_INDEXES_GET_PAIR(i) indexes_pair_v<indexes_pairs, i>
+    #define JLN_MP_INDEXES_GET_PAIR(i) indices_pair_v<indices_pairs, i>
     template<auto a, int i>
-    inline constexpr auto indexes_pair_v = a.elems[i];
+    inline constexpr auto indices_pair_v = a.elems[i];
   #else
-    #define JLN_MP_INDEXES_GET_PAIR(i) indexes_pairs.elems[i]
+    #define JLN_MP_INDEXES_GET_PAIR(i) indices_pairs.elems[i]
   #endif
 #else
   template<class T>
@@ -166,9 +166,9 @@ namespace jln::mp::detail
   #define JLN_MP_INDEXES_TPL_PARAM() class MkIndexesInt2
   #define JLN_MP_INDEXES_TPL_VALUE() MkIndexesInt2
   #if JLN_MP_MSVC
-    #define JLN_MP_INDEXES_GET_PAIR(i) indexes_pair_v<MkIndexesInt2, i>
+    #define JLN_MP_INDEXES_GET_PAIR(i) indices_pair_v<MkIndexesInt2, i>
     template<class MkIndexesInt2, int i>
-    inline constexpr auto indexes_pair_v = memoize_make_fn<MkIndexesInt2>.elems[i];
+    inline constexpr auto indices_pair_v = memoize_make_fn<MkIndexesInt2>.elems[i];
   #else
     #define JLN_MP_INDEXES_GET_PAIR(i) memoize_make_fn<MkIndexesInt2>.elems[i]
   #endif

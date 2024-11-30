@@ -10,7 +10,7 @@ namespace jln::mp
   namespace detail
   {
     template<bool... bs>
-    struct mk_group_indexes;
+    struct mk_group_indices;
 
     template<bool>
     struct group_impl;
@@ -72,12 +72,12 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<class Cmp, class x, class ys, class... xs>
-  struct mk_pairs_indexes;
+  struct mk_pairs_indices;
 
   template<class Cmp, class x, class... ys, class... xs>
-  struct mk_pairs_indexes<Cmp, x, list<ys...>, xs...>
+  struct mk_pairs_indices<Cmp, x, list<ys...>, xs...>
     : array_int2_index_dispatcher<
-      mk_split_before_indexes<
+      mk_split_before_indices<
         false,
         JLN_MP_RAW_EXPR_TO_BOOL_NOT(Cmp::template f<ys, xs>::value)...
       >
@@ -85,9 +85,9 @@ namespace jln::mp::detail
   {};
 
   template<class x, class... ys, class... xs>
-  struct mk_pairs_indexes<same<>, x, list<ys...>, xs...>
+  struct mk_pairs_indices<same<>, x, list<ys...>, xs...>
     : array_int2_index_dispatcher<
-      mk_split_before_indexes<
+      mk_split_before_indices<
         false,
         JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_IS_SAME(ys, xs))...
       >
@@ -95,11 +95,11 @@ namespace jln::mp::detail
   {};
 
   template<class... ys>
-  struct smp_mk_pairs_indexes
+  struct smp_mk_pairs_indices
   {
     template<class Cmp, class x, class... xs>
     using f = array_int2_index_dispatcher<
-      mk_split_before_indexes<
+      mk_split_before_indices<
         false,
         JLN_MP_RAW_EXPR_TO_BOOL_NOT(Cmp::template f<ys, xs>::value)...
       >
@@ -107,15 +107,15 @@ namespace jln::mp::detail
   };
 
   template<class Cmp, class TC, class FC, class x, class... ys, class... xs>
-  struct mk_pairs_indexes<try_<Cmp, TC, FC>, x, list<ys...>, xs...>
-    : try_<smp_mk_pairs_indexes<ys...>>
+  struct mk_pairs_indices<try_<Cmp, TC, FC>, x, list<ys...>, xs...>
+    : try_<smp_mk_pairs_indices<ys...>>
     ::template f<try_<Cmp, TC, FC>, x, xs...>
   {};
 
   // needed when JLN_MP_ENABLE_DEBUG is enabled
   template<class Cmp, class x, class... ys, class... xs>
-  struct mk_pairs_indexes<memoize<Cmp>, x, list<ys...>, xs...>
-    : try_<smp_mk_pairs_indexes<ys...>>
+  struct mk_pairs_indices<memoize<Cmp>, x, list<ys...>, xs...>
+    : try_<smp_mk_pairs_indices<ys...>>
     ::template f<memoize<Cmp>, x, xs...>
   {};
 
@@ -123,7 +123,7 @@ namespace jln::mp::detail
   struct group_impl<false>
   {
     template<class Cmp, class x, class... xs>
-    using f = mk_pairs_indexes<
+    using f = mk_pairs_indices<
       JLN_MP_TRACE_F(Cmp),
       x,
       typename take_front_c<sizeof...(xs)>::template f<x, xs...>,

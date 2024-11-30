@@ -448,12 +448,12 @@ namespace jln::mp::detail
   struct build_indexed_v_impl<2, PrecomputedIndexes>
   {
   private:
-    using _precomputed_indexes = typename rlist_to_indexed<PrecomputedIndexes>
+    using _precomputed_indices = typename rlist_to_indexed<PrecomputedIndexes>
       ::template f<indexed>;
 
   public:
     JLN_MP_BUILD_INDEXED_IMPL(
-      typename _precomputed_indexes
+      typename _precomputed_indices
       ::template f<index<(i >> 8)>>
       ::template f<index<(i >> 4) & 0xF>>
       ::template f<index<(i & 0xF)>>
@@ -465,13 +465,13 @@ namespace jln::mp::detail
   struct build_indexed_v_impl<3, PrecomputedIndexes>
   {
   private:
-    using _precomputed_indexes = typename rlist_to_indexed<
+    using _precomputed_indices = typename rlist_to_indexed<
       typename rlist_to_indexed_rlist<PrecomputedIndexes>::type
     >::template f<indexed>;
 
   public:
     JLN_MP_BUILD_INDEXED_IMPL(
-      typename _precomputed_indexes
+      typename _precomputed_indices
       ::template f<index<(i >> 12)>>
       ::template f<index<(i >> 8) & 0xF>>
       ::template f<index<(i >> 4) & 0xF>>
@@ -504,12 +504,12 @@ namespace jln::mp::detail
   template<class PrecomputedIndexes>
   class build_indexed_impl<2, PrecomputedIndexes>
   {
-    using _precomputed_indexes = typename rlist_to_indexed<PrecomputedIndexes>
+    using _precomputed_indices = typename rlist_to_indexed<PrecomputedIndexes>
       ::template f<indexed>;
 
   public:
     template<class i>
-    using f = typename _precomputed_indexes
+    using f = typename _precomputed_indices
       ::template f<index<(i::value >> 8)>>
       ::template f<index<(i::value >> 4) & 0xF>>
       ::template f<index<i::value & 0xF>>;
@@ -519,13 +519,13 @@ namespace jln::mp::detail
   template<class PrecomputedIndexes>
   class build_indexed_impl<3, PrecomputedIndexes>
   {
-    using _precomputed_indexes = typename rlist_to_indexed<
+    using _precomputed_indices = typename rlist_to_indexed<
       typename rlist_to_indexed_rlist<PrecomputedIndexes>::type
     >::template f<indexed>;
 
   public:
     template<class i>
-    using f = typename _precomputed_indexes
+    using f = typename _precomputed_indices
       ::template f<index<(i::value >> 12)>>
       ::template f<index<(i::value >> 8) & 0xF>>
       ::template f<index<(i::value >> 4) & 0xF>>
