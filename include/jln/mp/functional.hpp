@@ -21,10 +21,10 @@
 #include <jln/mp/functional/memoize.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/functional/not_fn.hpp>
-#include <jln/mp/functional/partial.hpp>
-#include <jln/mp/functional/partial_each.hpp>
 #include <jln/mp/functional/partial_tee.hpp>
-#include <jln/mp/functional/partial_xs.hpp>
+#include <jln/mp/functional/partial_tee_xs.hpp>
+#include <jln/mp/functional/partial_transform.hpp>
+#include <jln/mp/functional/partial_transform_xs.hpp>
 #include <jln/mp/functional/recursively.hpp>
 #include <jln/mp/functional/select.hpp>
 #include <jln/mp/functional/tee.hpp>

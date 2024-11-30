@@ -7,7 +7,6 @@
 #include <jln/mp/algorithm/transform.hpp>
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/functional/partial_tee.hpp>
-#include <jln/mp/functional/partial.hpp>
 #include <jln/mp/map/map_contains.hpp>
 #include <jln/mp/utility/wrapper.hpp>
 

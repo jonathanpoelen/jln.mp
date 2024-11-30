@@ -3,30 +3,30 @@
 #pragma once
 
 #include <jln/mp/smp/contract.hpp>
-#include <jln/mp/functional/partial_tee.hpp>
+#include <jln/mp/functional/partial_transform.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
-  struct _smp_partial_tee;
-  struct _smp_partial_tee0;
+  struct _smp_partial_transform;
+  struct _smp_partial_transform0;
 }
 /// \endcond
 
 namespace jln::mp::smp
 {
   template<class... Fs>
-  using partial_tee = typename mp::conditional_c<sizeof...(Fs) == 0>
+  using partial_transform = typename mp::conditional_c<sizeof...(Fs) == 0>
     ::template f<
       mp::always<bad_contract>,
-      rotate_c<-1, detail::_smp_partial_tee>>
+      rotate_c<-1, detail::_smp_partial_transform>>
     ::template f<Fs...>;
 
   template<class... Fs>
-  using partial_tee0 = typename mp::conditional_c<sizeof...(Fs) == 0>
+  using partial_transform0 = typename mp::conditional_c<sizeof...(Fs) == 0>
     ::template f<
       mp::always<bad_contract>,
-      rotate_c<-1, detail::_smp_partial_tee0>>
+      rotate_c<-1, detail::_smp_partial_transform0>>
     ::template f<Fs...>;
 }
 
@@ -38,30 +38,30 @@ namespace jln::mp::smp
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class... Fs>
-  struct _sfinae<sfinae, partial_tee<Fs...>>
+  struct _sfinae<sfinae, partial_transform<Fs...>>
   {
-    using type = smp::partial_tee<sfinae<Fs>...>;
+    using type = smp::partial_transform<sfinae<Fs>...>;
   };
 
-  struct _smp_partial_tee
+  struct _smp_partial_transform
   {
     template<class C, class... Fs>
     using f = test_contract<
       size<greater_equal_than_c<sizeof...(Fs)>>,
-      partial_tee<subcontract<Fs>..., monadic_xs<subcontract<C>>>
+      partial_transform<subcontract<Fs>..., monadic_xs<subcontract<C>>>
     >;
   };
 
   template<template<class> class sfinae, class... Fs>
-  struct _sfinae<sfinae, partial_tee0<Fs...>>
+  struct _sfinae<sfinae, partial_transform0<Fs...>>
   {
-    using type = smp::partial_tee0<sfinae<Fs>...>;
+    using type = smp::partial_transform0<sfinae<Fs>...>;
   };
 
-  struct _smp_partial_tee0
+  struct _smp_partial_transform0
   {
     template<class C, class... Fs>
-    using f = contract<mp::partial_tee0<subcontract<Fs>..., monadic_xs<subcontract<C>>>>;
+    using f = contract<mp::partial_transform0<subcontract<Fs>..., monadic_xs<subcontract<C>>>>;
   };
 }
 /// \endcond

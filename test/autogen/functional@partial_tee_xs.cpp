@@ -1,3 +1,3 @@
 // SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
-#include "jln/mp/smp/functional/partial.hpp"
+#include "jln/mp/functional/partial_tee_xs.hpp"

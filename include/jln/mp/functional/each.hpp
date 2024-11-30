@@ -21,7 +21,7 @@ namespace jln::mp
 
   /// Invokes multiple functions each taking the parameter corresponding to its position.
   /// \treturn \value
-  /// \see tee, partial
+  /// \see tee, partial_transform
 #ifdef JLN_MP_DOXYGENATING
   template<class... Fs, class C>
   struct each
