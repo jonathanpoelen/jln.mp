@@ -38,9 +38,12 @@ namespace jln::mp::detail
   };
 
   template<unsigned i, unsigned j, class C>
-  struct _smp_swap_index<swap_elem<i, j, C>>
+  struct _smp_swap_index<swap_index_impl<i, j, C>>
   {
-    using type = test_contract<size<greater_than_c<j>>, swap_elem<i, j, subcontract<C>>>;
+    using type = test_contract<
+      size<greater_than_c<j>>,
+      swap_index_impl<i, j, subcontract<C>>
+    >;
   };
 
   template<template<class> class sfinae, unsigned i, class C>
@@ -49,8 +52,8 @@ namespace jln::mp::detail
   {};
 
   template<template<class> class sfinae, unsigned i, unsigned j, class C>
-  struct _sfinae<sfinae, swap_elem<i, j, C>>
-  : detail::_smp_swap_index<swap_elem<i, j, sfinae<C>>>
+  struct _sfinae<sfinae, swap_index_impl<i, j, C>>
+  : detail::_smp_swap_index<swap_index_impl<i, j, sfinae<C>>>
   {};
 }
 /// \endcond

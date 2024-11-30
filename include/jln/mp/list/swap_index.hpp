@@ -12,19 +12,19 @@ namespace jln::mp
   namespace detail
   {
     template<bool, bool>
-    struct _select_swap_index;
+    struct select_swap_index;
   }
   /// \endcond
 
   /// \ingroup list
 
-  /// Swap elements at indexes \c i and \c j of a \sequence.
+  /// Swap elements at indices \c i and \c j of a \sequence.
   /// \pre `0 < i < sizeof...(xs)`
   /// \pre `0 < j < sizeof...(xs)`
   /// \treturn \sequence
   /// \note `swap_index<I, J>` == `swap_index<J, I>`
   template<unsigned i, unsigned j, class C = listify>
-  using swap_index_c = typename detail::_select_swap_index<i < j, i == j>
+  using swap_index_c = typename detail::select_swap_index<i < j, i == j>
     ::template f<i, j, C>;
 
   template<class I, class J, class C = listify>
@@ -42,81 +42,99 @@ namespace jln::mp
 
 
 #include <jln/mp/algorithm/rotate.hpp>
+#include <jln/mp/algorithm/make_int_sequence.hpp>
+#include <jln/mp/utility/conditional.hpp>
+#include <jln/mp/list/at.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
-  //                     |        i     j
-  //                     |        <--n-->
-  //                     |    aaa X bbb Y ccc
-  //                     |
-  // rotate i            |    X bbb Y ccc aaa
-  // get X ; prepend C,i |  C i bbb Y ccc aaa
-  // rotate n+1          |    Y ccc aaa C i bbb
-  // get Y ; append X    |      ccc aaa C i bbb X
-  // rotate -n-1         |    C i bbb X ccc aaa
-  // rm C,i ; append Y   |        bbb X ccc aaa Y
-  //                     |
-  // rotate -i           |    aaa Y bbb X ccc
+#if JLN_MP_GCC
+# define JLN_MP_FN_LIST_TYPE list
+# define JLN_MP_FN_TYPE class
+# define JLN_MP_FN_VALUE(...) __VA_ARGS__
+# define JLN_MP_FN_CALL(F) typename F::template f
+#else
+# define JLN_MP_FN_LIST_TYPE fn_list
+# define JLN_MP_FN_TYPE template<class, class> class
+# define JLN_MP_FN_VALUE(...) __VA_ARGS__::template f
+# define JLN_MP_FN_CALL(F) F
+  template<JLN_MP_FN_TYPE...> class fn_list;
+#endif
 
-  template<class y>
-  struct swap_elem_push_Y
+  template<class, class>
+  struct swap_index_build_seq;
+
+  template<JLN_MP_FN_TYPE... F1, JLN_MP_FN_TYPE... F2>
+  struct swap_index_build_seq<JLN_MP_FN_LIST_TYPE<F1...>, JLN_MP_FN_LIST_TYPE<F2...>>
   {
-    template<class C, class i, class... xs>
-    using f = typename rotate_impl<sizeof...(xs) - i::value>
-      ::template f<sizeof...(xs) - i::value, C, xs..., y>;
+    template<class a, class b, class C, class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      JLN_MP_FN_CALL(F1)<
+        a,
+        JLN_MP_FN_CALL(F2)<b, xs>
+      >...
+    );
   };
 
-  template<class x, unsigned n>
-  struct swap_elem_get_Y_push_X
+  template<int i, int j>
+  struct swap_index_builder
   {
-    template<class y, class... xs>
-    using f = typename rotate_impl<sizeof...(xs) - n - 1>
-      ::template f<sizeof...(xs) - n - 1, swap_elem_push_Y<y>, xs..., x>;
+    template<class, int... ns>
+    struct indexes : swap_index_build_seq<
+      JLN_MP_FN_LIST_TYPE<JLN_MP_FN_VALUE(conditional_c<ns == i>)...>,
+      JLN_MP_FN_LIST_TYPE<JLN_MP_FN_VALUE(conditional_c<ns == j>)...>
+    >
+    {};
   };
 
-  template<unsigned n, class i, class C>
-  struct swap_elem_get_X
-  {
-    template<class x, class... xs>
-    using f = typename rotate_impl<(sizeof...(xs) & 0) + n + 1>
-      ::template f<n + 1, swap_elem_get_Y_push_X<x, n>, C, i, xs...>;
-  };
+#undef JLN_MP_FN_LIST_INIT
+#undef JLN_MP_FN_CALL
+#undef JLN_MP_FN_TYPE
+
+  template<unsigned i, unsigned j, int n>
+  struct make_swap_index_builder : JLN_MP_MAKE_INTEGER_SEQUENCE_T(
+    int, n,
+    swap_index_builder<i,j>::template indexes
+  )
+  {};
 
   template<unsigned i, unsigned j, class C>
-  struct swap_elem
+  struct swap_index_impl
   {
     template<class... xs>
-    using f = typename rotate_impl<(sizeof...(xs) & 0) + i>
-      ::template f<i, swap_elem_get_X<j-i, number<i>, C>, xs...>;
+    using f = typename make_swap_index_builder<i, j, sizeof...(xs)>
+      ::template f<
+        typename at_c<(sizeof...(xs) & 0) + j>::template f<xs...>,
+        typename at_c<(sizeof...(xs) & 0) + i>::template f<xs...>,
+        C, xs...
+      >;
   };
 
   template<bool, bool>
-  struct _select_swap_index
+  struct select_swap_index
   {
     template<unsigned i, unsigned j, class C>
-    using f = swap_elem<i, j, C>;
+    using f = swap_index_impl<i, j, C>;
   };
 
   template<>
-  struct _select_swap_index<false, false>
+  struct select_swap_index<false, false>
   {
     template<unsigned i, unsigned j, class C>
-    using f = swap_elem<j, i, C>;
+    using f = swap_index_impl<j, i, C>;
   };
 
   template<unsigned i, class C>
-  struct if_valid_index
-    : detail::call_trace_xs<C>
+  struct if_valid_index : call_trace_xs<C>
   {};
 
   template<unsigned i>
-  struct if_valid_index<i, listify>
-    : listify
+  struct if_valid_index<i, listify> : listify
   {};
 
   template<>
-  struct _select_swap_index<false, true>
+  struct select_swap_index<false, true>
   {
     template<unsigned i, unsigned j, class C>
     using f = if_valid_index<i, C>;
