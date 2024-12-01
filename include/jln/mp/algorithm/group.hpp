@@ -126,7 +126,8 @@ namespace jln::mp::detail
     using f = mk_pairs_indices<
       JLN_MP_TRACE_F(Cmp),
       x,
-      typename take_front_c<sizeof...(xs)>::template f<x, xs...>,
+      typename take_front_impl<sizeof...(xs)>
+        ::template f<sizeof...(xs), list, x, xs...>,
       xs...
     >;
   };

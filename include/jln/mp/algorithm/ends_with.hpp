@@ -61,7 +61,8 @@ namespace jln::mp::detail
   {
     template<unsigned n, class L, class... xs>
     using f = number<JLN_MP_IS_SAME(
-      typename drop_front_c<sizeof...(xs) - n>::template f<xs...>,
+      typename drop_front_impl<sizeof...(xs) - n>
+      ::template f<sizeof...(xs) - n, list, xs...>,
       L
     )>;
   };

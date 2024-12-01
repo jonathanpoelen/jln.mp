@@ -117,7 +117,8 @@ namespace jln::mp
     detail::mk_pairs_indices<
       same<>,
       key,
-      typename take_front_c<sizeof...(keys)>::template f<key, keys...>,
+      typename detail::take_front_impl<sizeof...(keys)>
+        ::template f<sizeof...(keys), list, key, keys...>,
       keys...
     >
   >

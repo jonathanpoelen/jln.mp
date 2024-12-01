@@ -96,7 +96,7 @@ namespace jln::mp::detail
       (sizeof...(xs) & 0) + sizeof...(Fs)
     >::template f<
       sizeof...(Fs),
-      bind_front<C, JLN_MP_DCALL_TRACE_XS(xs, Fs, xs...)...>,
+      bind_front<C, JLN_MP_DCALL_TRACE_XS(xs, Fs, xs...)...>::template f,
       xs...
     >;
   };
@@ -164,7 +164,7 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename drop_front_impl<sizeof...(xs)>
-      ::template f<sizeof...(xs), lift<partial_transform_suffix>, Fs...>
+      ::template f<sizeof...(xs), partial_transform_suffix, Fs...>
       ::template f<
         typename take_front_impl<sizeof...(xs)>
         ::template f<sizeof...(xs), partial_tee_prefix, Fs...>

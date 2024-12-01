@@ -30,7 +30,7 @@ namespace jln::mp
   };
 
   /// \cond
-  #if ! JLN_MP_OPTIMIZED_ALIAS
+  #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
   template<template<class...> class C>
   struct join<lift<C>>
   {

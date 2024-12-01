@@ -105,13 +105,13 @@ namespace jln::mp::detail
     using f = typename drop_front_impl<(sizeof...(xs) & 0) + sizeof...(Fs)>
       ::template f<
         sizeof...(Fs),
-        typename take_front_impl<sizeof...(Fs) + 1 + (sizeof...(xs) & 0)>
+        take_front_impl<sizeof...(Fs) + 1 + (sizeof...(xs) & 0)>
         ::template f<
           sizeof...(Fs) + 1,
           partial_transform_prefix<Fs...>::template f,
           C,
           xs...
-        >,
+        >::template f,
         xs...
       >;
   };
@@ -223,7 +223,7 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename drop_front_impl<sizeof...(xs)>
-      ::template f<sizeof...(xs), lift<partial_transform_suffix>, Fs...>
+      ::template f<sizeof...(xs), partial_transform_suffix, Fs...>
       ::template f<
         typename take_front_impl<sizeof...(xs)>
         ::template f<sizeof...(xs), partial_transform_prefix, Fs...>

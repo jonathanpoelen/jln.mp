@@ -247,7 +247,7 @@ namespace jln::mp::detail
         ::template f<(sizeof...(xs) + 32) / 2, sort<Cmp>::template f,
           JLN_MP_XS_32(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), xs...>,
       typename drop_front_impl<(sizeof...(xs) + 32) / 2 - 32>
-        ::template f<(sizeof...(xs) + 32) / 2 - 32, sort<Cmp>, xs...>,
+        ::template f<(sizeof...(xs) + 32) / 2 - 32, sort<Cmp>::template f, xs...>,
       Cmp
     >::type;
   };

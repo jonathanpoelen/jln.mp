@@ -152,14 +152,18 @@ namespace jln::mp::detail
     {
       template<unsigned dummy, class... xs>
       using f = number<size +
-        drop_front_c<dummy+size,
+        drop_front_impl<dummy+size>
+        ::template f<
+          dummy+size,
           rotate_c<n-size,
             drop_front_c<size,
               typename _mismatch_tree<Cmp, n-size>::type
             >
-          >
-        >::template f<xs...>
-      ::value>;
+          >::template f,
+          xs...
+        >
+        ::value
+      >;
     };
 
     template<class... xs>
@@ -221,9 +225,12 @@ namespace jln::mp::detail
     {
       template<class Cmp, class C, class FC>
       using f = typename apply_index<
-        typename take_front_c<sizeof...(xs) * 2,
-          typename _mismatch_tree<Cmp, sizeof...(xs)>::type>
-        ::template f<xs..., ys...>,
+        typename take_front_impl<sizeof...(xs) * 2>
+          ::template f<
+            sizeof...(xs) * 2,
+            _mismatch_tree<Cmp, sizeof...(xs)>::type::template f,
+            xs..., ys...
+          >,
         number<sizeof...(xs)>
       >::template f<C, FC, number<sizeof...(xs)>, number<-1>>;
     };
@@ -234,9 +241,12 @@ namespace jln::mp::detail
     {
       template<class Cmp, class C, class FC>
       using f = typename apply_index<
-        typename take_front_c<sizeof...(ys) * 2,
-          typename _mismatch_tree<Cmp, sizeof...(ys)>::type>
-        ::template f<ys..., xs...>,
+        typename take_front_impl<sizeof...(ys) * 2>
+          ::template f<
+            sizeof...(ys) * 2,
+            _mismatch_tree<Cmp, sizeof...(ys)>::type::template f,
+            ys..., xs...
+          >,
         number<sizeof...(ys)>
       >::template f<C, FC, number<sizeof...(ys)>, number<1>>;
     };

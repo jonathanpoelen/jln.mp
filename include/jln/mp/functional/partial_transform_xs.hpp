@@ -140,10 +140,27 @@ namespace jln::mp::detail
         partial_transform_xs_prefix<Fs...>::template f,
         C,
         typename drop_front_impl<(sizeof...(xs) & 0) + sizeof...(Fs)>
-        ::template f<sizeof...(Fs), JLN_MP_TRACE_F(F), xs...>,
+        ::template f<sizeof...(Fs), JLN_MP_TRACE_F(F)::template f, xs...>,
         xs...
       >;
   };
+
+  #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  template<template<class...> class F, class C, class... Fs>
+  struct partial_transform_xs_select<2, lift<F>, C, Fs...>
+  {
+    template<class... xs>
+    using f = typename take_front_impl<sizeof...(Fs) + (sizeof...(xs) & 0) + 2>
+      ::template f<
+        sizeof...(Fs) + 2,
+        partial_transform_xs_prefix<Fs...>::template f,
+        C,
+        typename drop_front_impl<(sizeof...(xs) & 0) + sizeof...(Fs)>
+        ::template f<sizeof...(Fs), F, xs...>,
+        xs...
+      >;
+  };
+  #endif
 
   // sizeof...(Fs) + 1 > sizeof...(xs)
   template<class F, class C, class... Fs>

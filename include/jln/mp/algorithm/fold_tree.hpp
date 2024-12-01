@@ -170,10 +170,10 @@ namespace jln::mp::detail
 #if JLN_MP_MEMOIZED_ALIAS
     template<class... xs>
     using f = typename F::template f<
-      typename take_front_c<n, fold_tree_impl<F, n/2>>
-        ::template f<xs...>,
-      typename drop_front_c<n, fold_tree_impl<F, bit_ceil(sizeof...(xs)-n)/2>>
-        ::template f<xs...>
+      typename take_front_impl<(sizeof...(xs) & 0) + n>
+        ::template f<n, fold_tree_impl<F, n/2>::template f, xs...>,
+      typename drop_front_impl<(sizeof...(xs) & 0) + n>
+        ::template f<n, fold_tree_impl<F, bit_ceil(sizeof...(xs)-n)/2>::template f, xs...>
     >;
 #else
     template<class... xs>
@@ -230,10 +230,10 @@ namespace jln::mp::detail
 #if JLN_MP_MEMOIZED_ALIAS
     template<class... xs>
     using f = typename F::template f<
-      typename take_front_c<(n+1)/2, fold_balanced_tree_impl<F, (n+1)/2>>
-        ::template f<xs...>,
-      typename drop_front_c<(sizeof...(xs) & 0) + (n+1)/2, fold_balanced_tree_impl<F, n-(n+1)/2>>
-        ::template f<xs...>
+      typename take_front_impl<(sizeof...(xs) & 0) + (n+1)/2>
+        ::template f<(n+1)/2, fold_balanced_tree_impl<F, (n+1)/2>::template f, xs...>,
+      typename drop_front_impl<(sizeof...(xs) & 0) + (n+1)/2>
+        ::template f<(n+1)/2, fold_balanced_tree_impl<F, n-(n+1)/2>::template f, xs...>
     >;
 #else
     template<class... xs>
