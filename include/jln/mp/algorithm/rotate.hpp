@@ -42,7 +42,7 @@ namespace jln::mp
     >
     ::template f<
       detail::rotate_size(N, sizeof...(xs)),
-      C, xs...
+      JLN_MP_TRACE_F(C)::template f, xs...
     >;
   };
 
@@ -65,6 +65,21 @@ namespace jln::mp
 /// \cond
 namespace jln::mp
 {
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  template<int_t N, template<class...> class C>
+  struct rotate_c<N, lift<C>>
+  {
+    template<class... xs>
+    using f = typename detail::rotate_impl<
+      detail::rotate_size(N, sizeof...(xs))
+    >
+    ::template f<
+      detail::rotate_size(N, sizeof...(xs)),
+      C, xs...
+    >;
+  };
+#endif
+
   template<int_t N1, int_t N2, class C>
   struct rotate_c<N1, rotate_c<N2, C>>
     : rotate_c<N1 + N2, C>
@@ -111,11 +126,11 @@ namespace jln::mp::detail
   template<>                                              \
   struct rotate_impl<n>                                   \
   {                                                       \
-    template<unsigned size, class C,                      \
+    template<unsigned size, template<class...> class C,   \
       mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
       class... xs>                                        \
-    using f = JLN_MP_CALL_TRACE(C,                        \
-      xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)); \
+    using f = C<                                          \
+      xs... mp_xs(JLN_MP_COMMA, JLN_MP_NIL, JLN_MP_NIL)>; \
   };
 
   JLN_MP_GEN_XS_0_TO_8(JLN_MP_ROTATE_IMPL)
@@ -126,7 +141,7 @@ namespace jln::mp::detail
   template<>                                              \
   struct rotate_impl<n>                                   \
   {                                                       \
-    template<unsigned size, class C,                      \
+    template<unsigned size, template<class...> class C,   \
       mp_xs(class, JLN_MP_COMMA, JLN_MP_NIL)              \
       class... xs>                                        \
     using f = typename rotate_impl<size-n>                \

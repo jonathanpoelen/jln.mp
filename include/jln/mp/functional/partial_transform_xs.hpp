@@ -12,7 +12,11 @@ namespace jln::mp
     template<class... Fs>
     struct partial_transform0_xs_impl;
 
-    struct partial_transform_xs_impl;
+    template<int, class C, class... Fs>
+    struct partial_transform_xs_select;
+
+    template<class... Fs>
+    using partial_transform_xs_impl = partial_transform_xs_select<2, Fs...>;
   }
   /// \endcond
 
@@ -40,8 +44,8 @@ namespace jln::mp
 #else
   template<class... Fs>
   struct partial_transform_xs
-  : detail::rotate_impl<sizeof...(Fs)-2>
-  ::template f<sizeof...(Fs)-2, detail::partial_transform_xs_impl, Fs...>
+    : detail::rotate_impl<sizeof...(Fs)-2>
+    ::template f<sizeof...(Fs)-2, detail::partial_transform_xs_impl, Fs...>
   {};
 
   template<class C>
@@ -77,8 +81,8 @@ namespace jln::mp
 #else
   template<class... Fs>
   struct partial_transform0_xs
-  : detail::rotate_impl<sizeof...(Fs)-2>
-  ::template f<sizeof...(Fs)-2, lift<detail::partial_transform0_xs_impl>, Fs...>
+    : detail::rotate_impl<sizeof...(Fs)-2>
+    ::template f<sizeof...(Fs)-2, detail::partial_transform0_xs_impl, Fs...>
   {};
 
   template<class C>
@@ -101,9 +105,6 @@ namespace jln::mp::detail
          : nf < nx ? 2
          : 3;
   }
-
-  template<int, class C, class... Fs>
-  struct partial_transform_xs_select;
 
   // each (sizeof...(Fs) + 1 == sizeof...(xs))
   template<class F, class C, class... Fs>
@@ -176,12 +177,6 @@ namespace jln::mp::detail
       partial_transform_xs_selector(sizeof...(Fs), sizeof...(xs)),
       Fs...
     >::template f<xs...>;
-  };
-
-  struct partial_transform_xs_impl
-  {
-    template<class... Fs>
-    using f = partial_transform_xs_select<2, Fs...>;
   };
 }
 /// \endcond

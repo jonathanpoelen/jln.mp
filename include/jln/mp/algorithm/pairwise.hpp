@@ -35,7 +35,10 @@ namespace jln::mp
   struct pairwise_with
   {
     template<class... xs>
-    using f = typename detail::pairwise_impl<rotate_c<-1>::f<xs...>>
+    using f = typename detail::pairwise_impl<
+      typename detail::rotate_impl<sizeof...(xs) ? sizeof...(xs) - 1 : 0>
+      ::template f<sizeof...(xs) ? sizeof...(xs) - 1 : 0, list, xs...>
+    >
       ::template f<JLN_MP_TRACE_F(C)::template f, JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
@@ -57,7 +60,10 @@ namespace jln::mp
   struct pairwise_with<F, lift<C>>
   {
     template<class... xs>
-    using f = typename detail::pairwise_impl<rotate_c<-1>::f<xs...>>
+    using f = typename detail::pairwise_impl<
+      typename detail::rotate_impl<sizeof...(xs) ? sizeof...(xs) - 1 : 0>
+      ::template f<sizeof...(xs) ? sizeof...(xs) - 1 : 0, list, xs...>
+    >
       ::template f<C, JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
@@ -65,7 +71,10 @@ namespace jln::mp
   struct pairwise_with<lift<F>, C>
   {
     template<class... xs>
-    using f = typename detail::pairwise_impl<rotate_c<-1>::f<xs...>>
+    using f = typename detail::pairwise_impl<
+      typename detail::rotate_impl<sizeof...(xs) ? sizeof...(xs) - 1 : 0>
+      ::template f<sizeof...(xs) ? sizeof...(xs) - 1 : 0, list, xs...>
+    >
       ::template f<JLN_MP_TRACE_F(C)::template f, F, xs...>;
   };
 
@@ -73,7 +82,10 @@ namespace jln::mp
   struct pairwise_with<lift<F>, lift<C>>
   {
     template<class... xs>
-    using f = typename detail::pairwise_impl<rotate_c<-1>::f<xs...>>
+    using f = typename detail::pairwise_impl<
+      typename detail::rotate_impl<sizeof...(xs) ? sizeof...(xs) - 1 : 0>
+      ::template f<sizeof...(xs) ? sizeof...(xs) - 1 : 0, list, xs...>
+    >
       ::template f<C, F, xs...>;
   };
 #endif

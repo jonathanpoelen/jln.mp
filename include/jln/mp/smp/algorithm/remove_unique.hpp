@@ -70,11 +70,14 @@ namespace jln::mp::detail
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
       JLN_MP_MSVC_FIX_CALL((
-        rotate_c<ints, pop_front<smp::any_of<
-          contract<push_back<xs, Cmp>>,
-          contract<lift<wrap_in_list>>
-        >>>
-        ::template f<xs...>
+        rotate_impl<ints>::template f<
+          ints,
+          pop_front<smp::any_of<
+            contract<push_back<xs, Cmp>>,
+            contract<lift<wrap_in_list>>
+          >>::template f,
+          xs...
+        >
       ), xs)...
     >;
   };
@@ -119,11 +122,14 @@ namespace jln::mp::detail
     template<class C, class Cmp, class... xs>
     using f = typename join<C>::template f<
       JLN_MP_MSVC_FIX_CALL((
-        rotate_c<ints, pop_front<smp::none_of<
-          contract<push_back<xs, Cmp>>,
-          contract<lift<wrap_in_list>>
-        >>>
-        ::template f<xs...>
+        rotate_impl<ints>::template f<
+          ints,
+          pop_front<smp::none_of<
+            contract<push_back<xs, Cmp>>,
+            contract<lift<wrap_in_list>>
+          >>::template f,
+          xs...
+        >
       ), xs)...
     >;
   };

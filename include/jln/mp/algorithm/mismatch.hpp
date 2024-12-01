@@ -176,7 +176,7 @@ namespace jln::mp::detail
               typename _mismatch_tree<Cmp, size>::type
             >
           >
-        >,
+        >::template f,
         xs...
       >
     >::template f<0u, xs...>;

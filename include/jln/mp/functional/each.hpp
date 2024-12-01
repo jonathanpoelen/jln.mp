@@ -33,7 +33,7 @@ namespace jln::mp
   template<class... Fs>
   struct each
   : detail::rotate_impl<sizeof...(Fs)-1>
-  ::template f<sizeof...(Fs)-1, lift<detail::_each>, Fs...>
+  ::template f<sizeof...(Fs)-1, detail::_each, Fs...>
   {};
 #endif
 }

@@ -9,7 +9,11 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    struct partial_tee_impl;
+    template<int, class C, class... Fs>
+    struct partial_tee_select;
+
+    template<class... Fs>
+    using partial_tee_impl = partial_tee_select<1, Fs...>;
 
     template<class C, class... Fs>
     struct partial_tee0_impl;
@@ -37,8 +41,8 @@ namespace jln::mp
 #else
   template<class... Fs>
   struct partial_tee
-  : detail::rotate_impl<sizeof...(Fs)-1>
-  ::template f<sizeof...(Fs)-1, detail::partial_tee_impl, Fs...>
+    : detail::rotate_impl<sizeof...(Fs)-1>
+    ::template f<sizeof...(Fs)-1, detail::partial_tee_impl, Fs...>
   {};
 #endif
 
@@ -63,8 +67,8 @@ namespace jln::mp
 #else
   template<class... Fs>
   struct partial_tee0
-  : detail::rotate_impl<sizeof...(Fs)-1>
-  ::template f<sizeof...(Fs)-1, lift<detail::partial_tee0_impl>, Fs...>
+    : detail::rotate_impl<sizeof...(Fs)-1>
+    ::template f<sizeof...(Fs)-1, detail::partial_tee0_impl, Fs...>
   {};
 #endif
 }
@@ -78,9 +82,6 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<int, class C, class... Fs>
-  struct partial_tee_select;
-
   // tee (sizeof...(Fs) == sizeof...(xs))
   template<class C, class... Fs>
   struct partial_tee_select<0, C, Fs...>
@@ -181,12 +182,6 @@ namespace jln::mp::detail
       C,
       Fs...
     >::template f<xs...>;
-  };
-
-  struct partial_tee_impl
-  {
-    template<class... Fs>
-    using f = partial_tee_select<1, Fs...>;
   };
 } // namespace jln::mp
 /// \endcond

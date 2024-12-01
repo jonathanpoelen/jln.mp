@@ -30,7 +30,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::pairwise_fold_impl<
-      rotate_c<-1>::template f<xs...>
+      typename detail::rotate_impl<sizeof...(xs) ? sizeof...(xs) - 1 : 0>
+      ::template f<sizeof...(xs) ? sizeof...(xs) - 1 : 0, list, xs...>
     >::template f<C, Front, JLN_MP_MEMOIZE(F)::template f, xs...>;
   };
 
@@ -66,7 +67,8 @@ namespace jln::mp
   {
     template<class... xs>
     using f = typename detail::pairwise_fold_impl<
-      rotate_c<-1>::template f<xs...>
+      typename detail::rotate_impl<sizeof...(xs) ? sizeof...(xs) - 1 : 0>
+      ::template f<sizeof...(xs) ? sizeof...(xs) - 1 : 0, list, xs...>
     >::template f<C, Front, F, xs...>;
   };
 }
