@@ -3,6 +3,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
+#include "jln/mp/smp/list/size.hpp"
 #include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/algorithm/repeat.hpp"
 
@@ -21,18 +22,60 @@ TEST()
     .test<list<>>()
     .test<list<>, _1>()
     .test<list<>, _1, _2>()
+    .test<list<>, _1, _2, _3>()
     ;
 
   test_context<repeat_c<1>, smp::repeat_c<1>>()
     .test<list<>>()
     .test<seq_1, _1>()
     .test<seq_1_2, _1, _2>()
+    .test<seq_1_2_3, _1, _2, _3>()
     ;
 
   test_context<repeat_c<3>, smp::repeat_c<3>>()
     .test<list<>>()
     .test<seq_1_1_1, _1>()
-    .test<emp::numbers<1, 2, 1, 2, 1, 2>, _1, _2>()
+    .test<list<_1, _2, _1, _2, _1, _2>, _1, _2>()
+    .test<list<_1, _2, _3, _1, _2, _3, _1, _2, _3>, _1, _2, _3>()
+    ;
+
+  test_context<repeat_c<10>, smp::repeat_c<10>>()
+    .test<list<>>()
+    .test<list<_1, _1, _1, _1, _1, _1, _1, _1, _1, _1>, _1>()
+    .test<list<_1, _2, _1, _2, _1, _2, _1, _2, _1, _2,
+               _1, _2, _1, _2, _1, _2, _1, _2, _1, _2>, _1, _2>()
+    .test<list<_1, _2, _3, _1, _2, _3, _1, _2, _3,
+               _1, _2, _3, _1, _2, _3, _1, _2, _3,
+               _1, _2, _3, _1, _2, _3, _1, _2, _3,
+               _1, _2, _3>, _1, _2, _3>()
+    ;
+
+  test_context<repeat_c<0, size<>>, smp::repeat_c<0, smp::size<>>>()
+    .test<_0>()
+    .test<_0, _1>()
+    .test<_0, _1, _2>()
+    .test<_0, _1, _2, _3>()
+    ;
+
+  test_context<repeat_c<1, size<>>, smp::repeat_c<1, smp::size<>>>()
+    .test<_0>()
+    .test<_1, _1>()
+    .test<_2, _1, _2>()
+    .test<_3, _1, _2, _3>()
+    ;
+
+  test_context<repeat_c<3, size<>>, smp::repeat_c<3, smp::size<>>>()
+    .test<_0>()
+    .test<_3, _1>()
+    .test<_6, _1, _2>()
+    .test<_9, _1, _2, _3>()
+    ;
+
+  test_context<repeat_c<10, size<>>, smp::repeat_c<10, smp::size<>>>()
+    .test<_0>()
+    .test<_10, _1>()
+    .test<_20, _1, _2>()
+    .test<_30, _1, _2, _3>()
     ;
 
   ut::not_invocable<smp::repeat_c<-3>>();

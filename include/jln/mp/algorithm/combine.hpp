@@ -15,8 +15,8 @@ namespace jln::mp
   struct combine
   {
     template<class... xs>
-    using f = typename repeat_c<sizeof...(xs), product<C>>
-      ::template f<list<xs...>>;
+    using f = typename detail::repeat_impl<1, sizeof...(xs), product<C>>
+      ::template f<list<xs...>>::type;
   };
 
   namespace emp

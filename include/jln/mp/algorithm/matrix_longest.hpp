@@ -20,7 +20,7 @@ namespace jln::mp
       C,
       typename conditional_c<max != ns::value>
       ::template f<
-        typename repeat_c<max - ns::value, F>::template f<FillValue>,
+        typename repeat_impl<1, max - ns::value, F>::template f<FillValue>::type,
         EvenSizeF
       >
     ...>;

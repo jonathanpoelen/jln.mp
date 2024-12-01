@@ -83,7 +83,7 @@ namespace jln::mp::detail
   struct counter_to_repeat
   {
     template<class x, class n>
-    using f = typename repeat<n, C>::template f<x>;
+    using f = typename repeat_impl<1, n::value, C>::template f<x>::type;
   };
 
   template<class... xs>
