@@ -254,7 +254,8 @@ local define_impl = List(Until(S'\n\\'), P'\\' * 1) * 1
 local define_decl = 'define' * sp * C((alnum + '_')^1) * S' \\'^0 * C(('(' * After')')^0)
 
 local f_ident = function(s) return s end
-local preproc -- used into JLN_MP_CALL transformation
+local preproc
+local reproc = function(arg) return preproc:match(arg) end
 preproc = P{
   "S";
   S=Cs(
@@ -272,14 +273,14 @@ preproc = P{
     * ')'
     / function(f, args) return preproc:match(f) .. '::f<' .. preproc:match(args) .. '>' end
 
-  + P'JLN_MP_LAZY_PARAM' * P'_T'^0 * '('
+  + ('JLN_MP_LAZY_PARAM' * P'_T'^0 + 'JLN_MP_CALLER_XS') * '('
     * any_param
     * ',' * ws0 * cbalancedparent
     * ')'
-    / function(arg) return preproc:match(arg) end
+    / reproc
 
   + P'JLN_MP_TRACE_F(' * cbalancedparent * ')'
-    / function(f) return preproc:match(f) end
+    / reproc
 
   + P'JLN_MP_CALL_TRACE' * P'_T'^0 * '('
     * cbalancedparent_arg
@@ -302,7 +303,7 @@ preproc = P{
     / function(f) return preproc:match(f) .. '::f<>' end
 
   + P'JLN_MP_IDENT(' * cbalancedparent * ')'
-    / function(f) return preproc:match(f) end
+    / reproc
 
   + P'JLN_MP_NUMBER_FROM_REGULAR_VARIABLE_TEMPLATE_OR_TYPE('
     * ws0 * cid * ',' * ws0 * cbalancedparent * ws0 * ')'
