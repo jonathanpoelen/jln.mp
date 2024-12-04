@@ -95,6 +95,7 @@
 #include "src/algorithm/take_while.cpp"
 #include "src/algorithm/take_while_xs.cpp"
 #include "src/algorithm/transform.cpp"
+#include "src/algorithm/transform_at.cpp"
 #include "src/algorithm/transform_first.cpp"
 #include "src/algorithm/transform_second.cpp"
 #include "src/algorithm/transform_third.cpp"

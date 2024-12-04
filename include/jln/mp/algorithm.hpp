@@ -98,6 +98,7 @@
 #include <jln/mp/algorithm/take_while.hpp>
 #include <jln/mp/algorithm/take_while_xs.hpp>
 #include <jln/mp/algorithm/transform.hpp>
+#include <jln/mp/algorithm/transform_at.hpp>
 #include <jln/mp/algorithm/transform_first.hpp>
 #include <jln/mp/algorithm/transform_second.hpp>
 #include <jln/mp/algorithm/transform_third.hpp>
