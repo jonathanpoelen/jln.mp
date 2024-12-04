@@ -11,8 +11,8 @@ local splitShortAndLongDesc
 local fragmentName
 local inlinecode_begin = '<code class="inlinecode highlight" data-lang="cpp">'
 local inlinecode_end = '</code>'
-local blockcode_begin = '<code class="blockcode highlight" data-lang="cpp">'
-local blockcode_end = '</code>'
+local blockcode_begin = '<pre><code class="blockcode highlight" data-lang="cpp">'
+local blockcode_end = '</code></pre>'
 local defgroups = {}
 local namespaces = {
   ['traits::emp'] = {},
