@@ -424,3 +424,10 @@ h3, .group__emp {
   padding: 1em;
   background: #101010;
 }
+
+.test_bloc {
+  opacity: 0.7;
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: .1em
+}

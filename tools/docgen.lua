@@ -1112,6 +1112,8 @@ for _,g in ipairs(tgroups) do
   push('<div class="group__content">\n')
   for _,f in ipairs(g) do
     push('<h2 class="file" id="' .. f.filerefid .. '"><a href="#' .. f.filerefid .. '" class="ref">¶</a>&lt;' .. f.filename .. '></h2>')
+    local test_path = 'test/src/' .. f.filename:sub(8, #f.filename - 3) .. 'cpp'
+    push('<p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/' .. test_path .. '">' .. test_path .. '</a></p>\n')
     push('<div class="group__file">\n')
 
     local refcache = {}
