@@ -349,7 +349,7 @@ preproc = P{
 
 , p='#' * sp0 / '' *
     ( P'ifdef JLN_MP_DOXYGENATING' / ''
-      * Cs((1 - P'#' + V'#preproc' / '' + V'c')^0)
+      * Cs((V'#preproc' / '' + (1 - P'#') * V'c')^0)
       * V'rm#endif'
     + 'if 0' * After(V'#endif') / ''
     + 'if' * unl / '' * Cs(( V'c'
