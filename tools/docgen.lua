@@ -1015,18 +1015,18 @@ push_nav_by_group(
 
 -- function list
 
-table.sort(ttypes, comp_by_name)
+table.sort(ttypes, function(f1, f2) return f1.name:upper() < f2.name:upper() end)
 
 local types_by_letter = {}
 local current_letter, previous_letter, first_letter
 previous_name = nil
 for _,d in ipairs(ttypes) do
-  first_letter = d.name:byte()
+  first_letter = d.name:sub(1,1):upper()
   if previous_letter ~= first_letter then
     previous_letter = first_letter
     current_letter = {d}
     previous_name = d.name
-    types_by_letter[#types_by_letter+1] = {string.char(first_letter):upper(), current_letter}
+    types_by_letter[#types_by_letter+1] = {first_letter, current_letter}
   elseif previous_name ~= d.name then
     previous_name = d.name
     current_letter[#current_letter+1] = d
