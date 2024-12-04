@@ -215,7 +215,7 @@ namespace jln::mp
   #define JLN_MP_D_MAKE_UNSIGNED_SEQUENCE(n, ...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_TYPENAME JLN_MP_MAKE_UNSIGNED_SEQUENCE(n, __VA_ARGS__)
 
-  /// single list of int_t
+  /// single list of \c int_t.
   template<int_t... i>
   struct int_seq_c;
 } // namespace jln::mp

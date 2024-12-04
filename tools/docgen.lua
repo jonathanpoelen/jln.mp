@@ -628,10 +628,14 @@ htmlifier_init = function()
   local headers
 
   local headerize = function(h, title)
+    if #h == 1 then
+      headers[0] = title
+      return ''
+    end
     local current_lvl = #h
     local id = t2idpatt:match(title):lower()
     local prefix = ''
-    if current_lvl ~= 1 then
+    if current_lvl > 2 then
       id = lvl_stack[current_lvl-1] .. '__' .. id
     else
       prefix = '</section>\n' .. prefix .. '<section>'
@@ -686,7 +690,8 @@ htmlifier_init = function()
     headers = {}
     local html = md2htmlpatt:match(contents)
     if html then
-      html = '<section id="main">' .. html .. '</section>\n'
+      html = '<section id="main"><h2>Summary<a href="#main" class="titleref">¶</a></h2>'
+          .. html .. '</section>\n'
     end
     return headers, html
   end
@@ -899,7 +904,9 @@ local f = io.open'README.md'
 local headers, html_intro = md2html(f:read('*a'))
 f:close()
 
-push'<section><h1>Table of contents<a href="#toc" class="titleref">¶</a></h1><nav id="toc"><ul>'
+push('<h1>' .. headers[0] .. '</h1>')
+push'<section><h2>Table of contents<a href="#toc" class="titleref">¶</a></h2><nav id="toc"><ul>'
+push('<li><a href="#main">Summary</a></li>')
 for _,title in ipairs(headers) do
   push('<li><a href="#' .. title[1] .. '">' .. title[2] .. '</a></li>')
 end
@@ -920,8 +927,8 @@ push'</div>\n'
 
 function push_nav_by_group(t, gn, type, h1, prefix, idxname, getsubtable, getlink)
   local id = h1:lower():gsub(' ', '_')
-  push('<section id="' .. id .. '">')
-  push('<h1 id="' .. id .. '">' .. h1 .. '<a href="#' .. id .. '" class="titleref">¶</a></h1>')
+  push('<section>')
+  push('<h2 id="' .. id .. '">' .. h1 .. '<a href="#' .. id .. '" class="titleref">¶</a></h2>')
   push('<nav><p>')
   for _,g in ipairs(t) do
     push('<a class="link_group" href="#g' .. gn .. '__'
@@ -1047,7 +1054,7 @@ end
 
 push('<section>\n')
 
-push('<h1 id="short_descriptions">Short descriptions</h1>')
+push('<h2 id="short_descriptions">Short descriptions</h2>')
 push('<nav><p>')
 for _,g in ipairs(tgroups) do
   push('<a class="link_group" href="#g_' .. g.name .. '">' .. g.name .. '</a>')
@@ -1057,7 +1064,7 @@ push('</p></nav>\n')
 for _,g in ipairs(tgroups) do
   table.sort(g, comp_by_firstname)
   push('<article>\n')
-  push('<h2 id="g_' .. g.name .. '"><a href="#g_' .. g.name .. '" class="ref">¶</a>Group: ' .. g.name .. '</h2>\n')
+  push('<h3 id="g_' .. g.name .. '"><a href="#g_' .. g.name .. '" class="ref">¶</a>Group: ' .. g.name .. '</h3>\n')
   push('<table>\n')
   for _,f in ipairs(g) do
     table.sort(f.types, comp_by_name)
@@ -1080,7 +1087,7 @@ push('</section>\n')
 -- long description
 
 function push_block(name, s)
-  push('<div class="InfoBox"><h4 class="InfoBox-title">' .. name .. '</h4>\n')
+  push('<div class="InfoBox"><h5 class="InfoBox-title">' .. name .. '</h5>\n')
   push(s)
   push('</div>')
 end
@@ -1088,6 +1095,12 @@ end
 function push_list(name, t)
   if #t ~= 0 then
     push_block(name, '<ul><li>' .. table.concat(t,'</li><li>') .. '</li></ul>')
+  end
+end
+
+function push_blockcode(name, t)
+  if #t ~= 0 then
+    push_block(name, table.concat(t,'<br/>'))
   end
 end
 
@@ -1099,7 +1112,7 @@ end
 
 push('<section>\n')
 
-push('<h1 id="detailed_descriptions">Detailed descriptions</h1>')
+push('<h2 id="detailed_descriptions">Detailed descriptions</h2>')
 push('<nav><p>')
 for _,g in ipairs(tgroups) do
   push('<a class="link_group" href="#g6__' .. g.name .. '">' .. g.name .. '</a>')
@@ -1108,32 +1121,34 @@ push('</p></nav>\n')
 
 for _,g in ipairs(tgroups) do
   push('<article>\n')
-  push('<h2 id="g6__' .. g.name .. '" class="group__title"><a href="#g6__' .. g.name .. '" class="ref">¶</a>Group: ' .. g.name .. '</h2>\n')
+  push('<h3 id="g6__' .. g.name .. '" class="group__title"><a href="#g6__' .. g.name .. '" class="ref">¶</a>Group: ' .. g.name .. '</h3>\n')
   push('<div class="group__content">\n')
   for _,f in ipairs(g) do
-    push('<h2 class="file" id="' .. f.filerefid .. '"><a href="#' .. f.filerefid .. '" class="ref">¶</a>&lt;' .. f.filename .. '></h2>')
+    push('<h3 class="file" id="' .. f.filerefid .. '"><a href="#' .. f.filerefid .. '" class="ref">¶</a>&lt;' .. f.filename .. '></h3>')
     local test_path = 'test/src/' .. f.filename:sub(8, #f.filename - 3) .. 'cpp'
     push('<p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/' .. test_path .. '">' .. test_path .. '</a></p>\n')
     push('<div class="group__file">\n')
 
     local refcache = {}
     local emp = {}
+    local emp_ids = {}
 
     for _,d in ipairs(f.types) do
       local refid = (refcache[d.refid] and '' or ' id="' .. d.refid .. '"')
       if d.namespace == 'emp' then
-        emp[#emp+1] = '<h3 class="emp"' .. refid
+        emp[#emp+1] = '<h4 class="emp"' .. (emp_ids[refid] and '' or refid)
             .. '><a href="#' .. d.refid .. '" class="ref">¶</a>'
             .. inlinecode_begin .. d.cpp_type_html
             .. d.fullname:gsub('::', '<span class="p">::</span>')
             .. d.mem_html .. inlinecode_end .. ' = '
             .. (d.inline_impl_html or '/*...*/')
-            .. '</h3>\n'
+            .. '</h4>\n'
+        emp_ids[refid] = true
       else
-        push('<h3' .. (refcache[d.refid] and '' or ' id="' .. d.refid .. '"') .. '><a href="#'
+        push('<h4' .. (refcache[d.refid] and '' or ' id="' .. d.refid .. '"') .. '><a href="#'
              .. d.refid .. '" class="ref">¶</a>'
              .. inlinecode_begin .. d.cpp_type_html .. d.fullname
-             .. d.mem_html .. inlinecode_end .. '</h3>\n')
+             .. d.mem_html .. inlinecode_end .. '</h4>\n')
         refcache[d.refid] = true
 
         if d.treturn then push('<p>Return: ' .. d.treturn .. '</p>') end
@@ -1153,7 +1168,7 @@ for _,g in ipairs(tgroups) do
         end
         push_list('Pre-condition', d.pre)
         push_list('Post-condition', d.post)
-        push_blocks('Semantics', d.semantics)
+        push_blockcode('Semantics', d.semantics)
         push_blocks('Note', d.note)
         if d.see then push('<aside>See: ' .. d.see .. '</aside>') end
       end

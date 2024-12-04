@@ -1,6 +1,8 @@
 [![CI](https://github.com/jonathanpoelen/jln.mp/actions/workflows/ci.yml/badge.svg)](https://github.com/jonathanpoelen/jln.mp/actions?query=workflow%3ACI)
 
-[Jln.mp](https://github.com/jonathanpoelen/jln.mp) is a single header C++17 metaprogramming library designed for fast compilation speed (strongly inspired by [Kvasir::mpl](https://github.com/kvasir-io/mpl), but generally faster, with more algorithm and a debug mode to have errors with more context).
+# Jln.Mp: A C++17 metaprogramming library
+
+[Jln.mp](https://github.com/jonathanpoelen/jln.mp) is a C++17 metaprogramming library designed for fast compilation speed (strongly inspired by [Kvasir::mpl](https://github.com/kvasir-io/mpl), but generally faster, with more algorithm and a debug mode to have errors with more context).
 
 Licence: MIT
 
@@ -10,7 +12,7 @@ Online documentation for v1: https://jonathanpoelen.github.io/jln.mp/v1/
 
 Single file version in [standalone branch](https://github.com/jonathanpoelen/jln.mp/tree/standalone).
 
-# Concepts
+## Concepts
 
 Functions of jln.mp are used in 2 stages:
 
@@ -48,7 +50,7 @@ Jln.mp also has 2 additional namespaces:
 - `emp` which directly returns a result without going through `jln::mp::call`. According to the function, type sequences are replaced by lists and continuations are not always available.
 
 
-## Create a function
+### Create a function
 
 A function is a type with a `f` template member.
 
@@ -77,7 +79,7 @@ jln::mp::call<to_tuple<>, int, double> == std::tuple<int, double>
 ```
 
 
-# Glossary
+## Glossary
 
 - Sequence: a value sequence or a type sequence.
 - Set: a sequence of unique elements.
@@ -96,7 +98,7 @@ jln::mp::call<to_tuple<>, int, double> == std::tuple<int, double>
 - `_c` suffix: number type parameters are `jln::mp::int_t`. Usually `foo_c<int_t i> = foo<number<i>>`.
 
 
-# Example of real life
+## Example of real life
 
 Implementation of `std::tuple_cat` that works with tuple like.
 
@@ -220,7 +222,7 @@ static_assert(my_tuple == std::tuple{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
 // @}
 ```
 
-# FAQ
+## FAQ
 
 > Functions are missing in the stacktrace when the compiler displays an error message, how to display them?
 

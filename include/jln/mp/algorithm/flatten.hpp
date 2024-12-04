@@ -48,6 +48,7 @@ namespace jln::mp
   using flatten_once_f = flatten_once<lift<S>, C>;
 
   /// Recursive version of \c flatten_once.
+  /// \semantics
   ///   \code
   ///   call<flatten<>, list<a, b>, c, list<list<d, e>, f>
   ///   ==
