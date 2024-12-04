@@ -42,6 +42,7 @@ local kw = {
   'using',
   'static_constexpr',
   'comment',
+  'define',
 }
 local kwindexes = {}
 
@@ -166,7 +167,7 @@ local f_namespace = function(name)
   local ref_name = (name == '') and '' or name .. '::'
   ctx_namespace = name
   ctx_ref_namespace = ref_name
-  fileinfos[#fileinfos+1] = {i_namespace, name}
+  fileinfos[#fileinfos+1] = {i = i_namespace, name}
 end
 
 local previous_name
@@ -176,6 +177,17 @@ local f_emp_namespace = function(name)
 end
 local f_restore_namespace = function()
   f_namespace(previous_name)
+end
+
+local i_define = kwindexes.define
+local f_define = function(name, args)
+  fileinfos[#fileinfos+1] = {
+    i = i_define,
+    name = name,
+    fullname = name,
+    args = args,
+    refid = name,
+  }
 end
 
 local Until = function(p) return (1 - P(p))^0 end
@@ -238,13 +250,16 @@ end
 
 local blockComment = '/*' * Until'*/' * 2
 local any_param = ((1-S'()<>,' + tagasoperator + balancedparent + balancedtag)^1)
+local define_impl = List(Until(S'\n\\'), P'\\' * 1) * 1
+local define_decl = 'define' * sp * C((alnum + '_')^1) * S' \\'^0 * C(('(' * After')')^0)
 
 local f_ident = function(s) return s end
 local preproc -- used into JLN_MP_CALL transformation
 preproc = P{
   "S";
   S=Cs(
-  ( V'p'
+  ( '#' * sp * V'#def_sanitize'
+  + V'p'
   + '#' * unl / ''
   + V'c'
   + 1
@@ -343,7 +358,8 @@ preproc = P{
                            + V'#preproc' / ''
                            )^1)
       * V'rm#endif'
-    + (V'#def' + V'#undef') / ''
+    + V'#def_sanitize'
+    + V'#undef' / ''
     )
   + V'\\cond'
 
@@ -353,11 +369,12 @@ preproc = P{
                  )^1
     * V'#endif'
   + P'el' * unl * ((1 - P'#') + V'#preproc')^0
-  + V'#def'
+  + define_decl * define_impl
   + V'#undef'
   )
 
-, ['#def']='define ' * List(Until(S'\n\\'), P'\\' * 1) * 1
+, ['#def_sanitize']=define_decl * define_impl
+                  / function(name, args) return '#define ' .. name .. args .. '\n' end
 , ['#undef']='undef ' * unl
 , ['#endif']='#' * sp0 * 'endif'
 , ['rm#endif']=V'#endif' / ''
@@ -406,40 +423,41 @@ local pattern = P{
         )
       + lines / f_desc
       ) * sp0)^1
-    + (template + Cc(nil)) * ws0
-      * ( (P'struct' + 'class') * ws * Cc(kwindexes.struct) * Cc(nil) * cid * Until(S':;{<')
-          * (C(balancedtag) * ws0 + Cc(nil))
-          * (':' * ws0 * id * ws0
-            * (balancedtag * ws0 * (('::template ' * id * balancedtag + id) * ws0)^0)^-1
-            )^-1
-          * ( P';'
-            + P'{' * ws0
-              * ( template^-1 * ws0 * (P'using' + 'class' + 'struct')
-                  * ws * cid * ws0 * ('=' * ws0 * C(Until';'))^-1
-                + ( '};'
-                  + 'static const' * P'expr'^-1 * ws0 * id
-                    * ('(' * Until')' * 1)^-1 * ws0 * Cc(nil)
-                    * C(Until(P' =' + '=')) * P' '^-1 * '=' * ws0 * C(Until';')
-                  )
+  + (template + Cc(nil)) * ws0
+    * ( (P'struct' + 'class') * ws * Cc(kwindexes.struct) * Cc(nil) * cid * Until(S':;{<')
+        * (C(balancedtag) * ws0 + Cc(nil))
+        * (':' * ws0 * id * ws0
+          * (balancedtag * ws0 * (('::template ' * id * balancedtag + id) * ws0)^0)^-1
+          )^-1
+        * ( P';'
+          + P'{' * ws0
+            * ( template^-1 * ws0 * (P'using' + 'class' + 'struct')
+                * ws * cid * ws0 * ('=' * ws0 * C(Until';'))^-1
+              + ( '};'
+                + 'static const' * P'expr'^-1 * ws0 * id
+                  * ('(' * Until')' * 1)^-1 * ws0 * Cc(nil)
+                  * C(Until(P' =' + '=')) * P' '^-1 * '=' * ws0 * C(Until';')
                 )
-            )
-        + 'using ' * Cc(kwindexes.using) * Cc(nil) * cid * ws0 * '='
-          * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
-        -- using name;
-        + 'using ' * Cc(kwindexes.using) * Cc(nil) * ((alnum + S'_')^1 * '::')^0 * cid * ';'
-          * Cc(nil) * Cc(nil) * Cc(nil) * Cc(nil)
-        + (P'static ' + 'inline ')^0 * 'constexpr ' * Cc(kwindexes.static_constexpr)
-          * cid * ws * cid * ws0 * '=' * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
-        ) / f_type
-    + 'namespace '
-      * ( ignore_namespace * ws0 * Balanced('{', '}')
-        + ( C('emp') * '\n' / f_emp_namespace * ws0 * '{' * (V('e') + (1 - S'{}'))^0
-            * (P'}' / f_restore_namespace)
-          + ws0 * ('jln::mp' * P'::'^-1)^-1 * (cid + Cc('')) / f_namespace
+              )
           )
+      + 'using ' * Cc(kwindexes.using) * Cc(nil) * cid * ws0 * '='
+        * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
+      -- using name;
+      + 'using ' * Cc(kwindexes.using) * Cc(nil) * ((alnum + S'_')^1 * '::')^0 * cid * ';'
+        * Cc(nil) * Cc(nil) * Cc(nil) * Cc(nil)
+      + (P'static ' + 'inline ')^0 * 'constexpr ' * Cc(kwindexes.static_constexpr)
+        * cid * ws * cid * ws0 * '=' * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
+      ) / f_type
+  + 'namespace '
+    * ( ignore_namespace * ws0 * Balanced('{', '}')
+      + ( C('emp') * '\n' / f_emp_namespace * ws0 * '{' * (V('e') + (1 - S'{}'))^0
+          * (P'}' / f_restore_namespace)
+        + ws0 * ('jln::mp' * P'::'^-1)^-1 * (cid + Cc('')) / f_namespace
         )
-    + '//' * Until'\n' * 1
-    -- + '/*' * Until'*/' * 2
+      )
+  + '//' * Until'\n' * 1
+  -- + '/*' * Until'*/' * 2
+  + '#' * define_decl / f_define
 }
 
 preprocOnlyPattern = (ws + (P'#' + '//') * unl)^0 * -P(1)
@@ -464,6 +482,7 @@ parseFile = function(contents)
     contents = replace_detail_unpack:match(contents)
   end
   reset_parser()
+  -- log(preproc:match(contents))
   pattern:match(preproc:match(contents))
   return fileinfos
 end
@@ -780,6 +799,7 @@ i_pre = kwindexes.pre
 i_post = kwindexes.post
 i_note = kwindexes.note
 i_semantics = kwindexes.semantics
+i_define = kwindexes.define
 
 htmlifier_init()
 
@@ -819,7 +839,6 @@ for name,g in pairs(groups) do
   g.types = gtypes
 
   for _,f in ipairs(g) do
-
     local types = {}
     f.types = types
     for _,d in ipairs(f) do
@@ -875,6 +894,17 @@ for name,g in pairs(groups) do
         end
 
         reset_values()
+      elseif d.i == i_define then
+        if long_desc or short_desc then
+          types[#types+1] = d
+          ttypes[#ttypes+1] = d
+          gtypes[#gtypes+1] = d
+          d.mem_html = linkifier('', d.args)
+          d.long_desc_html = long_desc and #long_desc > 0 and long_desc
+          d.short_desc_html = short_desc and #short_desc > 0 and short_desc
+          long_desc = nil
+          short_desc = nil
+        end
       end
     end
   end
@@ -964,6 +994,15 @@ end
 
 function comp_by_name(f1, f2)
   return f1.name < f2.name
+end
+
+function comp_by_name_with_macro(f1, f2)
+  if (f1.i == i_define or f2.i == i_define) then
+    if f1.i ~= f2.i then
+      return f1.i < f2.i
+    end
+  end
+  return comp_by_name(f1, f2)
 end
 
 table.sort(tgroups, comp_by_name)
@@ -1067,7 +1106,7 @@ for _,g in ipairs(tgroups) do
   push('<h3 id="g_' .. g.name .. '"><a href="#g_' .. g.name .. '" class="ref">¶</a>Group: ' .. g.name .. '</h3>\n')
   push('<table>\n')
   for _,f in ipairs(g) do
-    table.sort(f.types, comp_by_name)
+    table.sort(f.types, comp_by_name_with_macro)
     for _,d in ipairs(f.types) do
       if d.namespace ~= 'emp' then
         push('<tr><td>' .. inlinecode_begin .. '<a href="#' .. d.refid .. '">' .. d.fullname
@@ -1144,6 +1183,13 @@ for _,g in ipairs(tgroups) do
             .. (d.inline_impl_html or '/*...*/')
             .. '</h4>\n'
         emp_ids[refid] = true
+      elseif d.i == i_define then
+        push('<h4' .. (refcache[d.refid] and '' or ' id="' .. d.refid .. '"') .. '><a href="#'
+            .. d.refid .. '" class="ref">¶</a>'
+            .. inlinecode_begin .. '#define ' .. d.fullname .. d.mem_html .. inlinecode_end
+            .. '</h4>\n')
+        if d.short_desc_html then push('<p>' .. d.short_desc_html .. '</p>') end
+        if d.long_desc_html then push('<p>' .. d.long_desc_html .. '</p>') end
       else
         push('<h4' .. (refcache[d.refid] and '' or ' id="' .. d.refid .. '"') .. '><a href="#'
              .. d.refid .. '" class="ref">¶</a>'
