@@ -781,6 +781,8 @@ htmlifier_init()
 function tohtml(namespace, s)
   if s then
     s = s:gsub('[\n ]+', ' ')
+         :gsub(' >', '>')
+         :gsub(' %)', ')')
     return linkifier(namespace, s)
   end
   return nil
