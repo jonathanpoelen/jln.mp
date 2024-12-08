@@ -7,7 +7,7 @@
 
 namespace jln::mp
 {
-  /// \endcond
+  /// \cond
   namespace detail
   {
     template<class Pred, class Replacement>

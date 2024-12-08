@@ -33,6 +33,7 @@ local kw = {
   'pre',
   'post',
   'note',
+  'code',
   'see',
   'tparam',
   'defgroup',
@@ -82,19 +83,21 @@ local reset_parser = function()
   fileinfos = {}
 end
 
-local f_defgroup = function(name, desc) defgroups[#defgroups+1] = {name, table.concat(desc)} end
+local f_defgroup = function(name, desc)
+  defgroups[#defgroups+1] = {name, table.concat(desc)}
+end
 local f_ingroup = function(name) fileinfos.ingroup = name end
 
 local i_tparam = kwindexes.tparam
-local f_push_tparam = function(name, desc)
-  fileinfos[#fileinfos+1] = {i_tparam, name, table.concat(desc)}
+local f_tparam = function(name, desc)
+  fileinfos[#fileinfos+1] = {i = i_tparam, name, table.concat(desc)}
 end
 
 local f_push_lines = function(k, lines)
   if lines[1] == '\n' then
     lines[1] = ''
   end
-  fileinfos[#fileinfos+1] = {k, table.concat(lines)}
+  fileinfos[#fileinfos+1] = {i = k, table.concat(lines)}
 end
 
 local i_desc = kwindexes.desc
@@ -107,6 +110,14 @@ local f_desc = function(lines)
     return
   end
   fileinfos[#fileinfos+1] = {i = i_desc, desc}
+end
+
+local i_code = kwindexes.code
+local f_code = function(s)
+  local prefix = s:match('^ */// *')
+  s = s:gsub(prefix, '')
+       :gsub(' *///\n', '\n') -- empty line
+  fileinfos[#fileinfos+1] = {i = i_code, s}
 end
 
 function human_template(tparams)
@@ -380,12 +391,12 @@ preproc = P{
 , ['#endif']='#' * sp0 * 'endif'
 , ['rm#endif']=V'#endif' / ''
 
-, ['\\cond'] = '/// \\cond' * Until'\\endcond' * 9 / ''
+, ['\\cond'] = '/// \\cond' * After'\\endcond' * P'\n'^-1 / ''
              + P'///' * Until'\n' * 1
              + blockComment / ''
 }
 
-local lines = Ct(List(C(unl) * sp0, '///' * P' '^-1 * -P'\\'))
+local lines = Ct(C(unl) * (sp0 * '///' * P' '^-0 * C(unl - '\\' + '\\c ' * unl))^0)
 local tparam = Ct(
   (C('template' * balancedtag) + Cc(nil)) * ws0
   * C(id * balancedtag^-1 * (ws0 * blockComment)^-1)
@@ -419,9 +430,11 @@ local pattern = P{
             + kwpatts.see
             ) * sp0 * lines
           ) / f_push_lines
-        + 'tparam ' * sp0 * C(Until(S' ')) * sp * lines / f_push_tparam
+        + 'tparam ' * sp0 * C(Until(S' ')) * sp * lines / f_tparam
         + 'defgroup ' * sp0 * C(Until(S' ')) * sp * lines / f_defgroup
         )
+      + sp0 * '\\code\n' * C(Until('\n' * sp * '///' * sp0 * '\\endcode')) * 1 * After'\n'
+        / f_code
       + lines / f_desc
       ) * sp0)^1
   + (template + Cc(nil)) * ws0
@@ -580,7 +593,7 @@ htmlifier_init = function()
   local blockcode = function(s)
     local first_space = s:match('^\n +')
     if first_space then
-      first = true
+      local first = true
       s = s:gsub(first_space, function()
         r = first and '' or '\n'
         first = false
@@ -600,7 +613,7 @@ htmlifier_init = function()
   htmlify = Cs((
     mdinlinecodepatt
   + P'\\c ' / '' * (Until(S' \n' + '.\n') / inlinecode)
-  + P'\\code' * (sp0 * '\n')^0 * C(Until(ws0 * '\\endcode')) * ws0 * '\\endcode' / blockcode
+  -- + P'\\code' * (sp0 * '\n')^0 * C(Until(ws0 * '\\endcode')) * ws0 * '\\endcode' / blockcode
   + P'\\ints' / ('<a href="#d_sequence">sequence</a> of ' .. inline_func('int_t'))
   + P'\\int_t' / inline_func('int_t')
   + P'\\list' / inline_func('list')
@@ -793,6 +806,7 @@ i_struct = kwindexes.struct
 i_using = kwindexes.using
 i_static_constexpr = kwindexes.static_constexpr
 i_desc = kwindexes.desc
+i_code = kwindexes.code
 i_see = kwindexes.see
 i_treturn = kwindexes.treturn
 i_tparam = kwindexes.tparam
@@ -820,18 +834,19 @@ local tgroups = {}
 for name,g in pairs(groups) do
   tgroups[#tgroups+1] = g
 
-  local short_desc, long_desc, treturn, see, tparams, extra_doc
+  local short_desc, treturn, see, tparams, extra_doc, i_block
   local reset_values = function()
     short_desc = nil
-    long_desc = nil
     treturn = nil
+    i_block = i_desc
     see = {}
     tparams = {}
     extra_doc = {
       [i_post]={},
       [i_pre]={},
+      [i_desc]={},
       [i_note]={},
-      [i_semantics]={}
+      [i_semantics]={},
     }
   end
   reset_values()
@@ -843,16 +858,29 @@ for name,g in pairs(groups) do
     local types = {}
     f.types = types
     for _,d in ipairs(f) do
-      if d[1] == i_see then
-        see[#see+1] = d[2]
-      elseif d[1] == i_tparam then
-        tparams[#tparams+1] = {d[2], htmlify:match(d[3])}
-      elseif d[1] == i_treturn then
-        treturn = htmlify:match(d[2])
-      elseif extra_doc[d[1]] then
-        table.insert(extra_doc[d[1]], htmlify:match(d[2]))
-      elseif d.i == i_desc then
-        short_desc, long_desc = splitShortAndLongDesc:match(htmlify:match(d[1]))
+      if d.i == i_see then
+        see[#see+1] = d[1]
+      elseif d.i == i_tparam then
+        tparams[#tparams+1] = {d[1], htmlify:match(d[2])}
+      elseif d.i == i_treturn then
+        treturn = htmlify:match(d[1])
+      elseif d.i == i_pre or d.i == i_post then
+        table.insert(extra_doc[d.i], htmlify:match(d[1]))
+      elseif d.i == i_desc or d.i == i_note or d.i == i_semantics then
+        local t = extra_doc[d.i]
+        local html = htmlify:match(d[1])
+        if not short_desc and i_block == i_desc and d.i == i_desc and #t == 0 then
+          short_desc, html = splitShortAndLongDesc:match(html)
+        end
+        if #html ~= 0 then
+          table.insert(t, '<p>')
+          table.insert(t, html)
+          table.insert(t, '</p>')
+        end
+        i_block = d.i
+      elseif d.i == i_code then
+        local part = blockcode_begin .. linkifier('', d[1]) .. blockcode_end
+        table.insert(extra_doc[i_block], part)
       elseif d.i == i_using or d.i == i_struct or d.i == i_static_constexpr then
         types[#types+1] = d
         if d.namespace == '' then
@@ -861,7 +889,6 @@ for name,g in pairs(groups) do
         end
 
         d.cpp_type_html = d.cpp_type and tohtml(d.namespace, d.cpp_type) .. ' ' or ''
-        d.long_desc_html = long_desc and #long_desc > 0 and long_desc
         d.short_desc_html = short_desc and #short_desc > 0 and short_desc
         d.treturn = treturn
         d.tparams = tparams
@@ -896,16 +923,17 @@ for name,g in pairs(groups) do
 
         reset_values()
       elseif d.i == i_define then
-        if long_desc or short_desc then
+        if #extra_doc[i_desc] ~= 0 or short_desc then
           types[#types+1] = d
           ttypes[#ttypes+1] = d
           gtypes[#gtypes+1] = d
           d.mem_html = linkifier('', d.args)
-          d.long_desc_html = long_desc and #long_desc > 0 and long_desc
           d.short_desc_html = short_desc and #short_desc > 0 and short_desc
-          long_desc = nil
-          short_desc = nil
+          for i,extra in pairs(extra_doc) do
+            d[kw[i]] = extra
+          end
         end
+        reset_values()
       end
     end
   end
@@ -1138,15 +1166,15 @@ function push_list(name, t)
   end
 end
 
-function push_blockcode(name, t)
+function push_blocks(name, t)
   if #t ~= 0 then
-    push_block(name, table.concat(t,'<br/>'))
+    push_block(name, table.concat(t,''))
   end
 end
 
-function push_blocks(name, t)
+function push_fragments(t)
   if #t ~= 0 then
-    push_block(name, '<p>' .. table.concat(t,'<br/>') .. '</p>')
+    push(table.concat(t, ''))
   end
 end
 
@@ -1190,7 +1218,11 @@ for _,g in ipairs(tgroups) do
             .. inlinecode_begin .. '#define ' .. d.fullname .. d.mem_html .. inlinecode_end
             .. '</h4>\n')
         if d.short_desc_html then push('<p>' .. d.short_desc_html .. '</p>') end
-        if d.long_desc_html then push('<p>' .. d.long_desc_html .. '</p>') end
+        push_fragments(d.desc)
+        push_list('Pre-condition', d.pre)
+        push_list('Post-condition', d.post)
+        push_blocks('Semantics', d.semantics)
+        push_blocks('Note', d.note)
       else
         push('<h4' .. (refcache[d.refid] and '' or ' id="' .. d.refid .. '"') .. '><a href="#'
              .. d.refid .. '" class="ref">¶</a>'
@@ -1200,7 +1232,7 @@ for _,g in ipairs(tgroups) do
 
         if d.treturn then push('<p>Return: ' .. d.treturn .. '</p>') end
         if d.short_desc_html then push('<p>' .. d.short_desc_html .. '</p>') end
-        if d.long_desc_html then push('<p>' .. d.long_desc_html .. '</p>') end
+        push_fragments(d.desc)
 
         if d.tparams and #d.tparams ~= 0 then
           push('<dl>')
@@ -1215,7 +1247,7 @@ for _,g in ipairs(tgroups) do
         end
         push_list('Pre-condition', d.pre)
         push_list('Post-condition', d.post)
-        push_blockcode('Semantics', d.semantics)
+        push_blocks('Semantics', d.semantics)
         push_blocks('Note', d.note)
         if d.see then push('<aside>See: ' .. d.see .. '</aside>') end
       end
@@ -1234,5 +1266,9 @@ push('</section>\n')
 
 push('</body></html>')
 
--- for _,x in ipairs(htmlfagments) do print(x) end
-print(table.concat(htmlfagments))
+html = table.concat(htmlfagments)
+print(html)
+if html:find('\\', 0, true) then
+  log('Error: the result contains an unescaped doxygen element')
+  os.exit(1)
+end

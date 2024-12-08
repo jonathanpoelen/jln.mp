@@ -124,4 +124,4 @@ namespace jln::mp::detail
     using f = take_front_c<m - (n >= ExtendedByN ? n - ExtendedByN + 1 : 0), TC>;
   };
 }
-/// \encond
+/// \endcond

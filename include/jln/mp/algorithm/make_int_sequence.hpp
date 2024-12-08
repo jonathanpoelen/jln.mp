@@ -148,7 +148,7 @@ namespace jln::mp
   }
 
   /// Fast initialization of template of the shape `tpl_class<class T, T... ints>`.
-  /// `n` should be a template parameter.
+  /// \pre `n` should be a template parameter.
   /// \code
   /// template<class, int...>
   /// struct ints { ... };
@@ -171,21 +171,23 @@ namespace jln::mp
   #endif
 
   /// Fast initialization of template of the shape `tpl_class<class T, std::size_t... ints>`.
-  /// `n` should be a template parameter.
+  /// \pre `n` should be a template parameter.
   #define JLN_MP_MAKE_INDEX_SEQUENCE(n, /*tpl_class*/...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_T(std::size_t, n, __VA_ARGS__)
 
   /// Fast initialization of template of the shape `tpl_class<class T, int_t... ints>`.
-  /// `n` should be a template parameter.
+  /// \pre `n` should be a template parameter.
   #define JLN_MP_MAKE_INTEGER_SEQUENCE(n, /*tpl_class*/...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_T(::jln::mp::int_t, n, __VA_ARGS__)
 
   /// Fast initialization of template of the shape `tpl_class<class T, unsigned... ints>`.
-  /// `n` should be a template parameter.
+  /// \pre `n` should be a template parameter.
   #define JLN_MP_MAKE_UNSIGNED_SEQUENCE(n, /*tpl_class*/...) \
     JLN_MP_MAKE_INTEGER_SEQUENCE_T(unsigned, n, __VA_ARGS__)
 
   /// Template-dependent version of \c JLN_MP_MAKE_INTEGER_SEQUENCE_T ; add typename when needed.
+
+
   /// \code
   /// // typename impl<...>::template f<T, 0, 1, 2> ->
   /// JLN_MP_D_MAKE_INTEGER_SEQUENCE_T(T, n, impl<...>::template f)

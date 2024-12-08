@@ -10,14 +10,14 @@
 
 namespace jln::mp
 {
-  /// \cont
+  /// \cond
   namespace detail
   {
     template<class L, class C = listify>
     struct set_difference_impl
     {};
   }
-  /// \endcont
+  /// \endcond
 
   /// \ingroup set
 
@@ -39,7 +39,7 @@ namespace jln::mp
   }
 }
 
-/// \cont
+/// \cond
 namespace jln::mp::detail
 {
   template<template<class...> class List, class... xs>
@@ -52,4 +52,4 @@ namespace jln::mp::detail
     >;
   };
 }
-/// \endcont
+/// \endcond

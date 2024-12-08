@@ -108,6 +108,7 @@ namespace jln::mp
 #include <jln/mp/list/take_front.hpp>
 #include <jln/mp/list/drop_front.hpp>
 
+/// \cond
 namespace jln::mp::detail
 {
   constexpr unsigned bit_ceil(unsigned n)

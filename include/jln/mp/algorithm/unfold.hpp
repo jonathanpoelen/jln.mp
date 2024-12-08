@@ -21,9 +21,9 @@ namespace jln::mp
   /// \ingroup algorithm
 
   template<class value, class next = value>
-  using Some = mp::list<value, next>;
+  using Some = list<value, next>;
 
-  using None = mp::stop_recursion;
+  using None = stop_recursion;
 
   /// Unfold \c F until returning \c None.
   /// When \c F returns `Some<value,next>`, \c value is added to the
@@ -36,10 +36,9 @@ namespace jln::mp
   ///       inc<lift<Some>>,
   ///       None
   ///     >
-  ///   >::f<
-  ///     number<0>
-  ///   >
-  ///   == list<number<1>, number<2>, number<3>, number<4>, number<5>>
+  ///   >::f<number<0>>
+  ///   ==
+  ///   list<number<1>, number<2>, number<3>, number<4>, number<5>>
   ///   \endcode
   /// \treturn \list
   /// \see fold, fold_right, recursively
