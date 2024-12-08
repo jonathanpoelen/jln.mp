@@ -238,23 +238,29 @@ table, td, th { border-color: #999; }
   margin-left: 0;
 }
 
-h3:hover .ref, h2:hover .ref, p:hover > .ref, .ref:focus {
+h2:hover .ref, h3:hover .ref, p:hover > .ref, .ref:focus {
   opacity: .8;
 }
 
-h1:hover .titleref, h2:hover .titleref, .titleref:focus {
+h2:hover .titleref, h3:hover .titleref, .titleref:focus {
   opacity: .6;
 }
 
-h2, h3, h4, h5, h6 { margin: .5em 0 .5em 0; }
+h3, h4, h5, h6 { margin: .5em 0 .5em 0; }
 
 h1 {
   font-size: 2.8rem;
+  padding: .25em .5em .25em .5em;
+  border-bottom: 1px dashed #c4c4c4;
+}
+
+h2 {
+  font-size: 2.4rem;
   padding-top: 1.5rem;
   padding-bottom: 1rem;
 }
-h2 {
-  font-size: 2.4rem;
+h3 {
+  font-size: 2rem;
 }
 
 a:hover, a:focus {
@@ -265,11 +271,6 @@ section,#main {
   padding: 1rem;
   padding-top: 0;
   border-bottom: 1px dashed #c4c4c4;
-}
-
-#main {
-  padding-top: 1rem;
-  font-size: 1.2rem
 }
 
 #toc {
@@ -423,4 +424,11 @@ h3, .group__emp {
   display: inline-block;
   padding: 1em;
   background: #101010;
+}
+
+.test_bloc {
+  opacity: 0.7;
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: .1em
 }
