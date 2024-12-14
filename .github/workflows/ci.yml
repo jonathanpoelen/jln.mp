@@ -220,6 +220,8 @@ jobs:
       - name: Build documentation
         run: |
           ./tools/docgen.lua \
+            include/jln/mp/detail/config.hpp \
+            include/jln/mp/detail/compiler.hpp \
             include/jln/mp/algorithm/* \
             include/jln/mp/functional/* \
             include/jln/mp/list/* \

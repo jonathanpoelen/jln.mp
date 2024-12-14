@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+/// \ingroup config
+
 #include <jln/mp/detail/compiler.hpp>
 
 

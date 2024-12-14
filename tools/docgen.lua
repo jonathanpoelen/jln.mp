@@ -759,10 +759,10 @@ function readfile(filename)
   end
 
   if not fileinfos.firstname then
-    if filename:find('/config.hpp', 0, true) then
-      return
+    if filename ~= 'include/jln/mp/detail/compiler.hpp'
+    and filename ~= 'include/jln/mp/detail/config.hpp' then
+      error('parser failure for ' .. filename)
     end
-    error('parser failure for ' .. filename)
   end
 
   fileinfos.filename = filename:sub(9)
@@ -1117,7 +1117,7 @@ push_nav_by_group(
 -- short description
 
 function comp_by_firstname(f1, f2)
-  return f1.firstname < f2.firstname
+  return f1.firstname and f1.firstname < f2.firstname
 end
 
 push('<section>\n')
