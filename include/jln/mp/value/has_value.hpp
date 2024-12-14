@@ -10,7 +10,7 @@ namespace jln::mp
 {
   /// \ingroup value
 
-#if !JLN_MP_FEATURE_CONCEPTS || !JLN_MP_GCC
+#if !JLN_MP_FEATURE_CONCEPTS || !JLN_MP_REQUIRES_AS_FAST_SFINAE
   /// \cond
   namespace detail
   {
