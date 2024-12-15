@@ -45,14 +45,14 @@ namespace jln::mp
   {
     template<class x>
     using f = JLN_MP_CALL_TRACE(C,
-      typename conditional_c<
-        JLN_MP_TRACE_F(Cmp)::template f<x, Min>::value
-      >::template f<
-        Min,
-        typename conditional_c<
-          JLN_MP_TRACE_F(Cmp)::template f<Max, x>::value
-        >::template f<Max, x>
-      >
+      JLN_MP_CONDITIONAL_P_C_T(
+        (JLN_MP_TRACE_F(Cmp)::template f<x, Min>::value),
+        (Min),
+        (JLN_MP_CONDITIONAL_P_C_T(
+          (JLN_MP_TRACE_F(Cmp)::template f<Max, x>::value),
+          (Max), (x)
+        ))
+      )
     );
   };
 
@@ -88,7 +88,7 @@ namespace jln::mp
   {
     template<class x, class y, class C = mp::identity>
     inline constexpr auto min_v = JLN_MP_TRACE_F(C)::template f<
-      typename mp::conditional_c<y::value < x::value>::template f<y, x>
+      JLN_MP_CONDITIONAL_C_T(y::value < x::value, y, x)
     >::value;
 
     template<class x, class y>
@@ -113,7 +113,7 @@ namespace jln::mp
 
     template<class x, class y, class C = mp::identity>
     inline constexpr auto max_v = JLN_MP_TRACE_F(C)::template f<
-      typename mp::conditional_c<x::value < y::value>::template f<y, x>
+      JLN_MP_CONDITIONAL_C_T(x::value < y::value, y, x)
     >::value;
 
     template<class x, class y>
@@ -244,12 +244,11 @@ namespace jln::mp
   {
     template<class x>
     using f =
-      typename conditional_c<x::value < Min::value>
-      ::template f<
+      JLN_MP_CONDITIONAL_C_T(
+        x::value < Min::value,
         Min,
-        typename conditional_c<Max::value < x::value>
-        ::template f<Max, x>
-      >
+        JLN_MP_CONDITIONAL_C_T(Max::value < x::value, Max, x)
+      )
     ;
   };
 
@@ -258,14 +257,14 @@ namespace jln::mp
   {
     template<class x>
     using f =
-      typename conditional_c<
-        JLN_MP_TRACE_F(Cmp)::template f<x, Min>::value
-      >::template f<
-        Min,
-        typename conditional_c<
-          JLN_MP_TRACE_F(Cmp)::template f<Max, x>::value
-        >::template f<Max, x>
-      >;
+      JLN_MP_CONDITIONAL_P_C_T(
+        (JLN_MP_TRACE_F(Cmp)::template f<x, Min>::value),
+        (Min),
+        (JLN_MP_CONDITIONAL_P_C_T(
+          (JLN_MP_TRACE_F(Cmp)::template f<Max, x>::value),
+          (Max), (x)
+        ))
+      );
   };
 
   template<class Min, class Max, class C>
@@ -273,11 +272,11 @@ namespace jln::mp
   {
     template<class x>
     using f = JLN_MP_CALL_TRACE(C,
-      typename conditional_c<x::value < Min::value>::template f<
+      JLN_MP_CONDITIONAL_C_T(
+        x::value < Min::value,
         Min,
-        typename conditional_c<Max::value < x::value>
-        ::template f<Max, x>
-      >
+        JLN_MP_CONDITIONAL_C_T(Max::value < x::value, Max, x)
+      )
     );
   };
 

@@ -11,8 +11,11 @@
 namespace jln::mp::smp
 {
   template<class Seq, class C = identity>
-  using ends_with = typename mp::conditional_c<emp::is_list_v<Seq>>
-    ::template f<contract<mp::ends_with<Seq, assume_positive_number<C>>>, bad_contract>;
+  using ends_with = JLN_MP_CONDITIONAL_P_C_T(
+    (emp::is_list_v<Seq>),
+    (contract<mp::ends_with<Seq, assume_positive_number<C>>>),
+    (bad_contract)
+  );
 }
 
 /// \cond

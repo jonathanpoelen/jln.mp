@@ -11,8 +11,11 @@
 namespace jln::mp::smp
 {
   template<class Seq, class C = identity>
-  using starts_with = typename mp::conditional_c<emp::is_list_v<Seq>>
-    ::template f<contract<mp::starts_with<Seq, assume_positive_number<C>>>, bad_contract>;
+  using starts_with = JLN_MP_CONDITIONAL_P_C_T(
+    (emp::is_list_v<Seq>),
+    (contract<mp::starts_with<Seq, assume_positive_number<C>>>),
+    (bad_contract)
+  );
 }
 
 /// \cond

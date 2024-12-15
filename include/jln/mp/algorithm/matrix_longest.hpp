@@ -18,11 +18,11 @@ namespace jln::mp
     template<class FillValue, class F, class EvenSizeF, class C, int_t max, class... ns>
     using matrix_longest_each_impl = _each<
       C,
-      typename conditional_c<max != ns::value>
-      ::template f<
-        typename repeat_impl<1, max - ns::value, F>::template f<FillValue>::type,
-        EvenSizeF
-      >
+      JLN_MP_CONDITIONAL_P_C_T(
+        (max != ns::value),
+        (typename repeat_impl<1, max - ns::value, F>::template f<FillValue>::type),
+        (EvenSizeF)
+      )
     ...>;
 
     constexpr int_t max_lengths();

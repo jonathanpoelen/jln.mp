@@ -314,15 +314,16 @@ namespace jln::mp::detail
     false
   >
   {
-    using type = typename conditional_c<min_index < ndrop>::template f<
-      bad_contract,
-      typename smp_if_select<smp_if_safe_pred_v<Pred>>::template f<
+    using type = JLN_MP_CONDITIONAL_P_C_T(
+      (min_index < ndrop),
+      (bad_contract),
+      (typename smp_if_select<smp_if_safe_pred_v<Pred>>::template f<
         min_index,
         typename smp_select_pred_unary_or_binary<min_index == 0>::template f<Pred>,
         front<TC>,
         drop_front_c<ndrop, front<FC>>
-      >
-    >;
+      >)
+    );
   };
 
   // if_<pred, drop_front, front>
@@ -337,15 +338,16 @@ namespace jln::mp::detail
     false
   >
   {
-    using type = typename conditional_c<min_index < ndrop>::template f<
-      bad_contract,
-      typename smp_if_select<smp_if_safe_pred_v<Pred>>::template f<
+    using type = JLN_MP_CONDITIONAL_P_C_T(
+      (min_index < ndrop),
+      (bad_contract),
+      (typename smp_if_select<smp_if_safe_pred_v<Pred>>::template f<
         min_index,
         typename smp_select_pred_unary_or_binary<min_index == 0>::template f<Pred>,
         drop_front_c<ndrop, front<TC>>,
         front<FC>
-      >
-    >;
+      >)
+    );
   };
 
   // if_<pred, drop_front, drop_front>
@@ -362,15 +364,16 @@ namespace jln::mp::detail
   {
     static constexpr int_t max_index = min_indexT < min_indexF ? min_indexF : min_indexT;
 
-    using type = typename conditional_c<max_index < ndropT || max_index < ndropF>::template f<
-      bad_contract,
-      typename smp_if_select<smp_if_safe_pred_v<Pred>>::template f<
+    using type = JLN_MP_CONDITIONAL_P_C_T(
+      (max_index < ndropT || max_index < ndropF),
+      (bad_contract),
+      (typename smp_if_select<smp_if_safe_pred_v<Pred>>::template f<
         max_index,
         typename smp_select_pred_unary_or_binary<max_index == 0>::template f<Pred>,
         drop_front_c<ndropT, try_<TC>>,
         drop_front_c<ndropF, front<FC>>
-      >
-    >;
+      >)
+    );
   };
 }
 /// \endcond

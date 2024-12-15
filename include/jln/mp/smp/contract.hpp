@@ -26,10 +26,10 @@ namespace jln::mp
   {};
 
   template<class test, class TC, class FC = violation>
-  using contract_if = typename conditional_c<test::value>::template f<TC, FC>;
+  using contract_if = JLN_MP_CONDITIONAL_C_T(test::value, TC, FC);
 
   template<bool test, class TC, class FC = violation>
-  using contract_if_c = typename conditional_c<test>::template f<TC, FC>;
+  using contract_if_c = JLN_MP_CONDITIONAL_C_T(test, TC, FC);
 
   template<class Pred, class TC = identity, class FC = violation>
   using test_contract = contract<if_<Pred, TC, FC>>;

@@ -65,10 +65,12 @@ namespace jln::mp::detail
   struct _smp_set_cmp_push_back
   {
     template<class x, class... xs>
-    using f = typename conditional_c<
-      smp::none_of<contract<push_back<x, Cmp>>>
-      ::template f<xs...>::value
-    >::template f<list<xs..., x>, list<xs...>>;
+    using f = JLN_MP_CONDITIONAL_P_C_T(
+      (smp::none_of<contract<push_back<x, Cmp>>>
+      ::template f<xs...>::value),
+      (list<xs..., x>),
+      (list<xs...>)
+    );
   };
 
   template<class C>

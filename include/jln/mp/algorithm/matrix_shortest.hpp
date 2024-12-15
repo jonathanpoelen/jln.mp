@@ -18,8 +18,11 @@ namespace jln::mp
       class F, class EvenSizeF, class C, int_t min, class... ns>
     using matrix_shortest_each_impl = _each<
       C,
-      typename conditional_c<min != ns::value>
-      ::template f<unpack<Take<min, F>>, EvenSizeF>
+      JLN_MP_CONDITIONAL_P_C_T(
+        (min != ns::value),
+        (unpack<Take<min, F>>),
+        (EvenSizeF)
+      )
     ...>;
 
     constexpr int_t min_lengths();

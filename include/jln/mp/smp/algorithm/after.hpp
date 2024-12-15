@@ -12,8 +12,11 @@
 namespace jln::mp::smp
 {
   template<class Seq, class TC = listify, class FC = clear<TC>>
-  using after = typename mp::conditional_c<emp::is_list_v<Seq>>
-    ::template f<contract<mp::after<Seq, subcontract<TC>, subcontract<FC>>>, bad_contract>;
+  using after = JLN_MP_CONDITIONAL_P_C_T(
+    (emp::is_list_v<Seq>),
+    (contract<mp::after<Seq, subcontract<TC>, subcontract<FC>>>),
+    (bad_contract)
+  );
 }
 
 /// \cond

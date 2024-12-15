@@ -48,25 +48,24 @@ namespace jln::mp::detail
   struct substitute_if
   {
     template<class x>
-    using f = typename conditional_c<
-      JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_TRACE_F(Pred)::template f<x>::value)
-    >::template f<x, Replacement>;
+    using f = JLN_MP_CONDITIONAL_C_T(
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(JLN_MP_TRACE_F(Pred)::template f<x>::value),
+      x, Replacement
+    );
   };
 
   template<class T, class Replacement>
   struct substitute_if<is<T>, Replacement>
   {
     template<class x>
-    using f = typename conditional_c<JLN_MP_IS_SAME(T, x)>
-      ::template f<Replacement, x>;
+    using f = JLN_MP_CONDITIONAL_C_T(JLN_MP_IS_SAME(T, x), Replacement, x);
   };
 
   template<class T, class Replacement>
   struct substitute_if<is_not<T>, Replacement>
   {
     template<class x>
-    using f = typename conditional_c<JLN_MP_IS_SAME(T, x)>
-      ::template f<x, Replacement>;
+    using f = JLN_MP_CONDITIONAL_C_T(JLN_MP_IS_SAME(T, x), x, Replacement);
   };
 
 #if ! JLN_MP_ENABLE_DEBUG
@@ -74,16 +73,20 @@ namespace jln::mp::detail
   struct substitute_if<lift<Pred>, Replacement>
   {
     template<class x>
-    using f = typename conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(Pred<x>::value)>
-      ::template f<x, Replacement>;
+    using f = JLN_MP_CONDITIONAL_C_T(
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(Pred<x>::value),
+      x, Replacement
+    );
   };
 
   template<template<class...> class Pred, class Replacement>
   struct substitute_if<lift_t<Pred>, Replacement>
   {
     template<class x>
-    using f = typename conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(Pred<x>::type::value)>
-      ::template f<x, Replacement>;
+    using f = JLN_MP_CONDITIONAL_C_T(
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(Pred<x>::type::value),
+      x, Replacement
+    );
   };
 #endif
 }

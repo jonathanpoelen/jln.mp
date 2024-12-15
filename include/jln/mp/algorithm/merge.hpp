@@ -108,7 +108,8 @@ namespace jln::mp::detail
 
   template<class... R, class T, class... Ts, class U, class... Us, class Cmp>
   struct merge_impl<list<R...>, list<T, Ts...>, list<U, Us...>, Cmp>
-  : conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(Cmp::template f<U, T>::value)>::template f<
+  : conditional_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(Cmp::template f<U, T>::value)>
+    ::template f<
       merge_impl<list<R..., T>, list<Ts...>, list<U, Us...>, Cmp>,
       merge_impl<list<R..., U>, list<T, Ts...>, list<Us...>, Cmp>
     >

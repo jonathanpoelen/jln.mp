@@ -34,8 +34,10 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, fold<lift<emp::set_push_back>, C>>
   {
     using type = smp::set_push_back_elements<
-      typename conditional_c<JLN_MP_IS_SAME(C, identity)>
-      ::template f<smp::listify, sfinae<C>>
+      JLN_MP_CONDITIONAL_C_T(
+        JLN_MP_IS_SAME(C, identity),
+        smp::listify, sfinae<C>
+      )
     >;
   };
 }

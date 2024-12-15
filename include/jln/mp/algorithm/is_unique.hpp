@@ -140,9 +140,11 @@ namespace jln::mp::detail
   struct is_unique_set_cmp_push_back_or_void
   {
     template<class x, class... xs>
-    using f = typename conditional_c<
-      none_of<push_back<x, Cmp>>::template f<xs...>::value
-    >::template f<list<xs..., x>, void>;
+    using f = JLN_MP_CONDITIONAL_P_C_T(
+      (none_of<push_back<x, Cmp>>::template f<xs...>::value),
+      (list<xs..., x>),
+      (void)
+    );
   };
 }
 

@@ -62,8 +62,7 @@ namespace jln::mp
   struct set_find<x, identity, always<T>>
   {
     template<class... xs>
-    using f = typename conditional_c<JLN_MP_SET_CONTAINS(x, xs...)>
-      ::template f<x, T>;
+    using f = JLN_MP_CONDITIONAL_C_T(JLN_MP_SET_CONTAINS(x, xs...), x, T);
   };
 
   // set_contains
@@ -72,8 +71,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      typename conditional_c<JLN_MP_SET_CONTAINS(x, xs...)>
-      ::template f<T, U>
+      JLN_MP_CONDITIONAL_C_T(JLN_MP_SET_CONTAINS(x, xs...), T, U)
     );
   };
 
@@ -82,8 +80,7 @@ namespace jln::mp
   struct set_find<x, always<T>, always<U>>
   {
     template<class... xs>
-    using f = typename conditional_c<JLN_MP_SET_CONTAINS(x, xs...)>
-      ::template f<T, U>;
+    using f = JLN_MP_CONDITIONAL_C_T(JLN_MP_SET_CONTAINS(x, xs...), T, U);
   };
 }
 

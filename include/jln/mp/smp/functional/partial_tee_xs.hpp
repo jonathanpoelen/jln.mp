@@ -20,11 +20,11 @@ namespace jln::mp::smp
   using partial_tee_xs = typename mp::conditional_c<sizeof...(Fs) == 0>
     ::template f<
       mp::always<bad_contract>,
-      typename mp::conditional_c<sizeof...(Fs) == 1>
-      ::template f<
-        detail::_smp_partial_tee_1_xs,
-        rotate_c<-2, detail::_smp_partial_tee_xs>
-      >
+      JLN_MP_CONDITIONAL_P_C_T(
+        (sizeof...(Fs) == 1),
+        (detail::_smp_partial_tee_1_xs),
+        (rotate_c<-2, detail::_smp_partial_tee_xs>)
+      )
     >
     ::template f<Fs...>;
 
@@ -32,11 +32,11 @@ namespace jln::mp::smp
   using partial_tee0_xs = typename mp::conditional_c<sizeof...(Fs) == 0>
     ::template f<
       mp::always<bad_contract>,
-      typename mp::conditional_c<sizeof...(Fs) == 1>
-      ::template f<
-        detail::_smp_partial_tee_1_xs,
-        rotate_c<-1, detail::_smp_partial_tee0_xs>
-      >
+      JLN_MP_CONDITIONAL_P_C_T(
+        (sizeof...(Fs) == 1),
+        (detail::_smp_partial_tee_1_xs),
+        (rotate_c<-1, detail::_smp_partial_tee0_xs>)
+      )
     >
     ::template f<Fs...>;
 }

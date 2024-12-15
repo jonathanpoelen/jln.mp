@@ -70,11 +70,14 @@ namespace jln::mp::detail
     using type =
       typename optimize_useless_transform_unpack_impl<optimize_useless_unpack_t<F>>
       ::template f<
-        typename conditional_c<emp::same_xs_v<
-          optimize_useless_transform_unpack_t<transform<F>>,
-          transform<F>
-        >>
-        ::template f<mp::monadic_xs<C>, C>
+        JLN_MP_CONDITIONAL_P_C_T(
+          (emp::same_xs_v<
+            optimize_useless_transform_unpack_t<transform<F>>,
+            transform<F>
+          >),
+          (mp::monadic_xs<C>),
+          (C)
+        )
       >;
   };
 }

@@ -108,8 +108,12 @@ namespace jln::mp::detail
 # if !JLN_MP_CUDA
   template<class F, class... Params>
   memoize_result<
+#   if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+    typename __type_pack_element<!sizeof...(Params), F, F>
+#   else
     typename conditional_c<!sizeof...(Params)>
     ::template f<F, F>
+#   endif
     ::template f<Params...>
   > memoized_call(list<Params...>*);
 

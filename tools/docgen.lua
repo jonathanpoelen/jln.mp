@@ -267,6 +267,12 @@ local define_decl = 'define' * sp * C((alnum + '_')^1) * S' \\'^0 * C(('(' * Aft
 local f_ident = function(s) return s end
 local preproc
 local reproc = function(arg) return preproc:match(arg) end
+local f_cond_c = function(b, t, f)
+  return 'mp::conditional_c<' .. preproc:match(b) .. '>::f<'
+      .. preproc:match(t) .. ', '
+      .. preproc:match(f) .. '>'
+end
+
 preproc = P{
   "S";
   S=Cs(
@@ -315,6 +321,18 @@ preproc = P{
 
   + P'JLN_MP_IDENT(' * cbalancedparent * ')'
     / reproc
+
+  + P'JLN_MP_CONDITIONAL_P_C_T('
+    * ws0 * '(' * cbalancedparent * '),'
+    * ws0 * '(' * cbalancedparent * '),'
+    * ws0 * '(' * cbalancedparent * ')' * ws * ')'
+    / f_cond_c
+
+  + P'JLN_MP_CONDITIONAL_C_T('
+    * ws0 * cbalancedparent_arg * ','
+    * ws0 * cbalancedparent_arg * ','
+    * ws0 * cbalancedparent * ')'
+    / f_cond_c
 
   + P'JLN_MP_NUMBER_FROM_REGULAR_VARIABLE_TEMPLATE_OR_TYPE('
     * ws0 * cid * ',' * ws0 * cbalancedparent * ws0 * ')'
