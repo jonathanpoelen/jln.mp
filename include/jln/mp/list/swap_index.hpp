@@ -105,8 +105,8 @@ namespace jln::mp::detail
     template<class... xs>
     using f = typename make_swap_index_builder<i, j, sizeof...(xs)>
       ::template f<
-        typename at_c<j>::template f<xs...>,
-        typename at_c<i>::template f<xs...>,
+        JLN_MP_AT_C_T(j, xs...),
+        JLN_MP_AT_C_T(i, xs...),
         C, xs...
       >;
   };

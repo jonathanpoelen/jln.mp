@@ -9,6 +9,18 @@ namespace jln::mp
 {
   /// \ingroup list
 
+#if !JLN_MP_HAS_BUILTIN(__type_pack_element)
+# define JLN_MP_AT_C(i, ...) ::jln::mp::at_c<i>::template f<__VA_ARGS__>
+# define JLN_MP_AT_CC(i, ...) ::jln::mp::at_c<i>::f<__VA_ARGS__>
+# define JLN_MP_AT_C_T(i, ...) typename ::jln::mp::at_c<i>::template f<__VA_ARGS__>
+# define JLN_MP_AT_CC_T(i, ...) typename ::jln::mp::at_c<i>::f<__VA_ARGS__>
+#else
+# define JLN_MP_AT_C(i, ...) __type_pack_element<i, __VA_ARGS__>
+# define JLN_MP_AT_CC(i, ...) __type_pack_element<i, __VA_ARGS__>
+# define JLN_MP_AT_C_T(i, ...) __type_pack_element<i, __VA_ARGS__>
+# define JLN_MP_AT_CC_T(i, ...) __type_pack_element<i, __VA_ARGS__>
+#endif
+
   /// Retrieves an element of a sequence at an arbitrary position.
   /// \pre `0 <= N < sizeof...(xs)`
   /// \treturn \value
