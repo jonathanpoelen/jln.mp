@@ -36,6 +36,14 @@ namespace jln::mp
 
   /// Constructs an indexable sequence in O(1).
   /// \pre 0 <= i < sizeof...(xs)
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+  template<class... xs>
+  struct build_indexed_v
+  {
+    template<int i>
+    using f = __type_pack_element<i, xs...>;
+  };
+#else
   template<class... xs>
   struct build_indexed_v
   : detail::build_indexed_v_impl<
@@ -43,17 +51,20 @@ namespace jln::mp
       typename detail::indexed_builder<detail::build_indexed_state(sizeof...(xs))>
       ::template f<xs...>
     >
-  {
-#ifdef JLN_MP_DOXYGENATING
-    template<int i>
-    using f;
+  {};
 #endif
-  };
 
   /// Constructs an indexable sequence in O(1).
   /// If possible prefer the use of build_indexed_v
   /// \pre 0 <= i::value < sizeof...(xs)
-#if JLN_MP_MEMOIZED_ALIAS
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+  template<class... xs>
+  struct build_indexed
+  {
+    template<class i>
+    using f = __type_pack_element<i::value, xs...>;
+  };
+#elif JLN_MP_MEMOIZED_ALIAS
   template<class... xs>
   struct build_indexed
   : detail::build_indexed_impl<
@@ -139,6 +150,11 @@ namespace jln::mp::detail
 
   using index0 = index<0>;
 
+
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+#  define JLN_MP_INDEXED_GET(i, ...) __VA_ARGS__::f<i>
+#  define JLN_MP_D_INDEXED_GET(i, ...) __VA_ARGS__::template f<i>
+#else
   template<class Head, class Tail>
   struct rlist;
 
@@ -531,6 +547,8 @@ namespace jln::mp::detail
       ::template f<index<(i::value >> 4) & 0xF>>
       ::template f<index<i::value & 0xF>>;
   };
+#endif
+
 #endif
 
 }
