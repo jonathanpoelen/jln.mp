@@ -19,7 +19,7 @@ namespace jln::mp::detail
 #if JLN_MP_FORCE_LAZY_ALIAS
 # define JLN_MP_LAZY_PARAM(deps, ...) __VA_ARGS__
 # define JLN_MP_LAZY_PARAM_T(deps, ...) __VA_ARGS__
-#elif JLN_MP_HAS_BUILTIN(__type_pack_element)
+#elif JLN_MP_ENABLE_TYPE_PACK_ELEMENT
 # define JLN_MP_LAZY_PARAM(deps, ...) __type_pack_element<0, __VA_ARGS__, deps>
 # define JLN_MP_LAZY_PARAM_T(deps, ...) __type_pack_element<0, __VA_ARGS__, deps>
 #else

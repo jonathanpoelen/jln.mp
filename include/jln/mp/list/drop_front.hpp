@@ -91,7 +91,7 @@ namespace jln::mp
   struct drop_front_max_c<0, listify> : listify
   {};
 
-#if JLN_MP_HAS_BUILTIN(__type_pack_element)
+#if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
   template<unsigned N, class C>
   struct drop_front_c<N, front<C>>
   {

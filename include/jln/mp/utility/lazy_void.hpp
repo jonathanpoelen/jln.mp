@@ -27,7 +27,7 @@ namespace jln::mp
 #if JLN_MP_LAZY_ALIAS
     template<class... xs>
     using lazy_void = void;
-#elif JLN_MP_HAS_BUILTIN(__type_pack_element)
+#elif JLN_MP_ENABLE_TYPE_PACK_ELEMENT
     template<class... xs>
     using lazy_void = __type_pack_element<0, void, xs...>;
 #else
@@ -37,7 +37,7 @@ namespace jln::mp
   }
 
 /// Equivalent to \c emp::lazy_void<xs...> while minimizing template instantiation.
-#if JLN_MP_HAS_BUILTIN(__type_pack_element)
+#if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
 # define JLN_MP_LAZY_VOID(...) __type_pack_element<0, void, __VA_ARGS__>
 #else
 # define JLN_MP_LAZY_VOID(...) ::jln::mp::emp::lazy_void<__VA_ARGS__>
