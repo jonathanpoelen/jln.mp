@@ -15,7 +15,7 @@ namespace jln::mp
   struct clear
   {
     template<class... xs>
-    using f = typename JLN_MP_LAZY_PARAM(xs, JLN_MP_TRACE_F(C))::template f<>;
+    using f = typename JLN_MP_LAZY_PARAM(xs..., JLN_MP_TRACE_F(C))::template f<>;
   };
 
   /// \cond

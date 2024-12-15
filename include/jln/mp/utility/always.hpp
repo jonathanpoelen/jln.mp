@@ -17,7 +17,7 @@ namespace jln::mp
   struct always
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, JLN_MP_LAZY_PARAM_T(xs, x));
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_LAZY_PARAM_T(xs..., x));
   };
 
   /// \cond
@@ -25,7 +25,7 @@ namespace jln::mp
   struct always<x, identity>
   {
     template<class... xs>
-    using f = JLN_MP_LAZY_PARAM_T(xs, x);
+    using f = JLN_MP_LAZY_PARAM_T(xs..., x);
   };
   /// \endcond
 }

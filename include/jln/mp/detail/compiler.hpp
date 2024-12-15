@@ -309,5 +309,14 @@
 #  define JLN_MP_HAS_BUILTIN(name) 0
 #endif
 
+/// When 1, the builtin __type_pack_element is very fast.
+#ifndef JLN_MP_FAST_TYPE_PACK_ELEMENT
+# if JLN_MP_HAS_BUILTIN(__type_pack_element) && JLN_MP_GCC
+#   define JLN_MP_FAST_TYPE_PACK_ELEMENT 1
+# else
+#   define JLN_MP_FAST_TYPE_PACK_ELEMENT 0
+# endif
+#endif
+
 /// Displays parameters. Useful in a macro to remove parentheses from a value.
 #define JLN_MP_UNPACK(...) __VA_ARGS__

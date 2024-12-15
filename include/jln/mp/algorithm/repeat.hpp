@@ -82,15 +82,17 @@ namespace jln::mp::detail
 
 #if JLN_MP_CUDA && JLN_MP_HOST_COMPILER_GCC
   template<class x, class> using emp_index0 = x;
-#  define JLN_MP_INDEX0 emp_index0
+#  define JLN_MP_INDEX0(...) emp_index0<__VA_ARGS__>
+#elif JLN_MP_FAST_TYPE_PACK_ELEMENT
+#  define JLN_MP_INDEX0(...) __type_pack_element<0, __VA_ARGS__>
 #else
-#  define JLN_MP_INDEX0 detail::index0::f
+#  define JLN_MP_INDEX0(...) detail::index0::f<__VA_ARGS__>
 #endif
 
 #if JLN_MP_MSVC || JLN_MP_GCC
 # if JLN_MP_MSVC
   template<class C, class x, class... xs>
-  using repeat_impl_1 = typename C::template f<JLN_MP_INDEX0<x, xs>...>;
+  using repeat_impl_1 = typename C::template f<JLN_MP_INDEX0(x, xs)...>;
 # endif
 
   template<class C>
@@ -105,7 +107,7 @@ namespace jln::mp::detail
 # if JLN_MP_MSVC
         using type = repeat_impl_1<C, x, decltype(ns)...>;
 # else
-        using type = typename C::template f<JLN_MP_INDEX0<x, decltype(ns)>...>;
+        using type = typename C::template f<JLN_MP_INDEX0(x, decltype(ns))...>;
 # endif
       };
     };
@@ -127,7 +129,7 @@ namespace jln::mp::detail
     template<class x>
     struct f
     {
-      using type = list<JLN_MP_INDEX0<x, decltype(ns)>...>;
+      using type = list<JLN_MP_INDEX0(x, decltype(ns))...>;
     };
   };
 
@@ -140,7 +142,7 @@ namespace jln::mp::detail
   struct repeat_impl_1_cont
   {
     template<class x>
-    struct duplicate : capture_front<JLN_MP_INDEX0<x, decltype(ns)>...>
+    struct duplicate : capture_front<JLN_MP_INDEX0(x, decltype(ns))...>
     {};
   };
 
