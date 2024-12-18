@@ -4,6 +4,7 @@
 
 #include <jln/mp/smp/contract.hpp>
 #include <jln/mp/smp/list/listify.hpp>
+#include <jln/mp/smp/functional/lift.hpp>
 #include <jln/mp/algorithm/flatten.hpp>
 
 namespace jln::mp::smp
@@ -13,6 +14,18 @@ namespace jln::mp::smp
 
   template<class S = mp::lift<list>, class C = listify>
   using flatten = try_contract<mp::flatten<S, subcontract<C>>>;
+
+  template<template<class...> class S, class C = listify>
+  using flatten_once_f = flatten_once<mp::lift<S>, C>;
+
+  template<template<class...> class S, class C = listify>
+  using flatten_f = flatten<mp::lift<S>, C>;
+
+  template<template<class...> class S, class C = identity>
+  using flatten_once_for_f = flatten<mp::lift<S>, lift<S, C>>;
+
+  template<template<class...> class S, class C = identity>
+  using flatten_for_f = flatten<mp::lift<S>, lift<S, C>>;
 }
 
 /// \cond

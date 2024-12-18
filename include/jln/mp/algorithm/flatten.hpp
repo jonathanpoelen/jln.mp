@@ -47,6 +47,9 @@ namespace jln::mp
   template<template<class...> class S, class C = listify>
   using flatten_once_f = flatten_once<lift<S>, C>;
 
+  template<template<class...> class S, class C = identity>
+  using flatten_once_for_f = flatten_once<lift<S>, lift<S, C>>;
+
   /// Recursive version of \c flatten_once.
   /// \semantics
   ///   \code
@@ -72,6 +75,9 @@ namespace jln::mp
   template<template<class...> class S, class C = listify>
   using flatten_f = flatten<lift<S>, C>;
 
+  template<template<class...> class S, class C = identity>
+  using flatten_for_f = flatten<lift<S>, lift<S, C>>;
+
   namespace emp
   {
     template<class L, class S = wrapper<L>, class C = mp::listify>
@@ -85,6 +91,12 @@ namespace jln::mp
 
     template<class L, template<class...> class S, class C = mp::listify>
     using flatten_f = typename detail::_unpack<mp::flatten_f<S, C>, L>::type;
+
+    template<class L, template<class...> class S, class C = mp::identity>
+    using flatten_once_for_f = typename detail::_unpack<mp::flatten_once_for_f<S, C>, L>::type;
+
+    template<class L, template<class...> class S, class C = mp::identity>
+    using flatten_for_f = typename detail::_unpack<mp::flatten_for_f<S, C>, L>::type;
   }
 
 /// \cond
