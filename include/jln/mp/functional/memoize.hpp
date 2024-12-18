@@ -106,22 +106,22 @@ namespace jln::mp::detail
   };
 
 # if !JLN_MP_CUDA
-  template<class F, class... Params>
+  template<class F, class... Params, class P>
   memoize_result<
 #   if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
-    typename __type_pack_element<!sizeof...(Params), F, F>
+    typename __type_pack_element<!sizeof(P), F, F>
 #   else
-    typename conditional_c<!sizeof...(Params)>
+    typename conditional_c<!sizeof(P)>
     ::template f<F, F>
 #   endif
     ::template f<Params...>
-  > memoized_call(list<Params...>*);
+  > memoized_call(P);
 
-  template<class F>
-  uncallable_function memoized_call(void*);
+  template<class F, class...>
+  uncallable_function memoized_call(char);
 
   template<class C, class... Params>
-  struct memoizer_impl : decltype(memoized_call<C>(static_cast<list<Params...>*>(nullptr)))
+  struct memoizer_impl : decltype(memoized_call<C, Params...>(1))
   {};
 #else // if JLN_MP_CUDA
   template<class dummy, class F, class... Params>
