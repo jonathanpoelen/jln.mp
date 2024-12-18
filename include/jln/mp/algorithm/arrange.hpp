@@ -10,8 +10,10 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
+#if !JLN_MP_FAST_TYPE_PACK_ELEMENT
     template<class C, int... ints>
     struct arrange_impl;
+#endif
 
     template<class Ints>
     struct make_arrange
@@ -31,17 +33,36 @@ namespace jln::mp
   template<class Ints, class C = listify>
   using arrange = typename detail::make_arrange<Ints>::template f<C>;
 
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+  template<class C, int... ints>
+  struct arrange_c_with
+  {
+    template<class... xs>
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, __type_pack_element<ints, xs...>...);
+  };
+
+  template<int... ints>
+  using arrange_c = arrange_c_with<listify, ints...>;
+#else
   template<int... ints>
   using arrange_c = detail::apply_indexed_v<detail::arrange_impl<listify, ints...>>;
 
   template<class C, int... ints>
   using arrange_c_with = detail::apply_indexed_v<detail::arrange_impl<C, ints...>>;
+#endif
 
   namespace emp
   {
     template<class L, class Ints, class C = listify>
     using arrange = typename detail::_unpack<mp::arrange<Ints, C>, L>::type;
 
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+    template<class L, int... ints>
+    using arrange_c = typename detail::_unpack<arrange_c_with<listify, ints...>, L>::type;
+
+    template<class L, class C, int... ints>
+    using arrange_with_c = typename detail::_unpack<arrange_c_with<C, ints...>, L>::type;
+#else
     template<class L, int... ints>
     using arrange_c = typename detail::_unpack<
       detail::apply_indexed_v<detail::arrange_impl<listify, ints...>>, L>::type;
@@ -49,6 +70,7 @@ namespace jln::mp
     template<class L, class C, int... ints>
     using arrange_with_c = typename detail::_unpack<
       detail::apply_indexed_v<detail::arrange_impl<C, ints...>>, L>::type;
+#endif
   }
 }
 
@@ -59,6 +81,10 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+# define JLN_MP_MAKE_ARRANGE(...) arrange_c_with<__VA_ARGS__>
+#else
+# define JLN_MP_MAKE_ARRANGE(...) apply_indexed_v<arrange_impl<__VA_ARGS__>>
   template<class C, int... ints>
   struct arrange_impl
   {
@@ -73,27 +99,27 @@ namespace jln::mp::detail
     template<class F>
     using f = list<typename F::template f<ints>...>;
   };
-
+#endif
 
   template<template<class...> class Tpl, class... ints>
   struct make_arrange<Tpl<ints...>>
   {
     template<class C>
-    using f = apply_indexed_v<arrange_impl<C, ints::value...>>;
+    using f = JLN_MP_MAKE_ARRANGE(C, ints::value...);
   };
 
   template<template<class T, T...> class Tpl, class T, T... ints>
   struct make_arrange<Tpl<T, ints...>>
   {
     template<class C>
-    using f = apply_indexed_v<arrange_impl<C, ints...>>;
+    using f = JLN_MP_MAKE_ARRANGE(C, ints...);
   };
 
   template<template<int_t...> class Tpl, int_t... ints>
   struct make_arrange<Tpl<ints...>>
   {
     template<class C>
-    using f = apply_indexed_v<arrange_impl<C, ints...>>;
+    using f = JLN_MP_MAKE_ARRANGE(C, ints...);
   };
 
 #if JLN_MP_ENABLE_TPL_AUTO
@@ -101,8 +127,10 @@ namespace jln::mp::detail
   struct make_arrange<Tpl<ints...>>
   {
     template<class C>
-    using f = apply_indexed_v<arrange_impl<C, ints...>>;
+    using f = JLN_MP_MAKE_ARRANGE(C, ints...);
   };
 #endif
+
+#undef JLN_MP_MAKE_ARRANGE
 }
 /// \endcond
