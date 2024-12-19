@@ -147,6 +147,7 @@ namespace jln::mp
 }
 
 
+#include <jln/mp/algorithm/arrange.hpp>
 #include <jln/mp/algorithm/make_int_sequence.hpp>
 #include <jln/mp/algorithm/compress.hpp>
 #include <jln/mp/algorithm/rotate.hpp>
@@ -294,6 +295,25 @@ namespace jln::mp::detail
   struct strided_slice_impl<-1, -1> : positive_strided_slice_impl<-1, -1>
   {};
 
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+  template<class, int... ints>
+  struct slided_slice
+  {
+    template<class C, int i, int step>
+    struct impl : arrange_c_with<C, ints * step + i ...>
+    {};
+  };
+
+  template<int_t i, int_t ri>
+  struct strided_slice_impl
+  {
+    template<class C, int step, int n>
+    using impl =
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE_T(int, (n - i - ri) / step + 1, slided_slice)
+      ::template impl<C, i, step>
+    ;
+  };
+#else // !JLN_MP_FAST_TYPE_PACK_ELEMENT
   template<class, unsigned... ints>
   struct slided_slice
   {
@@ -321,5 +341,6 @@ namespace jln::mp::detail
       ::template impl<C, step>
     >>;
   };
+#endif
 } // namespace jln::mp::detail
 /// \endcond
