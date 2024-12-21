@@ -75,7 +75,7 @@ namespace jln::mp
 }
 
 
-#include <type_traits>
+#include <jln/mp/detail/enable_callable_if.hpp>
 #include <jln/mp/number/number.hpp>  // JLN_MP_ENABLE_TPL_AUTO
 
 /// \cond
@@ -89,7 +89,7 @@ namespace jln::mp::detail
   struct arrange_impl
   {
     template<class F>
-    using f = typename std::enable_if_t<0 <= sizeof(F), JLN_MP_TRACE_F(C)>
+    using f = typename JLN_MP_ENABLE_IF_CALLABLE(0 <= sizeof(F), JLN_MP_TRACE_F(C))
       ::template f<typename F::template f<ints>...>;
   };
 
