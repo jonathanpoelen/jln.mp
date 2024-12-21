@@ -49,18 +49,38 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-#if JLN_MP_GCC
-# define JLN_MP_FN_LIST_TYPE list
-# define JLN_MP_FN_TYPE class
-# define JLN_MP_FN_VALUE(...) __VA_ARGS__
-# define JLN_MP_FN_CALL(F) typename F::template f
-#else
-# define JLN_MP_FN_LIST_TYPE fn_list
-# define JLN_MP_FN_TYPE template<class, class> class
-# define JLN_MP_FN_VALUE(...) __VA_ARGS__::template f
-# define JLN_MP_FN_CALL(F) F
+# if JLN_MP_FAST_TYPE_PACK_ELEMENT
+  template<int... i>
+  struct swap_index_build_seq
+  {
+    template<class C, class... xs>
+    using f = JLN_MP_CALL_TRACE(C, __type_pack_element<i, xs...>...);
+  };
+
+  template<int i, int j>
+  struct swap_index_builder
+  {
+    template<class, int... ns>
+    struct indices : swap_index_build_seq<
+      ns == i ? j : ns == j ? i : ns ...
+    >
+    {};
+  };
+
+# else // if !JLN_MP_FAST_TYPE_PACK_ELEMENT
+
+# if JLN_MP_GCC
+#   define JLN_MP_FN_LIST_TYPE list
+#   define JLN_MP_FN_TYPE class
+#   define JLN_MP_FN_VALUE(...) __VA_ARGS__
+#   define JLN_MP_FN_CALL(F) typename F::template f
+# else
+#   define JLN_MP_FN_LIST_TYPE fn_list
+#   define JLN_MP_FN_TYPE template<class, class> class
+#   define JLN_MP_FN_VALUE(...) __VA_ARGS__::template f
+#   define JLN_MP_FN_CALL(F) F
   template<JLN_MP_FN_TYPE...> class fn_list;
-#endif
+# endif
 
   template<class, class>
   struct swap_index_build_seq;
@@ -88,9 +108,11 @@ namespace jln::mp::detail
     {};
   };
 
-#undef JLN_MP_FN_LIST_INIT
-#undef JLN_MP_FN_CALL
-#undef JLN_MP_FN_TYPE
+# undef JLN_MP_FN_LIST_INIT
+# undef JLN_MP_FN_CALL
+# undef JLN_MP_FN_TYPE
+
+#endif
 
   template<unsigned i, unsigned j, int n>
   struct make_swap_index_builder : JLN_MP_MAKE_INTEGER_SEQUENCE_T(
@@ -105,8 +127,10 @@ namespace jln::mp::detail
     template<class... xs>
     using f = typename make_swap_index_builder<i, j, sizeof...(xs)>
       ::template f<
+#if !JLN_MP_FAST_TYPE_PACK_ELEMENT
         JLN_MP_AT_C_T(j, xs...),
         JLN_MP_AT_C_T(i, xs...),
+#endif
         C, xs...
       >;
   };
