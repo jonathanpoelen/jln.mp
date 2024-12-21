@@ -14,7 +14,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<class MkIndexesInt2>
+    template<class MkIndicesInt2>
     struct array_int2_index_dispatcher;
 
     template<bool... bs>
@@ -151,54 +151,54 @@ namespace jln::mp::detail
   };
 
 #if __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L
-  #define JLN_MP_INDEXES_TPL_PARAM() auto indices_pairs
-  #define JLN_MP_INDEXES_TPL_VALUE() MkIndexesInt2::make()
+  #define JLN_MP_INDICES_TPL_PARAM() auto indices_pairs
+  #define JLN_MP_INDICES_TPL_VALUE() MkIndicesInt2::make()
   #if JLN_MP_MSVC
-    #define JLN_MP_INDEXES_GET_PAIR(i) indices_pair_v<indices_pairs, i>
+    #define JLN_MP_INDICES_GET_PAIR(i) indices_pair_v<indices_pairs, i>
     template<auto a, int i>
     inline constexpr auto indices_pair_v = a.elems[i];
   #else
-    #define JLN_MP_INDEXES_GET_PAIR(i) indices_pairs.elems[i]
+    #define JLN_MP_INDICES_GET_PAIR(i) indices_pairs.elems[i]
   #endif
 #else
   template<class T>
   inline constexpr auto memoize_make_fn = T::make();
-  #define JLN_MP_INDEXES_TPL_PARAM() class MkIndexesInt2
-  #define JLN_MP_INDEXES_TPL_VALUE() MkIndexesInt2
+  #define JLN_MP_INDICES_TPL_PARAM() class MkIndicesInt2
+  #define JLN_MP_INDICES_TPL_VALUE() MkIndicesInt2
   #if JLN_MP_MSVC
-    #define JLN_MP_INDEXES_GET_PAIR(i) indices_pair_v<MkIndexesInt2, i>
-    template<class MkIndexesInt2, int i>
-    inline constexpr auto indices_pair_v = memoize_make_fn<MkIndexesInt2>.elems[i];
+    #define JLN_MP_INDICES_GET_PAIR(i) indices_pair_v<MkIndicesInt2, i>
+    template<class MkIndicesInt2, int i>
+    inline constexpr auto indices_pair_v = memoize_make_fn<MkIndicesInt2>.elems[i];
   #else
-    #define JLN_MP_INDEXES_GET_PAIR(i) memoize_make_fn<MkIndexesInt2>.elems[i]
+    #define JLN_MP_INDICES_GET_PAIR(i) memoize_make_fn<MkIndicesInt2>.elems[i]
   #endif
 #endif
 
   template<class, int... i>
   struct array_int2_index_dispatcher_impl
   {
-    template<JLN_MP_INDEXES_TPL_PARAM()>
+    template<JLN_MP_INDICES_TPL_PARAM()>
     using f = dispatch_group_index<
-      sliding_outer<int, JLN_MP_INDEXES_GET_PAIR(i)[0]...>,
+      sliding_outer<int, JLN_MP_INDICES_GET_PAIR(i)[0]...>,
 #if JLN_MP_MEMOIZED_ALIAS || (JLN_MP_CUDA && JLN_MP_HOST_COMPILER_GCC)
-      make_sliding_inner<JLN_MP_INDEXES_GET_PAIR(i)[1]>...
+      make_sliding_inner<JLN_MP_INDICES_GET_PAIR(i)[1]>...
 #else
-      JLN_MP_MAKE_INTEGER_SEQUENCE_T(int, JLN_MP_INDEXES_GET_PAIR(i)[1], sliding_inner)...
+      JLN_MP_MAKE_INTEGER_SEQUENCE_T(int, JLN_MP_INDICES_GET_PAIR(i)[1], sliding_inner)...
 #endif
     >;
   };
 
-  template<class MkIndexesInt2>
+  template<class MkIndicesInt2>
   struct array_int2_index_dispatcher
     : JLN_MP_MAKE_INTEGER_SEQUENCE_T(int,
-        MkIndexesInt2::result_len,
+        MkIndicesInt2::result_len,
         array_int2_index_dispatcher_impl
       )
-      ::template f<JLN_MP_INDEXES_TPL_VALUE()>
+      ::template f<JLN_MP_INDICES_TPL_VALUE()>
   {};
 
-#undef JLN_MP_INDEXES_GET_PAIR
-#undef JLN_MP_INDEXES_TPL_PARAM
-#undef JLN_MP_INDEXES_TPL_VALUE
+#undef JLN_MP_INDICES_GET_PAIR
+#undef JLN_MP_INDICES_TPL_PARAM
+#undef JLN_MP_INDICES_TPL_VALUE
 }
 /// \endcond

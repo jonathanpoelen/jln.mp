@@ -20,11 +20,11 @@ namespace jln::mp
     template<int, bool = false>
     struct indexed_builder;
 
-    template<int, class PrecomputedIndexes>
+    template<int, class PrecomputedIndices>
     struct build_indexed_v_impl;
 
 #if JLN_MP_MEMOIZED_ALIAS
-    template<int, class PrecomputedIndexes>
+    template<int, class PrecomputedIndices>
     struct build_indexed_impl;
 #endif
 
@@ -449,22 +449,22 @@ namespace jln::mp::detail
   };
 
   // 16 < sizeof...(xs) <= 256
-  template<class PrecomputedIndexes>
-  struct build_indexed_v_impl<1, PrecomputedIndexes>
+  template<class PrecomputedIndices>
+  struct build_indexed_v_impl<1, PrecomputedIndices>
   {
     JLN_MP_BUILD_INDEXED_IMPL(
-      typename PrecomputedIndexes
+      typename PrecomputedIndices
       ::template f<index<(i >> 4)>>
       ::template f<index<i & 0xf>>
     );
   };
 
   // 256 < sizeof...(xs) <= 4096
-  template<class PrecomputedIndexes>
-  struct build_indexed_v_impl<2, PrecomputedIndexes>
+  template<class PrecomputedIndices>
+  struct build_indexed_v_impl<2, PrecomputedIndices>
   {
   private:
-    using _precomputed_indices = typename rlist_to_indexed<PrecomputedIndexes>
+    using _precomputed_indices = typename rlist_to_indexed<PrecomputedIndices>
       ::template f<indexed>;
 
   public:
@@ -477,12 +477,12 @@ namespace jln::mp::detail
   };
 
   // 4096 < sizeof...(xs) <= 65536
-  template<class PrecomputedIndexes>
-  struct build_indexed_v_impl<3, PrecomputedIndexes>
+  template<class PrecomputedIndices>
+  struct build_indexed_v_impl<3, PrecomputedIndices>
   {
   private:
     using _precomputed_indices = typename rlist_to_indexed<
-      typename rlist_to_indexed_rlist<PrecomputedIndexes>::type
+      typename rlist_to_indexed_rlist<PrecomputedIndices>::type
     >::template f<indexed>;
 
   public:
@@ -507,20 +507,20 @@ namespace jln::mp::detail
   };
 
   // 16 < sizeof...(xs) <= 256
-  template<class PrecomputedIndexes>
-  struct build_indexed_impl<1, PrecomputedIndexes>
+  template<class PrecomputedIndices>
+  struct build_indexed_impl<1, PrecomputedIndices>
   {
     template<class i>
-    using f = typename PrecomputedIndexes
+    using f = typename PrecomputedIndices
       ::template f<index<(i::value >> 4)>>
       ::template f<index<i::value & 0xf>>;
   };
 
   // 256 < sizeof...(xs) <= 4096
-  template<class PrecomputedIndexes>
-  class build_indexed_impl<2, PrecomputedIndexes>
+  template<class PrecomputedIndices>
+  class build_indexed_impl<2, PrecomputedIndices>
   {
-    using _precomputed_indices = typename rlist_to_indexed<PrecomputedIndexes>
+    using _precomputed_indices = typename rlist_to_indexed<PrecomputedIndices>
       ::template f<indexed>;
 
   public:
@@ -532,11 +532,11 @@ namespace jln::mp::detail
   };
 
   // 4096 < sizeof...(xs) <= 65536
-  template<class PrecomputedIndexes>
-  class build_indexed_impl<3, PrecomputedIndexes>
+  template<class PrecomputedIndices>
+  class build_indexed_impl<3, PrecomputedIndices>
   {
     using _precomputed_indices = typename rlist_to_indexed<
-      typename rlist_to_indexed_rlist<PrecomputedIndexes>::type
+      typename rlist_to_indexed_rlist<PrecomputedIndices>::type
     >::template f<indexed>;
 
   public:
