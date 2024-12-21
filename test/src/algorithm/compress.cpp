@@ -29,6 +29,17 @@ TEST()
     .not_invocable<_0, _1, _2, _3, _4, _5>()
     ;
 
+  using selectors2 = emp::numbers<0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1>;
+  test_context<compress<selectors2>, smp::compress<selectors2>>()
+    .test<list<_1, _3, _4, _6, _7, _8, _10, _14>,
+      _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14>()
+    .not_invocable<>()
+    .not_invocable<_0, _1, _2, _3>()
+    .not_invocable<_0, _1, _2, _3, _4, _5>()
+    .not_invocable<_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13>()
+    .not_invocable<_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15>()
+    ;
+
   test_context<compress<seq_0>, smp::compress<seq_0>>()
     .test<list<>, _0>()
     .not_invocable<>()

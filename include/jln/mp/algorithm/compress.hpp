@@ -11,8 +11,18 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+    template<class C, class>
+    struct compress_impl;
+
+    template<int>
+    struct indices_from_compress;
+
+    constexpr int indices_from_compress_select(std::size_t n);
+#else
     template<template<class...> class C, class... Selectors>
     struct compress_impl;
+#endif
 
     template<class L, class C>
     struct make_compress;
@@ -34,7 +44,16 @@ namespace jln::mp
   /// \treturn \sequence
   template<class C, bool... selectors>
   struct compress_c_with
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+    : detail::compress_impl<
+      C,
+      typename detail::indices_from_compress<
+        detail::indices_from_compress_select(sizeof...(selectors))
+      >::template f<selectors...>::type
+    >
+#else
     : detail::compress_impl<C::template f, wrap_in_list_c<selectors>...>
+#endif
   {
 #ifdef JLN_MP_DOXYGENATING
     template<class... xs>
@@ -67,8 +86,104 @@ namespace jln::mp
   }
 }
 
-
 /// \cond
+#include <jln/mp/algorithm/make_int_sequence.hpp>
+
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+namespace jln::mp::detail
+{
+  template<int_t, class, class>
+  struct concat_indices;
+
+  template<int_t i, int_t... a, int_t... b>
+  struct concat_indices<i, int_seq_c<a...>, int_seq_c<b...>>
+  {
+    using type = int_seq_c<a..., i+b...>;
+  };
+
+  template<int>
+  struct indices_from_compress;
+
+  template<>
+  struct indices_from_compress<4>
+  {
+    template<bool b0 = 0, bool b1 = 0, bool b2 = 0, bool b3 = 0> struct f;
+  };
+
+  template<> struct indices_from_compress<4>::f<0,0,0,0> { using type = int_seq_c<>; };
+  template<> struct indices_from_compress<4>::f<0,0,0,1> { using type = int_seq_c<3>; };
+  template<> struct indices_from_compress<4>::f<0,0,1,0> { using type = int_seq_c<2>; };
+  template<> struct indices_from_compress<4>::f<0,0,1,1> { using type = int_seq_c<2,3>; };
+  template<> struct indices_from_compress<4>::f<0,1,0,0> { using type = int_seq_c<1>; };
+  template<> struct indices_from_compress<4>::f<0,1,0,1> { using type = int_seq_c<1,3>; };
+  template<> struct indices_from_compress<4>::f<0,1,1,0> { using type = int_seq_c<1,2>; };
+  template<> struct indices_from_compress<4>::f<0,1,1,1> { using type = int_seq_c<1,2,3>; };
+  template<> struct indices_from_compress<4>::f<1,0,0,0> { using type = int_seq_c<0>; };
+  template<> struct indices_from_compress<4>::f<1,0,0,1> { using type = int_seq_c<0,3>; };
+  template<> struct indices_from_compress<4>::f<1,0,1,0> { using type = int_seq_c<0,2>; };
+  template<> struct indices_from_compress<4>::f<1,0,1,1> { using type = int_seq_c<0,2,3>; };
+  template<> struct indices_from_compress<4>::f<1,1,0,0> { using type = int_seq_c<0,1>; };
+  template<> struct indices_from_compress<4>::f<1,1,0,1> { using type = int_seq_c<0,1,3>; };
+  template<> struct indices_from_compress<4>::f<1,1,1,0> { using type = int_seq_c<0,1,2>; };
+  template<> struct indices_from_compress<4>::f<1,1,1,1> { using type = int_seq_c<0,1,2,3>; };
+
+#define JLN_MP_MK_INDICES_FROM_COMPRESS(n, mp1, mp2)                            \
+  template<>                                                                    \
+  struct indices_from_compress<n*2>                                             \
+  {                                                                             \
+    template<mp1(bool, JLN_MP_NIL, JLN_MP_COMMA), mp2(bool, = 0, JLN_MP_COMMA)> \
+    using f = concat_indices<                                                   \
+      n,                                                                        \
+      typename indices_from_compress<n>                                         \
+        ::f<mp1(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>::type,                   \
+      typename indices_from_compress<n>                                         \
+        ::f<mp2(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>::type                    \
+    >;                                                                          \
+  };
+
+  JLN_MP_MK_INDICES_FROM_COMPRESS(4, JLN_MP_XS_4, JLN_MP_XS_4_FROM_5)
+  JLN_MP_MK_INDICES_FROM_COMPRESS(8, JLN_MP_XS_8, JLN_MP_XS_8_FROM_9)
+  JLN_MP_MK_INDICES_FROM_COMPRESS(16, JLN_MP_XS_16, JLN_MP_XS_16_FROM_17)
+  JLN_MP_MK_INDICES_FROM_COMPRESS(32, JLN_MP_XS_32, JLN_MP_XS_32_FROM_33)
+  JLN_MP_MK_INDICES_FROM_COMPRESS(64, JLN_MP_XS_64, JLN_MP_XS_64_FROM_65)
+
+#undef JLN_MP_MK_INDICES_FROM_COMPRESS
+
+  constexpr int indices_from_compress_select(std::size_t n)
+  {
+    return n > 128 ? 256
+         : n > 64 ? 128
+         : n > 32 ? 64
+         : n > 16 ? 32
+         : n > 8 ? 16
+         : n > 4 ? 8
+         : 4;
+  }
+
+  template<int>
+  struct indices_from_compress
+  {
+    template<JLN_MP_XS_128(bool, JLN_MP_NIL, JLN_MP_COMMA), bool... b>
+    using f = concat_indices<
+      128,
+      typename indices_from_compress<128>
+        ::f<JLN_MP_XS_128(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>::type,
+      typename indices_from_compress<indices_from_compress_select(sizeof...(b))>
+        ::template f<b...>::type
+    >;
+  };
+
+  template<class C, class>
+  struct compress_impl;
+
+  template<class C, int_t... ints>
+  struct compress_impl<C, int_seq_c<ints...>>
+  {
+     template<class... xs>
+     using f = JLN_MP_DCALL_TRACE_XS(xs, C, __type_pack_element<ints, xs...>...);
+  };
+}
+#else
 namespace jln::mp
 {
   template<bool... selectors>
@@ -88,7 +203,11 @@ namespace jln::mp::detail
       ::type
       ;
   };
+}
+#endif
 
+namespace jln::mp::detail
+{
   template<template<class...> class Tpl, class... selectors, class C>
   struct make_compress<Tpl<selectors...>, C>
   {

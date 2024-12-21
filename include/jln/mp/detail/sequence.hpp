@@ -696,3 +696,44 @@
   before _12 after sep before _11 after sep before _10 after sep before _9 after sep      \
   before _8 after sep before _7 after sep before _6 after sep before _5 after sep         \
   before _4 after sep before _3 after sep before _2 after sep before _1 after
+
+#define JLN_MP_XS_4_FROM_5(before, after, sep) \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after
+
+#define JLN_MP_XS_8_FROM_9(before, after, sep)                                       \
+  before _9 after sep before _10 after sep before _11 after sep before _12 after sep \
+  before _13 after sep before _14 after sep before _15 after sep before _16 after
+
+#define JLN_MP_XS_16_FROM_17(before, after, sep)                                      \
+  before _17 after sep before _18 after sep before _19 after sep before _20 after sep \
+  before _21 after sep before _22 after sep before _23 after sep before _24 after sep \
+  before _25 after sep before _26 after sep before _27 after sep before _28 after sep \
+  before _29 after sep before _30 after sep before _31 after sep before _32 after
+
+#define JLN_MP_XS_32_FROM_33(before, after, sep)                                      \
+  before _33 after sep before _34 after sep before _35 after sep before _36 after sep \
+  before _37 after sep before _38 after sep before _39 after sep before _40 after sep \
+  before _41 after sep before _42 after sep before _43 after sep before _44 after sep \
+  before _45 after sep before _46 after sep before _47 after sep before _48 after sep \
+  before _49 after sep before _50 after sep before _51 after sep before _52 after sep \
+  before _53 after sep before _54 after sep before _55 after sep before _56 after sep \
+  before _57 after sep before _58 after sep before _59 after sep before _60 after sep \
+  before _61 after sep before _62 after sep before _63 after sep before _64 after
+
+#define JLN_MP_XS_64_FROM_65(before, after, sep)                                          \
+  before _65 after sep before _66 after sep before _67 after sep before _68 after sep     \
+  before _69 after sep before _70 after sep before _71 after sep before _72 after sep     \
+  before _73 after sep before _74 after sep before _75 after sep before _76 after sep     \
+  before _77 after sep before _78 after sep before _79 after sep before _80 after sep     \
+  before _81 after sep before _82 after sep before _83 after sep before _84 after sep     \
+  before _85 after sep before _86 after sep before _87 after sep before _88 after sep     \
+  before _89 after sep before _90 after sep before _91 after sep before _92 after sep     \
+  before _93 after sep before _94 after sep before _95 after sep before _96 after sep     \
+  before _97 after sep before _98 after sep before _99 after sep before _100 after sep    \
+  before _101 after sep before _102 after sep before _103 after sep before _104 after sep \
+  before _105 after sep before _106 after sep before _107 after sep before _108 after sep \
+  before _109 after sep before _110 after sep before _111 after sep before _112 after sep \
+  before _113 after sep before _114 after sep before _115 after sep before _116 after sep \
+  before _117 after sep before _118 after sep before _119 after sep before _120 after sep \
+  before _121 after sep before _122 after sep before _123 after sep before _124 after sep \
+  before _125 after sep before _126 after sep before _127 after sep before _128 after
