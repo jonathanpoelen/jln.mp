@@ -2817,6 +2817,47 @@ namespace jln::mp
   before _8 after sep before _7 after sep before _6 after sep before _5 after sep         \
   before _4 after sep before _3 after sep before _2 after sep before _1 after
 
+#define JLN_MP_XS_4_FROM_5(before, after, sep) \
+  before _5 after sep before _6 after sep before _7 after sep before _8 after
+
+#define JLN_MP_XS_8_FROM_9(before, after, sep)                                       \
+  before _9 after sep before _10 after sep before _11 after sep before _12 after sep \
+  before _13 after sep before _14 after sep before _15 after sep before _16 after
+
+#define JLN_MP_XS_16_FROM_17(before, after, sep)                                      \
+  before _17 after sep before _18 after sep before _19 after sep before _20 after sep \
+  before _21 after sep before _22 after sep before _23 after sep before _24 after sep \
+  before _25 after sep before _26 after sep before _27 after sep before _28 after sep \
+  before _29 after sep before _30 after sep before _31 after sep before _32 after
+
+#define JLN_MP_XS_32_FROM_33(before, after, sep)                                      \
+  before _33 after sep before _34 after sep before _35 after sep before _36 after sep \
+  before _37 after sep before _38 after sep before _39 after sep before _40 after sep \
+  before _41 after sep before _42 after sep before _43 after sep before _44 after sep \
+  before _45 after sep before _46 after sep before _47 after sep before _48 after sep \
+  before _49 after sep before _50 after sep before _51 after sep before _52 after sep \
+  before _53 after sep before _54 after sep before _55 after sep before _56 after sep \
+  before _57 after sep before _58 after sep before _59 after sep before _60 after sep \
+  before _61 after sep before _62 after sep before _63 after sep before _64 after
+
+#define JLN_MP_XS_64_FROM_65(before, after, sep)                                          \
+  before _65 after sep before _66 after sep before _67 after sep before _68 after sep     \
+  before _69 after sep before _70 after sep before _71 after sep before _72 after sep     \
+  before _73 after sep before _74 after sep before _75 after sep before _76 after sep     \
+  before _77 after sep before _78 after sep before _79 after sep before _80 after sep     \
+  before _81 after sep before _82 after sep before _83 after sep before _84 after sep     \
+  before _85 after sep before _86 after sep before _87 after sep before _88 after sep     \
+  before _89 after sep before _90 after sep before _91 after sep before _92 after sep     \
+  before _93 after sep before _94 after sep before _95 after sep before _96 after sep     \
+  before _97 after sep before _98 after sep before _99 after sep before _100 after sep    \
+  before _101 after sep before _102 after sep before _103 after sep before _104 after sep \
+  before _105 after sep before _106 after sep before _107 after sep before _108 after sep \
+  before _109 after sep before _110 after sep before _111 after sep before _112 after sep \
+  before _113 after sep before _114 after sep before _115 after sep before _116 after sep \
+  before _117 after sep before _118 after sep before _119 after sep before _120 after sep \
+  before _121 after sep before _122 after sep before _123 after sep before _124 after sep \
+  before _125 after sep before _126 after sep before _127 after sep before _128 after
+
 namespace jln::mp
 {
   /// \cond
@@ -2831,11 +2872,11 @@ namespace jln::mp
     template<int, bool = false>
     struct indexed_builder;
 
-    template<int, class PrecomputedIndexes>
+    template<int, class PrecomputedIndices>
     struct build_indexed_v_impl;
 
 #if JLN_MP_MEMOIZED_ALIAS
-    template<int, class PrecomputedIndexes>
+    template<int, class PrecomputedIndices>
     struct build_indexed_impl;
 #endif
 
@@ -3258,22 +3299,22 @@ namespace jln::mp::detail
   };
 
   // 16 < sizeof...(xs) <= 256
-  template<class PrecomputedIndexes>
-  struct build_indexed_v_impl<1, PrecomputedIndexes>
+  template<class PrecomputedIndices>
+  struct build_indexed_v_impl<1, PrecomputedIndices>
   {
     JLN_MP_BUILD_INDEXED_IMPL(
-      typename PrecomputedIndexes
+      typename PrecomputedIndices
       ::template f<index<(i >> 4)>>
       ::template f<index<i & 0xf>>
     );
   };
 
   // 256 < sizeof...(xs) <= 4096
-  template<class PrecomputedIndexes>
-  struct build_indexed_v_impl<2, PrecomputedIndexes>
+  template<class PrecomputedIndices>
+  struct build_indexed_v_impl<2, PrecomputedIndices>
   {
   private:
-    using _precomputed_indices = typename rlist_to_indexed<PrecomputedIndexes>
+    using _precomputed_indices = typename rlist_to_indexed<PrecomputedIndices>
       ::template f<indexed>;
 
   public:
@@ -3286,12 +3327,12 @@ namespace jln::mp::detail
   };
 
   // 4096 < sizeof...(xs) <= 65536
-  template<class PrecomputedIndexes>
-  struct build_indexed_v_impl<3, PrecomputedIndexes>
+  template<class PrecomputedIndices>
+  struct build_indexed_v_impl<3, PrecomputedIndices>
   {
   private:
     using _precomputed_indices = typename rlist_to_indexed<
-      typename rlist_to_indexed_rlist<PrecomputedIndexes>::type
+      typename rlist_to_indexed_rlist<PrecomputedIndices>::type
     >::template f<indexed>;
 
   public:
@@ -3316,20 +3357,20 @@ namespace jln::mp::detail
   };
 
   // 16 < sizeof...(xs) <= 256
-  template<class PrecomputedIndexes>
-  struct build_indexed_impl<1, PrecomputedIndexes>
+  template<class PrecomputedIndices>
+  struct build_indexed_impl<1, PrecomputedIndices>
   {
     template<class i>
-    using f = typename PrecomputedIndexes
+    using f = typename PrecomputedIndices
       ::template f<index<(i::value >> 4)>>
       ::template f<index<i::value & 0xf>>;
   };
 
   // 256 < sizeof...(xs) <= 4096
-  template<class PrecomputedIndexes>
-  class build_indexed_impl<2, PrecomputedIndexes>
+  template<class PrecomputedIndices>
+  class build_indexed_impl<2, PrecomputedIndices>
   {
-    using _precomputed_indices = typename rlist_to_indexed<PrecomputedIndexes>
+    using _precomputed_indices = typename rlist_to_indexed<PrecomputedIndices>
       ::template f<indexed>;
 
   public:
@@ -3341,11 +3382,11 @@ namespace jln::mp::detail
   };
 
   // 4096 < sizeof...(xs) <= 65536
-  template<class PrecomputedIndexes>
-  class build_indexed_impl<3, PrecomputedIndexes>
+  template<class PrecomputedIndices>
+  class build_indexed_impl<3, PrecomputedIndices>
   {
     using _precomputed_indices = typename rlist_to_indexed<
-      typename rlist_to_indexed_rlist<PrecomputedIndexes>::type
+      typename rlist_to_indexed_rlist<PrecomputedIndices>::type
     >::template f<indexed>;
 
   public:
@@ -11020,6 +11061,13 @@ namespace jln::mp::smp
   using any_of = none_of<Pred, not_<C>>;
 }
 
+// typename __type_pack_element<...>::xxx gives an error with gcc
+#if JLN_MP_ENABLE_TYPE_PACK_ELEMENT && !JLN_MP_FAST_TYPE_PACK_ELEMENT
+# define JLN_MP_ENABLE_IF_CALLABLE(b, ...) __type_pack_element<b, void, __VA_ARGS__>
+#else
+# define JLN_MP_ENABLE_IF_CALLABLE(b, ...) std::enable_if_t<b, __VA_ARGS__>
+#endif
+
 
 namespace jln::mp
 {
@@ -11103,7 +11151,7 @@ namespace jln::mp::detail
   struct arrange_impl
   {
     template<class F>
-    using f = typename std::enable_if_t<0 <= sizeof(F), JLN_MP_TRACE_F(C)>
+    using f = typename JLN_MP_ENABLE_IF_CALLABLE(0 <= sizeof(F), JLN_MP_TRACE_F(C))
       ::template f<typename F::template f<ints>...>;
   };
 
@@ -11796,70 +11844,70 @@ namespace jln::mp::detail
   struct _wrap_in_list_if<is<T>>
   {
     template<class x, class... xs>
-    using f = typename std::enable_if_t<
+    using f = typename JLN_MP_ENABLE_IF_CALLABLE(
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
       wrap_in_list_c<JLN_MP_IS_SAME(T, x)>
-    >::template f<x>;
+    )::template f<x>;
   };
 
   template<class C, class T>
   struct _wrap_in_list_if<is<T, C>>
   {
     template<class x, class... xs>
-    using f = typename std::enable_if_t<
+    using f = typename JLN_MP_ENABLE_IF_CALLABLE(
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
       wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL(
         JLN_MP_TRACE_F(C)::template f<number<JLN_MP_IS_SAME(T, x)>>::value
       )>
-    >::template f<x>;
+    )::template f<x>;
   };
 
   template<class C, class T>
   struct _wrap_in_list_if<is<T, not_<C>>>
   {
     template<class x, class... xs>
-    using f = typename std::enable_if_t<
+    using f = typename JLN_MP_ENABLE_IF_CALLABLE(
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
       wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL(
         JLN_MP_TRACE_F(C)::template f<number<
           !JLN_MP_IS_SAME(T, x)
         >>::value
       )>
-    >::template f<x>;
+    )::template f<x>;
   };
 
   template<class T>
   struct _wrap_in_list_if_not<is<T>>
   {
     template<class x, class... xs>
-    using f = typename std::enable_if_t<
+    using f = typename JLN_MP_ENABLE_IF_CALLABLE(
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
       wrap_in_list_c<!JLN_MP_IS_SAME(T, x)>
-    >::template f<x>;
+    )::template f<x>;
   };
 
   template<class C, class T>
   struct _wrap_in_list_if_not<is<T, C>>
   {
     template<class x, class... xs>
-    using f = typename std::enable_if_t<
+    using f = typename JLN_MP_ENABLE_IF_CALLABLE(
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
       wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(
         JLN_MP_TRACE_F(C)::template f<number<JLN_MP_IS_SAME(T, x)>>::value
       )>
-    >::template f<x>;
+    )::template f<x>;
   };
 
   template<class C, class T>
   struct _wrap_in_list_if_not<is<T, not_<C>>>
   {
     template<class x, class... xs>
-    using f = typename std::enable_if_t<
+    using f = typename JLN_MP_ENABLE_IF_CALLABLE(
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
       wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(
         JLN_MP_TRACE_F(C)::template f<number<!JLN_MP_IS_SAME(T, x)>>::value
       )>
-    >::template f<x>;
+    )::template f<x>;
   };
 
   template<>
@@ -12003,8 +12051,18 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+    template<class C, class>
+    struct compress_impl;
+
+    template<int>
+    struct indices_from_compress;
+
+    constexpr int indices_from_compress_select(std::size_t n);
+#else
     template<template<class...> class C, class... Selectors>
     struct compress_impl;
+#endif
 
     template<class L, class C>
     struct make_compress;
@@ -12026,7 +12084,16 @@ namespace jln::mp
   /// \treturn \sequence
   template<class C, bool... selectors>
   struct compress_c_with
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+    : detail::compress_impl<
+      C,
+      typename detail::indices_from_compress<
+        detail::indices_from_compress_select(sizeof...(selectors))
+      >::template f<selectors...>::type
+    >
+#else
     : detail::compress_impl<C::template f, wrap_in_list_c<selectors>...>
+#endif
   {
 #ifdef JLN_MP_DOXYGENATING
     template<class... xs>
@@ -12059,8 +12126,103 @@ namespace jln::mp
   }
 }
 
-
 /// \cond
+
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+namespace jln::mp::detail
+{
+  template<int_t, class, class>
+  struct concat_indices;
+
+  template<int_t i, int_t... a, int_t... b>
+  struct concat_indices<i, int_seq_c<a...>, int_seq_c<b...>>
+  {
+    using type = int_seq_c<a..., i+b...>;
+  };
+
+  template<int>
+  struct indices_from_compress;
+
+  template<>
+  struct indices_from_compress<4>
+  {
+    template<bool b0 = 0, bool b1 = 0, bool b2 = 0, bool b3 = 0> struct f;
+  };
+
+  template<> struct indices_from_compress<4>::f<0,0,0,0> { using type = int_seq_c<>; };
+  template<> struct indices_from_compress<4>::f<0,0,0,1> { using type = int_seq_c<3>; };
+  template<> struct indices_from_compress<4>::f<0,0,1,0> { using type = int_seq_c<2>; };
+  template<> struct indices_from_compress<4>::f<0,0,1,1> { using type = int_seq_c<2,3>; };
+  template<> struct indices_from_compress<4>::f<0,1,0,0> { using type = int_seq_c<1>; };
+  template<> struct indices_from_compress<4>::f<0,1,0,1> { using type = int_seq_c<1,3>; };
+  template<> struct indices_from_compress<4>::f<0,1,1,0> { using type = int_seq_c<1,2>; };
+  template<> struct indices_from_compress<4>::f<0,1,1,1> { using type = int_seq_c<1,2,3>; };
+  template<> struct indices_from_compress<4>::f<1,0,0,0> { using type = int_seq_c<0>; };
+  template<> struct indices_from_compress<4>::f<1,0,0,1> { using type = int_seq_c<0,3>; };
+  template<> struct indices_from_compress<4>::f<1,0,1,0> { using type = int_seq_c<0,2>; };
+  template<> struct indices_from_compress<4>::f<1,0,1,1> { using type = int_seq_c<0,2,3>; };
+  template<> struct indices_from_compress<4>::f<1,1,0,0> { using type = int_seq_c<0,1>; };
+  template<> struct indices_from_compress<4>::f<1,1,0,1> { using type = int_seq_c<0,1,3>; };
+  template<> struct indices_from_compress<4>::f<1,1,1,0> { using type = int_seq_c<0,1,2>; };
+  template<> struct indices_from_compress<4>::f<1,1,1,1> { using type = int_seq_c<0,1,2,3>; };
+
+#define JLN_MP_MK_INDICES_FROM_COMPRESS(n, mp1, mp2)                            \
+  template<>                                                                    \
+  struct indices_from_compress<n*2>                                             \
+  {                                                                             \
+    template<mp1(bool, JLN_MP_NIL, JLN_MP_COMMA), mp2(bool, = 0, JLN_MP_COMMA)> \
+    using f = concat_indices<                                                   \
+      n,                                                                        \
+      typename indices_from_compress<n>                                         \
+        ::f<mp1(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>::type,                   \
+      typename indices_from_compress<n>                                         \
+        ::f<mp2(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>::type                    \
+    >;                                                                          \
+  };
+
+  JLN_MP_MK_INDICES_FROM_COMPRESS(4, JLN_MP_XS_4, JLN_MP_XS_4_FROM_5)
+  JLN_MP_MK_INDICES_FROM_COMPRESS(8, JLN_MP_XS_8, JLN_MP_XS_8_FROM_9)
+  JLN_MP_MK_INDICES_FROM_COMPRESS(16, JLN_MP_XS_16, JLN_MP_XS_16_FROM_17)
+  JLN_MP_MK_INDICES_FROM_COMPRESS(32, JLN_MP_XS_32, JLN_MP_XS_32_FROM_33)
+  JLN_MP_MK_INDICES_FROM_COMPRESS(64, JLN_MP_XS_64, JLN_MP_XS_64_FROM_65)
+
+#undef JLN_MP_MK_INDICES_FROM_COMPRESS
+
+  constexpr int indices_from_compress_select(std::size_t n)
+  {
+    return n > 128 ? 256
+         : n > 64 ? 128
+         : n > 32 ? 64
+         : n > 16 ? 32
+         : n > 8 ? 16
+         : n > 4 ? 8
+         : 4;
+  }
+
+  template<int>
+  struct indices_from_compress
+  {
+    template<JLN_MP_XS_128(bool, JLN_MP_NIL, JLN_MP_COMMA), bool... b>
+    using f = concat_indices<
+      128,
+      typename indices_from_compress<128>
+        ::f<JLN_MP_XS_128(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>::type,
+      typename indices_from_compress<indices_from_compress_select(sizeof...(b))>
+        ::template f<b...>::type
+    >;
+  };
+
+  template<class C, class>
+  struct compress_impl;
+
+  template<class C, int_t... ints>
+  struct compress_impl<C, int_seq_c<ints...>>
+  {
+     template<class... xs>
+     using f = JLN_MP_DCALL_TRACE_XS(xs, C, __type_pack_element<ints, xs...>...);
+  };
+}
+#else
 namespace jln::mp
 {
   template<bool... selectors>
@@ -12080,7 +12242,11 @@ namespace jln::mp::detail
       ::type
       ;
   };
+}
+#endif
 
+namespace jln::mp::detail
+{
   template<template<class...> class Tpl, class... selectors, class C>
   struct make_compress<Tpl<selectors...>, C>
   {
@@ -13633,7 +13799,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<class MkIndexesInt2>
+    template<class MkIndicesInt2>
     struct array_int2_index_dispatcher;
 
     template<bool... bs>
@@ -13768,55 +13934,55 @@ namespace jln::mp::detail
   };
 
 #if __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L
-  #define JLN_MP_INDEXES_TPL_PARAM() auto indices_pairs
-  #define JLN_MP_INDEXES_TPL_VALUE() MkIndexesInt2::make()
+  #define JLN_MP_INDICES_TPL_PARAM() auto indices_pairs
+  #define JLN_MP_INDICES_TPL_VALUE() MkIndicesInt2::make()
   #if JLN_MP_MSVC
-    #define JLN_MP_INDEXES_GET_PAIR(i) indices_pair_v<indices_pairs, i>
+    #define JLN_MP_INDICES_GET_PAIR(i) indices_pair_v<indices_pairs, i>
     template<auto a, int i>
     inline constexpr auto indices_pair_v = a.elems[i];
   #else
-    #define JLN_MP_INDEXES_GET_PAIR(i) indices_pairs.elems[i]
+    #define JLN_MP_INDICES_GET_PAIR(i) indices_pairs.elems[i]
   #endif
 #else
   template<class T>
   inline constexpr auto memoize_make_fn = T::make();
-  #define JLN_MP_INDEXES_TPL_PARAM() class MkIndexesInt2
-  #define JLN_MP_INDEXES_TPL_VALUE() MkIndexesInt2
+  #define JLN_MP_INDICES_TPL_PARAM() class MkIndicesInt2
+  #define JLN_MP_INDICES_TPL_VALUE() MkIndicesInt2
   #if JLN_MP_MSVC
-    #define JLN_MP_INDEXES_GET_PAIR(i) indices_pair_v<MkIndexesInt2, i>
-    template<class MkIndexesInt2, int i>
-    inline constexpr auto indices_pair_v = memoize_make_fn<MkIndexesInt2>.elems[i];
+    #define JLN_MP_INDICES_GET_PAIR(i) indices_pair_v<MkIndicesInt2, i>
+    template<class MkIndicesInt2, int i>
+    inline constexpr auto indices_pair_v = memoize_make_fn<MkIndicesInt2>.elems[i];
   #else
-    #define JLN_MP_INDEXES_GET_PAIR(i) memoize_make_fn<MkIndexesInt2>.elems[i]
+    #define JLN_MP_INDICES_GET_PAIR(i) memoize_make_fn<MkIndicesInt2>.elems[i]
   #endif
 #endif
 
   template<class, int... i>
   struct array_int2_index_dispatcher_impl
   {
-    template<JLN_MP_INDEXES_TPL_PARAM()>
+    template<JLN_MP_INDICES_TPL_PARAM()>
     using f = dispatch_group_index<
-      sliding_outer<int, JLN_MP_INDEXES_GET_PAIR(i)[0]...>,
+      sliding_outer<int, JLN_MP_INDICES_GET_PAIR(i)[0]...>,
 #if JLN_MP_MEMOIZED_ALIAS || (JLN_MP_CUDA && JLN_MP_HOST_COMPILER_GCC)
-      make_sliding_inner<JLN_MP_INDEXES_GET_PAIR(i)[1]>...
+      make_sliding_inner<JLN_MP_INDICES_GET_PAIR(i)[1]>...
 #else
-      JLN_MP_MAKE_INTEGER_SEQUENCE_T(int, JLN_MP_INDEXES_GET_PAIR(i)[1], sliding_inner)...
+      JLN_MP_MAKE_INTEGER_SEQUENCE_T(int, JLN_MP_INDICES_GET_PAIR(i)[1], sliding_inner)...
 #endif
     >;
   };
 
-  template<class MkIndexesInt2>
+  template<class MkIndicesInt2>
   struct array_int2_index_dispatcher
     : JLN_MP_MAKE_INTEGER_SEQUENCE_T(int,
-        MkIndexesInt2::result_len,
+        MkIndicesInt2::result_len,
         array_int2_index_dispatcher_impl
       )
-      ::template f<JLN_MP_INDEXES_TPL_VALUE()>
+      ::template f<JLN_MP_INDICES_TPL_VALUE()>
   {};
 
-#undef JLN_MP_INDEXES_GET_PAIR
-#undef JLN_MP_INDEXES_TPL_PARAM
-#undef JLN_MP_INDEXES_TPL_VALUE
+#undef JLN_MP_INDICES_GET_PAIR
+#undef JLN_MP_INDICES_TPL_PARAM
+#undef JLN_MP_INDICES_TPL_VALUE
 }
 /// \endcond
 
