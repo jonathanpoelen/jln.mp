@@ -66,6 +66,7 @@
 #include "src/algorithm/remove_suffix.cpp"
 #include "src/algorithm/remove_unique.cpp"
 #include "src/algorithm/repeat.cpp"
+#include "src/algorithm/repeat_index.cpp"
 #include "src/algorithm/replace.cpp"
 #include "src/algorithm/reverse.cpp"
 #include "src/algorithm/reverse_fold.cpp"

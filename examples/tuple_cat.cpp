@@ -3,6 +3,7 @@
 #include "jln/mp/algorithm/make_int_sequence.hpp"
 #include "jln/mp/algorithm/transform.hpp"
 #include "jln/mp/algorithm/repeat.hpp"
+#include "jln/mp/algorithm/repeat_index.hpp"
 #include "jln/mp/functional/each.hpp"
 #include "jln/mp/functional/lift.hpp"
 #include "jln/mp/list/join.hpp"
@@ -48,14 +49,8 @@ constexpr R my_tuple_cat(Tuples&&... args)
 {
     // ex:    tuple_size=3     tuple_size=2     tuple_size=4
     // list<    0, 0, 0,           1, 1,         2, 2, 2, 2   >
-    using index_by_tuple = emp::make_int_sequence_c<
-        sizeof...(Tuples),
-        // repeat each index by number of element
-        mp::each<
-            mp::repeat<std::tuple_size<std::decay_t<Tuples>>>...,
-            mp::join<>
-        >
-    >;
+    using index_by_tuple = mp::repeat_index_v_c<mp::join<>>
+        ::f<std::tuple_size_v<std::decay_t<Tuples>>...>;
 
     // ex:    tuple_size=3     tuple_size=2     tuple_size=4
     // list<    0, 1, 2,           0, 1,         0, 1, 2, 3   >

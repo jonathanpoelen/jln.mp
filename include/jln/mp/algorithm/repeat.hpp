@@ -38,6 +38,9 @@ namespace jln::mp
 
     template<class L, int_t n, class C = mp::listify>
     using repeat_c = typename detail::_unpack<mp::repeat_c<n, C>, L>::type;
+
+    template<unsigned n, class x, class F = listify>
+    using repeat_value_c = typename detail::repeat_impl<1, n, F>::template f<x>::type;
   }
 }
 
@@ -62,6 +65,14 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
+#if JLN_MP_MEMOIZED_ALIAS
+# define JLN_MP_REPEAT_VALUE(F, n, ...) ::jln::mp::emp::repeat_value_c<n, __VA_ARGS__, F>
+# define JLN_MP_REPEAT_VALUE_T JLN_MP_REPEAT_VALUE
+#else
+# define JLN_MP_REPEAT_VALUE(F, n, ...) repeat_impl<1, n, F>::template f<__VA_ARGS__>::type
+# define JLN_MP_REPEAT_VALUE_T(F, n, ...) typename JLN_MP_REPEAT_VALUE(F, n, __VA_ARGS__)
+#endif
+
   template<class T>
   struct repeat_impl_0
   {

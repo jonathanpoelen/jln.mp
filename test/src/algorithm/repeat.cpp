@@ -17,6 +17,7 @@ TEST()
   test_mulary_pack<repeat, _1>();
 
   ut::same<seq_1_1_1, emp::repeat_c<seq_1, 3>>();
+  ut::same<seq_1_1_1, emp::repeat_value_c<3, _1>>();
 
   test_context<repeat_c<0>, smp::repeat_c<0>>()
     .test<list<>>()

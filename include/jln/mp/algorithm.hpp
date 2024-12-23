@@ -68,6 +68,7 @@
 #include <jln/mp/algorithm/remove_suffix.hpp>
 #include <jln/mp/algorithm/remove_unique.hpp>
 #include <jln/mp/algorithm/repeat.hpp>
+#include <jln/mp/algorithm/repeat_index.hpp>
 #include <jln/mp/algorithm/replace.hpp>
 #include <jln/mp/algorithm/reverse.hpp>
 #include <jln/mp/algorithm/reverse_fold.hpp>
