@@ -105,7 +105,7 @@ with open(f'test/autogen/main.cpp', 'w') as f:
   f.write(LICENSE)
   f.write('int main() {}')
 autogen_tests.append(f'test/autogen/main.cpp')
-
+autogen_tests.sort()
 
 with open('meson.build') as f:
   content = f.read()
