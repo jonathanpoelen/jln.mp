@@ -20,22 +20,38 @@ TEST()
   (void)random<identity>();
   (void)random<listify>();
 
+  static_assert(emp::random_v<> != emp::random_v<>);
   ut::not_same<emp::random<>, emp::random<>>();
 
   using rd1 = random<>;
-  #if JLN_MP_CLANG
-  ut::not_same<rd1::f<int>, rd1::f<int>>();
-  #else
   ut::same<rd1::f<int>, rd1::f<int>>();
-  #endif
-  #if JLN_MP_CLANG_CL
-  ut::same<rd1::f<void>, rd1::f<int>>();
-  #else
   ut::not_same<rd1::f<void>, rd1::f<int>>();
-  #endif
 
   ut::not_same<random<>::f<int>, random<>::f<int>>();
   ut::not_same<random<>::f<void>, random<>::f<int>>();
+
+  class tag1;
+  class tag2;
+
+  static_assert(emp::random_v<tag1> == emp::random_v<tag2>);
+  static_assert(emp::random_v<tag1> == emp::random_v<tag2>);
+  static_assert(emp::random_v<tag1> != emp::random_v<tag1>);
+  static_assert(emp::random_v<tag2> != emp::random_v<tag2>);
+  static_assert(emp::random_v<tag1> == emp::random_v<tag2>);
+  ut::same<emp::random<tag1>, emp::random<tag2>>();
+
+  using rdt1 = random_for<tag1>;
+  using rdt2 = random_for<tag2>;
+
+  ut::same<rdt1::f<int>, rdt2::f<int>>();
+  ut::same<rdt1::f<void>, rdt2::f<void>>();
+  ut::same<rdt1::f<char>, rdt1::f<char>>();
+  ut::same<rdt2::f<char>, rdt2::f<char>>();
+  ut::same<rdt1::f<int>, rdt1::f<int>>();
+  ut::same<rdt2::f<int>, rdt2::f<int>>();
+  ut::same<rdt1::f<float>, rdt2::f<float>>();
+  ut::not_same<rdt1::f<void>, rdt1::f<int>>();
+  ut::not_same<rdt2::f<void>, rdt2::f<int>>();
 }
 
 TEST_SUITE_END()

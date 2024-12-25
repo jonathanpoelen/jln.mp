@@ -10,21 +10,25 @@
 
 namespace jln::mp::smp
 {
-  template<class C = identity>
-  using random = contract<mp::random<assume_positive_number<C>>>;
+  template<class Tag = default_make_id_tag, class C = identity, auto v = []{}>
+  using random_for = contract<mp::random_for<Tag, assume_positive_number<C>, v>>;
+
+  template<class C = identity, auto v = []{}>
+  using random = contract<
+    mp::random_for<default_make_id_tag, assume_positive_number<C>, v>>;
 }
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class C, auto v>
-  struct _sfinae<sfinae, random<C, v>>
+  template<template<class> class sfinae, class Tag, class C, auto v>
+  struct _sfinae<sfinae, random_for<Tag, C, v>>
   {
-    using type = contract<mp::random<assume_positive_number<C>, v>>;
+    using type = contract<mp::random_for<Tag, assume_positive_number<C>, v>>;
   };
 
-  template<class C, auto v>
-  struct expected_argument<random<C, v>>
+  template<class Tag, class C, auto v>
+  struct expected_argument<random_for<Tag, C, v>>
   : number<argument_category::unary_or_more>
   {};
 }

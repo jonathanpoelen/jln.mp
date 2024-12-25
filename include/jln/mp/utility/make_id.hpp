@@ -7,9 +7,7 @@
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/detail/compiler.hpp>
 
-#ifdef __cpp_generic_lambdas
-#if __cpp_generic_lambdas >= 201707L
-
+#if defined(__cpp_generic_lambdas) && __cpp_generic_lambdas >= 201707L
 # ifdef __cpp_consteval
 #   if __cpp_consteval >= 201811L
 #     define JLN_MP_CONSTEVAL_OR_CONSTEXPR consteval
@@ -21,160 +19,174 @@
 
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    namespace mkid
+    {
+      template<class Tag, int X>
+      struct state;
+
+      #if JLN_MP_MEMOIZED_ALIAS
+      # define JLN_MP_MKID_STATE(...) \
+        static_cast<detail::mkid::state<__VA_ARGS__>*>(nullptr)
+      #else
+      # define JLN_MP_MKID_STATE(...) detail::mkid::state_ptr_v<__VA_ARGS__>
+      template<class Tag, int id>
+      inline constexpr state<Tag, id>* state_ptr_v = nullptr;
+      #endif
+
+      template<class T, class Tag>
+      struct next_id;
+    }
+
+    template<class Tag> class next_id_tag;
+
+    template<class T> struct type_of_id;
+    template<class T> struct type_of_id<list<T>*> { using type = T; };
+    template<class T> struct type_of_id<T*> { using type = T; };
+  }
+  /// \endcond
+
   /// \ingroup utility
 
   class default_make_id_tag {};
 
-  /// \cond
-  namespace detail::mkid
+  namespace emp
   {
-    JLN_MP_DIAGNOSTIC_PUSH()
-    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
-    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wunused-function")
-    template<class T, int X>
-    struct flag
-    {
-      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<T, X>);
-    };
-    JLN_MP_DIAGNOSTIC_POP()
+    /// Generates a unique id per call for a specified tag.
+    template<class Tag = default_make_id_tag, auto v = []{}>
+    inline constexpr int next_id_v =
+      detail::mkid::next_id<decltype(v)*, detail::next_id_tag<Tag>>::value;
 
-    template<class T, int X>
-    struct injecter
-    {
-      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<T, X>) { return X; }
-    };
+    /// Generates a unique id per type for a specified tag.
+    template<class T, class Tag = default_make_id_tag>
+    inline constexpr int id_of_v = detail::mkid::next_id<list<T>*, Tag>::value;
 
-    template<class T = default_make_id_tag, int X = 0, auto v = []{}>
-    JLN_MP_CONSTEVAL_OR_CONSTEXPR auto next_id()
-    {
-      if constexpr (requires { f(flag<T, X+10>{}); }) {
-        if constexpr (requires { f(flag<T, X+100>{}); }) {
-          if constexpr (requires { f(flag<T, X+1000>{}); }) {
-            if constexpr (requires { f(flag<T, X+10000>{}); }) {
-              return next_id<T, X+10001, v>();
-            }
-            else if constexpr (requires { f(flag<T, X+3000>{}); }) {
-              return next_id<T, X+3001, v>();
-            }
-            else {
-              return next_id<T, X+1001, v>();
-            }
-          }
-          else if constexpr (requires { f(flag<T, X+300>{}); }) {
-            return next_id<T, X+301, v>();
-          }
-          else {
-            return next_id<T, X+101, v>();
-          }
-        }
-        else if constexpr (requires { f(flag<T, X+30>{}); }) {
-          return next_id<T, X+31, v>();
-        }
-        else {
-          return next_id<T, X+11, v>();
-        }
-      }
-      else if constexpr (requires { f(flag<T, X>{}); }) {
-        if constexpr (requires { f(flag<T, X+2>{}); }) {
-          if constexpr (requires { f(flag<T, X+4>{}); }) {
-            return next_id<T, X+5, v>();
-          }
-          else if constexpr (requires { f(flag<T, X+3>{}); }) {
-            return next_id<T, X+4, v>();
-          }
-          else {
-            return next_id<T, X+3, v>();
-          }
-        }
-        else if constexpr (requires { f(flag<T, X+1>{}); }) {
-            return next_id<T, X+2, v>();
-        }
-        else {
-            return next_id<T, X+1, v>();
-        }
-      }
-      else {
-        void(injecter<T, X>{});
-        return f(flag<T, X>{});
-      }
-    }
+    /// Generates a unique id per type for a specified tag.
+    template<class T, class Tag = default_make_id_tag>
+    using id_of = number<id_of_v<T, Tag>>;
+
+    /// Get the type associated to an id for a specified tag.
+    template<int id, class Tag = default_make_id_tag>
+    using type_of = typename detail::type_of_id<
+      decltype(get_bound_value(JLN_MP_MKID_STATE(Tag, id)))
+    >::type;
   }
-  /// \endcond
-
-  /// Generates a unique id per call for a specified tag.
-  /// Signature: `int next_id<class Tag = default_make_id_tag, start_id = 0, auto = []{}>()`
-  using detail::mkid::next_id;
-
-  /// Generates a unique id per type.
-  /// \treturn int
-  template<class T>
-  struct id_of
-  {
-    static constexpr int value = next_id<default_make_id_tag, 0, []{}>();
-  };
-
-  template<class T>
-  static constexpr int id_of_v = id_of<T>::value;
-
-  template<class T>
-  using id_of_t = number<id_of<T>::value>;
-
 
   /// Generates a unique id per type for a specified tag.
-  /// \treturn int
-  template<class Tag, class T>
-  struct tagged_id_of
-  {
-    static constexpr int value = next_id<Tag, 0, []{}>();
-  };
-
-  template<class Tag, class T>
-  static constexpr int tagged_id_of_v = tagged_id_of<Tag, T>::value;
-
-  template<class Tag, class T>
-  using tagged_id_of_t = number<tagged_id_of<Tag, T>::value>;
-
-
-  /// Generates a unique id per type.
   /// \treturn \number
-  template<class Tag, class C = identity>
+  template<class Tag = default_make_id_tag, class C = identity>
   struct make_id_for
   {
     template<class T>
-    using f = JLN_MP_CALL_TRACE(C, tagged_id_of_t<Tag, T>);
+    using f = JLN_MP_CALL_TRACE(C, number<emp::id_of_v<T, Tag>>);
   };
 
+  /// Generates a unique id per type.
+  /// \treturn \number
   template<class C = identity>
   using make_id = make_id_for<default_make_id_tag, C>;
 
   /// \cond
-  template<class T>
-  struct tagged_id_of<default_make_id_tag, T>
-  : id_of<T>
-  {};
-
-  template<>
-  struct make_id_for<default_make_id_tag, identity>
-  {
-    template<class T>
-    using f = id_of_t<T>;
-  };
-
   template<class Tag>
   struct make_id_for<Tag, identity>
   {
     template<class T>
-    using f = tagged_id_of_t<Tag, T>;
-  };
-
-  template<class C>
-  struct make_id_for<default_make_id_tag, C>
-  {
-    template<class T>
-    using f = JLN_MP_CALL_TRACE(C, id_of_t<T>);
+    using f = number<emp::id_of_v<T, Tag>>;
   };
   /// \endcond
 }
 
-#endif
+/// \cond
+namespace jln::mp::detail::mkid
+{
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
+  JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wunused-function")
+  template<class Tag, int X>
+  struct state
+  {
+    friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto get_bound_value(state*);
+  };
+  JLN_MP_DIAGNOSTIC_POP()
+
+  template<int id, class T, class Tag>
+  struct injecter
+  {
+    friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto get_bound_value(state<Tag, id>*)
+    {
+      return T();
+    }
+  };
+
+  template<class T, class Tag, int id = 0>
+  JLN_MP_CONSTEVAL_OR_CONSTEXPR int get_next_id()
+  {
+    if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+10)); }) {
+      if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+100)); }) {
+        if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+1000)); }) {
+          if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+10000)); }) {
+            return get_next_id<T, Tag, id+10001>();
+          }
+          else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+3000)); }) {
+            return get_next_id<T, Tag, id+3001>();
+          }
+          else {
+            return get_next_id<T, Tag, id+1001>();
+          }
+        }
+        else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+300)); }) {
+          return get_next_id<T, Tag, id+301>();
+        }
+        else {
+          return get_next_id<T, Tag, id+101>();
+        }
+      }
+      else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+30)); }) {
+        return get_next_id<T, Tag, id+31>();
+      }
+      else {
+        return get_next_id<T, Tag, id+11>();
+      }
+    }
+    else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id)); }) {
+      if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+2)); }) {
+        if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+4)); }) {
+          return get_next_id<T, Tag, id+5>();
+        }
+        else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+3)); }) {
+          return get_next_id<T, Tag, id+4>();
+        }
+        else {
+          return get_next_id<T, Tag, id+3>();
+        }
+      }
+      else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+1)); }) {
+          return get_next_id<T, Tag, id+2>();
+      }
+      else {
+          return get_next_id<T, Tag, id+1>();
+      }
+    }
+    else {
+      return id;
+    }
+  }
+
+  template<class T, class Tag>
+  struct next_id
+  {
+    static constexpr int value = get_next_id<T, Tag>();
+
+    friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto get_bound_value(state<Tag, value>*)
+    {
+      return T();
+    }
+  };
+}
+
+#undef JLN_MP_MKID_STATE
+/// \endcond
+
 #endif

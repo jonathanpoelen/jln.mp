@@ -23,39 +23,53 @@ TEST()
 
   ut::same<detail::sfinae<make_id<>>, smp::make_id<>>();
 
-  number<id_of<int>::value>() = _0();
-  number<id_of_v<int>>() = _0();
-  id_of_t<int>() = _0();
+  using emp::id_of_v;
+  using emp::id_of;
 
-  number<id_of_v<long>>() = _1();
-  number<id_of<long>::value>() = _1();
-  id_of_t<long>() = _1();
 
-  id_of_t<char>() = _2();
-  number<id_of_v<char>>() = _2();
-  number<id_of<char>::value>() = _2();
+  static_assert(id_of_v<int> == 0);
+  id_of<int>() = _0();
 
-  id_of_t<int>() = _0();
-  number<id_of<int>::value>() = _0();
-  number<id_of_v<int>>() = _0();
+  static_assert(id_of_v<long> == 1);
+  id_of<long>() = _1();
 
+  id_of<char>() = _2();
+  static_assert(id_of_v<char> == 2);
+
+  id_of<int>() = _0();
+  static_assert(id_of_v<int> == 0);
 
   class tag1;
 
-  make_id_for<tag1>::f<int>() = _0();
-  make_id_for<tag1>::f<int>() = _0();
-  smp::make_id_for<tag1>::f<int>() = _0();
-  smp::make_id_for<tag1>::f<int>() = _0();
+  static_assert(id_of_v<int, tag1> == 0);
+  id_of<int, tag1>() = _0();
 
-  make_id_for<tag1>::f<long>() = _1();
-  make_id_for<tag1>::f<long>() = _1();
-  smp::make_id_for<tag1>::f<long>() = _1();
-  smp::make_id_for<tag1>::f<long>() = _1();
+  static_assert(id_of_v<long, tag1> == 1);
+  id_of<long, tag1>() = _1();
 
-  make_id_for<tag1>::f<void>() = _2();
-  make_id_for<tag1>::f<void>() = _2();
-  smp::make_id_for<tag1>::f<void>() = _2();
-  smp::make_id_for<tag1>::f<void>() = _2();
+  id_of<char, tag1>() = _2();
+  static_assert(id_of_v<char, tag1> == 2);
+
+  id_of<int, tag1>() = _0();
+  static_assert(id_of_v<int, tag1> == 0);
+
+
+  class tag2;
+
+  make_id_for<tag2>::f<int>() = _0();
+  make_id_for<tag2>::f<int>() = _0();
+  smp::make_id_for<tag2>::f<int>() = _0();
+  smp::make_id_for<tag2>::f<int>() = _0();
+
+  make_id_for<tag2>::f<long>() = _1();
+  make_id_for<tag2>::f<long>() = _1();
+  smp::make_id_for<tag2>::f<long>() = _1();
+  smp::make_id_for<tag2>::f<long>() = _1();
+
+  make_id_for<tag2>::f<void>() = _2();
+  make_id_for<tag2>::f<void>() = _2();
+  smp::make_id_for<tag2>::f<void>() = _2();
+  smp::make_id_for<tag2>::f<void>() = _2();
 
 
   make_id<>::f<long>() = _1();
@@ -74,7 +88,11 @@ TEST()
   smp::make_id<>::f<void>() = _3();
 
 
-  ut::not_invocable<make_id_for<tag1>, int, int>();
+  ut::not_invocable<smp::make_id_for<tag2>>();
+  ut::not_invocable<smp::make_id_for<tag2>, int, int>();
+  ut::not_invocable<smp::make_id_for<tag2, bad_function>, int>();
+
+  static_assert(emp::next_id_v<> != emp::next_id_v<>);
 }
 
 TEST_SUITE_END()
