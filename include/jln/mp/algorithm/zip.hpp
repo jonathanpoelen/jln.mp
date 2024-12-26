@@ -106,7 +106,7 @@ namespace jln::mp::detail
     template<int n, template<class...> class C, template<class...> class F, class... seqs>
     using f = typename detail::_zip_dispatch<
       sizeof...(seqs) <= 8 ? 1 : 2
-    >::template f<C, F, seqs...>;
+    >::template f<C, join<lift<F>>::template f, seqs...>;
   };
 
 #define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep)                  \
