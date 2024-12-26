@@ -221,7 +221,7 @@ namespace jln::mp
 
   /// single list of \c int_t.
   template<int_t... i>
-  struct int_seq_c;
+  struct int_seq_c {};
 } // namespace jln::mp
 
 
