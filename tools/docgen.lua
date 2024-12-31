@@ -459,7 +459,8 @@ local pattern = P{
     * ( (P'struct' + 'class') * ws * Cc(kwindexes.struct) * Cc(nil) * cid * Until(S':;{<')
         * (C(balancedtag) * ws0 + Cc(nil))
         * (':' * ws0 * id * ws0
-          * (balancedtag * ws0 * (('::template ' * id * balancedtag + id) * ws0)^0)^-1
+          * ( P'...' * ws0
+          + balancedtag * ws0 * (('::template ' * id * balancedtag + id + '...') * ws0)^0)^-1
           )^-1
         * ( P';'
           + P'{' * ws0
