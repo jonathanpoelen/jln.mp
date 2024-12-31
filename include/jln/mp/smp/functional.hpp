@@ -8,6 +8,7 @@
 #include <jln/mp/smp/functional/capture_back.hpp>
 #include <jln/mp/smp/functional/capture_front.hpp>
 #include <jln/mp/smp/functional/cascade.hpp>
+#include <jln/mp/smp/functional/compare_with.hpp>
 #include <jln/mp/smp/functional/compose.hpp>
 #include <jln/mp/smp/functional/each.hpp>
 #include <jln/mp/smp/functional/eval.hpp>

@@ -3,7 +3,7 @@
 #include "test.hpp"
 
 #include "jln/mp/smp/utility/sizeof.hpp"
-#include "jln/mp/smp/algorithm/compare_with.hpp"
+#include "jln/mp/smp/functional/compare_with.hpp"
 
 TEST_SUITE_BEGIN()
 

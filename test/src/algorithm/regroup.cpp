@@ -6,7 +6,7 @@
 #include "jln/mp/smp/algorithm/regroup.hpp"
 #include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/utility/stl_traits.hpp"
-#include "jln/mp/smp/algorithm/compare_with.hpp"
+#include "jln/mp/smp/functional/compare_with.hpp"
 
 TEST_SUITE_BEGIN()
 

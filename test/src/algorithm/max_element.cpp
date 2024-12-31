@@ -3,7 +3,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/algorithm/compare_with.hpp"
+#include "jln/mp/smp/functional/compare_with.hpp"
 #include "jln/mp/smp/algorithm/max_element.hpp"
 #include "jln/mp/number/number.hpp"
 
