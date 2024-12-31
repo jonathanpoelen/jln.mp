@@ -1287,7 +1287,8 @@ push('</body></html>')
 
 html = table.concat(htmlfagments)
 print(html)
-if html:find('\\', 0, true) then
-  log('Error: the result contains an unescaped doxygen element')
+c = html:find('\\', 0, true)
+if c then
+  log('Error: the result contains an unescaped doxygen element: ' .. html:sub(c, c+1))
   os.exit(1)
 end
