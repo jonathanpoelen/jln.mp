@@ -4,12 +4,9 @@
 
 #include <jln/mp/number/not.hpp>
 #include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/utility/is_base_of.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/identity.hpp>
-
-#if !(JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC)
-# include <type_traits>
-#endif
 
 namespace jln::mp
 {
@@ -24,11 +21,7 @@ namespace jln::mp
     struct inherit : basic_item<xs>...
     {};
   }
-#if JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC
-# define JLN_MP_SET_CONTAINS_BASE(x, ...) __is_base_of(detail::basic_item<x>, __VA_ARGS__)
-#else
-# define JLN_MP_SET_CONTAINS_BASE(x, ...) std::is_base_of<detail::basic_item<x>, __VA_ARGS__>::value
-#endif
+#define JLN_MP_SET_CONTAINS_BASE(x, ...) JLN_MP_IS_BASE_OF(detail::basic_item<x>, __VA_ARGS__)
 #define JLN_MP_SET_CONTAINS(x, ...) JLN_MP_SET_CONTAINS_BASE(x, detail::inherit<__VA_ARGS__>)
   /// \endcond
 
