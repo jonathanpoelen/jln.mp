@@ -11,13 +11,9 @@
 
 #if !JLN_MP_ENABLE_TPL_AUTO || JLN_MP_VAL_AS_ALIAS
 
-# if defined(__has_builtin) && defined(JLN_MP_VAL_USE_STD_REMOVE_CONST)
-#   if __has_builtin(__remove_const)
-#     define JLN_MP_REMOVE_CONST_T __remove_const
-#   endif
-# endif
-
-# ifndef JLN_MP_REMOVE_CONST_T
+# if JLN_MP_HAS_BUILTIN(__remove_const)
+#   define JLN_MP_REMOVE_CONST_T __remove_const
+# else
 #   define JLN_MP_REMOVE_CONST_T(x) std::remove_const_t<x>
 #   include <type_traits>
 # endif
