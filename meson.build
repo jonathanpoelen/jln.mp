@@ -714,6 +714,7 @@ executable('check_inc', [
   'test/autogen/utility@alignof.cpp',
   'test/autogen/utility@always.cpp',
   'test/autogen/utility@conditional.cpp',
+  'test/autogen/utility@flat_inheritance.cpp',
   'test/autogen/utility@has_type.cpp',
   'test/autogen/utility@has_value_type.cpp',
   'test/autogen/utility@is.cpp',
