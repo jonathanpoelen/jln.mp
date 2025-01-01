@@ -25,7 +25,7 @@ namespace jln::mp
     using size = typename detail::_unpack<mp::size<C>, L>::type;
 
     template<class L, class C = mp::identity>
-    inline constexpr bool size_v = detail::_unpack<mp::size<C>, L>::type::value;
+    inline constexpr std::size_t size_v = detail::_unpack<mp::size<C>, L>::type::value;
   }
 
   /// \cond

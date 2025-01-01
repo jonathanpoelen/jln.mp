@@ -15,6 +15,7 @@ TEST()
   test_unary_pack<size>();
 
   ut::same<_3, emp::size<list<int, int, int>>>();
+  static_assert(3 == emp::size_v<list<int, int, int>>);
 
   test_context<size<>, smp::size<>>()
     .test<_0>()
