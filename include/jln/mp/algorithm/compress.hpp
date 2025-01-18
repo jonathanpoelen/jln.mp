@@ -213,5 +213,31 @@ namespace jln::mp::detail
   {
     using type = compress_c_with<C, selectors::value...>;
   };
+
+  template<template<class T, T...> class Tpl, class T, T... selectors, class C>
+  struct make_compress<Tpl<T, selectors...>, C>
+  {
+    using type = compress_c_with<C, selectors...>;
+  };
+
+  template<template<int_t...> class Tpl, int_t... selectors, class C>
+  struct make_compress<Tpl<selectors...>, C>
+  {
+    using type = compress_c_with<C, selectors...>;
+  };
+
+  template<template<bool...> class Tpl, bool... selectors, class C>
+  struct make_compress<Tpl<selectors...>, C>
+  {
+    using type = compress_c_with<C, selectors...>;
+  };
+
+#if JLN_MP_ENABLE_TPL_AUTO
+  template<template<auto...> class Tpl, auto... selectors, class C>
+  struct make_compress<Tpl<selectors...>, C>
+  {
+    using type = compress_c_with<C, selectors...>;
+  };
+#endif
 }
 /// \endcond
