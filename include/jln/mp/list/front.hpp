@@ -7,6 +7,19 @@
 
 namespace jln::mp
 {
+  /// \cond
+  #if ! JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+  namespace detail
+  {
+    template<class x, class...>
+    struct front_impl
+    {
+      using type = x;
+    };
+  }
+  #endif
+  /// \endcond
+
   /// \ingroup list
 
   /// Retrieves the first element of a sequence.
@@ -14,8 +27,13 @@ namespace jln::mp
   template<class C = identity>
   struct front
   {
-    template<class x, class... xs>
-    using f = JLN_MP_CALL_TRACE(C, x);
+#if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, __type_pack_element<0, xs...>);
+#else
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, typename detail::front_impl<xs...>::type);
+#endif
   };
 
   namespace emp
@@ -32,8 +50,16 @@ namespace jln::mp
 namespace jln::mp
 {
   template<>
-  struct front<identity> : detail::index0
-  {};
+  struct front<identity>
+  {
+#if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+    template<class... xs>
+    using f = __type_pack_element<0, xs...>;
+#else
+    template<class... xs>
+    using f = typename detail::front_impl<xs...>::type;
+#endif
+  };
 }
 
 // facilitates sfinae version for is_map_impl
