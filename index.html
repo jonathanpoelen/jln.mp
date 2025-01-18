@@ -77,6 +77,7 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <pre><code class="blockcode highlight" data-lang="cpp"><span class="cp">#include "jln/mp/algorithm/make_int_sequence.hpp"</span>
 <span class="cp">#include "jln/mp/algorithm/transform.hpp"</span>
 <span class="cp">#include "jln/mp/algorithm/repeat.hpp"</span>
+<span class="cp">#include "jln/mp/algorithm/repeat_index.hpp"</span>
 <span class="cp">#include "jln/mp/functional/each.hpp"</span>
 <span class="cp">#include "jln/mp/functional/lift.hpp"</span>
 <span class="cp">#include "jln/mp/list/join.hpp"</span>
@@ -122,14 +123,8 @@ jln<span class="p">::</span>mp<span class="p">::</span>call<span class="o">&lt;<
 <span class="p">{</span>
     <span class="c1">// ex:    tuple_size=3     tuple_size=2     tuple_size=4</span>
     <span class="c1">// list&lt;    0, 0, 0,           1, 1,         2, 2, 2, 2   ></span>
-    <span class="k">using</span> index_by_tuple <span class="o">=</span> <a href="#emp::make_int_sequence_c">emp<span class="p">::</span>make_int_sequence_c</a><span class="o">&lt;</span>
-        <span class="k">sizeof</span><span class="p">...(</span>Tuples<span class="p">),</span>
-        <span class="c1">// repeat each index by number of element</span>
-        <a href="#mp::each">mp<span class="p">::</span>each</a><span class="o">&lt;</span>
-            <a href="#mp::repeat">mp<span class="p">::</span>repeat</a><span class="o">&lt;</span>std<span class="p">::</span>tuple_size<span class="o">&lt;</span>std<span class="p">::</span>decay_t<span class="o">&lt;</span>Tuples<span class="o">></span><span class="o">></span><span class="o">></span><span class="p">...,</span>
-            <a href="#mp::join">mp<span class="p">::</span>join</a><span class="o">&lt;</span><span class="o">></span>
-        <span class="o">></span>
-    <span class="o">></span><span class="p">;</span>
+    <span class="k">using</span> index_by_tuple <span class="o">=</span> <a href="#mp::repeat_index_v_c">mp<span class="p">::</span>repeat_index_v_c</a><span class="o">&lt;</span><a href="#mp::join">mp<span class="p">::</span>join</a><span class="o">&lt;</span><span class="o">></span><span class="o">></span>
+        <span class="p">::</span>f<span class="o">&lt;</span>std<span class="p">::</span>tuple_size_v<span class="o">&lt;</span>std<span class="p">::</span>decay_t<span class="o">&lt;</span>Tuples<span class="o">></span><span class="o">></span><span class="p">...</span><span class="o">></span><span class="p">;</span>
 
     <span class="c1">// ex:    tuple_size=3     tuple_size=2     tuple_size=4</span>
     <span class="c1">// list&lt;    0, 1, 2,           0, 1,         0, 1, 2, 3   ></span>
@@ -211,7 +206,6 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#algorithm/any_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">any_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/arrange.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">arrange</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/circulant_matrix.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">circulant_matrix</span><span class="ext">.hpp</span></a></li>
-<li><a href="#algorithm/compare_with.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">compare_with</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/contains.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">contains</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/count.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">count</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/counter.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">counter</span><span class="ext">.hpp</span></a></li>
@@ -230,6 +224,7 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#algorithm/pairwise_fold.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">pairwise_fold</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/prefix.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">prefix</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/repeat.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">repeat</span><span class="ext">.hpp</span></a></li>
+<li><a href="#algorithm/repeat_index.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">repeat_index</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/replace.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">replace</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/reverse.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">reverse</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/rotate.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">rotate</span><span class="ext">.hpp</span></a></li>
@@ -267,6 +262,7 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#functional/capture_back.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">capture_back</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/capture_front.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">capture_front</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/cascade.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">cascade</span><span class="ext">.hpp</span></a></li>
+<li><a href="#functional/compare_with.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">compare_with</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/compose.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">compose</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/each.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">each</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/eval.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">eval</span><span class="ext">.hpp</span></a></li>
@@ -426,7 +422,9 @@ R foo<span class="p">();</span></code></pre></section>
 </ul></li><li id="g1__utility" class="index_group"><a class="index_cat" href="#g1__utility">Group: utility</a><ul class="subindex_list file_sublist">
 <li><a href="#utility/always.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">always</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/conditional.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">conditional</span><span class="ext">.hpp</span></a></li>
+<li><a href="#utility/flat_inheritance.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">flat_inheritance</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/is.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">is</span><span class="ext">.hpp</span></a></li>
+<li><a href="#utility/is_base_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">is_base_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/is_not.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">is_not</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/iterate.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">iterate</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/make_id.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">make_id</span><span class="ext">.hpp</span></a></li>
@@ -456,7 +454,6 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#algorithm/circulant_matrix.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">circulant_matrix</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/collapse.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">collapse</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/combine.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">combine</span><span class="ext">.hpp</span></a></li>
-<li><a href="#algorithm/compare_with.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">compare_with</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/compress.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">compress</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/conjunction.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">conjunction</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/contains.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">contains</span><span class="ext">.hpp</span></a></li>
@@ -509,6 +506,7 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#algorithm/remove_suffix.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">remove_suffix</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/remove_unique.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">remove_unique</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/repeat.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">repeat</span><span class="ext">.hpp</span></a></li>
+<li><a href="#algorithm/repeat_index.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">repeat_index</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/replace.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">replace</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/reverse.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">reverse</span><span class="ext">.hpp</span></a></li>
 <li><a href="#algorithm/reverse_fold.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">algorithm/</span><span class="basename">reverse_fold</span><span class="ext">.hpp</span></a></li>
@@ -559,6 +557,7 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#functional/capture_back.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">capture_back</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/capture_front.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">capture_front</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/cascade.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">cascade</span><span class="ext">.hpp</span></a></li>
+<li><a href="#functional/compare_with.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">compare_with</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/compose.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">compose</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/each.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">each</span><span class="ext">.hpp</span></a></li>
 <li><a href="#functional/eval.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">functional/</span><span class="basename">eval</span><span class="ext">.hpp</span></a></li>
@@ -651,9 +650,11 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#utility/alignof.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">alignof</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/always.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">always</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/conditional.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">conditional</span><span class="ext">.hpp</span></a></li>
+<li><a href="#utility/flat_inheritance.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">flat_inheritance</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/has_type.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">has_type</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/has_value_type.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">has_value_type</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/is.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">is</span><span class="ext">.hpp</span></a></li>
+<li><a href="#utility/is_base_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">is_base_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/is_not.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">is_not</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/is_specialization_of.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">is_specialization_of</span><span class="ext">.hpp</span></a></li>
 <li><a href="#utility/iterate.hpp" class="index_link"><span class="depth1">jln/mp/</span><span class="depth2">utility/</span><span class="basename">iterate</span><span class="ext">.hpp</span></a></li>
@@ -688,7 +689,6 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#mp::arrange_c_with" class="index_link">arrange_c_with</a></li>
 <li><a href="#mp::circulant_matrix" class="index_link">circulant_matrix</a></li>
 <li><a href="#mp::circulant_matrix_with" class="index_link">circulant_matrix_with</a></li>
-<li><a href="#mp::compare_with" class="index_link">compare_with</a></li>
 <li><a href="#mp::contains" class="index_link">contains</a></li>
 <li><a href="#mp::count" class="index_link">count</a></li>
 <li><a href="#mp::count_if" class="index_link">count_if</a></li>
@@ -720,6 +720,10 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#mp::prefix" class="index_link">prefix</a></li>
 <li><a href="#mp::repeat" class="index_link">repeat</a></li>
 <li><a href="#mp::repeat_c" class="index_link">repeat_c</a></li>
+<li><a href="#mp::repeat_index" class="index_link">repeat_index</a></li>
+<li><a href="#mp::repeat_index_v_c" class="index_link">repeat_index_v_c</a></li>
+<li><a href="#mp::repeat_index_with" class="index_link">repeat_index_with</a></li>
+<li><a href="#mp::repeat_index_with_v_c" class="index_link">repeat_index_with_v_c</a></li>
 <li><a href="#mp::replace" class="index_link">replace</a></li>
 <li><a href="#mp::replace_if" class="index_link">replace_if</a></li>
 <li><a href="#mp::reverse" class="index_link">reverse</a></li>
@@ -803,6 +807,7 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#mp::capture_front_c" class="index_link">capture_front_c</a></li>
 <li><a href="#mp::capture_front_v" class="index_link">capture_front_v</a></li>
 <li><a href="#mp::cascade" class="index_link">cascade</a></li>
+<li><a href="#mp::compare_with" class="index_link">compare_with</a></li>
 <li><a href="#mp::compose" class="index_link">compose</a></li>
 <li><a href="#mp::compose_f" class="index_link">compose_f</a></li>
 <li><a href="#mp::each" class="index_link">each</a></li>
@@ -1310,27 +1315,26 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#mp::type_" class="index_link">type_</a></li>
 <li><a href="#mp::value_type" class="index_link">value_type</a></li>
 </ul></li><li id="g3__utility" class="index_group"><a class="index_cat" href="#g3__utility">Group: utility</a><ul class="subindex_list func_sublist">
+<li><a href="#JLN_MP_IS_BASE_OF" class="index_link">JLN_MP_IS_BASE_OF</a></li>
+<li><a href="#JLN_MP_RANDOM_SEED_TIME" class="index_link">JLN_MP_RANDOM_SEED_TIME</a></li>
+<li><a href="#JLN_MP_RANDOM_SEED_W" class="index_link">JLN_MP_RANDOM_SEED_W</a></li>
+<li><a href="#JLN_MP_RANDOM_SEED_Z" class="index_link">JLN_MP_RANDOM_SEED_Z</a></li>
 <li><a href="#mp::always" class="index_link">always</a></li>
 <li><a href="#mp::conditional" class="index_link">conditional</a></li>
 <li><a href="#mp::conditional_c" class="index_link">conditional_c</a></li>
 <li><a href="#mp::default_make_id_tag" class="index_link">default_make_id_tag</a></li>
-<li><a href="#mp::id_of" class="index_link">id_of</a></li>
-<li><a href="#mp::id_of_t" class="index_link">id_of_t</a></li>
-<li><a href="#mp::id_of_v" class="index_link">id_of_v</a></li>
+<li><a href="#mp::flat_inheritance" class="index_link">flat_inheritance</a></li>
 <li><a href="#mp::is" class="index_link">is</a></li>
+<li><a href="#mp::is_base_of" class="index_link">is_base_of</a></li>
 <li><a href="#mp::is_not" class="index_link">is_not</a></li>
 <li><a href="#mp::iterate" class="index_link">iterate</a></li>
 <li><a href="#mp::iterate_c" class="index_link">iterate_c</a></li>
 <li><a href="#mp::make_id" class="index_link">make_id</a></li>
 <li><a href="#mp::make_id_for" class="index_link">make_id_for</a></li>
-<li><a href="#mp::next_id" class="index_link">next_id</a></li>
-<li><a href="#mp::next_random" class="index_link">next_random</a></li>
 <li><a href="#mp::random" class="index_link">random</a></li>
+<li><a href="#mp::random_for" class="index_link">random_for</a></li>
 <li><a href="#mp::rewrap_unpack" class="index_link">rewrap_unpack</a></li>
 <li><a href="#mp::rewrap_unpack_append" class="index_link">rewrap_unpack_append</a></li>
-<li><a href="#mp::tagged_id_of" class="index_link">tagged_id_of</a></li>
-<li><a href="#mp::tagged_id_of_t" class="index_link">tagged_id_of_t</a></li>
-<li><a href="#mp::tagged_id_of_v" class="index_link">tagged_id_of_v</a></li>
 <li><a href="#mp::unpack" class="index_link">unpack</a></li>
 <li><a href="#mp::unpack_append" class="index_link">unpack_append</a></li>
 <li><a href="#mp::unpack_append_v" class="index_link">unpack_append_v</a></li>
@@ -1570,6 +1574,7 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#mp::flatten_once" class="index_link">flatten_once</a></li>
 <li><a href="#mp::flatten_once_f" class="index_link">flatten_once_f</a></li>
 <li><a href="#mp::flatten_once_for_f" class="index_link">flatten_once_for_f</a></li>
+<li><a href="#mp::flat_inheritance" class="index_link">flat_inheritance</a></li>
 <li><a href="#mp::flip" class="index_link">flip</a></li>
 <li><a href="#mp::fold" class="index_link">fold</a></li>
 <li><a href="#mp::fold_balanced_tree" class="index_link">fold_balanced_tree</a></li>
@@ -1604,9 +1609,6 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#mp::has_value_type" class="index_link">has_value_type</a></li>
 </ul></li><li id="g4__I" class="index_group"><a class="index_cat" href="#g4__I">I</a><ul class="subindex_list func_sublist">
 <li><a href="#mp::identity" class="index_link">identity</a></li>
-<li><a href="#mp::id_of" class="index_link">id_of</a></li>
-<li><a href="#mp::id_of_t" class="index_link">id_of_t</a></li>
-<li><a href="#mp::id_of_v" class="index_link">id_of_v</a></li>
 <li><a href="#mp::if_" class="index_link">if_</a></li>
 <li><a href="#mp::inc" class="index_link">inc</a></li>
 <li><a href="#mp::index_if" class="index_link">index_if</a></li>
@@ -1624,6 +1626,7 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#mp::iota" class="index_link">iota</a></li>
 <li><a href="#mp::iota_v" class="index_link">iota_v</a></li>
 <li><a href="#mp::is" class="index_link">is</a></li>
+<li><a href="#mp::is_base_of" class="index_link">is_base_of</a></li>
 <li><a href="#mp::is_disjoint" class="index_link">is_disjoint</a></li>
 <li><a href="#mp::is_disjoint_with" class="index_link">is_disjoint_with</a></li>
 <li><a href="#mp::is_empty" class="index_link">is_empty</a></li>
@@ -1665,6 +1668,7 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#JLN_MP_HAS_BUILTIN" class="index_link">JLN_MP_HAS_BUILTIN</a></li>
 <li><a href="#JLN_MP_HOST_COMPILER_CLANG" class="index_link">JLN_MP_HOST_COMPILER_CLANG</a></li>
 <li><a href="#JLN_MP_HOST_COMPILER_GCC" class="index_link">JLN_MP_HOST_COMPILER_GCC</a></li>
+<li><a href="#JLN_MP_IS_BASE_OF" class="index_link">JLN_MP_IS_BASE_OF</a></li>
 <li><a href="#JLN_MP_LAZY_ALIAS" class="index_link">JLN_MP_LAZY_ALIAS</a></li>
 <li><a href="#JLN_MP_LAZY_VOID" class="index_link">JLN_MP_LAZY_VOID</a></li>
 <li><a href="#JLN_MP_MAKE_INDEX_SEQUENCE" class="index_link">JLN_MP_MAKE_INDEX_SEQUENCE</a></li>
@@ -1676,6 +1680,9 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#JLN_MP_MSVC" class="index_link">JLN_MP_MSVC</a></li>
 <li><a href="#JLN_MP_MSVC_LIKE" class="index_link">JLN_MP_MSVC_LIKE</a></li>
 <li><a href="#JLN_MP_OPTIMIZED_ALIAS" class="index_link">JLN_MP_OPTIMIZED_ALIAS</a></li>
+<li><a href="#JLN_MP_RANDOM_SEED_TIME" class="index_link">JLN_MP_RANDOM_SEED_TIME</a></li>
+<li><a href="#JLN_MP_RANDOM_SEED_W" class="index_link">JLN_MP_RANDOM_SEED_W</a></li>
+<li><a href="#JLN_MP_RANDOM_SEED_Z" class="index_link">JLN_MP_RANDOM_SEED_Z</a></li>
 <li><a href="#JLN_MP_REQUIRES_AS_FAST_SFINAE" class="index_link">JLN_MP_REQUIRES_AS_FAST_SFINAE</a></li>
 <li><a href="#JLN_MP_UNPACK" class="index_link">JLN_MP_UNPACK</a></li>
 <li><a href="#JLN_MP_WORKAROUND" class="index_link">JLN_MP_WORKAROUND</a></li>
@@ -1772,8 +1779,6 @@ R foo<span class="p">();</span></code></pre></section>
 </ul></li><li id="g4__N" class="index_group"><a class="index_cat" href="#g4__N">N</a><ul class="subindex_list func_sublist">
 <li><a href="#mp::na" class="index_link">na</a></li>
 <li><a href="#mp::neg" class="index_link">neg</a></li>
-<li><a href="#mp::next_id" class="index_link">next_id</a></li>
-<li><a href="#mp::next_random" class="index_link">next_random</a></li>
 <li><a href="#mp::next_recursion" class="index_link">next_recursion</a></li>
 <li><a href="#mp::None" class="index_link">None</a></li>
 <li><a href="#mp::none_of" class="index_link">none_of</a></li>
@@ -1867,6 +1872,7 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#mp::push_front" class="index_link">push_front</a></li>
 </ul></li><li id="g4__R" class="index_group"><a class="index_cat" href="#g4__R">R</a><ul class="subindex_list func_sublist">
 <li><a href="#mp::random" class="index_link">random</a></li>
+<li><a href="#mp::random_for" class="index_link">random_for</a></li>
 <li><a href="#mp::range" class="index_link">range</a></li>
 <li><a href="#mp::range_c" class="index_link">range_c</a></li>
 <li><a href="#mp::recursion_result" class="index_link">recursion_result</a></li>
@@ -1888,6 +1894,10 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#mp::remove_unique_if" class="index_link">remove_unique_if</a></li>
 <li><a href="#mp::repeat" class="index_link">repeat</a></li>
 <li><a href="#mp::repeat_c" class="index_link">repeat_c</a></li>
+<li><a href="#mp::repeat_index" class="index_link">repeat_index</a></li>
+<li><a href="#mp::repeat_index_v_c" class="index_link">repeat_index_v_c</a></li>
+<li><a href="#mp::repeat_index_with" class="index_link">repeat_index_with</a></li>
+<li><a href="#mp::repeat_index_with_v_c" class="index_link">repeat_index_with_v_c</a></li>
 <li><a href="#mp::replace" class="index_link">replace</a></li>
 <li><a href="#mp::replace_if" class="index_link">replace_if</a></li>
 <li><a href="#mp::reverse" class="index_link">reverse</a></li>
@@ -2004,9 +2014,6 @@ R foo<span class="p">();</span></code></pre></section>
 <li><a href="#mp::swap_index" class="index_link">swap_index</a></li>
 <li><a href="#mp::swap_index_c" class="index_link">swap_index_c</a></li>
 </ul></li><li id="g4__T" class="index_group"><a class="index_cat" href="#g4__T">T</a><ul class="subindex_list func_sublist">
-<li><a href="#mp::tagged_id_of" class="index_link">tagged_id_of</a></li>
-<li><a href="#mp::tagged_id_of_t" class="index_link">tagged_id_of_t</a></li>
-<li><a href="#mp::tagged_id_of_v" class="index_link">tagged_id_of_v</a></li>
 <li><a href="#mp::take_back" class="index_link">take_back</a></li>
 <li><a href="#mp::take_back_c" class="index_link">take_back_c</a></li>
 <li><a href="#mp::take_back_max" class="index_link">take_back_max</a></li>
@@ -2169,7 +2176,6 @@ the left relative to the preceding row vector.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::circulant_matrix_with">circulant_matrix_with</a><span class="o">&lt;</span>F <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>square matrix in which all row vectors are composed of the
 same elements and each row vector is rotated one element to
 the right relative to the preceding row vector.</td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::compare_with">compare_with</a><span class="o">&lt;</span>F<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;</span><span class="o">></span><span class="o">></span></code></td><td>comparison on the result of a function.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::contains">contains</a><span class="o">&lt;</span>x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Checks whether a <a href="#d_value">value</a> is contained in a <a href="#d_sequence">sequence</a>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::count">count</a><span class="o">&lt;</span>x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Counts all elements identical to a <a href="#d_value">value</a>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::count_if">count_if</a><span class="o">&lt;</span>Pred<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Counts all elements that satisfy a predicate.</td></tr>
@@ -2206,6 +2212,11 @@ the type and the repeat count.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::prefix">prefix</a><span class="o">&lt;</span>x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Inserts a <a href="#d_value">value</a> before each element of a <a href="#d_sequence">sequence</a>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::repeat">repeat</a><span class="o">&lt;</span>N<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::repeat_c">repeat_c</a><span class="o">&lt;</span>N<span class="p">::</span>value<span class="p">,</span> C<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::repeat_c">repeat_c</a><span class="o">&lt;</span><span class="kt">unsigned</span> N<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Returns a <a href="#d_sequence">sequence</a> that contains a <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code> of copies of the same <a href="#d_sequence">sequence</a>.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::repeat_index">repeat_index</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::repeat_index_with">repeat_index_with</a><span class="o">&lt;</span><a href="#mp::listify">listify</a><span class="p">,</span> C<span class="o">></span></code></td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::repeat_index_v_c">repeat_index_v_c</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::repeat_index_with_v_c">repeat_index_with_v_c</a><span class="o">&lt;</span><a href="#mp::listify">listify</a><span class="p">,</span> C<span class="o">></span></code></td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::repeat_index_with">repeat_index_with</a><span class="o">&lt;</span>F <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>ns<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::repeat_index_with_v_c">repeat_index_with_v_c</a><span class="o">&lt;</span>F<span class="p">,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>ns<span class="p">::</span>value<span class="p">...</span><span class="o">></span></code></td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::repeat_index_with_v_c">repeat_index_with_v_c</a><span class="o">&lt;</span>F <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span><span class="kt">unsigned</span><span class="p">...</span> ns<span class="o">></span></code></td><td>Creates a sequence of index sequence,
+taking the size of each as a parameter.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::replace">replace</a><span class="o">&lt;</span>T<span class="p">,</span> U<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>Replaces every occurrence of a <a href="#d_value">value</a> by another <a href="#d_value">value</a>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::replace_if">replace_if</a><span class="o">&lt;</span>Pred<span class="p">,</span> T<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>Replaces every occurrence that satisfy a predicate by some <a href="#d_value">value</a>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::reverse">reverse</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Reverses the order of the elements of a <a href="#d_sequence">sequence</a>.</td></tr>
@@ -2308,6 +2319,7 @@ which doesn't display aliases.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::capture_front_c">capture_front_c</a><span class="o">&lt;</span><a href="#mp::int_t">int_t</a><span class="p">...</span> BoundArgs<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::capture_front">capture_front</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>BoundArgs<span class="o">></span><span class="p">...</span><span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::capture_front_v">capture_front_v</a><span class="o">&lt;</span><span class="k">auto</span><span class="p">...</span> BoundArgs<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>F<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">F<span class="p">::</span>f<span class="o">&lt;</span>BoundArgs<span class="p">...,</span> xs<span class="p">...</span><span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::cascade">cascade</a><span class="o">&lt;</span>F<span class="p">,</span> Fs<span class="p">...</span><span class="o">></span></code></td><td>Recursively invokes <a href="#d_function">function</a>s to nested <a href="#d_typelist">typelist</a> of <a href="#d_typelist">typelist</a>s.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::compare_with">compare_with</a><span class="o">&lt;</span>F<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;</span><span class="o">></span><span class="o">></span></code></td><td>comparison on the result of a function.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::compose">compose</a><span class="o">&lt;</span>F<span class="p">,</span> Fs<span class="p">...</span><span class="o">></span></code></td><td>Composition of two <a href="#d_function">function</a>s or more.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::compose_f">compose_f</a><span class="o">&lt;</span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> F<span class="p">,</span> <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="p">...</span><span class="o">></span> Fs<span class="p">...</span><span class="o">></span></code></td><td>Composition of two <a href="#d_metafunction">meta-function</a>s or more.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::each">each</a><span class="o">&lt;</span>Fs<span class="p">...,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Invokes multiple functions each taking the parameter corresponding to its position.</td></tr>
@@ -2486,7 +2498,7 @@ except the last one taking zero to all remaining parameters.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::enumerate_with">enumerate_with</a><span class="o">&lt;</span>F <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Returns pairs containing an index and a value.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::erase">erase</a><span class="o">&lt;</span>start<span class="p">,</span> <a href="#mp::size">size</a> <span class="o">=</span> <a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">1</span><span class="o">></span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::erase_c">erase_c</a><span class="o">&lt;</span>start<span class="p">::</span>value<span class="p">,</span> size<span class="p">::</span>value<span class="p">,</span> C<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::erase_c">erase_c</a><span class="o">&lt;</span><a href="#mp::int_t">int_t</a> start<span class="p">,</span> <span class="kt">unsigned</span> <a href="#mp::size">size</a> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Removes at most <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::size">size</a></code> elements from index <code class="inlinecode highlight" data-lang="cpp">start</code>.</td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::front">front</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code></td><td>Retrieves the first element of a sequence.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::front">front</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Retrieves the first element of a sequence.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::insert">insert</a><span class="o">&lt;</span>index<span class="p">,</span> x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::insert_sequence_c">insert_sequence_c</a><span class="o">&lt;</span>index<span class="p">::</span>value<span class="p">,</span> <a href="#mp::list">list</a><span class="o">&lt;</span>x<span class="o">></span><span class="p">,</span> C<span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::insert_c">insert_c</a><span class="o">&lt;</span><a href="#mp::int_t">int_t</a> index<span class="p">,</span> x<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>Inserts an elements at an arbitrary position.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::insert_sequence">insert_sequence</a><span class="o">&lt;</span>index<span class="p">,</span> seq<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::insert_sequence_c">insert_sequence_c</a><span class="o">&lt;</span>index<span class="p">::</span>value<span class="p">,</span> seq<span class="p">,</span> C<span class="o">></span></code></td></tr>
@@ -2894,21 +2906,23 @@ that satisfies the <a href="#d_predicate">predicate</a> <code class="inlinecode 
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::conditional_c">conditional_c</a><span class="o">&lt;</span><span class="nb">false</span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>true_value<span class="p">,</span> false_value<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">false_value</code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::conditional_c">conditional_c</a><span class="o">&lt;</span><span class="nb">true</span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>true_value<span class="p">,</span> false_value<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">true_value</code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::default_make_id_tag">default_make_id_tag</a></code></td><td></td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::id_of">id_of</a><span class="o">&lt;</span>T<span class="o">></span><span class="p">::</span>value</code></td><td>Generates a unique id per type.</td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::id_of_t">id_of_t</a><span class="o">&lt;</span>T<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span><a href="#mp::id_of">id_of</a><span class="o">&lt;</span>T<span class="o">></span><span class="p">::</span>value<span class="o">></span></code></td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::id_of_v">id_of_v</a><span class="o">&lt;</span>T<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::id_of">id_of</a><span class="o">&lt;</span>T<span class="o">></span><span class="p">::</span>value</code></td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::make_id">make_id</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::make_id_for">make_id_for</a><span class="o">&lt;</span><a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> C<span class="o">></span></code></td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::make_id_for">make_id_for</a><span class="o">&lt;</span>Tag<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>T<span class="o">></span></code></td><td>Generates a unique id per type.</td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::next_id">next_id</a></code></td><td>Generates a unique id per call for a specified tag.</td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::tagged_id_of">tagged_id_of</a><span class="o">&lt;</span>Tag<span class="p">,</span> T<span class="o">></span><span class="p">::</span>value</code></td><td>Generates a unique id per type for a specified tag.</td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::tagged_id_of_t">tagged_id_of_t</a><span class="o">&lt;</span>Tag<span class="p">,</span> T<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span><a href="#mp::tagged_id_of">tagged_id_of</a><span class="o">&lt;</span>Tag<span class="p">,</span> T<span class="o">></span><span class="p">::</span>value<span class="o">></span></code></td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::tagged_id_of_v">tagged_id_of_v</a><span class="o">&lt;</span>Tag<span class="p">,</span> T<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::tagged_id_of">tagged_id_of</a><span class="o">&lt;</span>Tag<span class="p">,</span> T<span class="o">></span><span class="p">::</span>value</code></td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::make_id">make_id</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Generates a unique id per type.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::make_id_for">make_id_for</a><span class="o">&lt;</span>Tag <span class="o">=</span> <a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>T<span class="o">></span></code></td><td>Generates a unique id per type for a specified tag.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::flat_inheritance">flat_inheritance</a><span class="o">&lt;</span>Bases<span class="p">...</span><span class="o">></span></code></td><td>Class that inherits all <code class="inlinecode highlight" data-lang="cpp">Bases</code> types.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is">is</a><span class="o">&lt;</span>T<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>std<span class="p">::</span>is_same_v<span class="o">&lt;</span>T<span class="p">,</span> x<span class="o">></span><span class="o">></span><span class="o">></span></code></td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_base_of">is_base_of</a><span class="o">&lt;</span>Derived<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Wrapper for <code class="inlinecode highlight" data-lang="cpp">JLN_MP_IS_BASE_OF<span class="p">()</span></code> / <code class="inlinecode highlight" data-lang="cpp">std<span class="p">::</span>is_base_of</code>
+</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#JLN_MP_IS_BASE_OF">JLN_MP_IS_BASE_OF</a><span class="p">(</span>Base<span class="p">,</span> Derived<span class="p">)</span></code></td><td>Uses a compiler builtin or <code class="inlinecode highlight" data-lang="cpp">std<span class="p">::</span>is_base_if_v</code>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is_not">is_not</a><span class="o">&lt;</span>T<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::is">is</a><span class="o">&lt;</span>T<span class="p">,</span> <a href="#mp::not_">not_</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span></code></td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::iterate">iterate</a><span class="o">&lt;</span>n<span class="p">,</span> F<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></td><td>Apply a function <code class="inlinecode highlight" data-lang="cpp">n</code> times to its argument.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::iterate_c">iterate_c</a><span class="o">&lt;</span><a href="#mp::uint_t">uint_t</a> n<span class="p">,</span> F<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></td><td>Apply a function <code class="inlinecode highlight" data-lang="cpp">n</code> times to its argument.</td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::next_random">next_random</a></code></td><td>Generates a unique id per call for a specified tag.</td></tr>
-<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::random">random</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="p">,</span> <span class="k">auto</span> <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Generate a random number.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::random">random</a><span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="p">,</span> <span class="k">auto</span> v <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span></code></td><td>= <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::random_for">random_for</a><span class="o">&lt;</span><a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> C<span class="p">,</span> v<span class="o">></span></code></td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::random_for">random_for</a><span class="o">&lt;</span>Tag <span class="o">=</span> <a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="p">,</span> <span class="k">auto</span> <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></td><td>Generate a random number for a specified tag on each call with different <code class="inlinecode highlight" data-lang="cpp">xs</code>.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#JLN_MP_RANDOM_SEED_TIME">JLN_MP_RANDOM_SEED_TIME</a></code></td><td>Less than 0 to not rely on the <code class="inlinecode highlight" data-lang="cpp">__TIME__</code> macro (default) ;
+0 for use <code class="inlinecode highlight" data-lang="cpp">__TIME__</code> macro as seed ;
+greater than 0 for used this value as a replacement of <code class="inlinecode highlight" data-lang="cpp">__TIME__</code> macro.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#JLN_MP_RANDOM_SEED_W">JLN_MP_RANDOM_SEED_W</a></code></td><td>W value for the seed of random.</td></tr>
+<tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#JLN_MP_RANDOM_SEED_Z">JLN_MP_RANDOM_SEED_Z</a></code></td><td>Z value for the seed of random.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::rewrap_unpack">rewrap_unpack</a><span class="o">&lt;</span>C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>L<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code></td><td>Rewrap result of <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::unpack">unpack</a><span class="o">&lt;</span>C<span class="o">></span></code> in the same type as <code class="inlinecode highlight" data-lang="cpp">L</code>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::rewrap_unpack_append">rewrap_unpack_append</a><span class="o">&lt;</span>C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>L<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code></td><td>Rewrap result of <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::unpack_append">unpack_append</a><span class="o">&lt;</span>C<span class="o">></span></code> in the same type as <code class="inlinecode highlight" data-lang="cpp">L</code>.</td></tr>
 <tr><td><code class="inlinecode highlight" data-lang="cpp"><a href="#mp::unpack">unpack</a><span class="o">&lt;</span>C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>seq<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code></td><td>Turns a <a href="#d_typelist">typelist</a> into a <a href="#d_sequence">sequence</a> of those types.</td></tr>
@@ -3108,17 +3122,6 @@ the right relative to the preceding row vector.</p><p>
 </aside><div class="group__emp">
 <h4 class="emp" id="emp::circulant_matrix"><a href="#emp::circulant_matrix" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>circulant_matrix<span class="o">&lt;</span>L<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">mp<span class="p">::</span>listify</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">emp<span class="p">::</span>unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::circulant_matrix">mp<span class="p">::</span>circulant_matrix</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span></code></h4>
 <h4 class="emp" id="emp::circulant_matrix_with"><a href="#emp::circulant_matrix_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>circulant_matrix_with<span class="o">&lt;</span>L<span class="p">,</span> F<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">mp<span class="p">::</span>listify</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">emp<span class="p">::</span>unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::circulant_matrix_with">mp<span class="p">::</span>circulant_matrix_with</a><span class="o">&lt;</span>F<span class="p">,</span> C<span class="o">></span><span class="o">></span></code></h4>
-</div>
-</div>
-<h3 class="file" id="algorithm/compare_with.hpp"><a href="#algorithm/compare_with.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/compare_with.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/algorithm/compare_with.cpp">test/src/algorithm/compare_with.cpp</a></p>
-<div class="group__file">
-<h4 id="mp::compare_with"><a href="#mp::compare_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">compare_with<span class="o">&lt;</span>F<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;</span><span class="o">></span><span class="o">></span></code></h4>
-<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
-</p><p>comparison on the result of a function.</p><p>
-</p><div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
-<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::each">each</a><span class="o">&lt;</span>F<span class="p">,</span> F<span class="p">,</span> Cmp<span class="o">></span></code></pre></div><div class="group__emp">
-<h4 class="emp" id="emp::compare_with"><a href="#emp::compare_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>compare_with<span class="o">&lt;</span>F<span class="p">,</span> x<span class="p">,</span> y<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">mp<span class="p">::</span>less</a><span class="o">&lt;</span><span class="o">></span><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp">Cmp<span class="p">::</span>f<span class="o">&lt;</span> F<span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span><span class="p">,</span> F<span class="p">::</span>f<span class="o">&lt;</span>y<span class="o">></span><span class="o">></span></code></h4>
-<h4 class="emp" id="emp::compare_with_v"><a href="#emp::compare_with_v" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp"><span class="kt">bool</span> emp<span class="p">::</span>compare_with_v<span class="o">&lt;</span>F<span class="p">,</span> x<span class="p">,</span> y<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">mp<span class="p">::</span>less</a><span class="o">&lt;</span><span class="o">></span><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp">Cmp<span class="p">::</span>f<span class="o">&lt;</span> F<span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span><span class="p">,</span> F<span class="p">::</span>f<span class="o">&lt;</span>y<span class="o">></span><span class="o">></span><span class="p">::</span>value</code></h4>
 </div>
 </div>
 <h3 class="file" id="algorithm/contains.hpp"><a href="#algorithm/contains.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/contains.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/algorithm/contains.cpp">test/src/algorithm/contains.cpp</a></p>
@@ -3407,6 +3410,33 @@ otherwise <code class="inlinecode highlight" data-lang="cpp">TC<span class="p">:
 </li></ul></div><div class="group__emp">
 <h4 class="emp" id="emp::repeat"><a href="#emp::repeat" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>repeat<span class="o">&lt;</span>L<span class="p">,</span> n<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">mp<span class="p">::</span>listify</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">emp<span class="p">::</span>unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::repeat">mp<span class="p">::</span>repeat</a><span class="o">&lt;</span>n<span class="p">,</span> C<span class="o">></span><span class="o">></span></code></h4>
 <h4 class="emp" id="emp::repeat_c"><a href="#emp::repeat_c" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>repeat_c<span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::int_t">int_t</a> n<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">mp<span class="p">::</span>listify</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">emp<span class="p">::</span>unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::repeat_c">mp<span class="p">::</span>repeat_c</a><span class="o">&lt;</span>n<span class="p">,</span> C<span class="o">></span><span class="o">></span></code></h4>
+<h4 class="emp" id="emp::repeat_value_c"><a href="#emp::repeat_value_c" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>repeat_value_c<span class="o">&lt;</span><span class="kt">unsigned</span> n<span class="p">,</span> x<span class="p">,</span> F <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code> = /*...*/</h4>
+</div>
+</div>
+<h3 class="file" id="algorithm/repeat_index.hpp"><a href="#algorithm/repeat_index.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/repeat_index.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/algorithm/repeat_index.cpp">test/src/algorithm/repeat_index.cpp</a></p>
+<div class="group__file">
+<h4 id="mp::repeat_index"><a href="#mp::repeat_index" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">repeat_index<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></h4>
+<div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
+<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::repeat_index_with">repeat_index_with</a><span class="o">&lt;</span><a href="#mp::listify">listify</a><span class="p">,</span> C<span class="o">></span></code></pre></div><h4 id="mp::repeat_index_v_c"><a href="#mp::repeat_index_v_c" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">repeat_index_v_c<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code></h4>
+<div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
+<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::repeat_index_with_v_c">repeat_index_with_v_c</a><span class="o">&lt;</span><a href="#mp::listify">listify</a><span class="p">,</span> C<span class="o">></span></code></pre></div><h4 id="mp::repeat_index_with"><a href="#mp::repeat_index_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">repeat_index_with<span class="o">&lt;</span>F <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>ns<span class="p">...</span><span class="o">></span></code></h4>
+<div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
+<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::repeat_index_with_v_c">repeat_index_with_v_c</a><span class="o">&lt;</span>F<span class="p">,</span> C<span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>ns<span class="p">::</span>value<span class="p">...</span><span class="o">></span></code></pre></div><h4 id="mp::repeat_index_with_v_c"><a href="#mp::repeat_index_with_v_c" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">repeat_index_with_v_c<span class="o">&lt;</span>F <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span><span class="kt">unsigned</span><span class="p">...</span> ns<span class="o">></span></code></h4>
+<p>Return: <a href="#d_sequence">sequence</a>
+</p><p>Creates a sequence of index sequence,
+taking the size of each as a parameter.</p><p>
+</p><div class="InfoBox"><h5 class="InfoBox-title">Semantics</h5>
+<p>Equivalent to
+</p><pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::repeat_index_with_v_c">repeat_index_with_v_c</a><span class="o">&lt;</span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">></span>
+<span class="o">=</span><span class="o">=</span>
+<a href="#mp::list">list</a><span class="o">&lt;</span>
+  <a href="#mp::list">list</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">0</span><span class="o">></span><span class="p">,</span> <a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">0</span><span class="o">></span><span class="p">,</span> <a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">0</span><span class="o">></span><span class="o">></span><span class="p">,</span>
+  <a href="#mp::list">list</a><span class="o">&lt;</span><span class="o">></span><span class="p">,</span>
+  <a href="#mp::list">list</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">2</span><span class="o">></span><span class="p">,</span> <a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">2</span><span class="o">></span><span class="o">></span><span class="p">,</span>
+  <a href="#mp::list">list</a><span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span><span class="mi">3</span><span class="o">></span><span class="o">></span>
+<span class="o">></span></code></pre></div><div class="group__emp">
+<h4 class="emp" id="emp::repeat_index"><a href="#emp::repeat_index" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>repeat_index<span class="o">&lt;</span>L<span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">emp<span class="p">::</span>unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::repeat_index_with">mp<span class="p">::</span>repeat_index_with</a><span class="o">&lt;</span><a href="#mp::listify">listify</a><span class="p">,</span> C<span class="o">></span><span class="o">></span></code></h4>
+<h4 class="emp" id="emp::repeat_index_with"><a href="#emp::repeat_index_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>repeat_index_with<span class="o">&lt;</span>L<span class="p">,</span> F <span class="o">=</span> <a href="#mp::listify">listify</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::listify">listify</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">emp<span class="p">::</span>unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::repeat_index_with">mp<span class="p">::</span>repeat_index_with</a><span class="o">&lt;</span>F<span class="p">,</span> C<span class="o">></span><span class="o">></span></code></h4>
 </div>
 </div>
 <h3 class="file" id="algorithm/replace.hpp"><a href="#algorithm/replace.hpp" class="ref">¶</a>&lt;jln/mp/algorithm/replace.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/algorithm/replace.cpp">test/src/algorithm/replace.cpp</a></p>
@@ -3929,6 +3959,17 @@ Only the first element found is kept.
 </p><div class="InfoBox"><h5 class="InfoBox-title">Semantics</h5>
 <pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::cascade">cascade</a><span class="o">&lt;</span>F0<span class="o">></span> <span class="o">=</span> <a href="#mp::transform">transform</a><span class="o">&lt;</span>F0<span class="o">></span>
 <a href="#mp::cascade">cascade</a><span class="o">&lt;</span>F0<span class="p">,</span>F1<span class="p">,</span>F2<span class="o">></span> <span class="o">=</span> <a href="#mp::transform">transform</a><span class="o">&lt;</span><a href="#mp::unpack">unpack</a><span class="o">&lt;</span><a href="#mp::transform">transform</a><span class="o">&lt;</span><a href="#mp::unpack">unpack</a><span class="o">&lt;</span>F0<span class="o">></span><span class="p">,</span> F1<span class="o">></span><span class="o">></span><span class="p">,</span> F2<span class="o">></span></code></pre></div><div class="group__emp">
+</div>
+</div>
+<h3 class="file" id="functional/compare_with.hpp"><a href="#functional/compare_with.hpp" class="ref">¶</a>&lt;jln/mp/functional/compare_with.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/functional/compare_with.cpp">test/src/functional/compare_with.cpp</a></p>
+<div class="group__file">
+<h4 id="mp::compare_with"><a href="#mp::compare_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">compare_with<span class="o">&lt;</span>F<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">less</a><span class="o">&lt;</span><span class="o">></span><span class="o">></span></code></h4>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
+</p><p>comparison on the result of a function.</p><p>
+</p><div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
+<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::each">each</a><span class="o">&lt;</span>F<span class="p">,</span> F<span class="p">,</span> Cmp<span class="o">></span></code></pre></div><div class="group__emp">
+<h4 class="emp" id="emp::compare_with"><a href="#emp::compare_with" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>compare_with<span class="o">&lt;</span>F<span class="p">,</span> x<span class="p">,</span> y<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">mp<span class="p">::</span>less</a><span class="o">&lt;</span><span class="o">></span><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp">Cmp<span class="p">::</span>f<span class="o">&lt;</span> F<span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span><span class="p">,</span> F<span class="p">::</span>f<span class="o">&lt;</span>y<span class="o">></span><span class="o">></span></code></h4>
+<h4 class="emp" id="emp::compare_with_v"><a href="#emp::compare_with_v" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp"><span class="kt">bool</span> emp<span class="p">::</span>compare_with_v<span class="o">&lt;</span>F<span class="p">,</span> x<span class="p">,</span> y<span class="p">,</span> Cmp <span class="o">=</span> <a href="#mp::less">mp<span class="p">::</span>less</a><span class="o">&lt;</span><span class="o">></span><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp">Cmp<span class="p">::</span>f<span class="o">&lt;</span> F<span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span><span class="p">,</span> F<span class="p">::</span>f<span class="o">&lt;</span>y<span class="o">></span><span class="o">></span><span class="p">::</span>value</code></h4>
 </div>
 </div>
 <h3 class="file" id="functional/compose.hpp"><a href="#functional/compose.hpp" class="ref">¶</a>&lt;jln/mp/functional/compose.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/functional/compose.cpp">test/src/functional/compose.cpp</a></p>
@@ -5085,11 +5126,10 @@ A negative value represents an index starting from the end.
 </div>
 <h3 class="file" id="list/front.hpp"><a href="#list/front.hpp" class="ref">¶</a>&lt;jln/mp/list/front.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/list/front.cpp">test/src/list/front.cpp</a></p>
 <div class="group__file">
-<h4 id="mp::front"><a href="#mp::front" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">front<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="p">,</span> xs<span class="p">...</span><span class="o">></span></code></h4>
+<h4 id="mp::front"><a href="#mp::front" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">front<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h4>
 <p>Return: <a href="#d_value">value</a>
 </p><p>Retrieves the first element of a sequence.</p><p>
-</p><div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
-<pre><code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></pre></div><div class="group__emp">
+</p><div class="group__emp">
 <h4 class="emp" id="emp::front"><a href="#emp::front" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>front<span class="o">&lt;</span>L<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">mp<span class="p">::</span>identity</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">emp<span class="p">::</span>unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#emp::front">front</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span></code></h4>
 </div>
 </div>
@@ -5284,7 +5324,7 @@ All indices available in the range are returned, indices outside the bounds are 
 </p><div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
 <pre><code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span><span class="k">sizeof</span><span class="p">...(</span>xs<span class="p">)</span><span class="o">></span><span class="o">></span></code></pre></div><div class="group__emp">
 <h4 class="emp" id="emp::size"><a href="#emp::size" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>size<span class="o">&lt;</span>L<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">mp<span class="p">::</span>identity</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">emp<span class="p">::</span>unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::size">mp<span class="p">::</span>size</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span></code></h4>
-<h4 class="emp" id="emp::size_v"><a href="#emp::size_v" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp"><span class="kt">bool</span> emp<span class="p">::</span>size_v<span class="o">&lt;</span>L<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">mp<span class="p">::</span>identity</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">emp<span class="p">::</span>unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::size">mp<span class="p">::</span>size</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span><span class="p">::</span>value</code></h4>
+<h4 class="emp" id="emp::size_v"><a href="#emp::size_v" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">std<span class="p">::</span>size_t emp<span class="p">::</span>size_v<span class="o">&lt;</span>L<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">mp<span class="p">::</span>identity</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#emp::unpack">emp<span class="p">::</span>unpack</a><span class="o">&lt;</span>L<span class="p">,</span> <a href="#mp::size">mp<span class="p">::</span>size</a><span class="o">&lt;</span>C<span class="o">></span><span class="o">></span><span class="p">::</span>value</code></h4>
 </div>
 </div>
 <h3 class="file" id="list/slice.hpp"><a href="#list/slice.hpp" class="ref">¶</a>&lt;jln/mp/list/slice.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/list/slice.cpp">test/src/list/slice.cpp</a></p>
@@ -7656,32 +7696,35 @@ the macro <code class="inlinecode highlight" data-lang="cpp">JLN_MP_FORCE_LAZY_A
 <h3 class="file" id="utility/make_id.hpp"><a href="#utility/make_id.hpp" class="ref">¶</a>&lt;jln/mp/utility/make_id.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/utility/make_id.cpp">test/src/utility/make_id.cpp</a></p>
 <div class="group__file">
 <h4 id="mp::default_make_id_tag"><a href="#mp::default_make_id_tag" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">default_make_id_tag</code></h4>
-<h4 id="mp::id_of"><a href="#mp::id_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">id_of<span class="o">&lt;</span>T<span class="o">></span><span class="p">::</span>value</code></h4>
-<p>Return: int
-</p><p>Generates a unique id per type.</p><p>
-</p><div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
-<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::next_id">next_id</a><span class="o">&lt;</span><a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[]{}</span><span class="o">></span><span class="p">()</span></code></pre></div><h4 id="mp::id_of_t"><a href="#mp::id_of_t" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">id_of_t<span class="o">&lt;</span>T<span class="o">></span></code></h4>
-<div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
-<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span><a href="#mp::id_of">id_of</a><span class="o">&lt;</span>T<span class="o">></span><span class="p">::</span>value<span class="o">></span></code></pre></div><h4 id="mp::id_of_v"><a href="#mp::id_of_v" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp"><span class="kt">int</span> id_of_v<span class="o">&lt;</span>T<span class="o">></span></code></h4>
-<div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
-<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::id_of">id_of</a><span class="o">&lt;</span>T<span class="o">></span><span class="p">::</span>value</code></pre></div><h4 id="mp::make_id"><a href="#mp::make_id" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">make_id<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h4>
-<div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
-<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::make_id_for">make_id_for</a><span class="o">&lt;</span><a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> C<span class="o">></span></code></pre></div><h4 id="mp::make_id_for"><a href="#mp::make_id_for" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">make_id_for<span class="o">&lt;</span>Tag<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>T<span class="o">></span></code></h4>
+<h4 id="mp::make_id"><a href="#mp::make_id" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">make_id<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span></code></h4>
 <p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
 </p><p>Generates a unique id per type.</p><p>
 </p><div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
-<pre><code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::tagged_id_of_t">tagged_id_of_t</a><span class="o">&lt;</span>Tag<span class="p">,</span> T<span class="o">></span><span class="o">></span></code></pre></div><h4 id="mp::next_id"><a href="#mp::next_id" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">next_id</code></h4>
-<p>Generates a unique id per call for a specified tag.</p><p>
-Signature: <code class="inlinecode highlight" data-lang="cpp"><span class="kt">int</span> <a href="#mp::next_id">next_id</a><span class="o">&lt;</span><span class="k">class</span> Tag <span class="o">=</span> <a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> start_id <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="k">auto</span> <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span><span class="p">()</span></code>
-</p><h4 id="mp::tagged_id_of"><a href="#mp::tagged_id_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">tagged_id_of<span class="o">&lt;</span>Tag<span class="p">,</span> T<span class="o">></span><span class="p">::</span>value</code></h4>
-<p>Return: int
+<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::make_id_for">make_id_for</a><span class="o">&lt;</span><a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> C<span class="o">></span></code></pre></div><h4 id="mp::make_id_for"><a href="#mp::make_id_for" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">make_id_for<span class="o">&lt;</span>Tag <span class="o">=</span> <a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>T<span class="o">></span></code></h4>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
 </p><p>Generates a unique id per type for a specified tag.</p><p>
 </p><div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
-<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::next_id">next_id</a><span class="o">&lt;</span>Tag<span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[]{}</span><span class="o">></span><span class="p">()</span></code></pre></div><h4 id="mp::tagged_id_of_t"><a href="#mp::tagged_id_of_t" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">tagged_id_of_t<span class="o">&lt;</span>Tag<span class="p">,</span> T<span class="o">></span></code></h4>
-<div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
-<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span><a href="#mp::tagged_id_of">tagged_id_of</a><span class="o">&lt;</span>Tag<span class="p">,</span> T<span class="o">></span><span class="p">::</span>value<span class="o">></span></code></pre></div><h4 id="mp::tagged_id_of_v"><a href="#mp::tagged_id_of_v" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp"><span class="kt">int</span> tagged_id_of_v<span class="o">&lt;</span>Tag<span class="p">,</span> T<span class="o">></span></code></h4>
-<div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
-<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::tagged_id_of">tagged_id_of</a><span class="o">&lt;</span>Tag<span class="p">,</span> T<span class="o">></span><span class="p">::</span>value</code></pre></div><div class="group__emp">
+<pre><code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span><a href="#emp::id_of_v">emp<span class="p">::</span>id_of_v</a><span class="o">&lt;</span>T<span class="p">,</span> Tag<span class="o">></span><span class="o">></span><span class="o">></span></code></pre></div><div class="group__emp">
+<h4 class="emp" id="emp::id_of"><a href="#emp::id_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>id_of<span class="o">&lt;</span>T<span class="p">,</span> Tag <span class="o">=</span> <a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span><a href="#emp::id_of_v">id_of_v</a><span class="o">&lt;</span>T<span class="p">,</span> Tag<span class="o">></span><span class="o">></span></code></h4>
+<h4 class="emp" id="emp::id_of_v"><a href="#emp::id_of_v" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp"><span class="kt">int</span> emp<span class="p">::</span>id_of_v<span class="o">&lt;</span>T<span class="p">,</span> Tag <span class="o">=</span> <a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="o">></span></code> = /*...*/</h4>
+<h4 class="emp" id="emp::next_id_v"><a href="#emp::next_id_v" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp"><span class="kt">int</span> emp<span class="p">::</span>next_id_v<span class="o">&lt;</span>Tag <span class="o">=</span> <a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> <span class="k">auto</span> v <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span></code> = /*...*/</h4>
+<h4 class="emp" id="emp::type_of"><a href="#emp::type_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>type_of<span class="o">&lt;</span><span class="kt">int</span> id<span class="p">,</span> Tag <span class="o">=</span> <a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="o">></span></code> = /*...*/</h4>
+</div>
+</div>
+<h3 class="file" id="utility/flat_inheritance.hpp"><a href="#utility/flat_inheritance.hpp" class="ref">¶</a>&lt;jln/mp/utility/flat_inheritance.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/utility/flat_inheritance.cpp">test/src/utility/flat_inheritance.cpp</a></p>
+<div class="group__file">
+<h4 id="mp::flat_inheritance"><a href="#mp::flat_inheritance" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">flat_inheritance<span class="o">&lt;</span>Bases<span class="p">...</span><span class="o">></span></code></h4>
+<p>Class that inherits all <code class="inlinecode highlight" data-lang="cpp">Bases</code> types.</p><p>
+This used with <code class="inlinecode highlight" data-lang="cpp">JLN_MP_IS_BASE_OF<span class="p">()</span></code> makes a really fast version of <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::set_contains">set_contains</a></code>.
+</p><pre><code class="blockcode highlight" data-lang="cpp"><span class="k">class</span> A<span class="p">;</span>
+<span class="k">class</span> B<span class="p">;</span>
+<span class="k">class</span> C<span class="p">;</span>
+<span class="k">using</span> set <span class="o">=</span> <a href="#mp::flat_inheritance">mp<span class="p">::</span>flat_inheritance</a><span class="o">&lt;</span>A<span class="p">,</span> B<span class="p">,</span> C<span class="o">></span><span class="p">;</span>
+
+<span class="k">using</span> T <span class="o">=</span> <span class="p">...;</span>
+if <span class="k">constexpr</span> <span class="p">(</span>JLN_MP_IS_BASE_OF<span class="p">(</span>T<span class="p">,</span> set<span class="p">))</span> <span class="p">{</span>
+  <span class="p">...</span>
+<span class="p">}</span></code></pre><div class="group__emp">
 </div>
 </div>
 <h3 class="file" id="utility/is.hpp"><a href="#utility/is.hpp" class="ref">¶</a>&lt;jln/mp/utility/is.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/utility/is.cpp">test/src/utility/is.cpp</a></p>
@@ -7690,6 +7733,20 @@ Signature: <code class="inlinecode highlight" data-lang="cpp"><span class="kt">i
 <p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
 </p><div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
 <pre><code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>std<span class="p">::</span>is_same_v<span class="o">&lt;</span>T<span class="p">,</span> x<span class="o">></span><span class="o">></span><span class="o">></span></code></pre></div><div class="group__emp">
+</div>
+</div>
+<h3 class="file" id="utility/is_base_of.hpp"><a href="#utility/is_base_of.hpp" class="ref">¶</a>&lt;jln/mp/utility/is_base_of.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/utility/is_base_of.cpp">test/src/utility/is_base_of.cpp</a></p>
+<div class="group__file">
+<h4 id="mp::is_base_of"><a href="#mp::is_base_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">is_base_of<span class="o">&lt;</span>Derived<span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>x<span class="o">></span></code></h4>
+<p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::true_">true_</a></code> / <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::false_">false_</a></code>
+</p><p>Wrapper for <code class="inlinecode highlight" data-lang="cpp">JLN_MP_IS_BASE_OF<span class="p">()</span></code> / <code class="inlinecode highlight" data-lang="cpp">std<span class="p">::</span>is_base_of</code>
+</p><div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
+<pre><code class="blockcode highlight" data-lang="cpp">C<span class="p">::</span>f<span class="o">&lt;</span><a href="#mp::number">number</a><span class="o">&lt;</span>JLN_MP_IS_BASE_OF<span class="p">(</span>x<span class="p">,</span> Derived<span class="p">)</span><span class="o">></span><span class="o">></span></code></pre></div><h4 id="JLN_MP_IS_BASE_OF"><a href="#JLN_MP_IS_BASE_OF" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">#define JLN_MP_IS_BASE_OF<span class="p">(</span>Base<span class="p">,</span> Derived<span class="p">)</span></code></h4>
+<p>Uses a compiler builtin or <code class="inlinecode highlight" data-lang="cpp">std<span class="p">::</span>is_base_if_v</code>.</p><p>
+Note: the real signature takes a var args.
+</p><div class="group__emp">
+<h4 class="emp" id="emp::is_base_of"><a href="#emp::is_base_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>is_base_of<span class="o">&lt;</span>Base<span class="p">,</span> Derived<span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span>JLN_MP_IS_BASE_OF<span class="p">(</span>Base<span class="p">,</span> Derived<span class="p">)</span><span class="o">></span></code></h4>
+<h4 class="emp" id="emp::is_base_of_v"><a href="#emp::is_base_of_v" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp"><span class="kt">bool</span> emp<span class="p">::</span>is_base_of_v<span class="o">&lt;</span>Base<span class="p">,</span> Derived<span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp">JLN_MP_IS_BASE_OF<span class="p">(</span>Base<span class="p">,</span> Derived<span class="p">)</span></code></h4>
 </div>
 </div>
 <h3 class="file" id="utility/is_not.hpp"><a href="#utility/is_not.hpp" class="ref">¶</a>&lt;jln/mp/utility/is_not.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/utility/is_not.cpp">test/src/utility/is_not.cpp</a></p>
@@ -7716,17 +7773,24 @@ Signature: <code class="inlinecode highlight" data-lang="cpp"><span class="kt">i
 </div>
 <h3 class="file" id="utility/random.hpp"><a href="#utility/random.hpp" class="ref">¶</a>&lt;jln/mp/utility/random.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/utility/random.cpp">test/src/utility/random.cpp</a></p>
 <div class="group__file">
-<h4 id="mp::next_random"><a href="#mp::next_random" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">next_random</code></h4>
-<p>Generates a unique id per call for a specified tag.</p><p>
-Signature: <code class="inlinecode highlight" data-lang="cpp"><span class="kt">unsigned</span> <a href="#mp::next_random">next_random</a><span class="o">&lt;</span><span class="k">auto</span> <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span><span class="p">()</span></code>
-</p><h4 id="mp::random"><a href="#mp::random" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">random<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="p">,</span> <span class="k">auto</span> <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h4>
+<h4 id="mp::random"><a href="#mp::random" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">random<span class="o">&lt;</span>C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="p">,</span> <span class="k">auto</span> v <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span></code></h4>
+<div class="InfoBox"><h5 class="InfoBox-title">Implementation</h5>
+<pre><code class="blockcode highlight" data-lang="cpp"><a href="#mp::random_for">random_for</a><span class="o">&lt;</span><a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> C<span class="p">,</span> v<span class="o">></span></code></pre></div><h4 id="mp::random_for"><a href="#mp::random_for" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">random_for<span class="o">&lt;</span>Tag <span class="o">=</span> <a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> C <span class="o">=</span> <a href="#mp::identity">identity</a><span class="p">,</span> <span class="k">auto</span> <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span><span class="p">::</span>f<span class="o">&lt;</span>xs<span class="p">...</span><span class="o">></span></code></h4>
 <p>Return: <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a></code>
-</p><p>Generate a random number.</p><p>
-The seed can be configured with <code class="inlinecode highlight" data-lang="cpp">JLN_MP_RANDOM_SEED_TIME</code>
-or <code class="inlinecode highlight" data-lang="cpp">JLN_MP_RANDOM_SEED_W</code> and <code class="inlinecode highlight" data-lang="cpp">JLN_MP_RANDOM_SEED_Z</code>
+</p><p>Generate a random number for a specified tag on each call with different <code class="inlinecode highlight" data-lang="cpp">xs</code>.</p><p>
+</p><h4 id="JLN_MP_RANDOM_SEED_TIME"><a href="#JLN_MP_RANDOM_SEED_TIME" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">#define JLN_MP_RANDOM_SEED_TIME</code></h4>
+<p>Less than 0 to not rely on the <code class="inlinecode highlight" data-lang="cpp">__TIME__</code> macro (default) ;
+0 for use <code class="inlinecode highlight" data-lang="cpp">__TIME__</code> macro as seed ;
+greater than 0 for used this value as a replacement of <code class="inlinecode highlight" data-lang="cpp">__TIME__</code> macro.</p><p>
+</p><h4 id="JLN_MP_RANDOM_SEED_W"><a href="#JLN_MP_RANDOM_SEED_W" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">#define JLN_MP_RANDOM_SEED_W</code></h4>
+<p>W value for the seed of random.</p><p>
+</p><h4 id="JLN_MP_RANDOM_SEED_Z"><a href="#JLN_MP_RANDOM_SEED_Z" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">#define JLN_MP_RANDOM_SEED_Z</code></h4>
+<p>Z value for the seed of random.</p><p>
 </p><div class="group__emp">
-<h4 class="emp" id="emp::random"><a href="#emp::random" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>random<span class="o">&lt;</span><span class="k">auto</span> v <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::number">number</a><span class="o">&lt;</span><a href="#mp::next_random">next_random</a><span class="o">&lt;</span>v<span class="o">></span><span class="p">()</span><span class="o">></span></code></h4>
-<h4 class="emp" id="emp::random_v"><a href="#emp::random_v" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp"><span class="kt">unsigned</span> emp<span class="p">::</span>random_v<span class="o">&lt;</span><span class="k">auto</span> v <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span></code> = <code class="inlinecode highlight" data-lang="cpp"><a href="#mp::next_random">next_random</a><span class="o">&lt;</span>v<span class="o">></span><span class="p">()</span></code></h4>
+<h4 class="emp" id="emp::random"><a href="#emp::random" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>random<span class="o">&lt;</span>Tag <span class="o">=</span> <a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> <span class="k">auto</span> v <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span></code> = /*...*/</h4>
+<h4 class="emp" id="emp::random_of"><a href="#emp::random_of" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp">emp<span class="p">::</span>random_of<span class="o">&lt;</span>T<span class="p">,</span> Tag <span class="o">=</span> <a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> <span class="k">auto</span> v <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span></code> = /*...*/</h4>
+<h4 class="emp" id="emp::random_of_v"><a href="#emp::random_of_v" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp"><span class="kt">unsigned</span> emp<span class="p">::</span>random_of_v<span class="o">&lt;</span>T<span class="p">,</span> Tag <span class="o">=</span> <a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="o">></span></code> = /*...*/</h4>
+<h4 class="emp" id="emp::random_v"><a href="#emp::random_v" class="ref">¶</a><code class="inlinecode highlight" data-lang="cpp"><span class="kt">unsigned</span> emp<span class="p">::</span>random_v<span class="o">&lt;</span>Tag <span class="o">=</span> <a href="#mp::default_make_id_tag">default_make_id_tag</a><span class="p">,</span> <span class="k">auto</span> v <span class="o">=</span> <span class="p">[]{}</span><span class="o">></span></code> = /*...*/</h4>
 </div>
 </div>
 <h3 class="file" id="utility/rewrap_unpack.hpp"><a href="#utility/rewrap_unpack.hpp" class="ref">¶</a>&lt;jln/mp/utility/rewrap_unpack.hpp></h3><p class="test_bloc">Test file: <a href="https://github.com/jonathanpoelen/jln.mp/tree/master/test/src/utility/rewrap_unpack.cpp">test/src/utility/rewrap_unpack.cpp</a></p>
