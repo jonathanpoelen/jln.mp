@@ -45,8 +45,22 @@ namespace jln::mp
   template<class F = listify, class C = listify>
   struct repeat_index_with
   {
+#ifdef JLN_MP_DOXYGENATING
     template<class... ns>
     using f = typename repeat_index_with_v_c<F, C>::template f<ns::value...>;
+#elif !JLN_MP_MSVC
+    template<class... ns>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(
+      sizeof...(ns), detail::repeat_index_impl
+    )
+    ::template f<C, F, ns::value...>;
+#else
+    template<class... ns>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(
+      sizeof...(ns), detail::repeat_index_impl
+    )
+    ::template f<C, F, unsigned{ns::value}...>;
+#endif
   };
 
   template<class C = listify>
