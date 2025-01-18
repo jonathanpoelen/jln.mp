@@ -5,6 +5,7 @@
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/utility/is.hpp>
+#include <cstddef>
 
 namespace jln::mp
 {
