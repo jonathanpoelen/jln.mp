@@ -1360,7 +1360,7 @@ namespace jln::mp
     using size = typename detail::_unpack<mp::size<C>, L>::type;
 
     template<class L, class C = mp::identity>
-    inline constexpr bool size_v = detail::_unpack<mp::size<C>, L>::type::value;
+    inline constexpr std::size_t size_v = detail::_unpack<mp::size<C>, L>::type::value;
   }
 
   /// \cond
@@ -2771,7 +2771,7 @@ namespace jln::mp::detail
     template<int n, template<class...> class C, template<class...> class F, class... seqs>
     using f = typename detail::_zip_dispatch<
       sizeof...(seqs) <= 8 ? 1 : 2
-    >::template f<C, F, seqs...>;
+    >::template f<C, join<lift<F>>::template f, seqs...>;
   };
 
 #define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep)                  \
@@ -3461,6 +3461,19 @@ namespace jln::mp::detail
 
 namespace jln::mp
 {
+  /// \cond
+  #if ! JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+  namespace detail
+  {
+    template<class x, class...>
+    struct front_impl
+    {
+      using type = x;
+    };
+  }
+  #endif
+  /// \endcond
+
   /// \ingroup list
 
   /// Retrieves the first element of a sequence.
@@ -3468,8 +3481,13 @@ namespace jln::mp
   template<class C = identity>
   struct front
   {
-    template<class x, class... xs>
-    using f = JLN_MP_CALL_TRACE(C, x);
+#if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, __type_pack_element<0, xs...>);
+#else
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, typename detail::front_impl<xs...>::type);
+#endif
   };
 
   namespace emp
@@ -3485,8 +3503,16 @@ namespace jln::mp
 namespace jln::mp
 {
   template<>
-  struct front<identity> : detail::index0
-  {};
+  struct front<identity>
+  {
+#if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+    template<class... xs>
+    using f = __type_pack_element<0, xs...>;
+#else
+    template<class... xs>
+    using f = typename detail::front_impl<xs...>::type;
+#endif
+  };
 }
 
 // facilitates sfinae version for is_map_impl
@@ -6229,7 +6255,7 @@ namespace jln::mp
 
   /// single list of \c int_t.
   template<int_t... i>
-  struct int_seq_c;
+  struct int_seq_c {};
 } // namespace jln::mp
 
 
@@ -7848,6 +7874,32 @@ namespace jln::mp::detail
   {
     using type = compress_c_with<C, selectors::value...>;
   };
+
+  template<template<class T, T...> class Tpl, class T, T... selectors, class C>
+  struct make_compress<Tpl<T, selectors...>, C>
+  {
+    using type = compress_c_with<C, selectors...>;
+  };
+
+  template<template<int_t...> class Tpl, int_t... selectors, class C>
+  struct make_compress<Tpl<selectors...>, C>
+  {
+    using type = compress_c_with<C, selectors...>;
+  };
+
+  template<template<bool...> class Tpl, bool... selectors, class C>
+  struct make_compress<Tpl<selectors...>, C>
+  {
+    using type = compress_c_with<C, selectors...>;
+  };
+
+#if JLN_MP_ENABLE_TPL_AUTO
+  template<template<auto...> class Tpl, auto... selectors, class C>
+  struct make_compress<Tpl<selectors...>, C>
+  {
+    using type = compress_c_with<C, selectors...>;
+  };
+#endif
 }
 /// \endcond
 
@@ -10079,6 +10131,9 @@ namespace jln::mp
 
     template<class L, int_t n, class C = mp::listify>
     using repeat_c = typename detail::_unpack<mp::repeat_c<n, C>, L>::type;
+
+    template<unsigned n, class x, class F = listify>
+    using repeat_value_c = typename detail::repeat_impl<1, n, F>::template f<x>::type;
   }
 }
 
@@ -10100,6 +10155,14 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
+#if JLN_MP_MEMOIZED_ALIAS
+# define JLN_MP_REPEAT_VALUE(F, n, ...) ::jln::mp::emp::repeat_value_c<n, __VA_ARGS__, F>
+# define JLN_MP_REPEAT_VALUE_T JLN_MP_REPEAT_VALUE
+#else
+# define JLN_MP_REPEAT_VALUE(F, n, ...) repeat_impl<1, n, F>::template f<__VA_ARGS__>::type
+# define JLN_MP_REPEAT_VALUE_T(F, n, ...) typename JLN_MP_REPEAT_VALUE(F, n, __VA_ARGS__)
+#endif
+
   template<class T>
   struct repeat_impl_0
   {
@@ -10302,6 +10365,865 @@ namespace jln::mp
     using combine = typename detail::_unpack<mp::combine<C>, L>::type;
   }
 }
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class>
+    struct conjunction_impl;
+  }
+  /// \endcond
+
+  /// \ingroup search
+
+  /// Perform a logical AND on the sequence of value and returns the first value converted to false.
+  /// Conjunction is short-circuiting: if there is a template type
+  /// argument `xs[i]` with `bool(Pred::f<xs[i]>::value) == false`,
+  /// then instantiating `conjunction<C>::f<xs[0], ..., xs[n-1]>`
+  /// does not require the instantiation of `Pred::f<xs[j]>::value` for `j > i`.
+  /// \note If you just need a boolean, `all_of<Pred,C>` is more appropriate.
+  /// \treturn \value
+  /// \post If `sizeof...(xs) == 0`, `true_`
+  /// \post If `sizeof...(xs) != 0`, the first type `xs[i]` for which `bool(Pred::f<xs[i]>::value) == false`, or last value if there is no such type.
+  /// \see disjunction, all_of, drop_while, take_while
+  template<class Pred, class C = identity>
+  struct conjunction_with
+  {
+    template<class... xs>
+    using f = typename detail::conjunction_impl<
+      typename detail::_drop_while<sizeof...(xs)>
+      ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
+    >::template f<front<C>, sizeof...(xs)>
+    ::template f<true_, xs...>;
+  };
+
+  /// Perform a logical AND on the sequence of value and returns the first value converted to false.
+  /// Conjunction is short-circuiting: if there is a template type
+  /// argument `xs[i]` with `bool(xs[i]::value) == false`, then instantiating
+  /// `conjunction<C>::f<xs[0], ..., xs[n-1]>` does not require the
+  /// instantiation of `xs[j]::value` for `j > i`.
+  /// \note If you just need a boolean, `all_of<identity,C>` is more appropriate.
+  /// \treturn \value convertible to \bool
+  /// \post If `sizeof...(xs) == 0`, `true_`
+  /// \post If `sizeof...(xs) != 0`, the first value for which `bool(xs[i]::value) == false`, or last value if there is no such type.
+  /// \see disjunction, all_of, drop_while, take_while
+  template<class C = identity>
+  using conjunction = conjunction_with<identity, C>;
+
+  namespace emp
+  {
+    template<class L, class Pred, class C = mp::identity>
+    using conjunction_with = typename detail::_unpack<mp::conjunction_with<Pred, C>, L>::type;
+
+    template<class L, class C = mp::identity>
+    using conjunction = typename detail::_unpack<mp::conjunction_with<mp::identity, C>, L>::type;
+
+    template<class L, class Pred, class C = mp::identity>
+    inline constexpr bool conjunction_with_v = detail::_unpack<
+      mp::conjunction_with<Pred, C>, L>::type::value;
+
+    template<class L, class C = mp::identity>
+    inline constexpr bool conjunction_v = detail::_unpack<
+      mp::conjunction_with<mp::identity, C>, L>::type::value;
+  }
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct conjunction_impl<_drop_while_continue>
+  {
+    template<class C, std::size_t n>
+    using f = drop_front_c<n, C>;
+  };
+
+  template<std::size_t n>
+  struct conjunction_impl<_drop_while_result<n>>
+  {
+    template<class C, std::size_t m>
+    using f = drop_front_c<m-n, C>;
+  };
+}
+/// \endcond
+
+namespace jln::mp
+{
+  /// \ingroup algorithm
+
+  /// Checks whether a \value is contained in a \sequence.
+  /// \treturn \bool
+  template<class x, class C = identity>
+  using contains = any_of<is<x>, C>;
+
+  namespace emp
+  {
+    template<class L, class x, class C = mp::identity>
+    using contains = typename detail::_unpack<mp::contains<x, C>, L>::type;
+
+    template<class L, class x, class C = mp::identity>
+    inline constexpr bool contains_v = detail::_unpack<mp::contains<x, C>, L>::type::value;
+  }
+}
+
+namespace jln::mp
+{
+  /// \ingroup filter
+
+  /// Copies all elements that satisfy a predicate.
+  /// \treturn \sequence
+  template<class Pred, class C = listify>
+  using copy_if = transform<wrap_in_list_if<Pred>, join<C>>;
+
+  /// Copies all occurence of a \value.
+  /// \treturn \sequence
+  template<class x, class C = listify>
+  using copy = copy_if<is<x>, C>;
+
+  namespace emp
+  {
+    template<class L, class Pred, class C = mp::listify>
+    using copy_if = typename detail::_unpack<mp::copy_if<Pred, C>, L>::type;
+
+    template<class L, class x, class C = mp::listify>
+    using copy = typename detail::_unpack<mp::copy<x, C>, L>::type;
+  }
+}
+
+namespace jln::mp
+{
+  /// \ingroup list
+
+  /// Remove the first element of sequence
+  /// \pre `sizeof...(xs) > 0`
+  /// \treturn \sequence
+  template<class C = listify>
+  using pop_front = drop_front_c<1, C>;
+
+  namespace emp
+  {
+    template<class L, class C = mp::listify>
+    using pop_front = drop_front_c<L, 1, C>;
+  }
+}
+
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  /// \treturn \bool
+  template<class T, class C = identity>
+  using is_not = is<T, not_<C>>;
+  /// \ingroup utility
+
+  /// Uses a compiler builtin or \c std::is_base_if_v.
+  /// Note: the real signature takes a var args.
+  #ifdef DOXYGENATING
+  # define JLN_MP_IS_BASE_OF(Base, Derived)
+  #elif JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_base_of)
+  # define JLN_MP_IS_BASE_OF __is_base_of
+  #else
+  # define JLN_MP_IS_BASE_OF(...) std::is_base_of_v<__VA_ARGS__>
+    #endif
+
+  /// Wrapper for \c JLN_MP_IS_BASE_OF() / \c std::is_base_of
+  /// \treturn \c true_ / \c false_
+  template<class Derived, class C = identity>
+  struct is_base_of
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_IS_BASE_OF(x, Derived)>);
+  };
+
+  namespace emp
+  {
+    template<class Base, class Derived>
+    using is_base_of = number<JLN_MP_IS_BASE_OF(Base, Derived)>;
+
+    template<class Base, class Derived>
+    inline constexpr bool is_base_of_v = JLN_MP_IS_BASE_OF(Base, Derived);
+  }
+
+  /// \cond
+  template<class Derived>
+  struct is_base_of<Derived, identity>
+  {
+    template<class x>
+    using f = number<JLN_MP_IS_BASE_OF(x, Derived)>;
+  };
+  /// \endcond
+}
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class x>
+    struct basic_item
+    {};
+
+    template<class... xs>
+    struct inherit : basic_item<xs>...
+    {};
+  }
+#define JLN_MP_SET_CONTAINS_BASE(x, ...) JLN_MP_IS_BASE_OF(detail::basic_item<x>, __VA_ARGS__)
+#define JLN_MP_SET_CONTAINS(x, ...) JLN_MP_SET_CONTAINS_BASE(x, detail::inherit<__VA_ARGS__>)
+  /// \endcond
+
+  /// \ingroup set
+
+  /// Checks if \c x is an element of the \set whose elements are \c xs.
+  /// \treturn \bool
+  /// \pre `emp::unique<xs...> == list<xs...>`
+  template<class x, class C = identity>
+  struct set_contains
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_SET_CONTAINS(x, xs...)>);
+  };
+
+  /// Checks if \c x is not an element of the \set whose elements are \c xs.
+  /// \treturn \bool
+  /// \pre `emp::unique<xs...> == list<xs...>`
+  template<class x, class C = identity>
+  using set_not_contains = set_contains<x, not_<C>>;
+
+  namespace emp
+  {
+    /// \c true if \c x is an element of the set \c xs, \c false otherwise.
+    template<class x, class... xs>
+    inline constexpr bool set_contains_xs_v = JLN_MP_SET_CONTAINS(x, xs...);
+
+    /// \c true if \c x is an element of the set \c Set, \c false otherwise.
+    template<class Set, class x>
+    inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
+      x, typename detail::_unpack<mp::lift<detail::inherit>, Set>::type
+    );
+
+    /// \c true if \c x is an element of all \set \c Sets, \c false otherwise.
+    template<class x, class... Sets>
+    inline constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
+      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
+    ) && ...);
+
+    /// \c true if \c x is an element of any \set \c Sets, \c false otherwise.
+    template<class x, class... Sets>
+    inline constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
+      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
+    ) || ...);
+
+    /// \c true if \c x is an element of none \set \c Sets, \c false otherwise.
+    template<class x, class... Sets>
+    inline constexpr bool set_none_contains_v = !set_any_contains_v<x, Sets...>;
+
+    /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
+    template<class Set, class x>
+    using set_contains = number<set_contains_v<Set, x>>;
+
+    /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
+    template<class Set, class x>
+    using set_not_contains = number<!set_contains_v<Set, x>>;
+
+    /// \c true_ if \c x is an element of all \set \c Sets, \c false_ otherwise.
+    template<class x, class... Sets>
+    using set_all_contains = number<set_all_contains_v<x, Sets...>>;
+
+    /// \c true_ if \c x is an element of any \set \c Sets, \c false_ otherwise.
+    template<class x, class... Sets>
+    using set_any_contains = number<set_any_contains_v<x, Sets...>>;
+
+    /// \c true_ if \c x is an element of none \set \c Sets, \c false_ otherwise.
+    template<class x, class... Sets>
+    using set_none_contains = number<!set_any_contains_v<x, Sets...>>;
+  }
+
+  /// Checks if \c x is an element of all \set \c Sets.
+  /// \treturn \bool
+  /// \pre `emp::unique<Sets> && ...`
+  template<class x, class C = identity>
+  struct set_all_contains
+  {
+    template<class... Sets>
+    using f = JLN_MP_CALL_TRACE(C, number<emp::set_all_contains_v<x, Sets...>>);
+  };
+
+  /// Checks if \c x is an element of any \set \c Sets.
+  /// \treturn \bool
+  /// \pre `emp::unique<Sets> && ...`
+  template<class x, class C = identity>
+  struct set_any_contains
+  {
+    template<class... Sets>
+    using f = JLN_MP_CALL_TRACE(C, number<emp::set_any_contains_v<x, Sets...>>);
+  };
+
+  /// Checks if \c x is an element of none \set \c Sets.
+  /// \treturn \bool
+  /// \pre `emp::unique<Sets> && ...`
+  template<class x, class C = identity>
+  struct set_none_contains
+  {
+    template<class... Sets>
+    using f = JLN_MP_CALL_TRACE(C, number<!emp::set_any_contains_v<x, Sets...>>);
+  };
+}
+
+/// \cond
+namespace jln::mp
+{
+  template<class x>
+  struct set_contains<x, identity>
+  {
+    template<class... xs>
+    using f = number<JLN_MP_SET_CONTAINS(x, xs...)>;
+  };
+
+  template<class x, class C>
+  struct set_contains<x, not_<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<!JLN_MP_SET_CONTAINS(x, xs...)>);
+  };
+
+  template<class x>
+  struct set_contains<x, not_<identity>>
+  {
+    template<class... xs>
+    using f = number<!JLN_MP_SET_CONTAINS(x, xs...)>;
+  };
+
+  template<class x>
+  struct set_all_contains<x, identity>
+  {
+    template<class... Sets>
+    using f = number<emp::set_all_contains_v<x, Sets...>>;
+  };
+
+  template<class x>
+  struct set_any_contains<x, identity>
+  {
+    template<class... Sets>
+    using f = number<emp::set_any_contains_v<x, Sets...>>;
+  };
+
+  template<class x>
+  struct set_none_contains<x, identity>
+  {
+    template<class... Sets>
+    using f = number<!emp::set_any_contains_v<x, Sets...>>;
+  };
+}
+/// \endcond
+
+namespace jln::mp
+{
+  /// \ingroup algorithm
+
+  /// Checks whether all \values are unique.
+  /// \treturn \bool
+  template<class Cmp = same<>, class C = identity>
+  struct is_unique_if
+#ifdef JLN_MP_DOXYGENATING
+  {
+    template<class... xs>
+    using f;
+  }
+#endif
+  ;
+
+  /// Checks whether all \values are unique.
+  /// \treturn \bool
+  template<class C = identity>
+  using is_unique = is_unique_if<same<>, C>;
+
+  namespace emp
+  {
+    template<class L, class C = mp::identity>
+    using is_unique = typename detail::_unpack<mp::is_unique_if<mp::same<>, C>, L>::type;
+
+    template<class L, class Cmp = mp::same<>, class C = mp::identity>
+    using is_unique_if = typename detail::_unpack<mp::is_unique_if<Cmp, C>, L>::type;
+  }
+}
+
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<int_t i, class x>
+  struct indexed_item : basic_item<x>
+  {};
+
+  template<class, int_t... ints>
+  struct indexed_inherit
+  {
+    template<class... xs>
+    struct f : indexed_item<ints, xs>...
+    {};
+  };
+
+#if JLN_MP_MSVC_LIKE
+  template<class... xs>
+  struct _is_set
+  {
+    template<class Pack>
+    static auto is_set(Pack pack) -> decltype((
+        static_cast<basic_item<xs>*>(pack),...
+    ), number<1>());
+
+    static number<0> is_set(...);
+
+    using type = decltype(is_set(static_cast<
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>*
+    >(nullptr)));
+  };
+#endif
+}
+
+namespace jln::mp
+{
+  template<class C>
+  struct is_unique_if<same<>, C>
+  {
+    template<class... xs>
+#if JLN_MP_MSVC_LIKE
+    // workaround for MSVC which has a broken EBO
+    using f = JLN_MP_CALL_TRACE(C, typename detail::_is_set<xs...>::type);
+#else
+    using f = JLN_MP_CALL_TRACE(C, number<sizeof(
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)::template f<xs...>
+    ) == 1>);
+#endif
+  };
+
+  template<>
+  struct is_unique_if<same<>, identity>
+  {
+    template<class... xs>
+#if JLN_MP_MSVC_LIKE
+    // workaround for MSVC which has a broken EBO
+    using f = typename detail::_is_set<xs...>::type;
+#else
+    using f = number<sizeof(
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)::template f<xs...>
+    ) == 1>;
+#endif
+  };
+}
+
+namespace jln::mp::detail
+{
+  template<bool>
+  struct is_unique_unpack_impl;
+
+  template<>
+  struct is_unique_unpack_impl<false>
+  {
+    template<class C, class seq, class... xs>
+    using f = typename _unpack<C, seq, xs...>::type;
+  };
+
+  template<>
+  struct is_unique_unpack_impl<true>
+  {
+    template<class C, class seq, class... xs>
+    using f = void;
+  };
+
+  template<class C>
+  struct is_unique_unpack
+  {
+    template<class seq, class... xs>
+    using f = typename is_unique_unpack_impl<JLN_MP_IS_SAME(seq, void)>
+      ::template f<C, seq, xs...>;
+  };
+
+  template<class Cmp>
+  struct is_unique_set_cmp_push_back_or_void
+  {
+    template<class x, class... xs>
+    using f = JLN_MP_CONDITIONAL_P_C_T(
+      (none_of<push_back<x, Cmp>>::template f<xs...>::value),
+      (list<xs..., x>),
+      (void)
+    );
+  };
+}
+
+namespace jln::mp
+{
+  template<class Cmp, class C>
+  struct is_unique_if
+    : push_front<
+        list<>,
+        fold<
+          detail::is_unique_unpack<detail::is_unique_set_cmp_push_back_or_void<Cmp>>,
+          is_not<void, C>
+        >
+      >
+  {};
+}
+/// \endcond
+
+// #if ! JLN_MP_GCC
+// #endif
+
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+#if JLN_MP_GCC
+    template<bool>
+    struct _remove_unique;
+
+    template<bool>
+    struct _copy_unique;
+#else
+    template<class, int_t... i>
+    struct _remove_unique;
+
+    template<class, int_t... i>
+    struct _copy_unique;
+#endif
+
+    template<class Cmp, class C>
+    struct mk_remove_unique;
+
+    template<class Cmp, class C>
+    struct mk_copy_unique;
+  }
+  /// \endcond
+
+  /// \ingroup filter
+
+  /// Remove unique elements from a \sequence.
+  /// \treturn \sequence
+  /// \see remove_unique_if, copy_unique, copy_unique_if
+  template<class C = listify>
+  struct remove_unique
+  {
+    template<class... xs>
+#if JLN_MP_GCC
+    using f = typename detail::_remove_unique<sizeof...(xs) < 2>
+#else
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::_remove_unique)
+#endif
+      ::template f<C, xs...>;
+  };
+
+  /// Remove unique elements from a \sequence.
+  /// \treturn \sequence
+  /// \see remove_unique, copy_unique, copy_unique_if
+  template<class Cmp = same<>, class C = listify>
+  using remove_unique_if = typename detail::mk_remove_unique<Cmp, C>::type;
+
+  namespace emp
+  {
+    template<class L, class C = mp::listify>
+    using remove_unique = typename detail::_unpack<remove_unique<C>, L>::type;
+
+    template<class L, class Cmp = mp::same<>, class C = mp::listify>
+    using remove_unique_if = typename detail::_unpack<remove_unique_if<Cmp, C>, L>::type;
+  }
+
+  /// Copy unique elements from a \sequence.
+  /// \treturn \sequence
+  /// \see copy_unique_if, remove_unique, remove_unique_if
+  template<class C = listify>
+  struct copy_unique
+  {
+    template<class... xs>
+#if JLN_MP_GCC
+    using f = typename detail::_copy_unique<sizeof...(xs) < 2>
+#else
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::_copy_unique)
+#endif
+      ::template f<C, xs...>;
+  };
+
+  /// Copy unique elements from a \sequence.
+  /// \treturn \sequence
+  /// \see copy_unique, remove_unique, remove_unique_if
+  template<class Cmp = same<>, class C = listify>
+  using copy_unique_if = typename detail::mk_copy_unique<Cmp, C>::type;
+
+  namespace emp
+  {
+    template<class L, class C = mp::listify>
+    using copy_unique = typename detail::_unpack<copy_unique<C>, L>::type;
+
+    template<class L, class Cmp = mp::same<>, class C = mp::listify>
+    using copy_unique_if = typename detail::_unpack<copy_unique_if<Cmp, C>, L>::type;
+  }
+}
+
+
+
+// #if JLN_MP_GCC
+// #else
+// #endif
+
+/// \cond
+namespace jln::mp::detail
+{
+#if JLN_MP_GCC
+#if !JLN_MP_FEATURE_CONCEPTS
+  template<class From, class To, class = decltype(To(From()))>
+  constexpr bool is_convertible_to(From, To)
+  {
+    return true;
+  }
+
+  constexpr bool is_convertible_to(...)
+  {
+    return false;
+  }
+#endif
+
+  template<class Inherit, class x>
+  using remove_unique_elem_impl =
+    typename wrap_in_list_c<
+#if JLN_MP_FEATURE_CONCEPTS
+      !requires{ static_cast<basic_item<x>*>(static_cast<Inherit*>(nullptr)); }
+#else
+      !is_convertible_to(
+        static_cast<Inherit*>(nullptr),
+        static_cast<basic_item<x>*>(nullptr)
+      )
+#endif
+    >
+    ::template f<x>;
+
+  template<class C, class Inherit, class... xs>
+  using remove_unique_impl = typename join<C>
+    ::template f<remove_unique_elem_impl<Inherit, xs>...>;
+
+  template<>
+  struct _remove_unique<false>
+  {
+    template<class C, class... xs>
+    using f = remove_unique_impl<
+      C,
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>,
+      xs...
+    >;
+  };
+
+  template<>
+  struct _remove_unique<true>
+    : call_trace_c0_arg
+  {};
+
+
+  template<class Inherit, class x>
+  using copy_unique_elem_impl =
+    typename wrap_in_list_c<
+#if JLN_MP_FEATURE_CONCEPTS
+      requires{ static_cast<basic_item<x>*>(static_cast<Inherit*>(nullptr)); }
+#else
+      is_convertible_to(
+        static_cast<Inherit*>(nullptr),
+        static_cast<basic_item<x>*>(nullptr)
+      )
+#endif
+    >
+    ::template f<x>;
+
+  template<class C, class Inherit, class... xs>
+  using copy_unique_impl = typename join<C>
+    ::template f<copy_unique_elem_impl<Inherit, xs>...>;
+
+  template<>
+  struct _copy_unique<false>
+  {
+    template<class C, class... xs>
+    using f = copy_unique_impl<
+      C,
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>,
+      xs...
+    >;
+  };
+
+  template<>
+  struct _copy_unique<true>
+  {
+    template<class C, class... xs>
+    using f = JLN_MP_CALL_TRACE(C, xs...);
+  };
+#else
+  template<class C, class Inherit, Inherit* ptr, class... S>
+  using remove_copy_unique_filter = typename join<C>
+    ::template f<decltype(S::f(ptr))...>;
+
+
+  template<class x>
+  struct remove_unique_elem_impl
+  {
+    template<class i>
+    static list<> f(basic_item<list<x, i>>*);
+
+    static list<x> f(...);
+  };
+
+  template<class, int_t... i>
+  struct _remove_unique
+  {
+    template<class C, class... xs>
+    using f = remove_copy_unique_filter<
+      C, inherit<list<xs, number<i>>...>, nullptr, remove_unique_elem_impl<xs>...
+    >;
+  };
+
+
+  template<class x>
+  struct copy_unique_elem_impl
+  {
+    template<class i>
+    static list<x> f(basic_item<list<x, i>>*);
+
+    static list<> f(...);
+  };
+
+  template<class, int_t... i>
+  struct _copy_unique
+  {
+    template<class C, class... xs>
+    using f = remove_copy_unique_filter<
+      C, inherit<list<xs, number<i>>...>, nullptr, copy_unique_elem_impl<xs>...
+    >;
+  };
+#endif
+
+
+  template<class, int_t... ints>
+  struct remove_unique_if_impl
+  {
+    template<class C, class Cmp, class... xs>
+    using f = typename join<C>::template f<
+      JLN_MP_MSVC_FIX_CALL((
+        rotate_impl<ints>::template f<
+          ints,
+          pop_front<any_of<
+            push_back<xs, Cmp>,
+            lift<wrap_in_list>
+          >>::template f,
+          xs...
+        >
+      ), xs)...
+    >;
+  };
+
+  template<>
+  struct remove_unique_if_impl<int_t>
+    : call_trace_c0_arg
+  {};
+
+  template<int_t i>
+  struct remove_unique_if_impl<int_t, i>
+  : remove_unique_if_impl<int_t>
+  {};
+
+  template<class Cmp, class C>
+  struct _remove_unique_if
+  {
+    template<class... xs>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), remove_unique_if_impl)
+      ::template f<C, Cmp, xs...>;
+  };
+
+  template<class Cmp, class C>
+  struct mk_remove_unique
+  {
+    using type = _remove_unique_if<Cmp, C>;
+  };
+
+
+  template<class, int_t... ints>
+  struct copy_unique_if_impl
+  {
+    template<class C, class Cmp, class... xs>
+    using f = typename join<C>::template f<
+      JLN_MP_MSVC_FIX_CALL((
+        rotate_impl<ints>::template f<
+          ints,
+          pop_front<none_of<
+            push_back<xs, Cmp>,
+            lift<wrap_in_list>
+          >>::template f,
+          xs...
+        >
+      ), xs)...
+    >;
+  };
+
+  template<>
+  struct copy_unique_if_impl<int_t>
+  : remove_unique_if_impl<int_t>
+  {};
+
+  template<int_t i>
+  struct copy_unique_if_impl<int_t, i>
+  {
+    template<class C, class Cmp, class... xs>
+    using f = JLN_MP_CALL_TRACE(C, xs...);
+  };
+
+  template<class Cmp, class C>
+  struct _copy_unique_if
+  {
+    template<class... xs>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), copy_unique_if_impl)
+      ::template f<C, Cmp, xs...>;
+  };
+
+  template<class Cmp, class C>
+  struct mk_copy_unique
+  {
+    using type = _copy_unique_if<Cmp, C>;
+  };
+
+
+  template<class C>
+  struct mk_remove_unique<same<>, C>
+  {
+    using type = mp::remove_unique<C>;
+  };
+
+  template<class C>
+  struct mk_remove_unique<same<not_<>>, C>
+  {
+    using type = mp::copy_unique<C>;
+  };
+
+  template<class F, class C>
+  struct mk_remove_unique<tee<F, not_<>>, C>
+  : mk_copy_unique<F, C>
+  {};
+
+  template<class C>
+  struct mk_copy_unique<same<>, C>
+  {
+    using type = mp::copy_unique<C>;
+  };
+
+  template<class C>
+  struct mk_copy_unique<same<not_<>>, C>
+  {
+    using type = mp::remove_unique<C>;
+  };
+
+  template<class F, class C>
+  struct mk_copy_unique<tee<F, not_<>>, C>
+  : mk_remove_unique<F, C>
+  {};
+}
+/// \endcond
 
 
 
@@ -11492,852 +12414,6 @@ namespace jln::mp
     template<class x, class y>
     using f = number<(x::value >= y::value)>;
   };
-}
-/// \endcond
-
-namespace jln::mp
-{
-  /// \ingroup algorithm
-
-  /// comparison on the result of a function.
-  /// \treturn \bool
-  template<class F, class Cmp = less<>>
-  using compare_with = each<F, F, Cmp>;
-
-  namespace emp
-  {
-    template<class F, class x, class y, class Cmp = mp::less<>>
-    using compare_with = typename Cmp::template f<
-      typename F::template f<x>,
-      typename F::template f<y>
-    >;
-
-    template<class F, class x, class y, class Cmp = mp::less<>>
-    inline constexpr bool compare_with_v = Cmp::template f<
-      typename F::template f<x>,
-      typename F::template f<y>
-    >::value;
-  }
-}
-
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class>
-    struct conjunction_impl;
-  }
-  /// \endcond
-
-  /// \ingroup search
-
-  /// Perform a logical AND on the sequence of value and returns the first value converted to false.
-  /// Conjunction is short-circuiting: if there is a template type
-  /// argument `xs[i]` with `bool(Pred::f<xs[i]>::value) == false`,
-  /// then instantiating `conjunction<C>::f<xs[0], ..., xs[n-1]>`
-  /// does not require the instantiation of `Pred::f<xs[j]>::value` for `j > i`.
-  /// \note If you just need a boolean, `all_of<Pred,C>` is more appropriate.
-  /// \treturn \value
-  /// \post If `sizeof...(xs) == 0`, `true_`
-  /// \post If `sizeof...(xs) != 0`, the first type `xs[i]` for which `bool(Pred::f<xs[i]>::value) == false`, or last value if there is no such type.
-  /// \see disjunction, all_of, drop_while, take_while
-  template<class Pred, class C = identity>
-  struct conjunction_with
-  {
-    template<class... xs>
-    using f = typename detail::conjunction_impl<
-      typename detail::_drop_while<sizeof...(xs)>
-      ::template f<0, JLN_MP_TRACE_F(Pred), xs...>
-    >::template f<front<C>, sizeof...(xs)>
-    ::template f<true_, xs...>;
-  };
-
-  /// Perform a logical AND on the sequence of value and returns the first value converted to false.
-  /// Conjunction is short-circuiting: if there is a template type
-  /// argument `xs[i]` with `bool(xs[i]::value) == false`, then instantiating
-  /// `conjunction<C>::f<xs[0], ..., xs[n-1]>` does not require the
-  /// instantiation of `xs[j]::value` for `j > i`.
-  /// \note If you just need a boolean, `all_of<identity,C>` is more appropriate.
-  /// \treturn \value convertible to \bool
-  /// \post If `sizeof...(xs) == 0`, `true_`
-  /// \post If `sizeof...(xs) != 0`, the first value for which `bool(xs[i]::value) == false`, or last value if there is no such type.
-  /// \see disjunction, all_of, drop_while, take_while
-  template<class C = identity>
-  using conjunction = conjunction_with<identity, C>;
-
-  namespace emp
-  {
-    template<class L, class Pred, class C = mp::identity>
-    using conjunction_with = typename detail::_unpack<mp::conjunction_with<Pred, C>, L>::type;
-
-    template<class L, class C = mp::identity>
-    using conjunction = typename detail::_unpack<mp::conjunction_with<mp::identity, C>, L>::type;
-
-    template<class L, class Pred, class C = mp::identity>
-    inline constexpr bool conjunction_with_v = detail::_unpack<
-      mp::conjunction_with<Pred, C>, L>::type::value;
-
-    template<class L, class C = mp::identity>
-    inline constexpr bool conjunction_v = detail::_unpack<
-      mp::conjunction_with<mp::identity, C>, L>::type::value;
-  }
-}
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<>
-  struct conjunction_impl<_drop_while_continue>
-  {
-    template<class C, std::size_t n>
-    using f = drop_front_c<n, C>;
-  };
-
-  template<std::size_t n>
-  struct conjunction_impl<_drop_while_result<n>>
-  {
-    template<class C, std::size_t m>
-    using f = drop_front_c<m-n, C>;
-  };
-}
-/// \endcond
-
-namespace jln::mp
-{
-  /// \ingroup algorithm
-
-  /// Checks whether a \value is contained in a \sequence.
-  /// \treturn \bool
-  template<class x, class C = identity>
-  using contains = any_of<is<x>, C>;
-
-  namespace emp
-  {
-    template<class L, class x, class C = mp::identity>
-    using contains = typename detail::_unpack<mp::contains<x, C>, L>::type;
-
-    template<class L, class x, class C = mp::identity>
-    inline constexpr bool contains_v = detail::_unpack<mp::contains<x, C>, L>::type::value;
-  }
-}
-
-namespace jln::mp
-{
-  /// \ingroup filter
-
-  /// Copies all elements that satisfy a predicate.
-  /// \treturn \sequence
-  template<class Pred, class C = listify>
-  using copy_if = transform<wrap_in_list_if<Pred>, join<C>>;
-
-  /// Copies all occurence of a \value.
-  /// \treturn \sequence
-  template<class x, class C = listify>
-  using copy = copy_if<is<x>, C>;
-
-  namespace emp
-  {
-    template<class L, class Pred, class C = mp::listify>
-    using copy_if = typename detail::_unpack<mp::copy_if<Pred, C>, L>::type;
-
-    template<class L, class x, class C = mp::listify>
-    using copy = typename detail::_unpack<mp::copy<x, C>, L>::type;
-  }
-}
-
-namespace jln::mp
-{
-  /// \ingroup list
-
-  /// Remove the first element of sequence
-  /// \pre `sizeof...(xs) > 0`
-  /// \treturn \sequence
-  template<class C = listify>
-  using pop_front = drop_front_c<1, C>;
-
-  namespace emp
-  {
-    template<class L, class C = mp::listify>
-    using pop_front = drop_front_c<L, 1, C>;
-  }
-}
-
-namespace jln::mp
-{
-  /// \ingroup utility
-
-  /// \treturn \bool
-  template<class T, class C = identity>
-  using is_not = is<T, not_<C>>;
-  /// \cond
-  namespace detail
-  {
-    template<class x>
-    struct basic_item
-    {};
-
-    template<class... xs>
-    struct inherit : basic_item<xs>...
-    {};
-  }
-#if JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC
-# define JLN_MP_SET_CONTAINS_BASE(x, ...) __is_base_of(detail::basic_item<x>, __VA_ARGS__)
-#else
-# define JLN_MP_SET_CONTAINS_BASE(x, ...) std::is_base_of<detail::basic_item<x>, __VA_ARGS__>::value
-#endif
-#define JLN_MP_SET_CONTAINS(x, ...) JLN_MP_SET_CONTAINS_BASE(x, detail::inherit<__VA_ARGS__>)
-  /// \endcond
-
-  /// \ingroup set
-
-  /// Checks if \c x is an element of the \set whose elements are \c xs.
-  /// \treturn \bool
-  /// \pre `emp::unique<xs...> == list<xs...>`
-  template<class x, class C = identity>
-  struct set_contains
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_SET_CONTAINS(x, xs...)>);
-  };
-
-  /// Checks if \c x is not an element of the \set whose elements are \c xs.
-  /// \treturn \bool
-  /// \pre `emp::unique<xs...> == list<xs...>`
-  template<class x, class C = identity>
-  using set_not_contains = set_contains<x, not_<C>>;
-
-  namespace emp
-  {
-    /// \c true if \c x is an element of the set \c xs, \c false otherwise.
-    template<class x, class... xs>
-    inline constexpr bool set_contains_xs_v = JLN_MP_SET_CONTAINS(x, xs...);
-
-    /// \c true if \c x is an element of the set \c Set, \c false otherwise.
-    template<class Set, class x>
-    inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<detail::inherit>, Set>::type
-    );
-
-    /// \c true if \c x is an element of all \set \c Sets, \c false otherwise.
-    template<class x, class... Sets>
-    inline constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
-    ) && ...);
-
-    /// \c true if \c x is an element of any \set \c Sets, \c false otherwise.
-    template<class x, class... Sets>
-    inline constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
-    ) || ...);
-
-    /// \c true if \c x is an element of none \set \c Sets, \c false otherwise.
-    template<class x, class... Sets>
-    inline constexpr bool set_none_contains_v = !set_any_contains_v<x, Sets...>;
-
-    /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
-    template<class Set, class x>
-    using set_contains = number<set_contains_v<Set, x>>;
-
-    /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
-    template<class Set, class x>
-    using set_not_contains = number<!set_contains_v<Set, x>>;
-
-    /// \c true_ if \c x is an element of all \set \c Sets, \c false_ otherwise.
-    template<class x, class... Sets>
-    using set_all_contains = number<set_all_contains_v<x, Sets...>>;
-
-    /// \c true_ if \c x is an element of any \set \c Sets, \c false_ otherwise.
-    template<class x, class... Sets>
-    using set_any_contains = number<set_any_contains_v<x, Sets...>>;
-
-    /// \c true_ if \c x is an element of none \set \c Sets, \c false_ otherwise.
-    template<class x, class... Sets>
-    using set_none_contains = number<!set_any_contains_v<x, Sets...>>;
-  }
-
-  /// Checks if \c x is an element of all \set \c Sets.
-  /// \treturn \bool
-  /// \pre `emp::unique<Sets> && ...`
-  template<class x, class C = identity>
-  struct set_all_contains
-  {
-    template<class... Sets>
-    using f = JLN_MP_CALL_TRACE(C, number<emp::set_all_contains_v<x, Sets...>>);
-  };
-
-  /// Checks if \c x is an element of any \set \c Sets.
-  /// \treturn \bool
-  /// \pre `emp::unique<Sets> && ...`
-  template<class x, class C = identity>
-  struct set_any_contains
-  {
-    template<class... Sets>
-    using f = JLN_MP_CALL_TRACE(C, number<emp::set_any_contains_v<x, Sets...>>);
-  };
-
-  /// Checks if \c x is an element of none \set \c Sets.
-  /// \treturn \bool
-  /// \pre `emp::unique<Sets> && ...`
-  template<class x, class C = identity>
-  struct set_none_contains
-  {
-    template<class... Sets>
-    using f = JLN_MP_CALL_TRACE(C, number<!emp::set_any_contains_v<x, Sets...>>);
-  };
-}
-
-/// \cond
-namespace jln::mp
-{
-  template<class x>
-  struct set_contains<x, identity>
-  {
-    template<class... xs>
-    using f = number<JLN_MP_SET_CONTAINS(x, xs...)>;
-  };
-
-  template<class x, class C>
-  struct set_contains<x, not_<C>>
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<!JLN_MP_SET_CONTAINS(x, xs...)>);
-  };
-
-  template<class x>
-  struct set_contains<x, not_<identity>>
-  {
-    template<class... xs>
-    using f = number<!JLN_MP_SET_CONTAINS(x, xs...)>;
-  };
-
-  template<class x>
-  struct set_all_contains<x, identity>
-  {
-    template<class... Sets>
-    using f = number<emp::set_all_contains_v<x, Sets...>>;
-  };
-
-  template<class x>
-  struct set_any_contains<x, identity>
-  {
-    template<class... Sets>
-    using f = number<emp::set_any_contains_v<x, Sets...>>;
-  };
-
-  template<class x>
-  struct set_none_contains<x, identity>
-  {
-    template<class... Sets>
-    using f = number<!emp::set_any_contains_v<x, Sets...>>;
-  };
-}
-/// \endcond
-
-namespace jln::mp
-{
-  /// \ingroup algorithm
-
-  /// Checks whether all \values are unique.
-  /// \treturn \bool
-  template<class Cmp = same<>, class C = identity>
-  struct is_unique_if
-#ifdef JLN_MP_DOXYGENATING
-  {
-    template<class... xs>
-    using f;
-  }
-#endif
-  ;
-
-  /// Checks whether all \values are unique.
-  /// \treturn \bool
-  template<class C = identity>
-  using is_unique = is_unique_if<same<>, C>;
-
-  namespace emp
-  {
-    template<class L, class C = mp::identity>
-    using is_unique = typename detail::_unpack<mp::is_unique_if<mp::same<>, C>, L>::type;
-
-    template<class L, class Cmp = mp::same<>, class C = mp::identity>
-    using is_unique_if = typename detail::_unpack<mp::is_unique_if<Cmp, C>, L>::type;
-  }
-}
-
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<int_t i, class x>
-  struct indexed_item : basic_item<x>
-  {};
-
-  template<class, int_t... ints>
-  struct indexed_inherit
-  {
-    template<class... xs>
-    struct f : indexed_item<ints, xs>...
-    {};
-  };
-
-#if JLN_MP_MSVC_LIKE
-  template<class... xs>
-  struct _is_set
-  {
-    template<class Pack>
-    static auto is_set(Pack pack) -> decltype((
-        static_cast<basic_item<xs>*>(pack),...
-    ), number<1>());
-
-    static number<0> is_set(...);
-
-    using type = decltype(is_set(static_cast<
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>*
-    >(nullptr)));
-  };
-#endif
-}
-
-namespace jln::mp
-{
-  template<class C>
-  struct is_unique_if<same<>, C>
-  {
-    template<class... xs>
-#if JLN_MP_MSVC_LIKE
-    // workaround for MSVC which has a broken EBO
-    using f = JLN_MP_CALL_TRACE(C, typename detail::_is_set<xs...>::type);
-#else
-    using f = JLN_MP_CALL_TRACE(C, number<sizeof(
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)::template f<xs...>
-    ) == 1>);
-#endif
-  };
-
-  template<>
-  struct is_unique_if<same<>, identity>
-  {
-    template<class... xs>
-#if JLN_MP_MSVC_LIKE
-    // workaround for MSVC which has a broken EBO
-    using f = typename detail::_is_set<xs...>::type;
-#else
-    using f = number<sizeof(
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)::template f<xs...>
-    ) == 1>;
-#endif
-  };
-}
-
-namespace jln::mp::detail
-{
-  template<bool>
-  struct is_unique_unpack_impl;
-
-  template<>
-  struct is_unique_unpack_impl<false>
-  {
-    template<class C, class seq, class... xs>
-    using f = typename _unpack<C, seq, xs...>::type;
-  };
-
-  template<>
-  struct is_unique_unpack_impl<true>
-  {
-    template<class C, class seq, class... xs>
-    using f = void;
-  };
-
-  template<class C>
-  struct is_unique_unpack
-  {
-    template<class seq, class... xs>
-    using f = typename is_unique_unpack_impl<JLN_MP_IS_SAME(seq, void)>
-      ::template f<C, seq, xs...>;
-  };
-
-  template<class Cmp>
-  struct is_unique_set_cmp_push_back_or_void
-  {
-    template<class x, class... xs>
-    using f = JLN_MP_CONDITIONAL_P_C_T(
-      (none_of<push_back<x, Cmp>>::template f<xs...>::value),
-      (list<xs..., x>),
-      (void)
-    );
-  };
-}
-
-namespace jln::mp
-{
-  template<class Cmp, class C>
-  struct is_unique_if
-    : push_front<
-        list<>,
-        fold<
-          detail::is_unique_unpack<detail::is_unique_set_cmp_push_back_or_void<Cmp>>,
-          is_not<void, C>
-        >
-      >
-  {};
-}
-/// \endcond
-
-// #if ! JLN_MP_GCC
-// #endif
-
-
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-#if JLN_MP_GCC
-    template<bool>
-    struct _remove_unique;
-
-    template<bool>
-    struct _copy_unique;
-#else
-    template<class, int_t... i>
-    struct _remove_unique;
-
-    template<class, int_t... i>
-    struct _copy_unique;
-#endif
-
-    template<class Cmp, class C>
-    struct mk_remove_unique;
-
-    template<class Cmp, class C>
-    struct mk_copy_unique;
-  }
-  /// \endcond
-
-  /// \ingroup filter
-
-  /// Remove unique elements from a \sequence.
-  /// \treturn \sequence
-  /// \see remove_unique_if, copy_unique, copy_unique_if
-  template<class C = listify>
-  struct remove_unique
-  {
-    template<class... xs>
-#if JLN_MP_GCC
-    using f = typename detail::_remove_unique<sizeof...(xs) < 2>
-#else
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::_remove_unique)
-#endif
-      ::template f<C, xs...>;
-  };
-
-  /// Remove unique elements from a \sequence.
-  /// \treturn \sequence
-  /// \see remove_unique, copy_unique, copy_unique_if
-  template<class Cmp = same<>, class C = listify>
-  using remove_unique_if = typename detail::mk_remove_unique<Cmp, C>::type;
-
-  namespace emp
-  {
-    template<class L, class C = mp::listify>
-    using remove_unique = typename detail::_unpack<remove_unique<C>, L>::type;
-
-    template<class L, class Cmp = mp::same<>, class C = mp::listify>
-    using remove_unique_if = typename detail::_unpack<remove_unique_if<Cmp, C>, L>::type;
-  }
-
-  /// Copy unique elements from a \sequence.
-  /// \treturn \sequence
-  /// \see copy_unique_if, remove_unique, remove_unique_if
-  template<class C = listify>
-  struct copy_unique
-  {
-    template<class... xs>
-#if JLN_MP_GCC
-    using f = typename detail::_copy_unique<sizeof...(xs) < 2>
-#else
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::_copy_unique)
-#endif
-      ::template f<C, xs...>;
-  };
-
-  /// Copy unique elements from a \sequence.
-  /// \treturn \sequence
-  /// \see copy_unique, remove_unique, remove_unique_if
-  template<class Cmp = same<>, class C = listify>
-  using copy_unique_if = typename detail::mk_copy_unique<Cmp, C>::type;
-
-  namespace emp
-  {
-    template<class L, class C = mp::listify>
-    using copy_unique = typename detail::_unpack<copy_unique<C>, L>::type;
-
-    template<class L, class Cmp = mp::same<>, class C = mp::listify>
-    using copy_unique_if = typename detail::_unpack<copy_unique_if<Cmp, C>, L>::type;
-  }
-}
-
-
-
-// #if JLN_MP_GCC
-// #else
-// #endif
-
-/// \cond
-namespace jln::mp::detail
-{
-#if JLN_MP_GCC
-#if !JLN_MP_FEATURE_CONCEPTS
-  template<class From, class To, class = decltype(To(From()))>
-  constexpr bool is_convertible_to(From, To)
-  {
-    return true;
-  }
-
-  constexpr bool is_convertible_to(...)
-  {
-    return false;
-  }
-#endif
-
-  template<class Inherit, class x>
-  using remove_unique_elem_impl =
-    typename wrap_in_list_c<
-#if JLN_MP_FEATURE_CONCEPTS
-      !requires{ static_cast<basic_item<x>*>(static_cast<Inherit*>(nullptr)); }
-#else
-      !is_convertible_to(
-        static_cast<Inherit*>(nullptr),
-        static_cast<basic_item<x>*>(nullptr)
-      )
-#endif
-    >
-    ::template f<x>;
-
-  template<class C, class Inherit, class... xs>
-  using remove_unique_impl = typename join<C>
-    ::template f<remove_unique_elem_impl<Inherit, xs>...>;
-
-  template<>
-  struct _remove_unique<false>
-  {
-    template<class C, class... xs>
-    using f = remove_unique_impl<
-      C,
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>,
-      xs...
-    >;
-  };
-
-  template<>
-  struct _remove_unique<true>
-    : call_trace_c0_arg
-  {};
-
-
-  template<class Inherit, class x>
-  using copy_unique_elem_impl =
-    typename wrap_in_list_c<
-#if JLN_MP_FEATURE_CONCEPTS
-      requires{ static_cast<basic_item<x>*>(static_cast<Inherit*>(nullptr)); }
-#else
-      is_convertible_to(
-        static_cast<Inherit*>(nullptr),
-        static_cast<basic_item<x>*>(nullptr)
-      )
-#endif
-    >
-    ::template f<x>;
-
-  template<class C, class Inherit, class... xs>
-  using copy_unique_impl = typename join<C>
-    ::template f<copy_unique_elem_impl<Inherit, xs>...>;
-
-  template<>
-  struct _copy_unique<false>
-  {
-    template<class C, class... xs>
-    using f = copy_unique_impl<
-      C,
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>,
-      xs...
-    >;
-  };
-
-  template<>
-  struct _copy_unique<true>
-  {
-    template<class C, class... xs>
-    using f = JLN_MP_CALL_TRACE(C, xs...);
-  };
-#else
-  template<class C, class Inherit, Inherit* ptr, class... S>
-  using remove_copy_unique_filter = typename join<C>
-    ::template f<decltype(S::f(ptr))...>;
-
-
-  template<class x>
-  struct remove_unique_elem_impl
-  {
-    template<class i>
-    static list<> f(basic_item<list<x, i>>*);
-
-    static list<x> f(...);
-  };
-
-  template<class, int_t... i>
-  struct _remove_unique
-  {
-    template<class C, class... xs>
-    using f = remove_copy_unique_filter<
-      C, inherit<list<xs, number<i>>...>, nullptr, remove_unique_elem_impl<xs>...
-    >;
-  };
-
-
-  template<class x>
-  struct copy_unique_elem_impl
-  {
-    template<class i>
-    static list<x> f(basic_item<list<x, i>>*);
-
-    static list<> f(...);
-  };
-
-  template<class, int_t... i>
-  struct _copy_unique
-  {
-    template<class C, class... xs>
-    using f = remove_copy_unique_filter<
-      C, inherit<list<xs, number<i>>...>, nullptr, copy_unique_elem_impl<xs>...
-    >;
-  };
-#endif
-
-
-  template<class, int_t... ints>
-  struct remove_unique_if_impl
-  {
-    template<class C, class Cmp, class... xs>
-    using f = typename join<C>::template f<
-      JLN_MP_MSVC_FIX_CALL((
-        rotate_impl<ints>::template f<
-          ints,
-          pop_front<any_of<
-            push_back<xs, Cmp>,
-            lift<wrap_in_list>
-          >>::template f,
-          xs...
-        >
-      ), xs)...
-    >;
-  };
-
-  template<>
-  struct remove_unique_if_impl<int_t>
-    : call_trace_c0_arg
-  {};
-
-  template<int_t i>
-  struct remove_unique_if_impl<int_t, i>
-  : remove_unique_if_impl<int_t>
-  {};
-
-  template<class Cmp, class C>
-  struct _remove_unique_if
-  {
-    template<class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), remove_unique_if_impl)
-      ::template f<C, Cmp, xs...>;
-  };
-
-  template<class Cmp, class C>
-  struct mk_remove_unique
-  {
-    using type = _remove_unique_if<Cmp, C>;
-  };
-
-
-  template<class, int_t... ints>
-  struct copy_unique_if_impl
-  {
-    template<class C, class Cmp, class... xs>
-    using f = typename join<C>::template f<
-      JLN_MP_MSVC_FIX_CALL((
-        rotate_impl<ints>::template f<
-          ints,
-          pop_front<none_of<
-            push_back<xs, Cmp>,
-            lift<wrap_in_list>
-          >>::template f,
-          xs...
-        >
-      ), xs)...
-    >;
-  };
-
-  template<>
-  struct copy_unique_if_impl<int_t>
-  : remove_unique_if_impl<int_t>
-  {};
-
-  template<int_t i>
-  struct copy_unique_if_impl<int_t, i>
-  {
-    template<class C, class Cmp, class... xs>
-    using f = JLN_MP_CALL_TRACE(C, xs...);
-  };
-
-  template<class Cmp, class C>
-  struct _copy_unique_if
-  {
-    template<class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), copy_unique_if_impl)
-      ::template f<C, Cmp, xs...>;
-  };
-
-  template<class Cmp, class C>
-  struct mk_copy_unique
-  {
-    using type = _copy_unique_if<Cmp, C>;
-  };
-
-
-  template<class C>
-  struct mk_remove_unique<same<>, C>
-  {
-    using type = mp::remove_unique<C>;
-  };
-
-  template<class C>
-  struct mk_remove_unique<same<not_<>>, C>
-  {
-    using type = mp::copy_unique<C>;
-  };
-
-  template<class F, class C>
-  struct mk_remove_unique<tee<F, not_<>>, C>
-  : mk_copy_unique<F, C>
-  {};
-
-  template<class C>
-  struct mk_copy_unique<same<>, C>
-  {
-    using type = mp::copy_unique<C>;
-  };
-
-  template<class C>
-  struct mk_copy_unique<same<not_<>>, C>
-  {
-    using type = mp::remove_unique<C>;
-  };
-
-  template<class F, class C>
-  struct mk_copy_unique<tee<F, not_<>>, C>
-  : mk_remove_unique<F, C>
-  {};
 }
 /// \endcond
 
@@ -15726,10 +15802,10 @@ namespace jln::mp
     template<class FillValue, class F, class EvenSizeF, class C, int_t max, class... ns>
     using matrix_longest_each_impl = _each<
       C,
-      JLN_MP_CONDITIONAL_P_C_T(
-        (max != ns::value),
-        (typename repeat_impl<1, max - ns::value, F>::template f<FillValue>::type),
-        (EvenSizeF)
+      JLN_MP_CONDITIONAL_C_T(
+        max != ns::value,
+        JLN_MP_REPEAT_VALUE_T(F, max - ns::value, FillValue),
+        EvenSizeF
       )
     ...>;
 
@@ -17516,6 +17592,96 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
+    template<class C, int_t... ints>
+    struct repeat_index_impl;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Creates a sequence of index sequence,
+  /// taking the size of each as a parameter.
+  /// \semantics
+  ///   Equivalent to
+  ///   \code
+  ///   repeat_index_with_v_c<>::f<3, 0, 2, 1>
+  ///   ==
+  ///   list<
+  ///     list<number<0>, number<0>, number<0>>,
+  ///     list<>,
+  ///     list<number<2>, number<2>>,
+  ///     list<number<3>>
+  ///   >
+  ///   \endcode
+  /// \treturn \sequence
+  template<class F = listify, class C = listify>
+  struct repeat_index_with_v_c
+  {
+    template<unsigned... ns>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(
+      sizeof...(ns), detail::repeat_index_impl
+    )
+    ::template f<C, F, ns...>;
+  };
+
+  template<class F = listify, class C = listify>
+  struct repeat_index_with
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... ns>
+    using f = typename repeat_index_with_v_c<F, C>::template f<ns::value...>;
+#elif !JLN_MP_MSVC
+    template<class... ns>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(
+      sizeof...(ns), detail::repeat_index_impl
+    )
+    ::template f<C, F, ns::value...>;
+#else
+    template<class... ns>
+    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(
+      sizeof...(ns), detail::repeat_index_impl
+    )
+    ::template f<C, F, unsigned{ns::value}...>;
+#endif
+  };
+
+  template<class C = listify>
+  using repeat_index_v_c = repeat_index_with_v_c<listify, C>;
+
+  template<class C = listify>
+  using repeat_index = repeat_index_with<listify, C>;
+
+  namespace emp
+  {
+    template<class L, class F = listify, class C = listify>
+    using repeat_index_with
+      = typename detail::_unpack<mp::repeat_index_with<F, C>, L>::type;
+
+    template<class L, class C = listify>
+    using repeat_index
+      = typename detail::_unpack<mp::repeat_index_with<listify, C>, L>::type;
+  }
+}
+
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class, int_t... ints>
+  struct repeat_index_impl
+  {
+    template<class C, class F, unsigned... ns>
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_REPEAT_VALUE_T(F, ns, number<ints>)...);
+  };
+}
+/// \endcond
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
     template<class Pred, class Replacement>
     struct substitute_if;
   }
@@ -18043,6 +18209,19 @@ namespace jln::mp
 
 
 /// \cond
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+namespace jln::mp
+{
+  template<template<class...> class F, class C>
+  struct scan<lift<F>, C>
+  {
+    template<class... xs>
+    using f = typename detail::_scan<sizeof...(xs)>
+      ::template f<sizeof...(xs), C, F, xs...>;
+  };
+}
+#endif
+
 namespace jln::mp::detail
 {
   template<unsigned n>
@@ -18360,8 +18539,8 @@ namespace jln::mp::detail
       _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30,
       _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45,
       _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60,
-      _61, _62,
-      _63>::template f<remaining - 63, _scan<remaining - 63>, C, F, xs...>;
+      _61, _62, _63
+    >::template f<remaining - 63, _scan<remaining - 63>, C, F, xs...>;
   };
 
   template<>
@@ -18482,8 +18661,8 @@ namespace jln::mp::detail
       _76, _77, _78, _79, _80, _81, _82, _83, _84, _85, _86, _87, _88, _89, _90,
       _91, _92, _93, _94, _95, _96, _97, _98, _99, _100, _101, _102, _103, _104,
       _105, _106, _107, _108, _109, _110, _111, _112, _113, _114, _115, _116,
-      _117, _118, _119, _120, _121, _122, _123, _124, _125, _126, _127>::
-      template f<remaining - 127, _scan<remaining - 127>, C, F, xs...>;
+      _117, _118, _119, _120, _121, _122, _123, _124, _125, _126, _127
+    >::template f<remaining - 127, _scan<remaining - 127>, C, F, xs...>;
   };
 }
 /// \endcond
@@ -20732,6 +20911,31 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
+
+namespace jln::mp
+{
+  /// \ingroup functional
+
+  /// comparison on the result of a function.
+  /// \treturn \bool
+  template<class F, class Cmp = less<>>
+  using compare_with = each<F, F, Cmp>;
+
+  namespace emp
+  {
+    template<class F, class x, class y, class Cmp = mp::less<>>
+    using compare_with = typename Cmp::template f<
+      typename F::template f<x>,
+      typename F::template f<y>
+    >;
+
+    template<class F, class x, class y, class Cmp = mp::less<>>
+    inline constexpr bool compare_with_v = Cmp::template f<
+      typename F::template f<x>,
+      typename F::template f<y>
+    >::value;
+  }
+}
 
 namespace jln::mp
 {
@@ -23708,6 +23912,27 @@ namespace jln::mp
   };
   /// \endcond
 }
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  /// Class that inherits all \c Bases types.
+  /// This used with \c JLN_MP_IS_BASE_OF() makes a really fast version of \c set_contains.
+  /// \code
+  ///   class A;
+  ///   class B;
+  ///   class C;
+  ///   using set = mp::flat_inheritance<A, B, C>;
+  ///
+  ///   using T = ...;
+  ///   if constexpr (JLN_MP_IS_BASE_OF(T, set)) {
+  ///     ...
+  ///   }
+  /// \endcode
+  template<class... Bases>
+  struct flat_inheritance : Bases...
+  {};
+}
 
 namespace jln::mp
 {
@@ -24143,9 +24368,7 @@ namespace jln::mp
 #endif
 }
 
-#ifdef __cpp_generic_lambdas
-#if __cpp_generic_lambdas >= 201707L
-
+#if defined(__cpp_generic_lambdas) && __cpp_generic_lambdas >= 201707L
 # ifdef __cpp_consteval
 #   if __cpp_consteval >= 201811L
 #     define JLN_MP_CONSTEVAL_OR_CONSTEXPR consteval
@@ -24157,288 +24380,227 @@ namespace jln::mp
 
 namespace jln::mp
 {
+  /// \cond
+  namespace detail
+  {
+    namespace mkid
+    {
+      template<class Tag, int X>
+      struct state;
+
+      #if JLN_MP_MEMOIZED_ALIAS
+      # define JLN_MP_MKID_STATE(...) \
+        static_cast<detail::mkid::state<__VA_ARGS__>*>(nullptr)
+      #else
+      # define JLN_MP_MKID_STATE(...) detail::mkid::state_ptr_v<__VA_ARGS__>
+      template<class Tag, int id>
+      inline constexpr state<Tag, id>* state_ptr_v = nullptr;
+      #endif
+
+      template<class T, class Tag>
+      struct next_id;
+    }
+
+    template<class Tag> class next_id_tag;
+
+    template<class T> struct type_of_id;
+    template<class T> struct type_of_id<list<T>*> { using type = T; };
+    template<class T> struct type_of_id<T*> { using type = T; };
+  }
+  /// \endcond
+
   /// \ingroup utility
 
   class default_make_id_tag {};
 
-  /// \cond
-  namespace detail::mkid
+  namespace emp
   {
-    JLN_MP_DIAGNOSTIC_PUSH()
-    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
-    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wunused-function")
-    template<class T, int X>
-    struct flag
-    {
-      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<T, X>);
-    };
-    JLN_MP_DIAGNOSTIC_POP()
+    /// Generates a unique id per call for a specified tag.
+    template<class Tag = default_make_id_tag, auto v = []{}>
+    inline constexpr int next_id_v =
+      detail::mkid::next_id<decltype(v)*, detail::next_id_tag<Tag>>::value;
 
-    template<class T, int X>
-    struct injecter
-    {
-      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<T, X>) { return X; }
-    };
+    /// Generates a unique id per type for a specified tag.
+    template<class T, class Tag = default_make_id_tag>
+    inline constexpr int id_of_v = detail::mkid::next_id<list<T>*, Tag>::value;
 
-    template<class T = default_make_id_tag, int X = 0, auto v = []{}>
-    JLN_MP_CONSTEVAL_OR_CONSTEXPR auto next_id()
-    {
-      if constexpr (requires { f(flag<T, X+10>{}); }) {
-        if constexpr (requires { f(flag<T, X+100>{}); }) {
-          if constexpr (requires { f(flag<T, X+1000>{}); }) {
-            if constexpr (requires { f(flag<T, X+10000>{}); }) {
-              return next_id<T, X+10001, v>();
-            }
-            else if constexpr (requires { f(flag<T, X+3000>{}); }) {
-              return next_id<T, X+3001, v>();
-            }
-            else {
-              return next_id<T, X+1001, v>();
-            }
-          }
-          else if constexpr (requires { f(flag<T, X+300>{}); }) {
-            return next_id<T, X+301, v>();
-          }
-          else {
-            return next_id<T, X+101, v>();
-          }
-        }
-        else if constexpr (requires { f(flag<T, X+30>{}); }) {
-          return next_id<T, X+31, v>();
-        }
-        else {
-          return next_id<T, X+11, v>();
-        }
-      }
-      else if constexpr (requires { f(flag<T, X>{}); }) {
-        if constexpr (requires { f(flag<T, X+2>{}); }) {
-          if constexpr (requires { f(flag<T, X+4>{}); }) {
-            return next_id<T, X+5, v>();
-          }
-          else if constexpr (requires { f(flag<T, X+3>{}); }) {
-            return next_id<T, X+4, v>();
-          }
-          else {
-            return next_id<T, X+3, v>();
-          }
-        }
-        else if constexpr (requires { f(flag<T, X+1>{}); }) {
-            return next_id<T, X+2, v>();
-        }
-        else {
-            return next_id<T, X+1, v>();
-        }
-      }
-      else {
-        void(injecter<T, X>{});
-        return f(flag<T, X>{});
-      }
-    }
+    /// Generates a unique id per type for a specified tag.
+    template<class T, class Tag = default_make_id_tag>
+    using id_of = number<id_of_v<T, Tag>>;
+
+    /// Get the type associated to an id for a specified tag.
+    template<int id, class Tag = default_make_id_tag>
+    using type_of = typename detail::type_of_id<
+      decltype(get_bound_value(JLN_MP_MKID_STATE(Tag, id)))
+    >::type;
   }
-  /// \endcond
-
-  /// Generates a unique id per call for a specified tag.
-  /// Signature: `int next_id<class Tag = default_make_id_tag, start_id = 0, auto = []{}>()`
-  using detail::mkid::next_id;
-
-  /// Generates a unique id per type.
-  /// \treturn int
-  template<class T>
-  struct id_of
-  {
-    static constexpr int value = next_id<default_make_id_tag, 0, []{}>();
-  };
-
-  template<class T>
-  static constexpr int id_of_v = id_of<T>::value;
-
-  template<class T>
-  using id_of_t = number<id_of<T>::value>;
-
 
   /// Generates a unique id per type for a specified tag.
-  /// \treturn int
-  template<class Tag, class T>
-  struct tagged_id_of
-  {
-    static constexpr int value = next_id<Tag, 0, []{}>();
-  };
-
-  template<class Tag, class T>
-  static constexpr int tagged_id_of_v = tagged_id_of<Tag, T>::value;
-
-  template<class Tag, class T>
-  using tagged_id_of_t = number<tagged_id_of<Tag, T>::value>;
-
-
-  /// Generates a unique id per type.
   /// \treturn \number
-  template<class Tag, class C = identity>
+  template<class Tag = default_make_id_tag, class C = identity>
   struct make_id_for
   {
     template<class T>
-    using f = JLN_MP_CALL_TRACE(C, tagged_id_of_t<Tag, T>);
+    using f = JLN_MP_CALL_TRACE(C, number<emp::id_of_v<T, Tag>>);
   };
 
+  /// Generates a unique id per type.
+  /// \treturn \number
   template<class C = identity>
   using make_id = make_id_for<default_make_id_tag, C>;
 
   /// \cond
-  template<class T>
-  struct tagged_id_of<default_make_id_tag, T>
-  : id_of<T>
-  {};
-
-  template<>
-  struct make_id_for<default_make_id_tag, identity>
-  {
-    template<class T>
-    using f = id_of_t<T>;
-  };
-
   template<class Tag>
   struct make_id_for<Tag, identity>
   {
     template<class T>
-    using f = tagged_id_of_t<Tag, T>;
-  };
-
-  template<class C>
-  struct make_id_for<default_make_id_tag, C>
-  {
-    template<class T>
-    using f = JLN_MP_CALL_TRACE(C, id_of_t<T>);
+    using f = number<emp::id_of_v<T, Tag>>;
   };
   /// \endcond
 }
 
-#endif
+/// \cond
+namespace jln::mp::detail::mkid
+{
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
+  JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wunused-function")
+  template<class Tag, int X>
+  struct state
+  {
+    friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto get_bound_value(state*);
+  };
+  JLN_MP_DIAGNOSTIC_POP()
+
+  template<int id, class T, class Tag>
+  struct injecter
+  {
+    friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto get_bound_value(state<Tag, id>*)
+    {
+      return T();
+    }
+  };
+
+  template<class T, class Tag, int id = 0>
+  JLN_MP_CONSTEVAL_OR_CONSTEXPR int get_next_id()
+  {
+    if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+10)); }) {
+      if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+100)); }) {
+        if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+1000)); }) {
+          if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+10000)); }) {
+            return get_next_id<T, Tag, id+10001>();
+          }
+          else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+3000)); }) {
+            return get_next_id<T, Tag, id+3001>();
+          }
+          else {
+            return get_next_id<T, Tag, id+1001>();
+          }
+        }
+        else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+300)); }) {
+          return get_next_id<T, Tag, id+301>();
+        }
+        else {
+          return get_next_id<T, Tag, id+101>();
+        }
+      }
+      else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+30)); }) {
+        return get_next_id<T, Tag, id+31>();
+      }
+      else {
+        return get_next_id<T, Tag, id+11>();
+      }
+    }
+    else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id)); }) {
+      if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+2)); }) {
+        if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+4)); }) {
+          return get_next_id<T, Tag, id+5>();
+        }
+        else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+3)); }) {
+          return get_next_id<T, Tag, id+4>();
+        }
+        else {
+          return get_next_id<T, Tag, id+3>();
+        }
+      }
+      else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+1)); }) {
+          return get_next_id<T, Tag, id+2>();
+      }
+      else {
+          return get_next_id<T, Tag, id+1>();
+      }
+    }
+    else {
+      return id;
+    }
+  }
+
+  template<class T, class Tag>
+  struct next_id
+  {
+    static constexpr int value = get_next_id<T, Tag>();
+
+    friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto get_bound_value(state<Tag, value>*)
+    {
+      return T();
+    }
+  };
+}
+
+#undef JLN_MP_MKID_STATE
+/// \endcond
+
 #endif
 
-#ifdef __cpp_generic_lambdas
-#if __cpp_generic_lambdas >= 201707L
+#if defined(__cpp_generic_lambdas) && __cpp_generic_lambdas >= 201707L
 
 
 namespace jln::mp
 {
-  /// \ingroup utility
-
   /// \cond
-  namespace detail::rand
+  namespace detail
   {
-    JLN_MP_DIAGNOSTIC_PUSH()
-    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
-    template<int X>
-    struct flag
-    {
-      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<X>);
-    };
-    JLN_MP_DIAGNOSTIC_POP()
-
-    struct random_data
-    {
-      unsigned z;
-      unsigned w;
-    };
-
-    template<int X, unsigned z, unsigned w>
-    struct injecter
-    {
-      friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<X>) { return random_data{z,w}; }
-    };
-
-    #ifndef JLN_MP_RANDOM_SEED_Z
-    #   define JLN_MP_RANDOM_SEED_Z 0
-    #endif
-    #ifndef JLN_MP_RANDOM_SEED_W
-    #   define JLN_MP_RANDOM_SEED_W 0
-    #endif
-    // -1 -> do not use __TIME__
-    // 0 -> use __TIME__
-    // >= 0 -> use value as __TIME__
-    #ifndef JLN_MP_RANDOM_SEED_TIME
-    #   define JLN_MP_RANDOM_SEED_TIME -1
-    #endif
-
-    #if JLN_MP_RANDOM_SEED_TIME >= 0
-    #  if JLN_MP_RANDOM_SEED_TIME == 0
-    JLN_MP_DIAGNOSTIC_PUSH()
-    JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wdate-time")
-    constexpr unsigned t = unsigned((__TIME__[0] * 10 + __TIME__[1]) * 3600
-                                  + (__TIME__[3] * 10 + __TIME__[4]) * 60
-                                  + (__TIME__[6] * 10 + __TIME__[7]));
-    JLN_MP_DIAGNOSTIC_POP()
-    #    undef JLN_MP_RANDOM_SEED_TIME
-    #    define JLN_MP_RANDOM_SEED_TIME t
-    #  endif
-    #  if JLN_MP_RANDOM_SEED_Z == 0
-    #    define JLN_MP_RANDOM_SEED_Z \
-           (JLN_MP_RANDOM_SEED_TIME >> 16) ? (JLN_MP_RANDOM_SEED_TIME >> 16) : 362436069
-    #  endif
-    #  if JLN_MP_RANDOM_SEED_W == 0
-    #    define JLN_MP_RANDOM_SEED_W \
-           (JLN_MP_RANDOM_SEED_TIME % 4294967296) ? (JLN_MP_RANDOM_SEED_TIME % 4294967296) : 521288629
-    #  endif
-    #else
-    #  if JLN_MP_RANDOM_SEED_Z == 0
-    #    undef JLN_MP_RANDOM_SEED_Z
-    #    define JLN_MP_RANDOM_SEED_Z 362436069
-    #  endif
-    #  if JLN_MP_RANDOM_SEED_W == 0
-    #    undef JLN_MP_RANDOM_SEED_W
-    #    define JLN_MP_RANDOM_SEED_W 521288629
-    #  endif
-    #endif
-
-    inline JLN_MP_CONSTEVAL_OR_CONSTEXPR auto f(flag<0>)
-    {
-      return random_data{JLN_MP_RANDOM_SEED_Z, JLN_MP_RANDOM_SEED_W};
-    }
-
-    #undef JLN_MP_RANDOM_SEED_Z
-    #undef JLN_MP_RANDOM_SEED_W
-    #undef JLN_MP_RANDOM_SEED_TIME
-
-    /// \pre id >= 1
-    /// \pre random_for_id<id-1>() must have been called
-    template<int id>
-    JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned random_for_id()
-    {
-      constexpr auto data = f(flag<id-1>{});
-      // algorithm found on https://www.codeproject.com/Articles/25172/Simple-Random-Number-Generation
-      constexpr unsigned z = 36969 * (data.z & 65535) + (data.z >> 16);
-      constexpr unsigned w = 18000 * (data.w & 65535) + (data.w >> 16);
-      void(injecter<id, z, w>{});
-      return (z << 16) + w;
-    }
-
-    template<auto v = []{}>
-    JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned next_random()
-    {
-      return random_for_id<next_id<random_data, 1, v>()>();
-    }
+    template<class T, class Tag = default_make_id_tag>
+    JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned next_random_for();
   }
   /// \endcond
 
-  /// Generates a unique id per call for a specified tag.
-  /// Signature: `unsigned next_random<auto = []{}>()`
-  using detail::rand::next_random;
+  /// \ingroup utility
+
+#ifdef JLN_MP_DOXYGENATING
+/// Z value for the seed of random.
+# define JLN_MP_RANDOM_SEED_Z 0
+/// W value for the seed of random.
+# define JLN_MP_RANDOM_SEED_W 0
+/// Less than 0 to not rely on the \c __TIME__ macro (default) ;
+/// 0 for use \c __TIME__ macro as seed ;
+/// greater than 0 for used this value as a replacement of \c __TIME__ macro.
+# define JLN_MP_RANDOM_SEED_TIME -1
+#endif
 
   namespace emp
   {
-    template<auto v = []{}>
-    using random = number<next_random<v>()>;
+    /// Generates a random number per type for a specified tag.
+    template<class T, class Tag = default_make_id_tag>
+    inline constexpr unsigned random_of_v = detail::next_random_for<list<T>, Tag>();
 
-    template<auto v = []{}>
-    static constexpr unsigned random_v = next_random<v>();
+    /// Generates a random number per type for a specified tag.
+    template<class T, class Tag = default_make_id_tag, auto v = []{}>
+    using random_of = number<detail::next_random_for<list<T>, Tag>()>;
+
+    /// Generates a random number per call for a specified tag.
+    template<class Tag = default_make_id_tag, auto v = []{}>
+    inline constexpr unsigned random_v = detail::next_random_for<decltype(v), Tag>();
+
+    /// Generates a random number per call for a specified tag.
+    template<class Tag = default_make_id_tag, auto v = []{}>
+    using random = number<detail::next_random_for<decltype(v), Tag>()>;
   }
 
-  /// Generate a random number.
-  /// The seed can be configured with `JLN_MP_RANDOM_SEED_TIME`
-  /// or `JLN_MP_RANDOM_SEED_W` and `JLN_MP_RANDOM_SEED_Z`
+  /// Generate a random number for a specified tag on each call with different \c xs.
   /// \treturn \number
-  template<class C = identity, auto = []{}>
-  struct random
+  template<class Tag = default_make_id_tag, class C = identity, auto = []{}>
+  struct random_for
   #ifdef JLN_MP_DOXYGENATING
   {
     template<class... xs>
@@ -24447,46 +24609,147 @@ namespace jln::mp
   #endif
   ;
 
+  template<class C = identity, auto v = []{}>
+  using random = random_for<default_make_id_tag, C, v>;
+
+
 /// \cond
-#if JLN_MP_CLANG
+#if JLN_MP_MEMOIZED_ALIAS
   namespace detail
   {
-    template<std::size_t, auto v = []{}>
-    using random_impl = number<next_random<v>()>;
+    template<class...>
+    class rand_marker;
   }
 
-  template<class C, auto>
-  struct random
+  template<class Tag, class C, auto v>
+  struct random_for
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, detail::random_impl<sizeof...(xs)>);
+    using f = JLN_MP_CALL_TRACE(C,
+      number<detail::next_random_for<detail::rand_marker<decltype(v), xs...>, Tag>()>
+    );
   };
 
-  template<auto v>
-  struct random<identity, v>
+  template<class Tag, auto v>
+  struct random_for<Tag, identity, v>
   {
     template<class... xs>
-    using f = detail::random_impl<sizeof...(xs)>;
+    using f
+      = number<detail::next_random_for<detail::rand_marker<decltype(v), xs...>, Tag>()>;
   };
-#else
-  template<class C, auto>
-  struct random
+#else // if ! JLN_MP_MEMOIZED_ALIAS
+  namespace detail
   {
-    template<class...>
-    using f = JLN_MP_CALL_TRACE(C, number<next_random<[]{}>()>);
+    template<class Tag, class...>
+    struct random_impl
+    {
+      using type = number<detail::next_random_for<random_impl, Tag>()>;
+    };
+  }
+
+  template<class Tag, class C, auto v>
+  struct random_for
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C,
+      typename detail::random_impl<Tag, decltype(v), xs...>::type
+    );
   };
 
-  template<auto v>
-  struct random<identity, v>
+  template<class Tag, auto v>
+  struct random_for<Tag, identity, v>
   {
-    template<class...>
-    using f = number<next_random<[]{}>()>;
+    template<class... xs>
+    using f = typename detail::random_impl<Tag, decltype(v), xs...>::type;
   };
 #endif
 /// \endcond
 }
 
-#endif
+namespace jln::mp::detail
+{
+  template<unsigned Z, unsigned W>
+  struct random_data
+  {
+    // algorithm found on https://www.codeproject.com/Articles/25172/Simple-Random-Number-Generation
+    using next = random_data<
+      36969 * (Z & 65535) + (Z >> 16),
+      18000 * (W & 65535) + (W >> 16)
+    >;
+    static constexpr unsigned value = (Z << 16) + W;
+  };
+
+  template<class Tag>
+  class random_tag;
+
+  #ifndef JLN_MP_RANDOM_SEED_Z
+  #  define JLN_MP_RANDOM_SEED_Z 0
+  #endif
+  #ifndef JLN_MP_RANDOM_SEED_W
+  #  define JLN_MP_RANDOM_SEED_W 0
+  #endif
+  #ifndef JLN_MP_RANDOM_SEED_TIME
+  #  define JLN_MP_RANDOM_SEED_TIME -1
+  #endif
+
+  #if JLN_MP_RANDOM_SEED_TIME >= 0
+  #  if JLN_MP_RANDOM_SEED_TIME == 0
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wdate-time")
+  constexpr unsigned t = unsigned((__TIME__[0] * 10 + __TIME__[1]) * 3600
+                                + (__TIME__[3] * 10 + __TIME__[4]) * 60
+                                + (__TIME__[6] * 10 + __TIME__[7]));
+  JLN_MP_DIAGNOSTIC_POP()
+  #    undef JLN_MP_RANDOM_SEED_TIME
+  #    define JLN_MP_RANDOM_SEED_TIME t
+  #  endif
+  #  if JLN_MP_RANDOM_SEED_Z == 0
+  #    undef JLN_MP_RANDOM_SEED_Z
+  #    define JLN_MP_RANDOM_SEED_Z \
+          (JLN_MP_RANDOM_SEED_TIME >> 16) ? (JLN_MP_RANDOM_SEED_TIME >> 16) : 362436069
+  #  endif
+  #  if JLN_MP_RANDOM_SEED_W == 0
+  #    undef JLN_MP_RANDOM_SEED_W
+  #    define JLN_MP_RANDOM_SEED_W \
+          (JLN_MP_RANDOM_SEED_TIME % 4294967296) ? (JLN_MP_RANDOM_SEED_TIME % 4294967296) : 521288629
+  #  endif
+  #else
+  #  if JLN_MP_RANDOM_SEED_Z == 0
+  #    undef JLN_MP_RANDOM_SEED_Z
+  #    define JLN_MP_RANDOM_SEED_Z 362436069
+  #  endif
+  #  if JLN_MP_RANDOM_SEED_W == 0
+  #    undef JLN_MP_RANDOM_SEED_W
+  #    define JLN_MP_RANDOM_SEED_W 521288629
+  #  endif
+  #endif
+
+  template<int id, class Tag>
+  struct get_random_data
+  {
+    using type = emp::type_of<id-1, Tag>;
+  };
+
+  template<class Tag>
+  struct get_random_data<0, Tag>
+  {
+    using type = random_data<JLN_MP_RANDOM_SEED_Z, JLN_MP_RANDOM_SEED_W>;
+  };
+
+  #undef JLN_MP_RANDOM_SEED_Z
+  #undef JLN_MP_RANDOM_SEED_W
+  #undef JLN_MP_RANDOM_SEED_TIME
+
+  template<class T, class Tag>
+  JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned next_random_for()
+  {
+    constexpr int id = mkid::get_next_id<T*, random_tag<Tag>>();
+    using data = typename get_random_data<id, random_tag<Tag>>::type;
+    void(mkid::injecter<id, typename data::next*, random_tag<Tag>>{});
+    return data::value;
+  }
+}
+
 #endif
 
 namespace jln::mp
@@ -24945,13 +25208,9 @@ namespace jln::mp
 
 #if !JLN_MP_ENABLE_TPL_AUTO || JLN_MP_VAL_AS_ALIAS
 
-# if defined(__has_builtin) && defined(JLN_MP_VAL_USE_STD_REMOVE_CONST)
-#   if __has_builtin(__remove_const)
-#     define JLN_MP_REMOVE_CONST_T __remove_const
-#   endif
-# endif
-
-# ifndef JLN_MP_REMOVE_CONST_T
+# if JLN_MP_HAS_BUILTIN(__remove_const)
+#   define JLN_MP_REMOVE_CONST_T __remove_const
+# else
 #   define JLN_MP_REMOVE_CONST_T(x) std::remove_const_t<x>
 # endif
 
