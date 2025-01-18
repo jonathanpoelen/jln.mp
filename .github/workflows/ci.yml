@@ -123,6 +123,8 @@ jobs:
         CLICOLOR_FORCE= ninja -C build -k10
 
 
+  # https://github.com/actions/runner-images
+
   linux:
     name: Ubuntu ${{ matrix.cxx }} dbg=${{ matrix.debug }} ${{ matrix.std }}
     runs-on: ubuntu-latest
@@ -132,8 +134,27 @@ jobs:
       matrix:
         std: ['c++17', 'c++20']
         debug: ['false', 'true']
-        # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md
-        cxx: ['g++-12', 'clang++-13', 'clang++-14']
+        cxx: ['g++-13', 'g++-14', 'clang++-16', 'clang++-17', 'clang++-18']
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+    - run: |
+        python -m pip install ninja meson
+        CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }} -Db_colorout=always
+        CLICOLOR_FORCE= ninja -C build -k10
+
+
+  linux-old2:
+    name: Ubuntu ${{ matrix.cxx }} dbg=${{ matrix.debug }} ${{ matrix.std }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        std: ['c++17', 'c++20']
+        debug: ['false', 'true']
+        cxx: ['g++-11', 'g++-12', 'clang++-13', 'clang++-14', 'clang++-15']
 
     steps:
     - uses: actions/checkout@v4
@@ -197,7 +218,7 @@ jobs:
 
   auto-gen:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'jonathanpoelen/jln.mp'
-    needs: [linux, linux-old, macos, windows-cl, windows-clang, windows-gcc, cuda-linux]
+    needs: [linux, linux-old2, linux-old, macos, windows-cl, windows-clang, windows-gcc, cuda-linux]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
