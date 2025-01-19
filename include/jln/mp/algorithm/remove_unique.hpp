@@ -136,11 +136,11 @@ namespace jln::mp::detail
   using remove_unique_elem_impl =
     typename wrap_in_list_c<
 #if JLN_MP_FEATURE_CONCEPTS
-      !requires{ static_cast<basic_item<x>*>(static_cast<Inherit*>(nullptr)); }
+      !requires{ static_cast<list<x>*>(static_cast<Inherit*>(nullptr)); }
 #else
       !is_convertible_to(
         static_cast<Inherit*>(nullptr),
-        static_cast<basic_item<x>*>(nullptr)
+        static_cast<list<x>*>(nullptr)
       )
 #endif
     >
@@ -171,11 +171,11 @@ namespace jln::mp::detail
   using copy_unique_elem_impl =
     typename wrap_in_list_c<
 #if JLN_MP_FEATURE_CONCEPTS
-      requires{ static_cast<basic_item<x>*>(static_cast<Inherit*>(nullptr)); }
+      requires{ static_cast<list<x>*>(static_cast<Inherit*>(nullptr)); }
 #else
       is_convertible_to(
         static_cast<Inherit*>(nullptr),
-        static_cast<basic_item<x>*>(nullptr)
+        static_cast<list<x>*>(nullptr)
       )
 #endif
     >
@@ -212,7 +212,7 @@ namespace jln::mp::detail
   struct remove_unique_elem_impl
   {
     template<class i>
-    static list<> f(basic_item<list<x, i>>*);
+    static list<> f(list<list<x, i>>*);
 
     static list<x> f(...);
   };
@@ -231,7 +231,7 @@ namespace jln::mp::detail
   struct copy_unique_elem_impl
   {
     template<class i>
-    static list<x> f(basic_item<list<x, i>>*);
+    static list<x> f(list<list<x, i>>*);
 
     static list<> f(...);
   };

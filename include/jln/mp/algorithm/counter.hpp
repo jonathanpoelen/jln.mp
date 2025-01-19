@@ -103,6 +103,7 @@ namespace jln::mp
 #endif
 
 #include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
+#include <jln/mp/set/set_contains.hpp> // inherit
 
 namespace jln::mp::detail
 {
@@ -178,7 +179,7 @@ namespace jln::mp::detail
 #else
 
   template<class T, class i>
-  constexpr int_t index_base(basic_item<list<i, T>>*)
+  constexpr int_t index_base(list<list<i, T>>*)
   {
     return i::value;
   }

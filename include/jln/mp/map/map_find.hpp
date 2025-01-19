@@ -3,7 +3,7 @@
 #pragma once
 
 #include <jln/mp/functional/memoize.hpp> // na
-#include <jln/mp/set/set_contains.hpp> // inherit, basic_item
+#include <jln/mp/set/set_contains.hpp> // inherit
 #include <jln/mp/utility/always.hpp>
 
 
@@ -111,7 +111,7 @@ namespace jln::mp::detail
   struct map_find_select
   {
     template<template<class...> class Tpl, class... xs>
-    static map_find_elem<Tpl<key, xs...>> f(basic_item<Tpl<key, xs...>>*);
+    static map_find_elem<Tpl<key, xs...>> f(list<Tpl<key, xs...>>*);
 
     static map_find_elem<void> f(...);
   };

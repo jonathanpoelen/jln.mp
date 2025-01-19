@@ -7,21 +7,18 @@
 #include <jln/mp/utility/is_base_of.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/identity.hpp>
+#include <jln/mp/list/list.hpp>
 
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-    template<class x>
-    struct basic_item
-    {};
-
     template<class... xs>
-    struct inherit : basic_item<xs>...
+    struct inherit : list<xs>...
     {};
   }
-#define JLN_MP_SET_CONTAINS_BASE(x, ...) JLN_MP_IS_BASE_OF(detail::basic_item<x>, __VA_ARGS__)
+#define JLN_MP_SET_CONTAINS_BASE(x, ...) JLN_MP_IS_BASE_OF(list<x>, __VA_ARGS__)
 #define JLN_MP_SET_CONTAINS(x, ...) JLN_MP_SET_CONTAINS_BASE(x, detail::inherit<__VA_ARGS__>)
   /// \endcond
 

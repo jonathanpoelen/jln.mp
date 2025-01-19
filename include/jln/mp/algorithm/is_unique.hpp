@@ -43,13 +43,12 @@ namespace jln::mp
 #include <jln/mp/number/to_bool.hpp>
 #include <jln/mp/utility/is_not.hpp>
 #include <jln/mp/list/push_back.hpp>
-#include <jln/mp/set/set_contains.hpp> // basic_item
 
 /// \cond
 namespace jln::mp::detail
 {
   template<int_t i, class x>
-  struct indexed_item : basic_item<x>
+  struct indexed_item : list<x>
   {};
 
   template<class, int_t... ints>
@@ -66,7 +65,7 @@ namespace jln::mp::detail
   {
     template<class Pack>
     static auto is_set(Pack pack) -> decltype((
-        static_cast<basic_item<xs>*>(pack),...
+        static_cast<list<xs>*>(pack),...
     ), number<1>());
 
     static number<0> is_set(...);
