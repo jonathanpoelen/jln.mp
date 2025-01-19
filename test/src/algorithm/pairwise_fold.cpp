@@ -43,6 +43,7 @@ TEST()
     .not_invocable<_0, seq_0>()
     ;
 
+  ut::not_invocable<smp::pairwise_fold<identity>, _1, _1>();
   ut::not_invocable<smp::pairwise_fold<bad_function>, _1, _1>();
   ut::not_invocable<smp::pairwise_fold<smp::listify, bad_function>, _1>();
   ut::not_invocable<smp::pairwise_fold_and_transform_front<smp::listify, bad_function>, _1>();
