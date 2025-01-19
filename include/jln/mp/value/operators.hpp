@@ -798,50 +798,57 @@ namespace jln::mp::emp
   inline constexpr auto val_left_bit_or0_seq_v = detail::_unpack<mp::val_left_bit_or0<C>, L>::type::value;
 
 
-  template<auto... xs>
-  inline constexpr auto val_or_c_v = (xs || ... || false);
+#if JLN_MP_WORKAROUND(JLN_MP_GCC, < 1500)
+// fold is slow: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=118340
+#  define JLN_MP_FIX_SLOW_FOLDING(...) val<(__VA_ARGS__)>::value
+#else
+#  define JLN_MP_FIX_SLOW_FOLDING(...) (__VA_ARGS__)
+#endif
 
   template<auto... xs>
-  inline constexpr auto val_and_c_v = (xs && ... && true);
+  inline constexpr auto val_or_c_v = JLN_MP_FIX_SLOW_FOLDING(xs || ... || false);
 
   template<auto... xs>
-  inline constexpr auto val_left_or_c_v = (false || ... || xs);
+  inline constexpr auto val_and_c_v = JLN_MP_FIX_SLOW_FOLDING(xs && ... && true);
 
   template<auto... xs>
-  inline constexpr auto val_left_and_c_v = (true && ... && xs);
+  inline constexpr auto val_left_or_c_v = JLN_MP_FIX_SLOW_FOLDING(false || ... || xs);
 
   template<auto... xs>
-  inline constexpr auto val_add_c_v = (xs + ...);
+  inline constexpr auto val_left_and_c_v = JLN_MP_FIX_SLOW_FOLDING(true && ... && xs);
+
+  template<auto... xs>
+  inline constexpr auto val_add_c_v = JLN_MP_FIX_SLOW_FOLDING(xs + ...);
 
   template<auto... xs>
   inline constexpr auto val_add0_c_v = val_add_c_v<xs..., 0>;
 
   template<auto... xs>
-  inline constexpr auto val_left_add_c_v = (... + xs);
+  inline constexpr auto val_left_add_c_v = JLN_MP_FIX_SLOW_FOLDING(... + xs);
 
   template<auto... xs>
   inline constexpr auto val_left_add0_c_v = val_left_add_c_v<xs..., 0>;
 
   template<auto... xs>
-  inline constexpr auto val_sub_c_v = (... - xs);
+  inline constexpr auto val_sub_c_v = JLN_MP_FIX_SLOW_FOLDING(... - xs);
 
   template<auto... xs>
   inline constexpr auto val_sub0_c_v = val_sub_c_v<xs..., 0>;
 
   template<auto... xs>
-  inline constexpr auto val_lshift_c_v = (... << xs);
+  inline constexpr auto val_lshift_c_v = JLN_MP_FIX_SLOW_FOLDING(... << xs);
 
   template<auto... xs>
   inline constexpr auto val_lshift0_c_v = val_lshift_c_v<xs..., 0>;
 
   template<auto... xs>
-  inline constexpr auto val_rshift_c_v = (... >> xs);
+  inline constexpr auto val_rshift_c_v = JLN_MP_FIX_SLOW_FOLDING(... >> xs);
 
   template<auto... xs>
   inline constexpr auto val_rshift0_c_v = val_rshift_c_v<xs..., 0>;
 
   template<auto... xs>
-  inline constexpr auto val_mul_c_v = (xs * ...);
+  inline constexpr auto val_mul_c_v = JLN_MP_FIX_SLOW_FOLDING(xs * ...);
 
   template<auto... xs>
   inline constexpr auto val_mul0_c_v = val_mul_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
@@ -850,7 +857,7 @@ namespace jln::mp::emp
   inline constexpr auto val_mul1_c_v = val_mul_c_v<xs..., 1>;
 
   template<auto... xs>
-  inline constexpr auto val_left_mul_c_v = (... * xs);
+  inline constexpr auto val_left_mul_c_v = JLN_MP_FIX_SLOW_FOLDING(... * xs);
 
   template<auto... xs>
   inline constexpr auto val_left_mul0_c_v = val_left_mul_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
@@ -859,7 +866,7 @@ namespace jln::mp::emp
   inline constexpr auto val_left_mul1_c_v = val_left_mul_c_v<xs..., 1>;
 
   template<auto... xs>
-  inline constexpr auto val_div_c_v = (... / xs);
+  inline constexpr auto val_div_c_v = JLN_MP_FIX_SLOW_FOLDING(... / xs);
 
   template<auto... xs>
   inline constexpr auto val_div0_c_v = val_div_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
@@ -868,53 +875,53 @@ namespace jln::mp::emp
   inline constexpr auto val_div1_c_v = val_div_c_v<xs..., 1>;
 
   template<auto... xs>
-  inline constexpr auto val_mod_c_v = (... % xs);
+  inline constexpr auto val_mod_c_v = JLN_MP_FIX_SLOW_FOLDING(... % xs);
 
 
   template<class... xs>
-  inline constexpr auto val_or_v = (xs::value || ... || false);
+  inline constexpr auto val_or_v = JLN_MP_FIX_SLOW_FOLDING(xs::value || ... || false);
 
   template<class... xs>
-  inline constexpr auto val_and_v = (xs::value && ... && true);
+  inline constexpr auto val_and_v = JLN_MP_FIX_SLOW_FOLDING(xs::value && ... && true);
 
   template<class... xs>
-  inline constexpr auto val_left_or_v = (false || ... || xs::value);
+  inline constexpr auto val_left_or_v = JLN_MP_FIX_SLOW_FOLDING(false || ... || xs::value);
 
   template<class... xs>
-  inline constexpr auto val_left_and_v = (true && ... && xs::value);
+  inline constexpr auto val_left_and_v = JLN_MP_FIX_SLOW_FOLDING(true && ... && xs::value);
 
   template<class... xs>
-  inline constexpr auto val_add_v = (xs::value + ...);
+  inline constexpr auto val_add_v = JLN_MP_FIX_SLOW_FOLDING(xs::value + ...);
 
   template<class... xs>
   inline constexpr auto val_add0_v = mp::val_add0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_left_add_v = (... + xs::value);
+  inline constexpr auto val_left_add_v = JLN_MP_FIX_SLOW_FOLDING(... + xs::value);
 
   template<class... xs>
   inline constexpr auto val_left_add0_v = mp::val_add0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_sub_v = (... - xs::value);
+  inline constexpr auto val_sub_v = JLN_MP_FIX_SLOW_FOLDING(... - xs::value);
 
   template<class... xs>
   inline constexpr auto val_sub0_v = mp::val_sub0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_lshift_v = (... << xs::value);
+  inline constexpr auto val_lshift_v = JLN_MP_FIX_SLOW_FOLDING(... << xs::value);
 
   template<class... xs>
   inline constexpr auto val_lshift0_v = mp::val_lshift0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_rshift_v = (... >> xs::value);
+  inline constexpr auto val_rshift_v = JLN_MP_FIX_SLOW_FOLDING(... >> xs::value);
 
   template<class... xs>
   inline constexpr auto val_rshift0_v = mp::val_rshift0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_mul_v = (xs::value * ...);
+  inline constexpr auto val_mul_v = JLN_MP_FIX_SLOW_FOLDING(xs::value * ...);
 
   template<class... xs>
   inline constexpr auto val_mul0_v = mp::val_mul0<>::template f<xs...>::value;
@@ -923,7 +930,7 @@ namespace jln::mp::emp
   inline constexpr auto val_mul1_v = mp::val_mul1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_left_mul_v = (... * xs::value);
+  inline constexpr auto val_left_mul_v = JLN_MP_FIX_SLOW_FOLDING(... * xs::value);
 
   template<class... xs>
   inline constexpr auto val_left_mul0_v = mp::val_left_mul0<>::template f<xs...>::value;
@@ -932,7 +939,7 @@ namespace jln::mp::emp
   inline constexpr auto val_left_mul1_v = mp::val_left_mul1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_div_v = (... / xs::value);
+  inline constexpr auto val_div_v = JLN_MP_FIX_SLOW_FOLDING(... / xs::value);
 
   template<class... xs>
   inline constexpr auto val_div0_v = mp::val_div0<>::template f<xs...>::value;
@@ -941,7 +948,7 @@ namespace jln::mp::emp
   inline constexpr auto val_div1_v = mp::val_div1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_mod_v = (... % xs::value);
+  inline constexpr auto val_mod_v = JLN_MP_FIX_SLOW_FOLDING(... % xs::value);
 
   template<class... xs>
   inline constexpr auto val_mod0_v = mp::val_mod0<>::template f<xs...>::value;
@@ -950,40 +957,42 @@ namespace jln::mp::emp
   inline constexpr auto val_mod1_v = mp::val_mod1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_xor_v = (xs::value ^ ...);
+  inline constexpr auto val_xor_v = JLN_MP_FIX_SLOW_FOLDING(xs::value ^ ...);
 
   template<class... xs>
   inline constexpr auto val_xor0_v = mp::val_xor0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_left_xor_v = (... ^ xs::value);
+  inline constexpr auto val_left_xor_v = JLN_MP_FIX_SLOW_FOLDING(... ^ xs::value);
 
   template<class... xs>
   inline constexpr auto val_left_xor0_v = mp::val_left_xor0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_bit_and_v = (xs::value & ...);
+  inline constexpr auto val_bit_and_v = JLN_MP_FIX_SLOW_FOLDING(xs::value & ...);
 
   template<class... xs>
   inline constexpr auto val_bit_and0_v = mp::val_bit_and0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_left_bit_and_v = (... & xs::value);
+  inline constexpr auto val_left_bit_and_v = JLN_MP_FIX_SLOW_FOLDING(... & xs::value);
 
   template<class... xs>
   inline constexpr auto val_left_bit_and0_v = mp::val_left_bit_and0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_bit_or_v = (xs::value | ...);
+  inline constexpr auto val_bit_or_v = JLN_MP_FIX_SLOW_FOLDING(xs::value | ...);
 
   template<class... xs>
   inline constexpr auto val_bit_or0_v = mp::val_bit_or0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_left_bit_or_v = (... | xs::value);
+  inline constexpr auto val_left_bit_or_v = JLN_MP_FIX_SLOW_FOLDING(... | xs::value);
 
   template<class... xs>
   inline constexpr auto val_left_bit_or0_v = mp::val_left_bit_or0<>::template f<xs...>::value;
+
+#undef JLN_MP_FIX_SLOW_FOLDING
 
 
   template<class x, class C = mp::identity>

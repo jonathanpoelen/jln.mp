@@ -372,6 +372,9 @@ preproc = P{
   + P'JLN_MP_CALL_TRY_IMPL(' * cid * ws0 * ',' * ws0 * cbalancedparent * ws0 * ')'
     / function(f, args) return 'try_<' .. preproc:match(f) .. '>::f<' .. preproc:match(args) .. '>' end
 
+  + P'JLN_MP_FIX_SLOW_FOLDING(' * cbalancedparent * ')'
+    / function(s) return '(' .. s .. ')' end
+
   + P'JLN_MP_SET_CONTAINS_BASE' * balancedparent / '/*...*/'
   + P'JLN_MP_TPL_AUTO_OR_INT' / 'auto /*or int_t*/'
   + P'JLN_MP_TRACE_TYPENAME' / ''
