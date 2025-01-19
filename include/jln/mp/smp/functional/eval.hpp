@@ -4,15 +4,50 @@
 
 #include <jln/mp/smp/assume.hpp>
 #include <jln/mp/smp/contract.hpp>
+#include <jln/mp/smp/functional/identity.hpp>
 #include <jln/mp/functional/eval.hpp>
 
-#ifdef __cpp_nontype_template_parameter_class
-#if __cpp_nontype_template_parameter_class >= 201806L
+#if __cplusplus >= 202002L \
+  && defined(__cpp_nontype_template_parameter_auto) \
+  && __cpp_nontype_template_parameter_auto >= 201606L
+
+/// \cond
+#if !JLN_MP_GCC
+namespace jln::mp::detail
+{
+  template<auto F, class... xs>
+    requires(requires { F.template operator()<xs...>(); })
+  struct smp_func
+  {
+    using type = decltype(F.template operator()<xs...>());
+  };
+
+  template<auto F, class C = identity>
+  struct smp_eval
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, typename smp_func<F, xs...>::type);
+  };
+
+  template<auto F>
+  struct smp_eval<F, identity>
+  {
+    template<class... xs>
+    using f = typename smp_func<F, xs...>::type;
+  };
+}
+#endif
+/// \endcond
 
 namespace jln::mp::smp
 {
+#if !JLN_MP_GCC
   template<auto F, class C = identity>
-  using eval = try_contract<mp::eval<F, assume_unary<C>>>;
+  using eval = try_contract<detail::smp_eval<F, assume_unary<C>>>;
+#else
+  template<auto F, class C = identity>
+  using eval = try_contract<eval<F, assume_unary<C>>>;
+#endif
 }
 
 /// \cond
@@ -25,5 +60,5 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-#endif
+
 #endif

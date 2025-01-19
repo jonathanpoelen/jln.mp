@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: MIT
 #include "test/test_case.hpp"
 
-#ifdef __cpp_nontype_template_parameter_class
-#if __cpp_nontype_template_parameter_class >= 201806L
+#if __cplusplus >= 202002L \
+  && defined(__cpp_nontype_template_parameter_auto) \
+  && __cpp_nontype_template_parameter_auto >= 201606L
 
 #include "test.hpp"
 #include "test/numbers.hpp"
@@ -14,6 +15,10 @@
 #include "jln/mp/smp/list/listify.hpp"
 
 TEST_SUITE_BEGIN()
+
+JLN_MP_DIAGNOSTIC_PUSH()
+JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunused-template")
+JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunused-member-function")
 
 struct foo
 {
@@ -33,30 +38,51 @@ struct bar
   }
 };
 
-static constexpr struct { } noop {};
+struct NoTpl
+{
+  int operator()() const
+  {
+    return int{};
+  }
+};
+
+struct NoConst
+{
+  template<class T>
+  T operator()()
+  {
+    return T{};
+  }
+};
+
+struct Noop { };
+
+JLN_MP_DIAGNOSTIC_POP()
 
 TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
 
-  (void)eval<noop, ut::unary>();
-  (void)eval<noop, ut::listify>();
+  ut::same<int, emp::eval<foo{}, int>>();
 
-  ut::not_invocable<eval<noop>>();
-  ut::not_invocable<eval<noop>, int>();
-
-  constexpr foo f;
-
-  ut::same<int, emp::eval<f, int>>();
-
-  test_context<eval<f>, smp::eval<f>>()
+  test_context<eval<foo{}>, smp::eval<foo{}>>()
     .test<int, int>()
     .not_invocable<>()
     .not_invocable<int, int>()
     ;
+
+  test_context<eval<bar{}>, smp::eval<bar{}>>()
+    .test<int, int, char>()
+    .test<char, char, int>()
+    .not_invocable<>()
+    .not_invocable<int>()
+    ;
+
+  ut::not_invocable<smp::eval<Noop{}>>();
+  ut::not_invocable<smp::eval<NoTpl{}>>();
+  ut::not_invocable<smp::eval<NoConst{}>, int>();
 }
 
 TEST_SUITE_END()
-#endif
 #endif
