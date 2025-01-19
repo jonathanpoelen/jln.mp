@@ -3,8 +3,9 @@
 #pragma once
 
 #include <jln/mp/functional/memoize.hpp> // na
-#include <jln/mp/set/set_contains.hpp> // inherit
+#include <jln/mp/utility/inherit.hpp>
 #include <jln/mp/utility/always.hpp>
+#include <jln/mp/utility/unpack.hpp>
 
 
 namespace jln::mp
@@ -29,7 +30,7 @@ namespace jln::mp
   {
     template<class... kvs>
     using f = typename decltype(detail::map_find_select<key>::f(
-      static_cast<detail::inherit<kvs...>*>(nullptr)
+      static_cast<inherit_safely<kvs...>*>(nullptr)
     ))
       ::template f<TC, FC, kvs...>;
   };
@@ -61,7 +62,7 @@ namespace jln::mp
   {
     template<class... kvs>
     using f = typename decltype(detail::map_find_select<key>::f(
-      static_cast<detail::inherit<kvs...>*>(nullptr)
+      static_cast<inherit_safely<kvs...>*>(nullptr)
     ))
       ::template f<identity, always<T>>;
   };
@@ -73,7 +74,7 @@ namespace jln::mp
     template<class... kvs>
     using f = JLN_MP_CALL_TRACE(C,
       typename decltype(detail::map_find_select<key>::f(
-        static_cast<detail::inherit<kvs...>*>(nullptr)
+        static_cast<inherit_safely<kvs...>*>(nullptr)
       ))
       ::template f<always<T>, always<U>>
     );
@@ -85,7 +86,7 @@ namespace jln::mp
   {
     template<class... kvs>
     using f = typename decltype(detail::map_find_select<key>::f(
-      static_cast<detail::inherit<kvs...>*>(nullptr)
+      static_cast<inherit_safely<kvs...>*>(nullptr)
     ))
       ::template f<always<T>, always<U>>;
   };

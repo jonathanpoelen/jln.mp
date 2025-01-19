@@ -57,7 +57,7 @@ namespace jln::mp
 
 #include <jln/mp/algorithm/none_of.hpp>
 #include <jln/mp/utility/conditional.hpp>
-#include <jln/mp/utility/flat_inheritance.hpp>
+#include <jln/mp/utility/inherit.hpp>
 #include <jln/mp/utility/is_base_of.hpp>
 #include <jln/mp/list/push_back.hpp>
 #include <jln/mp/list/join.hpp>
@@ -88,7 +88,7 @@ namespace jln::mp::detail
   struct unique_impl_select
   {
     template<class Set, class x>
-    using f = flat_inheritance<Set, list<x>>;
+    using f = inherit<Set, list<x>>;
   };
 
   template<>
@@ -117,7 +117,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class C, class s, class x>
-  struct flat_recursive_unique<C, flat_inheritance<s, x>>
+  struct flat_recursive_unique<C, inherit<s, x>>
   : _join_select<2>::f<
       C,
       typename flat_recursive_unique<list, s>::type,
@@ -130,7 +130,7 @@ namespace jln::mp::detail
     JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA)>
   struct flat_recursive_unique<
     C,
-    JLN_MP_REPEAT_8(flat_inheritance<, JLN_MP_NIL)
+    JLN_MP_REPEAT_8(inherit<, JLN_MP_NIL)
     s
     JLN_MP_XS_8(JLN_MP_COMMA list<, >>, JLN_MP_NIL)
   >
@@ -146,7 +146,7 @@ namespace jln::mp::detail
     JLN_MP_XS_32(class, JLN_MP_NIL, JLN_MP_COMMA)>
   struct flat_recursive_unique<
     C,
-    JLN_MP_REPEAT_32(flat_inheritance<, JLN_MP_NIL)
+    JLN_MP_REPEAT_32(inherit<, JLN_MP_NIL)
     s
     JLN_MP_XS_32(JLN_MP_COMMA list<, >>, JLN_MP_NIL)
   >
@@ -160,7 +160,7 @@ namespace jln::mp::detail
 
   struct start_recursive_unique
   {
-    using type = flat_inheritance<>;
+    using type = inherit<>;
   };
 }
 
@@ -173,7 +173,7 @@ namespace jln::mp
     using f = typename detail::flat_recursive_unique<
       C::template f,
       typename detail::unique_impl
-        ::f<flat_inheritance<>, xs...>
+        ::f<inherit<>, xs...>
     >::type;
   };
 
@@ -185,7 +185,7 @@ namespace jln::mp
     using f = typename detail::flat_recursive_unique<
       C,
       typename detail::unique_impl
-        ::f<flat_inheritance<>, xs...>
+        ::f<inherit<>, xs...>
     >::type;
   };
 #endif

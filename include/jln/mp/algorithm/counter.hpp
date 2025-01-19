@@ -103,7 +103,7 @@ namespace jln::mp
 #endif
 
 #include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
-#include <jln/mp/set/set_contains.hpp> // inherit
+#include <jln/mp/utility/inherit.hpp> // inherit
 
 namespace jln::mp::detail
 {
@@ -179,7 +179,7 @@ namespace jln::mp::detail
 #else
 
   template<class T, class i>
-  constexpr int_t index_base(list<list<i, T>>*)
+  constexpr int_t index_base(list<i, T>*)
   {
     return i::value;
   }
@@ -190,7 +190,7 @@ namespace jln::mp::detail
     template<class... unique_xs>
     struct unique
     {
-      static constexpr detail::inherit<list<number<ints>, unique_xs>...>* indexed = nullptr;
+      static constexpr inherit<list<number<ints>, unique_xs>...>* indexed = nullptr;
 
 #if !JLN_MP_MSVC && __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L
       template<auto counters>
@@ -201,7 +201,7 @@ namespace jln::mp::detail
       };
 
       template<class... xs>
-      struct counter : impl<count_elems<sizeof...(ints), index_base2<xs>(indexed)...>()>
+      struct counter : impl<count_elems<sizeof...(ints), index_base<xs>(indexed)...>()>
       {};
 #else
       template<class S>

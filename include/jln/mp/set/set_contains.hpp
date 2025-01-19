@@ -4,6 +4,7 @@
 
 #include <jln/mp/number/not.hpp>
 #include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/utility/inherit.hpp>
 #include <jln/mp/utility/is_base_of.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/identity.hpp>
@@ -12,14 +13,8 @@
 namespace jln::mp
 {
   /// \cond
-  namespace detail
-  {
-    template<class... xs>
-    struct inherit : list<xs>...
-    {};
-  }
 #define JLN_MP_SET_CONTAINS_BASE(x, ...) JLN_MP_IS_BASE_OF(list<x>, __VA_ARGS__)
-#define JLN_MP_SET_CONTAINS(x, ...) JLN_MP_SET_CONTAINS_BASE(x, detail::inherit<__VA_ARGS__>)
+#define JLN_MP_SET_CONTAINS(x, ...) JLN_MP_SET_CONTAINS_BASE(x, inherit_safely<__VA_ARGS__>)
   /// \endcond
 
   /// \ingroup set
@@ -49,19 +44,19 @@ namespace jln::mp
     /// \c true if \c x is an element of the set \c Set, \c false otherwise.
     template<class Set, class x>
     inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<detail::inherit>, Set>::type
+      x, typename detail::_unpack<mp::lift<inherit_safely>, Set>::type
     );
 
     /// \c true if \c x is an element of all \set \c Sets, \c false otherwise.
     template<class x, class... Sets>
     inline constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
+      x, typename detail::_unpack<mp::lift<inherit_safely>, Sets>::type
     ) && ...);
 
     /// \c true if \c x is an element of any \set \c Sets, \c false otherwise.
     template<class x, class... Sets>
     inline constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
+      x, typename detail::_unpack<mp::lift<inherit_safely>, Sets>::type
     ) || ...);
 
     /// \c true if \c x is an element of none \set \c Sets, \c false otherwise.

@@ -112,7 +112,7 @@ namespace jln::mp
 // #if JLN_MP_GCC
 #include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
 // #else
-#include <jln/mp/set/set_contains.hpp> // inherit
+#include <jln/mp/utility/inherit.hpp>
 // #endif
 
 /// \cond
@@ -212,7 +212,7 @@ namespace jln::mp::detail
   struct remove_unique_elem_impl
   {
     template<class i>
-    static list<> f(list<list<x, i>>*);
+    static list<> f(list<x, i>*);
 
     static list<x> f(...);
   };
@@ -231,7 +231,7 @@ namespace jln::mp::detail
   struct copy_unique_elem_impl
   {
     template<class i>
-    static list<x> f(list<list<x, i>>*);
+    static list<x> f(list<x, i>*);
 
     static list<> f(...);
   };

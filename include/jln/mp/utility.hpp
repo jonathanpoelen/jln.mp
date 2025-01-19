@@ -5,9 +5,9 @@
 #include <jln/mp/utility/alignof.hpp>
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/conditional.hpp>
-#include <jln/mp/utility/flat_inheritance.hpp>
 #include <jln/mp/utility/has_type.hpp>
 #include <jln/mp/utility/has_value_type.hpp>
+#include <jln/mp/utility/inherit.hpp>
 #include <jln/mp/utility/is.hpp>
 #include <jln/mp/utility/is_base_of.hpp>
 #include <jln/mp/utility/is_not.hpp>

@@ -71,7 +71,8 @@ namespace jln::mp::detail
     static number<0> is_set(...);
 
     using type = decltype(is_set(static_cast<
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>*
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)
+      ::template f<xs...>*
     >(nullptr)));
   };
 #endif
@@ -88,7 +89,8 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C, typename detail::_is_set<xs...>::type);
 #else
     using f = JLN_MP_CALL_TRACE(C, number<sizeof(
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)::template f<xs...>
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)
+      ::template f<xs...>
     ) == 1>);
 #endif
   };
@@ -102,7 +104,8 @@ namespace jln::mp
     using f = typename detail::_is_set<xs...>::type;
 #else
     using f = number<sizeof(
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)::template f<xs...>
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)
+      ::template f<xs...>
     ) == 1>;
 #endif
   };
