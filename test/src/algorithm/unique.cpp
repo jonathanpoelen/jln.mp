@@ -29,6 +29,8 @@ TEST()
     .test<seq_0_1_2, _0, _1, _2>()
     .test<seq_0, _0, _0, _0, _0, _0>()
     .test<seq_0_1_2_3, _0, _0, _1, _0, _2, _2, _2, _0, _0, _3>()
+    .test<seq_0_1_2_3_4_5_6_7_8_9, _0, _0, _1, _0, _2, _2, _2, _0,
+        _0, _3, _4, _5, _5, _6, _7, _6, _5, _8, _9, _1, _4, _5, _2>()
     .test<list<int, int&, int&&, int const, int const&, int const&&>,
       int, int&, int&&, int const, int const&, int const&&, int&>()
     ;
@@ -41,12 +43,15 @@ TEST()
     .test<seq_0_1_2, _0, _1, _2>()
     .test<seq_0, _0, _0, _0, _0, _0>()
     .test<seq_0_1_2_3, _0, _0, _1, _0, _2, _2, _2, _0, _0, _3>()
+    .test<seq_0_1_2_3_4_5_6_7_8_9, _0, _0, _1, _0, _2, _2, _2, _0,
+        _0, _3, _4, _5, _5, _6, _7, _6, _5, _8, _9, _1, _4, _5, _2>()
     .test<list<int, int&, int&&, int const, int const&, int const&&>,
       int, int&, int&&, int const, int const&, int const&&, int&>()
     ;
 
   using first = unpack<at0<>>;
   using smp_first = smp::unpack<smp::at0<>>;
+
   test_context<
     unique_if<each<first, first, lift<std::is_same>>>,
     smp::unique_if<smp::each<smp_first, smp_first, smp::lift<std::is_same>>>,

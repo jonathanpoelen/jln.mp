@@ -89,6 +89,27 @@ namespace jln::mp
 // # endif
 
 /// \cond
+namespace jln::mp::detail
+{
+#if JLN_MP_MEMOIZED_ALIAS
+# define JLN_MP_SIMPLE_MEMOIZER(...) __VA_ARGS__
+#else
+  template<class F, class... xs>
+  struct simple_memoizer_impl
+  {
+    using type = typename F::template f<xs...>;
+  };
+
+  template<class F>
+  struct simple_memoizer
+  {
+    template<class... xs>
+    using f = typename simple_memoizer_impl<F, xs...>::type;
+  };
+# define JLN_MP_SIMPLE_MEMOIZER(...) ::jln::mp::detail::simple_memoizer<__VA_ARGS__>
+#endif
+}
+
 #if !JLN_MP_MEMOIZED_ALIAS || JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
 
 namespace jln::mp::detail

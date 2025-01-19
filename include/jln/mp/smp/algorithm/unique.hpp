@@ -14,7 +14,7 @@
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using unique = detail::sfinae<mp::unique<subcontract_barrier<C>>>;
+  using unique = contract<mp::unique_if<mp::same<>, subcontract<C>>>;
 
   template<class Cmp = same<>, class C = listify>
   using unique_if = detail::sfinae<mp::unique_if<
@@ -27,42 +27,20 @@ namespace jln::mp::smp
 /// \cond
 namespace jln::mp::detail
 {
-  template<class C>
-  struct smp_unique_continuation
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, unique_if<same<>, C>>
   {
-    using type = C;
-  };
-
-  template<>
-  struct smp_unique_continuation<try_<unpack<listify>>>
-  {
-    using type = mp::identity;
+    using type = smp::unique<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold<lift<emp::set_push_back>, C>>>
+  struct _sfinae<sfinae, unique_if<smp::same<>, C>>
   {
-    using type = contract<push_front<list<>, fold<
-      lift<emp::set_push_back>, typename smp_unique_continuation<
-        assume_unary<sfinae<C>>
-      >::type
-    >>>;
-  };
-
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold<
-    unpack<_set_cmp_push_back<JLN_MP_TRACE_F(smp::same<>)>>, C
-  >>>
-  {
-    using type = contract<push_front<list<>, fold<
-      lift<emp::set_push_back>, typename smp_unique_continuation<
-        assume_unary<optimize_useless_unpack_t<sfinae<C>>>
-      >::type
-    >>>;
+    using type = smp::unique<sfinae<C>>;
   };
 
   template<class Cmp>
-  struct _smp_set_cmp_push_back
+  struct smp_set_cmp_push_back
   {
     template<class x, class... xs>
     using f = JLN_MP_CONDITIONAL_P_C_T(
@@ -76,28 +54,31 @@ namespace jln::mp::detail
   template<class C>
   struct smp_unique_if_continuation
   {
-    using type = C;
+    using type = unpack<C>;
   };
 
   template<>
-  struct smp_unique_if_continuation<try_<unpack<listify>>>
+  struct smp_unique_if_continuation<listify>
   {
     using type = contract<mp::identity>;
   };
 
   template<template<class> class sfinae, class Cmp, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold<
-    unpack<_set_cmp_push_back<JLN_MP_TRACE_F(Cmp)>>, C
-  >>>
+  struct _sfinae<sfinae, unique_if<Cmp, C>>
   {
-    using type = contract<push_front<list<>, smp::fold<
-      contract<unpack<try_<_smp_set_cmp_push_back<
-        JLN_MP_TRACE_F(assume_binary<sfinae<Cmp>>)
-      >>>>,
-      typename smp_unique_if_continuation<
-        assume_unary<sfinae<C>>
-      >::type
-    >>>;
+    using type = contract<
+      unique_if_impl<
+        list<>,
+        smp::fold<
+          contract<unpack<try_<smp_set_cmp_push_back<
+            JLN_MP_TRACE_F(assume_binary<sfinae<Cmp>>)
+          >>>>,
+          typename smp_unique_if_continuation<
+            sfinae<C>
+          >::type
+        >
+      >
+    >;
   };
 }
 /// \endcond

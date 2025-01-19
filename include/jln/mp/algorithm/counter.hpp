@@ -4,13 +4,22 @@
 
 #include <jln/mp/functional/lift.hpp>
 #include <jln/mp/algorithm/unique.hpp>
+#include <jln/mp/algorithm/make_int_sequence.hpp>
 
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-    struct mk_counter;
+    template<class, int_t... ints>
+    struct counter_impl;
+
+    struct mk_counter
+    {
+      template<class... xs>
+      using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), counter_impl)
+        ::template unique<xs...>;
+    };
   }
   /// \endcond
 
@@ -93,11 +102,7 @@ namespace jln::mp
 }
 #endif
 
-#if JLN_MP_GCC
-# include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
-#else
-# include <jln/mp/algorithm/make_int_sequence.hpp>
-#endif
+#include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
 
 namespace jln::mp::detail
 {
@@ -178,7 +183,7 @@ namespace jln::mp::detail
     return i::value;
   }
 
- template<class, int_t... ints>
+  template<class, int_t... ints>
   struct counter_impl
   {
     template<class... unique_xs>
@@ -215,12 +220,5 @@ namespace jln::mp::detail
 #endif
 
   JLN_MP_DIAGNOSTIC_POP()
-
-  struct mk_counter
-  {
-    template<class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), counter_impl)
-      ::template unique<xs...>;
-  };
 }
 /// \endcond
