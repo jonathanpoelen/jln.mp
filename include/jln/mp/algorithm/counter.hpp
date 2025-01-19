@@ -102,9 +102,6 @@ namespace jln::mp
 }
 #endif
 
-#include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
-#include <jln/mp/utility/inherit.hpp> // inherit
-
 namespace jln::mp::detail
 {
   template<std::size_t N>
@@ -121,14 +118,17 @@ namespace jln::mp::detail
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
 
-#if JLN_MP_GCC || (!JLN_MP_MSVC && __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L)
-  template<std::size_t N, int_t... i>
+#if JLN_MP_GCC || (!JLN_MP_MSVC && JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS)
+  template<std::size_t N, class... i>
   constexpr array<N> count_elems()
   {
     array<N> counter{};
-    (..., ++counter.elems[i]);
+    (..., ++counter.elems[i::value]);
     return counter;
   }
+
+  template<class T, class I>
+  I index_base(list<I, T>*);
 #else
   template<std::size_t N, int_t... i>
   struct count_elems
@@ -139,15 +139,15 @@ namespace jln::mp::detail
       return counter;
     }();
   };
+
+  template<class T, class I>
+  constexpr int_t index_base(list<I, T>*)
+  {
+    return I::value;
+  }
 #endif
 
 #if JLN_MP_GCC
-
-  template<class T, int_t i>
-  constexpr int_t index_base(indexed_item<i, T>*)
-  {
-    return i;
-  }
 
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wunused-but-set-variable")
@@ -157,15 +157,16 @@ namespace jln::mp::detail
     template<class... unique_xs>
     struct unique
     {
+      struct indexed_t : list<number<ints>, unique_xs>... {};
+
       template<class C, template<class...> class F, class... xs>
       static auto f()
       {
-        constexpr typename indexed_inherit<int_t, ints...>::template f<unique_xs...>*
-          indexed = nullptr;
+        constexpr indexed_t * indexed = nullptr;
 
         constexpr auto counters = count_elems<
           sizeof...(ints),
-          index_base<xs>(indexed)...
+          decltype(index_base<xs>(indexed))...
         >();
 
         return always<typename C::template f<
@@ -176,13 +177,7 @@ namespace jln::mp::detail
   };
   JLN_MP_DIAGNOSTIC_POP()
 
-#else
-
-  template<class T, class i>
-  constexpr int_t index_base(list<i, T>*)
-  {
-    return i::value;
-  }
+#else // if ! JLN_MP_GCC
 
   template<class, int_t... ints>
   struct counter_impl
@@ -190,9 +185,10 @@ namespace jln::mp::detail
     template<class... unique_xs>
     struct unique
     {
-      static constexpr inherit<list<number<ints>, unique_xs>...>* indexed = nullptr;
+      struct indexed_inherit : list<number<ints>, unique_xs>... {};
+      static constexpr indexed_inherit * indexed = nullptr;
 
-#if !JLN_MP_MSVC && __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L
+#if !JLN_MP_MSVC && JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS
       template<auto counters>
       struct impl
       {
@@ -201,7 +197,7 @@ namespace jln::mp::detail
       };
 
       template<class... xs>
-      struct counter : impl<count_elems<sizeof...(ints), index_base<xs>(indexed)...>()>
+      struct counter : impl<count_elems<sizeof...(ints), decltype(index_base<xs>(indexed))...>()>
       {};
 #else
       template<class S>
