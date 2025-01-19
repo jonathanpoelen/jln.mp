@@ -7,10 +7,7 @@
 #include <jln/mp/smp/functional/identity.hpp>
 #include <jln/mp/functional/eval.hpp>
 
-#if __cplusplus >= 202002L \
-  && defined(__cpp_nontype_template_parameter_auto) \
-  && __cpp_nontype_template_parameter_auto >= 201606L
-
+#if JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS
 /// \cond
 #if !JLN_MP_GCC
 namespace jln::mp::detail

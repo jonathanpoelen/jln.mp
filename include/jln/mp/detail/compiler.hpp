@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -14,6 +14,18 @@
 #  endif
 #  ifndef JLN_MP_FEATURE_CONCEPTS
 #      define JLN_MP_FEATURE_CONCEPTS 0
+#  endif
+#endif
+
+#ifndef JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS
+// note: should be __cpp_nontype_template_args >= 201911,
+// but clang does not have this value because it does not fully support NTTP
+#  if __cplusplus >= 202002L \
+    && defined(__cpp_nontype_template_parameter_auto) \
+    && __cpp_nontype_template_parameter_auto >= 201606L
+#    define JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS 1
+#  else
+#    define JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS 0
 #  endif
 #endif
 //@}

@@ -5,11 +5,7 @@
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/call.hpp>
 
-// note: __cpp_nontype_template_args >= 201911,
-// but clang does not have this value because it does not fully support NTTP
-#if __cplusplus >= 202002L \
-  && defined(__cpp_nontype_template_parameter_auto) \
-  && __cpp_nontype_template_parameter_auto >= 201606L
+#if JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS
 namespace jln::mp
 {
   /// \ingroup functional
