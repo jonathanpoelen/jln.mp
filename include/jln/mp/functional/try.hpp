@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/algorithm/same_xs.hpp>
+#include <jln/mp/algorithm/same.hpp>
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/memoize.hpp>
 #include <jln/mp/list/list.hpp>

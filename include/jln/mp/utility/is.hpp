@@ -3,7 +3,7 @@
 #pragma once
 
 #include <jln/mp/number/number.hpp>
-#include <jln/mp/algorithm/same_xs.hpp>
+#include <jln/mp/algorithm/same.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/identity.hpp>
 

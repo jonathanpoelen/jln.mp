@@ -355,7 +355,6 @@ executable('check_inc', [
   'test/autogen/algorithm@reverse_fold_right.cpp',
   'test/autogen/algorithm@rotate.cpp',
   'test/autogen/algorithm@same.cpp',
-  'test/autogen/algorithm@same_xs.cpp',
   'test/autogen/algorithm@scan.cpp',
   'test/autogen/algorithm@scan_right.cpp',
   'test/autogen/algorithm@search.cpp',

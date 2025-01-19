@@ -23,7 +23,7 @@ namespace jln::mp::smp
 }
 
 
-#include <jln/mp/algorithm/same_xs.hpp>
+#include <jln/mp/algorithm/same.hpp>
 
 /// \cond
 namespace jln::mp::detail
