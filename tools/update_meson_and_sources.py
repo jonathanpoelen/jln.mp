@@ -37,7 +37,7 @@ def make_targets(path: str, prefix_alias_name: str, suffix_target_name: str,
 
 
 LICENSE = (
-  '// SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>\n'
+  '// SPDX-FileCopyrightText: 2025 Jonathan Poelen <jonathan.poelen@gmail.com>\n'
   '// SPDX-License-Identifier: MIT\n'
 )
 
