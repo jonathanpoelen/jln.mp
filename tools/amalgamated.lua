@@ -16,16 +16,12 @@ function readfile(path)
 end
 
 files={}
-for i=1,#arg do
-  files[arg[i]:gsub('.*jln/', '')] = {readfile(arg[i]), true}
-end
-
 tinsert = table.insert
 tconcat = table.concat
 
-system_includes = {}
+ksystem_includes = {}
 sources = {}
-copyrights = {}
+kcopyrights = {}
 
 function process_include(jln_prefix, incpath)
   if jln_prefix ~= '' then
@@ -42,7 +38,7 @@ function process_include(jln_prefix, incpath)
     end
   else
     eprint('syspath: ', incpath)
-    system_includes[incpath] = true
+    ksystem_includes[incpath] = true
   end
   return ''
 end
@@ -53,7 +49,8 @@ function process_comment(comment)
 end
 
 function process_copyright(comment)
-  copyrights[comment] = comment
+  eprint(comment)
+  kcopyrights[comment] = comment
   return ''
 end
 
@@ -87,7 +84,10 @@ splitpath = Ct(splitpath * ('/' * splitpath)^0)
 
 unpack = unpack or table.unpack
 
-for path,info in pairs(files) do
+for i=1,#arg do
+  path = arg[i]:gsub('.*jln/', '')
+  info = files[path] or {readfile(arg[i]), true}
+  files[path] = info
   if info[2] then
     eprint('> ', path)
     info[2] = false
@@ -96,12 +96,13 @@ for path,info in pairs(files) do
 end
 
 includes = {}
-for k in pairs(system_includes) do
+for k in pairs(ksystem_includes) do
   tinsert(includes, k)
 end
 table.sort(includes)
 
-for k,_ in pairs(copyrights) do
+copyrights = {}
+for k,_ in pairs(kcopyrights) do
   tinsert(copyrights, k)
 end
 table.sort(copyrights)
