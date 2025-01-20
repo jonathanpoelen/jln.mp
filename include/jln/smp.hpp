@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2025 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 // Amalgamated version of https://github.com/jonathanpoelen/jln.mp
 
@@ -92,6 +93,18 @@ namespace jln::mp::detail
 #  endif
 #  ifndef JLN_MP_FEATURE_CONCEPTS
 #      define JLN_MP_FEATURE_CONCEPTS 0
+#  endif
+#endif
+
+#ifndef JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS
+// note: should be __cpp_nontype_template_args >= 201911,
+// but clang does not have this value because it does not fully support NTTP
+#  if __cplusplus >= 202002L \
+    && defined(__cpp_nontype_template_parameter_auto) \
+    && __cpp_nontype_template_parameter_auto >= 201606L
+#    define JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS 1
+#  else
+#    define JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS 0
 #  endif
 #endif
 //@}
@@ -407,41 +420,6 @@ namespace jln::mp::detail
 
 /// Displays parameters. Useful in a macro to remove parentheses from a value.
 #define JLN_MP_UNPACK(...) __VA_ARGS__
-namespace jln::mp
-{
-  /// \ingroup list
-
-  template<class... xs>
-  class list {};
-  /// \ingroup algorithm
-
-#if JLN_MP_HAS_BUILTIN(__is_same)
-#  define JLN_MP_IS_SAME(...) __is_same(__VA_ARGS__)
-#else
-#  define JLN_MP_IS_SAME(...) ::jln::mp::emp::same_xs_v<__VA_ARGS__>
-#endif
-
-  namespace emp
-  {
-    template<class... xs>
-    inline constexpr bool same_xs_v = true;
-
-    template<class x>
-    inline constexpr bool same_xs_v<x, x> = true;
-
-    template<class x, class y>
-    inline constexpr bool same_xs_v<x, y> = false;
-
-    template<class x, class y, class z, class... xs>
-    inline constexpr bool same_xs_v<x, y, z, xs...> =
-#if JLN_MP_HAS_BUILTIN(__is_same)
-      __is_same(list<x, y, z, xs...>, list<y, z, xs..., x>)
-#else
-      same_xs_v<list<x, y, z, xs...>, list<y, z, xs..., x>>
-#endif
-    ;
-  }
-}
 
 // Fast convertion to bool.
 // If the value is more likely to be a bool, preferred bool(expr)
@@ -462,6 +440,98 @@ namespace jln::mp
 #  define JLN_MP_EXPR_TO_BOOL(...) bool(__VA_ARGS__)
 #  define JLN_MP_EXPR_TO_BOOL_NOT(...) !(__VA_ARGS__)
 #endif
+
+namespace jln::mp
+{
+  /// \ingroup number
+
+  using int_t = std::intmax_t;
+  using uint_t = std::uintmax_t;
+
+  template<int_t v>
+  struct number { static const int_t value = v; };
+
+  using true_ = number<1>;
+  using false_ = number<0>;
+
+#ifndef JLN_MP_ENABLE_TPL_AUTO
+# if defined(__cpp_nontype_template_parameter_auto)
+#   if __cpp_nontype_template_parameter_auto >= 201606L
+#     define JLN_MP_ENABLE_TPL_AUTO 1
+#   endif
+# endif
+#endif
+
+#ifndef JLN_MP_ENABLE_TPL_AUTO
+# define JLN_MP_ENABLE_TPL_AUTO 0
+#endif
+
+#if JLN_MP_ENABLE_TPL_AUTO
+# define JLN_MP_TPL_AUTO_OR_INT auto
+# define JLN_MP_TPL_AUTO_OR(T) auto
+#else
+# define JLN_MP_TPL_AUTO_OR_INT ::jln::mp::int_t
+# define JLN_MP_TPL_AUTO_OR(T) T
+#endif
+}
+namespace jln::mp
+{
+  /// \ingroup list
+
+  template<class... xs>
+  class list {};
+} // namespace jln::mp
+/// \ingroup config
+
+
+
+/// Maximum pack size that can be passed to the call function.
+/// If the pack is larger, there will be a compilation error.
+#ifndef JLN_MP_MAX_CALL_ELEMENT
+# define JLN_MP_MAX_CALL_ELEMENT 10000
+#endif
+
+/// When 1, ignore the value of JLN_MP_LAZY_ALIAS in the implementations.
+/// This allows the code to compile in an emptier way, but will fail when
+/// the compiler can resolve an alias leading to a compilation error
+/// (which is actually quite rare).
+#ifndef JLN_MP_FORCE_LAZY_ALIAS
+# define JLN_MP_FORCE_LAZY_ALIAS 1
+#endif
+
+#if JLN_MP_LAZY_ALIAS
+# undef JLN_MP_FORCE_LAZY_ALIAS
+# define JLN_MP_FORCE_LAZY_ALIAS 1
+#endif
+
+/// When 1, uses a memoization version of call to keep better track of calls
+/// in the case of compilation error. This is especially useful with clang,
+/// which doesn't display aliases.
+#ifndef JLN_MP_ENABLE_DEBUG
+# define JLN_MP_ENABLE_DEBUG 0
+#endif
+
+#if JLN_MP_ENABLE_DEBUG
+# define JLN_MP_ENABLE_DEBUG_ORIGINAL 1
+#else
+# define JLN_MP_ENABLE_DEBUG_ORIGINAL 0
+#endif
+
+// Useless with gcc and msvc since it displays all the transformations.
+#if JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_MEMOIZED_ALIAS
+# undef JLN_MP_ENABLE_DEBUG
+# define JLN_MP_ENABLE_DEBUG 0
+#endif
+
+/// \defgroup list List
+/// \defgroup algorithm Algorithm
+/// \defgroup number Number
+/// \defgroup value Value
+/// \defgroup functional Functional
+/// \defgroup utility Utility
+/// \defgroup trait Trait
+/// \defgroup search Search
+/// \defgroup group Group
 
 namespace jln::mp
 {
@@ -604,6 +674,27 @@ namespace jln::mp
 // # endif
 
 /// \cond
+namespace jln::mp::detail
+{
+#if JLN_MP_MEMOIZED_ALIAS
+# define JLN_MP_SIMPLE_MEMOIZER(...) __VA_ARGS__
+#else
+  template<class F, class... xs>
+  struct simple_memoizer_impl
+  {
+    using type = typename F::template f<xs...>;
+  };
+
+  template<class F>
+  struct simple_memoizer
+  {
+    template<class... xs>
+    using f = typename simple_memoizer_impl<F, xs...>::type;
+  };
+# define JLN_MP_SIMPLE_MEMOIZER(...) ::jln::mp::detail::simple_memoizer<__VA_ARGS__>
+#endif
+}
+
 #if !JLN_MP_MEMOIZED_ALIAS || JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
 
 namespace jln::mp::detail
@@ -659,91 +750,6 @@ namespace jln::mp::detail
 }
 #endif
 /// \endcond
-
-namespace jln::mp
-{
-  /// \ingroup number
-
-  using int_t = std::intmax_t;
-  using uint_t = std::uintmax_t;
-
-  template<int_t v>
-  struct number { static const int_t value = v; };
-
-  using true_ = number<1>;
-  using false_ = number<0>;
-
-#ifndef JLN_MP_ENABLE_TPL_AUTO
-# if defined(__cpp_nontype_template_parameter_auto)
-#   if __cpp_nontype_template_parameter_auto >= 201606L
-#     define JLN_MP_ENABLE_TPL_AUTO 1
-#   endif
-# endif
-#endif
-
-#ifndef JLN_MP_ENABLE_TPL_AUTO
-# define JLN_MP_ENABLE_TPL_AUTO 0
-#endif
-
-#if JLN_MP_ENABLE_TPL_AUTO
-# define JLN_MP_TPL_AUTO_OR_INT auto
-# define JLN_MP_TPL_AUTO_OR(T) auto
-#else
-# define JLN_MP_TPL_AUTO_OR_INT ::jln::mp::int_t
-# define JLN_MP_TPL_AUTO_OR(T) T
-#endif
-}
-/// \ingroup config
-
-
-
-/// Maximum pack size that can be passed to the call function.
-/// If the pack is larger, there will be a compilation error.
-#ifndef JLN_MP_MAX_CALL_ELEMENT
-# define JLN_MP_MAX_CALL_ELEMENT 10000
-#endif
-
-/// When 1, ignore the value of JLN_MP_LAZY_ALIAS in the implementations.
-/// This allows the code to compile in an emptier way, but will fail when
-/// the compiler can resolve an alias leading to a compilation error
-/// (which is actually quite rare).
-#ifndef JLN_MP_FORCE_LAZY_ALIAS
-# define JLN_MP_FORCE_LAZY_ALIAS 1
-#endif
-
-#if JLN_MP_LAZY_ALIAS
-# undef JLN_MP_FORCE_LAZY_ALIAS
-# define JLN_MP_FORCE_LAZY_ALIAS 1
-#endif
-
-/// When 1, uses a memoization version of call to keep better track of calls
-/// in the case of compilation error. This is especially useful with clang,
-/// which doesn't display aliases.
-#ifndef JLN_MP_ENABLE_DEBUG
-# define JLN_MP_ENABLE_DEBUG 0
-#endif
-
-#if JLN_MP_ENABLE_DEBUG
-# define JLN_MP_ENABLE_DEBUG_ORIGINAL 1
-#else
-# define JLN_MP_ENABLE_DEBUG_ORIGINAL 0
-#endif
-
-// Useless with gcc and msvc since it displays all the transformations.
-#if JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_MEMOIZED_ALIAS
-# undef JLN_MP_ENABLE_DEBUG
-# define JLN_MP_ENABLE_DEBUG 0
-#endif
-
-/// \defgroup list List
-/// \defgroup algorithm Algorithm
-/// \defgroup number Number
-/// \defgroup value Value
-/// \defgroup functional Functional
-/// \defgroup utility Utility
-/// \defgroup trait Trait
-/// \defgroup search Search
-/// \defgroup group Group
 
 namespace jln::mp
 {
@@ -1009,219 +1015,6 @@ namespace jln::mp::detail
     using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 }
-/// \endcond
-
-
-
-namespace jln::mp::detail
-{
-  template<class x, std::size_t>
-  struct first
-  {
-    using type = x;
-  };
-
-#if JLN_MP_FORCE_LAZY_ALIAS
-# define JLN_MP_LAZY_PARAM(deps, ...) __VA_ARGS__
-# define JLN_MP_LAZY_PARAM_T(deps, ...) __VA_ARGS__
-#elif JLN_MP_ENABLE_TYPE_PACK_ELEMENT
-# define JLN_MP_LAZY_PARAM(deps, ...) __type_pack_element<0, __VA_ARGS__, deps>
-# define JLN_MP_LAZY_PARAM_T(deps, ...) __type_pack_element<0, __VA_ARGS__, deps>
-#else
-# define JLN_MP_LAZY_PARAM(deps, ...) \
-  ::jln::mp::detail::first<__VA_ARGS__, sizeof(::jln::mp::list<deps>)>::type
-# define JLN_MP_LAZY_PARAM_T(deps, ...) \
-  typename JLN_MP_LAZY_PARAM(deps, __VA_ARGS__)
-#endif
-}
-
-namespace jln::mp
-{
-  /// \ingroup utility
-
-  /// Always evaluate at an arbitrary value.
-  /// \post result = x
-  /// \treturn \value
-  template<class x, class C = identity>
-  struct always
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, JLN_MP_LAZY_PARAM_T(xs..., x));
-  };
-
-  /// \cond
-  template<class x>
-  struct always<x, identity>
-  {
-    template<class... xs>
-    using f = JLN_MP_LAZY_PARAM_T(xs..., x);
-  };
-  /// \endcond
-}
-
-namespace jln::mp
-{
-  /// \ingroup utility
-
-  /// \treturn \bool
-  template<class T, class C = identity>
-  struct is
-  {
-    template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_IS_SAME(T, x)>);
-  };
-
-  /// \cond
-  template<class T>
-  struct is<T, identity>
-  {
-    template<class x>
-    using f = number<JLN_MP_IS_SAME(T, x)>;
-  };
-  /// \endcond
-  using is_na = is<na>;
-  using violation = always<na>;
-
-  /// \cond
-  namespace detail
-  {
-    template<class x>
-    struct try_dispatch;
-
-#if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
-    template<class, class, class = void>
-    struct _try_impl;
-
-#   define JLN_MP_CALL_TRY_IMPL(F, params) detail::_try_impl<F, list<params>>::type
-#elif JLN_MP_CUDA
-#   define JLN_MP_CALL_TRY_IMPL(F, params) detail::memoizer_impl<void, F, params>::try_type
-#else
-#   define JLN_MP_CALL_TRY_IMPL(F, params) detail::memoizer_impl<F, params>::try_type
-#endif
-  }
-  /// \endcond
-
-  /// \ingroup functional
-
-  /// Invokes \c TC::f<result> whether \c FC::f<xs...> is a valid expression
-  /// other than \c na, otherwhise invokes \c FC::f<xs...>.
-  /// \pre \c F::f<xs...> must be a SFINAE compatible expression
-  /// \treturn \value
-  template<class F, class TC = identity, class FC = violation>
-  struct try_
-  {
-    template<class... xs>
-    using f = typename detail::try_dispatch<
-      typename JLN_MP_CALL_TRY_IMPL(F, xs...)
-    >::template f<TC, FC, xs...>;
-  };
-
-  template<class F, class FC = violation>
-  using try_or_else = try_<F, identity, FC>;
-
-  template<class F, class FT = na>
-  using try_or = try_<F, identity, always<FT>>;
-
-  /// Checks whether \c F::f<xs...> is invocable.
-  /// \pre \c F::f<xs...> must be a SFINAE compatible expression
-  /// \treturn \bool
-  template<class F, class C = identity>
-  using is_invocable = try_<F, always<true_, C>, always<false_, C>>;
-
-  /// Checks whether \c F::f<xs...> is not invocable.
-  /// \pre \c F::f<xs...> must be a SFINAE compatible expression
-  /// \treturn \bool
-  template<class F, class C = identity>
-  using is_not_invocable = try_<F, always<false_, C>, always<true_, C>>;
-
-  namespace emp
-  {
-    template<class F, class TC, class FC, class... xs>
-    using try_ = typename mp::try_<F, TC, FC>::template f<xs...>;
-
-    template<class F, class FC, class... xs>
-    using try_or_else = typename mp::try_<F, mp::identity, FC>::template f<xs...>;
-
-    template<class F, class FT, class... xs>
-    using try_or = typename mp::try_<F, mp::identity, always<FT>>::template f<xs...>;
-
-    template<class F, class... xs>
-    inline constexpr bool is_invocable_v = JLN_MP_RAW_EXPR_TO_BOOL_NOT(
-      JLN_MP_IS_SAME(na, typename JLN_MP_CALL_TRY_IMPL(F, xs...)));
-
-    template<class F, class... xs>
-    inline constexpr bool is_not_invocable_v = !is_invocable_v<F, xs...>;
-
-    template<class F, class... xs>
-    using is_invocable = number<is_invocable_v<F, xs...>>;
-
-    template<class F, class... xs>
-    using is_not_invocable = number<!is_invocable_v<F, xs...>>;
-  }
-}
-
-
-/// \cond
-namespace jln::mp
-{
-  template<class F>
-  struct try_<F, always<true_>, always<false_>>
-  {
-    template<class... xs>
-    using f = number<emp::is_invocable_v<F, xs...>>;
-  };
-
-  template<class F>
-  struct try_<F, always<false_>, always<true_>>
-  {
-    template<class... xs>
-    using f = number<!emp::is_invocable_v<F, xs...>>;
-  };
-
-  template<class F>
-  struct try_<F, identity, violation>
-  {
-    template<class... xs>
-    using f = typename JLN_MP_CALL_TRY_IMPL(F, xs...);
-  };
-}
-
-namespace jln::mp::detail
-{
-  template<class x>
-  struct try_dispatch
-  {
-    template<class TC, class FC, class...>
-    using f = JLN_MP_CALL_TRACE(TC, x);
-  };
-
-  template<>
-  struct try_dispatch<na>
-  {
-    template<class TC, class FC, class... xs>
-    using f = JLN_MP_CALL_TRACE(FC, xs...);
-  };
-}
-
-#if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
-
-namespace jln::mp::detail
-{
-  template<class, class, class>
-  struct _try_impl
-  {
-    using type = na;
-  };
-
-  template<class F, class... xs>
-  struct _try_impl<F, list<xs...>, std::void_t<typename F::template f<xs...>>>
-  {
-    using type = typename F::template f<xs...>;
-  };
-}
-#endif
-
-#undef JLN_MP_CALL_TRY_IMPL
 /// \endcond
 
 namespace jln::mp
@@ -1537,6 +1330,290 @@ namespace jln::mp::detail
 
 namespace jln::mp
 {
+  /// \ingroup algorithm
+
+/// Fast implementation of std::is_same_v.
+#if JLN_MP_HAS_BUILTIN(__is_same)
+#  define JLN_MP_IS_SAME(...) __is_same(__VA_ARGS__)
+#else
+#  define JLN_MP_IS_SAME(...) ::jln::mp::emp::same_xs_v<__VA_ARGS__>
+#endif
+
+  namespace emp
+  {
+    template<class... xs>
+    inline constexpr bool same_xs_v = true;
+
+    template<class x>
+    inline constexpr bool same_xs_v<x, x> = true;
+
+    template<class x, class y>
+    inline constexpr bool same_xs_v<x, y> = false;
+
+    template<class x, class y, class z, class... xs>
+    inline constexpr bool same_xs_v<x, y, z, xs...> =
+#if JLN_MP_HAS_BUILTIN(__is_same)
+      __is_same(list<x, y, z, xs...>, list<y, z, xs..., x>)
+#else
+      same_xs_v<list<x, y, z, xs...>, list<y, z, xs..., x>>
+#endif
+    ;
+  }
+
+  /// Checks whether all \values are identical.
+  /// \treturn \bool
+  template<class C = identity>
+  struct same
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<emp::same_xs_v<xs...>>);
+  };
+
+  template<class C = identity>
+  struct same_v
+  {
+    template<class... xs>
+    using f = typename C::template f<emp::same_xs_v<xs...>>;
+  };
+
+  namespace emp
+  {
+    template<class L, class C = mp::identity>
+    using same = typename detail::_unpack<mp::same<C>, L>::type;
+
+    template<class L, class C = mp::identity>
+    inline constexpr bool same_v = detail::_unpack<mp::same<C>, L>::type::value;
+  }
+}
+
+
+/// \cond
+namespace jln::mp
+{
+  template<>
+  struct same<identity>
+  {
+    template<class... xs>
+    using f = number<emp::same_xs_v<xs...>>;
+  };
+}
+/// \endcond
+
+
+
+namespace jln::mp::detail
+{
+  template<class x, std::size_t>
+  struct first
+  {
+    using type = x;
+  };
+
+#if JLN_MP_FORCE_LAZY_ALIAS
+# define JLN_MP_LAZY_PARAM(deps, ...) __VA_ARGS__
+# define JLN_MP_LAZY_PARAM_T(deps, ...) __VA_ARGS__
+#elif JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+# define JLN_MP_LAZY_PARAM(deps, ...) __type_pack_element<0, __VA_ARGS__, deps>
+# define JLN_MP_LAZY_PARAM_T(deps, ...) __type_pack_element<0, __VA_ARGS__, deps>
+#else
+# define JLN_MP_LAZY_PARAM(deps, ...) \
+  ::jln::mp::detail::first<__VA_ARGS__, sizeof(::jln::mp::list<deps>)>::type
+# define JLN_MP_LAZY_PARAM_T(deps, ...) \
+  typename JLN_MP_LAZY_PARAM(deps, __VA_ARGS__)
+#endif
+}
+
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  /// Always evaluate at an arbitrary value.
+  /// \post result = x
+  /// \treturn \value
+  template<class x, class C = identity>
+  struct always
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_LAZY_PARAM_T(xs..., x));
+  };
+
+  /// \cond
+  template<class x>
+  struct always<x, identity>
+  {
+    template<class... xs>
+    using f = JLN_MP_LAZY_PARAM_T(xs..., x);
+  };
+  /// \endcond
+}
+
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  /// \treturn \bool
+  template<class T, class C = identity>
+  struct is
+  {
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_IS_SAME(T, x)>);
+  };
+
+  /// \cond
+  template<class T>
+  struct is<T, identity>
+  {
+    template<class x>
+    using f = number<JLN_MP_IS_SAME(T, x)>;
+  };
+  /// \endcond
+  using is_na = is<na>;
+  using violation = always<na>;
+
+  /// \cond
+  namespace detail
+  {
+    template<class x>
+    struct try_dispatch;
+
+#if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
+    template<class, class, class = void>
+    struct _try_impl;
+
+#   define JLN_MP_CALL_TRY_IMPL(F, params) detail::_try_impl<F, list<params>>::type
+#elif JLN_MP_CUDA
+#   define JLN_MP_CALL_TRY_IMPL(F, params) detail::memoizer_impl<void, F, params>::try_type
+#else
+#   define JLN_MP_CALL_TRY_IMPL(F, params) detail::memoizer_impl<F, params>::try_type
+#endif
+  }
+  /// \endcond
+
+  /// \ingroup functional
+
+  /// Invokes \c TC::f<result> whether \c FC::f<xs...> is a valid expression
+  /// other than \c na, otherwhise invokes \c FC::f<xs...>.
+  /// \pre \c F::f<xs...> must be a SFINAE compatible expression
+  /// \treturn \value
+  template<class F, class TC = identity, class FC = violation>
+  struct try_
+  {
+    template<class... xs>
+    using f = typename detail::try_dispatch<
+      typename JLN_MP_CALL_TRY_IMPL(F, xs...)
+    >::template f<TC, FC, xs...>;
+  };
+
+  template<class F, class FC = violation>
+  using try_or_else = try_<F, identity, FC>;
+
+  template<class F, class FT = na>
+  using try_or = try_<F, identity, always<FT>>;
+
+  /// Checks whether \c F::f<xs...> is invocable.
+  /// \pre \c F::f<xs...> must be a SFINAE compatible expression
+  /// \treturn \bool
+  template<class F, class C = identity>
+  using is_invocable = try_<F, always<true_, C>, always<false_, C>>;
+
+  /// Checks whether \c F::f<xs...> is not invocable.
+  /// \pre \c F::f<xs...> must be a SFINAE compatible expression
+  /// \treturn \bool
+  template<class F, class C = identity>
+  using is_not_invocable = try_<F, always<false_, C>, always<true_, C>>;
+
+  namespace emp
+  {
+    template<class F, class TC, class FC, class... xs>
+    using try_ = typename mp::try_<F, TC, FC>::template f<xs...>;
+
+    template<class F, class FC, class... xs>
+    using try_or_else = typename mp::try_<F, mp::identity, FC>::template f<xs...>;
+
+    template<class F, class FT, class... xs>
+    using try_or = typename mp::try_<F, mp::identity, always<FT>>::template f<xs...>;
+
+    template<class F, class... xs>
+    inline constexpr bool is_invocable_v = JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+      JLN_MP_IS_SAME(na, typename JLN_MP_CALL_TRY_IMPL(F, xs...)));
+
+    template<class F, class... xs>
+    inline constexpr bool is_not_invocable_v = !is_invocable_v<F, xs...>;
+
+    template<class F, class... xs>
+    using is_invocable = number<is_invocable_v<F, xs...>>;
+
+    template<class F, class... xs>
+    using is_not_invocable = number<!is_invocable_v<F, xs...>>;
+  }
+}
+
+
+/// \cond
+namespace jln::mp
+{
+  template<class F>
+  struct try_<F, always<true_>, always<false_>>
+  {
+    template<class... xs>
+    using f = number<emp::is_invocable_v<F, xs...>>;
+  };
+
+  template<class F>
+  struct try_<F, always<false_>, always<true_>>
+  {
+    template<class... xs>
+    using f = number<!emp::is_invocable_v<F, xs...>>;
+  };
+
+  template<class F>
+  struct try_<F, identity, violation>
+  {
+    template<class... xs>
+    using f = typename JLN_MP_CALL_TRY_IMPL(F, xs...);
+  };
+}
+
+namespace jln::mp::detail
+{
+  template<class x>
+  struct try_dispatch
+  {
+    template<class TC, class FC, class...>
+    using f = JLN_MP_CALL_TRACE(TC, x);
+  };
+
+  template<>
+  struct try_dispatch<na>
+  {
+    template<class TC, class FC, class... xs>
+    using f = JLN_MP_CALL_TRACE(FC, xs...);
+  };
+}
+
+#if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
+
+namespace jln::mp::detail
+{
+  template<class, class, class>
+  struct _try_impl
+  {
+    using type = na;
+  };
+
+  template<class F, class... xs>
+  struct _try_impl<F, list<xs...>, std::void_t<typename F::template f<xs...>>>
+  {
+    using type = typename F::template f<xs...>;
+  };
+}
+#endif
+
+#undef JLN_MP_CALL_TRY_IMPL
+/// \endcond
+
+namespace jln::mp
+{
   /// \ingroup list
 
   /// Returns the number of elements in a \c xs.
@@ -1580,49 +1657,6 @@ namespace jln::mp
   };
   /// \endcond
 }
-
-namespace jln::mp
-{
-  /// \ingroup algorithm
-
-  /// Checks whether all \values are identical.
-  /// \treturn \bool
-  template<class C = identity>
-  struct same
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<emp::same_xs_v<xs...>>);
-  };
-
-  template<class C = identity>
-  struct same_v
-  {
-    template<class... xs>
-    using f = typename C::template f<emp::same_xs_v<xs...>>;
-  };
-
-  namespace emp
-  {
-    template<class L, class C = mp::identity>
-    using same = typename detail::_unpack<mp::same<C>, L>::type;
-
-    template<class L, class C = mp::identity>
-    inline constexpr bool same_v = detail::_unpack<mp::same<C>, L>::type::value;
-  }
-}
-
-
-/// \cond
-namespace jln::mp
-{
-  template<>
-  struct same<identity>
-  {
-    template<class... xs>
-    using f = number<emp::same_xs_v<xs...>>;
-  };
-}
-/// \endcond
 
 namespace jln::mp
 {
@@ -8942,50 +8976,57 @@ namespace jln::mp::emp
   inline constexpr int_t left_bit_or0_seq_v = detail::_unpack<mp::left_bit_or0<C>, L>::type::value;
 
 
-  template<int_t... xs>
-  inline constexpr int_t or_c_v = (xs || ... || false);
+#if JLN_MP_WORKAROUND(JLN_MP_GCC, < 1500)
+// fold is slow: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=118340
+#  define JLN_MP_FIX_SLOW_FOLDING(...) number<(__VA_ARGS__)>::value
+#else
+#  define JLN_MP_FIX_SLOW_FOLDING(...) (__VA_ARGS__)
+#endif
 
   template<int_t... xs>
-  inline constexpr int_t left_or_c_v = (false || ... || xs);
+  inline constexpr int_t or_c_v = JLN_MP_FIX_SLOW_FOLDING(xs || ... || false);
 
   template<int_t... xs>
-  inline constexpr int_t and_c_v = (xs && ... && true);
+  inline constexpr int_t left_or_c_v = JLN_MP_FIX_SLOW_FOLDING(false || ... || xs);
 
   template<int_t... xs>
-  inline constexpr int_t left_and_c_v = (true && ... && xs);
+  inline constexpr int_t and_c_v = JLN_MP_FIX_SLOW_FOLDING(xs && ... && true);
 
   template<int_t... xs>
-  inline constexpr int_t add_c_v = (xs + ...);
+  inline constexpr int_t left_and_c_v = JLN_MP_FIX_SLOW_FOLDING(true && ... && xs);
+
+  template<int_t... xs>
+  inline constexpr int_t add_c_v = JLN_MP_FIX_SLOW_FOLDING(xs + ...);
 
   template<int_t... xs>
   inline constexpr int_t add0_c_v = add_c_v<xs..., 0>;
 
   template<int_t... xs>
-  inline constexpr int_t left_add_c_v = (... + xs);
+  inline constexpr int_t left_add_c_v = JLN_MP_FIX_SLOW_FOLDING(... + xs);
 
   template<int_t... xs>
   inline constexpr int_t left_add0_c_v = left_add_c_v<xs..., 0>;
 
   template<int_t... xs>
-  inline constexpr int_t sub_c_v = (... - xs);
+  inline constexpr int_t sub_c_v = JLN_MP_FIX_SLOW_FOLDING(... - xs);
 
   template<int_t... xs>
   inline constexpr int_t sub0_c_v = sub_c_v<xs..., 0>;
 
   template<int_t... xs>
-  inline constexpr int_t lshift_c_v = (... << xs);
+  inline constexpr int_t lshift_c_v = JLN_MP_FIX_SLOW_FOLDING(... << xs);
 
   template<int_t... xs>
   inline constexpr int_t lshift0_c_v = lshift_c_v<xs..., 0>;
 
   template<int_t... xs>
-  inline constexpr int_t rshift_c_v = (... >> xs);
+  inline constexpr int_t rshift_c_v = JLN_MP_FIX_SLOW_FOLDING(... >> xs);
 
   template<int_t... xs>
   inline constexpr int_t rshift0_c_v = rshift_c_v<xs..., 0>;
 
   template<int_t... xs>
-  inline constexpr int_t mul_c_v = (xs * ...);
+  inline constexpr int_t mul_c_v = JLN_MP_FIX_SLOW_FOLDING(xs * ...);
 
   template<int_t... xs>
   inline constexpr int_t mul0_c_v = mul_c_v<xs..., sizeof...(xs) ? 1 : 0>;
@@ -8994,7 +9035,7 @@ namespace jln::mp::emp
   inline constexpr int_t mul1_c_v = mul_c_v<xs..., 1>;
 
   template<int_t... xs>
-  inline constexpr int_t left_mul_c_v = (... * xs);
+  inline constexpr int_t left_mul_c_v = JLN_MP_FIX_SLOW_FOLDING(... * xs);
 
   template<int_t... xs>
   inline constexpr int_t left_mul0_c_v = left_mul_c_v<xs..., sizeof...(xs) ? 1 : 0>;
@@ -9003,7 +9044,7 @@ namespace jln::mp::emp
   inline constexpr int_t left_mul1_c_v = left_mul_c_v<xs..., 1>;
 
   template<int_t... xs>
-  inline constexpr int_t div_c_v = (... / xs);
+  inline constexpr int_t div_c_v = JLN_MP_FIX_SLOW_FOLDING(... / xs);
 
   template<int_t... xs>
   inline constexpr int_t div0_c_v = div_c_v<xs..., sizeof...(xs) ? 1 : 0>;
@@ -9012,7 +9053,7 @@ namespace jln::mp::emp
   inline constexpr int_t div1_c_v = div_c_v<xs..., 1>;
 
   template<int_t... xs>
-  inline constexpr int_t mod_c_v = (... % xs);
+  inline constexpr int_t mod_c_v = JLN_MP_FIX_SLOW_FOLDING(... % xs);
 
   template<int_t... xs>
   inline constexpr int_t mod0_c_v = mod_c_v<xs...,
@@ -9023,40 +9064,40 @@ namespace jln::mp::emp
     sizeof...(xs) ? std::numeric_limits<int_t>::min() : 1>;
 
   template<int_t... xs>
-  inline constexpr int_t xor_c_v = (xs ^ ...);
+  inline constexpr int_t xor_c_v = JLN_MP_FIX_SLOW_FOLDING(xs ^ ...);
 
   template<int_t... xs>
   inline constexpr int_t xor0_c_v = xor_c_v<xs..., 0, 0>;
 
   template<int_t... xs>
-  inline constexpr int_t left_xor_c_v = (... ^ xs);
+  inline constexpr int_t left_xor_c_v = JLN_MP_FIX_SLOW_FOLDING(... ^ xs);
 
   template<int_t... xs>
   inline constexpr int_t left_xor0_c_v = left_xor_c_v<xs..., 0, 0>;
 
   template<int_t... xs>
-  inline constexpr int_t bit_and_c_v = (xs & ...);
+  inline constexpr int_t bit_and_c_v = JLN_MP_FIX_SLOW_FOLDING(xs & ...);
 
   template<int_t... xs>
   inline constexpr int_t bit_and0_c_v = bit_and_c_v<xs...,
     sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0>;
 
   template<int_t... xs>
-  inline constexpr int_t left_bit_and_c_v = (... & xs);
+  inline constexpr int_t left_bit_and_c_v = JLN_MP_FIX_SLOW_FOLDING(... & xs);
 
   template<int_t... xs>
   inline constexpr int_t left_bit_and0_c_v = left_bit_and_c_v<xs...,
     sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0>;
 
   template<int_t... xs>
-  inline constexpr int_t bit_or_c_v = (xs | ...);
+  inline constexpr int_t bit_or_c_v = JLN_MP_FIX_SLOW_FOLDING(xs | ...);
 
   template<int_t... xs>
   inline constexpr int_t bit_or0_c_v = bit_or_c_v<xs...,
     sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0>;
 
   template<int_t... xs>
-  inline constexpr int_t left_bit_or_c_v = (... | xs);
+  inline constexpr int_t left_bit_or_c_v = JLN_MP_FIX_SLOW_FOLDING(... | xs);
 
   template<int_t... xs>
   inline constexpr int_t left_bit_or0_c_v = left_bit_or_c_v<xs...,
@@ -9064,49 +9105,49 @@ namespace jln::mp::emp
 
 
   template<class... xs>
-  inline constexpr int_t or_v = (xs::value || ... || false);
+  inline constexpr int_t or_v = JLN_MP_FIX_SLOW_FOLDING(xs::value || ... || false);
 
   template<class... xs>
-  inline constexpr int_t and_v = (xs::value && ... && true);
+  inline constexpr int_t and_v = JLN_MP_FIX_SLOW_FOLDING(xs::value && ... && true);
 
   template<class... xs>
-  inline constexpr int_t left_or_v = (false || ... || xs::value);
+  inline constexpr int_t left_or_v = JLN_MP_FIX_SLOW_FOLDING(false || ... || xs::value);
 
   template<class... xs>
-  inline constexpr int_t left_and_v = (true && ... && xs::value);
+  inline constexpr int_t left_and_v = JLN_MP_FIX_SLOW_FOLDING(true && ... && xs::value);
 
   template<class... xs>
-  inline constexpr int_t add_v = (xs::value + ...);
+  inline constexpr int_t add_v = JLN_MP_FIX_SLOW_FOLDING(xs::value + ...);
 
   template<class... xs>
   inline constexpr int_t add0_v = mp::add0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t left_add_v = (... + xs::value);
+  inline constexpr int_t left_add_v = JLN_MP_FIX_SLOW_FOLDING(... + xs::value);
 
   template<class... xs>
   inline constexpr int_t left_add0_v = mp::add0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t sub_v = (... - xs::value);
+  inline constexpr int_t sub_v = JLN_MP_FIX_SLOW_FOLDING(... - xs::value);
 
   template<class... xs>
   inline constexpr int_t sub0_v = mp::sub0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t lshift_v = (... << xs::value);
+  inline constexpr int_t lshift_v = JLN_MP_FIX_SLOW_FOLDING(... << xs::value);
 
   template<class... xs>
   inline constexpr int_t lshift0_v = mp::lshift0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t rshift_v = (... >> xs::value);
+  inline constexpr int_t rshift_v = JLN_MP_FIX_SLOW_FOLDING(... >> xs::value);
 
   template<class... xs>
   inline constexpr int_t rshift0_v = mp::rshift0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t mul_v = (xs::value * ...);
+  inline constexpr int_t mul_v = JLN_MP_FIX_SLOW_FOLDING(xs::value * ...);
 
   template<class... xs>
   inline constexpr int_t mul0_v = mp::mul0<>::template f<xs...>::value;
@@ -9115,7 +9156,7 @@ namespace jln::mp::emp
   inline constexpr int_t mul1_v = mp::mul1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t left_mul_v = (... * xs::value);
+  inline constexpr int_t left_mul_v = JLN_MP_FIX_SLOW_FOLDING(... * xs::value);
 
   template<class... xs>
   inline constexpr int_t left_mul0_v = mp::left_mul0<>::template f<xs...>::value;
@@ -9124,7 +9165,7 @@ namespace jln::mp::emp
   inline constexpr int_t left_mul1_v = mp::left_mul1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t div_v = (... / xs::value);
+  inline constexpr int_t div_v = JLN_MP_FIX_SLOW_FOLDING(... / xs::value);
 
   template<class... xs>
   inline constexpr int_t div0_v = mp::div0<>::template f<xs...>::value;
@@ -9133,7 +9174,7 @@ namespace jln::mp::emp
   inline constexpr int_t div1_v = mp::div1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t mod_v = (... % xs::value);
+  inline constexpr int_t mod_v = JLN_MP_FIX_SLOW_FOLDING(... % xs::value);
 
   template<class... xs>
   inline constexpr int_t mod0_v = mp::mod0<>::template f<xs...>::value;
@@ -9142,40 +9183,42 @@ namespace jln::mp::emp
   inline constexpr int_t mod1_v = mp::mod1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t xor_v = (xs::value ^ ...);
+  inline constexpr int_t xor_v = JLN_MP_FIX_SLOW_FOLDING(xs::value ^ ...);
 
   template<class... xs>
   inline constexpr int_t xor0_v = mp::xor0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t left_xor_v = (... ^ xs::value);
+  inline constexpr int_t left_xor_v = JLN_MP_FIX_SLOW_FOLDING(... ^ xs::value);
 
   template<class... xs>
   inline constexpr int_t left_xor0_v = mp::left_xor0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t bit_and_v = (xs::value & ...);
+  inline constexpr int_t bit_and_v = JLN_MP_FIX_SLOW_FOLDING(xs::value & ...);
 
   template<class... xs>
   inline constexpr int_t bit_and0_v = mp::bit_and0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t left_bit_and_v = (... & xs::value);
+  inline constexpr int_t left_bit_and_v = JLN_MP_FIX_SLOW_FOLDING(... & xs::value);
 
   template<class... xs>
   inline constexpr int_t left_bit_and0_v = mp::left_bit_and0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t bit_or_v = (xs::value | ...);
+  inline constexpr int_t bit_or_v = JLN_MP_FIX_SLOW_FOLDING(xs::value | ...);
 
   template<class... xs>
   inline constexpr int_t bit_or0_v = mp::bit_or0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr int_t left_bit_or_v = (... | xs::value);
+  inline constexpr int_t left_bit_or_v = JLN_MP_FIX_SLOW_FOLDING(... | xs::value);
 
   template<class... xs>
   inline constexpr int_t left_bit_or0_v = mp::left_bit_or0<>::template f<xs...>::value;
+
+#undef JLN_MP_FIX_SLOW_FOLDING
 
 
   template<class x, class C = mp::identity>
@@ -15049,210 +15092,6 @@ namespace jln::mp::smp
 
 namespace jln::mp
 {
-  /// \ingroup utility
-
-  /// Uses a compiler builtin or \c std::is_base_if_v.
-  /// Note: the real signature takes a var args.
-  #ifdef DOXYGENATING
-  # define JLN_MP_IS_BASE_OF(Base, Derived)
-  #elif JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_base_of)
-  # define JLN_MP_IS_BASE_OF __is_base_of
-  #else
-  # define JLN_MP_IS_BASE_OF(...) std::is_base_of_v<__VA_ARGS__>
-    #endif
-
-  /// Wrapper for \c JLN_MP_IS_BASE_OF() / \c std::is_base_of
-  /// \treturn \c true_ / \c false_
-  template<class Derived, class C = identity>
-  struct is_base_of
-  {
-    template<class x>
-    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_IS_BASE_OF(x, Derived)>);
-  };
-
-  namespace emp
-  {
-    template<class Base, class Derived>
-    using is_base_of = number<JLN_MP_IS_BASE_OF(Base, Derived)>;
-
-    template<class Base, class Derived>
-    inline constexpr bool is_base_of_v = JLN_MP_IS_BASE_OF(Base, Derived);
-  }
-
-  /// \cond
-  template<class Derived>
-  struct is_base_of<Derived, identity>
-  {
-    template<class x>
-    using f = number<JLN_MP_IS_BASE_OF(x, Derived)>;
-  };
-  /// \endcond
-}
-
-namespace jln::mp
-{
-  /// \cond
-  namespace detail
-  {
-    template<class x>
-    struct basic_item
-    {};
-
-    template<class... xs>
-    struct inherit : basic_item<xs>...
-    {};
-  }
-#define JLN_MP_SET_CONTAINS_BASE(x, ...) JLN_MP_IS_BASE_OF(detail::basic_item<x>, __VA_ARGS__)
-#define JLN_MP_SET_CONTAINS(x, ...) JLN_MP_SET_CONTAINS_BASE(x, detail::inherit<__VA_ARGS__>)
-  /// \endcond
-
-  /// \ingroup set
-
-  /// Checks if \c x is an element of the \set whose elements are \c xs.
-  /// \treturn \bool
-  /// \pre `emp::unique<xs...> == list<xs...>`
-  template<class x, class C = identity>
-  struct set_contains
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_SET_CONTAINS(x, xs...)>);
-  };
-
-  /// Checks if \c x is not an element of the \set whose elements are \c xs.
-  /// \treturn \bool
-  /// \pre `emp::unique<xs...> == list<xs...>`
-  template<class x, class C = identity>
-  using set_not_contains = set_contains<x, not_<C>>;
-
-  namespace emp
-  {
-    /// \c true if \c x is an element of the set \c xs, \c false otherwise.
-    template<class x, class... xs>
-    inline constexpr bool set_contains_xs_v = JLN_MP_SET_CONTAINS(x, xs...);
-
-    /// \c true if \c x is an element of the set \c Set, \c false otherwise.
-    template<class Set, class x>
-    inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<detail::inherit>, Set>::type
-    );
-
-    /// \c true if \c x is an element of all \set \c Sets, \c false otherwise.
-    template<class x, class... Sets>
-    inline constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
-    ) && ...);
-
-    /// \c true if \c x is an element of any \set \c Sets, \c false otherwise.
-    template<class x, class... Sets>
-    inline constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<detail::inherit>, Sets>::type
-    ) || ...);
-
-    /// \c true if \c x is an element of none \set \c Sets, \c false otherwise.
-    template<class x, class... Sets>
-    inline constexpr bool set_none_contains_v = !set_any_contains_v<x, Sets...>;
-
-    /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
-    template<class Set, class x>
-    using set_contains = number<set_contains_v<Set, x>>;
-
-    /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
-    template<class Set, class x>
-    using set_not_contains = number<!set_contains_v<Set, x>>;
-
-    /// \c true_ if \c x is an element of all \set \c Sets, \c false_ otherwise.
-    template<class x, class... Sets>
-    using set_all_contains = number<set_all_contains_v<x, Sets...>>;
-
-    /// \c true_ if \c x is an element of any \set \c Sets, \c false_ otherwise.
-    template<class x, class... Sets>
-    using set_any_contains = number<set_any_contains_v<x, Sets...>>;
-
-    /// \c true_ if \c x is an element of none \set \c Sets, \c false_ otherwise.
-    template<class x, class... Sets>
-    using set_none_contains = number<!set_any_contains_v<x, Sets...>>;
-  }
-
-  /// Checks if \c x is an element of all \set \c Sets.
-  /// \treturn \bool
-  /// \pre `emp::unique<Sets> && ...`
-  template<class x, class C = identity>
-  struct set_all_contains
-  {
-    template<class... Sets>
-    using f = JLN_MP_CALL_TRACE(C, number<emp::set_all_contains_v<x, Sets...>>);
-  };
-
-  /// Checks if \c x is an element of any \set \c Sets.
-  /// \treturn \bool
-  /// \pre `emp::unique<Sets> && ...`
-  template<class x, class C = identity>
-  struct set_any_contains
-  {
-    template<class... Sets>
-    using f = JLN_MP_CALL_TRACE(C, number<emp::set_any_contains_v<x, Sets...>>);
-  };
-
-  /// Checks if \c x is an element of none \set \c Sets.
-  /// \treturn \bool
-  /// \pre `emp::unique<Sets> && ...`
-  template<class x, class C = identity>
-  struct set_none_contains
-  {
-    template<class... Sets>
-    using f = JLN_MP_CALL_TRACE(C, number<!emp::set_any_contains_v<x, Sets...>>);
-  };
-}
-
-/// \cond
-namespace jln::mp
-{
-  template<class x>
-  struct set_contains<x, identity>
-  {
-    template<class... xs>
-    using f = number<JLN_MP_SET_CONTAINS(x, xs...)>;
-  };
-
-  template<class x, class C>
-  struct set_contains<x, not_<C>>
-  {
-    template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, number<!JLN_MP_SET_CONTAINS(x, xs...)>);
-  };
-
-  template<class x>
-  struct set_contains<x, not_<identity>>
-  {
-    template<class... xs>
-    using f = number<!JLN_MP_SET_CONTAINS(x, xs...)>;
-  };
-
-  template<class x>
-  struct set_all_contains<x, identity>
-  {
-    template<class... Sets>
-    using f = number<emp::set_all_contains_v<x, Sets...>>;
-  };
-
-  template<class x>
-  struct set_any_contains<x, identity>
-  {
-    template<class... Sets>
-    using f = number<emp::set_any_contains_v<x, Sets...>>;
-  };
-
-  template<class x>
-  struct set_none_contains<x, identity>
-  {
-    template<class... Sets>
-    using f = number<!emp::set_any_contains_v<x, Sets...>>;
-  };
-}
-/// \endcond
-
-namespace jln::mp
-{
   /// \ingroup algorithm
 
   /// Checks whether all \values are unique.
@@ -15288,7 +15127,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<int_t i, class x>
-  struct indexed_item : basic_item<x>
+  struct indexed_item : list<x>
   {};
 
   template<class, int_t... ints>
@@ -15305,13 +15144,14 @@ namespace jln::mp::detail
   {
     template<class Pack>
     static auto is_set(Pack pack) -> decltype((
-        static_cast<basic_item<xs>*>(pack),...
+        static_cast<list<xs>*>(pack),...
     ), number<1>());
 
     static number<0> is_set(...);
 
     using type = decltype(is_set(static_cast<
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)::template f<xs...>*
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)
+      ::template f<xs...>*
     >(nullptr)));
   };
 #endif
@@ -15328,7 +15168,8 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C, typename detail::_is_set<xs...>::type);
 #else
     using f = JLN_MP_CALL_TRACE(C, number<sizeof(
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)::template f<xs...>
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)
+      ::template f<xs...>
     ) == 1>);
 #endif
   };
@@ -15342,7 +15183,8 @@ namespace jln::mp
     using f = typename detail::_is_set<xs...>::type;
 #else
     using f = number<sizeof(
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)::template f<xs...>
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)
+      ::template f<xs...>
     ) == 1>;
 #endif
   };
@@ -15401,6 +15243,44 @@ namespace jln::mp
   {};
 }
 /// \endcond
+
+namespace jln::mp
+{
+  /// \ingroup utility
+
+  /// Class that inherits all \c Bases types.
+  /// This used with \c JLN_MP_IS_BASE_OF() makes a really fast version of \c set_contains.
+  /// \code
+  ///   class A {};
+  ///   class B {};
+  ///   class C {};
+  ///   using set = inherit<A, B, C>;
+  ///
+  ///   using T = ...;
+  ///   if constexpr (JLN_MP_IS_BASE_OF(T, set)) {
+  ///     ...
+  ///   }
+  /// \endcode
+  template<class... Bases>
+  struct inherit : Bases...
+  {};
+
+  /// Class that inherits all \c Bases types wrapped in a \c list<> type.
+  /// \code
+  ///   class A;
+  ///   class B;
+  ///   class C;
+  ///   using set = inherit_safely<A, B, C>;
+  ///
+  ///   using T = ...;
+  ///   if constexpr (JLN_MP_IS_BASE_OF(list<T>, set)) {
+  ///     ...
+  ///   }
+  /// \endcode
+  template<class... Bases>
+  struct inherit_safely : list<Bases>...
+  {};
+}
 
 // #if ! JLN_MP_GCC
 // #endif
@@ -15523,11 +15403,11 @@ namespace jln::mp::detail
   using remove_unique_elem_impl =
     typename wrap_in_list_c<
 #if JLN_MP_FEATURE_CONCEPTS
-      !requires{ static_cast<basic_item<x>*>(static_cast<Inherit*>(nullptr)); }
+      !requires{ static_cast<list<x>*>(static_cast<Inherit*>(nullptr)); }
 #else
       !is_convertible_to(
         static_cast<Inherit*>(nullptr),
-        static_cast<basic_item<x>*>(nullptr)
+        static_cast<list<x>*>(nullptr)
       )
 #endif
     >
@@ -15558,11 +15438,11 @@ namespace jln::mp::detail
   using copy_unique_elem_impl =
     typename wrap_in_list_c<
 #if JLN_MP_FEATURE_CONCEPTS
-      requires{ static_cast<basic_item<x>*>(static_cast<Inherit*>(nullptr)); }
+      requires{ static_cast<list<x>*>(static_cast<Inherit*>(nullptr)); }
 #else
       is_convertible_to(
         static_cast<Inherit*>(nullptr),
-        static_cast<basic_item<x>*>(nullptr)
+        static_cast<list<x>*>(nullptr)
       )
 #endif
     >
@@ -15599,7 +15479,7 @@ namespace jln::mp::detail
   struct remove_unique_elem_impl
   {
     template<class i>
-    static list<> f(basic_item<list<x, i>>*);
+    static list<> f(list<x, i>*);
 
     static list<x> f(...);
   };
@@ -15618,7 +15498,7 @@ namespace jln::mp::detail
   struct copy_unique_elem_impl
   {
     template<class i>
-    static list<x> f(basic_item<list<x, i>>*);
+    static list<x> f(list<x, i>*);
 
     static list<> f(...);
   };
@@ -15960,96 +15840,86 @@ namespace jln::mp::smp
   using count = contract<mp::count<x, assume_positive_number<C>>>;
 }
 
-
 namespace jln::mp
 {
-  /// \cond
-  namespace detail
+  /// \ingroup utility
+
+  /// Uses a compiler builtin or \c std::is_base_if_v.
+  /// Note: the real signature takes a var args.
+  #ifdef DOXYGENATING
+  # define JLN_MP_IS_BASE_OF(Base, Derived)
+  #elif JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_HAS_BUILTIN(__is_base_of)
+  # define JLN_MP_IS_BASE_OF __is_base_of
+  #else
+  # define JLN_MP_IS_BASE_OF(...) std::is_base_of_v<__VA_ARGS__>
+    #endif
+
+  /// Wrapper for \c JLN_MP_IS_BASE_OF() / \c std::is_base_of
+  /// \treturn \c true_ / \c false_
+  template<class Derived, class C = identity>
+  struct is_base_of
   {
-    template<bool>
-    struct set_push_back_select;
-
-    template<class Set, class x, class = number<0>>
-    struct set_push_back_impl;
-  }
-  /// \endcond
-
-  /// \ingroup set
-
-  /// Appends \c x to the end of the \set whose elements are \c xs if not already in \c xs.
-  /// \treturn \set
-  /// \pre `emp::unique<xs...> == list<xs...>`
-  /// \post \c emp::is_unique<result>
-  /// \see set_push_front, set_push_back_elements
-  template<class x, class C = listify>
-  struct set_push_back
-  {
-    template<class... xs>
-    using f = typename detail::set_push_back_select<JLN_MP_SET_CONTAINS(x, xs...)>
-      ::template f<JLN_MP_TRACE_F(C), x, xs...>;
+    template<class x>
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_IS_BASE_OF(x, Derived)>);
   };
 
   namespace emp
   {
-    template<class Set, class x>
-    using set_push_back = typename detail::set_push_back_impl<Set, x>::type;
+    template<class Base, class Derived>
+    using is_base_of = number<JLN_MP_IS_BASE_OF(Base, Derived)>;
+
+    template<class Base, class Derived>
+    inline constexpr bool is_base_of_v = JLN_MP_IS_BASE_OF(Base, Derived);
   }
+
+  /// \cond
+  template<class Derived>
+  struct is_base_of<Derived, identity>
+  {
+    template<class x>
+    using f = number<JLN_MP_IS_BASE_OF(x, Derived)>;
+  };
+  /// \endcond
 }
-
-
-/// \cond
-namespace jln::mp::detail
-{
-  template<>
-  struct set_push_back_select<false>
-  {
-    template<class C, class x, class... xs>
-    using f = typename C::template f<xs..., x>;
-  };
-
-  template<>
-  struct set_push_back_select<true>
-  {
-    template<class C, class, class... xs>
-    using f = typename C::template f<xs...>;
-  };
-
-  template<class L, class x, class>
-  struct set_push_back_impl
-  {
-    using type = L;
-  };
-
-  template<class... xs, class x>
-  struct set_push_back_impl<list<xs...>, x, number<JLN_MP_SET_CONTAINS(x, xs...)>>
-  {
-    using type = list<xs..., x>;
-  };
-}
-/// \endcond
 
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-    template<class Cmp, class C>
-    struct mk_unique;
+    template<class Cmp>
+    struct set_cmp_push_back;
+
+    template<class x, class F>
+    struct unique_if_impl;
   }
   /// \endcond
 
   /// \ingroup filter
 
   /// Returns a list with duplicate elements removed.
-  /// \treturn \set
-  template<class C = listify>
-  using unique = typename detail::mk_unique<same<>, C>::type;
-
-  /// Returns a list with duplicate elements removed.
   /// Only the first element found is kept.
   /// \treturn \sequence
   template<class Cmp = same<>, class C = listify>
-  using unique_if = typename detail::mk_unique<Cmp, C>::type;
+  struct unique_if
+  : detail::unique_if_impl<
+      list<>,
+      fold<
+        unpack<detail::set_cmp_push_back<JLN_MP_TRACE_F(Cmp)>>,
+        detail::optimize_useless_unpack_t<unpack<C>>
+      >
+    >
+  {
+#ifdef JLM_MP_DOXYGANATING
+    template<class... xs>
+    using f;
+#endif
+  };
+
+  /// Returns a list with duplicate elements removed.
+  /// \treturn \set
+  template<class C = listify>
+  using unique = unique_if<same<>, C>;
 
   namespace emp
   {
@@ -16067,7 +15937,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   template<class Cmp>
-  struct _set_cmp_push_back
+  struct set_cmp_push_back
   {
     template<class x, class... xs>
     using f = JLN_MP_CONDITIONAL_P_C_T(
@@ -16077,23 +15947,119 @@ namespace jln::mp::detail
     );
   };
 
-  template<class Cmp, class C>
-  struct mk_unique
+  template<class x, class F>
+  struct unique_if_impl
   {
-    using type = push_front<list<>, fold<
-      unpack<_set_cmp_push_back<JLN_MP_TRACE_F(Cmp)>>,
-      optimize_useless_unpack_t<unpack<C>>
-    >>;
+    template<class... xs>
+    using f = typename F::template f<x, xs...>;
   };
 
-  template<class C>
-  struct mk_unique<same<>, C>
+
+  template<bool>
+  struct unique_impl_select
   {
-    using type = push_front<list<>, fold<
-      lift<emp::set_push_back>,
-      optimize_useless_unpack_t<unpack<C>>
-    >>;
+    template<class Set, class x>
+    using f = inherit<Set, list<x>>;
   };
+
+  template<>
+  struct unique_impl_select<true>
+  {
+    template<class Set, class x>
+    using f = Set;
+  };
+
+
+  struct unique_next_impl
+  {
+    template<class Set, class x>
+    using f =
+      typename unique_impl_select<JLN_MP_IS_BASE_OF(list<x>, Set)>
+      ::template f<Set, x>;
+  };
+
+  using unique_impl = fold<JLN_MP_SIMPLE_MEMOIZER(unique_next_impl)>;
+
+
+  template<template<class...> class C, class S>
+  struct flat_recursive_unique
+  {
+    using type = C<>;
+  };
+
+  template<template<class...> class C, class s, class x>
+  struct flat_recursive_unique<C, inherit<s, x>>
+  : _join_select<2>::f<
+      C,
+      typename flat_recursive_unique<list, s>::type,
+      x
+    >
+  {};
+
+  template<
+    template<class...> class C, class s,
+    JLN_MP_XS_8(class, JLN_MP_NIL, JLN_MP_COMMA)>
+  struct flat_recursive_unique<
+    C,
+    JLN_MP_REPEAT_8(inherit<, JLN_MP_NIL)
+    s
+    JLN_MP_XS_8(JLN_MP_COMMA list<, >>, JLN_MP_NIL)
+  >
+  : _join_select<2>::f<
+      C,
+      typename flat_recursive_unique<list, s>::type,
+      list<JLN_MP_XS_8(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>
+    >
+  {};
+
+  template<
+    template<class...> class C, class s,
+    JLN_MP_XS_32(class, JLN_MP_NIL, JLN_MP_COMMA)>
+  struct flat_recursive_unique<
+    C,
+    JLN_MP_REPEAT_32(inherit<, JLN_MP_NIL)
+    s
+    JLN_MP_XS_32(JLN_MP_COMMA list<, >>, JLN_MP_NIL)
+  >
+  : _join_select<2>::f<
+      C,
+      typename flat_recursive_unique<list, s>::type,
+      list<JLN_MP_XS_32(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>
+    >
+  {};
+
+
+  struct start_recursive_unique
+  {
+    using type = inherit<>;
+  };
+}
+
+namespace jln::mp
+{
+  template<class C>
+  struct unique_if<same<>, C>
+  {
+    template<class... xs>
+    using f = typename detail::flat_recursive_unique<
+      C::template f,
+      typename detail::unique_impl
+        ::f<inherit<>, xs...>
+    >::type;
+  };
+
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  template<template<class...> class C>
+  struct unique_if<same<>, lift<C>>
+  {
+    template<class... xs>
+    using f = typename detail::flat_recursive_unique<
+      C,
+      typename detail::unique_impl
+        ::f<inherit<>, xs...>
+    >::type;
+  };
+#endif
 }
 /// \endcond
 
@@ -16102,7 +16068,15 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    struct mk_counter;
+    template<class, int_t... ints>
+    struct counter_impl;
+
+    struct mk_counter
+    {
+      template<class... xs>
+      using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), counter_impl)
+        ::template unique<xs...>;
+    };
   }
   /// \endcond
 
@@ -16185,7 +16159,6 @@ namespace jln::mp
 }
 #endif
 
-
 namespace jln::mp::detail
 {
   template<std::size_t N>
@@ -16202,14 +16175,17 @@ namespace jln::mp::detail
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
 
-#if JLN_MP_GCC || (!JLN_MP_MSVC && __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L)
-  template<std::size_t N, int_t... i>
+#if JLN_MP_GCC || (!JLN_MP_MSVC && JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS)
+  template<std::size_t N, class... i>
   constexpr array<N> count_elems()
   {
     array<N> counter{};
-    (..., ++counter.elems[i]);
+    (..., ++counter.elems[i::value]);
     return counter;
   }
+
+  template<class T, class I>
+  I index_base(list<I, T>*);
 #else
   template<std::size_t N, int_t... i>
   struct count_elems
@@ -16220,15 +16196,15 @@ namespace jln::mp::detail
       return counter;
     }();
   };
+
+  template<class T, class I>
+  constexpr int_t index_base(list<I, T>*)
+  {
+    return I::value;
+  }
 #endif
 
 #if JLN_MP_GCC
-
-  template<class T, int_t i>
-  constexpr int_t index_base(indexed_item<i, T>*)
-  {
-    return i;
-  }
 
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wunused-but-set-variable")
@@ -16238,15 +16214,16 @@ namespace jln::mp::detail
     template<class... unique_xs>
     struct unique
     {
+      struct indexed_t : list<number<ints>, unique_xs>... {};
+
       template<class C, template<class...> class F, class... xs>
       static auto f()
       {
-        constexpr typename indexed_inherit<int_t, ints...>::template f<unique_xs...>*
-          indexed = nullptr;
+        constexpr indexed_t * indexed = nullptr;
 
         constexpr auto counters = count_elems<
           sizeof...(ints),
-          index_base<xs>(indexed)...
+          decltype(index_base<xs>(indexed))...
         >();
 
         return always<typename C::template f<
@@ -16257,23 +16234,18 @@ namespace jln::mp::detail
   };
   JLN_MP_DIAGNOSTIC_POP()
 
-#else
+#else // if ! JLN_MP_GCC
 
-  template<class T, class i>
-  constexpr int_t index_base(basic_item<list<i, T>>*)
-  {
-    return i::value;
-  }
-
- template<class, int_t... ints>
+  template<class, int_t... ints>
   struct counter_impl
   {
     template<class... unique_xs>
     struct unique
     {
-      static constexpr detail::inherit<list<number<ints>, unique_xs>...>* indexed = nullptr;
+      struct indexed_inherit : list<number<ints>, unique_xs>... {};
+      static constexpr indexed_inherit * indexed = nullptr;
 
-#if !JLN_MP_MSVC && __cplusplus >= 202002L && __cpp_nontype_template_args >= 201911L
+#if !JLN_MP_MSVC && JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS
       template<auto counters>
       struct impl
       {
@@ -16282,7 +16254,7 @@ namespace jln::mp::detail
       };
 
       template<class... xs>
-      struct counter : impl<count_elems<sizeof...(ints), index_base2<xs>(indexed)...>()>
+      struct counter : impl<count_elems<sizeof...(ints), decltype(index_base<xs>(indexed))...>()>
       {};
 #else
       template<class S>
@@ -16302,13 +16274,6 @@ namespace jln::mp::detail
 #endif
 
   JLN_MP_DIAGNOSTIC_POP()
-
-  struct mk_counter
-  {
-    template<class... xs>
-    using f = typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), counter_impl)
-      ::template unique<xs...>;
-  };
 }
 /// \endcond
 
@@ -22094,7 +22059,7 @@ namespace jln::mp
     using f = typename detail::pairwise_fold_impl<
       typename detail::rotate_impl<sizeof...(xs) ? sizeof...(xs) - 1 : 0>
       ::template f<sizeof...(xs) ? sizeof...(xs) - 1 : 0, list, xs...>
-    >::template f<C, Front, JLN_MP_MEMOIZE(F)::template f, xs...>;
+    >::template f<C, Front, JLN_MP_SIMPLE_MEMOIZER(F)::template f, xs...>;
   };
 
   /// Computes the differences between adjacent pair of elements.
@@ -22875,7 +22840,7 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template<class C = listify>
-  using unique = detail::sfinae<mp::unique<subcontract_barrier<C>>>;
+  using unique = contract<mp::unique_if<mp::same<>, subcontract<C>>>;
 
   template<class Cmp = same<>, class C = listify>
   using unique_if = detail::sfinae<mp::unique_if<
@@ -22886,42 +22851,20 @@ namespace jln::mp::smp
 /// \cond
 namespace jln::mp::detail
 {
-  template<class C>
-  struct smp_unique_continuation
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, unique_if<same<>, C>>
   {
-    using type = C;
-  };
-
-  template<>
-  struct smp_unique_continuation<try_<unpack<listify>>>
-  {
-    using type = mp::identity;
+    using type = smp::unique<sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold<lift<emp::set_push_back>, C>>>
+  struct _sfinae<sfinae, unique_if<smp::same<>, C>>
   {
-    using type = contract<push_front<list<>, fold<
-      lift<emp::set_push_back>, typename smp_unique_continuation<
-        assume_unary<sfinae<C>>
-      >::type
-    >>>;
-  };
-
-  template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold<
-    unpack<_set_cmp_push_back<JLN_MP_TRACE_F(smp::same<>)>>, C
-  >>>
-  {
-    using type = contract<push_front<list<>, fold<
-      lift<emp::set_push_back>, typename smp_unique_continuation<
-        assume_unary<optimize_useless_unpack_t<sfinae<C>>>
-      >::type
-    >>>;
+    using type = smp::unique<sfinae<C>>;
   };
 
   template<class Cmp>
-  struct _smp_set_cmp_push_back
+  struct smp_set_cmp_push_back
   {
     template<class x, class... xs>
     using f = JLN_MP_CONDITIONAL_P_C_T(
@@ -22935,28 +22878,31 @@ namespace jln::mp::detail
   template<class C>
   struct smp_unique_if_continuation
   {
-    using type = C;
+    using type = unpack<C>;
   };
 
   template<>
-  struct smp_unique_if_continuation<try_<unpack<listify>>>
+  struct smp_unique_if_continuation<listify>
   {
     using type = contract<mp::identity>;
   };
 
   template<template<class> class sfinae, class Cmp, class C>
-  struct _sfinae<sfinae, push_front<list<>, fold<
-    unpack<_set_cmp_push_back<JLN_MP_TRACE_F(Cmp)>>, C
-  >>>
+  struct _sfinae<sfinae, unique_if<Cmp, C>>
   {
-    using type = contract<push_front<list<>, smp::fold<
-      contract<unpack<try_<_smp_set_cmp_push_back<
-        JLN_MP_TRACE_F(assume_binary<sfinae<Cmp>>)
-      >>>>,
-      typename smp_unique_if_continuation<
-        assume_unary<sfinae<C>>
-      >::type
-    >>>;
+    using type = contract<
+      unique_if_impl<
+        list<>,
+        smp::fold<
+          contract<unpack<try_<smp_set_cmp_push_back<
+            JLN_MP_TRACE_F(assume_binary<sfinae<Cmp>>)
+          >>>>,
+          typename smp_unique_if_continuation<
+            sfinae<C>
+          >::type
+        >
+      >
+    >;
   };
 }
 /// \endcond
@@ -28316,8 +28262,7 @@ namespace jln::mp::smp
   >;
 }
 
-#ifdef __cpp_nontype_template_parameter_class
-#if __cpp_nontype_template_parameter_class >= 201806L
+#if JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS
 namespace jln::mp
 {
   /// \ingroup functional
@@ -28347,15 +28292,45 @@ namespace jln::mp
   /// \endcond
 }
 #endif
-#endif
 
-#ifdef __cpp_nontype_template_parameter_class
-#if __cpp_nontype_template_parameter_class >= 201806L
+#if JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS
+/// \cond
+#if !JLN_MP_GCC
+namespace jln::mp::detail
+{
+  template<auto F, class... xs>
+    requires(requires { F.template operator()<xs...>(); })
+  struct smp_func
+  {
+    using type = decltype(F.template operator()<xs...>());
+  };
+
+  template<auto F, class C = identity>
+  struct smp_eval
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, typename smp_func<F, xs...>::type);
+  };
+
+  template<auto F>
+  struct smp_eval<F, identity>
+  {
+    template<class... xs>
+    using f = typename smp_func<F, xs...>::type;
+  };
+}
+#endif
+/// \endcond
 
 namespace jln::mp::smp
 {
+#if !JLN_MP_GCC
   template<auto F, class C = identity>
-  using eval = try_contract<mp::eval<F, assume_unary<C>>>;
+  using eval = try_contract<detail::smp_eval<F, assume_unary<C>>>;
+#else
+  template<auto F, class C = identity>
+  using eval = try_contract<eval<F, assume_unary<C>>>;
+#endif
 }
 
 /// \cond
@@ -28368,7 +28343,7 @@ namespace jln::mp::detail
   };
 }
 /// \endcond
-#endif
+
 #endif
 
 namespace jln::mp
@@ -30580,7 +30555,7 @@ namespace jln::mp
   {
     template<class... kvs>
     using f = typename decltype(detail::map_find_select<key>::f(
-      static_cast<detail::inherit<kvs...>*>(nullptr)
+      static_cast<inherit_safely<kvs...>*>(nullptr)
     ))
       ::template f<TC, FC, kvs...>;
   };
@@ -30612,7 +30587,7 @@ namespace jln::mp
   {
     template<class... kvs>
     using f = typename decltype(detail::map_find_select<key>::f(
-      static_cast<detail::inherit<kvs...>*>(nullptr)
+      static_cast<inherit_safely<kvs...>*>(nullptr)
     ))
       ::template f<identity, always<T>>;
   };
@@ -30624,7 +30599,7 @@ namespace jln::mp
     template<class... kvs>
     using f = JLN_MP_CALL_TRACE(C,
       typename decltype(detail::map_find_select<key>::f(
-        static_cast<detail::inherit<kvs...>*>(nullptr)
+        static_cast<inherit_safely<kvs...>*>(nullptr)
       ))
       ::template f<always<T>, always<U>>
     );
@@ -30636,7 +30611,7 @@ namespace jln::mp
   {
     template<class... kvs>
     using f = typename decltype(detail::map_find_select<key>::f(
-      static_cast<detail::inherit<kvs...>*>(nullptr)
+      static_cast<inherit_safely<kvs...>*>(nullptr)
     ))
       ::template f<always<T>, always<U>>;
   };
@@ -30662,7 +30637,7 @@ namespace jln::mp::detail
   struct map_find_select
   {
     template<template<class...> class Tpl, class... xs>
-    static map_find_elem<Tpl<key, xs...>> f(basic_item<Tpl<key, xs...>>*);
+    static map_find_elem<Tpl<key, xs...>> f(list<Tpl<key, xs...>>*);
 
     static map_find_elem<void> f(...);
   };
@@ -31832,6 +31807,158 @@ namespace jln::mp::detail
 }
 /// \endcond
 
+namespace jln::mp
+{
+  /// \cond
+#define JLN_MP_SET_CONTAINS_BASE(x, ...) JLN_MP_IS_BASE_OF(list<x>, __VA_ARGS__)
+#define JLN_MP_SET_CONTAINS(x, ...) JLN_MP_SET_CONTAINS_BASE(x, inherit_safely<__VA_ARGS__>)
+  /// \endcond
+
+  /// \ingroup set
+
+  /// Checks if \c x is an element of the \set whose elements are \c xs.
+  /// \treturn \bool
+  /// \pre `emp::unique<xs...> == list<xs...>`
+  template<class x, class C = identity>
+  struct set_contains
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_SET_CONTAINS(x, xs...)>);
+  };
+
+  /// Checks if \c x is not an element of the \set whose elements are \c xs.
+  /// \treturn \bool
+  /// \pre `emp::unique<xs...> == list<xs...>`
+  template<class x, class C = identity>
+  using set_not_contains = set_contains<x, not_<C>>;
+
+  namespace emp
+  {
+    /// \c true if \c x is an element of the set \c xs, \c false otherwise.
+    template<class x, class... xs>
+    inline constexpr bool set_contains_xs_v = JLN_MP_SET_CONTAINS(x, xs...);
+
+    /// \c true if \c x is an element of the set \c Set, \c false otherwise.
+    template<class Set, class x>
+    inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
+      x, typename detail::_unpack<mp::lift<inherit_safely>, Set>::type
+    );
+
+    /// \c true if \c x is an element of all \set \c Sets, \c false otherwise.
+    template<class x, class... Sets>
+    inline constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
+      x, typename detail::_unpack<mp::lift<inherit_safely>, Sets>::type
+    ) && ...);
+
+    /// \c true if \c x is an element of any \set \c Sets, \c false otherwise.
+    template<class x, class... Sets>
+    inline constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
+      x, typename detail::_unpack<mp::lift<inherit_safely>, Sets>::type
+    ) || ...);
+
+    /// \c true if \c x is an element of none \set \c Sets, \c false otherwise.
+    template<class x, class... Sets>
+    inline constexpr bool set_none_contains_v = !set_any_contains_v<x, Sets...>;
+
+    /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
+    template<class Set, class x>
+    using set_contains = number<set_contains_v<Set, x>>;
+
+    /// \c true_ if \c x is an element of the set \c Set, \c false_ otherwise.
+    template<class Set, class x>
+    using set_not_contains = number<!set_contains_v<Set, x>>;
+
+    /// \c true_ if \c x is an element of all \set \c Sets, \c false_ otherwise.
+    template<class x, class... Sets>
+    using set_all_contains = number<set_all_contains_v<x, Sets...>>;
+
+    /// \c true_ if \c x is an element of any \set \c Sets, \c false_ otherwise.
+    template<class x, class... Sets>
+    using set_any_contains = number<set_any_contains_v<x, Sets...>>;
+
+    /// \c true_ if \c x is an element of none \set \c Sets, \c false_ otherwise.
+    template<class x, class... Sets>
+    using set_none_contains = number<!set_any_contains_v<x, Sets...>>;
+  }
+
+  /// Checks if \c x is an element of all \set \c Sets.
+  /// \treturn \bool
+  /// \pre `emp::unique<Sets> && ...`
+  template<class x, class C = identity>
+  struct set_all_contains
+  {
+    template<class... Sets>
+    using f = JLN_MP_CALL_TRACE(C, number<emp::set_all_contains_v<x, Sets...>>);
+  };
+
+  /// Checks if \c x is an element of any \set \c Sets.
+  /// \treturn \bool
+  /// \pre `emp::unique<Sets> && ...`
+  template<class x, class C = identity>
+  struct set_any_contains
+  {
+    template<class... Sets>
+    using f = JLN_MP_CALL_TRACE(C, number<emp::set_any_contains_v<x, Sets...>>);
+  };
+
+  /// Checks if \c x is an element of none \set \c Sets.
+  /// \treturn \bool
+  /// \pre `emp::unique<Sets> && ...`
+  template<class x, class C = identity>
+  struct set_none_contains
+  {
+    template<class... Sets>
+    using f = JLN_MP_CALL_TRACE(C, number<!emp::set_any_contains_v<x, Sets...>>);
+  };
+}
+
+/// \cond
+namespace jln::mp
+{
+  template<class x>
+  struct set_contains<x, identity>
+  {
+    template<class... xs>
+    using f = number<JLN_MP_SET_CONTAINS(x, xs...)>;
+  };
+
+  template<class x, class C>
+  struct set_contains<x, not_<C>>
+  {
+    template<class... xs>
+    using f = JLN_MP_CALL_TRACE(C, number<!JLN_MP_SET_CONTAINS(x, xs...)>);
+  };
+
+  template<class x>
+  struct set_contains<x, not_<identity>>
+  {
+    template<class... xs>
+    using f = number<!JLN_MP_SET_CONTAINS(x, xs...)>;
+  };
+
+  template<class x>
+  struct set_all_contains<x, identity>
+  {
+    template<class... Sets>
+    using f = number<emp::set_all_contains_v<x, Sets...>>;
+  };
+
+  template<class x>
+  struct set_any_contains<x, identity>
+  {
+    template<class... Sets>
+    using f = number<emp::set_any_contains_v<x, Sets...>>;
+  };
+
+  template<class x>
+  struct set_none_contains<x, identity>
+  {
+    template<class... Sets>
+    using f = number<!emp::set_any_contains_v<x, Sets...>>;
+  };
+}
+/// \endcond
+
 namespace jln::mp::smp
 {
   template<class x, class C = identity>
@@ -31896,6 +32023,74 @@ namespace jln::mp::detail
   struct _sfinae<sfinae, set_none_contains<x, C>>
   {
     using type = smp::set_none_contains<x, sfinae<C>>;
+  };
+}
+/// \endcond
+
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<bool>
+    struct set_push_back_select;
+
+    template<class Set, class x, class = number<0>>
+    struct set_push_back_impl;
+  }
+  /// \endcond
+
+  /// \ingroup set
+
+  /// Appends \c x to the end of the \set whose elements are \c xs if not already in \c xs.
+  /// \treturn \set
+  /// \pre `emp::unique<xs...> == list<xs...>`
+  /// \post \c emp::is_unique<result>
+  /// \see set_push_front, set_push_back_elements
+  template<class x, class C = listify>
+  struct set_push_back
+  {
+    template<class... xs>
+    using f = typename detail::set_push_back_select<JLN_MP_SET_CONTAINS(x, xs...)>
+      ::template f<JLN_MP_TRACE_F(C), x, xs...>;
+  };
+
+  namespace emp
+  {
+    template<class Set, class x>
+    using set_push_back = typename detail::set_push_back_impl<Set, x>::type;
+  }
+}
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<>
+  struct set_push_back_select<false>
+  {
+    template<class C, class x, class... xs>
+    using f = typename C::template f<xs..., x>;
+  };
+
+  template<>
+  struct set_push_back_select<true>
+  {
+    template<class C, class, class... xs>
+    using f = typename C::template f<xs...>;
+  };
+
+  template<class L, class x, class>
+  struct set_push_back_impl
+  {
+    using type = L;
+  };
+
+  template<class... xs, class x>
+  struct set_push_back_impl<list<xs...>, x, number<JLN_MP_SET_CONTAINS(x, xs...)>>
+  {
+    using type = list<xs..., x>;
   };
 }
 /// \endcond
@@ -35251,50 +35446,57 @@ namespace jln::mp::emp
   inline constexpr auto val_left_bit_or0_seq_v = detail::_unpack<mp::val_left_bit_or0<C>, L>::type::value;
 
 
-  template<auto... xs>
-  inline constexpr auto val_or_c_v = (xs || ... || false);
+#if JLN_MP_WORKAROUND(JLN_MP_GCC, < 1500)
+// fold is slow: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=118340
+#  define JLN_MP_FIX_SLOW_FOLDING(...) val<(__VA_ARGS__)>::value
+#else
+#  define JLN_MP_FIX_SLOW_FOLDING(...) (__VA_ARGS__)
+#endif
 
   template<auto... xs>
-  inline constexpr auto val_and_c_v = (xs && ... && true);
+  inline constexpr auto val_or_c_v = JLN_MP_FIX_SLOW_FOLDING(xs || ... || false);
 
   template<auto... xs>
-  inline constexpr auto val_left_or_c_v = (false || ... || xs);
+  inline constexpr auto val_and_c_v = JLN_MP_FIX_SLOW_FOLDING(xs && ... && true);
 
   template<auto... xs>
-  inline constexpr auto val_left_and_c_v = (true && ... && xs);
+  inline constexpr auto val_left_or_c_v = JLN_MP_FIX_SLOW_FOLDING(false || ... || xs);
 
   template<auto... xs>
-  inline constexpr auto val_add_c_v = (xs + ...);
+  inline constexpr auto val_left_and_c_v = JLN_MP_FIX_SLOW_FOLDING(true && ... && xs);
+
+  template<auto... xs>
+  inline constexpr auto val_add_c_v = JLN_MP_FIX_SLOW_FOLDING(xs + ...);
 
   template<auto... xs>
   inline constexpr auto val_add0_c_v = val_add_c_v<xs..., 0>;
 
   template<auto... xs>
-  inline constexpr auto val_left_add_c_v = (... + xs);
+  inline constexpr auto val_left_add_c_v = JLN_MP_FIX_SLOW_FOLDING(... + xs);
 
   template<auto... xs>
   inline constexpr auto val_left_add0_c_v = val_left_add_c_v<xs..., 0>;
 
   template<auto... xs>
-  inline constexpr auto val_sub_c_v = (... - xs);
+  inline constexpr auto val_sub_c_v = JLN_MP_FIX_SLOW_FOLDING(... - xs);
 
   template<auto... xs>
   inline constexpr auto val_sub0_c_v = val_sub_c_v<xs..., 0>;
 
   template<auto... xs>
-  inline constexpr auto val_lshift_c_v = (... << xs);
+  inline constexpr auto val_lshift_c_v = JLN_MP_FIX_SLOW_FOLDING(... << xs);
 
   template<auto... xs>
   inline constexpr auto val_lshift0_c_v = val_lshift_c_v<xs..., 0>;
 
   template<auto... xs>
-  inline constexpr auto val_rshift_c_v = (... >> xs);
+  inline constexpr auto val_rshift_c_v = JLN_MP_FIX_SLOW_FOLDING(... >> xs);
 
   template<auto... xs>
   inline constexpr auto val_rshift0_c_v = val_rshift_c_v<xs..., 0>;
 
   template<auto... xs>
-  inline constexpr auto val_mul_c_v = (xs * ...);
+  inline constexpr auto val_mul_c_v = JLN_MP_FIX_SLOW_FOLDING(xs * ...);
 
   template<auto... xs>
   inline constexpr auto val_mul0_c_v = val_mul_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
@@ -35303,7 +35505,7 @@ namespace jln::mp::emp
   inline constexpr auto val_mul1_c_v = val_mul_c_v<xs..., 1>;
 
   template<auto... xs>
-  inline constexpr auto val_left_mul_c_v = (... * xs);
+  inline constexpr auto val_left_mul_c_v = JLN_MP_FIX_SLOW_FOLDING(... * xs);
 
   template<auto... xs>
   inline constexpr auto val_left_mul0_c_v = val_left_mul_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
@@ -35312,7 +35514,7 @@ namespace jln::mp::emp
   inline constexpr auto val_left_mul1_c_v = val_left_mul_c_v<xs..., 1>;
 
   template<auto... xs>
-  inline constexpr auto val_div_c_v = (... / xs);
+  inline constexpr auto val_div_c_v = JLN_MP_FIX_SLOW_FOLDING(... / xs);
 
   template<auto... xs>
   inline constexpr auto val_div0_c_v = val_div_c_v<xs..., (sizeof...(xs) ? 1 : 0)>;
@@ -35321,53 +35523,53 @@ namespace jln::mp::emp
   inline constexpr auto val_div1_c_v = val_div_c_v<xs..., 1>;
 
   template<auto... xs>
-  inline constexpr auto val_mod_c_v = (... % xs);
+  inline constexpr auto val_mod_c_v = JLN_MP_FIX_SLOW_FOLDING(... % xs);
 
 
   template<class... xs>
-  inline constexpr auto val_or_v = (xs::value || ... || false);
+  inline constexpr auto val_or_v = JLN_MP_FIX_SLOW_FOLDING(xs::value || ... || false);
 
   template<class... xs>
-  inline constexpr auto val_and_v = (xs::value && ... && true);
+  inline constexpr auto val_and_v = JLN_MP_FIX_SLOW_FOLDING(xs::value && ... && true);
 
   template<class... xs>
-  inline constexpr auto val_left_or_v = (false || ... || xs::value);
+  inline constexpr auto val_left_or_v = JLN_MP_FIX_SLOW_FOLDING(false || ... || xs::value);
 
   template<class... xs>
-  inline constexpr auto val_left_and_v = (true && ... && xs::value);
+  inline constexpr auto val_left_and_v = JLN_MP_FIX_SLOW_FOLDING(true && ... && xs::value);
 
   template<class... xs>
-  inline constexpr auto val_add_v = (xs::value + ...);
+  inline constexpr auto val_add_v = JLN_MP_FIX_SLOW_FOLDING(xs::value + ...);
 
   template<class... xs>
   inline constexpr auto val_add0_v = mp::val_add0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_left_add_v = (... + xs::value);
+  inline constexpr auto val_left_add_v = JLN_MP_FIX_SLOW_FOLDING(... + xs::value);
 
   template<class... xs>
   inline constexpr auto val_left_add0_v = mp::val_add0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_sub_v = (... - xs::value);
+  inline constexpr auto val_sub_v = JLN_MP_FIX_SLOW_FOLDING(... - xs::value);
 
   template<class... xs>
   inline constexpr auto val_sub0_v = mp::val_sub0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_lshift_v = (... << xs::value);
+  inline constexpr auto val_lshift_v = JLN_MP_FIX_SLOW_FOLDING(... << xs::value);
 
   template<class... xs>
   inline constexpr auto val_lshift0_v = mp::val_lshift0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_rshift_v = (... >> xs::value);
+  inline constexpr auto val_rshift_v = JLN_MP_FIX_SLOW_FOLDING(... >> xs::value);
 
   template<class... xs>
   inline constexpr auto val_rshift0_v = mp::val_rshift0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_mul_v = (xs::value * ...);
+  inline constexpr auto val_mul_v = JLN_MP_FIX_SLOW_FOLDING(xs::value * ...);
 
   template<class... xs>
   inline constexpr auto val_mul0_v = mp::val_mul0<>::template f<xs...>::value;
@@ -35376,7 +35578,7 @@ namespace jln::mp::emp
   inline constexpr auto val_mul1_v = mp::val_mul1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_left_mul_v = (... * xs::value);
+  inline constexpr auto val_left_mul_v = JLN_MP_FIX_SLOW_FOLDING(... * xs::value);
 
   template<class... xs>
   inline constexpr auto val_left_mul0_v = mp::val_left_mul0<>::template f<xs...>::value;
@@ -35385,7 +35587,7 @@ namespace jln::mp::emp
   inline constexpr auto val_left_mul1_v = mp::val_left_mul1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_div_v = (... / xs::value);
+  inline constexpr auto val_div_v = JLN_MP_FIX_SLOW_FOLDING(... / xs::value);
 
   template<class... xs>
   inline constexpr auto val_div0_v = mp::val_div0<>::template f<xs...>::value;
@@ -35394,7 +35596,7 @@ namespace jln::mp::emp
   inline constexpr auto val_div1_v = mp::val_div1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_mod_v = (... % xs::value);
+  inline constexpr auto val_mod_v = JLN_MP_FIX_SLOW_FOLDING(... % xs::value);
 
   template<class... xs>
   inline constexpr auto val_mod0_v = mp::val_mod0<>::template f<xs...>::value;
@@ -35403,40 +35605,42 @@ namespace jln::mp::emp
   inline constexpr auto val_mod1_v = mp::val_mod1<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_xor_v = (xs::value ^ ...);
+  inline constexpr auto val_xor_v = JLN_MP_FIX_SLOW_FOLDING(xs::value ^ ...);
 
   template<class... xs>
   inline constexpr auto val_xor0_v = mp::val_xor0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_left_xor_v = (... ^ xs::value);
+  inline constexpr auto val_left_xor_v = JLN_MP_FIX_SLOW_FOLDING(... ^ xs::value);
 
   template<class... xs>
   inline constexpr auto val_left_xor0_v = mp::val_left_xor0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_bit_and_v = (xs::value & ...);
+  inline constexpr auto val_bit_and_v = JLN_MP_FIX_SLOW_FOLDING(xs::value & ...);
 
   template<class... xs>
   inline constexpr auto val_bit_and0_v = mp::val_bit_and0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_left_bit_and_v = (... & xs::value);
+  inline constexpr auto val_left_bit_and_v = JLN_MP_FIX_SLOW_FOLDING(... & xs::value);
 
   template<class... xs>
   inline constexpr auto val_left_bit_and0_v = mp::val_left_bit_and0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_bit_or_v = (xs::value | ...);
+  inline constexpr auto val_bit_or_v = JLN_MP_FIX_SLOW_FOLDING(xs::value | ...);
 
   template<class... xs>
   inline constexpr auto val_bit_or0_v = mp::val_bit_or0<>::template f<xs...>::value;
 
   template<class... xs>
-  inline constexpr auto val_left_bit_or_v = (... | xs::value);
+  inline constexpr auto val_left_bit_or_v = JLN_MP_FIX_SLOW_FOLDING(... | xs::value);
 
   template<class... xs>
   inline constexpr auto val_left_bit_or0_v = mp::val_left_bit_or0<>::template f<xs...>::value;
+
+#undef JLN_MP_FIX_SLOW_FOLDING
 
 
   template<class x, class C = mp::identity>
