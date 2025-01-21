@@ -54,34 +54,13 @@ namespace jln::mp::smp
 /// \cond
 namespace jln::mp::detail
 {
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
   template<template<class> class sfinae, class C, int... ints>
   struct _sfinae<sfinae, arrange_c_with<C, ints...>>
   {
     using type = smp::arrange_c_with<sfinae<C>, ints...>;
   };
 
-  struct arrange_to_smp_arrange
-  {
-    template<class>
-    struct f
-    {
-      using type = bad_contract;
-    };
-
-    template<class C, int... ints>
-    struct f<arrange_c_with<C, ints...>>
-    {
-      using type = try_contract<arrange_c_with<subcontract<C>, ints...>>;
-    };
-  };
-#else
-  template<template<class> class sfinae, class C, int... ints>
-  struct _sfinae<sfinae, apply_indexed_v<arrange_impl<C, ints...>>>
-  {
-    using type = smp::arrange_c_with<sfinae<C>, ints...>;
-  };
-
+#if ! JLN_MP_FAST_TYPE_PACK_ELEMENT
   template<class... T>
   constexpr int max_idx_arrange(T... n)
   {
@@ -112,7 +91,7 @@ namespace jln::mp::detail
     template<class C, int... ns>
     using make = test_contract<
       smp_arrange_c,
-      detail::apply_indexed_v<detail::arrange_impl<subcontract<C>, ns...>>
+      arrange_c_with<subcontract<C>, ns...>
     >;
   };
 
@@ -131,6 +110,7 @@ namespace jln::mp::detail
     template<class C, int...>
     using make = bad_contract;
   };
+#endif
 
   struct arrange_to_smp_arrange
   {
@@ -141,12 +121,15 @@ namespace jln::mp::detail
     };
 
     template<class C, int... ints>
-    struct f<apply_indexed_v<arrange_impl<C, ints...>>>
+    struct f<arrange_c_with<C, ints...>>
     {
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+      using type = try_contract<arrange_c_with<subcontract<C>, ints...>>;
+#else
       using type = typename detail::smp_arrange_c<detail::max_idx_arrange(ints...)>
         ::template make<C, ints...>;
+#endif
     };
   };
-#endif
 }
 /// \endcond
