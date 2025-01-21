@@ -86,9 +86,9 @@ namespace jln::mp
   }
 }
 
-/// \cond
 #include <jln/mp/algorithm/make_int_sequence.hpp>
 
+/// \cond
 #if JLN_MP_FAST_TYPE_PACK_ELEMENT
 namespace jln::mp::detail
 {

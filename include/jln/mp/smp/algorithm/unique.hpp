@@ -4,11 +4,6 @@
 
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/smp/algorithm/same.hpp>
-#include <jln/mp/smp/algorithm/fold.hpp>
-#include <jln/mp/smp/utility/unpack.hpp>
-#include <jln/mp/smp/functional/lift.hpp>
-#include <jln/mp/smp/list/push_front.hpp>
-#include <jln/mp/smp/list/pop_front.hpp>
 #include <jln/mp/algorithm/unique.hpp>
 
 namespace jln::mp::smp
@@ -21,7 +16,9 @@ namespace jln::mp::smp
     assume_binary_barrier<Cmp>, subcontract_barrier<C>>>;
 }
 
+
 #include <jln/mp/smp/algorithm/none_of.hpp>
+#include <jln/mp/smp/algorithm/fold.hpp>
 #include <jln/mp/smp/utility/unpack.hpp>
 
 /// \cond
