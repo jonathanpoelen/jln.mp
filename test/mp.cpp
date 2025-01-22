@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2025 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #include "src/algorithm/accumulate.cpp"
 #include "src/algorithm/after.cpp"
@@ -99,6 +99,7 @@
 #include "src/algorithm/transform_first.cpp"
 #include "src/algorithm/transform_second.cpp"
 #include "src/algorithm/transform_third.cpp"
+#include "src/algorithm/uncompress.cpp"
 #include "src/algorithm/unfold.cpp"
 #include "src/algorithm/unique.cpp"
 #include "src/algorithm/upper_bound.cpp"

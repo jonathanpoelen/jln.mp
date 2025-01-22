@@ -17,7 +17,7 @@ namespace jln::mp::smp
   template<bool... selectors>
   using compress_c = test_contract<
     size<is<number<sizeof...(selectors)>>>,
-    compress_c_with<listify, selectors...>
+    compress_c_with<mp::listify, selectors...>
   >;
 
   template<class C, bool... selectors>

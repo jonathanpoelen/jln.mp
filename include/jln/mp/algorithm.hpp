@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2025 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -101,6 +101,7 @@
 #include <jln/mp/algorithm/transform_first.hpp>
 #include <jln/mp/algorithm/transform_second.hpp>
 #include <jln/mp/algorithm/transform_third.hpp>
+#include <jln/mp/algorithm/uncompress.hpp>
 #include <jln/mp/algorithm/unfold.hpp>
 #include <jln/mp/algorithm/unique.hpp>
 #include <jln/mp/algorithm/upper_bound.hpp>
