@@ -4,6 +4,8 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/map/map_find.hpp"
+#include "jln/mp/list/at.hpp"
+#include "jln/mp/list/pop_front.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -20,6 +22,38 @@ TEST()
   ut::same<na, emp::map_find<list<seq_0, seq_1_0>, _2>>();
   ut::same<list<seq_0, seq_1_0>, emp::map_find<list<seq_0, seq_1_0>, _2, identity, listify>>();
   ut::same<list<seq_1_0>, emp::map_find<list<seq_0, seq_1_0>, _1, listify>>();
+
+  // check specializations
+  // identity, always<T>
+  ut::same<seq_0, map_find<_0, identity, always<na>>::f<seq_0, seq_1_0>>();
+  ut::same<na, map_find<_2, identity, always<na>>::f<seq_0, seq_1_0>>();
+  // listify, always<T>
+  ut::same<list<seq_0>, map_find<_0, listify, always<na>>::f<seq_0, seq_1_0>>();
+  ut::same<na, map_find<_2, listify, always<na>>::f<seq_0, seq_1_0>>();
+  // always<T>, always<U>
+  ut::same<int, map_find<_0, always<int>, always<na>>::f<seq_0, seq_1_0>>();
+  ut::same<na, map_find<_2, always<int>, always<na>>::f<seq_0, seq_1_0>>();
+  // always<T, C1>, always<U, C2>
+  ut::same<list<int>, map_find<_0, always<int, listify>, always<na>>::f<seq_0, seq_1_0>>();
+  ut::same<na, map_find<_2, always<int, listify>, always<na>>::f<seq_0, seq_1_0>>();
+  // unpack<pop_front<>>, always<T>
+  ut::same<list<>, map_find<_0, unpack<pop_front<>>, always<na>>::f<seq_0, seq_1_0>>();
+  ut::same<na, map_find<_2, unpack<pop_front<>>, always<na>>::f<seq_0, seq_1_0>>();
+  // unpack<pop_front<C1>>, always<T, C2>
+  ut::same<list<>, map_find<_0, unpack<pop_front<>>, always<na, listify>>::f<seq_0, seq_1_0>>();
+  ut::same<list<na>, map_find<_2, unpack<pop_front<>>, always<na, listify>>::f<seq_0, seq_1_0>>();
+  // unpack<at1<>>, always<T>
+  ut::same<_2, map_find<_1, unpack<at1<>>, always<na>>::f<seq_0, seq_1_2>>();
+  ut::same<na, map_find<_2, unpack<at1<>>, always<na>>::f<seq_0, seq_1_0>>();
+  // unpack<at1<C1>>, always<T, C2>
+  ut::same<list<_2>, map_find<_1, unpack<at1<listify>>, always<na>>::f<seq_0, seq_1_2>>();
+  ut::same<na, map_find<_2, unpack<at1<listify>>, always<na>>::f<seq_0, seq_1_0>>();
+  // unpack<C>, always<T, C2>
+  ut::same<seq_0, map_find<_0, unpack<listify>, always<na>>::f<seq_0, seq_1>>();
+  ut::same<seq_1, map_find<_1, unpack<listify>, always<na>>::f<seq_0, seq_1>>();
+  ut::same<seq_1_2, map_find<_1, unpack<listify>, always<na>>::f<seq_0, seq_1_2>>();
+  ut::same<na, map_find<_2, unpack<listify>, always<na>>::f<seq_0, seq_1_0>>();
+
 
   using Void = always<void>;
   using sVoid = smp::always<void>;

@@ -54,55 +54,23 @@ namespace jln::mp
   }
 }
 
+
+#include "jln/mp/list/at.hpp"
+#include "jln/mp/list/pop_front.hpp"
+#include "jln/mp/algorithm/same.hpp"
+#include "jln/mp/utility/conditional.hpp"
+
 /// \cond
-namespace jln::mp
-{
-  template<class key, class T>
-  struct map_find<key, identity, always<T>>
-  {
-    template<class... kvs>
-    using f = typename decltype(detail::map_find_select<key>::f(
-      static_cast<inherit_safely<kvs...>*>(nullptr)
-    ))
-      ::template f<identity, always<T>>;
-  };
-
-  // map_contains
-  template<class key, class T, class U, class C>
-  struct map_find<key, always<T, C>, always<U, C>>
-  {
-    template<class... kvs>
-    using f = JLN_MP_CALL_TRACE(C,
-      typename decltype(detail::map_find_select<key>::f(
-        static_cast<inherit_safely<kvs...>*>(nullptr)
-      ))
-      ::template f<always<T>, always<U>>
-    );
-  };
-
-  // map_contains
-  template<class key, class T, class U>
-  struct map_find<key, always<T>, always<U>>
-  {
-    template<class... kvs>
-    using f = typename decltype(detail::map_find_select<key>::f(
-      static_cast<inherit_safely<kvs...>*>(nullptr)
-    ))
-      ::template f<always<T>, always<U>>;
-  };
-}
-
 namespace jln::mp::detail
 {
   template<class x>
-  struct map_find_elem
+  struct map_found_elem
   {
     template<class TC, class FC, class...>
     using f = JLN_MP_CALL_TRACE(TC, x);
   };
 
-  template<>
-  struct map_find_elem<void>
+  struct map_not_found_elem
   {
     template<class TC, class FC, class... kvs>
     using f = JLN_MP_CALL_TRACE(FC, kvs...);
@@ -112,9 +80,73 @@ namespace jln::mp::detail
   struct map_find_select
   {
     template<template<class...> class Tpl, class... xs>
-    static map_find_elem<Tpl<key, xs...>> f(list<Tpl<key, xs...>>*);
+    static map_found_elem<Tpl<key, xs...>> f(list<Tpl<key, xs...>>*);
 
-    static map_find_elem<void> f(...);
+    static map_not_found_elem f(...);
+  };
+
+
+  template<class TC, class T, class FC, class E>
+  struct map_elem_or_T
+  {
+    using type = typename FC::template f<T>;
+  };
+
+  template<class TC, class T>
+  struct map_elem_or_T<TC, T, identity, map_not_found_elem>
+  {
+    using type = T;
+  };
+
+  template<class T, class FC, class E>
+  struct map_elem_or_T<identity, T, FC, map_found_elem<E>>
+  {
+    using type = E;
+  };
+
+  template<class TC, class T, class FC, class E>
+  struct map_elem_or_T<TC, T, FC, map_found_elem<E>>
+  {
+    using type = typename TC::template f<E>;
+  };
+
+  template<class TC, class T, class FC, template<class...> class Tpl, class... xs>
+  struct map_elem_or_T<unpack<TC>, T, FC, map_found_elem<Tpl<xs...>>>
+  {
+    using type = typename TC::template f<xs...>;
+  };
+
+  template<class TC, class T, class FC, template<class...> class Tpl, class k, class... xs>
+  struct map_elem_or_T<unpack<pop_front<TC>>, T, FC, map_found_elem<Tpl<k, xs...>>>
+  {
+    using type = typename TC::template f<xs...>;
+  };
+
+  template<class T, class FC, template<class...> class Tpl, class k, class x, class... xs>
+  struct map_elem_or_T<unpack<at1<>>, T, FC, map_found_elem<Tpl<k, x, xs...>>>
+  {
+    using type = x;
+  };
+
+  template<class TC, class T, class FC, template<class...> class Tpl, class k, class x, class... xs>
+  struct map_elem_or_T<unpack<at1<TC>>, T, FC, map_found_elem<Tpl<k, x, xs...>>>
+  {
+    using type = typename TC::template f<x>;
+  };
+}
+
+namespace jln::mp
+{
+  template<class key, class TC, class T, class FC>
+  struct map_find<key, TC, always<T, FC>>
+  {
+    template<class... kvs>
+    using f = typename detail::map_elem_or_T<
+      TC, T, FC,
+      decltype(detail::map_find_select<key>::f(
+        static_cast<inherit_safely<kvs...>*>(nullptr)
+      ))
+     >::type;
   };
 }
 /// \endcond
