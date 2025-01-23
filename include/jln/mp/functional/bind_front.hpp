@@ -5,6 +5,7 @@
 #include <jln/mp/number/number.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/functional/call.hpp>
+#include <jln/mp/list/push_front.hpp>
 
 namespace jln::mp
 {
@@ -49,4 +50,10 @@ namespace jln::mp
     using bind_front_v = typename detail::_unpack<mp::bind_front_v<F, BoundArgs...>, L>::type;
 #endif
   }
+
+  /// \cond
+  template<class F, class Arg>
+  struct bind_front<F, Arg> : push_front<Arg, F>
+  {};
+  /// \endcond
 } // namespace jln::mp

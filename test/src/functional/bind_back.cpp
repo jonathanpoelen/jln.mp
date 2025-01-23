@@ -26,15 +26,35 @@ TEST()
 
   test_mulary_pack<bind_back>();
 
+  ut::same<list<char, long, int>, emp::bind_back<list<char, long>, listify, int>>();
   ut::same<list<char, long, int, void>, emp::bind_back<list<char, long>, listify, int, void>>();
 
   ut::same<bind_back<listify, _1>, bind_back_c<listify, 1>>();
+
+  test_context<
+    bind_back<pop_back<>>,
+    smp::bind_back<smp::pop_back<>>
+  >()
+    .test<list<>, void>()
+    .test<list<void>, void, char>()
+    .not_invocable<>()
+    ;
+
+  test_context<
+    bind_back<pop_back<>, int>,
+    smp::bind_back<smp::pop_back<>, int>
+  >()
+    .test<list<>>()
+    .test<list<void>, void>()
+    .test<list<void, char>, void, char>()
+    ;
 
   test_context<
     bind_back<pop_back<>, int, long>,
     smp::bind_back<smp::pop_back<>, int, long>
   >()
     .test<list<int>>()
+    .test<list<void, int>, void>()
     .test<list<void, char, int>, void, char>()
     ;
 
@@ -45,6 +65,8 @@ TEST()
 #endif
 
   ut::not_invocable<smp::bind_back<smp::pop_back<>>>();
+  ut::not_invocable<smp::bind_back<bad_contract>>();
+  ut::not_invocable<smp::bind_back<bad_contract>, void>();
 }
 
 TEST_SUITE_END()
