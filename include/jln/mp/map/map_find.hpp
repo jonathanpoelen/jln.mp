@@ -6,6 +6,8 @@
 #include <jln/mp/utility/inherit.hpp>
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/unpack.hpp>
+#include "jln/mp/list/pop_front.hpp"
+#include "jln/mp/list/at.hpp"
 
 
 namespace jln::mp
@@ -41,22 +43,71 @@ namespace jln::mp
   template<class key, class FT>
   using map_find_or = map_find<key, identity, always<FT>>;
 
+
+  /// Finds the first value of the \map with a key \c key.
+  template<class key, class TC = identity, class FC = always<na>>
+  using map_find_value = map_find<key, unpack<at1<TC>>, FC>;
+
+  template<class key, class FC>
+  using map_find_value_or_else = map_find<key, unpack<at1<>>, FC>;
+
+  template<class key, class FT>
+  using map_find_value_or = map_find<key, unpack<at1<>>, always<FT>>;
+
+
+  /// Finds the values of the \map with a key \c key.
+  template<class key, class TC = listify, class FC = always<na>>
+  using map_find_values = map_find<key, unpack<pop_front<TC>>, FC>;
+
+  template<class key, class FC>
+  using map_find_values_or_else = map_find<key, unpack<pop_front<listify>>, FC>;
+
+  template<class key, class FT>
+  using map_find_values_or = map_find<key, unpack<pop_front<listify>>, always<FT>>;
+
+
   namespace emp
   {
     template<class L, class key, class TC = mp::identity, class FC = mp::always<na>>
     using map_find = typename detail::_unpack<mp::map_find<key, TC, FC>, L>::type;
 
     template<class L, class key, class FC>
-    using map_find_or_else = typename detail::_unpack<mp::map_find<key, mp::identity, FC>, L>::type;
+    using map_find_or_else = typename detail::_unpack<mp::map_find<
+      key, mp::identity, FC>, L>::type;
 
     template<class L, class key, class FT>
-    using map_find_or = typename detail::_unpack<mp::map_find<key, mp::identity, mp::always<FT>>, L>::type;
+    using map_find_or = typename detail::_unpack<mp::map_find<
+      key, mp::identity, mp::always<FT>>, L>::type;
+
+
+    template<class L, class key, class TC = mp::identity, class FC = mp::always<na>>
+    using map_find_value = typename detail::_unpack<mp::map_find<
+      key, mp::unpack<mp::at1<TC>>, FC>, L>::type;
+
+    template<class L, class key, class FC>
+    using map_find_value_or_else = typename detail::_unpack<mp::map_find<
+      key, mp::unpack<mp::at1<>>, FC>, L>::type;
+
+    template<class L, class key, class FT>
+    using map_find_value_or = typename detail::_unpack<mp::map_find<
+      key, mp::unpack<mp::at1<>>, mp::always<FT>>, L>::type;
+
+
+    template<class L, class key, class TC = mp::listify, class FC = mp::always<na>>
+    using map_find_values = typename detail::_unpack<mp::map_find<
+      key, mp::unpack<mp::pop_front<TC>>, FC>, L>::type;
+
+    template<class L, class key, class FC>
+    using map_find_values_or_else = typename detail::_unpack<mp::map_find<
+      key, mp::unpack<mp::pop_front<>>, FC>, L>::type;
+
+    template<class L, class key, class FT>
+    using map_find_values_or = typename detail::_unpack<mp::map_find<
+      key, mp::unpack<mp::pop_front<>>, mp::always<FT>>, L>::type;
   }
 }
 
 
-#include "jln/mp/list/at.hpp"
-#include "jln/mp/list/pop_front.hpp"
 #include "jln/mp/algorithm/same.hpp"
 #include "jln/mp/utility/conditional.hpp"
 

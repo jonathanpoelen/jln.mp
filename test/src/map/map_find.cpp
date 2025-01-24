@@ -90,6 +90,28 @@ TEST()
     .not_invocable<seq_0, seq_0>()
     ;
 
+  test_context<map_find_value_or_else<_2, Void>, smp::map_find_value_or_else<_2, sVoid>>()
+    .test<void>()
+    .test<void, seq_0, seq_1, seq_3>()
+    .test<_3, seq_0, seq_1, seq_2_3_4>()
+    .test<_3, seq_0, seq_1, seq_2_3, seq_3>()
+    .not_invocable<void>()
+    .not_invocable<list<>>()
+    .not_invocable<seq_0, seq_0>()
+    .not_invocable<seq_2>()
+    ;
+
+  test_context<map_find_values_or_else<_2, Void>, smp::map_find_values_or_else<_2, sVoid>>()
+    .test<void>()
+    .test<void, seq_0, seq_1, seq_3>()
+    .test<list<>, seq_0, seq_1, seq_2>()
+    .test<list<_3, _4>, seq_0, seq_1, seq_2_3_4>()
+    .test<seq_3, seq_0, seq_1, seq_2_3, seq_3>()
+    .not_invocable<void>()
+    .not_invocable<list<>>()
+    .not_invocable<seq_0, seq_0>()
+    ;
+
   ut::not_invocable<smp::map_find<_0, bad_function, sVoid>, seq_0>();
   ut::not_invocable<smp::map_find<_0, identity, bad_function>>();
 }
