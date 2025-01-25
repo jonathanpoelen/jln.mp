@@ -148,9 +148,16 @@ namespace jln::mp::detail
   template<>
   struct _zip_dispatch<2>
   {
-    template<class C, class F, class... seqs>
-    using f = typename _recursive_zip<!sizeof...(seqs) + 8>
-      ::template f<sizeof...(seqs)-8, C, F, seqs...>;
+    template<class C, class F,
+      class _0, class _1, class _2, class _3, class _4,
+      class _5, class _6, class _7, class... seqs>
+    using f = typename _recursive_zip<sizeof...(seqs) < 8 ? sizeof...(seqs) : 8>
+      ::template f<
+        sizeof...(seqs) < 8 ? 0 : sizeof...(seqs) - 8,
+        C, F, seqs...,
+        typename _zip_impl<_0, _1, _2, _3, _4, _5, _6, _7>
+          ::template f<listify, listify>
+      >;
   };
 }
 /// \endcond
