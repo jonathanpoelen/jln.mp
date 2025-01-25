@@ -10,7 +10,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<unsigned>
+    template<int>
     struct reverse_impl;
   }
   /// \endcond
@@ -37,13 +37,11 @@ namespace jln::mp
 
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/detail/sequence.hpp>
-#include <jln/mp/utility/conditional.hpp>
-#include <cstddef>
 
 /// \cond
 namespace jln::mp::detail
 {
-  template<unsigned n>
+  template<int n>
   struct reverse_impl2 : reverse_impl2<
       n < 16 ? 8
     : n < 64 ? 16
@@ -52,21 +50,21 @@ namespace jln::mp::detail
   >
   {};
 
-  template<unsigned n>
+  template<int n>
   struct reverse_impl : reverse_impl2<n>
   {};
 
   template<>
   struct reverse_impl2<0>
   {
-    template<class C, std::size_t count, class... xs>
+    template<class C, int count, class... xs>
     using f = typename reverse<join<C>>::template f<xs...>;
   };
 
   template<>
   struct reverse_impl<0>
   {
-    template<class C, std::size_t count, class... xs>
+    template<class C, int count, class... xs>
     using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
@@ -74,7 +72,7 @@ namespace jln::mp::detail
   template<>                                             \
   struct reverse_impl2<n>                                \
   {                                                      \
-    template<class C, std::size_t count                  \
+    template<class C, int count                          \
       mp_xs(JLN_MP_COMMA class, JLN_MP_NIL, JLN_MP_NIL), \
       class... xs>                                       \
     using f = typename reverse<join<C>>                  \
@@ -84,7 +82,7 @@ namespace jln::mp::detail
   template<>                                             \
   struct reverse_impl<n>                                 \
   {                                                      \
-    template<class C, std::size_t count                  \
+    template<class C, int count                          \
       mp_xs(JLN_MP_COMMA class, JLN_MP_NIL, JLN_MP_NIL), \
       class... xs>                                       \
     using f = JLN_MP_CALL_TRACE(C,                       \
@@ -99,7 +97,7 @@ namespace jln::mp::detail
   template<>                                          \
   struct reverse_impl2<n>                             \
   {                                                   \
-    template<class C, std::size_t count,              \
+    template<class C, int count,                      \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),         \
       class... xs>                                    \
     using f = typename reverse_impl2<                 \
