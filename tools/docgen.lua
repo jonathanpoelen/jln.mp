@@ -216,7 +216,9 @@ local cunl = C(Until'\n') * 1
 local alnum = R('az','09','AZ')
 local charid = alnum + S':_'
 local id = charid^1
+local tid = id * (ws * 'const' + ws0 * S'*&')^0
 local cid = C(id)
+local ctid = C(tid)
 local balancedparent = Balanced('(', ')')
 local tagasoperator = '<' * S'= ' + '>='
 local balancedtag = P{
@@ -420,7 +422,7 @@ preproc = P{
 local lines = Ct(C(unl) * (sp0 * '///' * P' '^-0 * C(unl - '\\' + '\\c ' * unl))^0)
 local tparam = Ct(
   (C('template' * balancedtag) + Cc(nil)) * ws0
-  * C(id * balancedtag^-1 * (ws0 * blockComment)^-1)
+  * C(tid * balancedtag^-1 * (ws0 * blockComment)^-1)
   * ws0 * C(P'...'^-1) * ws0 * (cid + Cc(nil)) * ws0
   * ('=' * ws0 * C('[]{}' + id * ws0 * balancedtag^-1))^-1)
 local tparams = Ct('<' * List(ws0 * tparam, ',') * '>')
@@ -482,7 +484,8 @@ local pattern = P{
       + 'using ' * Cc(kwindexes.using) * Cc(nil) * ((alnum + S'_')^1 * '::')^0 * cid * ';'
         * Cc(nil) * Cc(nil) * Cc(nil) * Cc(nil)
       + (P'static ' + 'inline ')^0 * 'constexpr ' * Cc(kwindexes.static_constexpr)
-        * cid * ws * cid * ws0 * '=' * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
+        * ctid * ws * cid * ws0
+        * '=' * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
       ) / f_type
   + 'namespace '
     * ( ignore_namespace * ws0 * Balanced('{', '}')
