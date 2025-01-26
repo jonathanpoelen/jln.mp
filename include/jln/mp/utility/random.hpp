@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/utility/make_id.hpp>
+#include <jln/mp/utility/make_index.hpp>
 #include <jln/mp/list/clear.hpp>
 
 #if defined(__cpp_generic_lambdas) && __cpp_generic_lambdas >= 201707L
@@ -16,7 +16,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<class T, class Tag = default_make_id_tag>
+    template<class T, class Tag = default_make_index_tag>
     JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned next_random_for();
   }
   /// \endcond
@@ -37,25 +37,25 @@ namespace jln::mp
   namespace emp
   {
     /// Generates a random number per type for a specified tag.
-    template<class T, class Tag = default_make_id_tag>
+    template<class T, class Tag = default_make_index_tag>
     inline constexpr unsigned random_of_v = detail::next_random_for<list<T>, Tag>();
 
     /// Generates a random number per type for a specified tag.
-    template<class T, class Tag = default_make_id_tag, auto v = []{}>
+    template<class T, class Tag = default_make_index_tag, auto v = []{}>
     using random_of = number<detail::next_random_for<list<T>, Tag>()>;
 
     /// Generates a random number per call for a specified tag.
-    template<class Tag = default_make_id_tag, auto v = []{}>
+    template<class Tag = default_make_index_tag, auto v = []{}>
     inline constexpr unsigned random_v = detail::next_random_for<decltype(v), Tag>();
 
     /// Generates a random number per call for a specified tag.
-    template<class Tag = default_make_id_tag, auto v = []{}>
+    template<class Tag = default_make_index_tag, auto v = []{}>
     using random = number<detail::next_random_for<decltype(v), Tag>()>;
   }
 
   /// Generate a random number for a specified tag on each call with different \c xs.
   /// \treturn \number
-  template<class Tag = default_make_id_tag, class C = identity, auto = []{}>
+  template<class Tag = default_make_index_tag, class C = identity, auto = []{}>
   struct random_for
   #ifdef JLN_MP_DOXYGENATING
   {
@@ -66,7 +66,7 @@ namespace jln::mp
   ;
 
   template<class C = identity, auto v = []{}>
-  using random = random_for<default_make_id_tag, C, v>;
+  using random = random_for<default_make_index_tag, C, v>;
 
 
 /// \cond
@@ -183,7 +183,7 @@ namespace jln::mp::detail
   template<int id, class Tag>
   struct get_random_data
   {
-    using type = emp::type_of<id-1, Tag>;
+    using type = emp::type_of_index<id-1, Tag>;
   };
 
   template<class Tag>
@@ -199,9 +199,9 @@ namespace jln::mp::detail
   template<class T, class Tag>
   JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned next_random_for()
   {
-    constexpr int id = mkid::get_next_id<T*, random_tag<Tag>>();
+    constexpr int id = mkidx::get_next_index<T*, random_tag<Tag>>();
     using data = typename get_random_data<id, random_tag<Tag>>::type;
-    void(mkid::injecter<id, typename data::next*, random_tag<Tag>>{});
+    void(mkidx::injecter<id, typename data::next*, random_tag<Tag>>{});
     return data::value;
   }
 }

@@ -15,6 +15,7 @@
 #include <jln/mp/utility/iterate.hpp>
 #include <jln/mp/utility/lazy_void.hpp>
 #include <jln/mp/utility/make_id.hpp>
+#include <jln/mp/utility/make_index.hpp>
 #include <jln/mp/utility/random.hpp>
 #include <jln/mp/utility/rewrap_unpack.hpp>
 #include <jln/mp/utility/sizeof.hpp>

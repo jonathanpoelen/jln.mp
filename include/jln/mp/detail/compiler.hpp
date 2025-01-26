@@ -296,6 +296,16 @@
 //@}
 
 
+// keywords
+//@{
+#if defined(__cpp_consteval) && __cpp_consteval >= 201811L
+#  define JLN_MP_CONSTEVAL_OR_CONSTEXPR consteval
+#else
+#  define JLN_MP_CONSTEVAL_OR_CONSTEXPR constexpr
+#endif
+//@}
+
+
 // special wrapper for specialization of variable template or struct
 //@{
 #if JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
@@ -337,6 +347,11 @@
 # else
 #   define JLN_MP_FAST_TYPE_PACK_ELEMENT 0
 # endif
+#endif
+
+/// When 1, algorithms using friend injection its accessible
+#ifndef JLN_MP_ENABLE_FRIEND_INJECTION
+# define JLN_MP_ENABLE_FRIEND_INJECTION 1
 #endif
 
 /// Displays parameters. Useful in a macro to remove parentheses from a value.

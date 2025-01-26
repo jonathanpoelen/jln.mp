@@ -205,6 +205,7 @@
 #include "src/utility/iterate.cpp"
 #include "src/utility/lazy_void.cpp"
 #include "src/utility/make_id.cpp"
+#include "src/utility/make_index.cpp"
 #include "src/utility/random.cpp"
 #include "src/utility/rewrap_unpack.cpp"
 #include "src/utility/sizeof.cpp"
