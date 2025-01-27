@@ -5,7 +5,7 @@
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/smp/contract.hpp>
 #include <jln/mp/algorithm/arrange.hpp>
-#include <jln/mp/detail/type_identity.hpp>
+#include <jln/mp/detail/first.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -28,7 +28,7 @@ namespace jln::mp::smp
   using arrange = typename mp::try_<
     detail::make_arrange<Ints>,
     detail::arrange_to_smp_arrange,
-    mp::always<detail::type_identity<bad_contract>>
+    mp::always<detail::first<bad_contract, 1>>
   >::template f<C>::type;
 
 #if JLN_MP_FAST_TYPE_PACK_ELEMENT
