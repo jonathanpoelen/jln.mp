@@ -21,6 +21,7 @@ TEST()
   test_unary_pack<make_index_for, void>();
 
   ut::same<detail::sfinae<make_index<>>, smp::make_index<>>();
+  ut::not_same<number<emp::next_index_v<>>, number<emp::next_index_v<>>>();
 
 
   static_assert(emp::make_index_of_v<int> == 0);
@@ -87,8 +88,6 @@ TEST()
   ut::not_invocable<smp::make_index_for<tag2>>();
   ut::not_invocable<smp::make_index_for<tag2>, int, int>();
   ut::not_invocable<smp::make_index_for<tag2, bad_function>, int>();
-
-  static_assert(emp::next_index_v<> != emp::next_index_v<>);
 }
 
 TEST_SUITE_END()
