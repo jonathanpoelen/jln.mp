@@ -10,12 +10,12 @@
 
 namespace jln::mp::smp
 {
-  template<class Tag = default_make_id_tag, class C = identity, auto v = []{}>
+  template<class Tag = default_make_index_tag, class C = identity, auto v = []{}>
   using random_for = contract<mp::random_for<Tag, assume_positive_number<C>, v>>;
 
   template<class C = identity, auto v = []{}>
   using random = contract<
-    mp::random_for<default_make_id_tag, assume_positive_number<C>, v>>;
+    mp::random_for<default_make_index_tag, assume_positive_number<C>, v>>;
 }
 
 /// \cond

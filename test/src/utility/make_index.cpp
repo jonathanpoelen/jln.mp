@@ -22,35 +22,32 @@ TEST()
 
   ut::same<detail::sfinae<make_index<>>, smp::make_index<>>();
 
-  using emp::index_of_v;
-  using emp::index_of;
 
+  static_assert(emp::make_index_of_v<int> == 0);
+  emp::make_index_of<int>() = _0();
 
-  static_assert(index_of_v<int> == 0);
-  index_of<int>() = _0();
+  static_assert(emp::make_index_of_v<long> == 1);
+  emp::make_index_of<long>() = _1();
 
-  static_assert(index_of_v<long> == 1);
-  index_of<long>() = _1();
+  emp::make_index_of<char>() = _2();
+  static_assert(emp::make_index_of_v<char> == 2);
 
-  index_of<char>() = _2();
-  static_assert(index_of_v<char> == 2);
-
-  index_of<int>() = _0();
-  static_assert(index_of_v<int> == 0);
+  emp::make_index_of<int>() = _0();
+  static_assert(emp::make_index_of_v<int> == 0);
 
   class tag1;
 
-  static_assert(index_of_v<int, tag1> == 0);
-  index_of<int, tag1>() = _0();
+  static_assert(emp::make_index_of_v<int, tag1> == 0);
+  emp::make_index_of<int, tag1>() = _0();
 
-  static_assert(index_of_v<long, tag1> == 1);
-  index_of<long, tag1>() = _1();
+  static_assert(emp::make_index_of_v<long, tag1> == 1);
+  emp::make_index_of<long, tag1>() = _1();
 
-  index_of<char, tag1>() = _2();
-  static_assert(index_of_v<char, tag1> == 2);
+  emp::make_index_of<char, tag1>() = _2();
+  static_assert(emp::make_index_of_v<char, tag1> == 2);
 
-  index_of<int, tag1>() = _0();
-  static_assert(index_of_v<int, tag1> == 0);
+  emp::make_index_of<int, tag1>() = _0();
+  static_assert(emp::make_index_of_v<int, tag1> == 0);
 
 
   class tag2;

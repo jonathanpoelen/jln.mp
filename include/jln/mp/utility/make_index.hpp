@@ -53,11 +53,11 @@ namespace jln::mp
 
     /// Generates a unique index per type for a specified tag.
     template<class T, class Tag = default_make_index_tag>
-    inline constexpr int index_of_v = detail::mkidx::next_index<list<T>*, Tag>::value;
+    inline constexpr int make_index_of_v = detail::mkidx::next_index<list<T>*, Tag>::value;
 
     /// Generates a unique index per type for a specified tag.
     template<class T, class Tag = default_make_index_tag>
-    using index_of = number<index_of_v<T, Tag>>;
+    using make_index_of = number<make_index_of_v<T, Tag>>;
 
     /// Get the type associated to an index for a specified tag.
     template<int idx, class Tag = default_make_index_tag>
@@ -72,7 +72,7 @@ namespace jln::mp
   struct make_index_for
   {
     template<class T>
-    using f = JLN_MP_CALL_TRACE(C, number<emp::index_of_v<T, Tag>>);
+    using f = JLN_MP_CALL_TRACE(C, number<emp::make_index_of_v<T, Tag>>);
   };
 
   /// Generates a unique index per type.
@@ -85,7 +85,7 @@ namespace jln::mp
   struct make_index_for<Tag, identity>
   {
     template<class T>
-    using f = number<emp::index_of_v<T, Tag>>;
+    using f = number<emp::make_index_of_v<T, Tag>>;
   };
   /// \endcond
 }
