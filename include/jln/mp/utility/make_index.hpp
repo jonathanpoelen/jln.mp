@@ -96,6 +96,7 @@ namespace jln::mp::detail::mkidx
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
   JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wunused-function")
+  JLN_MP_DIAGNOSTIC_CUDA_IGNORE(1301)
   template<class Tag, int X>
   struct state
   {

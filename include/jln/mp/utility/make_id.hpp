@@ -19,6 +19,7 @@ namespace jln::mp
     JLN_MP_DIAGNOSTIC_PUSH()
     JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
     JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wunused-function")
+    JLN_MP_DIAGNOSTIC_CUDA_IGNORE(1301)
     template<int const* id>
     struct id_info
     {
