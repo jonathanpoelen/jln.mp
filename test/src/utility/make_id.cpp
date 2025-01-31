@@ -8,7 +8,7 @@
 
 #include "jln/mp/smp/utility/make_id.hpp"
 
-#if JLN_MP_ENABLE_FRIEND_INJECTION
+#if JLN_MP_ENABLE_FRIEND_INJECTION && !JLN_MP_WORKAROUND(JLN_MP_GCC, < 1200)
 
 TEST_SUITE_BEGIN()
 
