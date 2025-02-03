@@ -8,7 +8,8 @@
 #include "jln/mp/smp/utility/random.hpp"
 
 #ifdef __cpp_generic_lambdas
-#if __cpp_generic_lambdas >= 201707L
+// nvcc bug: types may not be defined in template arguments for emp::random_v<> ???
+#if __cpp_generic_lambdas >= 201707L && !JLN_MP_WORKAROUND(JLN_MP_CUDA, <= 1208)
 
 TEST_SUITE_BEGIN()
 
@@ -20,8 +21,13 @@ TEST()
   (void)random<identity>();
   (void)random<listify>();
 
-  static_assert(emp::random_v<> != emp::random_v<>);
-  ut::not_same<emp::random<>, emp::random<>>();
+  constexpr auto r1 = emp::random_v<>;
+  constexpr auto r2 = emp::random_v<>;
+  using R1 = emp::random<>;
+  using R2 = emp::random<>;
+
+  static_assert(r1 != r2);
+  ut::not_same<R1, R2>();
 
   using rd1 = random<>;
   ut::same<rd1::f<int>, rd1::f<int>>();
@@ -33,12 +39,18 @@ TEST()
   class tag1;
   class tag2;
 
-  static_assert(emp::random_v<tag1> == emp::random_v<tag2>);
-  static_assert(emp::random_v<tag1> == emp::random_v<tag2>);
-  static_assert(emp::random_v<tag1> != emp::random_v<tag1>);
-  static_assert(emp::random_v<tag2> != emp::random_v<tag2>);
-  static_assert(emp::random_v<tag1> == emp::random_v<tag2>);
-  ut::same<emp::random<tag1>, emp::random<tag2>>();
+  constexpr auto r1t1 = emp::random_v<tag1>;
+  constexpr auto r1t2 = emp::random_v<tag2>;
+  constexpr auto r2t1 = emp::random_v<tag1>;
+  constexpr auto r2t2 = emp::random_v<tag2>;
+  using R1T1 = emp::random<tag1>;
+  using R1T2 = emp::random<tag2>;
+
+  static_assert(r1t1 == r1t2);
+  static_assert(r2t1 == r2t2);
+  static_assert(r1t1 != r2t1);
+  static_assert(r1t2 != r2t2);
+  ut::same<R1T1, R1T2>();
 
   using rdt1 = random_for<tag1>;
   using rdt2 = random_for<tag2>;
