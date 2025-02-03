@@ -151,10 +151,13 @@ namespace jln::mp::detail
 
   template<class> using void_t = void;
 
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wattributes")
   template<class F, class... Params>
   struct memoizer_impl<void_t<typename F::template f<Params...>>, F, Params...>
     : memoize_result<typename F::template f<Params...>>
   {};
+  JLN_MP_DIAGNOSTIC_POP()
 # endif
 }
 #else // if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
