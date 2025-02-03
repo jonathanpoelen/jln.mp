@@ -22,13 +22,17 @@ TEST()
   using emp::id_of_v;
   using emp::id_of;
 
+  constexpr auto t1 = id_of_v<int>;
+  constexpr auto t2 = id_of_v<double>;
+  constexpr auto t3 = id_of_v<int, int>;
+
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wtautological-compare")
-  static_assert(id_of_v<int> == id_of_v<int>);
-  static_assert(id_of_v<int> != id_of_v<double>);
-  static_assert(id_of_v<int, int> != id_of_v<int>);
-  static_assert(id_of_v<int, int> == id_of_v<int, int>);
-  static_assert(id_of_v<int, int> != id_of_v<double>);
+  static_assert(t1 == t1);
+  static_assert(t1 != t2);
+  static_assert(t3 != t1);
+  static_assert(t3 == t3);
+  static_assert(t3 != t2);
   JLN_MP_DIAGNOSTIC_POP()
 
   test_context<make_id<>, smp::make_id<>>()
