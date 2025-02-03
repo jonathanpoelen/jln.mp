@@ -287,79 +287,70 @@ namespace jln::mp::detail
 // Diagnostic
 //@{
 #if JLN_MP_CLANG_LIKE || JLN_MP_GCC
-
 #  define JLN_MP_DIAGNOSTIC_PUSH() _Pragma("GCC diagnostic push")
 #  define JLN_MP_DIAGNOSTIC_POP() _Pragma("GCC diagnostic pop")
-
-#  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X)
-#  define JLN_MP_DIAGNOSTIC_GCC_IGNORE(X) JLN_MP_PRAGMA_I(GCC diagnostic ignored X)
-#  define JLN_MP_DIAGNOSTIC_MSVC_WARNING(X)
-#  define JLN_MP_DIAGNOSTIC_GCC_WARNING(X) JLN_MP_PRAGMA_I(GCC diagnostic warning X)
-#  define JLN_MP_DIAGNOSTIC_MSVC_ERROR(X)
-#  define JLN_MP_DIAGNOSTIC_GCC_ERROR(X) JLN_MP_PRAGMA_I(GCC diagnostic error X)
-#  ifdef __clang__
-#    define JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
-#    define JLN_MP_DIAGNOSTIC_CLANG_IGNORE JLN_MP_DIAGNOSTIC_GCC_IGNORE
-#    define JLN_MP_DIAGNOSTIC_GCC_ONLY_WARNING(X)
-#    define JLN_MP_DIAGNOSTIC_CLANG_WARNING JLN_MP_DIAGNOSTIC_GCC_WARNING
-#    define JLN_MP_DIAGNOSTIC_GCC_ONLY_ERROR(X)
-#    define JLN_MP_DIAGNOSTIC_CLANG_ERROR JLN_MP_DIAGNOSTIC_GCC_ERROR
-#  else
-#    define JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE JLN_MP_DIAGNOSTIC_GCC_IGNORE
-#    define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X)
-#    define JLN_MP_DIAGNOSTIC_GCC_ONLY_WARNING JLN_MP_DIAGNOSTIC_GCC_WARNING
-#    define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X)
-#    define JLN_MP_DIAGNOSTIC_GCC_ONLY_ERROR JLN_MP_DIAGNOSTIC_GCC_ERROR
-#    define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X)
-#  endif
-
 #elif JLN_MP_MSVC
-
 #  define JLN_MP_DIAGNOSTIC_PUSH() __pragma(warning(push))
 #  define JLN_MP_DIAGNOSTIC_POP() __pragma(warning(pop))
-
-#  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X) JLN_MP_PRAGMA_I(warning(disable:X))
-#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
-#  define JLN_MP_DIAGNOSTIC_GCC_IGNORE(X)
-
-#  define JLN_MP_DIAGNOSTIC_MSVC_WARNING(X) JLN_MP_PRAGMA_I(warning(4:X))
-#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_WARNING(X)
-#  define JLN_MP_DIAGNOSTIC_GCC_WARNING(X)
-
-#  define JLN_MP_DIAGNOSTIC_MSVC_ERROR(X) JLN_MP_PRAGMA_I(error(X))
-#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_ERROR(X)
-#  define JLN_MP_DIAGNOSTIC_GCC_ERROR(X)
-
-#  if JLN_MP_CLANG_LIKE
-#    define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X) JLN_MP_PRAGMA_I(GCC diagnostic ignored X)
-#    define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X) JLN_MP_PRAGMA_I(GCC diagnostic warning X)
-#    define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X) JLN_MP_PRAGMA_I(GCC diagnostic error X)
+#elif JLN_MP_CUDA
+#  if JLN_MP_HOST_COMPILER_CLANG || JLN_MP_HOST_COMPILER_GCC
+#    define JLN_MP_DIAGNOSTIC_PUSH() _Pragma("nv_diagnostic push") \
+                                     _Pragma("GCC diagnostic push")
+#    define JLN_MP_DIAGNOSTIC_POP() _Pragma("GCC diagnostic pop") \
+                                    _Pragma("nv_diagnostic pop")
 #  else
-#    define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X)
-#    define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X)
-#    define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X)
+#    define JLN_MP_DIAGNOSTIC_PUSH() _Pragma("nv_diagnostic push")
+#    define JLN_MP_DIAGNOSTIC_POP() _Pragma("nv_diagnostic pop")
 #  endif
-
 #else
-
 #  define JLN_MP_DIAGNOSTIC_PUSH()
 #  define JLN_MP_DIAGNOSTIC_POP()
+#endif
 
-#  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X)
+#if JLN_MP_CLANG_LIKE || JLN_MP_GCC || JLN_MP_HOST_COMPILER_CLANG || JLN_MP_HOST_COMPILER_GCC
+#  define JLN_MP_DIAGNOSTIC_GCC_IGNORE(X) JLN_MP_PRAGMA_I(GCC diagnostic ignored X)
+#  define JLN_MP_DIAGNOSTIC_GCC_WARNING(X) JLN_MP_PRAGMA_I(GCC diagnostic warning X)
+#  define JLN_MP_DIAGNOSTIC_GCC_ERROR(X) JLN_MP_PRAGMA_I(GCC diagnostic error X)
+#else
 #  define JLN_MP_DIAGNOSTIC_GCC_IGNORE(X)
-#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
-#  define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X)
-
-#  define JLN_MP_DIAGNOSTIC_MSVC_WARNING(X)
 #  define JLN_MP_DIAGNOSTIC_GCC_WARNING(X)
-#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_WARNING(X)
-#  define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X)
-
-#  define JLN_MP_DIAGNOSTIC_MSVC_ERROR(X)
 #  define JLN_MP_DIAGNOSTIC_GCC_ERROR(X)
-#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_ERROR(X)
-#  define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X)
+#endif
 
+#if JLN_MP_MSVC
+#  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X) JLN_MP_PRAGMA_I(warning(disable:X))
+#  define JLN_MP_DIAGNOSTIC_MSVC_WARNING(X) JLN_MP_PRAGMA_I(warning(4:X))
+#  define JLN_MP_DIAGNOSTIC_MSVC_ERROR(X) JLN_MP_PRAGMA_I(error(X))
+#else
+#  define JLN_MP_DIAGNOSTIC_MSVC_IGNORE(X)
+#  define JLN_MP_DIAGNOSTIC_MSVC_WARNING(X)
+#  define JLN_MP_DIAGNOSTIC_MSVC_ERROR(X)
+#endif
+
+#if JLN_MP_CUDA
+#  define JLN_MP_DIAGNOSTIC_CUDA_IGNORE(X) JLN_MP_PRAGMA_I(nv_diag_suppress X)
+#  define JLN_MP_DIAGNOSTIC_CUDA_WARNING(X) JLN_MP_PRAGMA_I(nv_diag_warn X)
+#  define JLN_MP_DIAGNOSTIC_CUDA_ERROR(X) JLN_MP_PRAGMA_I(nv_diag_error X)
+#else
+#  define JLN_MP_DIAGNOSTIC_CUDA_IGNORE(X)
+#  define JLN_MP_DIAGNOSTIC_CUDA_WARNING(X)
+#  define JLN_MP_DIAGNOSTIC_CUDA_ERROR(X)
+#endif
+
+#if JLN_MP_CLANG_LIKE || JLN_MP_HOST_COMPILER_CLANG
+#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE(X)
+#  define JLN_MP_DIAGNOSTIC_CLANG_IGNORE JLN_MP_DIAGNOSTIC_GCC_IGNORE
+#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_WARNING(X)
+#  define JLN_MP_DIAGNOSTIC_CLANG_WARNING JLN_MP_DIAGNOSTIC_GCC_WARNING
+#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_ERROR(X)
+#  define JLN_MP_DIAGNOSTIC_CLANG_ERROR JLN_MP_DIAGNOSTIC_GCC_ERROR
+#else
+#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE JLN_MP_DIAGNOSTIC_GCC_IGNORE
+#  define JLN_MP_DIAGNOSTIC_CLANG_IGNORE(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_WARNING JLN_MP_DIAGNOSTIC_GCC_WARNING
+#  define JLN_MP_DIAGNOSTIC_CLANG_WARNING(X)
+#  define JLN_MP_DIAGNOSTIC_GCC_ONLY_ERROR JLN_MP_DIAGNOSTIC_GCC_ERROR
+#  define JLN_MP_DIAGNOSTIC_CLANG_ERROR(X)
 #endif
 //@}
 
@@ -371,6 +362,16 @@ namespace jln::mp::detail
   JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wunsafe-buffer-usage")
 #else
 #  define JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
+#endif
+//@}
+
+
+// keywords
+//@{
+#if defined(__cpp_consteval) && __cpp_consteval >= 201811L
+#  define JLN_MP_CONSTEVAL_OR_CONSTEXPR consteval
+#else
+#  define JLN_MP_CONSTEVAL_OR_CONSTEXPR constexpr
 #endif
 //@}
 
@@ -416,6 +417,11 @@ namespace jln::mp::detail
 # else
 #   define JLN_MP_FAST_TYPE_PACK_ELEMENT 0
 # endif
+#endif
+
+/// When 1, algorithms using friend injection its accessible
+#ifndef JLN_MP_ENABLE_FRIEND_INJECTION
+# define JLN_MP_ENABLE_FRIEND_INJECTION 1
 #endif
 
 /// Displays parameters. Useful in a macro to remove parentheses from a value.
@@ -736,10 +742,13 @@ namespace jln::mp::detail
 
   template<class> using void_t = void;
 
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wattributes")
   template<class F, class... Params>
   struct memoizer_impl<void_t<typename F::template f<Params...>>, F, Params...>
     : memoize_result<typename F::template f<Params...>>
   {};
+  JLN_MP_DIAGNOSTIC_POP()
 # endif
 }
 #else // if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
@@ -5483,8 +5492,8 @@ namespace jln::mp
     using f = typename detail::_zip_dispatch<
       sizeof...(seqs) ? sizeof...(seqs) <= 8 ? 1 : 2 : 0
     >::template f<
-      JLN_MP_TRACE_F(C)::template f,
-      JLN_MP_TRACE_F(F)::template f,
+      JLN_MP_TRACE_F(C),
+      JLN_MP_TRACE_F(F),
       seqs...
     >;
   };
@@ -5509,12 +5518,16 @@ namespace jln::mp::detail
   template<class...>
   struct _zip_impl;
 
-#define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep)              \
-  template<mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>                \
-  struct _zip_impl<mp_xs(list<, ...>, JLN_MP_COMMA)>                 \
-  {                                                                  \
-    template<template<class...> class C, template<class...> class F> \
-    using f = C<F<mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>...>;  \
+#define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep) \
+  template<mp_xs(class..., JLN_MP_NIL, JLN_MP_COMMA)>   \
+  struct _zip_impl<mp_xs(list<, ...>, JLN_MP_COMMA)>    \
+  {                                                     \
+    template<class C, class F>                          \
+    using f = typename C::template f<                   \
+      typename F::template f<                           \
+        mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)     \
+      >...                                              \
+    >;                                                  \
   };
 
   JLN_MP_GEN_XS_1_TO_8_INCLUDED(JLN_MP_TRANSPOSE_IMPL)
@@ -5524,15 +5537,14 @@ namespace jln::mp::detail
   template<>
   struct _zip_dispatch<0>
   {
-    template<template<class...> class C, template<class...> class F>
-    // using f = JLN_MP_CALL_TRACE_0_ARG(C);
-    using f = C<>;
+    template<class C, class F>
+    using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
   template<>
   struct _zip_dispatch<1>
   {
-    template<template<class...> class C, template<class...> class F, class... seqs>
+    template<class C, class F, class... seqs>
     using f = typename _zip_impl<seqs...>::template f<C, F>;
   };
 
@@ -5542,38 +5554,38 @@ namespace jln::mp::detail
   template<>
   struct _recursive_zip<0>
   {
-    template<int n, template<class...> class C, template<class...> class F, class... seqs>
-    using f = typename detail::_zip_dispatch<
+    template<int n, class C, class F, class... seqs>
+    using f = typename _zip_dispatch<
       sizeof...(seqs) <= 8 ? 1 : 2
-    >::template f<C, join<lift<F>>::template f, seqs...>;
+    >::template f<C, join<F>, seqs...>;
   };
 
-#define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep)                  \
-  template<>                                                             \
-  struct _recursive_zip<n>                                               \
-  {                                                                      \
-    template<int, template<class...> class C, template<class...> class F \
-      mp_xs(JLN_MP_COMMA class, JLN_MP_NIL, JLN_MP_NIL),                 \
-      class... seqs>                                                     \
-    using f = typename detail::_zip_dispatch<                            \
-      sizeof...(seqs) < 8 ? 1 : 2                                        \
-    >::template f<C, join<lift<F>>::template f, seqs...,                 \
-        typename _zip_impl<mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>  \
-        ::template f<list, list>                                         \
-      >;                                                                 \
+#define JLN_MP_TRANSPOSE_IMPL(n, mp_xs, mp_rxs, mp_rep)                 \
+  template<>                                                            \
+  struct _recursive_zip<n>                                              \
+  {                                                                     \
+    template<int, class C, class F                                      \
+      mp_xs(JLN_MP_COMMA class, JLN_MP_NIL, JLN_MP_NIL),                \
+      class... seqs>                                                    \
+    using f = typename _zip_dispatch<                                   \
+      sizeof...(seqs) < 8 ? 1 : 2                                       \
+    >::template f<C, join<F>, seqs...,                                  \
+        typename _zip_impl<mp_xs(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)> \
+        ::template f<listify, listify>                                  \
+      >;                                                                \
   };
 
   template<>
   struct _recursive_zip<8>
   {
-    template<int n, template<class...> class C, template<class...> class F,
+    template<int n, class C, class F,
       class _0, class _1, class _2, class _3, class _4,
       class _5, class _6, class _7, class... seqs>
     using f = typename _recursive_zip<n < 8 ? n : 8>
       ::template f<
         n-8, C, F, seqs..., typename _zip_impl<
           _0, _1, _2, _3, _4, _5, _6, _7
-        >::template f<list, list>
+        >::template f<listify, listify>
       >;
   };
 
@@ -5584,9 +5596,16 @@ namespace jln::mp::detail
   template<>
   struct _zip_dispatch<2>
   {
-    template<template<class...> class C, template<class...> class F, class... seqs>
-    using f = typename _recursive_zip<!sizeof...(seqs) + 8>
-      ::template f<sizeof...(seqs)-8, C, F, seqs...>;
+    template<class C, class F,
+      class _0, class _1, class _2, class _3, class _4,
+      class _5, class _6, class _7, class... seqs>
+    using f = typename _recursive_zip<sizeof...(seqs) < 8 ? sizeof...(seqs) : 8>
+      ::template f<
+        sizeof...(seqs) < 8 ? 0 : sizeof...(seqs) - 8,
+        C, F, seqs...,
+        typename _zip_impl<_0, _1, _2, _3, _4, _5, _6, _7>
+          ::template f<listify, listify>
+      >;
   };
 }
 /// \endcond
@@ -11184,16 +11203,14 @@ namespace jln::mp
     template<class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C, __type_pack_element<ints, xs...>...);
   };
+#else
+  template<class C, int... ints>
+  struct arrange_c_with : detail::apply_indexed_v<detail::arrange_impl<C, ints...>>
+  {};
+#endif
 
   template<int... ints>
   using arrange_c = arrange_c_with<listify, ints...>;
-#else
-  template<int... ints>
-  using arrange_c = detail::apply_indexed_v<detail::arrange_impl<listify, ints...>>;
-
-  template<class C, int... ints>
-  using arrange_c_with = detail::apply_indexed_v<detail::arrange_impl<C, ints...>>;
-#endif
 
   namespace emp
   {
@@ -11223,10 +11240,8 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+#if !JLN_MP_FAST_TYPE_PACK_ELEMENT
 # define JLN_MP_MAKE_ARRANGE(...) arrange_c_with<__VA_ARGS__>
-#else
-# define JLN_MP_MAKE_ARRANGE(...) apply_indexed_v<arrange_impl<__VA_ARGS__>>
   template<class C, int... ints>
   struct arrange_impl
   {
@@ -11247,21 +11262,21 @@ namespace jln::mp::detail
   struct make_arrange<Tpl<ints...>>
   {
     template<class C>
-    using f = JLN_MP_MAKE_ARRANGE(C, ints::value...);
+    using f = arrange_c_with<C, ints::value...>;
   };
 
   template<template<class T, T...> class Tpl, class T, T... ints>
   struct make_arrange<Tpl<T, ints...>>
   {
     template<class C>
-    using f = JLN_MP_MAKE_ARRANGE(C, ints...);
+    using f = arrange_c_with<C, ints...>;
   };
 
   template<template<int_t...> class Tpl, int_t... ints>
   struct make_arrange<Tpl<ints...>>
   {
     template<class C>
-    using f = JLN_MP_MAKE_ARRANGE(C, ints...);
+    using f = arrange_c_with<C, ints...>;
   };
 
 #if JLN_MP_ENABLE_TPL_AUTO
@@ -11269,34 +11284,11 @@ namespace jln::mp::detail
   struct make_arrange<Tpl<ints...>>
   {
     template<class C>
-    using f = JLN_MP_MAKE_ARRANGE(C, ints...);
+    using f = arrange_c_with<C, ints...>;
   };
 #endif
-
-#undef JLN_MP_MAKE_ARRANGE
 }
 /// \endcond
-
-#ifdef __cpp_lib_type_identity
-#  if __cpp_lib_type_identity > 201806L
-#    define JLN_MP_USE_STD_TYPE_IDENTITY
-#  endif
-#endif
-
-namespace jln::mp::detail
-{
-#ifdef JLN_MP_USE_STD_TYPE_IDENTITY
-  using std::type_identity;
-#else
-  template<class T>
-  struct type_identity
-  {
-    using type = T;
-  };
-#endif
-}
-
-#undef JLN_MP_USE_TYPE_IDENTITY
 
 /// \cond
 namespace jln::mp::detail
@@ -11319,7 +11311,7 @@ namespace jln::mp::smp
   using arrange = typename mp::try_<
     detail::make_arrange<Ints>,
     detail::arrange_to_smp_arrange,
-    mp::always<detail::type_identity<bad_contract>>
+    mp::always<detail::first<bad_contract, 1>>
   >::template f<C>::type;
 
 #if JLN_MP_FAST_TYPE_PACK_ELEMENT
@@ -11344,34 +11336,13 @@ namespace jln::mp::smp
 /// \cond
 namespace jln::mp::detail
 {
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
   template<template<class> class sfinae, class C, int... ints>
   struct _sfinae<sfinae, arrange_c_with<C, ints...>>
   {
     using type = smp::arrange_c_with<sfinae<C>, ints...>;
   };
 
-  struct arrange_to_smp_arrange
-  {
-    template<class>
-    struct f
-    {
-      using type = bad_contract;
-    };
-
-    template<class C, int... ints>
-    struct f<arrange_c_with<C, ints...>>
-    {
-      using type = try_contract<arrange_c_with<subcontract<C>, ints...>>;
-    };
-  };
-#else
-  template<template<class> class sfinae, class C, int... ints>
-  struct _sfinae<sfinae, apply_indexed_v<arrange_impl<C, ints...>>>
-  {
-    using type = smp::arrange_c_with<sfinae<C>, ints...>;
-  };
-
+#if ! JLN_MP_FAST_TYPE_PACK_ELEMENT
   template<class... T>
   constexpr int max_idx_arrange(T... n)
   {
@@ -11402,7 +11373,7 @@ namespace jln::mp::detail
     template<class C, int... ns>
     using make = test_contract<
       smp_arrange_c,
-      detail::apply_indexed_v<detail::arrange_impl<subcontract<C>, ns...>>
+      arrange_c_with<subcontract<C>, ns...>
     >;
   };
 
@@ -11421,6 +11392,7 @@ namespace jln::mp::detail
     template<class C, int...>
     using make = bad_contract;
   };
+#endif
 
   struct arrange_to_smp_arrange
   {
@@ -11431,13 +11403,16 @@ namespace jln::mp::detail
     };
 
     template<class C, int... ints>
-    struct f<apply_indexed_v<arrange_impl<C, ints...>>>
+    struct f<arrange_c_with<C, ints...>>
     {
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+      using type = try_contract<arrange_c_with<subcontract<C>, ints...>>;
+#else
       using type = typename detail::smp_arrange_c<detail::max_idx_arrange(ints...)>
         ::template make<C, ints...>;
+#endif
     };
   };
-#endif
 }
 /// \endcond
 
@@ -12136,9 +12111,9 @@ namespace jln::mp
     struct compress_impl;
 
     template<int>
-    struct indices_from_compress;
+    struct compress_indices;
 
-    constexpr int indices_from_compress_select(std::size_t n);
+    constexpr int compress_indices_select(std::size_t n);
 #else
     template<template<class...> class C, class... Selectors>
     struct compress_impl;
@@ -12151,9 +12126,7 @@ namespace jln::mp
 
   /// \ingroup filter
 
-  /// Removes elements that have a corresponding element in selectors to 0.
-  /// \pre `emp::unpack<Selectors, listify> == Selectors`
-  /// \pre all `Selectors::value` are `1`, `0` or a `bool` value
+  /// Removes elements that have a corresponding element in \c selectors to 0.
   /// \pre `sizeof...(xs) == emp::size<Selectors>`
   /// \semantics
   ///   \code
@@ -12162,13 +12135,14 @@ namespace jln::mp
   ///      == list<a,  c,  e,f>
   ///   \endcode
   /// \treturn \sequence
+  /// \see uncompress
   template<class C, bool... selectors>
   struct compress_c_with
 #if JLN_MP_FAST_TYPE_PACK_ELEMENT
     : detail::compress_impl<
       C,
-      typename detail::indices_from_compress<
-        detail::indices_from_compress_select(sizeof...(selectors))
+      typename detail::compress_indices<
+        detail::compress_indices_select(sizeof...(selectors))
       >::template f<selectors...>::type
     >
 #else
@@ -12206,8 +12180,8 @@ namespace jln::mp
   }
 }
 
-/// \cond
 
+/// \cond
 #if JLN_MP_FAST_TYPE_PACK_ELEMENT
 namespace jln::mp::detail
 {
@@ -12220,55 +12194,53 @@ namespace jln::mp::detail
     using type = int_seq_c<a..., i+b...>;
   };
 
-  template<int>
-  struct indices_from_compress;
 
   template<>
-  struct indices_from_compress<4>
+  struct compress_indices<4>
   {
     template<bool b0 = 0, bool b1 = 0, bool b2 = 0, bool b3 = 0> struct f;
   };
 
-  template<> struct indices_from_compress<4>::f<0,0,0,0> { using type = int_seq_c<>; };
-  template<> struct indices_from_compress<4>::f<0,0,0,1> { using type = int_seq_c<3>; };
-  template<> struct indices_from_compress<4>::f<0,0,1,0> { using type = int_seq_c<2>; };
-  template<> struct indices_from_compress<4>::f<0,0,1,1> { using type = int_seq_c<2,3>; };
-  template<> struct indices_from_compress<4>::f<0,1,0,0> { using type = int_seq_c<1>; };
-  template<> struct indices_from_compress<4>::f<0,1,0,1> { using type = int_seq_c<1,3>; };
-  template<> struct indices_from_compress<4>::f<0,1,1,0> { using type = int_seq_c<1,2>; };
-  template<> struct indices_from_compress<4>::f<0,1,1,1> { using type = int_seq_c<1,2,3>; };
-  template<> struct indices_from_compress<4>::f<1,0,0,0> { using type = int_seq_c<0>; };
-  template<> struct indices_from_compress<4>::f<1,0,0,1> { using type = int_seq_c<0,3>; };
-  template<> struct indices_from_compress<4>::f<1,0,1,0> { using type = int_seq_c<0,2>; };
-  template<> struct indices_from_compress<4>::f<1,0,1,1> { using type = int_seq_c<0,2,3>; };
-  template<> struct indices_from_compress<4>::f<1,1,0,0> { using type = int_seq_c<0,1>; };
-  template<> struct indices_from_compress<4>::f<1,1,0,1> { using type = int_seq_c<0,1,3>; };
-  template<> struct indices_from_compress<4>::f<1,1,1,0> { using type = int_seq_c<0,1,2>; };
-  template<> struct indices_from_compress<4>::f<1,1,1,1> { using type = int_seq_c<0,1,2,3>; };
+  template<> struct compress_indices<4>::f<0,0,0,0> { using type = int_seq_c<>; };
+  template<> struct compress_indices<4>::f<0,0,0,1> { using type = int_seq_c<3>; };
+  template<> struct compress_indices<4>::f<0,0,1,0> { using type = int_seq_c<2>; };
+  template<> struct compress_indices<4>::f<0,0,1,1> { using type = int_seq_c<2,3>; };
+  template<> struct compress_indices<4>::f<0,1,0,0> { using type = int_seq_c<1>; };
+  template<> struct compress_indices<4>::f<0,1,0,1> { using type = int_seq_c<1,3>; };
+  template<> struct compress_indices<4>::f<0,1,1,0> { using type = int_seq_c<1,2>; };
+  template<> struct compress_indices<4>::f<0,1,1,1> { using type = int_seq_c<1,2,3>; };
+  template<> struct compress_indices<4>::f<1,0,0,0> { using type = int_seq_c<0>; };
+  template<> struct compress_indices<4>::f<1,0,0,1> { using type = int_seq_c<0,3>; };
+  template<> struct compress_indices<4>::f<1,0,1,0> { using type = int_seq_c<0,2>; };
+  template<> struct compress_indices<4>::f<1,0,1,1> { using type = int_seq_c<0,2,3>; };
+  template<> struct compress_indices<4>::f<1,1,0,0> { using type = int_seq_c<0,1>; };
+  template<> struct compress_indices<4>::f<1,1,0,1> { using type = int_seq_c<0,1,3>; };
+  template<> struct compress_indices<4>::f<1,1,1,0> { using type = int_seq_c<0,1,2>; };
+  template<> struct compress_indices<4>::f<1,1,1,1> { using type = int_seq_c<0,1,2,3>; };
 
-#define JLN_MP_MK_INDICES_FROM_COMPRESS(n, mp1, mp2)                            \
+#define MP_MK_COMPRESS_INDICES(n, mp1, mp2)                                     \
   template<>                                                                    \
-  struct indices_from_compress<n*2>                                             \
+  struct compress_indices<n*2>                                                  \
   {                                                                             \
     template<mp1(bool, JLN_MP_NIL, JLN_MP_COMMA), mp2(bool, = 0, JLN_MP_COMMA)> \
     using f = concat_indices<                                                   \
       n,                                                                        \
-      typename indices_from_compress<n>                                         \
+      typename compress_indices<n>                                              \
         ::f<mp1(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>::type,                   \
-      typename indices_from_compress<n>                                         \
+      typename compress_indices<n>                                              \
         ::f<mp2(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>::type                    \
     >;                                                                          \
   };
 
-  JLN_MP_MK_INDICES_FROM_COMPRESS(4, JLN_MP_XS_4, JLN_MP_XS_4_FROM_5)
-  JLN_MP_MK_INDICES_FROM_COMPRESS(8, JLN_MP_XS_8, JLN_MP_XS_8_FROM_9)
-  JLN_MP_MK_INDICES_FROM_COMPRESS(16, JLN_MP_XS_16, JLN_MP_XS_16_FROM_17)
-  JLN_MP_MK_INDICES_FROM_COMPRESS(32, JLN_MP_XS_32, JLN_MP_XS_32_FROM_33)
-  JLN_MP_MK_INDICES_FROM_COMPRESS(64, JLN_MP_XS_64, JLN_MP_XS_64_FROM_65)
+  MP_MK_COMPRESS_INDICES(4, JLN_MP_XS_4, JLN_MP_XS_4_FROM_5)
+  MP_MK_COMPRESS_INDICES(8, JLN_MP_XS_8, JLN_MP_XS_8_FROM_9)
+  MP_MK_COMPRESS_INDICES(16, JLN_MP_XS_16, JLN_MP_XS_16_FROM_17)
+  MP_MK_COMPRESS_INDICES(32, JLN_MP_XS_32, JLN_MP_XS_32_FROM_33)
+  MP_MK_COMPRESS_INDICES(64, JLN_MP_XS_64, JLN_MP_XS_64_FROM_65)
 
-#undef JLN_MP_MK_INDICES_FROM_COMPRESS
+#undef MP_MK_COMPRESS_INDICES
 
-  constexpr int indices_from_compress_select(std::size_t n)
+  constexpr int compress_indices_select(std::size_t n)
   {
     return n > 128 ? 256
          : n > 64 ? 128
@@ -12280,14 +12252,14 @@ namespace jln::mp::detail
   }
 
   template<int>
-  struct indices_from_compress
+  struct compress_indices
   {
     template<JLN_MP_XS_128(bool, JLN_MP_NIL, JLN_MP_COMMA), bool... b>
     using f = concat_indices<
       128,
-      typename indices_from_compress<128>
+      typename compress_indices<128>
         ::f<JLN_MP_XS_128(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>::type,
-      typename indices_from_compress<indices_from_compress_select(sizeof...(b))>
+      typename compress_indices<compress_indices_select(sizeof...(b))>
         ::template f<b...>::type
     >;
   };
@@ -14666,7 +14638,7 @@ namespace jln::mp::smp
   template<bool... selectors>
   using compress_c = test_contract<
     size<is<number<sizeof...(selectors)>>>,
-    compress_c_with<listify, selectors...>
+    compress_c_with<mp::listify, selectors...>
   >;
 
   template<class C, bool... selectors>
@@ -20783,6 +20755,12 @@ namespace jln::mp
     using bind_back_v = typename detail::_unpack<mp::bind_back_v<F, BoundArgs...>, L>::type;
 #endif
   }
+
+  /// \cond
+  template<class F, class Arg>
+  struct bind_back<F, Arg> : push_back<Arg, F>
+  {};
+  /// \endcond
   /// \cond
   namespace detail
   {
@@ -22848,6 +22826,7 @@ namespace jln::mp::smp
 }
 
 
+
 /// \cond
 namespace jln::mp::detail
 {
@@ -23483,7 +23462,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<unsigned>
+    template<int>
     struct reverse_impl;
   }
   /// \endcond
@@ -23512,7 +23491,7 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<unsigned n>
+  template<int n>
   struct reverse_impl2 : reverse_impl2<
       n < 16 ? 8
     : n < 64 ? 16
@@ -23521,21 +23500,21 @@ namespace jln::mp::detail
   >
   {};
 
-  template<unsigned n>
+  template<int n>
   struct reverse_impl : reverse_impl2<n>
   {};
 
   template<>
   struct reverse_impl2<0>
   {
-    template<class C, std::size_t count, class... xs>
+    template<class C, int count, class... xs>
     using f = typename reverse<join<C>>::template f<xs...>;
   };
 
   template<>
   struct reverse_impl<0>
   {
-    template<class C, std::size_t count, class... xs>
+    template<class C, int count, class... xs>
     using f = JLN_MP_CALL_TRACE_0_ARG(C);
   };
 
@@ -23543,7 +23522,7 @@ namespace jln::mp::detail
   template<>                                             \
   struct reverse_impl2<n>                                \
   {                                                      \
-    template<class C, std::size_t count                  \
+    template<class C, int count                          \
       mp_xs(JLN_MP_COMMA class, JLN_MP_NIL, JLN_MP_NIL), \
       class... xs>                                       \
     using f = typename reverse<join<C>>                  \
@@ -23553,7 +23532,7 @@ namespace jln::mp::detail
   template<>                                             \
   struct reverse_impl<n>                                 \
   {                                                      \
-    template<class C, std::size_t count                  \
+    template<class C, int count                          \
       mp_xs(JLN_MP_COMMA class, JLN_MP_NIL, JLN_MP_NIL), \
       class... xs>                                       \
     using f = JLN_MP_CALL_TRACE(C,                       \
@@ -23568,7 +23547,7 @@ namespace jln::mp::detail
   template<>                                          \
   struct reverse_impl2<n>                             \
   {                                                   \
-    template<class C, std::size_t count,              \
+    template<class C, int count,                      \
       mp_xs(class, JLN_MP_NIL, JLN_MP_COMMA),         \
       class... xs>                                    \
     using f = typename reverse_impl2<                 \
@@ -27264,6 +27243,12 @@ namespace jln::mp
     using bind_front_v = typename detail::_unpack<mp::bind_front_v<F, BoundArgs...>, L>::type;
 #endif
   }
+
+  /// \cond
+  template<class F, class Arg>
+  struct bind_front<F, Arg> : push_front<Arg, F>
+  {};
+  /// \endcond
   /// \cond
   namespace detail
   {
@@ -27664,6 +27649,250 @@ namespace jln::mp::smp
   template<class F, class C = listify>
   using transform_third = detail::_smp_partial_transform::f<C, identity, identity, F>;
 }
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    template<class C, class FillT, class L>
+    struct uncompress_impl;
+
+    template<class FillT, class Selectors, class C>
+    struct make_uncompress;
+
+    template<bool...>
+    struct uncompress_indices;
+  }
+  /// \endcond
+
+  /// \ingroup algorithm
+
+  /// Create sequence by replacing false in \c selectors with \c FillT
+  /// and true with a element in xs value, starting from the left.
+  /// \semantics
+  ///   \code
+  ///   uncompress_c<T, 1,0,1,0,1,1>
+  ///            ::f<   a,  c,  e,f>
+  ///        == list<   a,T,c,T,e,f>
+  ///   \endcode
+  /// \treturn \sequence
+  /// \see compress
+  template<class C, class FillT, bool... selectors>
+  struct uncompress_c_with
+  : detail::uncompress_impl<
+      C,
+      FillT,
+      typename detail::uncompress_indices<selectors...>::type
+    >
+  {
+#ifdef JLN_MP_DOXYGENATING
+    template<class... xs>
+    using f;
+#endif
+  };
+
+  template<class FillT, bool... selectors>
+  using uncompress_c = uncompress_c_with<listify, FillT, selectors...>;
+
+  template<class FillT, class... Selectors>
+  using uncompress_for = uncompress_c_with<listify, FillT, Selectors::value...>;
+
+  template<class FillT, class Selectors, class C = listify>
+  using uncompress = typename detail::make_uncompress<FillT, Selectors, C>::type;
+
+  namespace emp
+  {
+    template<class L, class FillT, class Selectors, class C = mp::listify>
+    using uncompress = typename detail::_unpack<typename detail::make_uncompress<FillT, Selectors, C>::type, L>::type;
+
+    template<class L, class FillT, class... Selectors>
+    using uncompress_for = typename detail::_unpack<mp::uncompress_c_with<listify, FillT, Selectors::value...>, L>::type;
+
+    template<class L, class FillT, bool... selectors>
+    using uncompress_c = typename detail::_unpack<mp::uncompress_c_with<listify, FillT, selectors...>, L>::type;
+
+    template<class L, class FillT, class C, bool... selectors>
+    using uncompress_c_with = typename detail::_unpack<mp::uncompress_c_with<C, FillT, selectors...>, L>::type;
+  }
+}
+
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class FillT, template<class...> class Tpl, class... selectors, class C>
+  struct make_uncompress<FillT, Tpl<selectors...>, C>
+  {
+    using type = uncompress_c_with<C, FillT, selectors::value...>;
+  };
+
+  template<class FillT, template<class T, T...> class Tpl, class T, T... selectors, class C>
+  struct make_uncompress<FillT, Tpl<T, selectors...>, C>
+  {
+    using type = uncompress_c_with<C, FillT, selectors...>;
+  };
+
+  template<class FillT, template<int_t...> class Tpl, int_t... selectors, class C>
+  struct make_uncompress<FillT, Tpl<selectors...>, C>
+  {
+    using type = uncompress_c_with<C, FillT, selectors...>;
+  };
+
+  template<class FillT, template<bool...> class Tpl, bool... selectors, class C>
+  struct make_uncompress<FillT, Tpl<selectors...>, C>
+  {
+    using type = uncompress_c_with<C, FillT, selectors...>;
+  };
+
+#if JLN_MP_ENABLE_TPL_AUTO
+  template<template<auto...> class Tpl, class FillT, auto... selectors, class C>
+  struct make_uncompress<FillT, Tpl<selectors...>, C>
+  {
+    using type = uncompress_c_with<C, FillT, selectors...>;
+  };
+#endif
+
+
+  template<class, class>
+  struct concat_uncompressed_indices;
+
+  template<int_t i1, int_t... a, int_t i2, int_t... b>
+  struct concat_uncompressed_indices<int_seq_c<i1, a...>, int_seq_c<i2, b...>>
+  {
+    using type = int_seq_c<i1+i2, a..., b == 0 ? 0 : i1+b...>;
+  };
+
+
+  template<> struct uncompress_indices<> { using type = int_seq_c<0>; };
+
+  template<> struct uncompress_indices<0> { using type = int_seq_c<0,0>; };
+  template<> struct uncompress_indices<1> { using type = int_seq_c<1,1>; };
+
+  template<> struct uncompress_indices<0,0> { using type = int_seq_c<0,0,0>; };
+  template<> struct uncompress_indices<0,1> { using type = int_seq_c<1,0,1>; };
+  template<> struct uncompress_indices<1,0> { using type = int_seq_c<1,1,0>; };
+  template<> struct uncompress_indices<1,1> { using type = int_seq_c<2,1,2>; };
+
+  template<> struct uncompress_indices<0,0,0> { using type = int_seq_c<0,0,0,0>; };
+  template<> struct uncompress_indices<0,0,1> { using type = int_seq_c<1,0,0,1>; };
+  template<> struct uncompress_indices<0,1,0> { using type = int_seq_c<1,0,1,0>; };
+  template<> struct uncompress_indices<0,1,1> { using type = int_seq_c<2,0,1,2>; };
+  template<> struct uncompress_indices<1,0,0> { using type = int_seq_c<1,1,0,0>; };
+  template<> struct uncompress_indices<1,0,1> { using type = int_seq_c<2,1,0,2>; };
+  template<> struct uncompress_indices<1,1,0> { using type = int_seq_c<2,1,2,0>; };
+  template<> struct uncompress_indices<1,1,1> { using type = int_seq_c<3,1,2,3>; };
+
+  template<> struct uncompress_indices<0,0,0,0> { using type = int_seq_c<0,0,0,0,0>; };
+  template<> struct uncompress_indices<0,0,0,1> { using type = int_seq_c<1,0,0,0,1>; };
+  template<> struct uncompress_indices<0,0,1,0> { using type = int_seq_c<1,0,0,1,0>; };
+  template<> struct uncompress_indices<0,0,1,1> { using type = int_seq_c<2,0,0,1,2>; };
+  template<> struct uncompress_indices<0,1,0,0> { using type = int_seq_c<1,0,1,0,0>; };
+  template<> struct uncompress_indices<0,1,0,1> { using type = int_seq_c<2,0,1,0,2>; };
+  template<> struct uncompress_indices<0,1,1,0> { using type = int_seq_c<2,0,1,2,0>; };
+  template<> struct uncompress_indices<0,1,1,1> { using type = int_seq_c<3,0,1,2,3>; };
+  template<> struct uncompress_indices<1,0,0,0> { using type = int_seq_c<1,1,0,0,0>; };
+  template<> struct uncompress_indices<1,0,0,1> { using type = int_seq_c<2,1,0,0,2>; };
+  template<> struct uncompress_indices<1,0,1,0> { using type = int_seq_c<2,1,0,2,0>; };
+  template<> struct uncompress_indices<1,0,1,1> { using type = int_seq_c<3,1,0,2,3>; };
+  template<> struct uncompress_indices<1,1,0,0> { using type = int_seq_c<2,1,2,0,0>; };
+  template<> struct uncompress_indices<1,1,0,1> { using type = int_seq_c<3,1,2,0,3>; };
+  template<> struct uncompress_indices<1,1,1,0> { using type = int_seq_c<3,1,2,3,0>; };
+  template<> struct uncompress_indices<1,1,1,1> { using type = int_seq_c<4,1,2,3,4>; };
+
+#define MP_MK_UNCOMPRESS_INDICES(seq)                                               \
+  template<seq(bool, JLN_MP_NIL, JLN_MP_COMMA), bool b, bool... bs>                 \
+  struct uncompress_indices<seq(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA), b, bs...>    \
+  : concat_uncompressed_indices<                                                    \
+      typename uncompress_indices<seq(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>::type, \
+      typename uncompress_indices<b, bs...>::type                                   \
+    >                                                                               \
+  {};
+
+  MP_MK_UNCOMPRESS_INDICES(JLN_MP_XS_4)
+  MP_MK_UNCOMPRESS_INDICES(JLN_MP_XS_8)
+  MP_MK_UNCOMPRESS_INDICES(JLN_MP_XS_16)
+  MP_MK_UNCOMPRESS_INDICES(JLN_MP_XS_32)
+  MP_MK_UNCOMPRESS_INDICES(JLN_MP_XS_64)
+  MP_MK_UNCOMPRESS_INDICES(JLN_MP_XS_128)
+
+#undef MP_MK_UNCOMPRESS_INDICES
+
+
+  template<class C, class FillT, int_t d, int_t... i>
+  struct uncompress_impl<C, FillT, int_seq_c<d, i...>>
+  {
+  private:
+    template<class Lookup>
+    using impl = typename JLN_MP_ENABLE_IF_CALLABLE(0 <= sizeof(Lookup), JLN_MP_TRACE_F(C))
+      ::template f<typename Lookup::template f<i>...>;
+
+  public:
+    template<class... xs>
+    using f = impl<build_indexed_v<FillT, xs...>>;
+  };
+}
+/// \endcond
+
+namespace jln::mp::detail
+{
+  template<class Selectors, class = void>
+  struct smp_uncompress_select;
+}
+
+namespace jln::mp::smp
+{
+  template<class FillT, bool... selectors>
+  using uncompress_c = test_contract<
+    size<greater_equal_than_c<(0 + ... + selectors)>>,
+    uncompress_c_with<mp::listify, FillT, selectors...>
+  >;
+
+  template<class C, class FillT, bool... selectors>
+  using uncompress_c_with = test_contract<
+    size<greater_equal_than_c<(0 + ... + selectors)>>,
+    uncompress_c_with<subcontract<C>, FillT, selectors...>
+  >;
+
+  template<class FillT, class Selectors, class C = listify>
+  using uncompress = typename detail::smp_uncompress_select<Selectors>
+    ::template f<FillT, C>;
+
+  template<class FillT, class... Selectors>
+  using uncompress_for = uncompress<FillT, mp::list<Selectors...>>;
+}
+
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class Selectors, class>
+  struct smp_uncompress_select : always<bad_contract>
+  {};
+
+  template<template<class...> class Tpl, class... Selectors>
+  struct smp_uncompress_select<
+    Tpl<Selectors...>,
+#if JLN_MP_CUDA
+    std::enable_if_t<((std::size_t{Selectors::value} <= 1) || ...) || !sizeof...(Selectors)>
+#else
+    std::void_t<decltype(JLN_MP_INTEGRAL_AS(bool, Selectors::value))...>
+#endif
+  >
+  {
+    template<class FillT, class C>
+    using f = smp::uncompress_c_with<C, FillT, Selectors::value...>;
+  };
+
+  template<template<class> class sfinae, class C, class FillT, bool... selectors>
+  struct _sfinae<sfinae, uncompress_c_with<C, FillT, selectors...>>
+  {
+    using type = smp::uncompress_c_with<sfinae<C>, FillT, selectors...>;
+  };
+}
+/// \endcond
 
 namespace jln::mp
 {
@@ -30566,68 +30795,83 @@ namespace jln::mp
   template<class key, class FT>
   using map_find_or = map_find<key, identity, always<FT>>;
 
+
+  /// Finds the first value of the \map with a key \c key.
+  template<class key, class TC = identity, class FC = always<na>>
+  using map_find_value = map_find<key, unpack<at1<TC>>, FC>;
+
+  template<class key, class FC>
+  using map_find_value_or_else = map_find<key, unpack<at1<>>, FC>;
+
+  template<class key, class FT>
+  using map_find_value_or = map_find<key, unpack<at1<>>, always<FT>>;
+
+
+  /// Finds the values of the \map with a key \c key.
+  template<class key, class TC = listify, class FC = always<na>>
+  using map_find_values = map_find<key, unpack<pop_front<TC>>, FC>;
+
+  template<class key, class FC>
+  using map_find_values_or_else = map_find<key, unpack<pop_front<listify>>, FC>;
+
+  template<class key, class FT>
+  using map_find_values_or = map_find<key, unpack<pop_front<listify>>, always<FT>>;
+
+
   namespace emp
   {
     template<class L, class key, class TC = mp::identity, class FC = mp::always<na>>
     using map_find = typename detail::_unpack<mp::map_find<key, TC, FC>, L>::type;
 
     template<class L, class key, class FC>
-    using map_find_or_else = typename detail::_unpack<mp::map_find<key, mp::identity, FC>, L>::type;
+    using map_find_or_else = typename detail::_unpack<mp::map_find<
+      key, mp::identity, FC>, L>::type;
 
     template<class L, class key, class FT>
-    using map_find_or = typename detail::_unpack<mp::map_find<key, mp::identity, mp::always<FT>>, L>::type;
+    using map_find_or = typename detail::_unpack<mp::map_find<
+      key, mp::identity, mp::always<FT>>, L>::type;
+
+
+    template<class L, class key, class TC = mp::identity, class FC = mp::always<na>>
+    using map_find_value = typename detail::_unpack<mp::map_find<
+      key, mp::unpack<mp::at1<TC>>, FC>, L>::type;
+
+    template<class L, class key, class FC>
+    using map_find_value_or_else = typename detail::_unpack<mp::map_find<
+      key, mp::unpack<mp::at1<>>, FC>, L>::type;
+
+    template<class L, class key, class FT>
+    using map_find_value_or = typename detail::_unpack<mp::map_find<
+      key, mp::unpack<mp::at1<>>, mp::always<FT>>, L>::type;
+
+
+    template<class L, class key, class TC = mp::listify, class FC = mp::always<na>>
+    using map_find_values = typename detail::_unpack<mp::map_find<
+      key, mp::unpack<mp::pop_front<TC>>, FC>, L>::type;
+
+    template<class L, class key, class FC>
+    using map_find_values_or_else = typename detail::_unpack<mp::map_find<
+      key, mp::unpack<mp::pop_front<>>, FC>, L>::type;
+
+    template<class L, class key, class FT>
+    using map_find_values_or = typename detail::_unpack<mp::map_find<
+      key, mp::unpack<mp::pop_front<>>, mp::always<FT>>, L>::type;
   }
 }
 
+
+
 /// \cond
-namespace jln::mp
-{
-  template<class key, class T>
-  struct map_find<key, identity, always<T>>
-  {
-    template<class... kvs>
-    using f = typename decltype(detail::map_find_select<key>::f(
-      static_cast<inherit_safely<kvs...>*>(nullptr)
-    ))
-      ::template f<identity, always<T>>;
-  };
-
-  // map_contains
-  template<class key, class T, class U, class C>
-  struct map_find<key, always<T, C>, always<U, C>>
-  {
-    template<class... kvs>
-    using f = JLN_MP_CALL_TRACE(C,
-      typename decltype(detail::map_find_select<key>::f(
-        static_cast<inherit_safely<kvs...>*>(nullptr)
-      ))
-      ::template f<always<T>, always<U>>
-    );
-  };
-
-  // map_contains
-  template<class key, class T, class U>
-  struct map_find<key, always<T>, always<U>>
-  {
-    template<class... kvs>
-    using f = typename decltype(detail::map_find_select<key>::f(
-      static_cast<inherit_safely<kvs...>*>(nullptr)
-    ))
-      ::template f<always<T>, always<U>>;
-  };
-}
-
 namespace jln::mp::detail
 {
   template<class x>
-  struct map_find_elem
+  struct map_found_elem
   {
     template<class TC, class FC, class...>
     using f = JLN_MP_CALL_TRACE(TC, x);
   };
 
-  template<>
-  struct map_find_elem<void>
+  struct map_not_found_elem
   {
     template<class TC, class FC, class... kvs>
     using f = JLN_MP_CALL_TRACE(FC, kvs...);
@@ -30637,9 +30881,73 @@ namespace jln::mp::detail
   struct map_find_select
   {
     template<template<class...> class Tpl, class... xs>
-    static map_find_elem<Tpl<key, xs...>> f(list<Tpl<key, xs...>>*);
+    static map_found_elem<Tpl<key, xs...>> f(list<Tpl<key, xs...>>*);
 
-    static map_find_elem<void> f(...);
+    static map_not_found_elem f(...);
+  };
+
+
+  template<class TC, class T, class FC, class E>
+  struct map_elem_or_T
+  {
+    using type = typename FC::template f<T>;
+  };
+
+  template<class TC, class T>
+  struct map_elem_or_T<TC, T, identity, map_not_found_elem>
+  {
+    using type = T;
+  };
+
+  template<class T, class FC, class E>
+  struct map_elem_or_T<identity, T, FC, map_found_elem<E>>
+  {
+    using type = E;
+  };
+
+  template<class TC, class T, class FC, class E>
+  struct map_elem_or_T<TC, T, FC, map_found_elem<E>>
+  {
+    using type = typename TC::template f<E>;
+  };
+
+  template<class TC, class T, class FC, template<class...> class Tpl, class... xs>
+  struct map_elem_or_T<unpack<TC>, T, FC, map_found_elem<Tpl<xs...>>>
+  {
+    using type = typename TC::template f<xs...>;
+  };
+
+  template<class TC, class T, class FC, template<class...> class Tpl, class k, class... xs>
+  struct map_elem_or_T<unpack<pop_front<TC>>, T, FC, map_found_elem<Tpl<k, xs...>>>
+  {
+    using type = typename TC::template f<xs...>;
+  };
+
+  template<class T, class FC, template<class...> class Tpl, class k, class x, class... xs>
+  struct map_elem_or_T<unpack<at1<>>, T, FC, map_found_elem<Tpl<k, x, xs...>>>
+  {
+    using type = x;
+  };
+
+  template<class TC, class T, class FC, template<class...> class Tpl, class k, class x, class... xs>
+  struct map_elem_or_T<unpack<at1<TC>>, T, FC, map_found_elem<Tpl<k, x, xs...>>>
+  {
+    using type = typename TC::template f<x>;
+  };
+}
+
+namespace jln::mp
+{
+  template<class key, class TC, class T, class FC>
+  struct map_find<key, TC, always<T, FC>>
+  {
+    template<class... kvs>
+    using f = typename detail::map_elem_or_T<
+      TC, T, FC,
+      decltype(detail::map_find_select<key>::f(
+        static_cast<inherit_safely<kvs...>*>(nullptr)
+      ))
+     >::type;
   };
 }
 /// \endcond
@@ -30776,12 +31084,23 @@ namespace jln::mp
   }
 }
 
+/// \cond
+namespace jln::mp::detail
+{
+  template<class C>
+  struct smp_map_find_tc
+  {
+    using type = assume_unary<C>;
+  };
+}
+/// \endcond
+
 namespace jln::mp::smp
 {
   template<class Key, class TC = identity, class FC = always<na>>
   using map_find = test_contract<
     mp::is_map<>,
-    mp::map_find<Key, assume_unary<TC>, subcontract<FC>>
+    mp::map_find<Key, typename detail::smp_map_find_tc<TC>::type, subcontract<FC>>
   >;
 
   template<class key, class FC>
@@ -30789,6 +31108,32 @@ namespace jln::mp::smp
 
   template<class key, class FT>
   using map_find_or = map_find<key, identity, always<FT>>;
+
+
+  template<class Key, class TC = identity, class FC = always<na>>
+  using map_find_value = test_contract<
+    mp::is_map<>,
+    mp::map_find<Key, mp::unpack<subcontract<at1<TC>>>, subcontract<FC>>
+  >;
+
+  template<class key, class FC>
+  using map_find_value_or_else = map_find_value<key, identity, FC>;
+
+  template<class key, class FT>
+  using map_find_value_or = map_find_value<key, identity, always<FT>>;
+
+
+  template<class Key, class TC = listify, class FC = always<na>>
+  using map_find_values = test_contract<
+    mp::is_map<>,
+    mp::map_find<Key, mp::unpack<mp::pop_front<subcontract<TC>>>, subcontract<FC>>
+  >;
+
+  template<class key, class FC>
+  using map_find_values_or_else = map_find_values<key, listify, FC>;
+
+  template<class key, class FT>
+  using map_find_values_or = map_find_values<key, listify, always<FT>>;
 }
 
 
@@ -30852,6 +31197,62 @@ namespace jln::mp::detail
         push_back<T, assume_unary_or_more<sfinae<C2>>>
       >
     >;
+  };
+
+
+  template<class C>
+  struct smp_map_find_unpack_tc
+  {
+    using type = subcontract<C>;
+  };
+
+  template<class C>
+  struct smp_map_find_unpack_tc<pop_front<C>>
+  {
+    using type = pop_front<subcontract<C>>;
+  };
+
+  template<class C>
+  struct smp_map_find_unpack_tc<contract<pop_front<C>>>
+  {
+    using type = pop_front<C>;
+  };
+
+  template<class C>
+  struct smp_map_find_unpack_tc<test_contract< // smp::pop_front
+    size<greater_equal_than_c<1>>,
+    drop_front_c<1, C>
+  >>
+  {
+    using type = pop_front<C>;
+  };
+
+  template<class C>
+  struct smp_map_find_tc<unpack<C>>
+  {
+    using type = unpack<typename smp_map_find_unpack_tc<C>::type>;
+  };
+
+  template<class C>
+  struct smp_map_find_tc<contract<unpack<C>>>
+  {
+    using type = unpack<C>;
+  };
+
+  template<class C>
+  struct smp_map_find_tc<try_contract<unpack<C>>> // smp::unpack
+  {
+    using type = unpack<C>;
+  };
+
+  template<class C>
+  struct smp_map_find_tc<try_contract<unpack<if_< // smp::unpack<smp::pop_front>
+    size<greater_equal_than_c<1>>,
+    pop_front<C>,
+    always<na>
+  >>>>
+  {
+    using type = unpack<pop_front<C>>;
   };
 }
 /// \endcond
@@ -33186,84 +33587,132 @@ namespace jln::mp::detail
 }
 /// \endcond
 
-#if defined(__cpp_generic_lambdas) && __cpp_generic_lambdas >= 201707L
-# ifdef __cpp_consteval
-#   if __cpp_consteval >= 201811L
-#     define JLN_MP_CONSTEVAL_OR_CONSTEXPR consteval
-#   endif
-# endif
-# ifndef JLN_MP_CONSTEVAL_OR_CONSTEXPR
-#   define JLN_MP_CONSTEVAL_OR_CONSTEXPR constexpr
-# endif
+#if JLN_MP_ENABLE_FRIEND_INJECTION
 
 namespace jln::mp
 {
+  /// \ingroup utility
+
   /// \cond
+  namespace meta
+  {
+    JLN_MP_DIAGNOSTIC_PUSH()
+    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
+    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wunused-function")
+    JLN_MP_DIAGNOSTIC_CUDA_IGNORE(1301)
+    template<int const* id>
+    struct id_info
+    {
+      friend constexpr auto meta_from_info(id_info const*);
+    };
+    JLN_MP_DIAGNOSTIC_POP()
+
+    template<class T, class Tag>
+    struct meta_t
+    {
+      using type = T;
+
+      static inline const int id = 0;
+
+      friend constexpr auto meta_from_info(id_info<&id> const*)
+      {
+        return meta_t{};
+      }
+    };
+  }
+
   namespace detail
   {
-    namespace mkid
+    template<class T>
+    struct id_of_info {};
+
+    template<int const* id>
+    struct id_of_info<meta::id_info<id>>
     {
-      template<class Tag, int X>
-      struct state;
+      static constexpr int const* value = id;
+    };
 
-      #if JLN_MP_MEMOIZED_ALIAS
-      # define JLN_MP_MKID_STATE(...) \
-        static_cast<detail::mkid::state<__VA_ARGS__>*>(nullptr)
-      #else
-      # define JLN_MP_MKID_STATE(...) detail::mkid::state_ptr_v<__VA_ARGS__>
-      template<class Tag, int id>
-      inline constexpr state<Tag, id>* state_ptr_v = nullptr;
-      #endif
 
-      template<class T, class Tag>
-      struct next_id;
-    }
+    template<class T>
+    struct type_of_meta {};
 
-    template<class Tag> class next_id_tag;
+    template<class T, class Tag>
+    struct type_of_meta<meta::meta_t<T, Tag>*>
+    {
+      using type = T;
+    };
 
-    template<class T> struct type_of_id;
-    template<class T> struct type_of_id<list<T>*> { using type = T; };
-    template<class T> struct type_of_id<T*> { using type = T; };
+    #if JLN_MP_MEMOIZED_ALIAS
+    # define JLN_MP_MK_ID_INFO(...) static_cast<meta::id_info<__VA_ARGS__> const*>(nullptr)
+    #else
+    # define JLN_MP_MK_ID_INFO(...) detail::id_info_ptr_v<__VA_ARGS__>
+    template<int const* id>
+    inline constexpr meta::id_info<id> const* id_info_ptr_v = nullptr;
+    #endif
   }
   /// \endcond
 
-  /// \ingroup utility
+#ifdef JLN_MP_DOXYGENATING
+  template<int const* id>
+  struct id_info
+  {};
+#else
+  using meta::id_info;
+#endif
 
   class default_make_id_tag {};
 
+  using id_t = int const*;
+
   namespace emp
   {
-    /// Generates a unique id per call for a specified tag.
-    template<class Tag = default_make_id_tag, auto v = []{}>
-    inline constexpr int next_id_v =
-      detail::mkid::next_id<decltype(v)*, detail::next_id_tag<Tag>>::value;
+    /// Generates a unique id per type for a specified tag.
+    template<class T, class Tag = default_make_id_tag>
+    inline constexpr int const* id_of_v = &meta::meta_t<T, Tag>::id;
+
+    /// Get id of meta::info.
+    template<class id_info>
+    inline constexpr int const* id_of_info_v = detail::first<id_info, 0>::value;
+
+    template<int const* id>
+    inline constexpr int const* id_of_info_v<id_info<id>> = id;
 
     /// Generates a unique id per type for a specified tag.
     template<class T, class Tag = default_make_id_tag>
-    inline constexpr int id_of_v = detail::mkid::next_id<list<T>*, Tag>::value;
+    using id_of = id_info<id_of_v<T, Tag>>;
 
-    /// Generates a unique id per type for a specified tag.
-    template<class T, class Tag = default_make_id_tag>
-    using id_of = number<id_of_v<T, Tag>>;
+    /// Get the type associated to an id.
+    template<int const* id>
+    using type_of
+    #ifndef JLN_MP_DOXYGENATING
+      = typename decltype(
+          meta_from_info(JLN_MP_MK_ID_INFO(id))
+        )::type
+    #endif
+    ;
 
-    /// Get the type associated to an id for a specified tag.
-    template<int id, class Tag = default_make_id_tag>
-    using type_of = typename detail::type_of_id<
-      decltype(get_bound_value(JLN_MP_MKID_STATE(Tag, id)))
-    >::type;
+    /// Get the type associated to an id.
+    template<class id_info>
+    using type_of_info
+    #ifndef JLN_MP_DOXYGENATING
+      = typename decltype(
+          meta_from_info(static_cast<id_info*>(nullptr))
+        )::type
+    #endif
+    ;
   }
 
-  /// Generates a unique id per type for a specified tag.
-  /// \treturn \number
+  /// Generates a unique type id per type for a specified tag.
+  /// \treturn id_info
   template<class Tag = default_make_id_tag, class C = identity>
   struct make_id_for
   {
     template<class T>
-    using f = JLN_MP_CALL_TRACE(C, number<emp::id_of_v<T, Tag>>);
+    using f = JLN_MP_CALL_TRACE(C, id_info<emp::id_of_v<T, Tag>>);
   };
 
-  /// Generates a unique id per type.
-  /// \treturn \number
+  /// Generates a unique type id per type.
+  /// \treturn id_info
   template<class C = identity>
   using make_id = make_id_for<default_make_id_tag, C>;
 
@@ -33272,17 +33721,128 @@ namespace jln::mp
   struct make_id_for<Tag, identity>
   {
     template<class T>
-    using f = number<emp::id_of_v<T, Tag>>;
+    using f = id_info<emp::id_of_v<T, Tag>>;
+  };
+  /// \endcond
+}
+
+#undef JLN_MP_MK_ID_INFO
+
+#endif
+
+#if JLN_MP_ENABLE_FRIEND_INJECTION
+
+namespace jln::mp::smp
+{
+  template<class C = identity>
+  using make_id = try_contract<mp::make_id<assume_unary<C>>>;
+}
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<template<class> class sfinae, class C>
+  struct _sfinae<sfinae, make_id<C>>
+  {
+    using type = smp::make_id<C>;
+  };
+
+  JLN_MP_MAKE_EXPECTED_ARGUMENT1(argument_category::unary, make_id);
+}
+/// \endcond
+
+#endif
+
+#if JLN_MP_ENABLE_FRIEND_INJECTION && JLN_MP_FEATURE_CONCEPTS
+
+namespace jln::mp
+{
+  /// \cond
+  namespace detail
+  {
+    namespace mkidx
+    {
+      template<class Tag, int X>
+      struct state;
+
+      #if JLN_MP_MEMOIZED_ALIAS
+      # define JLN_MP_MK_STATE(...) \
+        static_cast<detail::mkidx::state<__VA_ARGS__>*>(nullptr)
+      #else
+      # define JLN_MP_MK_STATE(...) detail::mkidx::state_ptr_v<__VA_ARGS__>
+      template<class Tag, int id>
+      inline constexpr state<Tag, id>* state_ptr_v = nullptr;
+      #endif
+
+      template<class T, class Tag>
+      struct next_index;
+    }
+
+    template<class Tag> class next_index_tag;
+
+    template<class T> struct type_of_index_id;
+    template<class T> struct type_of_index_id<list<T>*> { using type = T; };
+    template<class T> struct type_of_index_id<T*> { using type = T; };
+  }
+  /// \endcond
+
+  /// \ingroup utility
+
+  class default_make_index_tag {};
+
+  namespace emp
+  {
+    /// Generates a unique index per call for a specified tag.
+    template<class Tag = default_make_index_tag, auto v = []{}>
+    inline constexpr int next_index_v =
+      detail::mkidx::next_index<decltype(v)*, detail::next_index_tag<Tag>>::value;
+
+    /// Generates a unique index per type for a specified tag.
+    template<class T, class Tag = default_make_index_tag>
+    inline constexpr int make_index_of_v = detail::mkidx::next_index<list<T>*, Tag>::value;
+
+    /// Generates a unique index per type for a specified tag.
+    template<class T, class Tag = default_make_index_tag>
+    using make_index_of = number<make_index_of_v<T, Tag>>;
+
+    /// Get the type associated to an index for a specified tag.
+    template<int idx, class Tag = default_make_index_tag>
+    using type_of_index = typename detail::type_of_index_id<
+      decltype(get_bound_value(JLN_MP_MK_STATE(Tag, idx)))
+    >::type;
+  }
+
+  /// Generates a unique index per type for a specified tag.
+  /// \treturn \number
+  template<class Tag = default_make_index_tag, class C = identity>
+  struct make_index_for
+  {
+    template<class T>
+    using f = JLN_MP_CALL_TRACE(C, number<emp::make_index_of_v<T, Tag>>);
+  };
+
+  /// Generates a unique index per type.
+  /// \treturn \number
+  template<class C = identity>
+  using make_index = make_index_for<default_make_index_tag, C>;
+
+  /// \cond
+  template<class Tag>
+  struct make_index_for<Tag, identity>
+  {
+    template<class T>
+    using f = number<emp::make_index_of_v<T, Tag>>;
   };
   /// \endcond
 }
 
 /// \cond
-namespace jln::mp::detail::mkid
+namespace jln::mp::detail::mkidx
 {
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wnon-template-friend")
   JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wunused-function")
+  JLN_MP_DIAGNOSTIC_CUDA_IGNORE(1301)
   template<class Tag, int X>
   struct state
   {
@@ -33290,73 +33850,73 @@ namespace jln::mp::detail::mkid
   };
   JLN_MP_DIAGNOSTIC_POP()
 
-  template<int id, class T, class Tag>
+  template<int idx, class T, class Tag>
   struct injecter
   {
-    friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto get_bound_value(state<Tag, id>*)
+    friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto get_bound_value(state<Tag, idx>*)
     {
       return T();
     }
   };
 
-  template<class T, class Tag, int id = 0>
-  JLN_MP_CONSTEVAL_OR_CONSTEXPR int get_next_id()
+  template<class T, class Tag, int idx = 0>
+  JLN_MP_CONSTEVAL_OR_CONSTEXPR int get_next_index()
   {
-    if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+10)); }) {
-      if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+100)); }) {
-        if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+1000)); }) {
-          if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+10000)); }) {
-            return get_next_id<T, Tag, id+10001>();
+    if constexpr (requires { get_bound_value(JLN_MP_MK_STATE(Tag, idx+10)); }) {
+      if constexpr (requires { get_bound_value(JLN_MP_MK_STATE(Tag, idx+100)); }) {
+        if constexpr (requires { get_bound_value(JLN_MP_MK_STATE(Tag, idx+1000)); }) {
+          if constexpr (requires { get_bound_value(JLN_MP_MK_STATE(Tag, idx+10000)); }) {
+            return get_next_index<T, Tag, idx+10001>();
           }
-          else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+3000)); }) {
-            return get_next_id<T, Tag, id+3001>();
+          else if constexpr (requires { get_bound_value(JLN_MP_MK_STATE(Tag, idx+3000)); }) {
+            return get_next_index<T, Tag, idx+3001>();
           }
           else {
-            return get_next_id<T, Tag, id+1001>();
+            return get_next_index<T, Tag, idx+1001>();
           }
         }
-        else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+300)); }) {
-          return get_next_id<T, Tag, id+301>();
+        else if constexpr (requires { get_bound_value(JLN_MP_MK_STATE(Tag, idx+300)); }) {
+          return get_next_index<T, Tag, idx+301>();
         }
         else {
-          return get_next_id<T, Tag, id+101>();
+          return get_next_index<T, Tag, idx+101>();
         }
       }
-      else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+30)); }) {
-        return get_next_id<T, Tag, id+31>();
+      else if constexpr (requires { get_bound_value(JLN_MP_MK_STATE(Tag, idx+30)); }) {
+        return get_next_index<T, Tag, idx+31>();
       }
       else {
-        return get_next_id<T, Tag, id+11>();
+        return get_next_index<T, Tag, idx+11>();
       }
     }
-    else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id)); }) {
-      if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+2)); }) {
-        if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+4)); }) {
-          return get_next_id<T, Tag, id+5>();
+    else if constexpr (requires { get_bound_value(JLN_MP_MK_STATE(Tag, idx)); }) {
+      if constexpr (requires { get_bound_value(JLN_MP_MK_STATE(Tag, idx+2)); }) {
+        if constexpr (requires { get_bound_value(JLN_MP_MK_STATE(Tag, idx+4)); }) {
+          return get_next_index<T, Tag, idx+5>();
         }
-        else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+3)); }) {
-          return get_next_id<T, Tag, id+4>();
+        else if constexpr (requires { get_bound_value(JLN_MP_MK_STATE(Tag, idx+3)); }) {
+          return get_next_index<T, Tag, idx+4>();
         }
         else {
-          return get_next_id<T, Tag, id+3>();
+          return get_next_index<T, Tag, idx+3>();
         }
       }
-      else if constexpr (requires { get_bound_value(JLN_MP_MKID_STATE(Tag, id+1)); }) {
-          return get_next_id<T, Tag, id+2>();
+      else if constexpr (requires { get_bound_value(JLN_MP_MK_STATE(Tag, idx+1)); }) {
+          return get_next_index<T, Tag, idx+2>();
       }
       else {
-          return get_next_id<T, Tag, id+1>();
+          return get_next_index<T, Tag, idx+1>();
       }
     }
     else {
-      return id;
+      return idx;
     }
   }
 
   template<class T, class Tag>
-  struct next_id
+  struct next_index
   {
-    static constexpr int value = get_next_id<T, Tag>();
+    static constexpr int value = get_next_index<T, Tag>();
 
     friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto get_bound_value(state<Tag, value>*)
     {
@@ -33365,37 +33925,35 @@ namespace jln::mp::detail::mkid
   };
 }
 
-#undef JLN_MP_MKID_STATE
+#undef JLN_MP_MK_STATE
 /// \endcond
 
 #endif
 
-#ifdef __cpp_generic_lambdas
-#if __cpp_generic_lambdas >= 201707L
+#if JLN_MP_ENABLE_FRIEND_INJECTION && JLN_MP_FEATURE_CONCEPTS
 
 namespace jln::mp::smp
 {
-  template<class Tag = default_make_id_tag, class C = identity>
-  using make_id_for = try_contract<mp::make_id_for<Tag, assume_positive_number<C>>>;
+  template<class Tag = default_make_index_tag, class C = identity>
+  using make_index_for = try_contract<mp::make_index_for<Tag, assume_positive_number<C>>>;
 
   template<class C = identity>
-  using make_id = try_contract<mp::make_id_for<default_make_id_tag, assume_positive_number<C>>>;
+  using make_index = try_contract<mp::make_index_for<default_make_index_tag, assume_positive_number<C>>>;
 }
 
 /// \cond
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class Tag, class C>
-  struct _sfinae<sfinae, make_id_for<Tag, C>>
+  struct _sfinae<sfinae, make_index_for<Tag, C>>
   {
-    using type = smp::make_id_for<Tag, C>;
+    using type = smp::make_index_for<Tag, C>;
   };
 
-  JLN_MP_MAKE_EXPECTED_ARGUMENT2(argument_category::unary, make_id_for);
+  JLN_MP_MAKE_EXPECTED_ARGUMENT2(argument_category::unary, make_index_for);
 }
 /// \endcond
 
-#endif
 #endif
 
 #if defined(__cpp_generic_lambdas) && __cpp_generic_lambdas >= 201707L
@@ -33406,7 +33964,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<class T, class Tag = default_make_id_tag>
+    template<class T, class Tag = default_make_index_tag>
     JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned next_random_for();
   }
   /// \endcond
@@ -33427,25 +33985,25 @@ namespace jln::mp
   namespace emp
   {
     /// Generates a random number per type for a specified tag.
-    template<class T, class Tag = default_make_id_tag>
+    template<class T, class Tag = default_make_index_tag>
     inline constexpr unsigned random_of_v = detail::next_random_for<list<T>, Tag>();
 
     /// Generates a random number per type for a specified tag.
-    template<class T, class Tag = default_make_id_tag, auto v = []{}>
+    template<class T, class Tag = default_make_index_tag, auto v = []{}>
     using random_of = number<detail::next_random_for<list<T>, Tag>()>;
 
     /// Generates a random number per call for a specified tag.
-    template<class Tag = default_make_id_tag, auto v = []{}>
+    template<class Tag = default_make_index_tag, auto v = []{}>
     inline constexpr unsigned random_v = detail::next_random_for<decltype(v), Tag>();
 
     /// Generates a random number per call for a specified tag.
-    template<class Tag = default_make_id_tag, auto v = []{}>
+    template<class Tag = default_make_index_tag, auto v = []{}>
     using random = number<detail::next_random_for<decltype(v), Tag>()>;
   }
 
   /// Generate a random number for a specified tag on each call with different \c xs.
   /// \treturn \number
-  template<class Tag = default_make_id_tag, class C = identity, auto = []{}>
+  template<class Tag = default_make_index_tag, class C = identity, auto = []{}>
   struct random_for
   #ifdef JLN_MP_DOXYGENATING
   {
@@ -33456,7 +34014,7 @@ namespace jln::mp
   ;
 
   template<class C = identity, auto v = []{}>
-  using random = random_for<default_make_id_tag, C, v>;
+  using random = random_for<default_make_index_tag, C, v>;
 
 
 /// \cond
@@ -33573,7 +34131,7 @@ namespace jln::mp::detail
   template<int id, class Tag>
   struct get_random_data
   {
-    using type = emp::type_of<id-1, Tag>;
+    using type = emp::type_of_index<id-1, Tag>;
   };
 
   template<class Tag>
@@ -33589,9 +34147,9 @@ namespace jln::mp::detail
   template<class T, class Tag>
   JLN_MP_CONSTEVAL_OR_CONSTEXPR unsigned next_random_for()
   {
-    constexpr int id = mkid::get_next_id<T*, random_tag<Tag>>();
+    constexpr int id = mkidx::get_next_index<T*, random_tag<Tag>>();
     using data = typename get_random_data<id, random_tag<Tag>>::type;
-    void(mkid::injecter<id, typename data::next*, random_tag<Tag>>{});
+    void(mkidx::injecter<id, typename data::next*, random_tag<Tag>>{});
     return data::value;
   }
 }
@@ -33603,12 +34161,12 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template<class Tag = default_make_id_tag, class C = identity, auto v = []{}>
+  template<class Tag = default_make_index_tag, class C = identity, auto v = []{}>
   using random_for = contract<mp::random_for<Tag, assume_positive_number<C>, v>>;
 
   template<class C = identity, auto v = []{}>
   using random = contract<
-    mp::random_for<default_make_id_tag, assume_positive_number<C>, v>>;
+    mp::random_for<default_make_index_tag, assume_positive_number<C>, v>>;
 }
 
 /// \cond
