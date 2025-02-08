@@ -31,23 +31,13 @@ namespace jln::mp::smp
   >;
 
   template<class F>
-  using map_element_key_update = test_contract<
-    mp::is_size_of_c<1>,
-    mp::if_<
-      mp::is_map<>,
-      detail::smp_map_element_key_update<assume_unary<F>>,
-      violation
-    >
+  using map_element_key_update = try_contract<
+    detail::smp_map_element_key_update<assume_unary<F>>
   >;
 
   template<class F>
-  using map_element_value_update = test_contract<
-    mp::is_size_of_c<1>,
-    mp::if_<
-      mp::is_map<>,
-      detail::smp_map_element_value_update<subcontract<F>>,
-      violation
-    >
+  using map_element_value_update = try_contract<
+    detail::smp_map_element_value_update<subcontract<F>>
   >;
 
   template<class key, class F, class C = listify>
@@ -74,10 +64,17 @@ namespace jln::mp::smp
 
 #include <jln/mp/smp/list/front.hpp>
 #include <jln/mp/smp/map/map_find.hpp> // some _sfinae<..., map_update>
+#include <jln/mp/functional/partial_tee.hpp>
+#include <jln/mp/utility/wrapper.hpp>
 
 /// \cond
 namespace jln::mp::detail
 {
+  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::unary, (class F),
+    (map_element_key_update<F>));
+  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::unary, (class F),
+    (map_element_value_update<F>));
+
   template<>
   struct smp_map_update_or_insert<true_>
   {
@@ -93,19 +90,72 @@ namespace jln::mp::detail
     : always<bad_contract>
   {};
 
+
+  template<class k>
+  struct smp_map_element_key_update_dispatch
+  {
+    template<template<class...> class S, class... v>
+    using f = typename try_<lift<S>>::template f<k, v...>;
+  };
+
+  template<>
+  struct smp_map_element_key_update_dispatch<na>
+  {
+    template<template<class...> class S, class... v>
+    using f = na;
+  };
+
+  template<class, class>
+  struct smp_map_element_key_update_impl
+  {};
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct smp_map_element_key_update_impl<F, S<k, v...>>
+  {
+    using type =
+      typename smp_map_element_key_update_dispatch<JLN_MP_CALL_TRACE(F, k, v...)>
+      ::template f<S, v...>;
+  };
+
   template<class F>
   struct smp_map_element_key_update
   {
     template<class kv>
-    using f = typename detail::_unpack<partial_tee<F, monadic_xs<emp::wrapper<kv>>>, kv>::type;
+    using f = typename smp_map_element_key_update_impl<F, kv>::type;
+  };
+
+
+  template<class v>
+  struct smp_map_element_value_update_dispatch
+  {
+    template<template<class...> class S, class k>
+    using f = typename try_<lift<S>>::template f<k, v>;
+  };
+
+  template<>
+  struct smp_map_element_value_update_dispatch<na>
+    : smp_map_element_key_update_dispatch<na>
+  {};
+
+  template<class, class>
+  struct smp_map_element_value_update_impl
+  {};
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct smp_map_element_value_update_impl<F, S<k, v...>>
+  {
+    using type =
+      typename smp_map_element_value_update_dispatch<JLN_MP_CALL_TRACE(F, k, v...)>
+      ::template f<S, k>;
   };
 
   template<class F>
   struct smp_map_element_value_update
   {
     template<class kv>
-    using f = typename detail::_unpack<tee<front<>, F, monadic_xs<emp::wrapper<kv>>>, kv>::type;
+    using f = typename smp_map_element_value_update_impl<F, kv>::type;
   };
+
 
   template<template<class> class sfinae, class F>
   struct _sfinae<sfinae, map_element_key_update<F>>

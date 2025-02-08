@@ -6,12 +6,21 @@
 #include <jln/mp/list/push_back.hpp>
 #include <jln/mp/algorithm/transform.hpp>
 #include <jln/mp/functional/if.hpp>
-#include <jln/mp/functional/partial_tee.hpp>
 #include <jln/mp/map/map_contains.hpp>
-#include <jln/mp/utility/wrapper.hpp>
 
 namespace jln::mp
 {
+  namespace detail
+  {
+    template<class F, class kv>
+    struct map_element_key_update_impl
+    {};
+
+    template<class F, class kv>
+    struct map_element_value_update_impl
+    {};
+  }
+
   /// \ingroup map
 
   /// If the \map contain the key \c Key, replaces the existing element `L<k, v...>` with `F<k, v...>`.
@@ -20,22 +29,22 @@ namespace jln::mp
   template<class Key, class F, class C = listify>
   using map_update = transform<map_find<Key, F, front<>>, C>;
 
-  /// Update an element `L<k, v...>` with `L<k, F<k, v...>>`.
-  /// \pre `unpack<size<>>::f<kv> >= 1`
-  template<class F>
-  struct map_element_value_update
-  {
-    template<class kv>
-    using f = typename detail::_unpack<tee<front<>, F, emp::wrapper<kv>>, kv>::type;
-  };
-
   /// Update an element `L<k, v...>` with `L<F<k, v...>, v...>`.
   /// \pre `unpack<size<>>::f<x> >= 1`
   template<class F>
   struct map_element_key_update
   {
     template<class kv>
-    using f = typename detail::_unpack<partial_tee<F, emp::wrapper<kv>>, kv>::type;
+    using f = typename detail::map_element_key_update_impl<F, kv>::type;
+  };
+
+  /// Update an element `L<k, v...>` with `L<k, F<k, v...>>`.
+  /// \pre `unpack<size<>>::f<kv> >= 1`
+  template<class F>
+  struct map_element_value_update
+  {
+    template<class kv>
+    using f = typename detail::map_element_value_update_impl<F, kv>::type;
   };
 
   /// If the \map contain the key \c key, replaces the existing element `L<k, v...>` with `L<F<k, v...>, v...>`.
@@ -73,12 +82,10 @@ namespace jln::mp
     using map_update = typename detail::_unpack<mp::map_update<key, F, C>, L>::type;
 
     template<class kv, class F>
-    using map_element_key_update = typename mp::map_element_key_update<F>
-      ::template f<kv>;
+    using map_element_key_update = typename detail::map_element_key_update_impl<F, kv>::type;
 
     template<class kv, class F>
-    using map_element_value_update = typename mp::map_element_value_update<F>
-      ::template f<kv>;
+    using map_element_value_update = typename detail::map_element_value_update_impl<F, kv>::type;
 
     template<class L, class key, class F, class C = mp::listify>
     using map_key_update =
@@ -97,3 +104,47 @@ namespace jln::mp
       typename detail::_unpack<mp::map_value_update_or_insert<kv, F, C>, L>::type;
   }
 }
+
+#include <jln/mp/list/front.hpp>
+#include <jln/mp/list/pop_front.hpp>
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class F, template<class...> class S, class k, class... v>
+  struct map_element_key_update_impl<F, S<k, v...>>
+  {
+    using type = S<JLN_MP_CALL_TRACE(F, k, v...), v...>;
+  };
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct map_element_value_update_impl<F, S<k, v...>>
+  {
+    using type = S<k, JLN_MP_CALL_TRACE(F, k, v...)>;
+  };
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct map_element_key_update_impl<front<F>, S<k, v...>>
+  {
+    using type = S<JLN_MP_CALL_TRACE(F, k), v...>;
+  };
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct map_element_value_update_impl<front<F>, S<k, v...>>
+  {
+    using type = S<k, JLN_MP_CALL_TRACE(F, k)>;
+  };
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct map_element_key_update_impl<pop_front<F>, S<k, v...>>
+  {
+    using type = S<JLN_MP_CALL_TRACE(F, v...), v...>;
+  };
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct map_element_value_update_impl<pop_front<F>, S<k, v...>>
+  {
+    using type = S<k, JLN_MP_CALL_TRACE(F, v...)>;
+  };
+}
+/// \endcond

@@ -31,6 +31,12 @@ TEST()
   ut::not_invocable<smp::map_update<seq_0, smp::listify, bad_function>, seq_0>();
 }
 
+#if JLN_MP_FEATURE_CONCEPTS
+template<class n>
+  requires(std::is_void_v<n>)
+struct void_k_element {};
+#endif
+
 // map_element_key_update
 TEST()
 {
@@ -50,7 +56,13 @@ TEST()
     ;
 
   ut::not_invocable<smp::map_element_key_update<bad_function>, seq_0>();
+#if JLN_MP_FEATURE_CONCEPTS
+  ut::not_invocable<smp::map_element_key_update<listify>, void_k_element<void>>();
+#endif
 }
+
+template<class>
+struct one_element {};
 
 // map_element_value_update
 TEST()
@@ -71,6 +83,7 @@ TEST()
     ;
 
   ut::not_invocable<smp::map_element_value_update<bad_function>, seq_0>();
+  ut::not_invocable<smp::map_element_value_update<listify>, one_element<_0>>();
 }
 
 TEST_SUITE_END()
