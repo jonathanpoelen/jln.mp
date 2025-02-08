@@ -23,11 +23,11 @@ namespace jln::mp
 
   /// \ingroup map
 
-  /// If the \map contain the key \c Key, replaces the existing element `L<k, v...>` with `F<k, v...>`.
+  /// If the \map contain the key \c key, replaces the existing element `L<key, v...>` with `F<L<key, v...>>`.
   /// \pre \c is_map<>
   /// \treturn \sequence
-  template<class Key, class F, class C = listify>
-  using map_update = transform<map_find<Key, F, front<>>, C>;
+  template<class key, class F, class C = listify>
+  using map_update = transform<map_find<key, F, front<>>, C>;
 
   /// Update an element `L<k, v...>` with `L<F<k, v...>, v...>`.
   /// \pre `unpack<size<>>::f<x> >= 1`
@@ -47,19 +47,19 @@ namespace jln::mp
     using f = typename detail::map_element_value_update_impl<F, kv>::type;
   };
 
-  /// If the \map contain the key \c key, replaces the existing element `L<k, v...>` with `L<F<k, v...>, v...>`.
+  /// If the \map contain the key \c key, replaces the existing element `L<key, v...>` with `L<F<key, v...>, v...>`.
   /// \pre \c is_map<>
   /// \treturn \sequence
   template<class key, class F, class C = listify>
   using map_key_update = map_update<key, map_element_key_update<F>, C>;
 
-  /// If the \map contain the key \c key, replaces the existing element `L<k, v...>` with `L<k, F<k, v...>>`.
+  /// If the \map contain the key \c key, replaces the existing element `L<key, v...>` with `L<key, F<key, v...>>`.
   /// \pre \c is_map<>
   /// \treturn \map
   template<class key, class F, class C = listify>
   using map_value_update = map_update<key, map_element_value_update<F>, C>;
 
-  /// If the \map contain a key \c emp::front<kv>, replaces the existing element `L<k, v...>` with `F<k, v...>`; otherwise, inserts it using \c push_back<kv>.
+  /// If the \map contain a key \c emp::front<kv>, replaces the existing element `L<k, v...>` with `F<L<k, v...>>`; otherwise, inserts it using \c push_back<kv>.
   /// \pre \c is_map<>
   /// \treturn \sequence
   /// \see map_update_s_or_insert
@@ -70,7 +70,7 @@ namespace jln::mp
     push_back<kv, C>
   >;
 
-  /// If the \map contain a key \c k, replaces the existing element `L<k, v...>` with `F<k, v...>`; otherwise, inserts it using \c push_back<list<k,v>>.
+  /// If the \map contain a key \c k, replaces the existing element `L<k, v...>` with `F<list<k, v...>>`; otherwise, inserts it using \c push_back<list<k,v>>.
   /// \pre \c is_map<>
   /// \treturn \sequence
   /// \see map_update_or_insert
