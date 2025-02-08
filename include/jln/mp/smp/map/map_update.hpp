@@ -56,9 +56,22 @@ namespace jln::mp::smp
   using map_update_or_insert = typename detail::smp_map_update_or_insert<mp::is_map<>::f<kv>>
     ::template f<kv, F, C>;
 
+  template<class k, class v, class F, class C = listify>
+  using map_update_s_or_insert = test_contract<
+    mp::is_map<>,
+    mp::map_update_s_or_insert<k, v, assume_unary<F>, assume_unary_or_more<C>>
+  >;
+
   template<class kv, class F, class C = listify>
   using map_value_update_or_insert = typename detail::smp_map_update_or_insert<mp::is_map<>::f<kv>>
     ::template f<kv, contract<detail::smp_map_element_value_update<subcontract<F>>>, C>;
+
+  template<class k, class v, class F, class C = listify>
+  using map_value_update_s_or_insert = test_contract<
+    mp::is_map<>,
+    mp::map_update_s_or_insert<k, v,
+      detail::smp_map_element_value_update<subcontract<F>>, assume_unary_or_more<C>>
+  >;
 }
 
 

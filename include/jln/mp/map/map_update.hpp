@@ -62,6 +62,7 @@ namespace jln::mp
   /// If the \map contain a key \c emp::front<kv>, replaces the existing element `L<k, v...>` with `F<k, v...>`; otherwise, inserts it using \c push_back<kv>.
   /// \pre \c is_map<>
   /// \treturn \sequence
+  /// \see map_update_s_or_insert
   template<class kv, class F, class C = listify>
   using map_update_or_insert = if_<
     map_contains<unpack<front<>>::f<kv>>,
@@ -69,16 +70,35 @@ namespace jln::mp
     push_back<kv, C>
   >;
 
+  /// If the \map contain a key \c k, replaces the existing element `L<k, v...>` with `F<k, v...>`; otherwise, inserts it using \c push_back<list<k,v>>.
+  /// \pre \c is_map<>
+  /// \treturn \sequence
+  /// \see map_update_or_insert
+  template<class k, class v, class F, class C = listify>
+  using map_update_s_or_insert = if_<
+    map_contains<k>,
+    map_update<k, F, C>,
+    push_back<list<k, v>, C>
+  >;
+
   /// If the \map contain a key \c emp::front<kv>, replaces the existing element `L<k, v...>` with `L<k, F<k, v...>>`; otherwise, inserts it using \c push_back<kv>.
   /// \pre \c is_map<>
   /// \treturn \map
+  /// \see map_value_update_s_or_insert
   template<class kv, class F, class C = listify>
   using map_value_update_or_insert = map_update_or_insert<kv, map_element_value_update<F>, C>;
+
+  /// If the \map contain a key \c k, replaces the existing element `L<k, v...>` with `L<k, F<k, v...>>`; otherwise, inserts it using \c push_back<list<k,v>>.
+  /// \pre \c is_map<>
+  /// \treturn \map
+  /// \see map_value_update_or_insert
+  template<class k, class v, class F, class C = listify>
+  using map_value_update_s_or_insert = map_update_s_or_insert<k, v, map_element_value_update<F>, C>;
 
 
   namespace emp
   {
-    template<class L, class key, class F, class C = mp::listify>
+    template<class L, class key, class F, class C = listify>
     using map_update = typename detail::_unpack<mp::map_update<key, F, C>, L>::type;
 
     template<class kv, class F>
@@ -87,21 +107,29 @@ namespace jln::mp
     template<class kv, class F>
     using map_element_value_update = typename detail::map_element_value_update_impl<F, kv>::type;
 
-    template<class L, class key, class F, class C = mp::listify>
+    template<class L, class key, class F, class C = listify>
     using map_key_update =
       typename detail::_unpack<mp::map_key_update<key, F, C>, L>::type;
 
-    template<class L, class key, class F, class C = mp::listify>
+    template<class L, class key, class F, class C = listify>
     using map_value_update =
       typename detail::_unpack<mp::map_value_update<key, F, C>, L>::type;
 
-    template<class L, class kv, class F, class C = mp::listify>
+    template<class L, class kv, class F, class C = listify>
     using map_update_or_insert =
       typename detail::_unpack<mp::map_update_or_insert<kv, F, C>, L>::type;
 
-    template<class L, class kv, class F, class C = mp::listify>
+    template<class L, class k, class v, class F, class C = listify>
+    using map_update_s_or_insert =
+      typename detail::_unpack<mp::map_update_s_or_insert<k, v, F, C>, L>::type;
+
+    template<class L, class kv, class F, class C = listify>
     using map_value_update_or_insert =
       typename detail::_unpack<mp::map_value_update_or_insert<kv, F, C>, L>::type;
+
+    template<class L, class k, class v, class F, class C = listify>
+    using map_value_update_s_or_insert =
+      typename detail::_unpack<mp::map_value_update_s_or_insert<k, v, F, C>, L>::type;
   }
 }
 

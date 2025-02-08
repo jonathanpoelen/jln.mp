@@ -143,9 +143,12 @@ TEST()
   using namespace ut::ints;
 
   test_mulary_pack<map_update_or_insert, seq_0_0>();
+  test_mulary_pack<map_update_s_or_insert, _0, _0>();
 
   ut::same<list<seq_0, list<seq_1_0>>, emp::map_update_or_insert<list<seq_0, seq_1_0>, seq_1, listify>>();
   ut::same<list<seq_0, seq_1_0, seq_2>, emp::map_update_or_insert<list<seq_0, seq_1_0>, seq_2, listify>>();
+  ut::same<list<seq_0, list<seq_1_0>>, emp::map_update_s_or_insert<list<seq_0, seq_1_0>, _1, _2, listify>>();
+  ut::same<list<seq_0, seq_1_0, seq_2_3>, emp::map_update_s_or_insert<list<seq_0, seq_1_0>, _2, _3, listify>>();
 
   test_context<
     map_update_or_insert<seq_2_0, listify>,
@@ -159,8 +162,21 @@ TEST()
     .not_invocable<seq_0, seq_0>()
     ;
 
+  test_context<
+    map_update_s_or_insert<_2, _0, listify>,
+    smp::map_update_s_or_insert<_2, _0, smp::listify>
+  >()
+    .test<list<seq_2_0>>()
+    .test<list<seq_0, seq_2_0>, seq_0>()
+    .test<list<seq_0, list<seq_2>>, seq_0, seq_2>()
+    .not_invocable<void>()
+    .not_invocable<list<>>()
+    .not_invocable<seq_0, seq_0>()
+    ;
+
   ut::not_invocable<smp::map_update_or_insert<seq_0, bad_function>, _0>();
   ut::not_invocable<smp::map_update_or_insert<seq_0, smp::listify, bad_function>, seq_0>();
+  ut::not_invocable<smp::map_update_s_or_insert<seq_0, smp::listify, bad_function>, _0, _1>();
 }
 
 // map_value_update_or_insert
@@ -170,6 +186,7 @@ TEST()
   using namespace ut::ints;
 
   test_mulary_pack<map_value_update_or_insert, seq_0_0>();
+  test_mulary_pack<map_value_update_s_or_insert, _0, _0>();
 
   test_context<
     map_value_update_or_insert<seq_2_0, listify>,
@@ -184,6 +201,20 @@ TEST()
     .not_invocable<seq_0, seq_0>()
     ;
 
+  test_context<
+    map_value_update_s_or_insert<_2, _0, listify>,
+    smp::map_value_update_s_or_insert<_2, _0, smp::listify>
+  >()
+    .test<list<seq_2_0>>()
+    .test<list<seq_0, seq_2_0>, seq_0>()
+    .test<list<seq_0, list<_2, seq_2>>, seq_0, seq_2>()
+    .test<list<seq_0, list<_2, seq_2_1>>, seq_0, seq_2_1>()
+    .not_invocable<void>()
+    .not_invocable<list<>>()
+    .not_invocable<seq_0, seq_0>()
+    ;
+
   ut::not_invocable<smp::map_value_update_or_insert<seq_0, bad_function>, _0>();
   ut::not_invocable<smp::map_value_update_or_insert<seq_0, smp::listify, bad_function>, seq_0>();
+  ut::not_invocable<smp::map_value_update_s_or_insert<seq_0, smp::listify, bad_function>, _0, _1>();
 }
