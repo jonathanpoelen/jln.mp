@@ -51,13 +51,13 @@ namespace jln::mp::smp
   >;
 
   template<class Key, class F, class C = listify>
-  using map_update_key = test_contract<
+  using map_key_update = test_contract<
     mp::is_map<>,
     mp::map_update<Key, detail::smp_map_element_key_update<assume_unary<F>>, subcontract<C>>
   >;
 
   template<class Key, class F, class C = listify>
-  using map_update_value = test_contract<
+  using map_value_update = test_contract<
     mp::is_map<>,
     mp::map_update<Key, detail::smp_map_element_value_update<subcontract<F>>, subcontract<C>>
   >;
@@ -67,7 +67,7 @@ namespace jln::mp::smp
     ::template f<KV, F, C>;
 
   template<class KV, class F, class C = listify>
-  using map_update_value_or_insert = typename detail::smp_map_update_or_insert<mp::is_map<>::f<KV>>
+  using map_value_update_or_insert = typename detail::smp_map_update_or_insert<mp::is_map<>::f<KV>>
     ::template f<KV, contract<detail::smp_map_element_value_update<subcontract<F>>>, C>;
 }
 

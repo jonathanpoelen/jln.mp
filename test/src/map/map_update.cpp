@@ -75,18 +75,18 @@ TEST()
 
 TEST_SUITE_END()
 
-// map_update_key
+// map_key_update
 TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_mulary_pack<map_update_key, _0>();
+  test_mulary_pack<map_key_update, _0>();
 
-  ut::same<list<seq_0, list<seq_1_0, _0>>, emp::map_update_key<list<seq_0, seq_1_0>, _1, listify>>();
-  ut::same<list<seq_0, seq_1_0>, emp::map_update_key<list<seq_0, seq_1_0>, _2, listify>>();
+  ut::same<list<seq_0, list<seq_1_0, _0>>, emp::map_key_update<list<seq_0, seq_1_0>, _1, listify>>();
+  ut::same<list<seq_0, seq_1_0>, emp::map_key_update<list<seq_0, seq_1_0>, _2, listify>>();
 
-  test_context<map_update_key<_2, listify>, smp::map_update_key<_2, smp::listify>>()
+  test_context<map_key_update<_2, listify>, smp::map_key_update<_2, smp::listify>>()
     .test<list<>>()
     .test<list<seq_0>, seq_0>()
     .test<list<seq_0, list<seq_2_0, _0>>, seq_0, seq_2_0>()
@@ -95,22 +95,22 @@ TEST()
     .not_invocable<seq_0, seq_0>()
     ;
 
-  ut::not_invocable<smp::map_update_key<seq_0, bad_function>, _0>();
-  ut::not_invocable<smp::map_update_key<seq_0, smp::listify, bad_function>, seq_0>();
+  ut::not_invocable<smp::map_key_update<seq_0, bad_function>, _0>();
+  ut::not_invocable<smp::map_key_update<seq_0, smp::listify, bad_function>, seq_0>();
 }
 
-// map_update_value
+// map_value_update
 TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_mulary_pack<map_update_value, _0>();
+  test_mulary_pack<map_value_update, _0>();
 
-  ut::same<list<seq_0, list<_1, seq_1_0>>, emp::map_update_value<list<seq_0, seq_1_0>, _1, listify>>();
-  ut::same<list<seq_0, seq_1_0>, emp::map_update_value<list<seq_0, seq_1_0>, _2, listify>>();
+  ut::same<list<seq_0, list<_1, seq_1_0>>, emp::map_value_update<list<seq_0, seq_1_0>, _1, listify>>();
+  ut::same<list<seq_0, seq_1_0>, emp::map_value_update<list<seq_0, seq_1_0>, _2, listify>>();
 
-  test_context<map_update_value<_2, listify>, smp::map_update_value<_2, smp::listify>>()
+  test_context<map_value_update<_2, listify>, smp::map_value_update<_2, smp::listify>>()
     .test<list<>>()
     .test<list<seq_0>, seq_0>()
     .test<list<seq_0, list<_2, seq_2_0>>, seq_0, seq_2_0>()
@@ -119,8 +119,8 @@ TEST()
     .not_invocable<seq_0, seq_0>()
     ;
 
-  ut::not_invocable<smp::map_update_value<seq_0, bad_function>, _0>();
-  ut::not_invocable<smp::map_update_value<seq_0, smp::listify, bad_function>, seq_0>();
+  ut::not_invocable<smp::map_value_update<seq_0, bad_function>, _0>();
+  ut::not_invocable<smp::map_value_update<seq_0, smp::listify, bad_function>, seq_0>();
 }
 
 // map_update_or_insert
@@ -150,17 +150,17 @@ TEST()
   ut::not_invocable<smp::map_update_or_insert<seq_0, smp::listify, bad_function>, seq_0>();
 }
 
-// map_update_value_or_insert
+// map_value_update_or_insert
 TEST()
 {
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_mulary_pack<map_update_value_or_insert, seq_0_0>();
+  test_mulary_pack<map_value_update_or_insert, seq_0_0>();
 
   test_context<
-    map_update_value_or_insert<seq_2_0, listify>,
-    smp::map_update_value_or_insert<seq_2_0, smp::listify>
+    map_value_update_or_insert<seq_2_0, listify>,
+    smp::map_value_update_or_insert<seq_2_0, smp::listify>
   >()
     .test<list<seq_2_0>>()
     .test<list<seq_0, seq_2_0>, seq_0>()
@@ -171,6 +171,6 @@ TEST()
     .not_invocable<seq_0, seq_0>()
     ;
 
-  ut::not_invocable<smp::map_update_value_or_insert<seq_0, bad_function>, _0>();
-  ut::not_invocable<smp::map_update_value_or_insert<seq_0, smp::listify, bad_function>, seq_0>();
+  ut::not_invocable<smp::map_value_update_or_insert<seq_0, bad_function>, _0>();
+  ut::not_invocable<smp::map_value_update_or_insert<seq_0, smp::listify, bad_function>, seq_0>();
 }
