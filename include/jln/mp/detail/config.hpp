@@ -29,20 +29,20 @@
 /// When 1, uses a memoization version of call to keep better track of calls
 /// in the case of compilation error. This is especially useful with clang,
 /// which doesn't display aliases.
-#ifndef JLN_MP_ENABLE_DEBUG
-# define JLN_MP_ENABLE_DEBUG 0
+#ifndef JLN_MP_DEBUG
+# define JLN_MP_DEBUG 0
 #endif
 
-#if JLN_MP_ENABLE_DEBUG
-# define JLN_MP_ENABLE_DEBUG_ORIGINAL 1
+#if JLN_MP_DEBUG
+# define JLN_MP_DEBUG_ORIGINAL 1
 #else
-# define JLN_MP_ENABLE_DEBUG_ORIGINAL 0
+# define JLN_MP_DEBUG_ORIGINAL 0
 #endif
 
 // Useless with gcc and msvc since it displays all the transformations.
 #if JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_MEMOIZED_ALIAS
-# undef JLN_MP_ENABLE_DEBUG
-# define JLN_MP_ENABLE_DEBUG 0
+# undef JLN_MP_DEBUG
+# define JLN_MP_DEBUG 0
 #endif
 
 /// \defgroup list List

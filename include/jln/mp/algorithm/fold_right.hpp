@@ -84,7 +84,7 @@ namespace jln::mp
     >::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class F, class C>
   struct fold_right<lift<F>, C>
   {

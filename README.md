@@ -221,7 +221,7 @@ static_assert(my_tuple == std::tuple{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
 
 > Functions are missing in the stacktrace when the compiler displays an error message, how to display them?
 
-Compile with the define `JLN_MP_ENABLE_DEBUG` at `1` to have errors with more context.
+Compile with the define `JLN_MP_DEBUG` at `1` to have errors with more context.
 
 > Error: `sorry, unimplemented: mangling record_type` or `sorry, unimplemented: mangling typename_type` with Gcc.
 

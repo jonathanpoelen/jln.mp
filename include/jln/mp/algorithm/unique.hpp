@@ -177,7 +177,7 @@ namespace jln::mp
     >::type;
   };
 
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class C>
   struct unique_if<same<>, lift<C>>
   {

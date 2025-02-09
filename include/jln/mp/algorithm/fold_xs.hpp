@@ -147,7 +147,7 @@ namespace jln::mp
     using f = detail::partial_fold_xs_select<JLN_MP_TRACE_F(F)::template f, sizeof...(xs), xs...>;
   };
 
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<int_t OffsetEnd, template<class...> class F, class C>
   struct partial_fold_xs_c<OffsetEnd, lift<F>, C>
   {

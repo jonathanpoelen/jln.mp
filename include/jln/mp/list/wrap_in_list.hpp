@@ -212,7 +212,7 @@ namespace jln::mp::detail
     >::value)>::template f<x>;
   };
 
-#if ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_DEBUG
   template<template<class...> class Pred>
   struct _wrap_in_list_if<lift<Pred>>
   {

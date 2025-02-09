@@ -156,7 +156,7 @@ namespace jln::mp
   };
 #endif
 
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<unsigned N, template<class...> class C>
   struct drop_front_c<N, lift<C>>
   {

@@ -25,7 +25,7 @@ namespace jln::mp
 
 #define JLN_MP_IDENT(...) __VA_ARGS__
 
-#if ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_DEBUG
   #define JLN_MP_TRACE_F(...) __VA_ARGS__
   #define JLN_MP_TRACE_TYPENAME
 

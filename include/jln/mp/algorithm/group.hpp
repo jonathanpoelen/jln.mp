@@ -112,7 +112,7 @@ namespace jln::mp::detail
     ::template f<try_<Cmp, TC, FC>, x, xs...>
   {};
 
-  // needed when JLN_MP_ENABLE_DEBUG is enabled
+  // needed when JLN_MP_DEBUG is enabled
   template<class Cmp, class x, class... ys, class... xs>
   struct mk_pairs_indices<memoize<Cmp>, x, list<ys...>, xs...>
     : try_<smp_mk_pairs_indices<ys...>>

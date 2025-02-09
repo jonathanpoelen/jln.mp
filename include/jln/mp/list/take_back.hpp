@@ -81,7 +81,7 @@ namespace jln::mp
     : always<list<>>
   {};
 
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<unsigned N, template<class...> class C>
   struct take_back_c<N, lift<C>>
   {

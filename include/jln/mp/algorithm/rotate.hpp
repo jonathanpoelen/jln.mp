@@ -65,7 +65,7 @@ namespace jln::mp
 /// \cond
 namespace jln::mp
 {
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<int_t N, template<class...> class C>
   struct rotate_c<N, lift<C>>
   {

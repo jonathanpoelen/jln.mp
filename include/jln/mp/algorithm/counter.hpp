@@ -81,7 +81,7 @@ namespace jln::mp
 }
 
 /// \cond
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
 namespace jln::mp
 {
   template<template<class...> class F, class C>

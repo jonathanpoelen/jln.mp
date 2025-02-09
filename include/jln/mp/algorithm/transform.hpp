@@ -40,7 +40,7 @@ namespace jln::mp
   }
 
 /// \cond
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<class F, template<class...> class C>
   struct transform<F, lift<C>>
   {
@@ -66,7 +66,7 @@ namespace jln::mp
   };
 #endif
 
-#if ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_DEBUG
   namespace detail
   {
     template<bool>
@@ -107,7 +107,7 @@ namespace jln::mp::detail
   struct transform_impl<false>
   {};
 
-#if ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_DEBUG
   template<>
   struct transform_impl_t<true>
   {

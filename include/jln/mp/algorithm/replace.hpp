@@ -68,7 +68,7 @@ namespace jln::mp::detail
     using f = JLN_MP_CONDITIONAL_C_T(JLN_MP_IS_SAME(T, x), x, Replacement);
   };
 
-#if ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_DEBUG
   template<template<class...> class Pred, class Replacement>
   struct substitute_if<lift<Pred>, Replacement>
   {
