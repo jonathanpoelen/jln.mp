@@ -24,13 +24,13 @@ TEST()
 
   using ne = number<-1>;
 
-  ut::same<mseq<ne, _0>, emp::mismatch<list<>, list<>, equal<>, listify, lift<mseq>>>();
-  ut::same<mseq<_0, ne>, emp::mismatch<list<>, seq_0_1, equal<>, listify, lift<mseq>>>();
-  ut::same<mseq<_0, _1>, emp::mismatch<seq_0_1, list<>, equal<>, listify, lift<mseq>>>();
+  ut::same<mseq<ne, _0>, emp::mismatch<list<>, list<>, equal<>, listify, cfe<mseq>>>();
+  ut::same<mseq<_0, ne>, emp::mismatch<list<>, seq_0_1, equal<>, listify, cfe<mseq>>>();
+  ut::same<mseq<_0, _1>, emp::mismatch<seq_0_1, list<>, equal<>, listify, cfe<mseq>>>();
 
-  ut::same<mseq<ne, _2>, emp::mismatch<seq_0_1, seq_0_1, equal<>, listify, lift<mseq>>>();
-  ut::same<list<_0, _0>, emp::mismatch<seq_0_1, seq_1_2, equal<>, listify, lift<mseq>>>();
-  ut::same<list<_0, _0>, emp::mismatch<seq_1_2, seq_0_1, equal<>, listify, lift<mseq>>>();
+  ut::same<mseq<ne, _2>, emp::mismatch<seq_0_1, seq_0_1, equal<>, listify, cfe<mseq>>>();
+  ut::same<list<_0, _0>, emp::mismatch<seq_0_1, seq_1_2, equal<>, listify, cfe<mseq>>>();
+  ut::same<list<_0, _0>, emp::mismatch<seq_1_2, seq_0_1, equal<>, listify, cfe<mseq>>>();
 
   ut::same<list<_2, _1>, emp::mismatch<seq_0_1_2, seq_0_1>>();
   ut::same<list<_2, ne>, emp::mismatch<seq_0_1, seq_0_1_2>>();

@@ -67,7 +67,7 @@ namespace jln::mp
 {
 #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<int_t N, template<class...> class C>
-  struct rotate_c<N, lift<C>>
+  struct rotate_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::rotate_impl<

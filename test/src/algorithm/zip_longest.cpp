@@ -5,7 +5,7 @@
 
 #include "jln/mp/smp/algorithm/zip_longest.hpp"
 #include "jln/mp/smp/algorithm/matrix_shortest.hpp"
-#include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/functional/continuation.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()

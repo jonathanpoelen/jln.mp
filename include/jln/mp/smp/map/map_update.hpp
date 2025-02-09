@@ -108,7 +108,7 @@ namespace jln::mp::detail
   struct smp_map_element_key_update_dispatch
   {
     template<template<class...> class S, class... v>
-    using f = typename try_<lift<S>>::template f<k, v...>;
+    using f = typename try_<cfe<S>>::template f<k, v...>;
   };
 
   template<>
@@ -142,7 +142,7 @@ namespace jln::mp::detail
   struct smp_map_element_value_update_dispatch
   {
     template<template<class...> class S, class k>
-    using f = typename try_<lift<S>>::template f<k, v>;
+    using f = typename try_<cfe<S>>::template f<k, v>;
   };
 
   template<>

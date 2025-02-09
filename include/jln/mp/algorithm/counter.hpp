@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/algorithm/unique.hpp>
 #include <jln/mp/algorithm/make_int_sequence.hpp>
 
@@ -85,7 +85,7 @@ namespace jln::mp
 namespace jln::mp
 {
   template<template<class...> class F, class C>
-  struct counter_wrapped_with<lift<F>, C>
+  struct counter_wrapped_with<cfe<F>, C>
   {
     template<class... xs>
 #if JLN_MP_GCC

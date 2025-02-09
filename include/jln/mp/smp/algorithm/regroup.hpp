@@ -6,7 +6,7 @@
 #include <jln/mp/smp/algorithm/same.hpp>
 #include <jln/mp/smp/algorithm/counter.hpp>
 #include <jln/mp/smp/functional/invoke_twice.hpp>
-#include <jln/mp/smp/functional/lift.hpp>
+#include <jln/mp/smp/functional/continuation.hpp>
 #include <jln/mp/algorithm/regroup.hpp>
 
 /// \cond

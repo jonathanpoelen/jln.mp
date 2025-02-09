@@ -15,7 +15,7 @@
 #include <jln/mp/list/push_back.hpp>
 #include <jln/mp/algorithm/index.hpp>
 #include <jln/mp/functional/invoke_twice.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/functional/compose.hpp>
 

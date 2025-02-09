@@ -3,7 +3,7 @@
 #pragma once
 
 #include <jln/mp/algorithm/mismatch.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 
 namespace jln::mp
 {
@@ -29,7 +29,7 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C,
       typename mismatch<
         detail::_lexicographical_compare_equal<JLN_MP_TRACE_F(Cmp)>,
-        lift<detail::_lexicographical_compare>
+        cfe<detail::_lexicographical_compare>
       >
       ::template f<seq1, seq2>
       ::template f<JLN_MP_TRACE_F(Cmp), seq1, seq2>
@@ -41,7 +41,7 @@ namespace jln::mp
   {
     template<class seq1, class seq2>
     using f = JLN_MP_CALL_TRACE(C,
-      typename mismatch<JLN_MP_TRACE_F(CmpEq), lift<detail::_lexicographical_compare>>
+      typename mismatch<JLN_MP_TRACE_F(CmpEq), cfe<detail::_lexicographical_compare>>
       ::template f<seq1, seq2>
       ::template f<JLN_MP_TRACE_F(CmpLess), seq1, seq2>
     );
@@ -67,7 +67,7 @@ namespace jln::mp
     template<class seq1, class seq2>
     using f = typename mismatch<
       detail::_lexicographical_compare_equal<Cmp>,
-      lift<detail::_lexicographical_compare>
+      cfe<detail::_lexicographical_compare>
     >
     ::template f<seq1, seq2>
     ::template f<Cmp, seq1, seq2>;
@@ -77,7 +77,7 @@ namespace jln::mp
   struct lexicographical_compare2<CmpLess, CmpEq, identity>
   {
     template<class seq1, class seq2>
-    using f = typename mismatch<CmpEq, lift<detail::_lexicographical_compare>>
+    using f = typename mismatch<CmpEq, cfe<detail::_lexicographical_compare>>
       ::template f<seq1, seq2>
       ::template f<CmpLess, seq1, seq2>;
   };

@@ -15,8 +15,8 @@ TEST()
 {
   using namespace jln::mp;
 
-  ut::same<lift<list>, emp::wrapper<list<int>>>();
-  ut::same<lift<other_list>, emp::wrapper<other_list<int>>>();
+  ut::same<cfe<list>, emp::wrapper<list<int>>>();
+  ut::same<cfe<other_list>, emp::wrapper<other_list<int>>>();
 
   ut::same<list<void, char>, emp::rewrap<list<int>, void, char>>();
   ut::same<other_list<void, char>, emp::rewrap<other_list<int>, void, char>>();

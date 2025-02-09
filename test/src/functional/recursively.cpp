@@ -4,7 +4,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/functional/recursively.hpp"
-#include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/functional/continuation.hpp"
 #include "jln/mp/smp/functional/if.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 #include "jln/mp/smp/utility/unpack.hpp"

@@ -52,7 +52,7 @@ namespace jln::mp::detail
         _lexicographical_compare_equal<
           smp::concepts::predicate<Cmp, mp::identity, mp::always<true_>>
         >,
-        lift<_lexicographical_compare>
+        cfe<_lexicographical_compare>
       >
       ::template f<seq1, seq2>
       ::template f<smp::concepts::predicate<Cmp, mp::identity, violation>, seq1, seq2>
@@ -67,7 +67,7 @@ namespace jln::mp::detail
       _lexicographical_compare_equal<
         smp::concepts::predicate<Cmp, mp::identity, mp::always<true_>>
       >,
-      lift<_lexicographical_compare>
+      cfe<_lexicographical_compare>
     >
     ::template f<seq1, seq2>
     ::template f<smp::concepts::predicate<Cmp, mp::identity, violation>, seq1, seq2>;
@@ -80,7 +80,7 @@ namespace jln::mp::detail
     using f = typename monadic<C>::template f<
       typename mismatch<
         smp::concepts::predicate<CmpEq>,
-        lift<_lexicographical_compare>
+        cfe<_lexicographical_compare>
       >
       ::template f<seq1, seq2>
       ::template f<
@@ -100,7 +100,7 @@ namespace jln::mp::detail
     template<class seq1, class seq2>
     using f = typename mismatch<
       smp::concepts::predicate<CmpEq>,
-      lift<_lexicographical_compare>
+      cfe<_lexicographical_compare>
     >
     ::template f<seq1, seq2>
     ::template f<

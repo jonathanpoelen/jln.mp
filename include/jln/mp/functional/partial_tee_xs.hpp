@@ -132,7 +132,7 @@ namespace jln::mp::detail
 
   #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class F, class C, class... Fs>
-  struct partial_tee_xs_select<2, lift<F>, C, Fs...>
+  struct partial_tee_xs_select<2, cfe<F>, C, Fs...>
   {
     template<class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C,

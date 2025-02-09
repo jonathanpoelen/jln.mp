@@ -257,7 +257,7 @@ namespace jln::mp::detail
           ints,
           pop_front<any_of<
             push_back<xs, Cmp>,
-            lift<wrap_in_list>
+            cfe<wrap_in_list>
           >>::template f,
           xs...
         >
@@ -300,7 +300,7 @@ namespace jln::mp::detail
           ints,
           pop_front<none_of<
             push_back<xs, Cmp>,
-            lift<wrap_in_list>
+            cfe<wrap_in_list>
           >>::template f,
           xs...
         >

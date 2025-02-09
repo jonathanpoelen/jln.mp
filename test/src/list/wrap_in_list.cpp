@@ -3,7 +3,7 @@
 #include "test.hpp"
 
 #include "jln/mp/smp/list/wrap_in_list.hpp"
-#include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/functional/continuation.hpp"
 #include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/utility/is_not.hpp"
 
@@ -16,7 +16,7 @@ TEST()
   using namespace jln::mp;
 
   using pred1 = is<int>;
-  using pred2 = lift<std::is_same>;
+  using pred2 = cfe<std::is_same>;
 
   ut::same<list<int>, emp::wrap_in_list_if<pred1, int>>();
   ut::same<list<>, emp::wrap_in_list_if<pred1, char>>();
@@ -29,13 +29,13 @@ TEST()
   ut::same<list<int>, emp::wrap_in_list_if_not<pred2, int, char>>();
 
   ut::same<list<>, emp::wrap_in_list_if<is<int, not_<>>, int>>();
-  ut::same<list<>, emp::wrap_in_list_if<lift<std::is_same, not_<>>, int, int>>();
+  ut::same<list<>, emp::wrap_in_list_if<cfe<std::is_same, not_<>>, int, int>>();
   ut::same<list<>, emp::wrap_in_list_if<tee<is<int>, not_<>>, int>>();
-  ut::same<list<>, emp::wrap_in_list_if<tee<lift<std::is_same>, not_<>>, int, int>>();
+  ut::same<list<>, emp::wrap_in_list_if<tee<cfe<std::is_same>, not_<>>, int, int>>();
   ut::same<list<int>, emp::wrap_in_list_if_not<is<int, not_<>>, int>>();
-  ut::same<list<int>, emp::wrap_in_list_if_not<lift<std::is_same, not_<>>, int, int>>();
+  ut::same<list<int>, emp::wrap_in_list_if_not<cfe<std::is_same, not_<>>, int, int>>();
   ut::same<list<int>, emp::wrap_in_list_if_not<tee<is<int>, not_<>>, int>>();
-  ut::same<list<int>, emp::wrap_in_list_if_not<tee<lift<std::is_same>, not_<>>, int, int>>();
+  ut::same<list<int>, emp::wrap_in_list_if_not<tee<cfe<std::is_same>, not_<>>, int, int>>();
 
   test_context<wrap_in_list_if<pred1>, smp::wrap_in_list_if<pred1>>()
     .test<list<int>, int>()

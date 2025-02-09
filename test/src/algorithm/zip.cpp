@@ -5,7 +5,7 @@
 
 #include "jln/mp/smp/algorithm/zip.hpp"
 #include "jln/mp/smp/algorithm/matrix_shortest.hpp"
-#include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/functional/continuation.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
@@ -62,8 +62,8 @@ TEST()
     ;
 
   test_context<
-    left_matrix_shortest<zip_with<lift<another_list>>>,
-    smp::left_matrix_shortest<smp::zip_with<smp::lift<another_list>>>
+    left_matrix_shortest<zip_with<cfe<another_list>>>,
+    smp::left_matrix_shortest<smp::zip_with<smp::cfe<another_list>>>
   >()
     .test<list<>, list<>, list<>>()
     .test<list<>, list<>, list<_1>>()

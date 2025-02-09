@@ -123,25 +123,25 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F, template<class...> class Seq, class... ys, class... xs>
-  struct _unpack<lift<F>, Seq<ys...>, xs...>
+  struct _unpack<cfe<F>, Seq<ys...>, xs...>
   {
     using type = F<xs..., ys...>;
   };
 
   template<template<class...> class F, template<class...> class Seq, class... xs, class... ys>
-  struct _unpack_append<lift<F>, Seq<xs...>, ys...>
+  struct _unpack_append<cfe<F>, Seq<xs...>, ys...>
   {
     using type = F<xs..., ys...>;
   };
 
   template<template<class...> class F, template<class...> class Seq, class... ys, class... xs>
-  struct _unpack<lift_t<F>, Seq<ys...>, xs...>
+  struct _unpack<cfl<F>, Seq<ys...>, xs...>
   {
     using type = typename F<xs..., ys...>::type;
   };
 
   template<template<class...> class F, template<class...> class Seq, class... xs, class... ys>
-  struct _unpack_append<lift_t<F>, Seq<xs...>, ys...>
+  struct _unpack_append<cfl<F>, Seq<xs...>, ys...>
   {
     using type = typename F<xs..., ys...>::type;
   };

@@ -83,7 +83,7 @@ namespace jln::mp
 #include <jln/mp/utility/is.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/tee.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/number/not.hpp>
 #include <type_traits>
 
@@ -214,7 +214,7 @@ namespace jln::mp::detail
 
 #if ! JLN_MP_DEBUG
   template<template<class...> class Pred>
-  struct _wrap_in_list_if<lift<Pred>>
+  struct _wrap_in_list_if<cfe<Pred>>
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
@@ -223,7 +223,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class Pred>
-  struct _wrap_in_list_if_not<lift<Pred>>
+  struct _wrap_in_list_if_not<cfe<Pred>>
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
@@ -232,7 +232,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class Pred>
-  struct _wrap_in_list_if<lift_t<Pred>>
+  struct _wrap_in_list_if<cfl<Pred>>
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
@@ -241,7 +241,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class Pred>
-  struct _wrap_in_list_if_not<lift_t<Pred>>
+  struct _wrap_in_list_if_not<cfl<Pred>>
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
@@ -276,9 +276,9 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F>
-  struct mk_wrap_in_list_if<lift<F, not_<>>>
+  struct mk_wrap_in_list_if<cfe<F, not_<>>>
   {
-    using type = _wrap_in_list_if_not<lift<F>>;
+    using type = _wrap_in_list_if_not<cfe<F>>;
   };
 
   template<class Pred>
@@ -301,9 +301,9 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F>
-  struct mk_wrap_in_list_if_not<lift<F, not_<>>>
+  struct mk_wrap_in_list_if_not<cfe<F, not_<>>>
   {
-    using type = _wrap_in_list_if<lift<F>>;
+    using type = _wrap_in_list_if<cfe<F>>;
   };
 
   template<class Pred>

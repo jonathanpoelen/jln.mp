@@ -9,7 +9,7 @@
 
 namespace jln::mp::smp::concepts
 {
-  // TODO optimize Pred = is<>, same<>, lift<std::is_same>, equal, less, not_
+  // TODO optimize Pred = is<>, same<>, cfe<std::is_same>, equal, less, not_
   // {unary, binary, mulary}_predicate
   template<class Pred, class TC = mp::identity, class FC = mp::always<false_>>
   using predicate = mp::try_<Pred, mp::try_<mp::to_bool<>, TC, FC>, FC>;

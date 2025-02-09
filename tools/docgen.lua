@@ -368,8 +368,8 @@ preproc = P{
   + P'JLN_MP_SET_CONTAINS(' * cbalancedparent * ')'
     / function(expr) return 'emp::set_contains_xs_v<' .. expr .. '>' end
 
-  + P'JLN_MP_LIFT_WRAP(' * cid * ')'
-    / function(name) return 'lift_t<' .. name .. '>' end
+  + P'JLN_MP_CF_WRAP(' * cid * ')'
+    / function(name) return 'cfl<' .. name .. '>' end
 
   + P'JLN_MP_CALL_TRY_IMPL(' * cid * ws0 * ',' * ws0 * cbalancedparent * ws0 * ')'
     / function(f, args) return 'try_<' .. preproc:match(f) .. '>::f<' .. preproc:match(args) .. '>' end

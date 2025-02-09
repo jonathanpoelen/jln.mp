@@ -69,7 +69,7 @@ namespace jln::mp
 namespace jln::mp
 {
   template<class Pred, class F, template<class...> class C>
-  struct partition_with<Pred, F, lift<C>>
+  struct partition_with<Pred, F, cfe<C>>
   {
     template<class... xs>
     using f = typename transform<Pred, detail::partition_caller<F>>

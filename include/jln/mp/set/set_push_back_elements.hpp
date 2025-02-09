@@ -4,7 +4,7 @@
 
 #include <jln/mp/algorithm/fold.hpp>
 #include <jln/mp/set/set_push_back.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 
 
 namespace jln::mp
@@ -16,7 +16,7 @@ namespace jln::mp
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///   fold<lift<emp::set_push_back>>::f<xs...>
+  ///   fold<cfe<emp::set_push_back>>::f<xs...>
   ///   \endcode
   /// \pre \c emp::is_unique<Set>
   /// \post \c emp::is_unique<result>
@@ -31,7 +31,7 @@ namespace jln::mp
 #else
   template<class C = listify>
   using set_push_back_elements = fold<
-    lift<emp::set_push_back>,
+    cfe<emp::set_push_back>,
     detail::optimize_useless_unpack_t<unpack<C>>
   >;
 #endif

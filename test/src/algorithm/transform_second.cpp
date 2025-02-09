@@ -20,7 +20,7 @@ TEST()
   test_mulary_pack<transform_second, inc<>>();
 
   ut::same<list<_0, _2, _2>, emp::transform_second<seq_0_1_2, inc<>>>();
-  ut::same<list<_0, _2, void>, emp::transform_second<seq_0_1, inc<>, lift<to>>>();
+  ut::same<list<_0, _2, void>, emp::transform_second<seq_0_1, inc<>, cfe<to>>>();
 
   test_context<transform_second<inc<>>, smp::transform_second<smp::inc<>>>()
     .test<list<_1, _4>, _1, _3>()

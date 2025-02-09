@@ -3,7 +3,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/functional/continuation.hpp"
 #include "jln/mp/smp/functional/partial_transform.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 

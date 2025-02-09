@@ -11,7 +11,7 @@ namespace jln::mp::smp
 {
   template<unsigned i, class F, class C = listify>
   using transform_at_c = typename detail::repeat_impl<
-    1, i, mp::bind_back<mp::lift<partial_transform>, F, C>
+    1, i, mp::bind_back<mp::cfe<partial_transform>, F, C>
   >::template f<identity>::type;
 }
 

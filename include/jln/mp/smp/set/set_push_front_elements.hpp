@@ -31,7 +31,7 @@ namespace jln::mp::smp
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, fold<lift<emp::set_push_front>, C>>
+  struct _sfinae<sfinae, fold<cfe<emp::set_push_front>, C>>
   {
     using type = smp::set_push_front_elements<
       JLN_MP_CONDITIONAL_C_T(

@@ -83,7 +83,7 @@ namespace jln::mp
 
 #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<unsigned N, template<class...> class C>
-  struct take_back_c<N, lift<C>>
+  struct take_back_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::drop_front_impl<sizeof...(xs) - N>
@@ -91,7 +91,7 @@ namespace jln::mp
   };
 
   template<unsigned N, template<class...> class C>
-  struct take_back_max_c<N, lift<C>>
+  struct take_back_max_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::drop_front_impl<

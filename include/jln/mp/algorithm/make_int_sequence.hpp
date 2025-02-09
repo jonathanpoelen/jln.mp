@@ -260,7 +260,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F>
-  struct make_int_sequence_impl<numbers<lift<F>>>
+  struct make_int_sequence_impl<numbers<cfe<F>>>
   {
     template<class, int_t... ns>
     struct f
@@ -270,7 +270,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F, class C>
-  struct make_int_sequence_impl<numbers<lift<F, C>>>
+  struct make_int_sequence_impl<numbers<cfe<F, C>>>
   {
     template<class, int_t... ns>
     struct f
@@ -280,7 +280,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F>
-  struct make_int_sequence_impl<numbers<lift_t<F>>>
+  struct make_int_sequence_impl<numbers<cfl<F>>>
   {
     template<class, int_t... ns>
     struct f
@@ -290,7 +290,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F, class C>
-  struct make_int_sequence_impl<numbers<lift_t<F, C>>>
+  struct make_int_sequence_impl<numbers<cfl<F, C>>>
   {
     template<class, int_t... ns>
     struct f
@@ -300,7 +300,7 @@ namespace jln::mp::detail
   };
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct make_int_sequence_impl<lift_v_c<F>>
+  struct make_int_sequence_impl<cfe_v_c<F>>
   {
     template<class, int_t... ns>
     struct f
@@ -310,7 +310,7 @@ namespace jln::mp::detail
   };
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
-  struct make_int_sequence_impl<lift_v_c<F, C>>
+  struct make_int_sequence_impl<cfe_v_c<F, C>>
   {
     template<class, int_t... ns>
     struct f
@@ -320,7 +320,7 @@ namespace jln::mp::detail
   };
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct make_int_sequence_impl<lift_v_c_t<F>>
+  struct make_int_sequence_impl<cfl_v_c<F>>
   {
     template<class, int_t... ns>
     struct f
@@ -330,7 +330,7 @@ namespace jln::mp::detail
   };
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
-  struct make_int_sequence_impl<lift_v_c_t<F, C>>
+  struct make_int_sequence_impl<cfl_v_c<F, C>>
   {
     template<class, int_t... ns>
     struct f
@@ -340,19 +340,19 @@ namespace jln::mp::detail
   };
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct make_int_sequence_impl<numbers<lift_v<F>>> : make_int_sequence_impl<lift_v_c<F>>
+  struct make_int_sequence_impl<numbers<cfe_v<F>>> : make_int_sequence_impl<cfe_v_c<F>>
   {};
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
-  struct make_int_sequence_impl<numbers<lift_v<F, C>>> : make_int_sequence_impl<lift_v_c<F, C>>
+  struct make_int_sequence_impl<numbers<cfe_v<F, C>>> : make_int_sequence_impl<cfe_v_c<F, C>>
   {};
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct make_int_sequence_impl<numbers<lift_v_t<F>>> : make_int_sequence_impl<lift_v_c_t<F>>
+  struct make_int_sequence_impl<numbers<cfl_v<F>>> : make_int_sequence_impl<cfl_v_c<F>>
   {};
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
-  struct make_int_sequence_impl<numbers<lift_v_t<F, C>>> : make_int_sequence_impl<lift_v_c_t<F, C>>
+  struct make_int_sequence_impl<numbers<cfl_v<F, C>>> : make_int_sequence_impl<cfl_v_c<F, C>>
   {};
 }
 #elif ! defined(JLN_MP_FALLBACK_TO_STD_SEQUENCE)

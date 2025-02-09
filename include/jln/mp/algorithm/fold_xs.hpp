@@ -149,7 +149,7 @@ namespace jln::mp
 
 #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<int_t OffsetEnd, template<class...> class F, class C>
-  struct partial_fold_xs_c<OffsetEnd, lift<F>, C>
+  struct partial_fold_xs_c<OffsetEnd, cfe<F>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
@@ -162,7 +162,7 @@ namespace jln::mp
   };
 
   template<int_t OffsetEnd, template<class...> class F>
-  struct partial_fold_xs_c<OffsetEnd, lift<F>, identity>
+  struct partial_fold_xs_c<OffsetEnd, cfe<F>, identity>
   {
     template<class... xs>
     using f = detail::partial_fold_xs_select<
@@ -173,7 +173,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F, class C>
-  struct partial_fold_xs_c<-1, lift<F>, C>
+  struct partial_fold_xs_c<-1, cfe<F>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
@@ -182,7 +182,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F>
-  struct partial_fold_xs_c<-1, lift<F>, identity>
+  struct partial_fold_xs_c<-1, cfe<F>, identity>
   {
     template<class... xs>
     using f = detail::partial_fold_xs_select<F, sizeof...(xs), xs...>;

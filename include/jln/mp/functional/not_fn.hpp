@@ -39,7 +39,7 @@ namespace jln::mp
 #include <jln/mp/list/push_front.hpp>
 #include <jln/mp/algorithm/same.hpp>
 #include <jln/mp/utility/is.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/number/to_bool.hpp>
 #include <jln/mp/number/not.hpp>
 
@@ -120,23 +120,23 @@ namespace jln::mp::detail
   };
 
   template<class PredNot>
-  struct to_not_fn_lift;
+  struct to_not_fn_cfe;
 
   template<template<class...> class F, class C, class Not>
-  struct to_not_fn_lift<lift<F, tee<C, Not>>>
+  struct to_not_fn_cfe<cfe<F, tee<C, Not>>>
   {
-    using type = tee<lift<F, C>, Not>;
+    using type = tee<cfe<F, C>, Not>;
   };
 
   template<class PredNot>
-  struct to_not_fn_lift
+  struct to_not_fn_cfe
   {
     using type = PredNot;
   };
 
   template<template<class...> class F, class C>
-  struct to_not_fn<lift<F, C>>
-  : to_not_fn_lift<lift<F, to_not_fn_t<C>>>
+  struct to_not_fn<cfe<F, C>>
+  : to_not_fn_cfe<cfe<F, to_not_fn_t<C>>>
   {};
 
   template<class x, class C>

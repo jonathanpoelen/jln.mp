@@ -42,7 +42,7 @@ namespace jln::mp
   struct regroup_by_with
   {
     template<class... xs>
-    using f = typename unique_if<Cmp, lift<detail::regroup_by_impl>>
+    using f = typename unique_if<Cmp, cfe<detail::regroup_by_impl>>
       ::template f<xs...>
       ::template f<C, F, Cmp, xs...>;
   };

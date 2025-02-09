@@ -83,7 +83,7 @@ namespace jln::mp::detail
 
   template<class Cmp, class seq0>
   using smp_to_is_disjoint_impl = smp::unpack<smp_is_disjoint_impl<
-    typename smp::unpack<contract<lift<smp_is_disjoint_of>>>
+    typename smp::unpack<contract<cfe<smp_is_disjoint_of>>>
     ::template f<seq0, Cmp>
   >>;
 

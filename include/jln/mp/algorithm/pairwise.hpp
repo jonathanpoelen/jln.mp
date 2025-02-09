@@ -57,7 +57,7 @@ namespace jln::mp
 /// \cond
 #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<class F, template<class...> class C>
-  struct pairwise_with<F, lift<C>>
+  struct pairwise_with<F, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::pairwise_impl<
@@ -68,7 +68,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F, class C>
-  struct pairwise_with<lift<F>, C>
+  struct pairwise_with<cfe<F>, C>
   {
     template<class... xs>
     using f = typename detail::pairwise_impl<
@@ -79,7 +79,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F, template<class...> class C>
-  struct pairwise_with<lift<F>, lift<C>>
+  struct pairwise_with<cfe<F>, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::pairwise_impl<

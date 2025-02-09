@@ -5,7 +5,7 @@
 
 #include "jln/mp/smp/algorithm/is_unique.hpp"
 #include "jln/mp/smp/functional/each.hpp"
-#include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/functional/continuation.hpp"
 #include "jln/mp/smp/utility/unpack.hpp"
 #include "jln/mp/smp/list/at.hpp"
 #include "jln/mp/smp/number/operators.hpp"
@@ -45,8 +45,8 @@ TEST()
   using first = unpack<at0<>>;
   using smp_first = smp::unpack<smp::at0<>>;
   test_context<
-    is_unique_if<each<first, first, lift<std::is_same>>>,
-    smp::is_unique_if<smp::each<smp_first, smp_first, smp::lift<std::is_same>>>,
+    is_unique_if<each<first, first, cfe<std::is_same>>>,
+    smp::is_unique_if<smp::each<smp_first, smp_first, smp::cfe<std::is_same>>>,
     0 /* unpack<front<>> / unpack<at0<>> is optimized */
   >()
     .test<_1>()

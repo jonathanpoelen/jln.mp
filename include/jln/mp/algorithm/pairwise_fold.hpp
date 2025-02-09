@@ -63,7 +63,7 @@ namespace jln::mp
 namespace jln::mp
 {
   template<template<class...> class F, class Front, class C>
-  struct pairwise_fold_and_transform_front<lift<F>, Front, C>
+  struct pairwise_fold_and_transform_front<cfe<F>, Front, C>
   {
     template<class... xs>
     using f = typename detail::pairwise_fold_impl<

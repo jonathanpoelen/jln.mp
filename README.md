@@ -35,7 +35,7 @@ using result = jln::mp::call<remove_void, int, void, double, char>;
 Now suppose that `result` must be a `std::tuple`. Rather than linking with another function, it is possible to combine them in `remove_void` via a continuation (`C` parameter).
 
 ```cpp
-using remove_void = jln:mp::remove<void, /*C=*/jln::mp::lift<std::tuple>>;
+using remove_void = jln:mp::remove<void, /*C=*/jln::mp::cfe<std::tuple>>;
 
 using result = jln::mp::call<remove_void, int, void, double, char>;
 // result == std::tuple<int, double, char>
@@ -67,7 +67,7 @@ jln::mp::call<to_tuple, int, double> == std::tuple<int, double>
 In the mind of the library, functions should at least take a continuation.
 
 ```cpp
-// equivalent to jln::mp::lift<std::tuple, C>
+// equivalent to jln::mp::cfe<std::tuple, C>
 template<class C = jln::mp::identity>
 struct to_tuple
 {
@@ -108,7 +108,7 @@ Implementation of `std::tuple_cat` that works with tuple like.
 #include "jln/mp/algorithm/repeat.hpp"
 #include "jln/mp/algorithm/repeat_index.hpp"
 #include "jln/mp/functional/each.hpp"
-#include "jln/mp/functional/lift.hpp"
+#include "jln/mp/functional/continuation.hpp"
 #include "jln/mp/list/join.hpp"
 
 #include <array>
@@ -127,7 +127,7 @@ struct my_tuple_element
 template<class... Tuples>
 using my_tuple_cat_result_type = mp::call<
     // Convert a sequence of mp::list to std::tuple
-    mp::join<mp::lift<std::tuple>>,
+    mp::join<mp::cfe<std::tuple>>,
     // Convert a tuple like to mp::list of tuple element.
     // To support tuple-likes, it is necessary to use std::tuple_size and std::tuple_element.
     // Otherwise, emp::unpack<Tuples> is sufficient.

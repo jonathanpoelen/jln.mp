@@ -3,18 +3,18 @@
 #pragma once
 
 #include <jln/mp/list/list.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 
 namespace jln::mp
 {
   /// \ingroup list
 
   /// \treturn \link list
-  using listify = lift<list>;
+  using listify = cfe<list>;
 
   /// \cond
   template<>
-  struct lift<list, identity>
+  struct cfe<list, identity>
   {
     template<class... xs>
     using f = list<xs...>;

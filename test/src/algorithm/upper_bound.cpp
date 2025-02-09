@@ -23,15 +23,15 @@ static void test_upper_bound()
 
   using f = iota<upper_bound_than_c<
     less_than,
-    lift<list>,
-    lift<other_list>
+    cfe<list>,
+    cfe<other_list>
   >>;
 
   int const size = (less_than + 1 < count) ? count - (less_than + 1) : 0;
   using to_list = emp::conditional_c<
     size != 0,
-    lift<list>,
-    lift<other_list>
+    cfe<list>,
+    cfe<other_list>
   >;
   using result = emp::iota_c<less_than+1, size, 1, to_list>;
 

@@ -33,7 +33,7 @@ namespace jln::mp
 namespace jln::mp
 {
   template<class x, template<class...> class C>
-  struct prefix<x, lift<C>>
+  struct prefix<x, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>

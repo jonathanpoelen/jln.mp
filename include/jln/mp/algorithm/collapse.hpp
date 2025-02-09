@@ -51,10 +51,10 @@ namespace jln::mp
 
 
   template<class keys, class F = listify, class C = listify>
-  using collapse_with = typename detail::_unpack<lift<collapse2_with>, keys, C, F>::type;
+  using collapse_with = typename detail::_unpack<cfe<collapse2_with>, keys, C, F>::type;
 
   template<class keys, class C = listify>
-  using collapse = typename detail::_unpack<lift<collapse2_with>, keys, C, listify>::type;
+  using collapse = typename detail::_unpack<cfe<collapse2_with>, keys, C, listify>::type;
 
 
   template<class... keys>

@@ -5,7 +5,7 @@
 
 #include "jln/mp/smp/algorithm/unique.hpp"
 #include "jln/mp/smp/functional/each.hpp"
-#include <jln/mp/smp/functional/lift.hpp>
+#include <jln/mp/smp/functional/continuation.hpp>
 #include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/list/at.hpp"
 
@@ -54,8 +54,8 @@ TEST()
   using smp_first = smp::unpack<smp::at0<>>;
 
   test_context<
-    unique_if<each<first, first, lift<std::is_same>>>,
-    smp::unique_if<smp::each<smp_first, smp_first, smp::lift<std::is_same>>>,
+    unique_if<each<first, first, cfe<std::is_same>>>,
+    smp::unique_if<smp::each<smp_first, smp_first, smp::cfe<std::is_same>>>,
     0 /* unpack<front<>> / unpack<at0<>> is optimized */
   >()
     .test<list<>>()
@@ -69,7 +69,7 @@ TEST()
   ut::not_invocable<smp::unique_if<smp::always<na>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::unique_if<always<void>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::unique_if<bad_function>, _1, _1, _1, _1>();
-  ut::not_invocable<smp::unique_if<lift<std::is_same>, bad_function>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::unique_if<cfe<std::is_same>, bad_function>, _1, _1, _1, _1>();
 }
 
 TEST_SUITE_END()

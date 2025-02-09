@@ -6,7 +6,7 @@
 #include <jln/mp/smp/list/pop_front.hpp>
 #include <jln/mp/smp/functional/recursively.hpp>
 #include <jln/mp/functional/until_last.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/type.hpp>
 
@@ -15,7 +15,7 @@ namespace jln::mp::smp
   template<class Searcher>
   using until_last = emp::try_<
     mp::type_<>,
-    mp::lift<contract>,
+    mp::cfe<contract>,
     mp::always<bad_contract>,
     detail::until_last_impl<Searcher>
   >;

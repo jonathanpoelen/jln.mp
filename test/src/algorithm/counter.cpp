@@ -59,7 +59,7 @@ TEST()
 
   ut::not_invocable<smp::counter_wrapped_with<smp::always<na>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::counter_wrapped_with<bad_function>, _1, _1, _1, _1>();
-  ut::not_invocable<smp::counter_wrapped_with<lift_t<list>>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::counter_wrapped_with<cfl<list>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::counter_wrapped_with<listify, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::counter_wrapped_with<bad_function, bad_function>, _1, _1, _1, _1>();
 }

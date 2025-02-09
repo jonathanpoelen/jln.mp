@@ -4,7 +4,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/functional/cascade.hpp"
-#include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/functional/continuation.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
 TEST_SUITE_BEGIN()
@@ -15,9 +15,9 @@ template<class...> class list3 {};
 
 template<template<class...> class F>
 using make_cascade = F<
-  jln::mp::lift<list1>,
-  jln::mp::lift<list2>,
-  jln::mp::lift<list3>
+  jln::mp::cfe<list1>,
+  jln::mp::cfe<list2>,
+  jln::mp::cfe<list3>
 >;
 
 TEST()

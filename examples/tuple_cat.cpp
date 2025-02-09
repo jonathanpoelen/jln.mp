@@ -5,7 +5,7 @@
 #include "jln/mp/algorithm/repeat.hpp"
 #include "jln/mp/algorithm/repeat_index.hpp"
 #include "jln/mp/functional/each.hpp"
-#include "jln/mp/functional/lift.hpp"
+#include "jln/mp/functional/continuation.hpp"
 #include "jln/mp/list/join.hpp"
 
 #include <array>
@@ -24,7 +24,7 @@ struct my_tuple_element
 template<class... Tuples>
 using my_tuple_cat_result_type = mp::call<
     // Convert a sequence of mp::list to std::tuple
-    mp::join<mp::lift<std::tuple>>,
+    mp::join<mp::cfe<std::tuple>>,
     // Convert a tuple like to mp::list of tuple element.
     // To support tuple-likes, it is necessary to use std::tuple_size and std::tuple_element.
     // Otherwise, emp::unpack<Tuples> is sufficient.

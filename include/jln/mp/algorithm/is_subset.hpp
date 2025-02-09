@@ -88,7 +88,7 @@ namespace jln::mp::detail
 
   template<class Cmp, class seq0>
   using to_is_subset_impl = is_disjoint_impl<
-    typename _unpack<lift<_is_subset_of>, seq0, Cmp>::type
+    typename _unpack<cfe<_is_subset_of>, seq0, Cmp>::type
   >;
 
   template<>

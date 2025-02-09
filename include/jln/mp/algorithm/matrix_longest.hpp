@@ -7,7 +7,7 @@
 #include <jln/mp/list/push_front.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/functional/each.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/functional/bind_back.hpp>
 
 namespace jln::mp
@@ -61,7 +61,7 @@ namespace jln::mp
     template<class... seqs>
     using f = typename detail::matrix_longest_impl<
       FillValue,
-      push_front<unpack<F>, lift<bind_back>>,
+      push_front<unpack<F>, cfe<bind_back>>,
       typename detail::optimize_useless_unpack<unpack<F>>::type,
       C, typename detail::_unpack<size<>, seqs>::type...
     >::template f<seqs...>;
@@ -93,7 +93,7 @@ namespace jln::mp
     template<class... seqs>
     using f = typename detail::matrix_longest_impl<
       FillValue,
-      push_front<unpack_append<F>, lift<bind_back>>,
+      push_front<unpack_append<F>, cfe<bind_back>>,
       typename detail::optimize_useless_unpack<unpack<F>>::type,
       C, typename detail::_unpack<size<>, seqs>::type...
     >::template f<seqs...>;

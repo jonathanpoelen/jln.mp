@@ -7,7 +7,7 @@
 #include "jln/mp/smp/number/operators.hpp"
 #include "jln/mp/smp/functional/tee.hpp"
 #include "jln/mp/smp/functional/if.hpp"
-#include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/functional/continuation.hpp"
 
 TEST_SUITE_BEGIN()
 
@@ -18,13 +18,13 @@ TEST()
 
   using f = if_<
     less_than_c<5>,
-    tee<identity, inc<>, lift<Some>>,
+    tee<identity, inc<>, cfe<Some>>,
     None
   >;
 
   using smp_f = smp::if_<
     smp::less_than_c<5>,
-    smp::tee<smp::identity, smp::inc<>, smp::lift<Some>>,
+    smp::tee<smp::identity, smp::inc<>, smp::cfe<Some>>,
     smp::None
   >;
 

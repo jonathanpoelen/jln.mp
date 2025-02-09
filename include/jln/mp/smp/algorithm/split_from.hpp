@@ -34,7 +34,7 @@ namespace jln::mp::smp
 }
 
 
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/functional/monadic.hpp>
 #include <jln/mp/detail/expr_conversion.hpp>
 

@@ -74,7 +74,7 @@ namespace jln::mp::detail
           ints,
           pop_front<smp::any_of<
             contract<push_back<xs, Cmp>>,
-            contract<lift<wrap_in_list>>
+            contract<cfe<wrap_in_list>>
           >>::template f,
           xs...
         >
@@ -126,7 +126,7 @@ namespace jln::mp::detail
           ints,
           pop_front<smp::none_of<
             contract<push_back<xs, Cmp>>,
-            contract<lift<wrap_in_list>>
+            contract<cfe<wrap_in_list>>
           >>::template f,
           xs...
         >

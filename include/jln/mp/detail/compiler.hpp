@@ -156,7 +156,7 @@
 
 /// When 1, the compiler considers an alias that makes
 /// `alias<xs...>` = `F<xs...>` is identical to `F`.
-/// Therefore, `lift<alias>` and `lift<F>` will be the same.
+/// Therefore, `cfe<alias>` and `cfe<F>` will be the same.
 #ifndef JLN_MP_OPTIMIZED_ALIAS
 #  define JLN_MP_OPTIMIZED_ALIAS 0
 #endif

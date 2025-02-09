@@ -7,7 +7,7 @@
 #include "jln/mp/list/listify.hpp"
 #include "jln/mp/functional/if.hpp"
 #include "jln/mp/functional/call.hpp"
-#include "jln/mp/functional/lift.hpp"
+#include "jln/mp/functional/continuation.hpp"
 #include "jln/mp/smp/functional/sfinaefwd.hpp"
 
 namespace jln::mp

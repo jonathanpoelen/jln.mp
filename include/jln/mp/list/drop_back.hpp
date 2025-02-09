@@ -62,7 +62,7 @@ namespace jln::mp
   /// \cond
   #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<unsigned N, template<class...> class C>
-  struct drop_back_c<N, lift<C>>
+  struct drop_back_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::take_front_impl<sizeof...(xs) - N>
@@ -70,12 +70,12 @@ namespace jln::mp
   };
 
   template<template<class...> class C>
-  struct drop_back_c<0, lift<C>>
-    : detail::call_trace_xs<lift<C>>
+  struct drop_back_c<0, cfe<C>>
+    : detail::call_trace_xs<cfe<C>>
   {};
 
   template<unsigned N, template<class...> class C>
-  struct drop_back_max_c<N, lift<C>>
+  struct drop_back_max_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::take_front_impl<
@@ -88,8 +88,8 @@ namespace jln::mp
   };
 
   template<template<class...> class C>
-  struct drop_back_max_c<0, lift<C>>
-    : detail::call_trace_xs<lift<C>>
+  struct drop_back_max_c<0, cfe<C>>
+    : detail::call_trace_xs<cfe<C>>
   {};
   #endif
 

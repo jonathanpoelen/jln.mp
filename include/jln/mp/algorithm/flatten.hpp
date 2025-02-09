@@ -3,7 +3,7 @@
 #pragma once
 
 #include <jln/mp/list/join.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/utility/wrapper.hpp>
 
@@ -31,12 +31,12 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence
   /// \see flatten
-  template<class S = lift<list>, class C = listify>
+  template<class S = cfe<list>, class C = listify>
   struct flatten_once
   {};
 
   template<template<class...> class S, class C>
-  struct flatten_once<lift<S, identity>, C>
+  struct flatten_once<cfe<S, identity>, C>
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
@@ -45,10 +45,10 @@ namespace jln::mp
   };
 
   template<template<class...> class S, class C = listify>
-  using flatten_once_f = flatten_once<lift<S>, C>;
+  using flatten_once_f = flatten_once<cfe<S>, C>;
 
   template<template<class...> class S, class C = identity>
-  using flatten_once_for_f = flatten_once<lift<S>, lift<S, C>>;
+  using flatten_once_for_f = flatten_once<cfe<S>, cfe<S, C>>;
 
   /// Recursive version of \c flatten_once.
   /// \semantics
@@ -59,12 +59,12 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence
   /// \see flatten_once
-  template<class S = lift<list>, class C = listify>
+  template<class S = cfe<list>, class C = listify>
   struct flatten
   {};
 
   template<template<class...> class S, class C>
-  struct flatten<lift<S, identity>, C>
+  struct flatten<cfe<S, identity>, C>
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
@@ -73,10 +73,10 @@ namespace jln::mp
   };
 
   template<template<class...> class S, class C = listify>
-  using flatten_f = flatten<lift<S>, C>;
+  using flatten_f = flatten<cfe<S>, C>;
 
   template<template<class...> class S, class C = identity>
-  using flatten_for_f = flatten<lift<S>, lift<S, C>>;
+  using flatten_for_f = flatten<cfe<S>, cfe<S, C>>;
 
   namespace emp
   {
@@ -102,7 +102,7 @@ namespace jln::mp
 /// \cond
 #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class S, template<class...> class C>
-  struct flatten_once<lift<S, identity>, lift<C>>
+  struct flatten_once<cfe<S, identity>, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
@@ -111,7 +111,7 @@ namespace jln::mp
   };
 
   template<template<class...> class S, template<class...> class C>
-  struct flatten<lift<S, identity>, lift<C>>
+  struct flatten<cfe<S, identity>, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>

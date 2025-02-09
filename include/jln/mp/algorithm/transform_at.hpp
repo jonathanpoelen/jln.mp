@@ -21,7 +21,7 @@ namespace jln::mp
   };
 #else
   using transform_at_c = typename detail::repeat_impl<
-    1, i, bind_back<lift<partial_transform>, F, C>
+    1, i, bind_back<cfe<partial_transform>, F, C>
   >::template f<identity>::type;
 #endif
 

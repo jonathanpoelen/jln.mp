@@ -33,7 +33,7 @@ namespace jln::mp
   ///   unfold<
   ///     if_<
   ///       less_than_c<5>,
-  ///       inc<lift<Some>>,
+  ///       inc<cfe<Some>>,
   ///       None
   ///     >
   ///   >::f<number<0>>

@@ -38,7 +38,7 @@ namespace jln::mp
 }
 
 #include <jln/mp/utility/conditional.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/utility/is_not.hpp>
 
 /// \cond
@@ -70,7 +70,7 @@ namespace jln::mp::detail
 
 #if ! JLN_MP_DEBUG
   template<template<class...> class Pred, class Replacement>
-  struct substitute_if<lift<Pred>, Replacement>
+  struct substitute_if<cfe<Pred>, Replacement>
   {
     template<class x>
     using f = JLN_MP_CONDITIONAL_C_T(
@@ -80,7 +80,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class Pred, class Replacement>
-  struct substitute_if<lift_t<Pred>, Replacement>
+  struct substitute_if<cfl<Pred>, Replacement>
   {
     template<class x>
     using f = JLN_MP_CONDITIONAL_C_T(

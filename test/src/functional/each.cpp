@@ -3,7 +3,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/functional/continuation.hpp"
 #include "jln/mp/smp/functional/each.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
@@ -57,7 +57,7 @@ TEST()
   ut::not_invocable<smp::each<bad_function>>();
   ut::not_invocable<smp::each<bad_function, bad_function, bad_function>, _1, _1>();
   ut::not_invocable<smp::each<identity, identity, bad_function>, _1, _1>();
-  ut::not_invocable<smp::lift<smp::each>>();
+  ut::not_invocable<smp::cfe<smp::each>>();
 }
 
 TEST_SUITE_END()

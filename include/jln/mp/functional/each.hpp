@@ -4,7 +4,7 @@
 
 #include <jln/mp/algorithm/rotate.hpp>
 #include <jln/mp/number/number.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/functional/call.hpp>
 
 namespace jln::mp

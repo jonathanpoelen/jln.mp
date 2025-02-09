@@ -66,7 +66,7 @@ namespace jln::mp
 
 
 #include <jln/mp/algorithm/drop_until.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/list/push_back.hpp>
 
 /// \cond
@@ -103,7 +103,7 @@ namespace jln::mp::detail
 
   template<class Cmp, class seq0>
   using to_is_disjoint_impl = is_disjoint_impl<
-    typename _unpack<lift<is_disjoint_of>, seq0, Cmp>::type
+    typename _unpack<cfe<is_disjoint_of>, seq0, Cmp>::type
   >;
 
   template<>

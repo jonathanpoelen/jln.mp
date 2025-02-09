@@ -42,7 +42,7 @@ namespace jln::mp
 /// \cond
 #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<class F, template<class...> class C>
-  struct transform<F, lift<C>>
+  struct transform<F, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
@@ -50,7 +50,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F, class C>
-  struct transform<lift<F>, C>
+  struct transform<cfe<F>, C>
   {
     template<class... xs>
     using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
@@ -58,7 +58,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F, template<class...> class C>
-  struct transform<lift<F>, lift<C>>
+  struct transform<cfe<F>, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
@@ -74,7 +74,7 @@ namespace jln::mp
   }
 
   template<template<class...> class F, class C>
-  struct transform<lift_t<F>, C>
+  struct transform<cfl<F>, C>
   {
     template<class... xs>
     using f = typename detail::transform_impl_t<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
@@ -82,7 +82,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F, template<class...> class C>
-  struct transform<lift_t<F>, lift<C>>
+  struct transform<cfl<F>, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::transform_impl_t<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>

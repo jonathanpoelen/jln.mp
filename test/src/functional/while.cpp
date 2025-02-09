@@ -4,7 +4,7 @@
 #include "test/numbers.hpp"
 
 #include "jln/mp/smp/functional/while.hpp"
-#include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/functional/continuation.hpp"
 #include "jln/mp/smp/functional/if.hpp"
 #include "jln/mp/smp/list/push_back.hpp"
 #include "jln/mp/smp/list/is_size_of.hpp"

@@ -179,7 +179,7 @@ namespace jln::mp
 
 #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class C>
-  struct unique_if<same<>, lift<C>>
+  struct unique_if<same<>, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::flat_recursive_unique<

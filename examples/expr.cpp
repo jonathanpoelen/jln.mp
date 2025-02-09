@@ -7,7 +7,7 @@
 #include <jln/mp/algorithm/transform.hpp>
 #include <jln/mp/algorithm/unique.hpp>
 #include <jln/mp/functional/if.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/list/at.hpp>
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/size.hpp>
@@ -95,12 +95,12 @@ struct is_expression<Expression<Ts...>> : std::true_type
 // other => Value
 template<class T>
 using to_expr_type = mp::if_<
-  mp::lift<is_expression>,
+  mp::cfe<is_expression>,
   mp::identity,
   mp::if_<
-    mp::lift<is_var>,
+    mp::cfe<is_var>,
     mp::identity,
-    mp::lift<Value>
+    mp::cfe<Value>
   >
 >::f<T>;
 
@@ -124,9 +124,9 @@ namespace detail
 struct extract_vars : mp::unpack<
   mp::transform<
     mp::if_<
-      mp::lift<is_expression>,
+      mp::cfe<is_expression>,
       extract_vars, // recursivity
-      mp::wrap_in_list_if<mp::lift<is_var>>
+      mp::wrap_in_list_if<mp::cfe<is_var>>
     >,
     mp::join<>
   >
@@ -175,7 +175,7 @@ namespace error
 
 template<template<class...> class Error, class L, class... Ts>
 using extract_unknown_variables = mp::call<
-  mp::join<mp::lift<Error>>,
+  mp::join<mp::cfe<Error>>,
   mp::emp::wrap_in_list_c<
     !mp::emp::contains<L, Ts>::value,
     Ts
@@ -193,7 +193,7 @@ struct values_factory<
 >
   : extract_unknown_variables<error::missing_variables, mp::list<ValueVariable...>, ExprVariable...>
   , extract_unknown_variables<error::too_many_variables, mp::list<ExprVariable...>, ValueVariable...>
-  , mp::join<mp::lift<error::duplicate_variables>>::f<
+  , mp::join<mp::cfe<error::duplicate_variables>>::f<
       mp::call<mp::repeat_c<
         mp::call<mp::count<SingleValueVariable>, ValueVariable...>::value - 1
       >, SingleValueVariable>

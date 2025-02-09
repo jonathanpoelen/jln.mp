@@ -72,7 +72,7 @@ namespace jln::mp
 namespace jln::mp
 {
   template<template<class...> class F, class C>
-  struct enumerate_with<lift<F>, C>
+  struct enumerate_with<cfe<F>, C>
   {
     template<class... xs>
     using f = typename detail::enumerate_impl<emp::make_int_sequence_c<sizeof...(xs)>>

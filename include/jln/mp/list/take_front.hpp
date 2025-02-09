@@ -69,7 +69,7 @@ namespace jln::mp
   /// \cond
   #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<unsigned N, template<class...> class C>
-  struct take_front_c<N, lift<C>>
+  struct take_front_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::take_front_impl<(sizeof...(xs) & 0) + N>

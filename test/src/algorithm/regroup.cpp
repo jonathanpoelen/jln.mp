@@ -38,7 +38,7 @@ TEST()
   ut::not_invocable<smp::regroup<smp::always<na>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::regroup<bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::regroup_with<bad_function>, _1, _1, _1, _1>();
-  ut::not_invocable<smp::regroup_with<lift_t<list>>, _1, _1, _1, _1>();
+  ut::not_invocable<smp::regroup_with<cfl<list>>, _1, _1, _1, _1>();
   ut::not_invocable<smp::regroup_with<listify, bad_function>, _1, _1, _1, _1>();
   ut::not_invocable<smp::regroup_with<bad_function, bad_function>, _1, _1, _1, _1>();
 
@@ -54,8 +54,8 @@ TEST()
     ;
 
   test_context<
-    regroup_by<compare_with<traits::extent<>, lift<std::is_same>>>,
-    smp::regroup_by<smp::compare_with<smp::traits::extent<>, contract<lift<std::is_same>>>>
+    regroup_by<compare_with<traits::extent<>, cfe<std::is_same>>>,
+    smp::regroup_by<smp::compare_with<smp::traits::extent<>, contract<cfe<std::is_same>>>>
   >()
     .test<list<>>()
     .test<list<list<int>>, int>()

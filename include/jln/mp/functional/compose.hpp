@@ -3,7 +3,7 @@
 #pragma once
 
 #include <jln/mp/algorithm/fold_right.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/list/at.hpp>
 
@@ -42,7 +42,7 @@ namespace jln::mp
   using compose = typename conditional_c<sizeof...(Fs) == 0>
     ::template f<
       at1<F>,
-      mp::fold_right<JLN_MP_LIFT_WRAP(detail::compose_impl)>
+      mp::fold_right<JLN_MP_CF_WRAP(detail::compose_impl)>
     >
     ::template f<identity, F, Fs...>;
 }
@@ -111,15 +111,15 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F, class x>
-  struct compose_impl<lift<F>, x>
+  struct compose_impl<cfe<F>, x>
   {
-    using type = lift<F, x>;
+    using type = cfe<F, x>;
   };
 
   template<template<class...> class F, class x>
-  struct compose_impl<lift_t<F>, x>
+  struct compose_impl<cfl<F>, x>
   {
-    using type = lift_t<F, x>;
+    using type = cfl<F, x>;
   };
 
   template<class F>
@@ -130,16 +130,16 @@ namespace jln::mp::detail
 
   // fix ambiguity
   template<template<class...> class F>
-  struct compose_impl<lift<F>, identity>
+  struct compose_impl<cfe<F>, identity>
   {
-    using type = lift<F>;
+    using type = cfe<F>;
   };
 
   // fix ambiguity
   template<template<class...> class F>
-  struct compose_impl<lift_t<F>, identity>
+  struct compose_impl<cfl<F>, identity>
   {
-    using type = lift_t<F>;
+    using type = cfl<F>;
   };
 }
 /// \endcond

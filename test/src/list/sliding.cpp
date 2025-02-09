@@ -3,7 +3,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/functional/continuation.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 #include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/list/sliding.hpp"
@@ -45,7 +45,7 @@ TEST()
 
   ut::same<list<seq_0_1, seq_1_2>, emp::sliding<seq_0_1_2, _2>>();
 
-  using listify2 = lift<list, listify>;
+  using listify2 = cfe<list, listify>;
   using smp_listify2 = detail::sfinae<listify2>;
 
   test_context<sliding<_1>, smp::sliding<_1>>()

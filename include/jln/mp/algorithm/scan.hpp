@@ -52,7 +52,7 @@ namespace jln::mp
 namespace jln::mp
 {
   template<template<class...> class F, class C>
-  struct scan<lift<F>, C>
+  struct scan<cfe<F>, C>
   {
     template<class... xs>
     using f = typename detail::_scan<sizeof...(xs)>

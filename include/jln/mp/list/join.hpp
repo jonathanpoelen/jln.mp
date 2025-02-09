@@ -32,7 +32,7 @@ namespace jln::mp
   /// \cond
   #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class C>
-  struct join<lift<C>>
+  struct join<cfe<C>>
   {
     template<class... seqs>
     using f = typename detail::_join_select<sizeof...(seqs)>

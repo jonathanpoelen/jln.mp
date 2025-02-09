@@ -44,19 +44,19 @@ namespace jln::mp
     /// \c true if \c x is an element of the set \c Set, \c false otherwise.
     template<class Set, class x>
     inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<inherit_safely>, Set>::type
+      x, typename detail::_unpack<mp::cfe<inherit_safely>, Set>::type
     );
 
     /// \c true if \c x is an element of all \set \c Sets, \c false otherwise.
     template<class x, class... Sets>
     inline constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<inherit_safely>, Sets>::type
+      x, typename detail::_unpack<mp::cfe<inherit_safely>, Sets>::type
     ) && ...);
 
     /// \c true if \c x is an element of any \set \c Sets, \c false otherwise.
     template<class x, class... Sets>
     inline constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<inherit_safely>, Sets>::type
+      x, typename detail::_unpack<mp::cfe<inherit_safely>, Sets>::type
     ) || ...);
 
     /// \c true if \c x is an element of none \set \c Sets, \c false otherwise.

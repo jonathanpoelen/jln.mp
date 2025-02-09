@@ -3,7 +3,7 @@
 #include "test.hpp"
 #include "test/numbers.hpp"
 
-#include "jln/mp/smp/functional/lift.hpp"
+#include "jln/mp/smp/functional/continuation.hpp"
 #include "jln/mp/smp/functional/tee.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
@@ -64,7 +64,7 @@ TEST()
   ut::not_invocable<smp::tee<bad_function, bad_function, bad_function>>();
   ut::not_invocable<smp::tee<bad_function, bad_function, bad_function, listify>>();
   ut::not_invocable<smp::tee<bad_function, bad_function, bad_function, bad_function>>();
-  ut::not_invocable<smp::lift<smp::tee>>();
+  ut::not_invocable<smp::cfe<smp::tee>>();
 }
 
 TEST_SUITE_END()

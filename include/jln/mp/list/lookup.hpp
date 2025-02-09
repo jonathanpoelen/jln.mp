@@ -3,7 +3,7 @@
 #pragma once
 
 #include <jln/mp/utility/unpack.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <cstddef>
 
 namespace jln::mp
@@ -99,18 +99,18 @@ namespace jln::mp
   namespace emp
   {
     template<class L>
-    using build_indexed_v = typename detail::_unpack<lift<mp::build_indexed_v>, L>::type;
+    using build_indexed_v = typename detail::_unpack<cfe<mp::build_indexed_v>, L>::type;
 
     template<class L>
-    using build_indexed = typename detail::_unpack<lift<mp::build_indexed>, L>::type;
+    using build_indexed = typename detail::_unpack<cfe<mp::build_indexed>, L>::type;
 
     template<class L, int i>
     using lookup_c =
-      typename detail::_unpack<mp::lift<mp::build_indexed_v>, L>::type::template f<i>;
+      typename detail::_unpack<mp::cfe<mp::build_indexed_v>, L>::type::template f<i>;
 
     template<class L, class I>
     using lookup =
-      typename detail::_unpack<mp::lift<mp::build_indexed_v>, L>::type::template f<I::value>;
+      typename detail::_unpack<mp::cfe<mp::build_indexed_v>, L>::type::template f<I::value>;
 
     template<class IndexedV, int i>
     using indexed_lookup_c = typename IndexedV::template f<i>;
@@ -126,7 +126,7 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  // fast propagation of lift<build_indexed_v, F> without dependency call
+  // fast propagation of cfe<build_indexed_v, F> without dependency call
   template<class F>
   struct apply_indexed_v
   {

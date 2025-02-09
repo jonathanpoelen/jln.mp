@@ -84,7 +84,7 @@ namespace jln::mp
 
 #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class F, class C>
-  struct reverse_fold<lift<F>, C>
+  struct reverse_fold<cfe<F>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
@@ -95,7 +95,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F>
-  struct reverse_fold<lift<F>, identity>
+  struct reverse_fold<cfe<F>, identity>
   {
     template<class... xs>
     using f = typename detail::reverse_fold_impl<

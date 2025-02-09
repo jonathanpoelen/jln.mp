@@ -4,7 +4,7 @@
 
 #include <jln/mp/smp/functional/sfinaefwd.hpp>
 #include <jln/mp/functional/try.hpp>
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/if.hpp>

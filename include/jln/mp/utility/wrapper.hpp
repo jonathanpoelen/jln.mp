@@ -16,7 +16,7 @@ namespace jln::mp
 
   namespace emp
   {
-    /// converts a \typelist to a \c lift<S>
+    /// converts a \typelist to a \c cfe<S>
     template<class L>
     using wrapper = typename detail::wrapper<L>::type;
 
@@ -25,7 +25,7 @@ namespace jln::mp
   }
 }
 
-#include <jln/mp/functional/lift.hpp>
+#include <jln/mp/functional/continuation.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -33,7 +33,7 @@ namespace jln::mp::detail
   template<template<class...> class S, class... xs>
   struct wrapper<S<xs...>>
   {
-    using type = lift<S>;
+    using type = cfe<S>;
   };
 }
 /// \endcond

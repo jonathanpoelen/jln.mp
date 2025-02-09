@@ -78,13 +78,13 @@ namespace jln::mp::detail
   template<class C>
   struct _powerset<C, false>
   {
-    using type = fold_right<JLN_MP_LIFT_WRAP(powerset_impl), unpack<C>>;
+    using type = fold_right<JLN_MP_CF_WRAP(powerset_impl), unpack<C>>;
   };
 
   template<>
   struct _powerset<listify, false>
   {
-    using type = fold_right<JLN_MP_LIFT_WRAP(powerset_impl)>;
+    using type = fold_right<JLN_MP_CF_WRAP(powerset_impl)>;
   };
 
   template<class C>
