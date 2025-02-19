@@ -235,7 +235,7 @@ namespace jln::mp::detail
 
 /// When 1, the compiler considers an alias that makes
 /// `alias<xs...>` = `F<xs...>` is identical to `F`.
-/// Therefore, `lift<alias>` and `lift<F>` will be the same.
+/// Therefore, `cfe<alias>` and `cfe<F>` will be the same.
 #ifndef JLN_MP_OPTIMIZED_ALIAS
 #  define JLN_MP_OPTIMIZED_ALIAS 0
 #endif
@@ -513,20 +513,20 @@ namespace jln::mp
 /// When 1, uses a memoization version of call to keep better track of calls
 /// in the case of compilation error. This is especially useful with clang,
 /// which doesn't display aliases.
-#ifndef JLN_MP_ENABLE_DEBUG
-# define JLN_MP_ENABLE_DEBUG 0
+#ifndef JLN_MP_DEBUG
+# define JLN_MP_DEBUG 0
 #endif
 
-#if JLN_MP_ENABLE_DEBUG
-# define JLN_MP_ENABLE_DEBUG_ORIGINAL 1
+#if JLN_MP_DEBUG
+# define JLN_MP_DEBUG_ORIGINAL 1
 #else
-# define JLN_MP_ENABLE_DEBUG_ORIGINAL 0
+# define JLN_MP_DEBUG_ORIGINAL 0
 #endif
 
 // Useless with gcc and msvc since it displays all the transformations.
 #if JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_MEMOIZED_ALIAS
-# undef JLN_MP_ENABLE_DEBUG
-# define JLN_MP_ENABLE_DEBUG 0
+# undef JLN_MP_DEBUG
+# define JLN_MP_DEBUG 0
 #endif
 
 /// \defgroup list List
@@ -778,7 +778,7 @@ namespace jln::mp
 
 #define JLN_MP_IDENT(...) __VA_ARGS__
 
-#if ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_DEBUG
   #define JLN_MP_TRACE_F(...) __VA_ARGS__
   #define JLN_MP_TRACE_TYPENAME
 
@@ -1030,21 +1030,23 @@ namespace jln::mp
 {
   /// \ingroup functional
 
-  /// Makes a \function from a \lazymetafunction.
+  /// Makes a continuation from a \lazymetafunction.
+  /// cfe means continuation from eager.
   /// \treturn \value
-  /// \see lift
+  /// \see cfe, cfl_v, cfl_v_c
   template<template<class...> class F, class C = identity>
-  struct lift_t
+  struct cfl
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_XS(xs, F, xs...)::type);
   };
 
-  /// Makes a \function from a \metafunction.
+  /// Makes a continuation from a \metafunction.
+  /// cfl means continuation from lazy.
   /// \treturn \value
-  /// \see lift_t
+  /// \see cfl, cfe_v, cfe_v_c
   template<template<class...> class F, class C = identity>
-  struct lift
+  struct cfe
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_XS(xs, F, xs...));
@@ -1052,14 +1054,14 @@ namespace jln::mp
 
   /// \cond
   template<template<class...> class F>
-  struct lift_t<F, identity>
+  struct cfl<F, identity>
   {
     template<class... xs>
     using f = JLN_MP_DCALLF_XS(xs, F, xs...)::type;
   };
 
   template<template<class...> class F>
-  struct lift<F, identity>
+  struct cfe<F, identity>
   {
     template<class... xs>
     using f = JLN_MP_DCALLF_XS(xs, F, xs...);
@@ -1069,9 +1071,9 @@ namespace jln::mp
 
   /// Makes a \function from a \lazymetafunction.
   /// \treturn \value
-  /// \see lift
+  /// \see cfl
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
-  struct lift_v_t
+  struct cfl_v
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs::value...)::type);
@@ -1079,9 +1081,9 @@ namespace jln::mp
 
   /// Makes a \function from a \metafunction.
   /// \treturn \value
-  /// \see lift_t
+  /// \see cfe
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
-  struct lift_v
+  struct cfe_v
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs::value...));
@@ -1089,14 +1091,14 @@ namespace jln::mp
 
   /// \cond
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct lift_v_t<F, identity>
+  struct cfl_v<F, identity>
   {
     template<class... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...)::type;
   };
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct lift_v<F, identity>
+  struct cfe_v<F, identity>
   {
     template<class... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...);
@@ -1106,9 +1108,9 @@ namespace jln::mp
 
   /// Makes a \function from a \lazymetafunction.
   /// \treturn \value
-  /// \see lift_t
+  /// \see cfl
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
-  struct lift_v_c_t
+  struct cfl_v_c
   {
     template<JLN_MP_TPL_AUTO_OR_INT... xs>
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs...)::type);
@@ -1116,9 +1118,9 @@ namespace jln::mp
 
   /// Makes a \function from a \metafunction.
   /// \treturn \value
-  /// \see lift_t
+  /// \see cfe
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
-  struct lift_v_c
+  struct cfe_v_c
   {
     template<JLN_MP_TPL_AUTO_OR_INT... xs>
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs...));
@@ -1126,14 +1128,14 @@ namespace jln::mp
 
   /// \cond
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct lift_v_c_t<F, identity>
+  struct cfl_v_c<F, identity>
   {
     template<JLN_MP_TPL_AUTO_OR_INT... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs...)::type;
   };
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct lift_v_c<F, identity>
+  struct cfe_v_c<F, identity>
   {
     template<JLN_MP_TPL_AUTO_OR_INT... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs...);
@@ -1142,20 +1144,20 @@ namespace jln::mp
 
 
 #if JLN_MP_GCC
-#  define JLN_MP_LIFT_WRAP_IMPL(fn, fn_t) ::jln::mp::lift_t<fn>
+#  define JLN_MP_CF_WRAP_IMPL(fn, fn_t) ::jln::mp::cfl<fn>
 #else
-#  define JLN_MP_LIFT_WRAP_IMPL(fn, fn_t) ::jln::mp::lift<fn_t>
+#  define JLN_MP_CF_WRAP_IMPL(fn, fn_t) ::jln::mp::cfe<fn_t>
 #endif
 
-#define JLN_MP_LIFT_WRAP(fn) JLN_MP_LIFT_WRAP_IMPL(fn, fn##_t)
+#define JLN_MP_CF_WRAP(fn) JLN_MP_CF_WRAP_IMPL(fn, fn##_t)
   /// \ingroup list
 
   /// \treturn \link list
-  using listify = lift<list>;
+  using listify = cfe<list>;
 
   /// \cond
   template<>
-  struct lift<list, identity>
+  struct cfe<list, identity>
   {
     template<class... xs>
     using f = list<xs...>;
@@ -1277,25 +1279,25 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F, template<class...> class Seq, class... ys, class... xs>
-  struct _unpack<lift<F>, Seq<ys...>, xs...>
+  struct _unpack<cfe<F>, Seq<ys...>, xs...>
   {
     using type = F<xs..., ys...>;
   };
 
   template<template<class...> class F, template<class...> class Seq, class... xs, class... ys>
-  struct _unpack_append<lift<F>, Seq<xs...>, ys...>
+  struct _unpack_append<cfe<F>, Seq<xs...>, ys...>
   {
     using type = F<xs..., ys...>;
   };
 
   template<template<class...> class F, template<class...> class Seq, class... ys, class... xs>
-  struct _unpack<lift_t<F>, Seq<ys...>, xs...>
+  struct _unpack<cfl<F>, Seq<ys...>, xs...>
   {
     using type = typename F<xs..., ys...>::type;
   };
 
   template<template<class...> class F, template<class...> class Seq, class... xs, class... ys>
-  struct _unpack_append<lift_t<F>, Seq<xs...>, ys...>
+  struct _unpack_append<cfl<F>, Seq<xs...>, ys...>
   {
     using type = typename F<xs..., ys...>::type;
   };
@@ -2994,18 +2996,18 @@ namespace jln::mp
   namespace emp
   {
     template<class L>
-    using build_indexed_v = typename detail::_unpack<lift<mp::build_indexed_v>, L>::type;
+    using build_indexed_v = typename detail::_unpack<cfe<mp::build_indexed_v>, L>::type;
 
     template<class L>
-    using build_indexed = typename detail::_unpack<lift<mp::build_indexed>, L>::type;
+    using build_indexed = typename detail::_unpack<cfe<mp::build_indexed>, L>::type;
 
     template<class L, int i>
     using lookup_c =
-      typename detail::_unpack<mp::lift<mp::build_indexed_v>, L>::type::template f<i>;
+      typename detail::_unpack<mp::cfe<mp::build_indexed_v>, L>::type::template f<i>;
 
     template<class L, class I>
     using lookup =
-      typename detail::_unpack<mp::lift<mp::build_indexed_v>, L>::type::template f<I::value>;
+      typename detail::_unpack<mp::cfe<mp::build_indexed_v>, L>::type::template f<I::value>;
 
     template<class IndexedV, int i>
     using indexed_lookup_c = typename IndexedV::template f<i>;
@@ -3019,7 +3021,7 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-  // fast propagation of lift<build_indexed_v, F> without dependency call
+  // fast propagation of cfe<build_indexed_v, F> without dependency call
   template<class F>
   struct apply_indexed_v
   {
@@ -3658,9 +3660,9 @@ namespace jln::mp
   };
 #endif
 
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<unsigned N, template<class...> class C>
-  struct drop_front_c<N, lift<C>>
+  struct drop_front_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::drop_front_impl<(sizeof...(xs) & 0) + N>
@@ -3668,7 +3670,7 @@ namespace jln::mp
   };
 
   template<unsigned N, template<class...> class C>
-  struct drop_front_max_c<N, lift<C>>
+  struct drop_front_max_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::drop_front_impl<
@@ -5120,9 +5122,9 @@ namespace jln::mp
     >::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class F, class C>
-  struct fold<lift<F>, C>
+  struct fold<cfe<F>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
@@ -5133,7 +5135,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F>
-  struct fold<lift<F>, identity>
+  struct fold<cfe<F>, identity>
   {
     template<class... xs>
     using f = typename detail::fold_impl<
@@ -5236,9 +5238,9 @@ namespace jln::mp
   }
 
 /// \cond
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<class F, template<class...> class C>
-  struct transform<F, lift<C>>
+  struct transform<F, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
@@ -5246,7 +5248,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F, class C>
-  struct transform<lift<F>, C>
+  struct transform<cfe<F>, C>
   {
     template<class... xs>
     using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
@@ -5254,7 +5256,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F, template<class...> class C>
-  struct transform<lift<F>, lift<C>>
+  struct transform<cfe<F>, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::transform_impl<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
@@ -5262,7 +5264,7 @@ namespace jln::mp
   };
 #endif
 
-#if ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_DEBUG
   namespace detail
   {
     template<bool>
@@ -5270,7 +5272,7 @@ namespace jln::mp
   }
 
   template<template<class...> class F, class C>
-  struct transform<lift_t<F>, C>
+  struct transform<cfl<F>, C>
   {
     template<class... xs>
     using f = typename detail::transform_impl_t<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
@@ -5278,7 +5280,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F, template<class...> class C>
-  struct transform<lift_t<F>, lift<C>>
+  struct transform<cfl<F>, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::transform_impl_t<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
@@ -5303,7 +5305,7 @@ namespace jln::mp::detail
   struct transform_impl<false>
   {};
 
-#if ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_DEBUG
   template<>
   struct transform_impl_t<true>
   {
@@ -5374,9 +5376,9 @@ namespace jln::mp
   };
 
   /// \cond
-  #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class C>
-  struct join<lift<C>>
+  struct join<cfe<C>>
   {
     template<class... seqs>
     using f = typename detail::_join_select<sizeof...(seqs)>
@@ -6352,9 +6354,9 @@ namespace jln::mp
 
 
   /// \cond
-  #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<unsigned N, template<class...> class C>
-  struct take_front_c<N, lift<C>>
+  struct take_front_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::take_front_impl<(sizeof...(xs) & 0) + N>
@@ -7146,7 +7148,7 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp::concepts
 {
-  // TODO optimize Pred = is<>, same<>, lift<std::is_same>, equal, less, not_
+  // TODO optimize Pred = is<>, same<>, cfe<std::is_same>, equal, less, not_
   // {unary, binary, mulary}_predicate
   template<class Pred, class TC = mp::identity, class FC = mp::always<false_>>
   using predicate = mp::try_<Pred, mp::try_<mp::to_bool<>, TC, FC>, FC>;
@@ -7582,7 +7584,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F>
-  struct make_int_sequence_impl<numbers<lift<F>>>
+  struct make_int_sequence_impl<numbers<cfe<F>>>
   {
     template<class, int_t... ns>
     struct f
@@ -7592,7 +7594,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F, class C>
-  struct make_int_sequence_impl<numbers<lift<F, C>>>
+  struct make_int_sequence_impl<numbers<cfe<F, C>>>
   {
     template<class, int_t... ns>
     struct f
@@ -7602,7 +7604,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F>
-  struct make_int_sequence_impl<numbers<lift_t<F>>>
+  struct make_int_sequence_impl<numbers<cfl<F>>>
   {
     template<class, int_t... ns>
     struct f
@@ -7612,7 +7614,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F, class C>
-  struct make_int_sequence_impl<numbers<lift_t<F, C>>>
+  struct make_int_sequence_impl<numbers<cfl<F, C>>>
   {
     template<class, int_t... ns>
     struct f
@@ -7622,7 +7624,7 @@ namespace jln::mp::detail
   };
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct make_int_sequence_impl<lift_v_c<F>>
+  struct make_int_sequence_impl<cfe_v_c<F>>
   {
     template<class, int_t... ns>
     struct f
@@ -7632,7 +7634,7 @@ namespace jln::mp::detail
   };
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
-  struct make_int_sequence_impl<lift_v_c<F, C>>
+  struct make_int_sequence_impl<cfe_v_c<F, C>>
   {
     template<class, int_t... ns>
     struct f
@@ -7642,7 +7644,7 @@ namespace jln::mp::detail
   };
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct make_int_sequence_impl<lift_v_c_t<F>>
+  struct make_int_sequence_impl<cfl_v_c<F>>
   {
     template<class, int_t... ns>
     struct f
@@ -7652,7 +7654,7 @@ namespace jln::mp::detail
   };
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
-  struct make_int_sequence_impl<lift_v_c_t<F, C>>
+  struct make_int_sequence_impl<cfl_v_c<F, C>>
   {
     template<class, int_t... ns>
     struct f
@@ -7662,19 +7664,19 @@ namespace jln::mp::detail
   };
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct make_int_sequence_impl<numbers<lift_v<F>>> : make_int_sequence_impl<lift_v_c<F>>
+  struct make_int_sequence_impl<numbers<cfe_v<F>>> : make_int_sequence_impl<cfe_v_c<F>>
   {};
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
-  struct make_int_sequence_impl<numbers<lift_v<F, C>>> : make_int_sequence_impl<lift_v_c<F, C>>
+  struct make_int_sequence_impl<numbers<cfe_v<F, C>>> : make_int_sequence_impl<cfe_v_c<F, C>>
   {};
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
-  struct make_int_sequence_impl<numbers<lift_v_t<F>>> : make_int_sequence_impl<lift_v_c_t<F>>
+  struct make_int_sequence_impl<numbers<cfl_v<F>>> : make_int_sequence_impl<cfl_v_c<F>>
   {};
 
   template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
-  struct make_int_sequence_impl<numbers<lift_v_t<F, C>>> : make_int_sequence_impl<lift_v_c_t<F, C>>
+  struct make_int_sequence_impl<numbers<cfl_v<F, C>>> : make_int_sequence_impl<cfl_v_c<F, C>>
   {};
 }
 #elif ! defined(JLN_MP_FALLBACK_TO_STD_SEQUENCE)
@@ -7807,9 +7809,9 @@ namespace jln::mp
 /// \cond
 namespace jln::mp
 {
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<int_t N, template<class...> class C>
-  struct rotate_c<N, lift<C>>
+  struct rotate_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::rotate_impl<
@@ -9445,9 +9447,9 @@ namespace jln::mp
   }
 
   /// \cond
-  #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<unsigned N, template<class...> class C>
-  struct drop_back_c<N, lift<C>>
+  struct drop_back_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::take_front_impl<sizeof...(xs) - N>
@@ -9455,12 +9457,12 @@ namespace jln::mp
   };
 
   template<template<class...> class C>
-  struct drop_back_c<0, lift<C>>
-    : detail::call_trace_xs<lift<C>>
+  struct drop_back_c<0, cfe<C>>
+    : detail::call_trace_xs<cfe<C>>
   {};
 
   template<unsigned N, template<class...> class C>
-  struct drop_back_max_c<N, lift<C>>
+  struct drop_back_max_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::take_front_impl<
@@ -9473,8 +9475,8 @@ namespace jln::mp
   };
 
   template<template<class...> class C>
-  struct drop_back_max_c<0, lift<C>>
-    : detail::call_trace_xs<lift<C>>
+  struct drop_back_max_c<0, cfe<C>>
+    : detail::call_trace_xs<cfe<C>>
   {};
   #endif
 
@@ -11542,9 +11544,9 @@ namespace jln::mp
   }
 
 /// \cond
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<class F, template<class...> class C>
-  struct pairwise_with<F, lift<C>>
+  struct pairwise_with<F, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::pairwise_impl<
@@ -11555,7 +11557,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F, class C>
-  struct pairwise_with<lift<F>, C>
+  struct pairwise_with<cfe<F>, C>
   {
     template<class... xs>
     using f = typename detail::pairwise_impl<
@@ -11566,7 +11568,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F, template<class...> class C>
-  struct pairwise_with<lift<F>, lift<C>>
+  struct pairwise_with<cfe<F>, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::pairwise_impl<
@@ -11714,23 +11716,23 @@ namespace jln::mp::detail
   };
 
   template<class PredNot>
-  struct to_not_fn_lift;
+  struct to_not_fn_cfe;
 
   template<template<class...> class F, class C, class Not>
-  struct to_not_fn_lift<lift<F, tee<C, Not>>>
+  struct to_not_fn_cfe<cfe<F, tee<C, Not>>>
   {
-    using type = tee<lift<F, C>, Not>;
+    using type = tee<cfe<F, C>, Not>;
   };
 
   template<class PredNot>
-  struct to_not_fn_lift
+  struct to_not_fn_cfe
   {
     using type = PredNot;
   };
 
   template<template<class...> class F, class C>
-  struct to_not_fn<lift<F, C>>
-  : to_not_fn_lift<lift<F, to_not_fn_t<C>>>
+  struct to_not_fn<cfe<F, C>>
+  : to_not_fn_cfe<cfe<F, to_not_fn_t<C>>>
   {};
 
   template<class x, class C>
@@ -11999,9 +12001,9 @@ namespace jln::mp::detail
     >::value)>::template f<x>;
   };
 
-#if ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_DEBUG
   template<template<class...> class Pred>
-  struct _wrap_in_list_if<lift<Pred>>
+  struct _wrap_in_list_if<cfe<Pred>>
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
@@ -12010,7 +12012,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class Pred>
-  struct _wrap_in_list_if_not<lift<Pred>>
+  struct _wrap_in_list_if_not<cfe<Pred>>
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
@@ -12019,7 +12021,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class Pred>
-  struct _wrap_in_list_if<lift_t<Pred>>
+  struct _wrap_in_list_if<cfl<Pred>>
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
@@ -12028,7 +12030,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class Pred>
-  struct _wrap_in_list_if_not<lift_t<Pred>>
+  struct _wrap_in_list_if_not<cfl<Pred>>
   {
     template<class x, class... xs>
     using f = JLN_MP_CALL_TRACE(wrap_in_list_c<
@@ -12063,9 +12065,9 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F>
-  struct mk_wrap_in_list_if<lift<F, not_<>>>
+  struct mk_wrap_in_list_if<cfe<F, not_<>>>
   {
-    using type = _wrap_in_list_if_not<lift<F>>;
+    using type = _wrap_in_list_if_not<cfe<F>>;
   };
 
   template<class Pred>
@@ -12088,9 +12090,9 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F>
-  struct mk_wrap_in_list_if_not<lift<F, not_<>>>
+  struct mk_wrap_in_list_if_not<cfe<F, not_<>>>
   {
-    using type = _wrap_in_list_if<lift<F>>;
+    using type = _wrap_in_list_if<cfe<F>>;
   };
 
   template<class Pred>
@@ -14280,7 +14282,7 @@ namespace jln::mp::detail
     ::template f<try_<Cmp, TC, FC>, x, xs...>
   {};
 
-  // needed when JLN_MP_ENABLE_DEBUG is enabled
+  // needed when JLN_MP_DEBUG is enabled
   template<class Cmp, class x, class... ys, class... xs>
   struct mk_pairs_indices<memoize<Cmp>, x, list<ys...>, xs...>
     : try_<smp_mk_pairs_indices<ys...>>
@@ -14355,10 +14357,10 @@ namespace jln::mp
 
 
   template<class keys, class F = listify, class C = listify>
-  using collapse_with = typename detail::_unpack<lift<collapse2_with>, keys, C, F>::type;
+  using collapse_with = typename detail::_unpack<cfe<collapse2_with>, keys, C, F>::type;
 
   template<class keys, class C = listify>
-  using collapse = typename detail::_unpack<lift<collapse2_with>, keys, C, listify>::type;
+  using collapse = typename detail::_unpack<cfe<collapse2_with>, keys, C, listify>::type;
 
 
   template<class... keys>
@@ -14963,10 +14965,10 @@ namespace jln::mp::detail
 namespace jln::mp::smp
 {
   template<template<class...> class F, class C = identity>
-  using lift = try_contract<mp::lift<F, assume_unary<C>>>;
+  using cfe = try_contract<mp::cfe<F, assume_unary<C>>>;
 
   template<template<class...> class F, class C = identity>
-  using lift_t = try_contract<mp::lift_t<F, assume_unary<C>>>;
+  using cfl = try_contract<mp::cfl<F, assume_unary<C>>>;
 }
 
 
@@ -14974,15 +14976,15 @@ namespace jln::mp::smp
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, template<class...> class F, class C>
-  struct _sfinae<sfinae, lift_t<F, C>>
+  struct _sfinae<sfinae, cfl<F, C>>
   {
-    using type = smp::lift_t<F, sfinae<C>>;
+    using type = smp::cfl<F, sfinae<C>>;
   };
 
   template<template<class> class sfinae, template<class...> class F, class C>
-  struct _sfinae<sfinae, lift<F, C>>
+  struct _sfinae<sfinae, cfe<F, C>>
   {
-    using type = smp::lift<F, sfinae<C>>;
+    using type = smp::cfe<F, sfinae<C>>;
   };
 }
 /// \endcond
@@ -15496,7 +15498,7 @@ namespace jln::mp::detail
           ints,
           pop_front<any_of<
             push_back<xs, Cmp>,
-            lift<wrap_in_list>
+            cfe<wrap_in_list>
           >>::template f,
           xs...
         >
@@ -15539,7 +15541,7 @@ namespace jln::mp::detail
           ints,
           pop_front<none_of<
             push_back<xs, Cmp>,
-            lift<wrap_in_list>
+            cfe<wrap_in_list>
           >>::template f,
           xs...
         >
@@ -15676,7 +15678,7 @@ namespace jln::mp::detail
           ints,
           pop_front<smp::any_of<
             contract<push_back<xs, Cmp>>,
-            contract<lift<wrap_in_list>>
+            contract<cfe<wrap_in_list>>
           >>::template f,
           xs...
         >
@@ -15728,7 +15730,7 @@ namespace jln::mp::detail
           ints,
           pop_front<smp::none_of<
             contract<push_back<xs, Cmp>>,
-            contract<lift<wrap_in_list>>
+            contract<cfe<wrap_in_list>>
           >>::template f,
           xs...
         >
@@ -16020,9 +16022,9 @@ namespace jln::mp
     >::type;
   };
 
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class C>
-  struct unique_if<same<>, lift<C>>
+  struct unique_if<same<>, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::flat_recursive_unique<
@@ -16110,11 +16112,11 @@ namespace jln::mp
 }
 
 /// \cond
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
 namespace jln::mp
 {
   template<template<class...> class F, class C>
-  struct counter_wrapped_with<lift<F>, C>
+  struct counter_wrapped_with<cfe<F>, C>
   {
     template<class... xs>
 #if JLN_MP_GCC
@@ -17166,7 +17168,7 @@ namespace jln::mp::smp
   template<class Searcher>
   using until_last = emp::try_<
     mp::type_<>,
-    mp::lift<contract>,
+    mp::cfe<contract>,
     mp::always<bad_contract>,
     detail::until_last_impl<Searcher>
   >;
@@ -17263,7 +17265,7 @@ namespace jln::mp
 
   namespace emp
   {
-    /// converts a \typelist to a \c lift<S>
+    /// converts a \typelist to a \c cfe<S>
     template<class L>
     using wrapper = typename detail::wrapper<L>::type;
 
@@ -17279,7 +17281,7 @@ namespace jln::mp::detail
   template<template<class...> class S, class... xs>
   struct wrapper<S<xs...>>
   {
-    using type = lift<S>;
+    using type = cfe<S>;
   };
 }
 /// \endcond
@@ -17308,12 +17310,12 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence
   /// \see flatten
-  template<class S = lift<list>, class C = listify>
+  template<class S = cfe<list>, class C = listify>
   struct flatten_once
   {};
 
   template<template<class...> class S, class C>
-  struct flatten_once<lift<S, identity>, C>
+  struct flatten_once<cfe<S, identity>, C>
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
@@ -17322,10 +17324,10 @@ namespace jln::mp
   };
 
   template<template<class...> class S, class C = listify>
-  using flatten_once_f = flatten_once<lift<S>, C>;
+  using flatten_once_f = flatten_once<cfe<S>, C>;
 
   template<template<class...> class S, class C = identity>
-  using flatten_once_for_f = flatten_once<lift<S>, lift<S, C>>;
+  using flatten_once_for_f = flatten_once<cfe<S>, cfe<S, C>>;
 
   /// Recursive version of \c flatten_once.
   /// \semantics
@@ -17336,12 +17338,12 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence
   /// \see flatten_once
-  template<class S = lift<list>, class C = listify>
+  template<class S = cfe<list>, class C = listify>
   struct flatten
   {};
 
   template<template<class...> class S, class C>
-  struct flatten<lift<S, identity>, C>
+  struct flatten<cfe<S, identity>, C>
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
@@ -17350,10 +17352,10 @@ namespace jln::mp
   };
 
   template<template<class...> class S, class C = listify>
-  using flatten_f = flatten<lift<S>, C>;
+  using flatten_f = flatten<cfe<S>, C>;
 
   template<template<class...> class S, class C = identity>
-  using flatten_for_f = flatten<lift<S>, lift<S, C>>;
+  using flatten_for_f = flatten<cfe<S>, cfe<S, C>>;
 
   namespace emp
   {
@@ -17377,9 +17379,9 @@ namespace jln::mp
   }
 
 /// \cond
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class S, template<class...> class C>
-  struct flatten_once<lift<S, identity>, lift<C>>
+  struct flatten_once<cfe<S, identity>, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
@@ -17388,7 +17390,7 @@ namespace jln::mp
   };
 
   template<template<class...> class S, template<class...> class C>
-  struct flatten<lift<S, identity>, lift<C>>
+  struct flatten<cfe<S, identity>, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
@@ -17430,23 +17432,23 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template<class S = mp::lift<list>, class C = listify>
+  template<class S = mp::cfe<list>, class C = listify>
   using flatten_once = try_contract<mp::flatten_once<S, subcontract<C>>>;
 
-  template<class S = mp::lift<list>, class C = listify>
+  template<class S = mp::cfe<list>, class C = listify>
   using flatten = try_contract<mp::flatten<S, subcontract<C>>>;
 
   template<template<class...> class S, class C = listify>
-  using flatten_once_f = flatten_once<mp::lift<S>, C>;
+  using flatten_once_f = flatten_once<mp::cfe<S>, C>;
 
   template<template<class...> class S, class C = listify>
-  using flatten_f = flatten<mp::lift<S>, C>;
+  using flatten_f = flatten<mp::cfe<S>, C>;
 
   template<template<class...> class S, class C = identity>
-  using flatten_once_for_f = flatten<mp::lift<S>, lift<S, C>>;
+  using flatten_once_for_f = flatten<mp::cfe<S>, cfe<S, C>>;
 
   template<template<class...> class S, class C = identity>
-  using flatten_for_f = flatten<mp::lift<S>, lift<S, C>>;
+  using flatten_for_f = flatten<mp::cfe<S>, cfe<S, C>>;
 }
 
 /// \cond
@@ -17588,9 +17590,9 @@ namespace jln::mp
     >::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class F, class C>
-  struct fold_right<lift<F>, C>
+  struct fold_right<cfe<F>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
@@ -17601,7 +17603,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F>
-  struct fold_right<lift<F>, identity>
+  struct fold_right<cfe<F>, identity>
   {
     template<class... xs>
     using f = typename detail::fold_right_impl<
@@ -18141,9 +18143,9 @@ namespace jln::mp
     using f = detail::partial_fold_xs_select<JLN_MP_TRACE_F(F)::template f, sizeof...(xs), xs...>;
   };
 
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<int_t OffsetEnd, template<class...> class F, class C>
-  struct partial_fold_xs_c<OffsetEnd, lift<F>, C>
+  struct partial_fold_xs_c<OffsetEnd, cfe<F>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
@@ -18156,7 +18158,7 @@ namespace jln::mp
   };
 
   template<int_t OffsetEnd, template<class...> class F>
-  struct partial_fold_xs_c<OffsetEnd, lift<F>, identity>
+  struct partial_fold_xs_c<OffsetEnd, cfe<F>, identity>
   {
     template<class... xs>
     using f = detail::partial_fold_xs_select<
@@ -18167,7 +18169,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F, class C>
-  struct partial_fold_xs_c<-1, lift<F>, C>
+  struct partial_fold_xs_c<-1, cfe<F>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
@@ -18176,7 +18178,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F>
-  struct partial_fold_xs_c<-1, lift<F>, identity>
+  struct partial_fold_xs_c<-1, cfe<F>, identity>
   {
     template<class... xs>
     using f = detail::partial_fold_xs_select<F, sizeof...(xs), xs...>;
@@ -18656,7 +18658,7 @@ namespace jln::mp
   using compose = typename conditional_c<sizeof...(Fs) == 0>
     ::template f<
       at1<F>,
-      mp::fold_right<JLN_MP_LIFT_WRAP(detail::compose_impl)>
+      mp::fold_right<JLN_MP_CF_WRAP(detail::compose_impl)>
     >
     ::template f<identity, F, Fs...>;
 }
@@ -18723,15 +18725,15 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class F, class x>
-  struct compose_impl<lift<F>, x>
+  struct compose_impl<cfe<F>, x>
   {
-    using type = lift<F, x>;
+    using type = cfe<F, x>;
   };
 
   template<template<class...> class F, class x>
-  struct compose_impl<lift_t<F>, x>
+  struct compose_impl<cfl<F>, x>
   {
-    using type = lift_t<F, x>;
+    using type = cfl<F, x>;
   };
 
   template<class F>
@@ -18742,16 +18744,16 @@ namespace jln::mp::detail
 
   // fix ambiguity
   template<template<class...> class F>
-  struct compose_impl<lift<F>, identity>
+  struct compose_impl<cfe<F>, identity>
   {
-    using type = lift<F>;
+    using type = cfe<F>;
   };
 
   // fix ambiguity
   template<template<class...> class F>
-  struct compose_impl<lift_t<F>, identity>
+  struct compose_impl<cfl<F>, identity>
   {
-    using type = lift_t<F>;
+    using type = cfl<F>;
   };
 }
 /// \endcond
@@ -19169,7 +19171,7 @@ namespace jln::mp::detail
 
   template<class Cmp, class seq0>
   using to_is_disjoint_impl = is_disjoint_impl<
-    typename _unpack<lift<is_disjoint_of>, seq0, Cmp>::type
+    typename _unpack<cfe<is_disjoint_of>, seq0, Cmp>::type
   >;
 
   template<>
@@ -19361,7 +19363,7 @@ namespace jln::mp::detail
 
   template<class Cmp, class seq0>
   using smp_to_is_disjoint_impl = smp::unpack<smp_is_disjoint_impl<
-    typename smp::unpack<contract<lift<smp_is_disjoint_of>>>
+    typename smp::unpack<contract<cfe<smp_is_disjoint_of>>>
     ::template f<seq0, Cmp>
   >>;
 
@@ -19616,7 +19618,7 @@ namespace jln::mp::detail
 
   template<class Cmp, class seq0>
   using to_is_subset_impl = is_disjoint_impl<
-    typename _unpack<lift<_is_subset_of>, seq0, Cmp>::type
+    typename _unpack<cfe<_is_subset_of>, seq0, Cmp>::type
   >;
 
   template<>
@@ -19715,7 +19717,7 @@ namespace jln::mp::detail
 
   template<class Cmp, class seq0>
   using smp_to_is_subset_impl = smp::unpack<smp_is_disjoint_impl<
-    typename smp::unpack<contract<lift<smp_is_subset_of>>>
+    typename smp::unpack<contract<cfe<smp_is_subset_of>>>
     ::template f<seq0, Cmp>
   >>;
 
@@ -20191,7 +20193,7 @@ namespace jln::mp
     using f = JLN_MP_CALL_TRACE(C,
       typename mismatch<
         detail::_lexicographical_compare_equal<JLN_MP_TRACE_F(Cmp)>,
-        lift<detail::_lexicographical_compare>
+        cfe<detail::_lexicographical_compare>
       >
       ::template f<seq1, seq2>
       ::template f<JLN_MP_TRACE_F(Cmp), seq1, seq2>
@@ -20203,7 +20205,7 @@ namespace jln::mp
   {
     template<class seq1, class seq2>
     using f = JLN_MP_CALL_TRACE(C,
-      typename mismatch<JLN_MP_TRACE_F(CmpEq), lift<detail::_lexicographical_compare>>
+      typename mismatch<JLN_MP_TRACE_F(CmpEq), cfe<detail::_lexicographical_compare>>
       ::template f<seq1, seq2>
       ::template f<JLN_MP_TRACE_F(CmpLess), seq1, seq2>
     );
@@ -20229,7 +20231,7 @@ namespace jln::mp
     template<class seq1, class seq2>
     using f = typename mismatch<
       detail::_lexicographical_compare_equal<Cmp>,
-      lift<detail::_lexicographical_compare>
+      cfe<detail::_lexicographical_compare>
     >
     ::template f<seq1, seq2>
     ::template f<Cmp, seq1, seq2>;
@@ -20239,7 +20241,7 @@ namespace jln::mp
   struct lexicographical_compare2<CmpLess, CmpEq, identity>
   {
     template<class seq1, class seq2>
-    using f = typename mismatch<CmpEq, lift<detail::_lexicographical_compare>>
+    using f = typename mismatch<CmpEq, cfe<detail::_lexicographical_compare>>
       ::template f<seq1, seq2>
       ::template f<CmpLess, seq1, seq2>;
   };
@@ -20341,7 +20343,7 @@ namespace jln::mp::detail
         _lexicographical_compare_equal<
           smp::concepts::predicate<Cmp, mp::identity, mp::always<true_>>
         >,
-        lift<_lexicographical_compare>
+        cfe<_lexicographical_compare>
       >
       ::template f<seq1, seq2>
       ::template f<smp::concepts::predicate<Cmp, mp::identity, violation>, seq1, seq2>
@@ -20356,7 +20358,7 @@ namespace jln::mp::detail
       _lexicographical_compare_equal<
         smp::concepts::predicate<Cmp, mp::identity, mp::always<true_>>
       >,
-      lift<_lexicographical_compare>
+      cfe<_lexicographical_compare>
     >
     ::template f<seq1, seq2>
     ::template f<smp::concepts::predicate<Cmp, mp::identity, violation>, seq1, seq2>;
@@ -20369,7 +20371,7 @@ namespace jln::mp::detail
     using f = typename monadic<C>::template f<
       typename mismatch<
         smp::concepts::predicate<CmpEq>,
-        lift<_lexicographical_compare>
+        cfe<_lexicographical_compare>
       >
       ::template f<seq1, seq2>
       ::template f<
@@ -20389,7 +20391,7 @@ namespace jln::mp::detail
     template<class seq1, class seq2>
     using f = typename mismatch<
       smp::concepts::predicate<CmpEq>,
-      lift<_lexicographical_compare>
+      cfe<_lexicographical_compare>
     >
     ::template f<seq1, seq2>
     ::template f<
@@ -20810,7 +20812,7 @@ namespace jln::mp
     template<class... seqs>
     using f = typename detail::matrix_longest_impl<
       FillValue,
-      push_front<unpack<F>, lift<bind_back>>,
+      push_front<unpack<F>, cfe<bind_back>>,
       typename detail::optimize_useless_unpack<unpack<F>>::type,
       C, typename detail::_unpack<size<>, seqs>::type...
     >::template f<seqs...>;
@@ -20842,7 +20844,7 @@ namespace jln::mp
     template<class... seqs>
     using f = typename detail::matrix_longest_impl<
       FillValue,
-      push_front<unpack_append<F>, lift<bind_back>>,
+      push_front<unpack_append<F>, cfe<bind_back>>,
       typename detail::optimize_useless_unpack<unpack<F>>::type,
       C, typename detail::_unpack<size<>, seqs>::type...
     >::template f<seqs...>;
@@ -21003,9 +21005,9 @@ namespace jln::mp
     : always<list<>>
   {};
 
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<unsigned N, template<class...> class C>
-  struct take_back_c<N, lift<C>>
+  struct take_back_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::drop_front_impl<sizeof...(xs) - N>
@@ -21013,7 +21015,7 @@ namespace jln::mp
   };
 
   template<unsigned N, template<class...> class C>
-  struct take_back_max_c<N, lift<C>>
+  struct take_back_max_c<N, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::drop_front_impl<
@@ -22064,11 +22066,11 @@ namespace jln::mp
 }
 
 /// \cond
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
 namespace jln::mp
 {
   template<template<class...> class F, class Front, class C>
-  struct pairwise_fold_and_transform_front<lift<F>, Front, C>
+  struct pairwise_fold_and_transform_front<cfe<F>, Front, C>
   {
     template<class... xs>
     using f = typename detail::pairwise_fold_impl<
@@ -22180,11 +22182,11 @@ namespace jln::mp
 
 
 /// \cond
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
 namespace jln::mp
 {
   template<class Pred, class F, template<class...> class C>
-  struct partition_with<Pred, F, lift<C>>
+  struct partition_with<Pred, F, cfe<C>>
   {
     template<class... xs>
     using f = typename transform<Pred, detail::partition_caller<F>>
@@ -22600,13 +22602,13 @@ namespace jln::mp::detail
   template<class C>
   struct _powerset<C, false>
   {
-    using type = fold_right<JLN_MP_LIFT_WRAP(powerset_impl), unpack<C>>;
+    using type = fold_right<JLN_MP_CF_WRAP(powerset_impl), unpack<C>>;
   };
 
   template<>
   struct _powerset<listify, false>
   {
-    using type = fold_right<JLN_MP_LIFT_WRAP(powerset_impl)>;
+    using type = fold_right<JLN_MP_CF_WRAP(powerset_impl)>;
   };
 
   template<class C>
@@ -22657,11 +22659,11 @@ namespace jln::mp
 }
 
 /// \cond
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
 namespace jln::mp
 {
   template<class x, template<class...> class C>
-  struct prefix<x, lift<C>>
+  struct prefix<x, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
@@ -22711,7 +22713,7 @@ namespace jln::mp::smp
 {
   template<class F>
   using invoke_twice = contract<mp::invoke_twice<mp::try_subcontract<
-    F, mp::lift<try_subcontract>, mp::always<mp::violation>>>>;
+    F, mp::cfe<try_subcontract>, mp::always<mp::violation>>>>;
 }
 
 /// \cond
@@ -22762,7 +22764,7 @@ namespace jln::mp
   struct regroup_by_with
   {
     template<class... xs>
-    using f = typename unique_if<Cmp, lift<detail::regroup_by_impl>>
+    using f = typename unique_if<Cmp, cfe<detail::regroup_by_impl>>
       ::template f<xs...>
       ::template f<C, F, Cmp, xs...>;
   };
@@ -23408,9 +23410,9 @@ namespace jln::mp::detail
     using f = JLN_MP_CONDITIONAL_C_T(JLN_MP_IS_SAME(T, x), x, Replacement);
   };
 
-#if ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_DEBUG
   template<template<class...> class Pred, class Replacement>
-  struct substitute_if<lift<Pred>, Replacement>
+  struct substitute_if<cfe<Pred>, Replacement>
   {
     template<class x>
     using f = JLN_MP_CONDITIONAL_C_T(
@@ -23420,7 +23422,7 @@ namespace jln::mp::detail
   };
 
   template<template<class...> class Pred, class Replacement>
-  struct substitute_if<lift_t<Pred>, Replacement>
+  struct substitute_if<cfl<Pred>, Replacement>
   {
     template<class x>
     using f = JLN_MP_CONDITIONAL_C_T(
@@ -23651,9 +23653,9 @@ namespace jln::mp
     >::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class F, class C>
-  struct reverse_fold<lift<F>, C>
+  struct reverse_fold<cfe<F>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
@@ -23664,7 +23666,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F>
-  struct reverse_fold<lift<F>, identity>
+  struct reverse_fold<cfe<F>, identity>
   {
     template<class... xs>
     using f = typename detail::reverse_fold_impl<
@@ -23838,9 +23840,9 @@ namespace jln::mp
       ::template f<JLN_MP_TRACE_F(F)::template f, xs...>;
   };
 
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class F, class C>
-  struct reverse_fold_right<lift<F>, C>
+  struct reverse_fold_right<cfe<F>, C>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
@@ -23850,7 +23852,7 @@ namespace jln::mp
   };
 
   template<template<class...> class F>
-  struct reverse_fold_right<lift<F>, identity>
+  struct reverse_fold_right<cfe<F>, identity>
   {
     template<class... xs>
     using f = typename detail::reverse_fold_right_impl<int(sizeof...(xs)) - 1>
@@ -23990,11 +23992,11 @@ namespace jln::mp
 
 
 /// \cond
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
 namespace jln::mp
 {
   template<template<class...> class F, class C>
-  struct scan<lift<F>, C>
+  struct scan<cfe<F>, C>
   {
     template<class... xs>
     using f = typename detail::_scan<sizeof...(xs)>
@@ -27037,11 +27039,11 @@ namespace jln::mp
 }
 
 /// \cond
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
 namespace jln::mp
 {
   template<class x, template<class...> class C>
-  struct suffix<x, lift<C>>
+  struct suffix<x, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::_join_select<sizeof...(xs)>
@@ -27557,7 +27559,7 @@ namespace jln::mp
   };
 #else
   using transform_at_c = typename detail::repeat_impl<
-    1, i, bind_back<lift<partial_transform>, F, C>
+    1, i, bind_back<cfe<partial_transform>, F, C>
   >::template f<identity>::type;
 #endif
 
@@ -27578,7 +27580,7 @@ namespace jln::mp::smp
 {
   template<unsigned i, class F, class C = listify>
   using transform_at_c = typename detail::repeat_impl<
-    1, i, mp::bind_back<mp::lift<partial_transform>, F, C>
+    1, i, mp::bind_back<mp::cfe<partial_transform>, F, C>
   >::template f<identity>::type;
 }
 
@@ -27919,7 +27921,7 @@ namespace jln::mp
   ///   unfold<
   ///     if_<
   ///       less_than_c<5>,
-  ///       inc<lift<Some>>,
+  ///       inc<cfe<Some>>,
   ///       None
   ///     >
   ///   >::f<number<0>>
@@ -28482,7 +28484,7 @@ namespace jln::mp::smp
 {
   template<template<class...> class F, template<class...> class... Fs>
   using compose_f = mp::detail::sfinae<
-    mp::compose<mp::lift<F>, mp::lift<Fs>...>
+    mp::compose<mp::cfe<F>, mp::cfe<Fs>...>
   >;
 
   template<class F, class... Fs>
@@ -28981,9 +28983,9 @@ namespace jln::mp::detail
     );
   };
 
-  #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class F, class C, class... Fs>
-  struct partial_tee_xs_select<2, lift<F>, C, Fs...>
+  struct partial_tee_xs_select<2, cfe<F>, C, Fs...>
   {
     template<class... xs>
     using f = JLN_MP_DCALL_TRACE_XS(xs, C,
@@ -29248,9 +29250,9 @@ namespace jln::mp::detail
       >;
   };
 
-  #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+  #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
   template<template<class...> class F, class C, class... Fs>
-  struct partial_transform_xs_select<2, lift<F>, C, Fs...>
+  struct partial_transform_xs_select<2, cfe<F>, C, Fs...>
   {
     template<class... xs>
     using f = typename take_front_impl<sizeof...(Fs) + (sizeof...(xs) & 0) + 2>
@@ -29600,11 +29602,11 @@ namespace jln::mp
 
 
 /// \cond
-#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_ENABLE_DEBUG
+#if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG
 namespace jln::mp
 {
   template<template<class...> class F, class C>
-  struct enumerate_with<lift<F>, C>
+  struct enumerate_with<cfe<F>, C>
   {
     template<class... xs>
     using f = typename detail::enumerate_impl<emp::make_int_sequence_c<sizeof...(xs)>>
@@ -30998,91 +31000,170 @@ namespace jln::mp
 
 namespace jln::mp
 {
+  namespace detail
+  {
+    template<class F, class kv>
+    struct map_element_key_update_impl
+    {};
+
+    template<class F, class kv>
+    struct map_element_value_update_impl
+    {};
+  }
+
   /// \ingroup map
 
-  /// If the \map contain the key \c Key, replaces the existing element `L<k, v...>` with `F<k, v...>`.
+  /// If the \map contain the key \c key, replaces the existing element `L<key, v...>` with `F<L<key, v...>>`.
   /// \pre \c is_map<>
   /// \treturn \sequence
-  template<class Key, class F, class C = listify>
-  using map_update = transform<map_find<Key, F, front<>>, C>;
-
-  /// Update an element `L<k, v...>` with `L<k, F<k, v...>>`.
-  /// \pre `unpack<size<>>::f<x> >= 1`
-  template<class F>
-  struct map_element_value_update
-  {
-    template<class x>
-    using f = typename detail::_unpack<tee<front<>, F, emp::wrapper<x>>, x>::type;
-  };
+  template<class key, class F, class C = listify>
+  using map_update = transform<map_find<key, F, front<>>, C>;
 
   /// Update an element `L<k, v...>` with `L<F<k, v...>, v...>`.
   /// \pre `unpack<size<>>::f<x> >= 1`
   template<class F>
   struct map_element_key_update
   {
-    template<class x>
-    using f = typename detail::_unpack<partial_tee<F, emp::wrapper<x>>, x>::type;
+    template<class kv>
+    using f = typename detail::map_element_key_update_impl<F, kv>::type;
   };
 
-  /// If the \map contain the key \c Key, replaces the existing element `L<k, v...>` with `L<F<k, v...>, v...>`.
+  /// Update an element `L<k, v...>` with `L<k, F<k, v...>>`.
+  /// \pre `unpack<size<>>::f<kv> >= 1`
+  template<class F>
+  struct map_element_value_update
+  {
+    template<class kv>
+    using f = typename detail::map_element_value_update_impl<F, kv>::type;
+  };
+
+  /// If the \map contain the key \c key, replaces the existing element `L<key, v...>` with `L<F<key, v...>, v...>`.
   /// \pre \c is_map<>
   /// \treturn \sequence
-  template<class Key, class F, class C = listify>
-  using map_update_key = map_update<Key, map_element_key_update<F>, C>;
+  template<class key, class F, class C = listify>
+  using map_key_update = map_update<key, map_element_key_update<F>, C>;
 
-  /// If the \map contain the key \c Key, replaces the existing element `L<k, v...>` with `L<k, F<k, v...>>`.
+  /// If the \map contain the key \c key, replaces the existing element `L<key, v...>` with `L<key, F<key, v...>>`.
   /// \pre \c is_map<>
   /// \treturn \map
-  template<class Key, class F, class C = listify>
-  using map_update_value = map_update<Key, map_element_value_update<F>, C>;
+  template<class key, class F, class C = listify>
+  using map_value_update = map_update<key, map_element_value_update<F>, C>;
 
-  /// If the \map contain a key \c emp::front<KV>, replaces the existing element `L<k, v...>` with `F<k, v...>`; otherwise, inserts it using \c push_back<KV>.
+  /// If the \map contain a key \c emp::front<kv>, replaces the existing element `L<k, v...>` with `F<L<k, v...>>`; otherwise, inserts it using \c push_back<kv>.
   /// \pre \c is_map<>
   /// \treturn \sequence
-  template<class KV, class F, class C = listify>
+  /// \see map_update_s_or_insert
+  template<class kv, class F, class C = listify>
   using map_update_or_insert = if_<
-    map_contains<unpack<front<>>::f<KV>>,
-    map_update<unpack<front<>>::f<KV>, F, C>,
-    push_back<KV, C>
+    map_contains<unpack<front<>>::f<kv>>,
+    map_update<unpack<front<>>::f<kv>, F, C>,
+    push_back<kv, C>
   >;
 
-  /// If the \map contain a key \c emp::front<KV>, replaces the existing element `L<k, v...>` with `L<k, F<k, v...>>`; otherwise, inserts it using \c push_back<KV>.
+  /// If the \map contain a key \c k, replaces the existing element `L<k, v...>` with `F<list<k, v...>>`; otherwise, inserts it using \c push_back<list<k,v>>.
+  /// \pre \c is_map<>
+  /// \treturn \sequence
+  /// \see map_update_or_insert
+  template<class k, class v, class F, class C = listify>
+  using map_update_s_or_insert = if_<
+    map_contains<k>,
+    map_update<k, F, C>,
+    push_back<list<k, v>, C>
+  >;
+
+  /// If the \map contain a key \c emp::front<kv>, replaces the existing element `L<k, v...>` with `L<k, F<k, v...>>`; otherwise, inserts it using \c push_back<kv>.
   /// \pre \c is_map<>
   /// \treturn \map
-  template<class KV, class F, class C = listify>
-  using map_update_value_or_insert = map_update_or_insert<KV, map_element_value_update<F>, C>;
+  /// \see map_value_update_s_or_insert
+  template<class kv, class F, class C = listify>
+  using map_value_update_or_insert = map_update_or_insert<kv, map_element_value_update<F>, C>;
+
+  /// If the \map contain a key \c k, replaces the existing element `L<k, v...>` with `L<k, F<k, v...>>`; otherwise, inserts it using \c push_back<list<k,v>>.
+  /// \pre \c is_map<>
+  /// \treturn \map
+  /// \see map_value_update_or_insert
+  template<class k, class v, class F, class C = listify>
+  using map_value_update_s_or_insert = map_update_s_or_insert<k, v, map_element_value_update<F>, C>;
 
 
   namespace emp
   {
-    template<class L, class Key, class F, class C = mp::listify>
-    using map_update = typename detail::_unpack<mp::map_update<Key, F, C>, L>::type;
+    template<class L, class key, class F, class C = listify>
+    using map_update = typename detail::_unpack<mp::map_update<key, F, C>, L>::type;
 
-    template<class KV, class F>
-    using map_element_key_update = typename mp::map_element_key_update<F>
-      ::template f<KV>;
+    template<class kv, class F>
+    using map_element_key_update = typename detail::map_element_key_update_impl<F, kv>::type;
 
-    template<class KV, class F>
-    using map_element_value_update = typename mp::map_element_value_update<F>
-      ::template f<KV>;
+    template<class kv, class F>
+    using map_element_value_update = typename detail::map_element_value_update_impl<F, kv>::type;
 
-    template<class L, class Key, class F, class C = mp::listify>
-    using map_update_key =
-      typename detail::_unpack<mp::map_update_key<Key, F, C>, L>::type;
+    template<class L, class key, class F, class C = listify>
+    using map_key_update =
+      typename detail::_unpack<mp::map_key_update<key, F, C>, L>::type;
 
-    template<class L, class Key, class F, class C = mp::listify>
-    using map_update_value =
-      typename detail::_unpack<mp::map_update_value<Key, F, C>, L>::type;
+    template<class L, class key, class F, class C = listify>
+    using map_value_update =
+      typename detail::_unpack<mp::map_value_update<key, F, C>, L>::type;
 
-    template<class L, class KV, class F, class C = mp::listify>
+    template<class L, class kv, class F, class C = listify>
     using map_update_or_insert =
-      typename detail::_unpack<mp::map_update_or_insert<KV, F, C>, L>::type;
+      typename detail::_unpack<mp::map_update_or_insert<kv, F, C>, L>::type;
 
-    template<class L, class KV, class F, class C = mp::listify>
-    using map_update_value_or_insert =
-      typename detail::_unpack<mp::map_update_value_or_insert<KV, F, C>, L>::type;
+    template<class L, class k, class v, class F, class C = listify>
+    using map_update_s_or_insert =
+      typename detail::_unpack<mp::map_update_s_or_insert<k, v, F, C>, L>::type;
+
+    template<class L, class kv, class F, class C = listify>
+    using map_value_update_or_insert =
+      typename detail::_unpack<mp::map_value_update_or_insert<kv, F, C>, L>::type;
+
+    template<class L, class k, class v, class F, class C = listify>
+    using map_value_update_s_or_insert =
+      typename detail::_unpack<mp::map_value_update_s_or_insert<k, v, F, C>, L>::type;
   }
 }
+
+
+/// \cond
+namespace jln::mp::detail
+{
+  template<class F, template<class...> class S, class k, class... v>
+  struct map_element_key_update_impl<F, S<k, v...>>
+  {
+    using type = S<JLN_MP_CALL_TRACE(F, k, v...), v...>;
+  };
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct map_element_value_update_impl<F, S<k, v...>>
+  {
+    using type = S<k, JLN_MP_CALL_TRACE(F, k, v...)>;
+  };
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct map_element_key_update_impl<front<F>, S<k, v...>>
+  {
+    using type = S<JLN_MP_CALL_TRACE(F, k), v...>;
+  };
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct map_element_value_update_impl<front<F>, S<k, v...>>
+  {
+    using type = S<k, JLN_MP_CALL_TRACE(F, k)>;
+  };
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct map_element_key_update_impl<pop_front<F>, S<k, v...>>
+  {
+    using type = S<JLN_MP_CALL_TRACE(F, v...), v...>;
+  };
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct map_element_value_update_impl<pop_front<F>, S<k, v...>>
+  {
+    using type = S<k, JLN_MP_CALL_TRACE(F, v...)>;
+  };
+}
+/// \endcond
 
 /// \cond
 namespace jln::mp::detail
@@ -31364,16 +31445,25 @@ namespace jln::mp
 {
   /// \ingroup map
 
-  /// Inserts the element \c KV into the map, if the key \c emp::front<KV> does not exist.
+  /// Inserts the element \c kv into the map, if the key \c emp::front<kv> does not exist.
   /// \pre \c is_map<>
   /// \treturn \map
-  template<class KV, class C = listify>
-  using map_insert = if_<map_contains<unpack<front<>>::f<KV>>, C, push_back<KV, C>>;
+  template<class kv, class C = listify>
+  using map_insert = if_<map_contains<unpack<front<>>::f<kv>>, C, push_back<kv, C>>;
+
+  /// Inserts the element \c list<k,v> into the map, if the key \c k does not exist.
+  /// \pre \c is_map<>
+  /// \treturn \map
+  template<class k, class v, class C = listify>
+  using map_insert_s = if_<map_contains<k>, C, push_back<list<k, v>, C>>;
 
   namespace emp
   {
-    template<class L, class KV, class C = mp::listify>
-    using map_insert = typename detail::_unpack<mp::map_insert<KV, C>, L>::type;
+    template<class L, class kv, class C = mp::listify>
+    using map_insert = typename detail::_unpack<mp::map_insert<kv, C>, L>::type;
+
+    template<class L, class k, class v, class C = mp::listify>
+    using map_insert_s = typename detail::_unpack<mp::map_insert_s<k, v, C>, L>::type;
   }
 }
 
@@ -31387,9 +31477,15 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template<class KV, class C = listify>
-  using map_insert = typename detail::smp_map_insert<mp::is_map<>::f<KV>>
-    ::template f<KV, C>;
+  template<class kv, class C = listify>
+  using map_insert = typename detail::smp_map_insert<mp::is_map<>::f<kv>>
+    ::template f<kv, C>;
+
+  template<class k, class v, class C = listify>
+  using map_insert_s = test_contract<
+    mp::is_map<>,
+    mp::map_insert_s<k, v, assume_unary_or_more<C>>
+  >;
 }
 
 
@@ -31399,10 +31495,10 @@ namespace jln::mp::detail
   template<>
   struct smp_map_insert<true_>
   {
-    template<class KV, class C>
+    template<class kv, class C>
     using f = test_contract<
       mp::is_map<>,
-      mp::map_insert<KV, assume_unary_or_more<C>>
+      mp::map_insert<kv, assume_unary_or_more<C>>
     >;
   };
 
@@ -31464,51 +31560,54 @@ namespace jln::mp::detail
 
 namespace jln::mp::smp
 {
-  template<class Key, class F, class C = listify>
+  template<class key, class F, class C = listify>
   using map_update = test_contract<
     mp::is_map<>,
-    mp::map_update<Key, assume_unary<F>, subcontract<C>>
+    mp::map_update<key, assume_unary<F>, subcontract<C>>
   >;
 
   template<class F>
-  using map_element_key_update = test_contract<
-    mp::is_size_of_c<1>,
-    mp::if_<
-      mp::is_map<>,
-      detail::smp_map_element_key_update<assume_unary<F>>,
-      violation
-    >
+  using map_element_key_update = try_contract<
+    detail::smp_map_element_key_update<assume_unary<F>>
   >;
 
   template<class F>
-  using map_element_value_update = test_contract<
-    mp::is_size_of_c<1>,
-    mp::if_<
-      mp::is_map<>,
-      detail::smp_map_element_value_update<subcontract<F>>,
-      violation
-    >
+  using map_element_value_update = try_contract<
+    detail::smp_map_element_value_update<subcontract<F>>
   >;
 
-  template<class Key, class F, class C = listify>
-  using map_update_key = test_contract<
+  template<class key, class F, class C = listify>
+  using map_key_update = test_contract<
     mp::is_map<>,
-    mp::map_update<Key, detail::smp_map_element_key_update<assume_unary<F>>, subcontract<C>>
+    mp::map_update<key, detail::smp_map_element_key_update<assume_unary<F>>, subcontract<C>>
   >;
 
-  template<class Key, class F, class C = listify>
-  using map_update_value = test_contract<
+  template<class key, class F, class C = listify>
+  using map_value_update = test_contract<
     mp::is_map<>,
-    mp::map_update<Key, detail::smp_map_element_value_update<subcontract<F>>, subcontract<C>>
+    mp::map_update<key, detail::smp_map_element_value_update<subcontract<F>>, subcontract<C>>
   >;
 
-  template<class KV, class F, class C = listify>
-  using map_update_or_insert = typename detail::smp_map_update_or_insert<mp::is_map<>::f<KV>>
-    ::template f<KV, F, C>;
+  template<class kv, class F, class C = listify>
+  using map_update_or_insert = typename detail::smp_map_update_or_insert<mp::is_map<>::f<kv>>
+    ::template f<kv, F, C>;
 
-  template<class KV, class F, class C = listify>
-  using map_update_value_or_insert = typename detail::smp_map_update_or_insert<mp::is_map<>::f<KV>>
-    ::template f<KV, contract<detail::smp_map_element_value_update<subcontract<F>>>, C>;
+  template<class k, class v, class F, class C = listify>
+  using map_update_s_or_insert = test_contract<
+    mp::is_map<>,
+    mp::map_update_s_or_insert<k, v, assume_unary<F>, assume_unary_or_more<C>>
+  >;
+
+  template<class kv, class F, class C = listify>
+  using map_value_update_or_insert = typename detail::smp_map_update_or_insert<mp::is_map<>::f<kv>>
+    ::template f<kv, contract<detail::smp_map_element_value_update<subcontract<F>>>, C>;
+
+  template<class k, class v, class F, class C = listify>
+  using map_value_update_s_or_insert = test_contract<
+    mp::is_map<>,
+    mp::map_update_s_or_insert<k, v,
+      detail::smp_map_element_value_update<subcontract<F>>, assume_unary_or_more<C>>
+  >;
 }
 
 
@@ -31516,13 +31615,18 @@ namespace jln::mp::smp
 /// \cond
 namespace jln::mp::detail
 {
+  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::unary, (class F),
+    (map_element_key_update<F>));
+  JLN_MP_MAKE_EXPECTED_ARGUMENT(argument_category::unary, (class F),
+    (map_element_value_update<F>));
+
   template<>
   struct smp_map_update_or_insert<true_>
   {
-    template<class KV, class F, class C>
+    template<class kv, class F, class C>
     using f = test_contract<
       is_map<>,
-      map_update_or_insert<KV, assume_unary<F>, assume_unary_or_more<C>>
+      map_update_or_insert<kv, assume_unary<F>, assume_unary_or_more<C>>
     >;
   };
 
@@ -31531,19 +31635,72 @@ namespace jln::mp::detail
     : always<bad_contract>
   {};
 
+
+  template<class k>
+  struct smp_map_element_key_update_dispatch
+  {
+    template<template<class...> class S, class... v>
+    using f = typename try_<cfe<S>>::template f<k, v...>;
+  };
+
+  template<>
+  struct smp_map_element_key_update_dispatch<na>
+  {
+    template<template<class...> class S, class... v>
+    using f = na;
+  };
+
+  template<class, class>
+  struct smp_map_element_key_update_impl
+  {};
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct smp_map_element_key_update_impl<F, S<k, v...>>
+  {
+    using type =
+      typename smp_map_element_key_update_dispatch<JLN_MP_CALL_TRACE(F, k, v...)>
+      ::template f<S, v...>;
+  };
+
   template<class F>
   struct smp_map_element_key_update
   {
-    template<class x>
-    using f = typename detail::_unpack<partial_tee<F, monadic_xs<emp::wrapper<x>>>, x>::type;
+    template<class kv>
+    using f = typename smp_map_element_key_update_impl<F, kv>::type;
+  };
+
+
+  template<class v>
+  struct smp_map_element_value_update_dispatch
+  {
+    template<template<class...> class S, class k>
+    using f = typename try_<cfe<S>>::template f<k, v>;
+  };
+
+  template<>
+  struct smp_map_element_value_update_dispatch<na>
+    : smp_map_element_key_update_dispatch<na>
+  {};
+
+  template<class, class>
+  struct smp_map_element_value_update_impl
+  {};
+
+  template<class F, template<class...> class S, class k, class... v>
+  struct smp_map_element_value_update_impl<F, S<k, v...>>
+  {
+    using type =
+      typename smp_map_element_value_update_dispatch<JLN_MP_CALL_TRACE(F, k, v...)>
+      ::template f<S, k>;
   };
 
   template<class F>
   struct smp_map_element_value_update
   {
-    template<class x>
-    using f = typename detail::_unpack<tee<front<>, F, monadic_xs<emp::wrapper<x>>>, x>::type;
+    template<class kv>
+    using f = typename smp_map_element_value_update_impl<F, kv>::type;
   };
+
 
   template<template<class> class sfinae, class F>
   struct _sfinae<sfinae, map_element_key_update<F>>
@@ -31558,51 +31715,51 @@ namespace jln::mp::detail
   };
 
   // map_update
-  template<template<class> class sfinae, class Key, class F, class FC, class C>
-  struct _sfinae<sfinae, transform<map_find<Key, map_element_key_update<F>, FC>, C>>
+  template<template<class> class sfinae, class key, class F, class FC, class C>
+  struct _sfinae<sfinae, transform<map_find<key, map_element_key_update<F>, FC>, C>>
     : _sfinae<sfinae, transform<map_find<
-      Key,
+      key,
       contract<smp_map_element_key_update<assume_unary<sfinae<F>>>>, FC>,
       C
     >>
   {};
 
   // map_update
-  template<template<class> class sfinae, class Key, class F, class FC, class C>
-  struct _sfinae<sfinae, transform<map_find<Key, map_element_value_update<F>, FC>, C>>
+  template<template<class> class sfinae, class key, class F, class FC, class C>
+  struct _sfinae<sfinae, transform<map_find<key, map_element_value_update<F>, FC>, C>>
     : _sfinae<sfinae, transform<map_find<
-      Key,
+      key,
       contract<smp_map_element_value_update<subcontract<sfinae<F>>>>, FC>,
       C
     >>
   {};
 
   // map_update_or_insert
-  template<template<class> class sfinae, class Key, class KV, class F, class FC, class C1, class C2>
+  template<template<class> class sfinae, class key, class kv, class F, class FC, class C1, class C2>
   struct _sfinae<sfinae, if_<
-    map_contains<Key>,
-    transform<map_find<Key, map_element_key_update<F>, FC>, C1>,
-    push_back<KV, C2>
+    map_contains<key>,
+    transform<map_find<key, map_element_key_update<F>, FC>, C1>,
+    push_back<kv, C2>
   >>
-    : _sfinae<sfinae, if_<map_contains<Key>, transform<map_find<
-      Key,
+    : _sfinae<sfinae, if_<map_contains<key>, transform<map_find<
+      key,
       contract<smp_map_element_key_update<assume_unary<sfinae<F>>>>, FC>,
       C1
-    >, push_back<KV, C2>>>
+    >, push_back<kv, C2>>>
   {};
 
   // map_update_or_insert
-  template<template<class> class sfinae, class Key, class KV, class F, class FC, class C1, class C2>
+  template<template<class> class sfinae, class key, class kv, class F, class FC, class C1, class C2>
   struct _sfinae<sfinae, if_<
-    map_contains<Key>,
-    transform<map_find<Key, map_element_value_update<F>, FC>, C1>,
-    push_back<KV, C2>
+    map_contains<key>,
+    transform<map_find<key, map_element_value_update<F>, FC>, C1>,
+    push_back<kv, C2>
   >>
-    : _sfinae<sfinae, if_<map_contains<Key>, transform<map_find<
-      Key,
+    : _sfinae<sfinae, if_<map_contains<key>, transform<map_find<
+      key,
       contract<smp_map_element_value_update<subcontract<sfinae<F>>>>, FC>,
       C1
-    >, push_back<KV, C2>>>
+    >, push_back<kv, C2>>>
   {};
 }
 /// \endcond
@@ -32242,19 +32399,19 @@ namespace jln::mp
     /// \c true if \c x is an element of the set \c Set, \c false otherwise.
     template<class Set, class x>
     inline constexpr bool set_contains_v = JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<inherit_safely>, Set>::type
+      x, typename detail::_unpack<mp::cfe<inherit_safely>, Set>::type
     );
 
     /// \c true if \c x is an element of all \set \c Sets, \c false otherwise.
     template<class x, class... Sets>
     inline constexpr bool set_all_contains_v = (JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<inherit_safely>, Sets>::type
+      x, typename detail::_unpack<mp::cfe<inherit_safely>, Sets>::type
     ) && ...);
 
     /// \c true if \c x is an element of any \set \c Sets, \c false otherwise.
     template<class x, class... Sets>
     inline constexpr bool set_any_contains_v = (JLN_MP_SET_CONTAINS_BASE(
-      x, typename detail::_unpack<mp::lift<inherit_safely>, Sets>::type
+      x, typename detail::_unpack<mp::cfe<inherit_safely>, Sets>::type
     ) || ...);
 
     /// \c true if \c x is an element of none \set \c Sets, \c false otherwise.
@@ -32793,7 +32950,7 @@ namespace jln::mp
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///   fold<lift<emp::set_push_back>>::f<xs...>
+  ///   fold<cfe<emp::set_push_back>>::f<xs...>
   ///   \endcode
   /// \pre \c emp::is_unique<Set>
   /// \post \c emp::is_unique<result>
@@ -32808,7 +32965,7 @@ namespace jln::mp
 #else
   template<class C = listify>
   using set_push_back_elements = fold<
-    lift<emp::set_push_back>,
+    cfe<emp::set_push_back>,
     detail::optimize_useless_unpack_t<unpack<C>>
   >;
 #endif
@@ -32842,7 +32999,7 @@ namespace jln::mp::smp
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, fold<lift<emp::set_push_back>, C>>
+  struct _sfinae<sfinae, fold<cfe<emp::set_push_back>, C>>
   {
     using type = smp::set_push_back_elements<
       JLN_MP_CONDITIONAL_C_T(
@@ -32949,7 +33106,7 @@ namespace jln::mp
   /// \semantics
   ///   Equivalent to
   ///   \code
-  ///   fold<lift<emp::set_push_front>>::f<xs...>
+  ///   fold<cfe<emp::set_push_front>>::f<xs...>
   ///   \endcode
   /// \treturn \set
   /// \pre \c emp::is_unique<Set>
@@ -32965,7 +33122,7 @@ namespace jln::mp
 #else
   template<class C = listify>
   using set_push_front_elements = fold<
-    lift<emp::set_push_front>,
+    cfe<emp::set_push_front>,
     detail::optimize_useless_unpack_t<unpack<C>>
   >;
 #endif
@@ -32999,7 +33156,7 @@ namespace jln::mp::smp
 namespace jln::mp::detail
 {
   template<template<class> class sfinae, class C>
-  struct _sfinae<sfinae, fold<lift<emp::set_push_front>, C>>
+  struct _sfinae<sfinae, fold<cfe<emp::set_push_front>, C>>
   {
     using type = smp::set_push_front_elements<
       JLN_MP_CONDITIONAL_C_T(
@@ -34885,7 +35042,7 @@ namespace jln::mp::detail
 /// \endcond
 
 #ifndef JLN_MP_VAL_AS_ALIAS
-# define JLN_MP_VAL_AS_ALIAS (JLN_MP_ENABLE_DEBUG_ORIGINAL && !JLN_MP_CLANG_LIKE)
+# define JLN_MP_VAL_AS_ALIAS (JLN_MP_DEBUG_ORIGINAL && !JLN_MP_CLANG_LIKE)
 #endif
 
 #if !JLN_MP_ENABLE_TPL_AUTO || JLN_MP_VAL_AS_ALIAS
@@ -35139,7 +35296,7 @@ namespace jln::mp
     template<class x>
     inline constexpr bool is_val_v = false;
 
-#if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_ENABLE_DEBUG || JLN_MP_CLANG_LIKE)
+#if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_DEBUG || JLN_MP_CLANG_LIKE)
     template<auto x>
     inline constexpr bool is_val_v<val<x>> = true;
 #else
@@ -35184,7 +35341,7 @@ namespace jln::mp::detail
     using type = false_;
   };
 
-#if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_ENABLE_DEBUG || JLN_MP_CLANG_LIKE)
+#if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_DEBUG || JLN_MP_CLANG_LIKE)
   template<auto x>
   struct is_val_impl<val<x>>
 #else
@@ -36898,7 +37055,7 @@ namespace jln::mp::detail
 #undef JLN_smp_opv_without_zero_and_with_value
 /// \endcond
 
-#if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_ENABLE_DEBUG || JLN_MP_CLANG_LIKE)
+#if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_DEBUG || JLN_MP_CLANG_LIKE)
 namespace jln::mp
 {
   /// \ingroup value
