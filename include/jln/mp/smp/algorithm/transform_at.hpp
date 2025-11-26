@@ -7,6 +7,8 @@
 #include <jln/mp/smp/functional/partial_transform.hpp>
 #include <jln/mp/algorithm/transform_at.hpp>
 
+#include <type_traits> // std::void_t
+
 namespace jln::mp::smp
 {
   template<unsigned i, class F, class C = listify>

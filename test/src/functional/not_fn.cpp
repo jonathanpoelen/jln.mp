@@ -6,6 +6,8 @@
 #include "jln/mp/smp/functional/not_fn.hpp"
 #include "jln/mp/smp/utility/always.hpp"
 
+#include <type_traits>
+
 TEST_SUITE_BEGIN()
 
 struct xxx

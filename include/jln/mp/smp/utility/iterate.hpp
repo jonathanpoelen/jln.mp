@@ -9,6 +9,8 @@
 #include <jln/mp/list/is_size_of.hpp>
 #include <jln/mp/detail/expr_conversion.hpp>
 
+#include <type_traits> // std::void_t
+
 namespace jln::mp::smp
 {
   template<uint_t n, class F, class C = identity>

@@ -7,8 +7,6 @@
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/list/front.hpp>
 
-#include <type_traits>
-
 
 namespace jln::mp
 {
