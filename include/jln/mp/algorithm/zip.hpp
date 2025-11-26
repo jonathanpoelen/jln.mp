@@ -24,13 +24,13 @@ namespace jln::mp
   /// \pre all lists must be the same size
   /// \semantics
   ///   \code
-  ///   zip<>::f<
+  ///   zip_with<F, C>::f<
   ///     list<_1, _2, _3>,
   ///     list<_a, _b, _c>
-  ///   > = list<
-  ///     list<_1, _a>,
-  ///     list<_2, _b>,
-  ///     list<_3, _c>
+  ///   > = C::f<
+  ///     F::f<_1, _a>,
+  ///     F::f<_2, _b>,
+  ///     F::f<_3, _c>
   ///   >
   ///   \endcode
   /// \treturn \sequence of \list
