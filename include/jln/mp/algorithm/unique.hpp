@@ -23,6 +23,7 @@ namespace jln::mp
   /// Returns a list with duplicate elements removed.
   /// Only the first element found is kept.
   /// \treturn \sequence
+  /// \see unique, unique_by, unique_by_kv
   template<class Cmp = same<>, class C = listify>
   struct unique_if
   : detail::unique_if_impl<
@@ -33,14 +34,16 @@ namespace jln::mp
       >
     >
   {
-#ifdef JLM_MP_DOXYGANATING
+#ifdef JLN_MP_DOXYGENATING
     template<class... xs>
     using f;
 #endif
   };
 
-  /// Returns a list with duplicate elements removed.
+  /// Returns a list with duplicate elements removed,
+  /// preserving the order of appearance.
   /// \treturn \set
+  /// \see unique_if, unique_by, unique_by_kv
   template<class C = listify>
   using unique = unique_if<same<>, C>;
 
@@ -156,12 +159,6 @@ namespace jln::mp::detail
       list<JLN_MP_XS_32(JLN_MP_NIL, JLN_MP_NIL, JLN_MP_COMMA)>
     >
   {};
-
-
-  struct start_recursive_unique
-  {
-    using type = inherit<>;
-  };
 }
 
 namespace jln::mp

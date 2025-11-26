@@ -102,6 +102,7 @@
 #include "src/algorithm/uncompress.cpp"
 #include "src/algorithm/unfold.cpp"
 #include "src/algorithm/unique.cpp"
+#include "src/algorithm/unique_by.cpp"
 #include "src/algorithm/upper_bound.cpp"
 #include "src/algorithm/zip.cpp"
 #include "src/algorithm/zip_longest.cpp"

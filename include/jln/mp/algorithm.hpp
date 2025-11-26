@@ -104,6 +104,7 @@
 #include <jln/mp/algorithm/uncompress.hpp>
 #include <jln/mp/algorithm/unfold.hpp>
 #include <jln/mp/algorithm/unique.hpp>
+#include <jln/mp/algorithm/unique_by.hpp>
 #include <jln/mp/algorithm/upper_bound.hpp>
 #include <jln/mp/algorithm/zip.hpp>
 #include <jln/mp/algorithm/zip_longest.hpp>

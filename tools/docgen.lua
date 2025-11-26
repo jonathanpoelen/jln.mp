@@ -41,6 +41,7 @@ local kw = {
   'namespace',
   'struct',
   'using',
+  'concept',
   'static_constexpr',
   'comment',
   'define',
@@ -469,7 +470,7 @@ local pattern = P{
           )^-1
         * ( P';'
           + P'{' * ws0
-            * ( template^-1 * ws0 * (P'using' + 'class' + 'struct')
+            * ( template^-1 * ws0 * (P'using' + 'class' + 'struct' + 'concept')
                 * ws * cid * ws0 * ('=' * ws0 * C(Until';'))^-1
               + ( '};'
                 + 'static const' * P'expr'^-1 * ws0 * id
@@ -486,6 +487,8 @@ local pattern = P{
       + (P'static ' + 'inline ')^0 * 'constexpr ' * Cc(kwindexes.static_constexpr)
         * ctid * ws * cid * ws0
         * '=' * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
+      + 'concept ' * Cc(kwindexes.concept) * Cc(nil) * cid * ws0 * '='
+        * ws0 * Cc(nil) * Cc(nil) * Cc(nil) * C(Until';')
       ) / f_type
   + 'namespace '
     * ( ignore_namespace * ws0 * Balanced('{', '}')
@@ -586,6 +589,7 @@ htmlifier_init = function()
     ( ( ( P'template' + 'class' + 'struct' + 'using' + 'typename'
         + 'decltype' + 'sizeof' + 'auto' + 'static_assert'
         + 'constexpr' + 'return' + 'namespace' + 'static_cast'
+        + 'concept'
         ) / mk_tag'k'
       + ( P'void' + 'int' + 'unsigned' + 'long' + 'bool' + 'char' + 'short'
         + 'double' + 'float'
@@ -829,6 +833,7 @@ end
 
 i_struct = kwindexes.struct
 i_using = kwindexes.using
+i_concept = kwindexes.concept
 i_static_constexpr = kwindexes.static_constexpr
 i_desc = kwindexes.desc
 i_code = kwindexes.code
@@ -906,7 +911,7 @@ for name,g in pairs(groups) do
       elseif d.i == i_code then
         local part = blockcode_begin .. linkifier('', d[1]) .. blockcode_end
         table.insert(extra_doc[i_block], part)
-      elseif d.i == i_using or d.i == i_struct or d.i == i_static_constexpr then
+      elseif d.i == i_using or d.i == i_struct or d.i == i_static_constexpr or d.i == i_concept then
         types[#types+1] = d
         if d.namespace == '' then
           ttypes[#ttypes+1] = d
@@ -939,8 +944,8 @@ for name,g in pairs(groups) do
                   or tohtml(d.namespace, d.human_tparams)
                   or ''
 
-        if d.i == i_using then
-          d.is_alias = true
+        if d.i == i_concept then
+          d.is_concept = true
         elseif d.mem then
           d.mem_html = d.mem_html .. '<span class="p">::</span>'
                     .. d.mem .. (tohtml(d.namespace, d.human_tparams_mem) or '')
@@ -1163,7 +1168,8 @@ for _,g in ipairs(tgroups) do
     table.sort(f.types, comp_by_name_with_macro)
     for _,d in ipairs(f.types) do
       if d.namespace ~= 'emp' then
-        push('<tr><td>' .. inlinecode_begin .. '<a href="#' .. d.refid .. '">' .. d.fullname
+        push('<tr><td>' .. (d.is_concept and 'concept ' or '')
+             .. inlinecode_begin .. '<a href="#' .. d.refid .. '">' .. d.fullname
              .. '</a>' .. d.mem_html .. inlinecode_end
              .. '</td><td>' .. ( d.short_desc_html
                                or (d.inline_impl_html and '= ' .. d.inline_impl_html)
@@ -1251,6 +1257,7 @@ for _,g in ipairs(tgroups) do
       else
         push('<h4' .. (refcache[d.refid] and '' or ' id="' .. d.refid .. '"') .. '><a href="#'
              .. d.refid .. '" class="ref">¶</a>'
+             .. (d.is_concept and 'concept ' or '')
              .. inlinecode_begin .. d.cpp_type_html .. d.fullname
              .. d.mem_html .. inlinecode_end .. '</h4>\n')
         refcache[d.refid] = true

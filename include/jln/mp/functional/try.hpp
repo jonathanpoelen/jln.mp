@@ -10,11 +10,14 @@
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/is.hpp>
 
-
 namespace jln::mp
 {
   using is_na = is<na>;
   using violation = always<na>;
+
+#if JLN_MP_FEATURE_CONCEPTS
+  template<class T> concept not_same_as_na = !JLN_MP_IS_SAME(T, na);
+#endif
 
   /// \cond
   namespace detail
