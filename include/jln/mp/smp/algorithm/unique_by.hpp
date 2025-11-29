@@ -87,7 +87,7 @@ namespace jln::mp::detail
       using f = typename C::template f<unique_by_kv_entry<k, v>...>;
     };
 
-    using impl = JLN_MP_AT_C_T((!JLN_MP_IS_SAME(k, na) && ... && true), na, dispatch);
+    using impl = JLN_MP_AT_C_T(JLN_MP_NONE_SAME_AS(na, k), na, dispatch);
   };
 #endif
 

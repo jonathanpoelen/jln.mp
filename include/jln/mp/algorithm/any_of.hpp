@@ -10,6 +10,13 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Checks whether a predicate holds for at least some element of a \sequence.
+  /// \c any_of is short-circuiting: if there is a template type
+  /// argument `xs[i]` with `bool(xs[i]::value) == true`, then instantiating
+  /// `any_of<C>::f<xs[0], ..., xs[n-1]>` does not require the
+  /// instantiation of `Pred::f<xs[j]>::value` for `j > i`.
+  /// If the predicate is fast, short-circuiting can slow down evaluation,
+  /// and this form may be faster: `transform<Pred, any_of<is<true_>, C>>`
+  /// because \c any_of is optimized with \c is.
   /// \treturn \bool
   /// \see all_of, none_of
   template<class Pred, class C = identity>

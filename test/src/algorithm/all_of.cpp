@@ -14,8 +14,22 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
+  ut::same<false_, emp::all_of<seq_0_0_0, to_bool<>>>();
   ut::same<false_, emp::all_of<seq_0_1_2, to_bool<>>>();
   ut::same<true_, emp::all_of<seq_1_2_3, to_bool<>>>();
+
+  ut::same<true_, emp::all_of<seq_0_0_0, to_bool<not_<>>>>();
+  ut::same<false_, emp::all_of<seq_1_2_3, to_bool<not_<>>>>();
+
+  ut::same<true_, emp::all_of<list<>, is<_1>>>();
+  ut::same<false_, emp::all_of<seq_1_2_3, is<_1>>>();
+  ut::same<true_, emp::all_of<seq_1_1_1, is<_1>>>();
+  ut::same<true_, emp::all_of<seq_1_2_3, is<_4>, not_<>>>();
+  ut::same<false_, emp::all_of<seq_1_1_1, is<_1>, not_<>>>();
+  ut::same<true_, emp::all_of<list<>, is<_1, not_<>>>>();
+  ut::same<false_, emp::all_of<seq_1_2_3, is<_1, not_<>>>>();
+  ut::same<true_, emp::all_of<seq_1_2_3, is<_4, not_<>>>>();
+  ut::same<false_, emp::all_of<seq_1_2_3, is<_4, not_<>>, not_<>>>();
 
   test_unary_pack<all_of>();
   test_unary_pack<all_of, to_bool<>>();

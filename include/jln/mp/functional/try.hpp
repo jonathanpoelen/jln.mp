@@ -16,7 +16,8 @@ namespace jln::mp
   using violation = always<na>;
 
 #if JLN_MP_FEATURE_CONCEPTS
-  template<class T> concept not_same_as_na = !JLN_MP_IS_SAME(T, na);
+  template<class T>
+  concept not_same_as_na = !JLN_MP_IS_SAME(T, na);
 #endif
 
   /// \cond

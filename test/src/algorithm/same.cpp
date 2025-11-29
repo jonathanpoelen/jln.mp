@@ -7,9 +7,30 @@
 
 TEST_SUITE_BEGIN()
 
+template<class T, class... Ts>
+static inline constexpr bool test_all_same_as = JLN_MP_ALL_SAME_AS(T, Ts);
+
+template<class T, class... Ts>
+static inline constexpr bool test_any_same_as = JLN_MP_ANY_SAME_AS(T, Ts);
+
+template<class T, class... Ts>
+static inline constexpr bool test_none_same_as = JLN_MP_NONE_SAME_AS(T, Ts);
+
 TEST()
 {
   using namespace jln::mp;
+
+  static_assert(test_all_same_as<int, int, int>);
+  static_assert(!test_all_same_as<int, int, char>);
+  static_assert(!test_all_same_as<int, char, char>);
+
+  static_assert(!test_none_same_as<int, int, int>);
+  static_assert(!test_none_same_as<int, int, char>);
+  static_assert(test_none_same_as<int, char, char>);
+
+  static_assert(test_any_same_as<int, int, int>);
+  static_assert(test_any_same_as<int, int, char>);
+  static_assert(!test_any_same_as<int, char, char>);
 
   ut::same<true_, emp::same<list<int, int, int>>>();
   ut::same<false_, emp::same<list<int, int, void>>>();

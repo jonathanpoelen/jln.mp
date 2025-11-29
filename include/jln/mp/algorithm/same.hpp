@@ -12,7 +12,7 @@ namespace jln::mp
 {
   /// \ingroup algorithm
 
-/// Fast implementation of std::is_same_v.
+/// Fast implementation of \c std::is_same_v.
 #if JLN_MP_HAS_BUILTIN(__is_same)
 #  define JLN_MP_IS_SAME(...) __is_same(__VA_ARGS__)
 #else
@@ -32,13 +32,51 @@ namespace jln::mp
 
     template<class x, class y, class z, class... xs>
     inline constexpr bool same_xs_v<x, y, z, xs...> =
-#if JLN_MP_HAS_BUILTIN(__is_same)
-      __is_same(list<x, y, z, xs...>, list<y, z, xs..., x>)
-#else
-      same_xs_v<list<x, y, z, xs...>, list<y, z, xs..., x>>
-#endif
+      JLN_MP_IS_SAME(list<x, y, z, xs...>, list<y, z, xs..., x>)
     ;
   }
+
+#if JLN_MP_FEATURE_CONCEPTS
+  template<class x, class y>
+  concept same_as = JLN_MP_IS_SAME(x, y);
+
+  template<class x, class y>
+  concept not_same_as = !JLN_MP_IS_SAME(x, y);
+
+  /// Equivalent to `std::enable_if_t<(same_as<T, Ts> && ... && true)>`.
+  template<class T, same_as<T>...>
+  using enable_if_all_same_as = void;
+
+  /// Equivalent to `std::enable_if_t<(!same_as<T, Ts> && ... && true)>`.
+  template<class T, not_same_as<T>...>
+  using enable_if_none_same_as = void;
+#endif
+
+
+/// Fast implementation of `(std::is_same_v<T, xs> && ... && true)`.
+#if !JLN_MP_HAS_BUILTIN(__is_same) || JLN_MP_GCC
+# define JLN_MP_ALL_SAME_AS(T, xs) \
+  JLN_MP_IS_SAME(::jln::mp::list<T, xs...>, ::jln::mp::list<xs..., T>)
+#else
+# define JLN_MP_ALL_SAME_AS(T, xs) (JLN_MP_IS_SAME(T, xs) && ... && true)
+#endif
+
+/// Fast implementation of `(!std::is_same_v<T, xs> && ... && true)`.
+#if JLN_MP_REQUIRES_AS_FAST_SFINAE
+# define JLN_MP_NONE_SAME_AS(T, xs) \
+  requires { ::jln::mp::enable_if_none_same_as<T, xs...>{}; }
+#else
+# define JLN_MP_NONE_SAME_AS(T, xs) !(JLN_MP_IS_SAME(T, xs) || ...)
+#endif
+
+/// Fast implementation of `(std::is_same_v<T, xs> || ...)`.
+#if JLN_MP_REQUIRES_AS_FAST_SFINAE
+# define JLN_MP_ANY_SAME_AS(T, xs) \
+  !requires { ::jln::mp::enable_if_none_same_as<T, xs...>{}; }
+#else
+# define JLN_MP_ANY_SAME_AS(T, xs) (JLN_MP_IS_SAME(T, xs) || ...)
+#endif
+
 
   /// Checks whether all \values are identical.
   /// \treturn \bool

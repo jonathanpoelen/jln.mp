@@ -13,7 +13,7 @@ namespace jln::mp
   /// Disjunction is short-circuiting: if there is a template type
   /// argument `xs[i]` with `bool(xs[i]::value) == true`, then instantiating
   /// `disjunction<C>::f<xs[0], ..., xs[n-1]>` does not require the
-  /// instantiation of `Pred::f<xs[j]>::value` for `j > i`
+  /// instantiation of `Pred::f<xs[j]>::value` for `j > i`.
   /// \note If you just need a boolean, `any_of<Pred,C>` is more appropriate.
   /// \treturn \value
   /// \post If `sizeof...(xs) == 0`, `false_`
