@@ -205,6 +205,18 @@ namespace jln::mp::detail
   };
 
   template<class TC>
+  struct _assume_number<if_<size<is<number<1>>>, TC, violation>>
+  {
+    using type = TC;
+  };
+
+  template<class TC>
+  struct _assume_positive_number<if_<size<is<number<1>>>, TC, violation>>
+  {
+    using type = TC;
+  };
+
+  template<class TC>
   struct _assume_binary<if_<size<is<number<2>>>, TC, violation>>
   {
     using type = TC;

@@ -6,10 +6,20 @@
 #include <jln/mp/smp/functional/identity.hpp>
 #include <jln/mp/utility/is.hpp>
 
+/// \cond
+namespace jln::mp::detail
+{
+  JLN_MP_MAKE_EXPECTED_ARGUMENT2(argument_category::unary, is);
+}
+/// \endcond
+
 namespace jln::mp::smp
 {
   template<class x, class C = identity>
-  using is = try_contract<mp::is<x, assume_positive_number<C>>>;
+  using is = test_contract<
+    mp::size<mp::is<number<1>>>,
+    mp::is<x, assume_positive_number<C>>
+  >;
 }
 
 /// \cond
@@ -20,7 +30,5 @@ namespace jln::mp::detail
   {
     using type = smp::is<x, sfinae<C>>;
   };
-
-  JLN_MP_MAKE_EXPECTED_ARGUMENT2(argument_category::unary, is);
 }
 /// \endcond

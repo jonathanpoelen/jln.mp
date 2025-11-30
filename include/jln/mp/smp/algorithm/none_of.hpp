@@ -12,10 +12,14 @@
 /// \cond
 namespace jln::mp::detail
 {
-  template<class Pred, class C>
+  template<class Pred, class C,
+    class AssumedPred = assume_unary<Pred>,
+    class AssumedC = assume_positive_number_barrier<C>>
   struct smp_none_of;
 
-  template<class Pred, class C>
+  template<class Pred, class C,
+    class AssumedPred = assume_unary<Pred>,
+    class AssumedC = assume_positive_number_barrier<C>>
   struct smp_all_of;
 }
 /// \endcond
@@ -45,82 +49,52 @@ namespace jln::mp::detail
   };
 
 
-  template<class Pred, class C>
+  template<class Pred, class C, class AssumedPred, class AssumedC>
   struct smp_none_of
   {
     using type = smp::drop_until<Pred,
-      smp::always<false_, assume_positive_number_barrier<C>>,
-      smp::always<true_, assume_positive_number_barrier<C>>
+      smp::always<false_, AssumedC>,
+      smp::always<true_, AssumedC>
     >;
   };
 
-  template<class T, class C>
-  struct smp_none_of<is<T>, C>
+  template<class Pred, class C, class T, class AssumedC>
+  struct smp_none_of<Pred, C, is<T>, AssumedC>
   {
-    using type = contract<none_of<is<T>, assume_positive_number_barrier<C>>>;
+    using type = contract<none_of<is<T>, AssumedC>>;
   };
 
-  template<class T, class C>
-  struct smp_none_of<is<T, not_<>>, C>
-  {
-    using type = contract<all_of<is<T>, assume_positive_number_barrier<C>>>;
-  };
-
-  template<class T, class C>
-  struct smp_none_of<try_contract<is<T>>, C>
-  {
-    using type = contract<none_of<is<T>, assume_positive_number_barrier<C>>>;
-  };
-
-  template<class T, class C>
-  struct smp_none_of<try_contract<is<T, not_<>>>, C>
+  template<class Pred, class C, class T, class AssumedC>
+  struct smp_none_of<Pred, C, is<T, not_<>>, AssumedC>
   {
     using type = contract<all_of<is<T>, assume_positive_number_barrier<C>>>;
   };
 
 
-  template<class Pred, class C>
+  template<class Pred, class C, class AssumedPred, class AssumedC>
   struct smp_all_of
   {
     using type = smp::drop_while<Pred,
-      smp::always<false_, assume_positive_number_barrier<C>>,
-      smp::always<true_, assume_positive_number_barrier<C>>
+      smp::always<false_, AssumedC>,
+      smp::always<true_, AssumedC>
     >;
   };
 
-  template<class T, class C>
-  struct smp_all_of<is<T>, C>
+  template<class Pred, class C, class T, class AssumedC>
+  struct smp_all_of<Pred, C, is<T>, AssumedC>
   {
     using type = contract<all_of<is<T>, assume_positive_number_barrier<C>>>;
   };
 
-  template<class T, class C>
-  struct smp_all_of<is<T, not_<>>, C>
-  {
-    using type = contract<none_of<is<T>, assume_positive_number_barrier<C>>>;
-  };
-
-  template<class T, class C>
-  struct smp_all_of<try_contract<is<T>>, C>
-  {
-    using type = contract<all_of<is<T>, assume_positive_number_barrier<C>>>;
-  };
-
-  template<class T, class C>
-  struct smp_all_of<try_contract<is<T, not_<>>>, C>
+  template<class Pred, class C, class T, class AssumedC>
+  struct smp_all_of<Pred, C, is<T, not_<>>, AssumedC>
   {
     using type = contract<none_of<is<T>, assume_positive_number_barrier<C>>>;
   };
 
 #if !JLN_MP_GCC
-  template<class C>
-  struct smp_all_of<is_list<>, C>
-  {
-    using type = contract<all_of<is_list<>, assume_positive_number_barrier<C>>>;
-  };
-
-  template<class C>
-  struct smp_all_of<try_contract<is_list<>>, C>
+  template<class Pred, class C, class AssumedC>
+  struct smp_all_of<Pred, C, is_list<>, AssumedC>
   {
     using type = contract<all_of<is_list<>, assume_positive_number_barrier<C>>>;
   };

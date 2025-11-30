@@ -9,7 +9,10 @@
 namespace jln::mp::smp
 {
   template<class C = identity>
-  using is_list = try_contract<mp::is_list<assume_positive_number<C>>>;
+  using is_list = test_contract<
+    mp::size<mp::is<number<1>>>,
+    mp::is_list<assume_positive_number<C>>
+  >;
 }
 
 /// \cond

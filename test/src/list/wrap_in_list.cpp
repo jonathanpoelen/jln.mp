@@ -16,7 +16,9 @@ TEST()
   using namespace jln::mp;
 
   using pred1 = is<int>;
+  using smp_pred1 = smp::is<int>;
   using pred2 = cfe<std::is_same>;
+  using smp_pred2 = smp::cfe<std::is_same>;
 
   ut::same<list<int>, emp::wrap_in_list_if<pred1, int>>();
   ut::same<list<>, emp::wrap_in_list_if<pred1, char>>();
@@ -37,14 +39,14 @@ TEST()
   ut::same<list<int>, emp::wrap_in_list_if_not<tee<is<int>, not_<>>, int>>();
   ut::same<list<int>, emp::wrap_in_list_if_not<tee<cfe<std::is_same>, not_<>>, int, int>>();
 
-  test_context<wrap_in_list_if<pred1>, smp::wrap_in_list_if<pred1>>()
+  test_context<wrap_in_list_if<pred1>, smp::wrap_in_list_if<smp_pred1>>()
     .test<list<int>, int>()
     .test<list<>, char>()
     .not_invocable<>()
     .not_invocable<int, int>()
     ;
 
-  test_context<wrap_in_list_if<pred2>, smp::wrap_in_list_if<pred2>>()
+  test_context<wrap_in_list_if<pred2>, smp::wrap_in_list_if<smp_pred2>>()
     .test<list<int>, int, int>()
     .test<list<>, int, char>()
     .not_invocable<>()
@@ -61,14 +63,14 @@ TEST()
     .not_invocable<>()
     ;
 
-  test_context<wrap_in_list_if_not<pred1>, smp::wrap_in_list_if_not<pred1>>()
+  test_context<wrap_in_list_if_not<pred1>, smp::wrap_in_list_if_not<smp_pred1>>()
     .test<list<>, int>()
     .test<list<char>, char>()
     .not_invocable<>()
     .not_invocable<int, int>()
     ;
 
-  test_context<wrap_in_list_if_not<pred2>, smp::wrap_in_list_if_not<pred2>>()
+  test_context<wrap_in_list_if_not<pred2>, smp::wrap_in_list_if_not<smp_pred2>>()
     .test<list<>, int, int>()
     .test<list<int>, int, char>()
     .not_invocable<>()
