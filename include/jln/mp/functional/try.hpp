@@ -26,7 +26,11 @@ namespace jln::mp
     template<class x>
     struct try_dispatch;
 
-#if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
+#if JLN_MP_REQUIRES_AS_FAST_SFINAE
+    template<bool>
+    struct try_select;
+
+#elif JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
     template<class, class, class = void>
     struct _try_impl;
 
@@ -48,10 +52,19 @@ namespace jln::mp
   template<class F, class TC = identity, class FC = violation>
   struct try_
   {
+#if JLN_MP_REQUIRES_AS_FAST_SFINAE
+    template<class... xs>
+    using f = typename detail::try_select<requires {
+      requires not_same_as_na<typename F::template f<xs...>>;
+    }>
+    ::template f<F, TC, FC, xs...>;
+#else
     template<class... xs>
     using f = typename detail::try_dispatch<
       typename JLN_MP_CALL_TRY_IMPL(F, xs...)
-    >::template f<TC, FC, xs...>;
+    >
+    ::template f<TC, FC, xs...>;
+#endif
   };
 
   template<class F, class FC = violation>
@@ -84,8 +97,15 @@ namespace jln::mp
     using try_or = typename mp::try_<F, mp::identity, always<FT>>::template f<xs...>;
 
     template<class F, class... xs>
-    inline constexpr bool is_invocable_v = JLN_MP_RAW_EXPR_TO_BOOL_NOT(
-      JLN_MP_IS_SAME(na, typename JLN_MP_CALL_TRY_IMPL(F, xs...)));
+    inline constexpr bool is_invocable_v =
+#if JLN_MP_REQUIRES_AS_FAST_SFINAE
+      requires { requires not_same_as_na<typename F::template f<xs...>>; }
+#else
+      JLN_MP_RAW_EXPR_TO_BOOL_NOT(
+        JLN_MP_IS_SAME(na, typename JLN_MP_CALL_TRY_IMPL(F, xs...))
+      )
+#endif
+    ;
 
     template<class F, class... xs>
     inline constexpr bool is_not_invocable_v = !is_invocable_v<F, xs...>;
@@ -116,12 +136,14 @@ namespace jln::mp
     using f = number<!emp::is_invocable_v<F, xs...>>;
   };
 
+#if !(JLN_MP_REQUIRES_AS_FAST_SFINAE)
   template<class F>
   struct try_<F, identity, violation>
   {
     template<class... xs>
     using f = typename JLN_MP_CALL_TRY_IMPL(F, xs...);
   };
+#endif
 }
 
 namespace jln::mp::detail
@@ -139,9 +161,29 @@ namespace jln::mp::detail
     template<class TC, class FC, class... xs>
     using f = JLN_MP_CALL_TRACE(FC, xs...);
   };
+
+
 }
 
-#if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
+#if JLN_MP_REQUIRES_AS_FAST_SFINAE
+namespace jln::mp::detail
+{
+  template<bool>
+  struct try_select
+  {
+    template<class F, class TC, class FC, class... xs>
+    using f = JLN_MP_CALL_TRACE(TC, typename F::template f<xs...>);
+  };
+
+  template<>
+  struct try_select<false>
+  {
+    template<class F, class TC, class FC, class... xs>
+    using f = JLN_MP_CALL_TRACE(FC, xs...);
+  };
+}
+
+#elif JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
 #include <type_traits>
 
 namespace jln::mp::detail
