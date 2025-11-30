@@ -64,7 +64,7 @@ namespace jln::mp
 /// Fast implementation of `(!std::is_same_v<T, xs> && ... && true)`.
 #if JLN_MP_REQUIRES_AS_FAST_SFINAE
 # define JLN_MP_NONE_SAME_AS(T, xs) \
-  requires { ::jln::mp::enable_if_none_same_as<T, xs...>{}; }
+  requires { ::jln::mp::enable_if_none_same_as<T, xs...>(); }
 #else
 # define JLN_MP_NONE_SAME_AS(T, xs) !(JLN_MP_IS_SAME(T, xs) || ...)
 #endif
@@ -72,7 +72,7 @@ namespace jln::mp
 /// Fast implementation of `(std::is_same_v<T, xs> || ...)`.
 #if JLN_MP_REQUIRES_AS_FAST_SFINAE
 # define JLN_MP_ANY_SAME_AS(T, xs) \
-  !requires { ::jln::mp::enable_if_none_same_as<T, xs...>{}; }
+  !requires { ::jln::mp::enable_if_none_same_as<T, xs...>(); }
 #else
 # define JLN_MP_ANY_SAME_AS(T, xs) (JLN_MP_IS_SAME(T, xs) || ...)
 #endif
