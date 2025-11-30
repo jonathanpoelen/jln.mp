@@ -192,8 +192,11 @@ namespace jln::mp
   JLN_MP_SMP_MAKE_TRAIT(invoke_result, 1, types::any)
 #endif
 
+// deprecated with C++23
+#if __cplusplus < 202302L
   JLN_MP_SMP_MAKE_TRAIT(aligned_storage, 1, types::any)
   JLN_MP_SMP_MAKE_TRAIT(aligned_union, 1, types::any)
+#endif
 
 #undef JLN_MP_SMP_MAKE_BASIC_TRAIT
 #undef JLN_MP_SMP_MAKE_TRAIT

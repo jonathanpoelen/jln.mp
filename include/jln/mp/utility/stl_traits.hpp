@@ -261,6 +261,8 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT(invoke_result);
 #endif
 
+// deprecated with C++23
+#if __cplusplus < 202302L
   template<class C = identity>
   struct aligned_storage
   {
@@ -309,6 +311,7 @@ namespace jln::mp::traits
     using f = typename std::aligned_union<len::value, xs...>::type;
   };
   /// \endcond
+#endif
 
 #undef JLN_MP_MAKE_TRAIT
 }
