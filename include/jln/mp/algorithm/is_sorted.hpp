@@ -36,8 +36,8 @@ namespace jln::mp
   }
 }
 
+#include <jln/mp/algorithm/none_of.hpp>
 #include <jln/mp/algorithm/pairwise.hpp>
-#include <jln/mp/algorithm/drop_until_xs.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -60,23 +60,24 @@ namespace jln::mp::detail
     using f = JLN_MP_CALL_TRACE(C, number<JLN_MP_RAW_EXPR_TO_BOOL(Cmp::template f<x, y>::value)>);
   };
 
-  template<class F>
-  struct bind_and_flip_2
+  template<class Cmp>
+  struct cmp_w
   {
-    template<class x, class y, class... xs>
-    using f = typename F::template f<y, x>;
+    template<class x, class y>
+    struct f
+    {
+      using type = typename Cmp::template f<y, x>;
+    };
   };
+
+  struct type_t { template<class x> using f = typename x::type; };
 
   template<>
   struct is_sorted_impl<3>
   {
     template<class C, class Cmp, class... xs>
-    using f = JLN_MP_CALL_TRACE(C, typename is_drop_while_continue<
-      detail::drop_until_xs_call<
-        sizeof...(xs)-1,
-        bind_and_flip_2<JLN_MP_TRACE_F(Cmp)>, xs...
-      >
-    >::type);
+    using f = typename pairwise_with<cmp_w<Cmp>, none_of<type_t>>
+      ::template f<xs...>;
   };
 }
 /// \endcond

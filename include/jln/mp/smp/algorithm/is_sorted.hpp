@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include <jln/mp/smp/algorithm/drop_until_xs.hpp>
-#include <jln/mp/smp/functional/identity.hpp>
+#include <jln/mp/smp/algorithm/all_of.hpp>
 #include <jln/mp/smp/number/as_bool.hpp>
 #include <jln/mp/smp/number/operators.hpp>
 #include <jln/mp/list/size.hpp>
@@ -22,11 +21,9 @@ namespace jln::mp::smp
       mp::if_<
         mp::size<mp::is<number<2>>>,
         mp::tee<assume_binary<Cmp>, as_bool<C>>,
-        partial_drop_until_xs_c<
-          -2,
-          contract<detail::bind_and_flip_2<assume_binary<Cmp>>>,
-          contract<mp::always<false_, assume_positive_number<C>>>,
-          contract<mp::always<true_, assume_positive_number<C>>>
+        mp::pairwise_with<
+          detail::cmp_w<assume_binary<Cmp>>,
+          none_of<contract<detail::type_t>, assume_positive_number<C>>
         >
       >
     >
