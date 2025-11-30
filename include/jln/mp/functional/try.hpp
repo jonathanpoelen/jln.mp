@@ -26,7 +26,7 @@ namespace jln::mp
     template<class x>
     struct try_dispatch;
 
-#if JLN_MP_REQUIRES_AS_FAST_SFINAE
+#if JLN_MP_REQUIRES_AS_FAST_SFINAE && (!JLN_MP_GCC || JLN_MP_GCC >= 1500)
     template<bool>
     struct try_select;
 
@@ -52,7 +52,7 @@ namespace jln::mp
   template<class F, class TC = identity, class FC = violation>
   struct try_
   {
-#if JLN_MP_REQUIRES_AS_FAST_SFINAE
+#if JLN_MP_REQUIRES_AS_FAST_SFINAE && (!JLN_MP_GCC || JLN_MP_GCC >= 1500)
     template<class... xs>
     using f = typename detail::try_select<requires {
       requires not_same_as_na<typename F::template f<xs...>>;
@@ -98,7 +98,7 @@ namespace jln::mp
 
     template<class F, class... xs>
     inline constexpr bool is_invocable_v =
-#if JLN_MP_REQUIRES_AS_FAST_SFINAE
+#if JLN_MP_REQUIRES_AS_FAST_SFINAE && (!JLN_MP_GCC || JLN_MP_GCC >= 1500)
       requires { requires not_same_as_na<typename F::template f<xs...>>; }
 #else
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(
@@ -136,7 +136,7 @@ namespace jln::mp
     using f = number<!emp::is_invocable_v<F, xs...>>;
   };
 
-#if !(JLN_MP_REQUIRES_AS_FAST_SFINAE)
+#if !(JLN_MP_REQUIRES_AS_FAST_SFINAE && (!JLN_MP_GCC || JLN_MP_GCC >= 1500))
   template<class F>
   struct try_<F, identity, violation>
   {
@@ -165,7 +165,7 @@ namespace jln::mp::detail
 
 }
 
-#if JLN_MP_REQUIRES_AS_FAST_SFINAE
+#if JLN_MP_REQUIRES_AS_FAST_SFINAE && (!JLN_MP_GCC || JLN_MP_GCC >= 1500)
 namespace jln::mp::detail
 {
   template<bool>
