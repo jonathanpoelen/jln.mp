@@ -179,6 +179,11 @@ namespace jln::mp::detail
 
 #else // if ! JLN_MP_GCC
 
+#if JLN_MP_WORKAROUND(JLN_MP_MSVC, >= 1944)
+  template<template<class...> class F, class S, class unique_xs, int_t i>
+  using counter_impl_dispatch = F<unique_xs, number<S::counters.elems[i]>>;
+#endif
+
   template<class, int_t... ints>
   struct counter_impl
   {
@@ -204,7 +209,11 @@ namespace jln::mp::detail
       struct impl
       {
         template<class C, template<class...> class F>
+#if JLN_MP_WORKAROUND(JLN_MP_MSVC, >= 1944)
+        using f = typename C::template f<counter_impl_dispatch<F, S, unique_xs, ints>...>;
+#else
         using f = typename C::template f<F<unique_xs, number<S::counters.elems[ints]>>...>;
+#endif
       };
 
       template<class... xs>
