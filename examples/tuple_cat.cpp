@@ -95,7 +95,7 @@ struct std::tuple_element<i, ::toy::Vector2D>
 // @{
 constexpr std::tuple<int, float, double> t0{1, 2, 3};
 constexpr std::tuple<char, unsigned> t1{4, 5};
-constexpr std::tuple<long> t2{6};
+constexpr std::tuple<long> t2{6L};
 constexpr std::array<short, 4> a{7, 8, 9, 10};
 constexpr toy::Vector2D v {11, 12};
 
