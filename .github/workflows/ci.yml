@@ -7,6 +7,8 @@ on: [push, pull_request]
 #   pull_request:
 #     branches: [ master ]
 
+# https://github.com/actions/runner-images
+
 jobs:
   windows-gcc:
     name: Windows ${{ matrix.compiler }} dbg=${{ matrix.debug }} ${{ matrix.std }}
@@ -16,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         compiler: [g++]
-        std: ['c++17', 'c++20']
+        std: ['c++17', 'c++20', 'c++23']
         debug: ['false', 'true']
 
     steps:
@@ -109,7 +111,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        std: ['c++17', 'c++20']
+        std: ['c++17', 'c++20', 'c++23']
         debug: ['false', 'true']
 
     steps:
@@ -123,8 +125,6 @@ jobs:
         CLICOLOR_FORCE= ninja -C build -k10
 
 
-  # https://github.com/actions/runner-images
-
   linux:
     name: Ubuntu ${{ matrix.cxx }} dbg=${{ matrix.debug }} ${{ matrix.std }}
     runs-on: ubuntu-latest
@@ -132,7 +132,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        std: ['c++17', 'c++20']
+        std: ['c++17', 'c++20', 'c++23']
         debug: ['false', 'true']
         cxx: ['g++-13', 'g++-14', 'clang++-16', 'clang++-17', 'clang++-18']
 
@@ -145,7 +145,7 @@ jobs:
         CLICOLOR_FORCE= ninja -C build -k10
 
 
-  linux-old2:
+  linux-old:
     name: Ubuntu ${{ matrix.cxx }} dbg=${{ matrix.debug }} ${{ matrix.std }}
     runs-on: ubuntu-22.04
     timeout-minutes: 5
@@ -154,7 +154,7 @@ jobs:
       matrix:
         std: ['c++17', 'c++20']
         debug: ['false', 'true']
-        cxx: ['g++-11', 'g++-12', 'clang++-13', 'clang++-14', 'clang++-15']
+        cxx: ['g++-10', 'g++-11', 'g++-12', 'clang++-13', 'clang++-14', 'clang++-15']
 
     steps:
     - uses: actions/checkout@v4
@@ -165,25 +165,6 @@ jobs:
         CLICOLOR_FORCE= ninja -C build -k10
 
 
-  linux-old:
-    name: Ubuntu ${{ matrix.cxx }} dbg=${{ matrix.debug }} ${{ matrix.std }}
-    runs-on: ubuntu-20.04
-    timeout-minutes: 5
-    strategy:
-      fail-fast: false
-      matrix:
-        debug: ['false', 'true']
-        cxx: ['g++-9', 'g++-10', 'clang++-10', 'clang++-11', 'clang++-12']
-
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-    - run: |
-        python -m pip install ninja meson
-        CXX=${{ matrix.cxx }} meson setup build -Dmp_debug=${{ matrix.debug }} -Db_colorout=always
-        CLICOLOR_FORCE= ninja -C build -k10
-
-
   cuda-linux:
     name: Ubuntu nvcc dbg=${{ matrix.debug }} ${{ matrix.std }}
     runs-on: ubuntu-24.04
@@ -191,9 +172,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # std: ['c++17', 'c++20']
-        std: ['c++20']
-        debug: ['false']
+        std: ['c++17', 'c++20', 'c++23']
+        debug: ['true', 'false']
 
     steps:
       - uses: actions/checkout@v4
@@ -202,7 +182,7 @@ jobs:
         with:
           cuda: '12.8.0'  # default
           # linux-local-args: '["--toolkit"]'
-          log-file-suffix: '${{ matrix.std }}-dbg={{ matrix.debug }}.txt'  # fix an artifact with this name already exists on the workflow run
+          log-file-suffix: '${{ matrix.std }}-dbg=${{ matrix.debug }}.txt'  # fix an artifact with this name already exists on the workflow run
       - run: |
           python -m pip install ninja meson
           CXX=clang++ meson setup build -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }}
@@ -218,7 +198,7 @@ jobs:
 
   auto-gen:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'jonathanpoelen/jln.mp'
-    needs: [linux, linux-old2, linux-old, macos, windows-cl, windows-clang, windows-gcc, cuda-linux]
+    needs: [linux, linux-old, macos, windows-cl, windows-clang, windows-gcc, cuda-linux]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
