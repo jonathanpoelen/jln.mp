@@ -92,7 +92,7 @@ namespace jln::mp
 #ifdef JLN_MP_DOXYGENATING
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(
-      unique_by_kv<KeyF, C>,
+      unique_by_kv<C>,
       unique_by_kv_entry<JLN_MP_CALL_TRACE(KeyF, xs), xs>...
     );
 #else
