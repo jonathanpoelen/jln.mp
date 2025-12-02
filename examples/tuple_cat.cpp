@@ -93,13 +93,13 @@ struct std::tuple_element<i, ::toy::Vector2D>
 
 // test
 // @{
-constexpr std::tuple<int, float, double> t0{1, 2, 3};
-constexpr std::tuple<char, unsigned> t1{4, 5};
-constexpr std::tuple<long> t2{6L};
-constexpr std::array<short, 4> a{7, 8, 9, 10};
-constexpr toy::Vector2D v {11, 12};
+constexpr std::tuple<int, float, double> t0 {1, 2, 3};
+constexpr std::pair<char, unsigned> t1 {4, 5};
+constexpr std::array<long, 1> t2 {6};
+constexpr std::array<short, 4> t3 {7, 8, 9, 10};
+constexpr toy::Vector2D t4 {11, 12};
 
-constexpr auto my_tuple = my_tuple_cat(t0, t1, t2, a, v);
+constexpr auto my_tuple = my_tuple_cat(t0, t1, t2, t3, t4);
 
 using my_tuple_type = std::remove_const_t<decltype(my_tuple)>;
 using std_tuple = std::tuple<
