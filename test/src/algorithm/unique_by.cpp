@@ -13,14 +13,14 @@ TEST()
   using namespace jln::mp;
   using namespace ut::ints;
 
-  test_mulary_pack<unique_by, add<>>();
+  test_mulary_pack<unique_by, add0<>>();
   test_mulary_pack<unique_by_kv>();
 
   ut::same<
     list<seq_0_1, seq_1_1, seq_2_1>,
     emp::unique_by<
       list<seq_0_1, seq_1_0, seq_1_1, seq_2_0, seq_2_1, seq_3_0>,
-      unpack<add<>>
+      unpack<add0<>>
     >
   >();
 
@@ -38,8 +38,8 @@ TEST()
     >
   >();
 
-  test_context<unique_by<unpack<add<>>>, smp::unique_by<smp::unpack<smp::add<>>>>()
-    .not_invocable<list<>>()
+  test_context<unique_by<unpack<add0<>>>, smp::unique_by<smp::unpack<smp::add0<>>>>()
+    .not_invocable<list<int>>()
     .not_invocable<_0>()
     .test<list<>>()
     .test<list<seq_0_0>, seq_0_0>()
