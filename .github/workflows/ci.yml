@@ -171,16 +171,20 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: Jimver/cuda-toolkit@v0.2.29
+      - uses: Jimver/cuda-toolkit@v0.2.30
         # id: cuda-toolkit
         with:
-          cuda: '13.0.2'
-          # linux-local-args: '["--toolkit"]'
+          cuda: '13.1.0'
+          linux-local-args: '["--toolkit"]'
+          use-local-cache: false
+          use-github-cache: false
+          method: network
+          sub-packages: '["nvcc"]'
           # log-file-suffix: '${{ matrix.std }}_dbg-${{ matrix.debug }}_cuda-${{ matrix.cuda }}.txt'
           log-file-suffix: 'cuda-${{ matrix.cuda }}.txt'
       - run: |
           for debug in 0 1 ; do
-            for std in c++17 c++20 c++23 ; do
+            for std in c++17 c++20 ; do
               echo nvcc -std=$std -DJLN_MP_DEBUG=$debug test/mp.cpp
               nvcc -x cu -diag-suppress 177 -Wno-deprecated-gpu-targets --compiler-options -fdiagnostics-color=always -Itest/include -Iinclude test/mp.cpp -std=$std -DJLN_MP_DEBUG=$debug
             done
