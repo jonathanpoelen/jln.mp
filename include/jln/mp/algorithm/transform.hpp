@@ -19,6 +19,11 @@ namespace jln::mp
   /// \ingroup algorithm
 
   /// Executes \c F on every element of a \sequence.
+  /// \semantics
+  ///   \code
+  ///   transform<listify>::f<int, double, char>
+  ///   == list< list<int>, list<double>, list<char> >
+  ///   \endcode
   /// \treturn \sequence
   template<class F, class C = listify>
   struct transform
