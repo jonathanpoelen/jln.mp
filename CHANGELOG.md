@@ -30,7 +30,7 @@
 - Rename `int_` and `uint_` to `int_t` and `uint_t` respectively.
 - Rename `lift*_t` to `cfl*`, `lift*` to `cfe*` and `functional/lift.hpp` to `functional/continuation.hpp`.
 - Rename `lift_c` and `lift_c_t` to `cfe_v_c` and `cfl_v_c`.
-- Rename `adjacent_remove`/`adjacent_remove_if` to `remove_adjacent`/`adjacent_remove_if` and `algorithm/adjacent_remove.hpp` to `algorithm/remove_adjacent.hpp`.
+- Rename `adjacent_remove`/`adjacent_remove_if` to `remove_adjacent`/`remove_adjacent_if` and `algorithm/adjacent_remove.hpp` to `algorithm/remove_adjacent.hpp`.
 - Rename `cartesian` to `product` and `algorithm/cartesian.hpp` to `algorithm/product.hpp`.
 - Rename `fold_left` to `fold` and `algorithm/fold_left.hpp` to `algorithm/fold.hpp`.
 - Rename `group_n` to `batched` and `algorithm/group_n.hpp` to `algorithm/batched.hpp`.
