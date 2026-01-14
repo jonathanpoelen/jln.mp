@@ -97,6 +97,7 @@
 #include "src/algorithm/transform.cpp"
 #include "src/algorithm/transform_at.cpp"
 #include "src/algorithm/transform_first.cpp"
+#include "src/algorithm/transform_if.cpp"
 #include "src/algorithm/transform_second.cpp"
 #include "src/algorithm/transform_third.cpp"
 #include "src/algorithm/uncompress.cpp"

@@ -99,6 +99,7 @@
 #include <jln/mp/algorithm/transform.hpp>
 #include <jln/mp/algorithm/transform_at.hpp>
 #include <jln/mp/algorithm/transform_first.hpp>
+#include <jln/mp/algorithm/transform_if.hpp>
 #include <jln/mp/algorithm/transform_second.hpp>
 #include <jln/mp/algorithm/transform_third.hpp>
 #include <jln/mp/algorithm/uncompress.hpp>
