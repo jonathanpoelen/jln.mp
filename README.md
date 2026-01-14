@@ -117,6 +117,11 @@ Implementation of `std::tuple_cat` that works with tuple like.
 namespace mp = jln::mp;
 namespace emp = jln::mp::emp;
 
+/*
+ * tuple_cat() implementation
+ */
+
+//@{
 template<class Tuple>
 struct my_tuple_element
 {
@@ -150,13 +155,13 @@ constexpr R my_tuple_cat_impl(
 template<class... Tuples, class R = my_tuple_cat_result_type<Tuples...>>
 constexpr R my_tuple_cat(Tuples&&... args)
 {
-    // ex:    tuple_size=3     tuple_size=2     tuple_size=4
-    // list<    0, 0, 0,           1, 1,         2, 2, 2, 2   >
+    // tuple_size_v<Tuple>:      3           2            4
+    // list<                  0, 0, 0,     1, 1,     2, 2, 2, 2   >
     using index_by_tuple = mp::repeat_index_v_c<mp::join<>>
         ::f<std::tuple_size_v<std::decay_t<Tuples>>...>;
 
-    // ex:    tuple_size=3     tuple_size=2     tuple_size=4
-    // list<    0, 1, 2,           0, 1,         0, 1, 2, 3   >
+    // tuple_size_v<Tuple>:      3           2            4
+    // list<                  0, 1, 2,     0, 1,     0, 1, 2, 3   >
     using index_by_value = emp::join<
         emp::make_int_sequence<std::tuple_size<std::decay_t<Tuples>>>...
     >;
@@ -165,7 +170,11 @@ constexpr R my_tuple_cat(Tuples&&... args)
         std::tuple<Tuples&&...>(std::forward<Tuples>(args)...));
 }
 
-// defines a tuple like
+
+/*
+ * Tuple like class
+ */
+
 //@{
 namespace toy
 {
@@ -194,7 +203,11 @@ struct std::tuple_element<i, ::toy::Vector2D>
 };
 //@}
 
-// test
+
+/*
+ * Test
+ */
+
 // @{
 constexpr std::tuple<int, float, double> t0{1, 2, 3};
 constexpr std::tuple<char, unsigned> t1{4, 5};
