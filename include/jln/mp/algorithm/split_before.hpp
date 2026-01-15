@@ -84,24 +84,24 @@ namespace jln::mp::detail
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_IGNORE_BOGUS_WNRVO()
   JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
-  template<bool... bs>
+  template<bool... is_sep>
   struct mk_split_before_indices
   {
-    static constexpr std::size_t result_len = (1 + ... + bs);
+    static constexpr std::size_t result_len = (1 + ... + is_sep);
 
     static constexpr auto make()
     {
       array_int2<result_len> a{};
+      int nb_group = 0;
       int i = 0;
-      int n = 0;
 
-      bool bools[] {bs...};
-      for (bool b : bools)
+      bool is_seps[] {is_sep...};
+      for (bool has_sep : is_seps)
       {
-        if (b)
-          a.elems[++n][0] = i;
+        if (has_sep)
+          a.elems[++nb_group][0] = i; // set index of the group
         ++i;
-        ++a.elems[n][1];
+        ++a.elems[nb_group][1]; // increment size of the group
       }
 
       return a;
