@@ -284,6 +284,16 @@
 #else
 #  define JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
 #endif
+
+#if JLN_MP_CLANG >= 2101
+// clang bug:
+// - https://stackoverflow.com/a/78746171
+// - https://github.com/llvm/llvm-project/issues/95280
+#  define JLN_MP_DIAGNOSTIC_IGNORE_BOGUS_WNRVO() \
+  JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wnrvo")
+#else
+#  define JLN_MP_DIAGNOSTIC_IGNORE_BOGUS_WNRVO()
+#endif
 //@}
 
 

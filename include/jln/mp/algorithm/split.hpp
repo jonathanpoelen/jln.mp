@@ -100,6 +100,7 @@ namespace jln::mp::detail
   };
 
   JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_IGNORE_BOGUS_WNRVO()
   JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
   template<bool... bs>
   struct mk_split_indices
