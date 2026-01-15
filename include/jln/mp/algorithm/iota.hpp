@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -10,7 +10,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-    template<int_t start, int_t count, int_t stride, bool is_neg = 0 < count>
+    template<int_t start, int_t count, int_t stride, bool is_neg_count = count < 0>
     struct iota_v_c;
   }
   /// \endcond
@@ -18,6 +18,13 @@ namespace jln::mp
   /// \ingroup number
 
   /// Generates a sequence of \int_t.
+  /// When count is negative, the starting value becomes `start + (count + 1) * stride`.
+  /// That is, `start` represents the last value in the sequence.
+  /// \semantics
+  ///   \code
+  ///   iota_v<>::f<_5, _3> == list<_5, _6, _7>
+  ///   iota_v<>::f<_5, neg_3> == list<_3, _4, _5>
+  ///   \endcode
   /// \treturn \sequence of \int_t
   /// \see iota
   template<class C = numbers<>>
@@ -88,46 +95,43 @@ namespace jln::mp::detail
     using strided = iota_c_result<start + i * stride...>;
   };
 
-  template<int_t start, int_t count, int_t stride, bool is_neg>
+  template<int_t start, int_t count, int_t stride, bool is_neg_count>
   struct iota_v_c
-    : JLN_MP_MAKE_INTEGER_SEQUENCE(count < 0 ? -count : count, iota_impl)
-    ::template strided<start, count < 0 ? -stride : stride>
+    : JLN_MP_MAKE_INTEGER_SEQUENCE(count, iota_impl)
+    ::template strided<start, stride>
   {};
 
-#if JLN_MP_MEMOIZED_ALIAS
-  template<int_t... i>
-  struct iota_c_result
-  {
-    template<class C>
-    using f = typename JLN_MP_CALLER_XS(i, C)::template f<i...>;
-  };
+  template<int_t start, int_t count, int_t stride>
+  struct iota_v_c<start, count, stride, true>
+    : iota_v_c<start + (count + 1) * stride, -count, stride, false>
+  {};
 
   template<int_t count>
   struct iota_v_c<0, count, 1, false>
   {
     template<class C>
+# if JLN_MP_MEMOIZED_ALIAS
     using f = emp::make_int_sequence_v_c<count, C>;
-  };
-#else
-  template<int_t... i>
-  struct iota_c_result
-  {
-    template<class C>
-    struct f
-    {
-      using type = typename JLN_MP_CALLER_XS(i, C)::template f<i...>;
-    };
-  };
-
-  template<int_t count>
-  struct iota_v_c<0, count, 1, false>
-  {
-    template<class C>
+# else
     struct f
     {
       using type = emp::make_int_sequence_v_c<count, C>;
     };
+# endif
   };
-#endif
+
+  template<int_t... i>
+  struct iota_c_result
+  {
+    template<class C>
+# if JLN_MP_MEMOIZED_ALIAS
+    using f = typename JLN_MP_CALLER_XS(i, C)::template f<i...>;
+# else
+    struct f
+    {
+      using type = typename JLN_MP_CALLER_XS(i, C)::template f<i...>;
+    };
+# endif
+  };
 }
 /// \endcond
