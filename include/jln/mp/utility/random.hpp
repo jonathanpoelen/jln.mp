@@ -11,6 +11,20 @@
 #   include <cstddef>
 # endif
 
+// bug 5818686
+# if JLN_MP_CUDA
+namespace jln::mp::detail
+{
+  template<class T> struct random_remove_cref { using type = T; };
+  template<class T> struct random_remove_cref<T &> { using type = T; };
+  template<class T> struct random_remove_cref<T const> { using type = T; };
+  template<class T> struct random_remove_cref<T const &> { using type = T; };
+}
+#   define JLN_MP_RANDOM_TYPE_OF(v) typename detail::random_remove_cref<decltype(v)>::type
+# else
+#   define JLN_MP_RANDOM_TYPE_OF(v) decltype(v)
+# endif
+
 namespace jln::mp
 {
   /// \cond
@@ -46,11 +60,11 @@ namespace jln::mp
 
     /// Generates a random number per call for a specified tag.
     template<class Tag = default_make_index_tag, auto v = []{}>
-    inline constexpr unsigned random_v = detail::next_random_for<decltype(v), Tag>();
+    inline constexpr unsigned random_v = detail::next_random_for<JLN_MP_RANDOM_TYPE_OF(v), Tag>();
 
     /// Generates a random number per call for a specified tag.
     template<class Tag = default_make_index_tag, auto v = []{}>
-    using random = number<detail::next_random_for<decltype(v), Tag>()>;
+    using random = number<detail::next_random_for<JLN_MP_RANDOM_TYPE_OF(v), Tag>()>;
   }
 
   /// Generate a random number for a specified tag on each call with different \c xs.
@@ -82,7 +96,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      number<detail::next_random_for<detail::rand_marker<decltype(v), xs...>, Tag>()>
+      number<detail::next_random_for<detail::rand_marker<JLN_MP_RANDOM_TYPE_OF(v), xs...>, Tag>()>
     );
   };
 
@@ -91,7 +105,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f
-      = number<detail::next_random_for<detail::rand_marker<decltype(v), xs...>, Tag>()>;
+      = number<detail::next_random_for<detail::rand_marker<JLN_MP_RANDOM_TYPE_OF(v), xs...>, Tag>()>;
   };
 #else // if ! JLN_MP_MEMOIZED_ALIAS
   namespace detail
@@ -108,7 +122,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      typename detail::random_impl<Tag, decltype(v), xs...>::type
+      typename detail::random_impl<Tag, JLN_MP_RANDOM_TYPE_OF(v), xs...>::type
     );
   };
 
@@ -116,7 +130,7 @@ namespace jln::mp
   struct random_for<Tag, identity, v>
   {
     template<class... xs>
-    using f = typename detail::random_impl<Tag, decltype(v), xs...>::type;
+    using f = typename detail::random_impl<Tag, JLN_MP_RANDOM_TYPE_OF(v), xs...>::type;
   };
 #endif
 /// \endcond
@@ -205,5 +219,7 @@ namespace jln::mp::detail
     return data::value;
   }
 }
+
+#undef JLN_MP_RANDOM_TYPE_OF
 
 #endif

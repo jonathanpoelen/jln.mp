@@ -13,7 +13,15 @@
 namespace jln::mp::detail
 {
   template<auto F, class... xs>
-    requires(requires { F.template operator()<xs...>(); })
+    requires(requires {
+      // bug 5818686
+      #if JLN_MP_CUDA
+      static_cast<decltype(F) const&>(F)
+      #else
+      F
+      #endif
+      .template operator()<xs...>();
+    })
   struct smp_func
   {
     using type = decltype(F.template operator()<xs...>());

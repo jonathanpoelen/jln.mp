@@ -40,7 +40,8 @@
 #endif
 
 // Useless with gcc and msvc since it displays all the transformations.
-#if JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_MEMOIZED_ALIAS
+// TODO disable with nvcc (13.1) because the bug 5818596
+#if JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_MEMOIZED_ALIAS || JLN_MP_CUDA
 # undef JLN_MP_DEBUG
 # define JLN_MP_DEBUG 0
 #endif
