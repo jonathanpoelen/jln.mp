@@ -196,12 +196,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: leafo/gh-actions-lua@v8
-      - uses: leafo/gh-actions-luarocks@v4
+      - uses: leafo/gh-actions-lua@v12
+      - uses: leafo/gh-actions-luarocks@v6
 
       - name: Cache luarocks
         id: cache-luarocks
-        uses: actions/cache@v2
+        uses: actions/cache@v5
         with:
           path: |
             .luarocks
