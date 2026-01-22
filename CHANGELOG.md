@@ -26,7 +26,7 @@
 - Move `algorithm/compare_with.hpp` to `functional/compare_with.hpp`.
 - Move `functional/is_invocable.hpp` in `functional/try.hpp`.
 - Move `abs`, `clamp` and `pow` from `number/operators.hpp` to `number/math.hpp`.
-- rename `JLN_MP_ENABLE_DEBUG` to `JLN_MP_DEBUG`.
+- Rename `JLN_MP_ENABLE_DEBUG` to `JLN_MP_DEBUG`.
 - Rename `int_` and `uint_` to `int_t` and `uint_t` respectively.
 - Rename `lift*_t` to `cfl*`, `lift*` to `cfe*` and `functional/lift.hpp` to `functional/continuation.hpp`.
 - Rename `lift_c` and `lift_c_t` to `cfe_v_c` and `cfl_v_c`.
