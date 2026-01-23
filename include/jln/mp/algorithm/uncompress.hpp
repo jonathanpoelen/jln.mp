@@ -74,7 +74,7 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/detail/enable_callable_if.hpp>
+#include <jln/mp/utility/enable_if.hpp>
 #include <jln/mp/detail/sequence.hpp>
 
 /// \cond
@@ -183,7 +183,7 @@ namespace jln::mp::detail
   {
   private:
     template<class Lookup>
-    using impl = typename JLN_MP_ENABLE_IF_CALLABLE(0 <= sizeof(Lookup), JLN_MP_TRACE_F(C))
+    using impl = typename enable_if_t<0 <= sizeof(Lookup), JLN_MP_TRACE_F(C)>
       ::template f<typename Lookup::template f<i>...>;
 
   public:

@@ -5,6 +5,7 @@
 #include <jln/mp/utility/alignof.hpp>
 #include <jln/mp/utility/always.hpp>
 #include <jln/mp/utility/conditional.hpp>
+#include <jln/mp/utility/enable_if.hpp>
 #include <jln/mp/utility/has_type.hpp>
 #include <jln/mp/utility/has_value_type.hpp>
 #include <jln/mp/utility/inherit.hpp>

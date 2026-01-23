@@ -9,6 +9,7 @@
 #include <jln/mp/smp/functional/continuation.hpp>
 #include <jln/mp/functional/try.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
+#include <type_traits> // std::void_t
 
 namespace jln::mp::smp
 {

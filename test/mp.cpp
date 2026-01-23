@@ -198,6 +198,7 @@
 #include "src/utility/alignof.cpp"
 #include "src/utility/always.cpp"
 #include "src/utility/conditional.cpp"
+#include "src/utility/enable_if.cpp"
 #include "src/utility/has_type.cpp"
 #include "src/utility/has_value_type.cpp"
 #include "src/utility/is.cpp"

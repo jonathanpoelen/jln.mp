@@ -78,14 +78,13 @@ namespace jln::mp
   }
 }
 
-#include <jln/mp/detail/enable_callable_if.hpp>
 #include <jln/mp/algorithm/same.hpp>
 #include <jln/mp/utility/is.hpp>
+#include <jln/mp/utility/enable_if.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/functional/tee.hpp>
 #include <jln/mp/functional/continuation.hpp>
 #include <jln/mp/number/not.hpp>
-#include <type_traits>
 
 /// \cond
 namespace jln::mp::detail
@@ -112,70 +111,70 @@ namespace jln::mp::detail
   struct _wrap_in_list_if<is<T>>
   {
     template<class x, class... xs>
-    using f = typename JLN_MP_ENABLE_IF_CALLABLE(
+    using f = typename enable_if_t<
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
       wrap_in_list_c<JLN_MP_IS_SAME(T, x)>
-    )::template f<x>;
+    >::template f<x>;
   };
 
   template<class C, class T>
   struct _wrap_in_list_if<is<T, C>>
   {
     template<class x, class... xs>
-    using f = typename JLN_MP_ENABLE_IF_CALLABLE(
+    using f = typename enable_if_t<
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
       wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL(
         JLN_MP_TRACE_F(C)::template f<number<JLN_MP_IS_SAME(T, x)>>::value
       )>
-    )::template f<x>;
+    >::template f<x>;
   };
 
   template<class C, class T>
   struct _wrap_in_list_if<is<T, not_<C>>>
   {
     template<class x, class... xs>
-    using f = typename JLN_MP_ENABLE_IF_CALLABLE(
+    using f = typename enable_if_t<
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
       wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL(
         JLN_MP_TRACE_F(C)::template f<number<
           !JLN_MP_IS_SAME(T, x)
         >>::value
       )>
-    )::template f<x>;
+    >::template f<x>;
   };
 
   template<class T>
   struct _wrap_in_list_if_not<is<T>>
   {
     template<class x, class... xs>
-    using f = typename JLN_MP_ENABLE_IF_CALLABLE(
+    using f = typename enable_if_t<
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
       wrap_in_list_c<!JLN_MP_IS_SAME(T, x)>
-    )::template f<x>;
+    >::template f<x>;
   };
 
   template<class C, class T>
   struct _wrap_in_list_if_not<is<T, C>>
   {
     template<class x, class... xs>
-    using f = typename JLN_MP_ENABLE_IF_CALLABLE(
+    using f = typename enable_if_t<
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
       wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(
         JLN_MP_TRACE_F(C)::template f<number<JLN_MP_IS_SAME(T, x)>>::value
       )>
-    )::template f<x>;
+    >::template f<x>;
   };
 
   template<class C, class T>
   struct _wrap_in_list_if_not<is<T, not_<C>>>
   {
     template<class x, class... xs>
-    using f = typename JLN_MP_ENABLE_IF_CALLABLE(
+    using f = typename enable_if_t<
       JLN_MP_RAW_EXPR_TO_BOOL_NOT(sizeof...(xs)),
       wrap_in_list_c<JLN_MP_RAW_EXPR_TO_BOOL_NOT(
         JLN_MP_TRACE_F(C)::template f<number<!JLN_MP_IS_SAME(T, x)>>::value
       )>
-    )::template f<x>;
+    >::template f<x>;
   };
 
   template<>

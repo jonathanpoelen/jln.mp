@@ -6,6 +6,7 @@
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/functional/call.hpp>
 #include <jln/mp/number/number.hpp>
+#include <jln/mp/utility/enable_if.hpp>
 
 #if JLN_MP_CUDA
 #  include <type_traits>
@@ -16,7 +17,7 @@ namespace jln::mp
   /// \ingroup number
 
 #if JLN_MP_CUDA
-#  define JLN_MP_AS_BOOL(v) std::enable_if_t<std::size_t{v} <= 1, bool>{v}
+#  define JLN_MP_AS_BOOL(v) enable_if_t<std::size_t{v} <= 1, bool>{v}
 #else
 #  define JLN_MP_AS_BOOL(v) JLN_MP_INTEGRAL_AS(bool, v)
 #endif

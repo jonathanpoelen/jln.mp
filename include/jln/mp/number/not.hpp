@@ -39,6 +39,7 @@ namespace jln::mp
 #include <jln/mp/number/to_bool.hpp>
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/algorithm/same.hpp>
+#include <jln/mp/utility/enable_if.hpp>
 #include <jln/mp/utility/is.hpp>
 #include <jln/mp/list/size.hpp>
 
@@ -64,7 +65,7 @@ namespace jln::mp
   };
 
 #if JLN_MP_CUDA
-#  define JLN_MP_AS_BOOL(v) std::enable_if_t<std::size_t{v} <= 1, bool>{v}
+#  define JLN_MP_AS_BOOL(v) jln::mp::enable_if_t<std::size_t{v} <= 1, bool>{v}
 #else
 #  define JLN_MP_AS_BOOL(v) JLN_MP_INTEGRAL_AS(bool, v)
 #endif

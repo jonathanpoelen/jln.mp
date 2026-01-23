@@ -84,6 +84,7 @@ namespace jln::mp
 
 
 #include <jln/mp/functional/memoize.hpp> // uncallable_function
+#include <jln/mp/utility/enable_if.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -93,7 +94,7 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename Dispatcher::template f<
-      std::enable_if_t<sizeof...(xs) == n, C>,
+      enable_if_t<sizeof...(xs) == n, C>,
       F,
       build_indexed_v<xs...>
     >;

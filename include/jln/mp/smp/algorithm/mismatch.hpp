@@ -24,6 +24,8 @@ namespace jln::mp::smp
 }
 
 
+#include <jln/mp/utility/enable_if.hpp>
+
 /// \cond
 namespace jln::mp::detail
 {
@@ -44,7 +46,7 @@ namespace jln::mp::detail
     };
 
     template<class i>
-    struct f<i, number<0>, std::enable_if_t<(i::value != -1)>>
+    struct f<i, number<0>, enable_if_t<(i::value != -1)>>
     {
       template<class Cmp, class seq1, class seq2>
       using impl = typename conditional<

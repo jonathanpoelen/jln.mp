@@ -36,7 +36,8 @@ namespace jln::mp::smp
 
 
 #include <jln/mp/utility/always.hpp>
-#include <type_traits>
+#include <jln/mp/utility/enable_if.hpp>
+#include <type_traits> // std::void_t
 
 /// \cond
 namespace jln::mp::detail
@@ -49,7 +50,7 @@ namespace jln::mp::detail
   struct smp_compress_select<
     Tpl<Selectors...>,
 #if JLN_MP_CUDA
-    std::enable_if_t<((std::size_t{Selectors::value} <= 1) || ...) || !sizeof...(Selectors)>
+    enable_if_t<((std::size_t{Selectors::value} <= 1) || ...) || !sizeof...(Selectors)>
 #else
     std::void_t<decltype(JLN_MP_INTEGRAL_AS(bool, Selectors::value))...>
 #endif

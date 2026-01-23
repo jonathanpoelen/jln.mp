@@ -50,7 +50,7 @@ namespace jln::mp::detail
   struct smp_uncompress_select<
     Tpl<Selectors...>,
 #if JLN_MP_CUDA
-    std::enable_if_t<((std::size_t{Selectors::value} <= 1) || ...) || !sizeof...(Selectors)>
+    enable_if_t<((std::size_t{Selectors::value} <= 1) || ...) || !sizeof...(Selectors)>
 #else
     std::void_t<decltype(JLN_MP_INTEGRAL_AS(bool, Selectors::value))...>
 #endif

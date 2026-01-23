@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -26,6 +26,17 @@
 #    define JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS 1
 #  else
 #    define JLN_MP_FEATURE_NONTYPE_TEMPLATE_CLASS 0
+#  endif
+#endif
+
+#ifndef JLN_MP_FEATURE_PACK_INDEXING
+#  ifdef __cpp_pack_indexing
+#    if __cpp_pack_indexing >= 202311L
+#      define JLN_MP_FEATURE_PACK_INDEXING 1
+#    endif
+#  endif
+#  ifndef JLN_MP_FEATURE_PACK_INDEXING
+#      define JLN_MP_FEATURE_PACK_INDEXING 0
 #  endif
 #endif
 //@}
