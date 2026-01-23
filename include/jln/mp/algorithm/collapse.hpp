@@ -94,9 +94,9 @@ namespace jln::mp::detail
   {
     template<class... xs>
     using f = typename Dispatcher::template f<
-      enable_if_t<sizeof...(xs) == n, C>,
+      C,
       F,
-      build_indexed_v<xs...>
+      enable_if_t<sizeof...(xs) == n, build_indexed_v<xs...>>
     >;
   };
 }
