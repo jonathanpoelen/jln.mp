@@ -8,7 +8,7 @@
 namespace jln::mp
 {
   /// \cond
-  #if ! JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+  #ifndef JLN_MP_PACK_AT
   namespace detail
   {
     template<class x, class...>
@@ -27,9 +27,12 @@ namespace jln::mp
   template<class C = identity>
   struct front
   {
-#if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+#ifdef JLN_MP_PACK_AT
+    JLN_MP_DIAGNOSTIC_PUSH()
+    JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, __type_pack_element<0, xs...>);
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_PACK_AT(xs, 0));
+    JLN_MP_DIAGNOSTIC_POP()
 #else
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C, typename detail::front_impl<xs...>::type);
@@ -52,9 +55,12 @@ namespace jln::mp
   template<>
   struct front<identity>
   {
-#if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+#ifdef JLN_MP_PACK_AT
+    JLN_MP_DIAGNOSTIC_PUSH()
+    JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
     template<class... xs>
-    using f = __type_pack_element<0, xs...>;
+    using f = JLN_MP_PACK_AT(xs, 0);
+    JLN_MP_DIAGNOSTIC_POP()
 #else
     template<class... xs>
     using f = typename detail::front_impl<xs...>::type;

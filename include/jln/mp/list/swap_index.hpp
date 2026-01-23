@@ -131,13 +131,16 @@ namespace jln::mp::detail
   template<unsigned i, unsigned j, class C>
   struct swap_index_impl
   {
+    JLN_MP_DIAGNOSTIC_PUSH()
+    JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
     template<class... xs>
     using f = typename make_swap_index_builder<i, j, sizeof...(xs)>
       ::template f<
-        JLN_MP_AT_C_T(j, xs...),
-        JLN_MP_AT_C_T(i, xs...),
+        JLN_MP_PACK_AT_C_T(xs, j),
+        JLN_MP_PACK_AT_C_T(xs, i),
         C, xs...
       >;
+    JLN_MP_DIAGNOSTIC_POP()
   };
 
 #endif

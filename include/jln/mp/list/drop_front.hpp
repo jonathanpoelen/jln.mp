@@ -91,19 +91,22 @@ namespace jln::mp
   struct drop_front_max_c<0, listify> : listify
   {};
 
-#if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+#ifdef JLN_MP_PACK_AT
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
+
   template<unsigned N, class C>
   struct drop_front_c<N, front<C>>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, __type_pack_element<N, xs...>);
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_PACK_AT(xs, N));
   };
 
   template<class C>
   struct drop_front_c<0, front<C>>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C, __type_pack_element<0, xs...>);
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_PACK_AT(xs, 0));
   };
 
 
@@ -111,14 +114,14 @@ namespace jln::mp
   struct drop_front_c<N, front<identity>>
   {
     template<class... xs>
-    using f = __type_pack_element<N, xs...>;
+    using f = JLN_MP_PACK_AT(xs, N);
   };
 
   template<>
   struct drop_front_c<0, front<identity>>
   {
     template<class... xs>
-    using f = __type_pack_element<0, xs...>;
+    using f = JLN_MP_PACK_AT(xs, 0);
   };
 
 
@@ -127,7 +130,7 @@ namespace jln::mp
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      __type_pack_element<sizeof...(xs) < N ? sizeof...(xs) : N, xs...>
+      JLN_MP_PACK_AT(xs, sizeof...(xs) < N ? sizeof...(xs) : N)
     );
   };
 
@@ -135,9 +138,7 @@ namespace jln::mp
   struct drop_front_max_c<0, front<C>>
   {
     template<class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      __type_pack_element<0, xs...>
-    );
+    using f = JLN_MP_CALL_TRACE(C, JLN_MP_PACK_AT(xs, 0));
   };
 
 
@@ -145,15 +146,17 @@ namespace jln::mp
   struct drop_front_max_c<N, front<identity>>
   {
     template<class... xs>
-    using f = __type_pack_element<sizeof...(xs) < N ? sizeof...(xs) : N, xs...>;
+    using f = JLN_MP_PACK_AT(xs, sizeof...(xs) < N ? sizeof...(xs) : N);
   };
 
   template<>
   struct drop_front_max_c<0, front<identity>>
   {
     template<class... xs>
-    using f = __type_pack_element<0, xs...>;
+    using f = JLN_MP_PACK_AT(xs, 0);
   };
+
+  JLN_MP_DIAGNOSTIC_POP()
 #endif
 
 #if ! JLN_MP_OPTIMIZED_ALIAS && ! JLN_MP_DEBUG

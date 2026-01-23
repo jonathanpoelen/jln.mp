@@ -305,6 +305,13 @@
 #else
 #  define JLN_MP_DIAGNOSTIC_IGNORE_BOGUS_WNRVO()
 #endif
+
+#if JLN_MP_FEATURE_PACK_INDEXING && JLN_MP_CLANG && __cplusplus < 202400L
+#  define JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION() \
+  JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wc++26-extensions")
+#else
+#  define JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
+#endif
 //@}
 
 
@@ -361,6 +368,17 @@
 # endif
 #endif
 
+/// When 1, the builtin __type_pack_element can be used with chaining.
+/// The gcc version of __type_pack_element is somewhat buggy and does
+/// not support chaining: \c `__type_pack_element<i,a,b>::type` // error
+#ifndef JLN_MP_CHANING_TYPE_PACK_ELEMENT
+# if JLN_MP_ENABLE_TYPE_PACK_ELEMENT && !JLN_MP_GCC && !JLN_MP_HOST_COMPILER_GCC
+#   define JLN_MP_CHANING_TYPE_PACK_ELEMENT 1
+# else
+#   define JLN_MP_CHANING_TYPE_PACK_ELEMENT 0
+# endif
+#endif
+
 /// When 1, algorithms using friend injection its accessible
 #ifndef JLN_MP_ENABLE_FRIEND_INJECTION
 # define JLN_MP_ENABLE_FRIEND_INJECTION 1
@@ -368,3 +386,21 @@
 
 /// Displays parameters. Useful in a macro to remove parentheses from a value.
 #define JLN_MP_UNPACK(...) __VA_ARGS__
+
+/// Call `__type_pack_element` or use pack indexing feature.
+/// This macro is not defined if the features do not exist.
+/// \attention The gcc version of `__type_pack_element` is somewhat
+/// buggy and does not support chaining:\n
+/// \c __type_pack_element<i,a,b>::type // error
+/// \see JLN_MP_PACK_AT_SAFE
+#if JLN_MP_FEATURE_PACK_INDEXING
+# define JLN_MP_PACK_AT(xs, ...) xs...[__VA_ARGS__]
+#elif JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+# define JLN_MP_PACK_AT(xs, ...) __type_pack_element<__VA_ARGS__, xs...>
+#endif
+
+/// Version of \c JLN_MP_PACK_AT defined only if expression is "safe".
+/// \see JLN_MP_PACK_AT
+#if JLN_MP_FEATURE_PACK_INDEXING || JLN_MP_CHANING_TYPE_PACK_ELEMENT
+# define JLN_MP_PACK_AT_SAFE(xs, ...) JLN_MP_PACK_AT(xs, __VA_ARGS__)
+#endif

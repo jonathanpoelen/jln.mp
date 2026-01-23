@@ -229,7 +229,7 @@ local balancedtag = P{
 local cbalancedparent = C((1-S'()' + balancedparent)^1)
 local cbalancedparent_arg = C((1-S'(),' + balancedparent)^1)
 
-splitShortAndLongDesc = C(Until('.\n' + -P(1)) * P'.'^-1) * sp0 * C(P(1)^0)
+splitShortAndLongDesc = C(Until('.\n' + -P(1)) * P'.'^-1) * sp0 * P'</p><p>'^0 * C(P(1)^0)
 
 fragmentName = Cs(
   P'jln/mp/' / function(s) return '<span class="depth1">jln/mp/</span>' end
@@ -337,6 +337,14 @@ preproc = P{
     * ws0 * cbalancedparent * ')'
     / f_cond_c
 
+  + P'JLN_MP_PACK_AT' * ((P'_C' + '_CC') * P'_T'^0)^0 *'('
+    * ws0 * cid * ',' * ws0 * cbalancedparent * ws0 * ')'
+    / function(xs, i) return xs .. '...[' .. preproc:match(i) .. ']' end
+
+  + P'JLN_MP_AT' * ((P'_C' + '_CC') * P'_T'^0)^0 * '('
+    * ws0 * cbalancedparent * ',' * ws0 * cbalancedparent * ws0 * ')'
+    / function(i, args) return 'at<' .. preproc:match(i) .. '>::f<' .. preproc:match(args) .. '>' end
+
   + P'JLN_MP_NUMBER_FROM_REGULAR_VARIABLE_TEMPLATE_OR_TYPE('
     * ws0 * cid * ',' * ws0 * cbalancedparent * ws0 * ')'
     / function(name, args) return 'number<emp::' .. name .. '_v<' .. preproc:match(args) .. '>>' end
@@ -378,6 +386,7 @@ preproc = P{
   + P'JLN_MP_FIX_SLOW_FOLDING(' * cbalancedparent * ')'
     / function(s) return '(' .. s .. ')' end
 
+  + P'JLN_MP_DIAGNOSTIC_' * id * balancedparent / ''
   + P'JLN_MP_SET_CONTAINS_BASE' * balancedparent / '/*...*/'
   + P'JLN_MP_TPL_AUTO_OR_INT' / 'auto /*or int_t*/'
   + P'JLN_MP_TRACE_TYPENAME' / ''
@@ -666,6 +675,8 @@ htmlifier_init = function()
   + P'\\metafunction' / '<a href="#d_metafunction">meta-function</a>'
   + P'\\lazymetafunction' / '<a href="#d_lazymetafunction">lazy meta-function</a>'
   + P'\\link ' * cid / inlinecode
+  + P'\\attention ' / '</p><p>Attention: '
+  + P'\\n' / '<br>'
   + htmlspecialchars_c
   + 1
   )^0)
@@ -1302,6 +1313,6 @@ html = table.concat(htmlfagments)
 print(html)
 c = html:find('\\', 0, true)
 if c then
-  log('Error: the result contains an unescaped doxygen element: ' .. html:sub(c, c+1))
+  log('Error: the result contains an unescaped doxygen element: \'' .. html:sub(c, c+2) .. "'")
   os.exit(1)
 end

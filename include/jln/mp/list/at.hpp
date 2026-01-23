@@ -21,6 +21,18 @@ namespace jln::mp
 # define JLN_MP_AT_CC_T(i, ...) __type_pack_element<i, __VA_ARGS__>
 #endif
 
+#ifdef JLN_MP_PACK_AT
+# define JLN_MP_PACK_AT_C(xs, ...) JLN_MP_PACK_AT(xs, __VA_ARGS__)
+# define JLN_MP_PACK_AT_CC(xs, ...) JLN_MP_PACK_AT(xs, __VA_ARGS__)
+# define JLN_MP_PACK_AT_C_T(xs, ...) JLN_MP_PACK_AT(xs, __VA_ARGS__)
+# define JLN_MP_PACK_AT_CC_T(xs, ...) JLN_MP_PACK_AT(xs, __VA_ARGS__)
+#else
+# define JLN_MP_PACK_AT_C(xs, ...) ::jln::mp::at_c<__VA_ARGS__>::template f<xs...>
+# define JLN_MP_PACK_AT_CC(xs, ...) ::jln::mp::at_c<__VA_ARGS__>::f<xs...>
+# define JLN_MP_PACK_AT_C_T(xs, ...) typename ::jln::mp::at_c<__VA_ARGS__>::template f<xs...>
+# define JLN_MP_PACK_AT_CC_T(xs, ...) typename ::jln::mp::at_c<__VA_ARGS__>::f<xs...>
+#endif
+
   /// Retrieves an element of a sequence at an arbitrary position.
   /// \pre `0 <= N < sizeof...(xs)`
   /// \treturn \value
@@ -62,6 +74,18 @@ namespace jln::mp
 
   namespace emp
   {
+    JLN_MP_DIAGNOSTIC_PUSH()
+    JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
+
+    template<class i, class... xs>
+    using pack_at = JLN_MP_PACK_AT_C_T(xs, i::value);
+
+    template<uint_t i, class... xs>
+    using pack_at_c = JLN_MP_PACK_AT_C_T(xs, i);
+
+    JLN_MP_DIAGNOSTIC_POP()
+
+
     template<class L, class i, class C = mp::identity>
     using at = typename detail::_unpack<mp::drop_front_c<i::value, mp::front<C>>, L>::type;
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -14,6 +14,9 @@ namespace jln::mp
     template<int>
     struct index;
 
+    constexpr int build_indexed_state(std::size_t n);
+
+#if !(JLN_MP_FEATURE_PACK_INDEXING || JLN_MP_FAST_TYPE_PACK_ELEMENT)
     template<class...>
     struct indexed;
 
@@ -23,26 +26,28 @@ namespace jln::mp
     template<int, class PrecomputedIndices>
     struct build_indexed_v_impl;
 
-#if JLN_MP_MEMOIZED_ALIAS
+# if JLN_MP_MEMOIZED_ALIAS
     template<int, class PrecomputedIndices>
     struct build_indexed_impl;
+# endif
 #endif
-
-    constexpr int build_indexed_state(std::size_t n);
   }
   /// \endcond
 
   /// \ingroup list
 
   /// Constructs an indexable sequence in O(1).
-  /// \pre 0 <= i < sizeof...(xs)
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+  /// \pre `0 <= i < sizeof...(xs)`
+#if JLN_MP_FEATURE_PACK_INDEXING || JLN_MP_FAST_TYPE_PACK_ELEMENT
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
   template<class... xs>
   struct build_indexed_v
   {
     template<int i>
-    using f = __type_pack_element<i, xs...>;
+    using f = JLN_MP_PACK_AT(xs, i);
   };
+  JLN_MP_DIAGNOSTIC_POP()
 #else
   template<class... xs>
   struct build_indexed_v
@@ -56,14 +61,17 @@ namespace jln::mp
 
   /// Constructs an indexable sequence in O(1).
   /// If possible prefer the use of build_indexed_v
-  /// \pre 0 <= i::value < sizeof...(xs)
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+  /// \pre `0 <= i::value < sizeof...(xs)`
+#if JLN_MP_FEATURE_PACK_INDEXING || JLN_MP_FAST_TYPE_PACK_ELEMENT
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
   template<class... xs>
   struct build_indexed
   {
     template<class i>
-    using f = __type_pack_element<i::value, xs...>;
+    using f = JLN_MP_PACK_AT(xs, i::value);
   };
+  JLN_MP_DIAGNOSTIC_POP()
 #elif JLN_MP_MEMOIZED_ALIAS
   template<class... xs>
   struct build_indexed
@@ -73,10 +81,10 @@ namespace jln::mp
       ::template f<xs...>
     >
   {
-#ifdef JLN_MP_DOXYGENATING
+# ifdef JLN_MP_DOXYGENATING
     template<class i>
     using f;
-#endif
+# endif
   };
 #else
   template<class... xs>
@@ -86,13 +94,13 @@ namespace jln::mp
     using BuildIndexedV = build_indexed_v<xs...>;
 
   public:
-#if JLN_MP_MEMOIZED_ALIAS
+# if JLN_MP_MEMOIZED_ALIAS
     template<class i>
     using f = typename BuildIndexedV::template f<i::value>;
-#else
+# else
     template<class i>
     using f = typename BuildIndexedV::template memoize_result_<i::value>::type;
-#endif
+# endif
   };
 #endif
 
@@ -151,7 +159,7 @@ namespace jln::mp::detail
   using index0 = index<0>;
 
 
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+#if JLN_MP_FAST_TYPE_PACK_ELEMENT || JLN_MP_FEATURE_PACK_INDEXING
 #  define JLN_MP_INDEXED_GET(i, ...) __VA_ARGS__::f<i>
 #  define JLN_MP_D_INDEXED_GET(i, ...) __VA_ARGS__::template f<i>
 #else

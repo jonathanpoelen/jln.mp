@@ -85,14 +85,17 @@ namespace jln::mp
     : rotate_c<N1 + N2, C>
   {};
 
-#if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+#ifdef JLN_MP_PACK_AT
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
+
   // back<C>
   template<int_t N, class C>
   struct rotate_c<N, front<C>>
   {
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(C,
-      __type_pack_element<detail::rotate_size(N, sizeof...(xs)), xs...>
+      JLN_MP_PACK_AT(xs, detail::rotate_size(N, sizeof...(xs)))
     );
   };
 
@@ -101,8 +104,10 @@ namespace jln::mp
   struct rotate_c<N, front<>>
   {
     template<class... xs>
-    using f = __type_pack_element<detail::rotate_size(N, sizeof...(xs)), xs...>;
+    using f = JLN_MP_PACK_AT(xs, detail::rotate_size(N, sizeof...(xs)));
   };
+
+  JLN_MP_DIAGNOSTIC_POP()
 #endif
 }
 

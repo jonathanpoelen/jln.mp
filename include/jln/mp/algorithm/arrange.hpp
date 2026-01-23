@@ -33,13 +33,16 @@ namespace jln::mp
   template<class Ints, class C = listify>
   using arrange = typename detail::make_arrange<Ints>::template f<C>;
 
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+#ifdef JLN_MP_PACK_AT
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
   template<class C, int... ints>
   struct arrange_c_with
   {
     template<class... xs>
-    using f = JLN_MP_DCALL_TRACE_XS(xs, C, __type_pack_element<ints, xs...>...);
+    using f = JLN_MP_DCALL_TRACE_XS(xs, C, JLN_MP_PACK_AT(xs, ints)...);
   };
+  JLN_MP_DIAGNOSTIC_POP()
 #else
   template<class C, int... ints>
   struct arrange_c_with : detail::apply_indexed_v<detail::arrange_impl<C, ints...>>
@@ -79,7 +82,7 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-#if !JLN_MP_FAST_TYPE_PACK_ELEMENT
+#ifndef JLN_MP_PACK_AT
 # define JLN_MP_MAKE_ARRANGE(...) arrange_c_with<__VA_ARGS__>
   template<class C, int... ints>
   struct arrange_impl
