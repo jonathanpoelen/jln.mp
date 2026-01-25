@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -6,7 +6,6 @@
 #include <jln/mp/smp/list/size.hpp>
 #include <jln/mp/smp/utility/is.hpp>
 #include <jln/mp/list/is_size_of.hpp>
-#include <type_traits> // std::void_t
 
 namespace jln::mp::smp
 {

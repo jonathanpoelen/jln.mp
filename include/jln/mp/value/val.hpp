@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -14,8 +14,12 @@
 # if JLN_MP_HAS_BUILTIN(__remove_const)
 #   define JLN_MP_REMOVE_CONST_T __remove_const
 # else
-#   define JLN_MP_REMOVE_CONST_T(x) std::remove_const_t<x>
-#   include <type_traits>
+#   define JLN_MP_REMOVE_CONST_T(x) typename detail::val_remove_const<x>::type
+namespace detail
+{
+  template<class T> struct val_remove_const { using type = T; };
+  template<class T> struct val_remove_const<T const> { using type = T; };
+}
 # endif
 
 #endif

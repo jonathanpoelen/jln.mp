@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -6,7 +6,6 @@
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/smp/algorithm/transform.hpp>
 #include <jln/mp/list/sliding.hpp>
-#include <type_traits> // std::void_t
 
 /// \cond
 namespace jln::mp::detail

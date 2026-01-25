@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -79,8 +79,6 @@ namespace jln::mp
 }
 
 #if !JLN_MP_FEATURE_CONCEPTS || !JLN_MP_GCC
-#include <type_traits>
-
 /// \cond
 namespace jln::mp::detail
 {

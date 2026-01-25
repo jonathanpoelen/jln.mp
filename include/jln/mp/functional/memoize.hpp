@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -86,6 +86,7 @@ namespace jln::mp
 
 // # if !JLN_MP_CUDA
 #include <jln/mp/list/list.hpp>
+#include <jln/mp/utility/void_t.hpp>
 // # endif
 
 /// \cond
@@ -148,8 +149,6 @@ namespace jln::mp::detail
   template<class dummy, class F, class... Params>
   struct memoizer_impl : uncallable_function
   {};
-
-  template<class> using void_t = void;
 
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Wattributes")

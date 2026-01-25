@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -189,7 +189,7 @@ namespace jln::mp::detail
     template<class na, class = void>                     \
     struct smp_name {};                                  \
     template<class na>                                   \
-    struct smp_name<na, std::void_t<__VA_ARGS__>>        \
+    struct smp_name<na, ::jln::mp::void_t<__VA_ARGS__>>  \
     { using type = __VA_ARGS__; };                       \
   }                                                      \
   namespace ns_smp {                                     \
@@ -208,19 +208,19 @@ namespace jln::mp::detail
 #define JLN_MP_MAKE_REGULAR_SMP1_P(name, a, ...) JLN_MP_MAKE_REGULAR_SMP1( \
   jln::mp::smp, jln::mp::detail, smp_##name, name, a, __VA_ARGS__)
 
-#define JLN_MP_MAKE_REGULAR_SMP2_II(                      \
-  ns_smp, ns_detail, smp_name, name, na, nb, da, db, ...) \
-  namespace ns_detail {                                   \
-    template<class na, class nb, class = void>            \
-    struct smp_name {};                                   \
-    template<class na, class nb>                          \
-    struct smp_name<na, nb, std::void_t<__VA_ARGS__>>     \
-    { using type = __VA_ARGS__; };                        \
-  }                                                       \
-  namespace ns_smp {                                      \
-    template<class da, class db>                          \
-    using name = decltype(::jln::mp::detail::lazy_build<  \
-      ::ns_detail::smp_name<na, nb>>(1));                 \
+#define JLN_MP_MAKE_REGULAR_SMP2_II(                        \
+  ns_smp, ns_detail, smp_name, name, na, nb, da, db, ...)   \
+  namespace ns_detail {                                     \
+    template<class na, class nb, class = void>              \
+    struct smp_name {};                                     \
+    template<class na, class nb>                            \
+    struct smp_name<na, nb, ::jln::mp::void_t<__VA_ARGS__>> \
+    { using type = __VA_ARGS__; };                          \
+  }                                                         \
+  namespace ns_smp {                                        \
+    template<class da, class db>                            \
+    using name = decltype(::jln::mp::detail::lazy_build<    \
+      ::ns_detail::smp_name<na, nb>>(1));                   \
   }
 
 #define JLN_MP_MAKE_REGULAR_SMP2_I(ns_smp, ns_detail, smp_name, name, na, nb, da, db, ...) \
@@ -241,7 +241,7 @@ namespace jln::mp::detail
     template<class na, class nb, class nc, class = void>          \
     struct smp_name {};                                           \
     template<class na, class nb, class nc>                        \
-    struct smp_name<na, nb, nc, std::void_t<__VA_ARGS__>>         \
+    struct smp_name<na, nb, nc, ::jln::mp::void_t<__VA_ARGS__>>   \
     { using type = __VA_ARGS__; };                                \
   }                                                               \
   namespace ns_smp {                                              \
@@ -270,7 +270,7 @@ namespace jln::mp::detail
     template<class na, class nb, class nc, class nd, class = void>        \
     struct smp_name {};                                                   \
     template<class na, class nb, class nc, class nd>                      \
-    struct smp_name<na, nb, nc, nd, std::void_t<__VA_ARGS__>>             \
+    struct smp_name<na, nb, nc, nd, ::jln::mp::void_t<__VA_ARGS__>>       \
     { using type = __VA_ARGS__; };                                        \
   }                                                                       \
   namespace ns_smp {                                                      \
@@ -301,7 +301,7 @@ namespace jln::mp::detail
     template<class na, class nb, class nc, class nd, class ne, class = void>      \
     struct smp_name {};                                                           \
     template<class na, class nb, class nc, class nd, class ne>                    \
-    struct smp_name<na, nb, nc, nd, ne, std::void_t<__VA_ARGS__>>                 \
+    struct smp_name<na, nb, nc, nd, ne, ::jln::mp::void_t<__VA_ARGS__>>           \
     { using type = __VA_ARGS__; };                                                \
   }                                                                               \
   namespace ns_smp {                                                              \

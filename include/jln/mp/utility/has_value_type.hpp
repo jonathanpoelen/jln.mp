@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -79,7 +79,7 @@ namespace jln::mp
 }
 
 #if !JLN_MP_FEATURE_CONCEPTS || !JLN_MP_GCC
-#include <type_traits>
+#include <jln/mp/utility/void_t.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -91,7 +91,7 @@ namespace jln::mp::detail
   };
 
   template<class x>
-  struct _has_value_type<x, std::void_t<typename x::value_type>>
+  struct _has_value_type<x, void_t<typename x::value_type>>
   {
     using type = true_;
   };

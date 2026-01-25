@@ -1,11 +1,10 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
 #include <jln/mp/smp/functional/identity.hpp>
 #include <jln/mp/functional/try.hpp>
 #include <jln/mp/list/offset.hpp>
-#include <type_traits> // std::void_t
 
 namespace jln::mp::smp
 {

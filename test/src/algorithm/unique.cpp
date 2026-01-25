@@ -9,6 +9,8 @@
 #include "jln/mp/smp/utility/always.hpp"
 #include "jln/mp/smp/list/at.hpp"
 
+#include <type_traits>
+
 TEST_SUITE_BEGIN()
 
 TEST()

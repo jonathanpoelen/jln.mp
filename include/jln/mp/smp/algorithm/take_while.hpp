@@ -13,7 +13,6 @@
 #include <jln/mp/algorithm/take_while.hpp>
 #include <jln/mp/functional/if.hpp>
 #include <jln/mp/functional/invoke_twice.hpp>
-#include <type_traits> // std::void_t
 
 /// \cond
 namespace jln::mp::detail

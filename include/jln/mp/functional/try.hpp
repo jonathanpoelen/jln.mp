@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -184,7 +184,7 @@ namespace jln::mp::detail
 }
 
 #elif JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
-#include <type_traits>
+#include <jln/mp/utility/void_t.hpp>
 
 namespace jln::mp::detail
 {
@@ -195,7 +195,7 @@ namespace jln::mp::detail
   };
 
   template<class F, class... xs>
-  struct _try_impl<F, list<xs...>, std::void_t<typename F::template f<xs...>>>
+  struct _try_impl<F, list<xs...>, void_t<typename F::template f<xs...>>>
   {
     using type = typename F::template f<xs...>;
   };

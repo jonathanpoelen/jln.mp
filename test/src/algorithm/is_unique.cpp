@@ -10,6 +10,8 @@
 #include "jln/mp/smp/list/at.hpp"
 #include "jln/mp/smp/number/operators.hpp"
 
+#include <type_traits>
+
 TEST_SUITE_BEGIN()
 
 TEST()

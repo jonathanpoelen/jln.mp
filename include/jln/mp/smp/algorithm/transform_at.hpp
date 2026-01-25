@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -6,8 +6,6 @@
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/smp/functional/partial_transform.hpp>
 #include <jln/mp/algorithm/transform_at.hpp>
-
-#include <type_traits> // std::void_t
 
 namespace jln::mp::smp
 {

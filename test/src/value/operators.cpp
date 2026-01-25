@@ -6,6 +6,8 @@
 #include "jln/mp/smp/utility/unpack.hpp"
 #include "jln/mp/smp/value/operators.hpp"
 
+#include <type_traits>
+
 TEST_SUITE_BEGIN()
 
 TEST()

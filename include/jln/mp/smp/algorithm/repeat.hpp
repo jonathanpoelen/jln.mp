@@ -4,7 +4,6 @@
 
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/algorithm/repeat.hpp>
-#include <type_traits> // std::void_t
 
 /// \cond
 namespace jln::mp::detail

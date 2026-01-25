@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -37,7 +37,7 @@ namespace jln::mp::smp
 
 
 #include <jln/mp/utility/always.hpp>
-#include <type_traits>
+#include <jln/mp/utility/void_t.hpp>
 
 /// \cond
 namespace jln::mp::detail
@@ -52,7 +52,7 @@ namespace jln::mp::detail
 #if JLN_MP_CUDA
     enable_if_t<((std::size_t{Selectors::value} <= 1) || ...) || !sizeof...(Selectors)>
 #else
-    std::void_t<decltype(JLN_MP_INTEGRAL_AS(bool, Selectors::value))...>
+    void_t<decltype(JLN_MP_INTEGRAL_AS(bool, Selectors::value))...>
 #endif
   >
   {

@@ -4,7 +4,6 @@
 
 #include <jln/mp/smp/list/listify.hpp>
 #include <jln/mp/algorithm/rotate.hpp>
-#include <type_traits> // std::void_t
 
 namespace jln::mp::smp
 {
