@@ -218,6 +218,29 @@
 
 // Diagnostic
 //@{
+#ifdef JLN_MP_DOXYGENATING
+/// Save state of the diagnostics.
+#  define JLN_MP_DIAGNOSTIC_PUSH()
+/// Restore state of the diagnostics.
+#  define JLN_MP_DIAGNOSTIC_POP()
+/// Ignore a specific diagnostic.
+/// `xxx` can be replaced by one of the compilers below:\n
+/// - `GCC_ONLY` for GCC compiler.\n
+/// - `GCC` for GCC and Clang compilers.\n
+/// - `CLANG` for Clang compiler.\n
+/// - `MSVC` for the Microsoft compiler (cl).\n
+/// - `CUDA` for the NVIDIA/CUDA compiler (nvcc).
+#  define JLN_MP_DIAGNOSTIC_xxx_IGNORE(X)
+/// Treat a specific diagnostic as a warning.
+/// `xxx` can be replaced by one of the compilers
+/// listed by \c JLN_MP_DIAGNOSTIC_xxx_IGNORE.
+#  define JLN_MP_DIAGNOSTIC_xxx_WARNING(X)
+/// Treat a specific diagnostic as a error.
+/// `xxx` can be replaced by one of the compilers
+/// listed by \c JLN_MP_DIAGNOSTIC_xxx_IGNORE.
+#  define JLN_MP_DIAGNOSTIC_xxx_ERROR(X)
+#endif
+
 #if JLN_MP_CLANG_LIKE || JLN_MP_GCC
 #  define JLN_MP_DIAGNOSTIC_PUSH() _Pragma("GCC diagnostic push")
 #  define JLN_MP_DIAGNOSTIC_POP() _Pragma("GCC diagnostic pop")
