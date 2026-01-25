@@ -103,9 +103,21 @@ namespace jln::mp::detail
     using f = list<x>;
   };
 
+#if JLN_MP_HAS_MEMOIZED_ALIAS
   template<class Cmp, class x, class y>
   using sort_pair = typename mk_list2<JLN_MP_RAW_EXPR_TO_BOOL_NOT(Cmp::template f<y, x>::value)>
-    ::template f<x, y>;
+      ::template f<x, y>;
+#else
+  template<class Cmp, class x, class y>
+  struct sort_pair_impl
+  {
+    using type = typename mk_list2<JLN_MP_RAW_EXPR_TO_BOOL_NOT(Cmp::template f<y, x>::value)>
+      ::template f<x, y>;
+  };
+
+  template<class Cmp, class x, class y>
+  using sort_pair = typename sort_pair_impl<Cmp, x, y>::type;
+#endif
 
   template<>
   struct sort_impl<2>
