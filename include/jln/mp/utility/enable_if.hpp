@@ -23,10 +23,10 @@ namespace jln::mp
 
   /// Fast implementation of \c std::enable_if_t.
   template<bool cond, class T = void>
-  #if JLN_MP_FEATURE_CONCEPTS && !JLN_MP_FAST_TYPE_PACK_ELEMENT
+  #if JLN_MP_FEATURE_CONCEPTS && !JLN_MP_HAS_MEMOIZED_TYPE_PACK_ELEMENT
     requires (cond)
   using enable_if_t = T;
-  #elif JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+  #elif JLN_MP_FEATURE_TYPE_PACK_ELEMENT
   using enable_if_t = __type_pack_element<!cond, T>;
   #else
   using enable_if_t = typename enable_if<cond, T>::type;

@@ -33,7 +33,7 @@ namespace jln::mp
     template<class start, class count, class stride = number<1>>
     using f = typename detail::iota_v_c<start::value, count::value, stride::value>
       ::template f<C>
-      #if !JLN_MP_MEMOIZED_ALIAS
+      #if !JLN_MP_HAS_MEMOIZED_ALIAS
       ::type
       #endif
       ;
@@ -50,7 +50,7 @@ namespace jln::mp
   {
     template<int_t start, int_t count, int_t stride = 1, class C = mp::numbers<>>
     using iota_v_c = typename detail::iota_v_c<start, count, stride>::template f<C>
-      #if !JLN_MP_MEMOIZED_ALIAS
+      #if !JLN_MP_HAS_MEMOIZED_ALIAS
       ::type
       #endif
       ;
@@ -58,14 +58,14 @@ namespace jln::mp
     template<class start, class count, class stride = number<1>, class C = mp::numbers<>>
     using iota_v = typename detail::iota_v_c<start::value, count::value, stride::value>
       ::template f<C>
-      #if !JLN_MP_MEMOIZED_ALIAS
+      #if !JLN_MP_HAS_MEMOIZED_ALIAS
       ::type
       #endif
       ;
 
     template<int_t start, int_t count, int_t stride = 1, class C = mp::listify>
     using iota_c = typename detail::iota_v_c<start, count, stride>::template f<mp::numbers<C>>
-      #if !JLN_MP_MEMOIZED_ALIAS
+      #if !JLN_MP_HAS_MEMOIZED_ALIAS
       ::type
       #endif
       ;
@@ -73,7 +73,7 @@ namespace jln::mp
     template<class start, class count, class stride = number<1>, class C = mp::listify>
     using iota = typename detail::iota_v_c<start::value, count::value, stride::value>
       ::template f<mp::numbers<C>>
-      #if !JLN_MP_MEMOIZED_ALIAS
+      #if !JLN_MP_HAS_MEMOIZED_ALIAS
       ::type
       #endif
       ;
@@ -110,7 +110,7 @@ namespace jln::mp::detail
   struct iota_v_c<0, count, 1, false>
   {
     template<class C>
-# if JLN_MP_MEMOIZED_ALIAS
+# if JLN_MP_HAS_MEMOIZED_ALIAS
     using f = emp::make_int_sequence_v_c<count, C>;
 # else
     struct f
@@ -124,7 +124,7 @@ namespace jln::mp::detail
   struct iota_c_result
   {
     template<class C>
-# if JLN_MP_MEMOIZED_ALIAS
+# if JLN_MP_HAS_MEMOIZED_ALIAS
     using f = typename JLN_MP_CALLER_XS(i, C)::template f<i...>;
 # else
     struct f

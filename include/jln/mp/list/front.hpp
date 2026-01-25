@@ -8,7 +8,7 @@
 namespace jln::mp
 {
   /// \cond
-  #ifndef JLN_MP_PACK_AT
+  #if ! JLN_MP_HAS_MEMOIZED_PACK_AT
   namespace detail
   {
     template<class x, class...>
@@ -27,7 +27,7 @@ namespace jln::mp
   template<class C = identity>
   struct front
   {
-#ifdef JLN_MP_PACK_AT
+#if JLN_MP_HAS_MEMOIZED_PACK_AT
     JLN_MP_DIAGNOSTIC_PUSH()
     JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
     template<class... xs>
@@ -55,7 +55,7 @@ namespace jln::mp
   template<>
   struct front<identity>
   {
-#ifdef JLN_MP_PACK_AT
+#if JLN_MP_HAS_MEMOIZED_PACK_AT
     JLN_MP_DIAGNOSTIC_PUSH()
     JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
     template<class... xs>

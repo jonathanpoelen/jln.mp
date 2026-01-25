@@ -84,7 +84,7 @@ namespace jln::mp
 
 
 /// \cond
-#if JLN_MP_MEMOIZED_ALIAS
+#if JLN_MP_HAS_MEMOIZED_ALIAS
   namespace detail
   {
     template<class...>
@@ -107,7 +107,7 @@ namespace jln::mp
     using f
       = number<detail::next_random_for<detail::rand_marker<JLN_MP_RANDOM_TYPE_OF(v), xs...>, Tag>()>;
   };
-#else // if ! JLN_MP_MEMOIZED_ALIAS
+#else // if ! JLN_MP_HAS_MEMOIZED_ALIAS
   namespace detail
   {
     template<class Tag, class...>

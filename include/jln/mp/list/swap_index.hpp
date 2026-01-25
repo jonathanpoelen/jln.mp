@@ -49,7 +49,7 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-# if JLN_MP_FAST_TYPE_PACK_ELEMENT
+# if JLN_MP_HAS_MEMOIZED_PACK_AT
 
   template<int i, int j, class C>
   struct swap_index_builder
@@ -76,7 +76,7 @@ namespace jln::mp::detail
       ::template f<xs...>;
   };
 
-# else // if !JLN_MP_FAST_TYPE_PACK_ELEMENT
+# else // if ! JLN_MP_HAS_MEMOIZED_PACK_AT
 
 # if JLN_MP_GCC
 #   define JLN_MP_FN_LIST_TYPE list
@@ -131,16 +131,13 @@ namespace jln::mp::detail
   template<unsigned i, unsigned j, class C>
   struct swap_index_impl
   {
-    JLN_MP_DIAGNOSTIC_PUSH()
-    JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
     template<class... xs>
     using f = typename make_swap_index_builder<i, j, sizeof...(xs)>
       ::template f<
-        JLN_MP_PACK_AT_C_T(xs, j),
-        JLN_MP_PACK_AT_C_T(xs, i),
+        JLN_MP_AT_C_T(j, xs...),
+        JLN_MP_AT_C_T(i, xs...),
         C, xs...
       >;
-    JLN_MP_DIAGNOSTIC_POP()
   };
 
 #endif

@@ -4,6 +4,13 @@
 
 /// \ingroup config
 
+/// Check that a builtin exists.
+#if defined(__has_builtin)
+#  define JLN_MP_HAS_BUILTIN(name) __has_builtin(name)
+#else
+#  define JLN_MP_HAS_BUILTIN(name) 0
+#endif
+
 // Features
 //@{
 #ifndef JLN_MP_FEATURE_CONCEPTS
@@ -38,6 +45,15 @@
 #  ifndef JLN_MP_FEATURE_PACK_INDEXING
 #      define JLN_MP_FEATURE_PACK_INDEXING 0
 #  endif
+#endif
+
+/// When 1, the builtin __type_pack_element can be used.
+#ifndef JLN_MP_FEATURE_TYPE_PACK_ELEMENT
+# if JLN_MP_HAS_BUILTIN(__type_pack_element)
+#   define JLN_MP_FEATURE_TYPE_PACK_ELEMENT 1
+# else
+#   define JLN_MP_FEATURE_TYPE_PACK_ELEMENT 0
+# endif
 #endif
 //@}
 
@@ -82,8 +98,8 @@
 #  ifndef JLN_MP_MSVC
 #    define JLN_MP_MSVC _MSC_VER
 #  endif
-#  ifndef JLN_MP_MEMOIZED_ALIAS
-#    define JLN_MP_MEMOIZED_ALIAS 1
+#  ifndef JLN_MP_HAS_MEMOIZED_ALIAS
+#    define JLN_MP_HAS_MEMOIZED_ALIAS 1
 #  endif
 #  ifndef JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
 #    define JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE 1
@@ -97,8 +113,8 @@
 #  ifndef JLN_MP_OPTIMIZED_ALIAS
 #    define JLN_MP_OPTIMIZED_ALIAS 1
 #  endif
-#  ifndef JLN_MP_MEMOIZED_ALIAS
-#    define JLN_MP_MEMOIZED_ALIAS 1
+#  ifndef JLN_MP_HAS_MEMOIZED_ALIAS
+#    define JLN_MP_HAS_MEMOIZED_ALIAS 1
 #  endif
 #  ifndef JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE
 #    define JLN_MP_FAST_ALIAS_ON_VARIABLE_TEMPLATE 1
@@ -174,8 +190,8 @@
 
 /// When 1, aliases are memoized. This means that calling a "slow" alias
 /// a second time and with the same parameters will be fast.
-#ifndef JLN_MP_MEMOIZED_ALIAS
-#  define JLN_MP_MEMOIZED_ALIAS 0
+#ifndef JLN_MP_HAS_MEMOIZED_ALIAS
+#  define JLN_MP_HAS_MEMOIZED_ALIAS 0
 #endif
 
 /// When 1, `number<f_v<xs...>>` is faster than `f<xs...>::type`.
@@ -361,33 +377,25 @@
   JLN_MP_NUMBER_FROM_VARIABLE_TEMPLATE_OR_TYPE(emp::name##_v, detail::name##_impl, __VA_ARGS__)
 //@}
 
-
-/// Checks that a value respects a condition and is different from 0.
-/// ex: `JLN_MP_WORKAROUND(JLN_MP_GCC, < 1200)`.
-#define JLN_MP_WORKAROUND(symbol, test) ((symbol) != 0 && ((symbol) test))
-
-/// Check that a builtin exists.
-#if defined(__has_builtin)
-#  define JLN_MP_HAS_BUILTIN(name) __has_builtin(name)
-#else
-#  define JLN_MP_HAS_BUILTIN(name) 0
-#endif
-
-/// When 1, the builtin __type_pack_element can be used.
-#ifndef JLN_MP_ENABLE_TYPE_PACK_ELEMENT
-# if JLN_MP_HAS_BUILTIN(__type_pack_element)
-#   define JLN_MP_ENABLE_TYPE_PACK_ELEMENT 1
+// Pack indexing and __type_pack_element configuration
+//@{
+/// When 1, the builtin __type_pack_element can be used and is very fast.
+/// With Clang, a non-memoized version takes longer on the second call than a memoized version.
+#ifndef JLN_MP_HAS_MEMOIZED_TYPE_PACK_ELEMENT
+# if JLN_MP_FEATURE_TYPE_PACK_ELEMENT && JLN_MP_GCC
+#   define JLN_MP_HAS_MEMOIZED_TYPE_PACK_ELEMENT 1
 # else
-#   define JLN_MP_ENABLE_TYPE_PACK_ELEMENT 0
+#   define JLN_MP_HAS_MEMOIZED_TYPE_PACK_ELEMENT 0
 # endif
 #endif
 
-/// When 1, the builtin __type_pack_element can be used and is very fast.
-#ifndef JLN_MP_FAST_TYPE_PACK_ELEMENT
-# if JLN_MP_ENABLE_TYPE_PACK_ELEMENT && JLN_MP_GCC
-#   define JLN_MP_FAST_TYPE_PACK_ELEMENT 1
+/// When 1, pack indexing (`xs...[i]`) can be used and is very fast.
+/// With Clang, a non-memoized version takes longer on the fourth call than a memoized version.
+#ifndef JLN_MP_HAS_MEMOIZED_PACK_INDEXING
+# if JLN_MP_FEATURE_PACK_INDEXING && JLN_MP_GCC
+#   define JLN_MP_HAS_MEMOIZED_PACK_INDEXING 1
 # else
-#   define JLN_MP_FAST_TYPE_PACK_ELEMENT 0
+#   define JLN_MP_HAS_MEMOIZED_PACK_INDEXING 0
 # endif
 #endif
 
@@ -395,20 +403,12 @@
 /// The gcc version of __type_pack_element is somewhat buggy and does
 /// not support chaining: \c `__type_pack_element<i,a,b>::type` // error
 #ifndef JLN_MP_CHANING_TYPE_PACK_ELEMENT
-# if JLN_MP_ENABLE_TYPE_PACK_ELEMENT && !JLN_MP_GCC && !JLN_MP_HOST_COMPILER_GCC
+# if JLN_MP_FEATURE_TYPE_PACK_ELEMENT && !JLN_MP_GCC && !JLN_MP_HOST_COMPILER_GCC
 #   define JLN_MP_CHANING_TYPE_PACK_ELEMENT 1
 # else
 #   define JLN_MP_CHANING_TYPE_PACK_ELEMENT 0
 # endif
 #endif
-
-/// When 1, algorithms using friend injection its accessible
-#ifndef JLN_MP_ENABLE_FRIEND_INJECTION
-# define JLN_MP_ENABLE_FRIEND_INJECTION 1
-#endif
-
-/// Displays parameters. Useful in a macro to remove parentheses from a value.
-#define JLN_MP_UNPACK(...) __VA_ARGS__
 
 /// Call `__type_pack_element` or use pack indexing feature.
 /// This macro is not defined if the features do not exist.
@@ -418,8 +418,15 @@
 /// \see JLN_MP_PACK_AT_SAFE
 #if JLN_MP_FEATURE_PACK_INDEXING
 # define JLN_MP_PACK_AT(xs, ...) xs...[__VA_ARGS__]
-#elif JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+#elif JLN_MP_FEATURE_TYPE_PACK_ELEMENT
 # define JLN_MP_PACK_AT(xs, ...) __type_pack_element<__VA_ARGS__, xs...>
+#endif
+
+/// When 1, \c JLN_MP_PACK_AT can be used and is very fast.
+#if JLN_MP_HAS_MEMOIZED_PACK_INDEXING || JLN_MP_HAS_MEMOIZED_TYPE_PACK_ELEMENT
+# define JLN_MP_HAS_MEMOIZED_PACK_AT 1
+#elif JLN_MP_FEATURE_TYPE_PACK_ELEMENT
+# define JLN_MP_HAS_MEMOIZED_PACK_AT 0
 #endif
 
 /// Version of \c JLN_MP_PACK_AT defined only if expression is "safe".
@@ -427,3 +434,17 @@
 #if JLN_MP_FEATURE_PACK_INDEXING || JLN_MP_CHANING_TYPE_PACK_ELEMENT
 # define JLN_MP_PACK_AT_SAFE(xs, ...) JLN_MP_PACK_AT(xs, __VA_ARGS__)
 #endif
+//@}
+
+
+/// Checks that a value respects a condition and is different from 0.
+/// ex: `JLN_MP_WORKAROUND(JLN_MP_GCC, < 1200)`.
+#define JLN_MP_WORKAROUND(symbol, test) ((symbol) != 0 && ((symbol) test))
+
+/// When 1, algorithms using friend injection its accessible
+#ifndef JLN_MP_ENABLE_FRIEND_INJECTION
+# define JLN_MP_ENABLE_FRIEND_INJECTION 1
+#endif
+
+/// Displays parameters. Useful in a macro to remove parentheses from a value.
+#define JLN_MP_UNPACK(...) __VA_ARGS__

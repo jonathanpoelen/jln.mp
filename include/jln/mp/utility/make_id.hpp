@@ -62,7 +62,7 @@ namespace jln::mp
       using type = T;
     };
 
-    #if JLN_MP_MEMOIZED_ALIAS
+    #if JLN_MP_HAS_MEMOIZED_ALIAS
     # define JLN_MP_MK_ID_INFO(...) static_cast<meta::id_info<__VA_ARGS__> const*>(nullptr)
     #else
     # define JLN_MP_MK_ID_INFO(...) detail::id_info_ptr_v<__VA_ARGS__>

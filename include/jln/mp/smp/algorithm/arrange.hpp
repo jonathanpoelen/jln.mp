@@ -12,7 +12,7 @@ namespace jln::mp::detail
 {
   struct arrange_to_smp_arrange;
 
-#if !JLN_MP_FAST_TYPE_PACK_ELEMENT
+#if ! JLN_MP_HAS_MEMOIZED_PACK_AT
   template<int>
   struct smp_arrange_c;
 
@@ -31,7 +31,7 @@ namespace jln::mp::smp
     mp::always<detail::first<bad_contract, 1>>
   >::template f<C>::type;
 
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+#if JLN_MP_HAS_MEMOIZED_PACK_AT
   template<int... ints>
   using arrange_c = try_contract<mp::arrange_c_with<mp::listify, ints...>>;
 
@@ -60,7 +60,7 @@ namespace jln::mp::detail
     using type = smp::arrange_c_with<sfinae<C>, ints...>;
   };
 
-#if ! JLN_MP_FAST_TYPE_PACK_ELEMENT
+#if ! JLN_MP_HAS_MEMOIZED_PACK_AT
   template<class... T>
   constexpr int max_idx_arrange(T... n)
   {
@@ -123,7 +123,7 @@ namespace jln::mp::detail
     template<class C, int... ints>
     struct f<arrange_c_with<C, ints...>>
     {
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+#if JLN_MP_HAS_MEMOIZED_PACK_AT
       using type = try_contract<arrange_c_with<subcontract<C>, ints...>>;
 #else
       using type = typename detail::smp_arrange_c<detail::max_idx_arrange(ints...)>

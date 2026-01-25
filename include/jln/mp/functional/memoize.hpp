@@ -11,7 +11,7 @@ namespace jln::mp
   /// This type is used in `smp` for a contract that is not respected.
   struct na {};
 
-#if !JLN_MP_MEMOIZED_ALIAS || JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
+#if !JLN_MP_HAS_MEMOIZED_ALIAS || JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
 
 # if !JLN_MP_CUDA
   /// \cond
@@ -64,7 +64,7 @@ namespace jln::mp
 
 # define JLN_MP_MEMOIZE(...) ::jln::mp::memoize<__VA_ARGS__>
 
-#else // if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
+#else // if JLN_MP_HAS_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
   template<class C, class... xs>
   using memoize_call = typename conditional_c<!sizeof...(xs)>
     ::template f<C, C>
@@ -92,7 +92,7 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-#if JLN_MP_MEMOIZED_ALIAS
+#if JLN_MP_HAS_MEMOIZED_ALIAS
 # define JLN_MP_SIMPLE_MEMOIZER(...) __VA_ARGS__
 #else
   template<class F, class... xs>
@@ -111,7 +111,7 @@ namespace jln::mp::detail
 #endif
 }
 
-#if !JLN_MP_MEMOIZED_ALIAS || JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
+#if !JLN_MP_HAS_MEMOIZED_ALIAS || JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
 
 namespace jln::mp::detail
 {
@@ -130,7 +130,7 @@ namespace jln::mp::detail
 # if !JLN_MP_CUDA
   template<class F, class... Params, class P>
   memoize_result<
-#   if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+#   if JLN_MP_FEATURE_TYPE_PACK_ELEMENT
     typename __type_pack_element<!sizeof(P), F, F>
 #   else
     typename conditional_c<!sizeof(P)>
@@ -159,7 +159,7 @@ namespace jln::mp::detail
   JLN_MP_DIAGNOSTIC_POP()
 # endif
 }
-#else // if JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
+#else // if JLN_MP_HAS_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
 namespace jln::mp::detail
 {
   struct uncallable_function

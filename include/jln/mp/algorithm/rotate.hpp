@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -85,7 +85,7 @@ namespace jln::mp
     : rotate_c<N1 + N2, C>
   {};
 
-#ifdef JLN_MP_PACK_AT
+#if JLN_MP_HAS_MEMOIZED_PACK_AT
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
 

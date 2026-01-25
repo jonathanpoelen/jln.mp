@@ -11,7 +11,7 @@ namespace jln::mp
   /// \cond
   namespace detail
   {
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+#if JLN_MP_HAS_MEMOIZED_TYPE_PACK_ELEMENT
     template<class C, class>
     struct compress_impl;
 
@@ -43,7 +43,7 @@ namespace jln::mp
   /// \see uncompress
   template<class C, bool... selectors>
   struct compress_c_with
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+#if JLN_MP_HAS_MEMOIZED_TYPE_PACK_ELEMENT
     : detail::compress_impl<
       C,
       typename detail::compress_indices<
@@ -89,7 +89,7 @@ namespace jln::mp
 #include <jln/mp/detail/sequence.hpp>
 
 /// \cond
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+#if JLN_MP_HAS_MEMOIZED_TYPE_PACK_ELEMENT
 namespace jln::mp::detail
 {
   template<int_t, class, class>

@@ -65,7 +65,7 @@ namespace jln::mp
 
 namespace jln::mp::detail
 {
-#if JLN_MP_MEMOIZED_ALIAS
+#if JLN_MP_HAS_MEMOIZED_ALIAS
 # define JLN_MP_REPEAT_VALUE(F, n, ...) ::jln::mp::emp::repeat_value_c<n, __VA_ARGS__, F>
 # define JLN_MP_REPEAT_VALUE_T JLN_MP_REPEAT_VALUE
 #else
@@ -94,7 +94,7 @@ namespace jln::mp::detail
 #if JLN_MP_CUDA && JLN_MP_HOST_COMPILER_GCC
   template<class x, class> using emp_index0 = x;
 #  define JLN_MP_INDEX0(...) emp_index0<__VA_ARGS__>
-#elif JLN_MP_FAST_TYPE_PACK_ELEMENT
+#elif JLN_MP_HAS_MEMOIZED_TYPE_PACK_ELEMENT
 #  define JLN_MP_INDEX0(...) __type_pack_element<0, __VA_ARGS__>
 #else
 #  define JLN_MP_INDEX0(...) detail::index0::f<__VA_ARGS__>

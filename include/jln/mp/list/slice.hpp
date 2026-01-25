@@ -295,7 +295,7 @@ namespace jln::mp::detail
   struct strided_slice_impl<-1, -1> : positive_strided_slice_impl<-1, -1>
   {};
 
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+#if JLN_MP_HAS_MEMOIZED_TYPE_PACK_ELEMENT
   template<class, int... ints>
   struct slided_slice
   {
@@ -313,7 +313,7 @@ namespace jln::mp::detail
       ::template impl<C, i, step>
     ;
   };
-#else // !JLN_MP_FAST_TYPE_PACK_ELEMENT
+#else // !JLN_MP_HAS_MEMOIZED_TYPE_PACK_ELEMENT
   template<class, unsigned... ints>
   struct slided_slice
   {

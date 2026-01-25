@@ -168,7 +168,7 @@ namespace jln::mp::detail
   template<class F, unsigned n>
   struct fold_tree_impl
   {
-#if JLN_MP_MEMOIZED_ALIAS
+#if JLN_MP_HAS_MEMOIZED_ALIAS
     template<class... xs>
     using f = typename F::template f<
       typename take_front_impl<(sizeof...(xs) & 0) + n>
@@ -228,7 +228,7 @@ namespace jln::mp::detail
   template<class F, uint_t n>
   struct fold_balanced_tree_impl
   {
-#if JLN_MP_MEMOIZED_ALIAS
+#if JLN_MP_HAS_MEMOIZED_ALIAS
     template<class... xs>
     using f = typename F::template f<
       typename take_front_impl<(sizeof...(xs) & 0) + (n+1)/2>

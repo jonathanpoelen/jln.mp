@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -91,7 +91,7 @@ namespace jln::mp
   struct drop_front_max_c<0, listify> : listify
   {};
 
-#ifdef JLN_MP_PACK_AT
+#if JLN_MP_HAS_MEMOIZED_PACK_AT
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
 

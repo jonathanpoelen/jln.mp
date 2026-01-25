@@ -4,13 +4,12 @@
 
 #include <jln/mp/list/lookup.hpp>
 
-
 namespace jln::mp
 {
   /// \cond
   namespace detail
   {
-#if !JLN_MP_FAST_TYPE_PACK_ELEMENT
+#if ! JLN_MP_HAS_MEMOIZED_PACK_AT
     template<class C, int... ints>
     struct arrange_impl;
 #endif
@@ -33,7 +32,7 @@ namespace jln::mp
   template<class Ints, class C = listify>
   using arrange = typename detail::make_arrange<Ints>::template f<C>;
 
-#ifdef JLN_MP_PACK_AT
+#if JLN_MP_HAS_MEMOIZED_PACK_AT
   JLN_MP_DIAGNOSTIC_PUSH()
   JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
   template<class C, int... ints>
@@ -57,7 +56,7 @@ namespace jln::mp
     template<class L, class Ints, class C = listify>
     using arrange = typename detail::_unpack<mp::arrange<Ints, C>, L>::type;
 
-#if JLN_MP_FAST_TYPE_PACK_ELEMENT
+#if JLN_MP_HAS_MEMOIZED_PACK_AT
     template<class L, int... ints>
     using arrange_c = typename detail::_unpack<arrange_c_with<listify, ints...>, L>::type;
 
@@ -82,8 +81,7 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-#ifndef JLN_MP_PACK_AT
-# define JLN_MP_MAKE_ARRANGE(...) arrange_c_with<__VA_ARGS__>
+#if ! JLN_MP_HAS_MEMOIZED_PACK_AT
   template<class C, int... ints>
   struct arrange_impl
   {

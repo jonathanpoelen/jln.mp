@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Jonathan Poelen <jonathan.poelen@gmail.com>
+// SPDX-FileCopyrightText: 2026 Jonathan Poelen <jonathan.poelen@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
 
@@ -30,7 +30,7 @@ namespace jln::mp
 
   namespace emp
   {
-#if !JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+#if !JLN_MP_FEATURE_TYPE_PACK_ELEMENT
     template<class bool_, class true_value, class false_value>
     using conditional = typename mp::conditional_c<JLN_MP_RAW_EXPR_TO_BOOL(bool_::value)>
       ::template f<true_value, false_value>;
@@ -51,7 +51,7 @@ namespace jln::mp
 
 // The gcc version is somewhat buggy and does not support chaining.
 // __type_pack_element<i, a, b>::type // error
-#if JLN_MP_ENABLE_TYPE_PACK_ELEMENT
+#if JLN_MP_FEATURE_TYPE_PACK_ELEMENT
 # define JLN_MP_CONDITIONAL_P_C_T(b, true_value, false_value) \
   __type_pack_element<JLN_MP_UNPACK b, JLN_MP_UNPACK false_value, JLN_MP_UNPACK true_value>
 # define JLN_MP_CONDITIONAL_C_T(b, true_value, false_value) \

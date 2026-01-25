@@ -19,7 +19,7 @@ namespace jln::mp
       template<class Tag, int X>
       struct state;
 
-      #if JLN_MP_MEMOIZED_ALIAS
+      #if JLN_MP_HAS_MEMOIZED_ALIAS
       # define JLN_MP_MK_STATE(...) \
         static_cast<detail::mkidx::state<__VA_ARGS__>*>(nullptr)
       #else

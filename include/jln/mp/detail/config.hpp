@@ -41,7 +41,7 @@
 
 // Useless with gcc and msvc since it displays all the transformations.
 // TODO disable with nvcc (13.1) and gcc host compiler because the bug 5818596
-#if JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_MEMOIZED_ALIAS || JLN_MP_HOST_COMPILER_GCC
+#if JLN_MP_GCC || JLN_MP_MSVC || JLN_MP_HAS_MEMOIZED_ALIAS || JLN_MP_HOST_COMPILER_GCC
 # undef JLN_MP_DEBUG
 # define JLN_MP_DEBUG 0
 #endif

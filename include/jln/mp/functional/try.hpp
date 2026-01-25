@@ -30,7 +30,7 @@ namespace jln::mp
     template<bool>
     struct try_select;
 
-#elif JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
+#elif JLN_MP_HAS_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
     template<class, class, class = void>
     struct _try_impl;
 
@@ -183,7 +183,7 @@ namespace jln::mp::detail
   };
 }
 
-#elif JLN_MP_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
+#elif JLN_MP_HAS_MEMOIZED_ALIAS && !JLN_MP_WORKAROUND(JLN_MP_MSVC, < 1942)
 #include <jln/mp/utility/void_t.hpp>
 
 namespace jln::mp::detail
