@@ -8,17 +8,24 @@
 /// \cond
 namespace jln::mp::detail
 {
-  template<bool>
+  template<int>
   struct smp_build_indexed;
 
   template<unsigned long long n>
   struct check_build_indexed_index;
 
   template<>
-  struct smp_build_indexed<false>
+  struct smp_build_indexed<0>
   {
     template<class... xs>
     using f = test_contract<check_build_indexed_index<sizeof...(xs)>, mp::build_indexed<xs...>>;
+  };
+
+  template<>
+  struct smp_build_indexed<2>
+  {
+    template<class... xs>
+    using f = try_contract<mp::build_indexed<xs...>>;
   };
 }
 /// \endcond
@@ -27,8 +34,10 @@ namespace jln::mp::smp
 {
   template<class... xs>
   using build_indexed = typename detail::smp_build_indexed<
-#if !JLN_MP_HAS_MEMOIZED_ALIAS
-    false
+#if JLN_MP_HAS_MEMOIZED_PACK_AT
+    2
+#elif JLN_MP_FEATURE_PACK_INDEXING || !JLN_MP_HAS_MEMOIZED_ALIAS
+    0
 #else
     sizeof...(xs) <= 16
 #endif

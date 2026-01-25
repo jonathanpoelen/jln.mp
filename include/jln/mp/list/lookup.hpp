@@ -16,7 +16,7 @@ namespace jln::mp
 
     constexpr int build_indexed_state(std::size_t n);
 
-#if ! JLN_MP_HAS_MEMOIZED_PACK_AT
+#if ! (JLN_MP_HAS_MEMOIZED_PACK_AT || JLN_MP_FEATURE_PACK_INDEXING)
     template<class...>
     struct indexed;
 
@@ -48,6 +48,23 @@ namespace jln::mp
     using f = JLN_MP_PACK_AT(xs, i);
   };
   JLN_MP_DIAGNOSTIC_POP()
+#elif JLN_MP_FEATURE_PACK_INDEXING
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
+  template<class... xs>
+  struct build_indexed_v
+  {
+    template<int i>
+    struct memoize_result_
+    {
+      using type = xs...[i];
+    };
+
+  public:
+    template<int i>
+    using f = typename memoize_result_<i>::type;
+  };
+  JLN_MP_DIAGNOSTIC_POP()
 #else
   template<class... xs>
   struct build_indexed_v
@@ -70,6 +87,24 @@ namespace jln::mp
   {
     template<class i>
     using f = JLN_MP_PACK_AT(xs, i::value);
+  };
+  JLN_MP_DIAGNOSTIC_POP()
+#elif JLN_MP_FEATURE_PACK_INDEXING
+  JLN_MP_DIAGNOSTIC_PUSH()
+  JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION()
+  template<class... xs>
+  struct build_indexed
+  {
+  private:
+    template<class i>
+    struct memoize_result_
+    {
+      using type = xs...[i::value];
+    };
+
+  public:
+    template<class i>
+    using f = typename memoize_result_<i>::type;
   };
   JLN_MP_DIAGNOSTIC_POP()
 #elif JLN_MP_HAS_MEMOIZED_ALIAS
@@ -159,7 +194,7 @@ namespace jln::mp::detail
   using index0 = index<0>;
 
 
-#if JLN_MP_HAS_MEMOIZED_PACK_AT
+#if JLN_MP_HAS_MEMOIZED_PACK_AT || JLN_MP_FEATURE_PACK_INDEXING
 #  define JLN_MP_INDEXED_GET(i, ...) __VA_ARGS__::f<i>
 #  define JLN_MP_D_INDEXED_GET(i, ...) __VA_ARGS__::template f<i>
 #else
