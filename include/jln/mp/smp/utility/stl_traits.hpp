@@ -62,11 +62,10 @@ namespace jln::mp
   // type properties:
   JLN_MP_SMP_MAKE_TRAIT(is_const, 1, types::boolean)
   JLN_MP_SMP_MAKE_TRAIT(is_volatile, 1, types::boolean)
-  JLN_MP_SMP_MAKE_TRAIT(is_trivial, 1, types::boolean)
   JLN_MP_SMP_MAKE_TRAIT(is_trivially_copyable, 1, types::boolean)
   JLN_MP_SMP_MAKE_TRAIT(is_standard_layout, 1, types::boolean)
-#if __cplusplus <= 201703L
-  JLN_MP_SMP_MAKE_TRAIT(is_pod, 1, types::boolean)
+#if __cplusplus >= 201703L
+  JLN_MP_SMP_MAKE_TRAIT(has_unique_object_representations, 1, types::boolean)
 #endif
   JLN_MP_SMP_MAKE_TRAIT(is_empty, 1, types::boolean)
   JLN_MP_SMP_MAKE_TRAIT(is_polymorphic, 1, types::boolean)
@@ -83,6 +82,11 @@ namespace jln::mp
   JLN_MP_SMP_MAKE_TRAIT(is_bounded_array, 1, types::boolean)
   JLN_MP_SMP_MAKE_TRAIT(is_unbounded_array, 1, types::boolean)
 #endif
+#if defined(__cpp_lib_is_scoped_enum) && __cpp_lib_is_scoped_enum
+  JLN_MP_SMP_MAKE_TRAIT(is_scoped_enum, 1, types::boolean)
+#endif
+
+  // supported operations:
   JLN_MP_SMP_MAKE_TRAIT(is_constructible, -1, types::boolean)
   JLN_MP_SMP_MAKE_TRAIT(is_default_constructible, 1, types::boolean)
   JLN_MP_SMP_MAKE_TRAIT(is_copy_constructible, 1, types::boolean)
@@ -114,8 +118,9 @@ namespace jln::mp
   JLN_MP_SMP_MAKE_TRAIT(is_nothrow_move_assignable, 1, types::boolean)
   JLN_MP_SMP_MAKE_TRAIT(is_nothrow_destructible, 1, types::boolean)
   JLN_MP_SMP_MAKE_TRAIT(has_virtual_destructor, 1, types::boolean)
-#if __cplusplus >= 201703L
-  JLN_MP_SMP_MAKE_TRAIT(has_unique_object_representations, 1, types::boolean)
+#if defined(__cpp_lib_reference_from_temporary) && __cpp_lib_reference_from_temporary
+  JLN_MP_SMP_MAKE_TRAIT(reference_constructs_from_temporary, 2, types::boolean)
+  JLN_MP_SMP_MAKE_TRAIT(reference_converts_from_temporary, 2, types::boolean)
 #endif
 
   // type property queries:
@@ -124,9 +129,12 @@ namespace jln::mp
 
   JLN_MP_SMP_MAKE_BASIC_TRAIT(extent)
 
-  // type relations:
+  // type relationships:
   JLN_MP_SMP_MAKE_TRAIT(is_same, 2, types::boolean)
   JLN_MP_SMP_MAKE_TRAIT(is_base_of, 2, types::boolean)
+#if defined(__cpp_lib_is_virtual_base_of) && __cpp_lib_is_virtual_base_of
+  JLN_MP_SMP_MAKE_TRAIT(is_virtual_base_of, 2, types::boolean)
+#endif
   JLN_MP_SMP_MAKE_TRAIT(is_convertible, 2, types::boolean)
 #if defined(__cpp_lib_is_nothrow_convertible) && __cpp_lib_is_nothrow_convertible
   JLN_MP_SMP_MAKE_TRAIT(is_nothrow_convertible, 2, types::boolean)
@@ -183,8 +191,6 @@ namespace jln::mp
 #if __cplusplus >= 202002L
   JLN_MP_SMP_MAKE_TRAIT(common_reference, 1, types::any)
   JLN_MP_SMP_MAKE_TRAIT(basic_common_reference, 1, types::any)
-#else
-  JLN_MP_SMP_MAKE_TRAIT(result_of, 1, types::any)
 #endif
   JLN_MP_SMP_MAKE_TRAIT(underlying_type, 1, types::any)
   JLN_MP_SMP_MAKE_TRAIT(common_type, 1, types::any)
@@ -192,10 +198,9 @@ namespace jln::mp
   JLN_MP_SMP_MAKE_TRAIT(invoke_result, 1, types::any)
 #endif
 
-// deprecated with C++23
-#if __cplusplus < 202302L
-  JLN_MP_SMP_MAKE_TRAIT(aligned_storage, 1, types::any)
-  JLN_MP_SMP_MAKE_TRAIT(aligned_union, 1, types::any)
+  // member relationships:
+#if defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible
+  JLN_MP_SMP_MAKE_TRAIT(is_pointer_interconvertible_base_of, 2, types::boolean);
 #endif
 
 #undef JLN_MP_SMP_MAKE_BASIC_TRAIT

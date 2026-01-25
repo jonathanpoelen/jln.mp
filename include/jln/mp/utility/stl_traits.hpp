@@ -87,11 +87,10 @@ namespace jln::mp::traits
   // type properties:
   JLN_MP_MAKE_TRAIT(is_const);
   JLN_MP_MAKE_TRAIT(is_volatile);
-  JLN_MP_MAKE_TRAIT(is_trivial);
   JLN_MP_MAKE_TRAIT(is_trivially_copyable);
   JLN_MP_MAKE_TRAIT(is_standard_layout);
-#if __cplusplus <= 201703L
-  JLN_MP_MAKE_TRAIT(is_pod);
+#if __cplusplus >= 201703L
+  JLN_MP_MAKE_TRAIT(has_unique_object_representations);
 #endif
   JLN_MP_MAKE_TRAIT(is_empty);
   JLN_MP_MAKE_TRAIT(is_polymorphic);
@@ -102,12 +101,20 @@ namespace jln::mp::traits
 #if __cplusplus >= 201703L
   JLN_MP_MAKE_TRAIT(is_aggregate);
 #endif
+#if defined(__cpp_lib_is_implicit_lifetime) && __cpp_lib_is_implicit_lifetime
+  JLN_MP_MAKE_TRAIT(is_implicit_lifetime);
+#endif
   JLN_MP_MAKE_TRAIT(is_signed);
   JLN_MP_MAKE_TRAIT(is_unsigned);
 #if defined(__cpp_lib_bounded_array_traits) && __cpp_lib_bounded_array_traits
   JLN_MP_MAKE_TRAIT(is_bounded_array);
   JLN_MP_MAKE_TRAIT(is_unbounded_array);
 #endif
+#if defined(__cpp_lib_is_scoped_enum) && __cpp_lib_is_scoped_enum
+  JLN_MP_MAKE_TRAIT(is_scoped_enum);
+#endif
+
+  // supported operations:
   JLN_MP_MAKE_TRAIT(is_constructible);
   JLN_MP_MAKE_TRAIT(is_default_constructible);
   JLN_MP_MAKE_TRAIT(is_copy_constructible);
@@ -139,8 +146,9 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT(is_nothrow_move_assignable);
   JLN_MP_MAKE_TRAIT(is_nothrow_destructible);
   JLN_MP_MAKE_TRAIT(has_virtual_destructor);
-#if __cplusplus >= 201703L
-  JLN_MP_MAKE_TRAIT(has_unique_object_representations);
+#if defined(__cpp_lib_reference_from_temporary) && __cpp_lib_reference_from_temporary
+  JLN_MP_MAKE_TRAIT(reference_constructs_from_temporary);
+  JLN_MP_MAKE_TRAIT(reference_converts_from_temporary);
 #endif
 
   // type property queries:
@@ -169,9 +177,12 @@ namespace jln::mp::traits
   };
   /// \endcond
 
-  // type relations:
+  // type relationships:
   JLN_MP_MAKE_TRAIT(is_same);
   JLN_MP_MAKE_TRAIT(is_base_of);
+#if defined(__cpp_lib_is_virtual_base_of) && __cpp_lib_is_virtual_base_of
+  JLN_MP_MAKE_TRAIT(is_virtual_base_of);
+#endif
   JLN_MP_MAKE_TRAIT(is_convertible);
 #if defined(__cpp_lib_is_nothrow_convertible) && __cpp_lib_is_nothrow_convertible
 // is_nothrow_convertible is an alias, not a class: https://github.com/microsoft/STL/issues/4317
@@ -252,8 +263,6 @@ namespace jln::mp::traits
 #if __cplusplus >= 202002L
   JLN_MP_MAKE_TRAIT(common_reference);
   JLN_MP_MAKE_TRAIT(basic_common_reference);
-#else
-  JLN_MP_MAKE_TRAIT(result_of);
 #endif
   JLN_MP_MAKE_TRAIT(underlying_type);
   JLN_MP_MAKE_TRAIT(common_type);
@@ -261,56 +270,9 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT(invoke_result);
 #endif
 
-// deprecated with C++23
-#if __cplusplus < 202302L
-  template<class C = identity>
-  struct aligned_storage
-  {
-    template<class Len, class... Alignment>
-    using f = JLN_MP_CALL_TRACE(C,
-      typename std::aligned_storage<Len::value, Alignment::value...>::type
-    );
-  };
-
-  namespace emp
-  {
-    template<class Len, class... Alignment>
-    using aligned_storage = typename std::aligned_storage<
-      Len::value, Alignment::value...>::type;
-  }
-
-  /// \cond
-  template<>
-  struct aligned_storage<identity>
-  {
-    template<class Len, class... Alignment>
-    using f = typename std::aligned_storage<Len::value, Alignment::value...>::type;
-  };
-  /// \endcond
-
-  template<class C = identity>
-  struct aligned_union
-  {
-    template<class len, class... xs>
-    using f = JLN_MP_CALL_TRACE(C,
-      typename std::aligned_union<len::value, xs...>::type
-    );
-  };
-
-  namespace emp
-  {
-    template<class len, class... xs>
-    using aligned_union = typename std::aligned_union<len::value, xs...>::type;
-  }
-
-  /// \cond
-  template<>
-  struct aligned_union<identity>
-  {
-    template<class len, class... xs>
-    using f = typename std::aligned_union<len::value, xs...>::type;
-  };
-  /// \endcond
+  // member relationships:
+#if defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible
+  JLN_MP_MAKE_TRAIT(is_pointer_interconvertible_base_of);
 #endif
 
 #undef JLN_MP_MAKE_TRAIT
