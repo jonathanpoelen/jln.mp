@@ -103,10 +103,12 @@ namespace jln::mp::detail
     using f = list<x>;
   };
 
+
 #if JLN_MP_HAS_MEMOIZED_ALIAS
   template<class Cmp, class x, class y>
   using sort_pair = typename mk_list2<JLN_MP_RAW_EXPR_TO_BOOL_NOT(Cmp::template f<y, x>::value)>
       ::template f<x, y>;
+  #define JLN_MP_SORT2(...) sort_pair<__VA_ARGS__>
 #else
   template<class Cmp, class x, class y>
   struct sort_pair_impl
@@ -114,41 +116,130 @@ namespace jln::mp::detail
     using type = typename mk_list2<JLN_MP_RAW_EXPR_TO_BOOL_NOT(Cmp::template f<y, x>::value)>
       ::template f<x, y>;
   };
-
-  template<class Cmp, class x, class y>
-  using sort_pair = typename sort_pair_impl<Cmp, x, y>::type;
+  #define JLN_MP_SORT2(...) typename sort_pair_impl<__VA_ARGS__>::type
 #endif
 
   template<>
   struct sort_impl<2>
   {
     template<class Cmp, class x, class y>
-    using f = sort_pair<Cmp, x, y>;
+    using f = JLN_MP_SORT2(Cmp, x, y);
   };
+
+
+  template<class Cmp, class x, class y, class z>
+  constexpr auto sort3()
+  {
+    if constexpr (Cmp::template f<y, x>::value)
+    {
+      if constexpr (Cmp::template f<z, y>::value)
+      {
+        return list<z,y,x>{};
+      }
+      else if constexpr (Cmp::template f<z, x>::value)
+      {
+        return list<y,z,x>{};
+      }
+      else
+      {
+        return list<y,x,z>{};
+      }
+    }
+    else if constexpr (Cmp::template f<z, y>::value)
+    {
+      if constexpr (Cmp::template f<z, x>::value)
+      {
+        if constexpr (Cmp::template f<x, y>::value) // for stable sort
+        {
+          return list<z,x,y>{};
+        }
+        else
+        {
+          return list<z,y,x>{};
+        }
+      }
+      else
+      {
+        return list<x,z,y>{};
+      }
+    }
+    else
+    {
+      return list<x,y,z>{};
+    }
+  }
 
   template<>
   struct sort_impl<3>
   {
     template<class Cmp, class x1, class x2, class x3>
-    using f = typename merge_impl<
-      list<>,
-      sort_pair<Cmp, x1, x2>,
-      list<x3>,
-      Cmp
-    >::type;
+    using f = decltype(sort3<Cmp, x1, x2, x3>());
   };
 
+#if ! JLN_MP_GCC
+  template<class>
+  struct get_l3;
+
+  template<class x, class y, class z>
+  struct get_l3<list<x,y,z>>
+  {
+    using x1 = x;
+    using x2 = y;
+    using x3 = z;
+  };
+
+  template<class Cmp, class a1, class a2, class a3, class x4>
+  constexpr auto sort4()
+  {
+    using l = get_l3<decltype(sort3<Cmp,a1,a2,a3>())>;
+    using x1 = typename l::x1;
+    using x2 = typename l::x2;
+    using x3 = typename l::x3;
+
+    if constexpr (Cmp::template f<x4, x2>::value)
+    {
+      if constexpr (Cmp::template f<x4, x1>::value)
+      {
+        return list<x4,x1,x2,x3>{};
+      }
+      else
+      {
+        return list<x1,x4,x2,x3>{};
+      }
+    }
+    else if constexpr (Cmp::template f<x4, x3>::value)
+    {
+      return list<x1,x2,x4,x3>{};
+    }
+    else
+    {
+      return list<x1,x2,x3,x4>{};
+    }
+  }
+
+  template<>
+  struct sort_impl<4>
+  {
+    template<class Cmp, class x1, class x2, class x3, class x4>
+    using f = decltype(sort4<Cmp, x1, x2, x3, x4>());
+  };
+  #define JLN_MP_SORT4(...) decltype(sort4<__VA_ARGS__>())
+#else // if JLN_MP_GCC
   template<>
   struct sort_impl<4>
   {
     template<class Cmp, class x1, class x2, class x3, class x4>
     using f = typename merge_impl<
       list<>,
-      sort_pair<Cmp, x1, x2>,
-      sort_pair<Cmp, x3, x4>,
+      JLN_MP_SORT2(Cmp, x1, x2),
+      JLN_MP_SORT2(Cmp, x3, x4),
       Cmp
     >::type;
   };
+  #define JLN_MP_SORT4(...) typename sort_impl<4>::template f<__VA_ARGS__>
+#endif
+
+
 
   template<>
   struct sort_impl<5>
@@ -156,8 +247,8 @@ namespace jln::mp::detail
     template<class Cmp, class x1, class x2, class x3, class x4, class x5>
     using f = typename merge_impl<
       list<>,
-      sort_pair<Cmp, x1, x2>,
-      typename sort_impl<3>::template f<Cmp, x3, x4, x5>,
+      JLN_MP_SORT2(Cmp, x1, x2),
+      decltype(sort3<Cmp, x3, x4, x5>()),
       Cmp
     >::type;
   };
@@ -169,8 +260,8 @@ namespace jln::mp::detail
              class x6>
     using f = typename merge_impl<
       list<>,
-      typename sort_impl<3>::template f<Cmp, x1, x2, x3>,
-      typename sort_impl<3>::template f<Cmp, x4, x5, x6>,
+      decltype(sort3<Cmp, x1, x2, x3>()),
+      decltype(sort3<Cmp, x4, x5, x6>()),
       Cmp
     >::type;
   };
@@ -182,8 +273,8 @@ namespace jln::mp::detail
              class x6, class x7>
     using f = typename merge_impl<
       list<>,
-      typename sort_impl<4>::template f<Cmp, x1, x2, x3, x4>,
-      typename sort_impl<3>::template f<Cmp, x5, x6, x7>,
+      JLN_MP_SORT4(Cmp, x1, x2, x3, x4),
+      decltype(sort3<Cmp, x5, x6, x7>()),
       Cmp
     >::type;
   };
@@ -195,8 +286,8 @@ namespace jln::mp::detail
              class x6, class x7, class x8>
     using f = typename merge_impl<
       list<>,
-      typename sort_impl<4>::template f<Cmp, x1, x2, x3, x4>,
-      typename sort_impl<4>::template f<Cmp, x5, x6, x7, x8>,
+      JLN_MP_SORT4(Cmp, x1, x2, x3, x4),
+      JLN_MP_SORT4(Cmp, x5, x6, x7, x8),
       Cmp
     >::type;
   };
@@ -263,5 +354,8 @@ namespace jln::mp::detail
       Cmp
     >::type;
   };
+
+#undef JLN_MP_SORT2
+#undef JLN_MP_SORT4
 }
 /// \endcond
