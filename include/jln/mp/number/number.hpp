@@ -17,23 +17,23 @@ namespace jln::mp
   using true_ = number<1>;
   using false_ = number<0>;
 
-#ifndef JLN_MP_ENABLE_TPL_AUTO
+#ifndef JLN_MP_ENABLE_TPL_PARAM_AUTO
 # if defined(__cpp_nontype_template_parameter_auto)
 #   if __cpp_nontype_template_parameter_auto >= 201606L
-#     define JLN_MP_ENABLE_TPL_AUTO 1
+#     define JLN_MP_ENABLE_TPL_PARAM_AUTO 1
 #   endif
 # endif
 #endif
 
-#ifndef JLN_MP_ENABLE_TPL_AUTO
-# define JLN_MP_ENABLE_TPL_AUTO 0
+#ifndef JLN_MP_ENABLE_TPL_PARAM_AUTO
+# define JLN_MP_ENABLE_TPL_PARAM_AUTO 0
 #endif
 
-#if JLN_MP_ENABLE_TPL_AUTO
-# define JLN_MP_TPL_AUTO_OR_INT auto
-# define JLN_MP_TPL_AUTO_OR(T) auto
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
+# define JLN_MP_TPL_PARAM_AUTO_OR_INT auto
+# define JLN_MP_TPL_PARAM_AUTO_OR(T) auto
 #else
-# define JLN_MP_TPL_AUTO_OR_INT ::jln::mp::int_t
-# define JLN_MP_TPL_AUTO_OR(T) T
+# define JLN_MP_TPL_PARAM_AUTO_OR_INT ::jln::mp::int_t
+# define JLN_MP_TPL_PARAM_AUTO_OR(T) T
 #endif
 }

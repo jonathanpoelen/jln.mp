@@ -102,20 +102,20 @@ namespace jln::mp::detail
       using type = tpl_tps;
   };
 
-  template<template<class T, JLN_MP_TPL_AUTO_OR(T)...> class Tpl>
+  template<template<class T, JLN_MP_TPL_PARAM_AUTO_OR(T)...> class Tpl>
   struct tpl_tp_vals
   {
       using type = tpl_tp_vals;
   };
 
-  template<template<JLN_MP_TPL_AUTO_OR(std::size_t), class...> class Tpl>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR(std::size_t), class...> class Tpl>
   struct tpl_val_tps
   {
       using type = tpl_val_tps;
   };
 
 
-#if !JLN_MP_ENABLE_TPL_AUTO
+#if !JLN_MP_ENABLE_TPL_PARAM_AUTO
   template<template<class, std::size_t...> class Tpl>
   struct tpl_tp_szs
   {
@@ -136,7 +136,7 @@ namespace jln::mp::detail
   struct normalize_similar2 : normalize_similar3<T>
   {};
 
-#else // if JLN_MP_ENABLE_TPL_AUTO
+#else // if JLN_MP_ENABLE_TPL_PARAM_AUTO
 
 // fix not matching of `template<class T, T...>` with `Tpl<class, auto...>`
 # if JLN_MP_CLANG_LIKE >= 2000
@@ -178,8 +178,8 @@ namespace jln::mp::detail
   {};
 #endif
 
-  template<template<class T, JLN_MP_TPL_AUTO_OR(T)...> class Tpl,
-           class T, JLN_MP_TPL_AUTO_OR(T)... v>
+  template<template<class T, JLN_MP_TPL_PARAM_AUTO_OR(T)...> class Tpl,
+           class T, JLN_MP_TPL_PARAM_AUTO_OR(T)... v>
   struct normalize_similar2<Tpl<T, v...>> : tpl_tp_vals<Tpl>
   {};
 
@@ -191,8 +191,8 @@ namespace jln::mp::detail
   struct normalize_similar<Tpl<T...>> : tpl_tps<Tpl>
   {};
 
-  template<template<JLN_MP_TPL_AUTO_OR(std::size_t), class...> class Tpl,
-           JLN_MP_TPL_AUTO_OR(std::size_t) v, class... T>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR(std::size_t), class...> class Tpl,
+           JLN_MP_TPL_PARAM_AUTO_OR(std::size_t) v, class... T>
   struct normalize_similar<Tpl<v, T...>> : tpl_val_tps<Tpl>
   {};
 }

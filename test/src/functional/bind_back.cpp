@@ -10,7 +10,7 @@
 
 TEST_SUITE_BEGIN()
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
 struct foo
 {
   template<class, int>
@@ -58,7 +58,7 @@ TEST()
     .test<list<void, char, int>, void, char>()
     ;
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
   test_context<bind_back_v<foo, 3>, void>()
     .test<foo::f<_1, 3>, _1>()
     ;

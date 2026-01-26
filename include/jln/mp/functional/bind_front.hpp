@@ -28,7 +28,7 @@ namespace jln::mp
   template<class F, int_t... BoundArgs>
   using bind_front_c = bind_front<F, number<BoundArgs>...>;
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
   template<class F, auto... BoundArgs>
   struct bind_front_v
   {
@@ -45,7 +45,7 @@ namespace jln::mp
     template<class L, class F, int_t... BoundArgs>
     using bind_front_c = typename detail::_unpack<F, L, number<BoundArgs>...>::type;
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
     template<class L, class F, auto... BoundArgs>
     using bind_front_v = typename detail::_unpack<mp::bind_front_v<F, BoundArgs...>, L>::type;
 #endif

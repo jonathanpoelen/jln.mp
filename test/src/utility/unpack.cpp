@@ -71,7 +71,7 @@ TEST()
   ut::not_invocable<smp::unpack_append<bad_function>, list<>>();
 }
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
 struct foo_t_i { template<class, int...> struct f; };
 struct foo_i_t { template<int, class...> struct f; };
 struct foo_2t_i { template<class, class, int...> struct f; };

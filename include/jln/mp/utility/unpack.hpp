@@ -11,7 +11,7 @@ namespace jln::mp
   {
     template<class C, class L, class... xs> struct _unpack {};
     template<class C, class L, class... xs> struct _unpack_append {};
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
     template<class C, class L, class... xs> struct _unpack_v {};
     template<class C, class L, class... xs> struct _unpack_append_v {};
 #endif
@@ -46,7 +46,7 @@ namespace jln::mp
     using f = typename detail::_unpack_append<C, seq, xs...>::type;
   };
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
   /// Turns a \typelist into a \sequence of those types.
   /// \semantics
   ///   \code
@@ -88,7 +88,7 @@ namespace jln::mp
     template<class L, class C, int_t... xs>
     using unpack_append_c = typename detail::_unpack_append<C, L, number<xs>...>::type;
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
     template<class L, class C, class... xs>
     using unpack_v = typename detail::_unpack_v<C, L, xs...>::type;
 
@@ -146,7 +146,7 @@ namespace jln::mp::detail
     using type = typename F<xs..., ys...>::type;
   };
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
   template<class C, template<auto...> class Seq, auto... ys, class... xs>
   struct _unpack_v<C, Seq<ys...>, xs...>
   {

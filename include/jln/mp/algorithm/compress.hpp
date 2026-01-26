@@ -230,7 +230,7 @@ namespace jln::mp::detail
     using type = compress_c_with<C, selectors...>;
   };
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
   template<template<auto...> class Tpl, auto... selectors, class C>
   struct make_compress<Tpl<selectors...>, C>
   {

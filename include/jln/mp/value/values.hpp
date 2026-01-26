@@ -7,7 +7,7 @@
 #include <jln/mp/utility/conditional.hpp>
 #include <jln/mp/value/val.hpp>
 
-#if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_DEBUG || JLN_MP_CLANG_LIKE)
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO && (!JLN_MP_DEBUG || JLN_MP_CLANG_LIKE)
 namespace jln::mp
 {
   /// \ingroup value

@@ -26,7 +26,7 @@ namespace jln::mp
     template<class x>
     inline constexpr bool is_val_v = false;
 
-#if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_DEBUG || JLN_MP_CLANG_LIKE)
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO && (!JLN_MP_DEBUG || JLN_MP_CLANG_LIKE)
     template<auto x>
     inline constexpr bool is_val_v<val<x>> = true;
 #else
@@ -71,7 +71,7 @@ namespace jln::mp::detail
     using type = false_;
   };
 
-#if JLN_MP_ENABLE_TPL_AUTO && (!JLN_MP_DEBUG || JLN_MP_CLANG_LIKE)
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO && (!JLN_MP_DEBUG || JLN_MP_CLANG_LIKE)
   template<auto x>
   struct is_val_impl<val<x>>
 #else

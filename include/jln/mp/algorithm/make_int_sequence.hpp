@@ -299,7 +299,7 @@ namespace jln::mp::detail
     };
   };
 
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F>
   struct make_int_sequence_impl<cfe_v_c<F>>
   {
     template<class, int_t... ns>
@@ -309,7 +309,7 @@ namespace jln::mp::detail
     };
   };
 
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F, class C>
   struct make_int_sequence_impl<cfe_v_c<F, C>>
   {
     template<class, int_t... ns>
@@ -319,7 +319,7 @@ namespace jln::mp::detail
     };
   };
 
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F>
   struct make_int_sequence_impl<cfl_v_c<F>>
   {
     template<class, int_t... ns>
@@ -329,7 +329,7 @@ namespace jln::mp::detail
     };
   };
 
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F, class C>
   struct make_int_sequence_impl<cfl_v_c<F, C>>
   {
     template<class, int_t... ns>
@@ -339,19 +339,19 @@ namespace jln::mp::detail
     };
   };
 
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F>
   struct make_int_sequence_impl<numbers<cfe_v<F>>> : make_int_sequence_impl<cfe_v_c<F>>
   {};
 
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F, class C>
   struct make_int_sequence_impl<numbers<cfe_v<F, C>>> : make_int_sequence_impl<cfe_v_c<F, C>>
   {};
 
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F>
   struct make_int_sequence_impl<numbers<cfl_v<F>>> : make_int_sequence_impl<cfl_v_c<F>>
   {};
 
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F, class C>
   struct make_int_sequence_impl<numbers<cfl_v<F, C>>> : make_int_sequence_impl<cfl_v_c<F, C>>
   {};
 }

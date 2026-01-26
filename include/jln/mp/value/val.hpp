@@ -3,13 +3,13 @@
 #pragma once
 
 #include <jln/mp/detail/config.hpp>
-#include <jln/mp/number/number.hpp>  // JLN_MP_ENABLE_TPL_AUTO
+#include <jln/mp/number/number.hpp>  // JLN_MP_ENABLE_TPL_PARAM_AUTO
 
 #ifndef JLN_MP_VAL_AS_ALIAS
 # define JLN_MP_VAL_AS_ALIAS (JLN_MP_DEBUG_ORIGINAL && !JLN_MP_CLANG_LIKE)
 #endif
 
-#if !JLN_MP_ENABLE_TPL_AUTO || JLN_MP_VAL_AS_ALIAS
+#if !JLN_MP_ENABLE_TPL_PARAM_AUTO || JLN_MP_VAL_AS_ALIAS
 
 # if JLN_MP_HAS_BUILTIN(__remove_const)
 #   define JLN_MP_REMOVE_CONST_T __remove_const
@@ -28,7 +28,7 @@ namespace jln::mp
 {
   /// \ingroup value
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
 # if !JLN_MP_VAL_AS_ALIAS
   // note: integer types are not displayed with some compilers
   // clang: val<0ll>

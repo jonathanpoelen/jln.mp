@@ -104,7 +104,7 @@ namespace jln::mp::detail
     using type = uncompress_c_with<C, FillT, selectors...>;
   };
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
   template<template<auto...> class Tpl, class FillT, auto... selectors, class C>
   struct make_uncompress<FillT, Tpl<selectors...>, C>
   {

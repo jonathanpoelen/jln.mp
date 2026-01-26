@@ -27,7 +27,7 @@ namespace jln::mp
   template<int_t... BoundArgs>
   using capture_back_c = capture_back<number<BoundArgs>...>;
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
   template<auto... BoundArgs>
   struct capture_back_v
   {
@@ -44,7 +44,7 @@ namespace jln::mp
     template<class L, int_t... BoundArgs>
     using capture_back_c = typename detail::_unpack<mp::capture_back_c<BoundArgs...>, L>::type;
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
     template<class L, auto... BoundArgs>
     using capture_back_v = typename detail::_unpack<mp::capture_back_v<BoundArgs...>, L>::type;
 #endif

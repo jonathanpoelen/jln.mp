@@ -23,7 +23,7 @@ template<std::size_t, class> class at1;
 template<std::size_t, class, class> class at2;
 template<std::size_t, class...> class atx;
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
 template<auto> class va1;
 template<auto, auto> class va2;
 template<auto...> class vax;
@@ -59,7 +59,7 @@ TEST()
 
   test_unary_pack<similar>();
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
   constexpr std::size_t i1 = 1;
   constexpr std::size_t i2 = 2;
 #endif
@@ -81,7 +81,7 @@ TEST()
     .test<true_, t2<int, int>, t2<int, char>>()
     .test<true_, tx<>, tx<int>, tx<int, int>, tx<int, int, int>>()
     .test<true_, a1<1>, a1<2>>()
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
     .test<true_, a2<1, 1>, a2<2, 2>>()
     .test<true_, ax<1>, ax<1, 2>>()
 #endif
@@ -91,7 +91,7 @@ TEST()
     .test<true_, at1<1, int>, at1<2, int>>()
     .test<true_, at2<1, int, int>, at2<2, int, int>>()
     .test<true_, atx<1>, atx<1, int>>()
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
     .test<true_, va1<1>, va1<2>>()
     .test<true_, va2<1, 1>, va2<2, 2>>()
     .test<true_, vax<1>, vax<1, 2>>()
@@ -120,7 +120,7 @@ TEST()
       , a1<1>, a2<1, 1>, ax<>, ax<1>, ax<1, 1>, ax<1, 1, 1>
       , ta1<int, 1>, ta2<int, 1, 1>, tax<int>, tax<int, 1>, tax<int, 1, 1>, tax<int, 1, 1, 1>
       , at1<1, int>, at2<1, int, int>, atx<1>, atx<1, int>, atx<1, int, int>, atx<1, int, int, int>
-      #if JLN_MP_ENABLE_TPL_AUTO
+      #if JLN_MP_ENABLE_TPL_PARAM_AUTO
       , vta1<int, 1>, vta2<int, 1, 1>, vtax<int>, vtax<int, 1>, vtax<int, 1, 1>, vtax<int, 1, 1, 1>
       , vat1<1, int>, vat2<1, int, int>, vatx<1>, vatx<1, int>, vatx<1, int, int>, vatx<1, int, int, int>
       , vta1<int, i1>, vta2<int, i1, i1>, vtax<int>, vtax<int, i1>, vtax<int, i1, i1>, vtax<int, i1, i1, i1>

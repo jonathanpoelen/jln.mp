@@ -76,7 +76,7 @@ namespace jln::mp
 
 
 #include <jln/mp/utility/enable_if.hpp>
-#include <jln/mp/number/number.hpp>  // JLN_MP_ENABLE_TPL_AUTO
+#include <jln/mp/number/number.hpp>  // JLN_MP_ENABLE_TPL_PARAM_AUTO
 
 /// \cond
 namespace jln::mp::detail
@@ -119,7 +119,7 @@ namespace jln::mp::detail
     using f = arrange_c_with<C, ints...>;
   };
 
-#if JLN_MP_ENABLE_TPL_AUTO
+#if JLN_MP_ENABLE_TPL_PARAM_AUTO
   template<template<auto...> class Tpl, auto... ints>
   struct make_arrange<Tpl<ints...>>
   {

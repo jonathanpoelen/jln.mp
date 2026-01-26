@@ -5,7 +5,7 @@
 #include <jln/mp/detail/config.hpp>
 #include <jln/mp/functional/memoize.hpp>
 #include <jln/mp/utility/conditional.hpp>
-#include <jln/mp/number/number.hpp> // JLN_MP_TPL_AUTO_OR_INT
+#include <jln/mp/number/number.hpp> // JLN_MP_TPL_PARAM_AUTO_OR_INT
 
 namespace jln::mp
 {
@@ -213,7 +213,7 @@ using call = typename conditional_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
 #endif
 
 
-template<class C, JLN_MP_TPL_AUTO_OR_INT... xs>
+template<class C, JLN_MP_TPL_PARAM_AUTO_OR_INT... xs>
 using call_c = typename detail::dcall_c<sizeof...(xs) < JLN_MP_MAX_CALL_ELEMENT>
   ::template f<C, xs...>;
 
@@ -228,7 +228,7 @@ namespace jln::mp::detail
   template<>
   struct dcall_c<true>
   {
-      template<class C, JLN_MP_TPL_AUTO_OR_INT...xs>
+      template<class C, JLN_MP_TPL_PARAM_AUTO_OR_INT... xs>
       using f = typename C::template f<xs...>;
   };
 
@@ -242,7 +242,10 @@ namespace jln::mp::detail
   template<>
   struct dcallf_c<true>
   {
-      template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, JLN_MP_TPL_AUTO_OR_INT...xs>
+      template<
+        template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F,
+        JLN_MP_TPL_PARAM_AUTO_OR_INT... xs
+      >
       using f = F<xs...>;
   };
 

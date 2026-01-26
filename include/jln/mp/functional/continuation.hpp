@@ -51,7 +51,7 @@ namespace jln::mp
   /// Makes a \function from a \lazymetafunction.
   /// \treturn \value
   /// \see cfl
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F, class C = identity>
   struct cfl_v
   {
     template<class... xs>
@@ -61,7 +61,7 @@ namespace jln::mp
   /// Makes a \function from a \metafunction.
   /// \treturn \value
   /// \see cfe
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F, class C = identity>
   struct cfe_v
   {
     template<class... xs>
@@ -69,14 +69,14 @@ namespace jln::mp
   };
 
   /// \cond
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F>
   struct cfl_v<F, identity>
   {
     template<class... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs::value...)::type;
   };
 
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F>
   struct cfe_v<F, identity>
   {
     template<class... xs>
@@ -88,35 +88,35 @@ namespace jln::mp
   /// Makes a \function from a \lazymetafunction.
   /// \treturn \value
   /// \see cfl
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F, class C = identity>
   struct cfl_v_c
   {
-    template<JLN_MP_TPL_AUTO_OR_INT... xs>
+    template<JLN_MP_TPL_PARAM_AUTO_OR_INT... xs>
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs...)::type);
   };
 
   /// Makes a \function from a \metafunction.
   /// \treturn \value
   /// \see cfe
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F, class C = identity>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F, class C = identity>
   struct cfe_v_c
   {
-    template<JLN_MP_TPL_AUTO_OR_INT... xs>
+    template<JLN_MP_TPL_PARAM_AUTO_OR_INT... xs>
     using f = JLN_MP_CALL_TRACE(C, JLN_MP_DCALLF_C_XS(xs, F, xs...));
   };
 
   /// \cond
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F>
   struct cfl_v_c<F, identity>
   {
-    template<JLN_MP_TPL_AUTO_OR_INT... xs>
+    template<JLN_MP_TPL_PARAM_AUTO_OR_INT... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs...)::type;
   };
 
-  template<template<JLN_MP_TPL_AUTO_OR_INT...> class F>
+  template<template<JLN_MP_TPL_PARAM_AUTO_OR_INT...> class F>
   struct cfe_v_c<F, identity>
   {
-    template<JLN_MP_TPL_AUTO_OR_INT... xs>
+    template<JLN_MP_TPL_PARAM_AUTO_OR_INT... xs>
     using f = JLN_MP_DCALLF_C_XS(xs, F, xs...);
   };
   /// \endcond
