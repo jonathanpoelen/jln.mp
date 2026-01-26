@@ -15,7 +15,7 @@
 #   define JLN_MP_REMOVE_CONST_T __remove_const
 # else
 #   define JLN_MP_REMOVE_CONST_T(x) typename detail::val_remove_const<x>::type
-namespace detail
+namespace jln::mp::detail
 {
   template<class T> struct val_remove_const { using type = T; };
   template<class T> struct val_remove_const<T const> { using type = T; };
