@@ -262,6 +262,12 @@ h2 {
 h3 {
   font-size: 2rem;
 }
+h4 {
+  margin: 1em 0 .5em 0;
+}
+h4:first-child {
+  margin: .5em 0 .5em 0;
+}
 
 a:hover, a:focus {
   color: #ca8244;
