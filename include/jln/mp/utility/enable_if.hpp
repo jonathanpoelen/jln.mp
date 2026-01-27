@@ -21,14 +21,11 @@ namespace jln::mp
     using type = T;
   };
 
-  /// Fast implementation of \c std::enable_if_t.
+  /// Implementation of \c std::enable_if_t.
   template<bool cond, class T = void>
-  #if JLN_MP_FEATURE_CONCEPTS && !JLN_MP_HAS_MEMOIZED_TYPE_PACK_ELEMENT
-    requires (cond)
-  using enable_if_t = T;
-  #elif JLN_MP_FEATURE_TYPE_PACK_ELEMENT
-  using enable_if_t = __type_pack_element<!cond, T>;
-  #else
+  #if ! JLN_MP_HAS_MEMOIZED_TYPE_PACK_ELEMENT
   using enable_if_t = typename enable_if<cond, T>::type;
+  #else
+  using enable_if_t = __type_pack_element<!cond, T>;
   #endif
 }
