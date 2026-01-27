@@ -198,11 +198,6 @@ namespace jln::mp
   JLN_MP_SMP_MAKE_TRAIT(invoke_result, 1, types::any)
 #endif
 
-  // member relationships:
-#if defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible
-  JLN_MP_SMP_MAKE_TRAIT(is_pointer_interconvertible_base_of, 2, types::boolean);
-#endif
-
 #undef JLN_MP_SMP_MAKE_BASIC_TRAIT
 #undef JLN_MP_SMP_MAKE_TRAIT
 }

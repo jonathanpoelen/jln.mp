@@ -270,10 +270,5 @@ namespace jln::mp::traits
   JLN_MP_MAKE_TRAIT(invoke_result);
 #endif
 
-  // member relationships:
-#if defined(__cpp_lib_is_pointer_interconvertible) && __cpp_lib_is_pointer_interconvertible
-  JLN_MP_MAKE_TRAIT(is_pointer_interconvertible_base_of);
-#endif
-
 #undef JLN_MP_MAKE_TRAIT
 }
