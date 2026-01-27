@@ -65,7 +65,7 @@ namespace jln::mp
   };
 
 #if JLN_MP_CUDA
-#  define JLN_MP_AS_BOOL(v) jln::mp::enable_if_t<std::size_t{v} <= 1, bool>{v}
+#  define JLN_MP_AS_BOOL(v) enable_if_t<std::size_t{v} <= 1, bool>{v}
 #else
 #  define JLN_MP_AS_BOOL(v) JLN_MP_INTEGRAL_AS(bool, v)
 #endif
