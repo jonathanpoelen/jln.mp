@@ -5,6 +5,10 @@
 
 #include "jln/mp/smp/map/map_update.hpp"
 
+#if JLN_MP_FEATURE_CONCEPTS
+# include <type_traits>
+#endif
+
 TEST_SUITE_BEGIN()
 
 // map_update
