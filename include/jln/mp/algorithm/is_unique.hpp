@@ -49,18 +49,6 @@ namespace jln::mp
 /// \cond
 namespace jln::mp::detail
 {
-  template<int_t i, class x>
-  struct indexed_item : list<x>
-  {};
-
-  template<class, int_t... ints>
-  struct indexed_inherit
-  {
-    template<class... xs>
-    struct f : indexed_item<ints, xs>...
-    {};
-  };
-
 #if JLN_MP_WORKAROUND(JLN_MP_GCC, < 1300)
 # define JLN_MP_UNIQUE_WITH_REQUIRES 0
 #else
@@ -596,7 +584,7 @@ namespace jln::mp
     }>);
 #else
     using f = JLN_MP_CALL_TRACE(C, number<sizeof(
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)
       ::template f<xs...>
     ) == 1>);
 #endif
@@ -616,7 +604,7 @@ namespace jln::mp
     }>;
 #else
     using f = number<sizeof(
-      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), detail::indexed_inherit)
+      typename JLN_MP_MAKE_INTEGER_SEQUENCE(sizeof...(xs), indexed_inherit)
       ::template f<xs...>
     ) == 1>;
 #endif

@@ -108,12 +108,7 @@ namespace jln::mp
 #include <jln/mp/list/join.hpp>
 #include <jln/mp/list/pop_front.hpp>
 #include <jln/mp/list/wrap_in_list.hpp>
-
-// #if JLN_MP_GCC
-#include <jln/mp/algorithm/is_unique.hpp> // indexed_inherit
-// #else
 #include <jln/mp/utility/inherit.hpp>
-// #endif
 
 /// \cond
 namespace jln::mp::detail

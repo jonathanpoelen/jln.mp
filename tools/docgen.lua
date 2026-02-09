@@ -676,6 +676,7 @@ htmlifier_init = function()
   + P'\\lazymetafunction' / '<a href="#d_lazymetafunction">lazy meta-function</a>'
   + P'\\link ' * cid / inlinecode
   + P'\\attention ' / '</p><p>Attention: '
+  + P'\\warning ' / '</p><p>Warning: '
   + P'\\n' / '<br>'
   + htmlspecialchars_c
   + 1

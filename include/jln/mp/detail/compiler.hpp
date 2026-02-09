@@ -412,7 +412,7 @@
 
 /// Call `__type_pack_element` or use pack indexing feature.
 /// This macro is not defined if the features do not exist.
-/// \attention The gcc version of `__type_pack_element` is somewhat
+/// \warning The gcc version of `__type_pack_element` is somewhat
 /// buggy and does not support chaining:\n
 /// \c __type_pack_element<i,a,b>::type // error
 /// \see JLN_MP_PACK_AT_SAFE
