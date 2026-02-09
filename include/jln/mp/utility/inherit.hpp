@@ -3,9 +3,16 @@
 #pragma once
 
 #include <jln/mp/list/list.hpp>
+#include <jln/mp/detail/compiler.hpp>
 
 namespace jln::mp
 {
+  JLN_MP_DIAGNOSTIC_PUSH()
+#if JLN_MP_GCC >= 1000
+  JLN_MP_DIAGNOSTIC_GCC_IGNORE("-Winaccessible-base")
+#endif
+  JLN_MP_DIAGNOSTIC_MSVC_IGNORE(4584)
+
   /// \ingroup utility
 
   /// Class that inherits all \c Bases types.
@@ -40,4 +47,6 @@ namespace jln::mp
   template<class... Bases>
   struct inherit_safely : list<Bases>...
   {};
+
+  JLN_MP_DIAGNOSTIC_POP()
 }
