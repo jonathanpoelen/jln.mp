@@ -13,8 +13,6 @@
 
 #include <jln/mp/detail/compiler.hpp>
 
-#include <limits>
-
 JLN_MP_DIAGNOSTIC_PUSH()
 JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wlogical-op")
 
@@ -527,12 +525,10 @@ namespace jln::mp::emp
   using mod_c = number<(... % xs)>;
 
   template<int_t... xs>
-  using mod0_c = mod_c<xs...,
-    (sizeof...(xs) ? std::numeric_limits<int_t>::min() : 0)>;
+  using mod0_c = mod_c<xs..., (sizeof...(xs) ? int_min_v : 0)>;
 
   template<int_t... xs>
-  using mod1_c = mod_c<xs...,
-    (sizeof...(xs) ? std::numeric_limits<int_t>::min() : 1)>;
+  using mod1_c = mod_c<xs..., (sizeof...(xs) ? int_min_v : 1)>;
 
   template<int_t... xs>
   using xor_c = number<(xs ^ ...)>;
@@ -550,29 +546,25 @@ namespace jln::mp::emp
   using bit_and_c = number<(xs & ...)>;
 
   template<int_t... xs>
-  using bit_and0_c = bit_and_c<xs...,
-    (sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0)>;
+  using bit_and0_c = bit_and_c<xs..., (sizeof...(xs) ? int_max_v : 0)>;
 
   template<int_t... xs>
   using left_bit_and_c = number<(... & xs)>;
 
   template<int_t... xs>
-  using left_bit_and0_c = left_bit_and_c<xs...,
-    (sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0)>;
+  using left_bit_and0_c = left_bit_and_c<xs..., (sizeof...(xs) ? int_max_v : 0)>;
 
   template<int_t... xs>
   using bit_or_c = number<(xs | ...)>;
 
   template<int_t... xs>
-  using bit_or0_c = bit_or_c<xs...,
-    (sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0)>;
+  using bit_or0_c = bit_or_c<xs..., (sizeof...(xs) ? int_max_v : 0)>;
 
   template<int_t... xs>
   using left_bit_or_c = number<(... | xs)>;
 
   template<int_t... xs>
-  using left_bit_or0_c = left_bit_or_c<xs...,
-    (sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0)>;
+  using left_bit_or0_c = left_bit_or_c<xs..., (sizeof...(xs) ? int_max_v : 0)>;
 
 
   template<class... xs>
@@ -919,12 +911,10 @@ namespace jln::mp::emp
   inline constexpr int_t mod_c_v = JLN_MP_FIX_SLOW_FOLDING(... % xs);
 
   template<int_t... xs>
-  inline constexpr int_t mod0_c_v = mod_c_v<xs...,
-    sizeof...(xs) ? std::numeric_limits<int_t>::min() : 0>;
+  inline constexpr int_t mod0_c_v = mod_c_v<xs..., sizeof...(xs) ? int_min_v : 0>;
 
   template<int_t... xs>
-  inline constexpr int_t mod1_c_v = mod_c_v<xs...,
-    sizeof...(xs) ? std::numeric_limits<int_t>::min() : 1>;
+  inline constexpr int_t mod1_c_v = mod_c_v<xs..., sizeof...(xs) ? int_min_v : 1>;
 
   template<int_t... xs>
   inline constexpr int_t xor_c_v = JLN_MP_FIX_SLOW_FOLDING(xs ^ ...);
@@ -943,28 +933,28 @@ namespace jln::mp::emp
 
   template<int_t... xs>
   inline constexpr int_t bit_and0_c_v = bit_and_c_v<xs...,
-    sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0>;
+    sizeof...(xs) ? int_max_v : 0>;
 
   template<int_t... xs>
   inline constexpr int_t left_bit_and_c_v = JLN_MP_FIX_SLOW_FOLDING(... & xs);
 
   template<int_t... xs>
   inline constexpr int_t left_bit_and0_c_v = left_bit_and_c_v<xs...,
-    sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0>;
+    sizeof...(xs) ? int_max_v : 0>;
 
   template<int_t... xs>
   inline constexpr int_t bit_or_c_v = JLN_MP_FIX_SLOW_FOLDING(xs | ...);
 
   template<int_t... xs>
   inline constexpr int_t bit_or0_c_v = bit_or_c_v<xs...,
-    sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0>;
+    sizeof...(xs) ? int_max_v : 0>;
 
   template<int_t... xs>
   inline constexpr int_t left_bit_or_c_v = JLN_MP_FIX_SLOW_FOLDING(... | xs);
 
   template<int_t... xs>
   inline constexpr int_t left_bit_or0_c_v = left_bit_or_c_v<xs...,
-    sizeof...(xs) ? std::numeric_limits<int_t>::max() : 0>;
+    sizeof...(xs) ? int_max_v : 0>;
 
 
   template<class... xs>

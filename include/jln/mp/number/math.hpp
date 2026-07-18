@@ -200,7 +200,7 @@ namespace jln::mp
 
     template<int_t i>
     inline constexpr int_t abs_c_v<i, mp::identity> = (i < -i ? -i : i)
-      + !sizeof(int[std::numeric_limits<int_t>::min() != i]); // check abs(-min)
+      + !sizeof(int[int_min_v != i]); // check abs(-min)
 
 
     template<class I, class C = mp::identity>

@@ -11,6 +11,17 @@ namespace jln::mp
   using int_t = std::intmax_t;
   using uint_t = std::uintmax_t;
 
+  /// Equivalent to `std::numeric_limits<int_t>::max()`.
+  inline constexpr int_t int_max_v
+      = (((int_t{1} << (sizeof(int_t) * 8 - 1 - 1)) - 1) << 1) + 1;
+  /// Equivalent to `std::numeric_limits<int_t>::min()`.
+  inline constexpr int_t int_min_v = -int_max_v - 1;
+
+  /// Equivalent to `std::numeric_limits<uint_t>::max()`.
+  inline constexpr uint_t uint_max_v = ~uint_t{};
+  /// Equivalent to `std::numeric_limits<uint_t>::min()`.
+  inline constexpr uint_t uint_min_v = 0;
+
   template<int_t v>
   struct number { static const int_t value = v; };
 
