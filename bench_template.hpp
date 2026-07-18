@@ -25,17 +25,27 @@ namespace n
 {
   using namespace jln::mp;
 
+
+#if NREPEAT == 1
+using Algo = ALGO;
+#else
+using Algo = repeat_c<NREPEAT, ALGO>;
+#endif
+
+// Algo<0..NELEM>
 #if IMPL == 0
-  using l = emp::make_int_sequence_c<NELEM, repeat_c<NREPEAT, ALGO>>;
+  using l = emp::make_int_sequence_c<NELEM, Algo>;
+// Algo<0>, Algo<0,1> .. Algo<0..(NELEM-1)>
 #elif IMPL == 1
   using l = emp::make_int_sequence_c<NELEM, transform<
-    make_int_sequence<repeat_c<NREPEAT, ALGO>>
+    make_int_sequence<Algo>
   >>;
+// Algo<0..(0+NELEM)>, Algo<1..(1+NELEM)> .. Algo<(NELEM-1)..(NELEM-1+NELEM)>
 #else
   struct test
   {
     template<class n>
-    using f = emp::iota_c<n::value, NELEM, 1, repeat_c<NREPEAT, ALGO>>;
+    using f = emp::iota_c<n::value, NELEM, 1, Algo>;
   };
 
   using l = emp::make_int_sequence_c<NELEM, transform<test>>;
