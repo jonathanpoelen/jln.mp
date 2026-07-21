@@ -107,10 +107,15 @@ namespace jln::mp::detail::mkidx
   template<int idx, class T, class Tag>
   struct injecter
   {
+    JLN_MP_DIAGNOSTIC_PUSH()
+#if JLN_MP_GCC > 1600
+    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wsfinae-incomplete")
+#endif
     friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto get_bound_value(state<Tag, idx>*)
     {
       return T();
     }
+    JLN_MP_DIAGNOSTIC_POP()
   };
 
   template<class T, class Tag, int idx = 0>
@@ -172,10 +177,15 @@ namespace jln::mp::detail::mkidx
   {
     static constexpr int value = get_next_index<T, Tag>();
 
+    JLN_MP_DIAGNOSTIC_PUSH()
+#if JLN_MP_GCC > 1600
+    JLN_MP_DIAGNOSTIC_GCC_ONLY_IGNORE("-Wsfinae-incomplete")
+#endif
     friend JLN_MP_CONSTEVAL_OR_CONSTEXPR auto get_bound_value(state<Tag, value>*)
     {
       return T();
     }
+    JLN_MP_DIAGNOSTIC_POP()
   };
 }
 
