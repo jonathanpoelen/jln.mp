@@ -20,6 +20,13 @@ TEST()
 {
   using namespace jln::mp;
 
+#if JLN_MP_FEATURE_CONCEPTS
+  static_assert( same_as<int, int>);
+  static_assert(!same_as<int, float>);
+  static_assert(!not_same_as<int, int>);
+  static_assert( not_same_as<int, float>);
+#endif
+
   static_assert(test_all_same_as<int, int, int>);
   static_assert(!test_all_same_as<int, int, char>);
   static_assert(!test_all_same_as<int, char, char>);
