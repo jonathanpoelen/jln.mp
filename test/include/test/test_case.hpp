@@ -4,14 +4,31 @@
 
 #include "jln/mp/detail/compiler.hpp"
 
-#define TEST_SUITE_BEGIN() TEST_SUITE_BEGIN_I(jln_test_, __COUNTER__)
+#if JLN_MP_CLANG >= 2200
+#define TEST_DIAGNOSTIC_IGNORE_COUNTER_PUSH() \
+  JLN_MP_DIAGNOSTIC_PUSH()                    \
+  JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wc2y-extensions")
+#define TEST_DIAGNOSTIC_IGNORE_COUNTER_POP() \
+  JLN_MP_DIAGNOSTIC_POP()
+#else
+#define TEST_DIAGNOSTIC_IGNORE_COUNTER_PUSH()
+#define TEST_DIAGNOSTIC_IGNORE_COUNTER_POP()
+#endif
+
+#define TEST_SUITE_BEGIN()                   \
+  TEST_DIAGNOSTIC_IGNORE_COUNTER_PUSH()      \
+  TEST_SUITE_BEGIN_I(jln_test_, __COUNTER__) \
+  TEST_DIAGNOSTIC_IGNORE_COUNTER_POP()
 #define TEST_SUITE_BEGIN_I(name, n) TEST_SUITE_BEGIN_II(name, n)
 // under namespace to prevent ambiguities with libc
 #define TEST_SUITE_BEGIN_II(name, n) \
   namespace jln { namespace { namespace test_suite { struct test_ ## name ## n {
 #define TEST_SUITE_END() }; } } }
 
-#define TEST() TEST_I(__COUNTER__)
+#define TEST()                          \
+  TEST_DIAGNOSTIC_IGNORE_COUNTER_PUSH() \
+  TEST_I(__COUNTER__)                   \
+  TEST_DIAGNOSTIC_IGNORE_COUNTER_POP()
 #define TEST_I(n) TEST_II(n)
 
 #if JLN_MP_CLANG_LIKE
