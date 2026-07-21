@@ -132,6 +132,7 @@
 #include "src/functional/partial_transform_xs.cpp"
 #include "src/functional/recursively.cpp"
 #include "src/functional/select.cpp"
+#include "src/functional/sfinae_truthy_falsy.cpp"
 #include "src/functional/tee.cpp"
 #include "src/functional/try.cpp"
 #include "src/functional/until.cpp"
