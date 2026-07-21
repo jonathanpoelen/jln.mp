@@ -14,7 +14,8 @@
 
 - Support `nvcc` compiler.
 - Add `recursion_result::f<xs...>` and `next_recursion::f<xs...>` to specify a sequence of values for the next iteration or final iteration of `recursively` and `recursively_as_much_as_possible` (previously `recurse` and `infinite_recurse`).
-- Add many other algorithms.
+- Add `indexed_item` and `indexed_inherit`.
+- Add many algorithms.
 
 
 ### Changed

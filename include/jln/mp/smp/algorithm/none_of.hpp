@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
+#include <jln/mp/smp/functional/sfinae_truthy_falsy.hpp>
 #include <jln/mp/smp/algorithm/drop_until.hpp>
 #include <jln/mp/smp/utility/always.hpp>
 #include <jln/mp/smp/utility/is.hpp>
@@ -31,6 +32,41 @@ namespace jln::mp::smp
 
   template<class Pred, class C = identity>
   using all_of = typename detail::smp_all_of<Pred, C>::type;
+
+  template<class Pred, class C = identity>
+  using any_of = none_of<Pred, not_<C>>;
+
+#if JLN_MP_FEATURE_CONCEPTS
+  template<class Pred, class C = identity>
+  using any_of_sfinae_truthy = contract<
+    mp::any_of_sfinae_truthy<assume_unary<Pred>, assume_number<C>>
+  >;
+
+  template<class Pred, class C = identity>
+  using any_of_sfinae_falsy = contract<
+    mp::any_of_sfinae_falsy<assume_unary<Pred>, assume_number<C>>
+  >;
+
+  template<class Pred, class C = identity>
+  using all_of_sfinae_truthy = contract<
+    mp::all_of_sfinae_truthy<assume_unary<Pred>, assume_number<C>>
+  >;
+
+  template<class Pred, class C = identity>
+  using all_of_sfinae_falsy = contract<
+    mp::all_of_sfinae_falsy<assume_unary<Pred>, assume_number<C>>
+  >;
+
+  template<class Pred, class C = identity>
+  using none_of_sfinae_truthy = contract<
+    mp::none_of_sfinae_truthy<assume_unary<Pred>, assume_number<C>>
+  >;
+
+  template<class Pred, class C = identity>
+  using none_of_sfinae_falsy = contract<
+    mp::none_of_sfinae_falsy<assume_unary<Pred>, assume_number<C>>
+  >;
+#endif
 }
 
 /// \cond
@@ -97,6 +133,44 @@ namespace jln::mp::detail
   struct smp_all_of<Pred, C, is_list<>, AssumedC>
   {
     using type = contract<all_of<is_list<>, assume_positive_number_barrier<C>>>;
+  };
+#endif
+
+#if JLN_MP_FEATURE_CONCEPTS
+  template<template<class> class sfinae, class Pred, class C>
+  struct _sfinae<sfinae, any_of_sfinae_truthy<Pred, C>>
+  {
+    using type = smp::any_of_sfinae_truthy<sfinae<Pred>, sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class Pred, class C>
+  struct _sfinae<sfinae, any_of_sfinae_falsy<Pred, C>>
+  {
+    using type = smp::any_of_sfinae_falsy<sfinae<Pred>, sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class Pred, class C>
+  struct _sfinae<sfinae, all_of_sfinae_truthy<Pred, C>>
+  {
+    using type = smp::all_of_sfinae_truthy<sfinae<Pred>, sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class Pred, class C>
+  struct _sfinae<sfinae, all_of_sfinae_falsy<Pred, C>>
+  {
+    using type = smp::all_of_sfinae_falsy<sfinae<Pred>, sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class Pred, class C>
+  struct _sfinae<sfinae, none_of_sfinae_truthy<Pred, C>>
+  {
+    using type = smp::none_of_sfinae_truthy<sfinae<Pred>, sfinae<C>>;
+  };
+
+  template<template<class> class sfinae, class Pred, class C>
+  struct _sfinae<sfinae, none_of_sfinae_falsy<Pred, C>>
+  {
+    using type = smp::none_of_sfinae_falsy<sfinae<Pred>, sfinae<C>>;
   };
 #endif
 }

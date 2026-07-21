@@ -47,4 +47,67 @@ TEST()
   ut::not_invocable<smp::any_of<bad_function, bad_function>, _1>();
 }
 
+#if JLN_MP_FEATURE_CONCEPTS
+TEST()
+{
+  using namespace jln::mp;
+  using namespace ut::ints;
+
+  static_assert(!emp::any_of_sfinae_truthy_xs_v<identity>);
+  static_assert( emp::any_of_sfinae_truthy_xs_v<identity, _1, _1, _1>);
+  static_assert( emp::any_of_sfinae_truthy_xs_v<identity, _1, _0, _1>);
+  static_assert(!emp::any_of_sfinae_truthy_xs_v<identity, _0, _0, _0>);
+  static_assert( emp::any_of_sfinae_truthy_xs_v<identity, _1, void, _1>);
+  static_assert( emp::any_of_sfinae_truthy_xs_v<identity, _0, void, _1>);
+  static_assert(!emp::any_of_sfinae_truthy_xs_v<identity, _0, void, _0>);
+
+  static_assert(!emp::any_of_sfinae_falsy_xs_v<identity>);
+  static_assert(!emp::any_of_sfinae_falsy_xs_v<identity, _1, _1, _1>);
+  static_assert( emp::any_of_sfinae_falsy_xs_v<identity, _1, _0, _1>);
+  static_assert( emp::any_of_sfinae_falsy_xs_v<identity, _0, _0, _0>);
+  static_assert(!emp::any_of_sfinae_falsy_xs_v<identity, _1, void, _1>);
+  static_assert( emp::any_of_sfinae_falsy_xs_v<identity, _0, void, _1>);
+  static_assert( emp::any_of_sfinae_falsy_xs_v<identity, _0, void, _0>);
+
+  static_assert(!emp::any_of_sfinae_truthy_v<list<>, identity>);
+  static_assert( emp::any_of_sfinae_truthy_v<list<_1, _1, _1>, identity>);
+  static_assert( emp::any_of_sfinae_truthy_v<list<_1, _0, _1>, identity>);
+  static_assert(!emp::any_of_sfinae_truthy_v<list<_0, _0, _0>, identity>);
+  static_assert( emp::any_of_sfinae_truthy_v<list<_1, void, _1>, identity>);
+  static_assert( emp::any_of_sfinae_truthy_v<list<_0, void, _1>, identity>);
+  static_assert(!emp::any_of_sfinae_truthy_v<list<_0, void, _0>, identity>);
+
+  static_assert(!emp::any_of_sfinae_falsy_v<list<>, identity>);
+  static_assert(!emp::any_of_sfinae_falsy_v<list<_1, _1, _1>, identity>);
+  static_assert( emp::any_of_sfinae_falsy_v<list<_1, _0, _1>, identity>);
+  static_assert( emp::any_of_sfinae_falsy_v<list<_0, _0, _0>, identity>);
+  static_assert(!emp::any_of_sfinae_falsy_v<list<_1, void, _1>, identity>);
+  static_assert( emp::any_of_sfinae_falsy_v<list<_0, void, _1>, identity>);
+  static_assert( emp::any_of_sfinae_falsy_v<list<_0, void, _0>, identity>);
+
+  test_unary_pack<any_of_sfinae_falsy>();
+  test_unary_pack<any_of_sfinae_truthy>();
+  test_unary_pack<any_of_sfinae_falsy, to_bool<>>();
+  test_unary_pack<any_of_sfinae_truthy, to_bool<>>();
+
+  test_context<any_of_sfinae_truthy<identity>, smp::any_of_sfinae_truthy<smp::identity>>()
+    .test<false_>()
+    .test<true_, _1, _1>()
+    .test<true_, _1, _0>()
+    .test<false_, _0, _0>()
+    .test<false_, _0, void>()
+    .test<true_, _1, void>()
+    ;
+
+  test_context<any_of_sfinae_falsy<identity>, smp::any_of_sfinae_falsy<smp::identity>>()
+    .test<false_>()
+    .test<false_, _1, _1>()
+    .test<true_, _1, _0>()
+    .test<true_, _0, _0>()
+    .test<true_, _0, void>()
+    .test<false_, _1, void>()
+    ;
+}
+#endif
+
 TEST_SUITE_END()

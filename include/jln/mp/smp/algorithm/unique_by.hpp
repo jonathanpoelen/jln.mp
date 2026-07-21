@@ -23,7 +23,8 @@ namespace jln::mp::smp
 
   template<class C = listify>
   using unique_by_kv = test_contract<
-    mp::none_of<detail::is_not_unique_by_kv_entry>,
+    JLN_MP_IF_FEATURE_CONCEPTS_OR(mp::none_of_sfinae_truthy, mp::none_of)
+      <detail::is_not_unique_by_kv_entry>,
     mp::unique_by_kv<subcontract<C>>
   >;
 }

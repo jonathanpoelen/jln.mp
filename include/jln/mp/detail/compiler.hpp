@@ -448,3 +448,16 @@
 
 /// Displays parameters. Useful in a macro to remove parentheses from a value.
 #define JLN_MP_UNPACK(...) __VA_ARGS__
+
+
+/// Use \c with_concept value when concepts are available,
+/// otherwise use \c without_concept value.
+/// The version with the _P suffix will expand the parameter with \c JLN_MP_UNPACK.
+/// ex: `JLN_MP_IF_FEATURE_CONCEPTS_OR(any_of_sfinae_truthy, all_of)<Pred>`.
+#if JLN_MP_FEATURE_CONCEPTS
+# define JLN_MP_IF_FEATURE_CONCEPTS_OR(with_concept, without_concept) with_concept
+# define JLN_MP_IF_FEATURE_CONCEPTS_OR_P(with_concept, without_concept) JLN_MP_UNPACK with_concept
+#else
+# define JLN_MP_IF_FEATURE_CONCEPTS_OR(with_concept, without_concept) without_concept
+# define JLN_MP_IF_FEATURE_CONCEPTS_OR_P(with_concept, without_concept) JLN_MP_UNPACK without_concept
+#endif
