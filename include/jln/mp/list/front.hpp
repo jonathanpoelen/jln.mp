@@ -4,6 +4,7 @@
 
 #include <jln/mp/functional/identity.hpp>
 #include <jln/mp/utility/unpack.hpp>
+#include <jln/mp/detail/compiler.hpp>
 
 namespace jln::mp
 {

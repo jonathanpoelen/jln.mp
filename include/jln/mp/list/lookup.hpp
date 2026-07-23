@@ -4,6 +4,7 @@
 
 #include <jln/mp/utility/unpack.hpp>
 #include <jln/mp/functional/continuation.hpp>
+#include <jln/mp/detail/compiler.hpp>
 #include <cstddef>
 
 namespace jln::mp
