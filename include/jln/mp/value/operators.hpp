@@ -194,7 +194,7 @@ namespace jln::mp
   };
 
   template<class C = identity>
-  using val_left_bit_and0 = if_<size<>, val_bit_and<C>, always<val<0>, C>>;
+  using val_left_bit_and0 = if_<size<>, val_left_bit_and<C>, always<val<0>, C>>;
 
 
   template<class C = identity>
