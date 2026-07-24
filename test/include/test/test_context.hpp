@@ -62,6 +62,12 @@ namespace ut
     static constexpr bool value = true;
   };
 
+  template<bool>
+  struct without_smp_t
+  {};
+
+  inline constexpr without_smp_t<true> without_smp;
+
   // 1: check Smp == sfinae<Mp>
   // 0: check Smp != sfinae<Mp>
   // -1: not sfinae<Mp>
@@ -73,11 +79,21 @@ namespace ut
     static_assert(is_contract<Smp>::value);
 
     template<class R, class... xs>
-    static test_context test()
+    static test_context test(without_smp_t<false> = {})
     {
       invocable<Smp, xs...>();
       invoke_r<R, Mp, xs...>();
       invoke_r<R, Smp, xs...>();
+      if constexpr (!VerifySfinae) {
+        invoke_r<R, sfinae<Mp>, xs...>();
+      }
+      return {};
+    }
+
+    template<class R, class... xs>
+    static test_context test(without_smp_t<true>)
+    {
+      invoke_r<R, Mp, xs...>();
       if constexpr (!VerifySfinae) {
         invoke_r<R, sfinae<Mp>, xs...>();
       }

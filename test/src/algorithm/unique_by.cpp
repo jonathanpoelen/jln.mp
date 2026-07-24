@@ -38,16 +38,23 @@ TEST()
     >
   >();
 
+  // bug 5818596
+  constexpr auto without_smp_if_cuda_le_1302 = ut::without_smp_t<
+    JLN_MP_WORKAROUND(JLN_MP_CUDA, <= 1302)
+  >{};
+  constexpr auto without_smp_if_cuda_le_1303 = ut::without_smp_t<
+    JLN_MP_WORKAROUND(JLN_MP_CUDA, <= 1303)
+  >{};
+
   test_context<unique_by<unpack<add0<>>>, smp::unique_by<smp::unpack<smp::add0<>>>>()
     .not_invocable<list<int>>()
     .not_invocable<_0>()
-// bug 5818596
-#if !JLN_MP_WORKAROUND(JLN_MP_CUDA, <= 1301)
-    .test<list<>>()
-    .test<list<seq_0_0>, seq_0_0>()
-    .test<list<seq_0_0>, seq_0_0, seq_0_0>()
-    .test<list<seq_0_0, seq_0_1>, seq_0_0, seq_0_1>()
-    .test<list<seq_0_0, seq_0_1, seq_2_2>, seq_0_0, seq_0_1, seq_2_2>()
+    .test<list<>>(without_smp_if_cuda_le_1302)
+    .test<list<seq_0_0>, seq_0_0>(without_smp_if_cuda_le_1303)
+    .test<list<seq_0_0>, seq_0_0, seq_0_0>(without_smp_if_cuda_le_1303)
+    .test<list<seq_0_0, seq_0_1>, seq_0_0, seq_0_1>(without_smp_if_cuda_le_1303)
+    .test<list<seq_0_0, seq_0_1, seq_2_2>, seq_0_0, seq_0_1, seq_2_2>(
+      without_smp_if_cuda_le_1303)
     .test<
         list<
           seq_0_0, seq_0_1, seq_0_2, seq_0_3,
@@ -59,8 +66,7 @@ TEST()
         seq_1_0, seq_1_1, seq_1_2, seq_1_3,
         seq_2_0, seq_2_1, seq_2_2, seq_2_3,
         seq_3_0, seq_3_1, seq_3_2, seq_3_3
-      >()
-#endif
+      >(without_smp_if_cuda_le_1303)
     ;
 
   test_context<unique_by_kv<>, smp::unique_by_kv<>>()
@@ -78,7 +84,7 @@ TEST()
 
   ut::not_invocable<smp::unique_by<bad_function>, _1, _1, _1, _1>();
 // bug 5818596
-#if !JLN_MP_WORKAROUND(JLN_MP_CUDA, <= 1301)
+#if !JLN_MP_WORKAROUND(JLN_MP_CUDA, <= 1302)
   ut::not_invocable<smp::unique_by<smp::always<na>>, _1, _1, _1, _1>();
 #endif
   ut::not_invocable<smp::unique_by<always<void>, bad_function>, _1, _1, _1, _1>();

@@ -31,7 +31,7 @@ TEST()
 
   using rd1 = random<>;
 // because... ???
-#if !JLN_MP_WORKAROUND(JLN_MP_CUDA, <= 1301)
+#if !JLN_MP_WORKAROUND(JLN_MP_CUDA, <= 1302)
   ut::same<rd1::f<int>, rd1::f<int>>();
 #endif
   ut::not_same<rd1::f<void>, rd1::f<int>>();

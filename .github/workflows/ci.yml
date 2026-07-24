@@ -10,96 +10,45 @@ on: [push, pull_request]
 # https://github.com/actions/runner-images
 
 jobs:
-  windows-gcc:
+  windows:
     name: Windows ${{ matrix.compiler }} dbg=${{ matrix.debug }} ${{ matrix.std }}
     runs-on: windows-latest
     timeout-minutes: 8
     strategy:
       fail-fast: false
       matrix:
-        compiler: [g++]
-        std: ['c++17', 'c++20', 'c++23']
+        compiler: ['g++', 'clang-cl', 'cl']
+        std: ['c++17', 'c++20', 'c++23', 'c++26']
         debug: ['false', 'true']
+        exclude:
+          # debug is always disabled with msvc
+          - { compiler: 'cl', debug: 'true' }
+          # no c++23 and c++26 with cl
+          - { compiler: 'cl', std: 'c++23' }
+          - { compiler: 'cl', std: 'c++26' }
+          # nor clang-cl
+          - { compiler: 'clang-cl', std: 'c++23' }
+          - { compiler: 'clang-cl', std: 'c++26' }
 
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
+
+    - name: Install Python Dependencies
+      run: pip install meson ninja
+
+    - name: Prepare MSVC
+      if: ${{ matrix.compiler != 'g++' }}
+      uses: TheMrMilchmann/setup-msvc-dev@v3
+      with:
+        arch: x64
+
     - shell: cmd
       env:
         CC: ${{ matrix.compiler }}
         CXX: ${{ matrix.compiler }}
       run: |
         python -m pip install ninja meson
-        meson setup build -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }} -Db_colorout=always
-        ninja -C build -k10
-
-
-  windows-clang:
-    name: Windows ${{ matrix.compiler }} dbg=${{ matrix.debug }} ${{ matrix.std }}
-    runs-on: windows-latest
-    timeout-minutes: 8
-    strategy:
-      fail-fast: false
-      matrix:
-        compiler: [clang-cl]
-        std: ['c++17', 'c++20']
-        debug: ['false', 'true']
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
-
-    - name: Install Python Dependencies
-      run: pip install meson ninja
-
-    - name: Prepare MSVC
-      uses: TheMrMilchmann/setup-msvc-dev@v3
-      with:
-        arch: x64
-
-    - shell: cmd
-      env:
-        CC: ${{ matrix.compiler }}
-        CXX: ${{ matrix.compiler }}
-      run: |
-        meson setup build -Dcpp_winlibs= -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }} -Db_colorout=always
-        ninja -C build -k10
-
-
-  windows-cl:
-    name: Windows ${{ matrix.compiler }} dbg=${{ matrix.debug }} ${{ matrix.std }}
-    runs-on: windows-latest
-    timeout-minutes: 8
-    strategy:
-      fail-fast: false
-      matrix:
-        compiler: [cl]
-        std: ['c++17', 'c++20']
-        debug: ['false']  # debug is always disabled with msvc
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
-
-    - name: Install Python Dependencies
-      run: pip install meson ninja
-
-    - name: Prepare MSVC
-      uses: TheMrMilchmann/setup-msvc-dev@v3
-      with:
-        arch: x64
-
-    - shell: cmd
-      env:
-        CC: ${{ matrix.compiler }}
-        CXX: ${{ matrix.compiler }}
-      run: |
         meson setup build -Dcpp_winlibs= -Dwarning_level=3 -Dmp_debug=${{ matrix.debug }} -Dcpp_std=${{ matrix.std }} -Db_colorout=always
         ninja -C build -k10
 
@@ -111,7 +60,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        std: ['c++17', 'c++20', 'c++23']
+        std: ['c++17', 'c++20', 'c++23', 'c++26']
         debug: ['false', 'true']
 
     steps:
@@ -132,9 +81,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        std: ['c++17', 'c++20', 'c++23']
+        std: ['c++17', 'c++20', 'c++23', 'c++26']
         debug: ['false', 'true']
         cxx: ['g++-13', 'g++-14', 'clang++-16', 'clang++-17', 'clang++-18']
+        exclude:
+          - { std: 'c++26', cxx: 'g++-13' }
+          - { std: 'c++26', cxx: 'clang++-16' }
 
     steps:
     - uses: actions/checkout@v4
@@ -171,10 +123,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: Jimver/cuda-toolkit@v0.2.30
+      - uses: Jimver/cuda-toolkit@v0.2.35
         # id: cuda-toolkit
         with:
-          cuda: '13.1.0'
+          cuda: '13.2.0'
           linux-local-args: '["--toolkit"]'
           use-local-cache: false
           use-github-cache: false
@@ -192,7 +144,7 @@ jobs:
 
   auto-gen:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'jonathanpoelen/jln.mp'
-    needs: [linux, linux-old, macos, windows-cl, windows-clang, windows-gcc, cuda-linux]
+    needs: [linux, linux-old, macos, windows, cuda-linux]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
