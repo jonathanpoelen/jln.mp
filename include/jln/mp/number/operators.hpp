@@ -1075,37 +1075,37 @@ namespace jln::mp::emp
 
 
   template<class x, class C = mp::identity>
-  inline constexpr int_t neg_v = mp::neg<C>::template f<x>;
+  inline constexpr int_t neg_v = mp::neg<C>::template f<x>::value;
 
   template<class x, class C = mp::identity>
-  inline constexpr int_t unary_plus_v = mp::unary_plus<C>::template f<x>;
+  inline constexpr int_t unary_plus_v = mp::unary_plus<C>::template f<x>::value;
 
   template<class x, class C = mp::identity>
-  inline constexpr int_t bit_not_v = mp::bit_not<C>::template f<x>;
+  inline constexpr int_t bit_not_v = mp::bit_not<C>::template f<x>::value;
 
   template<class x, class C = mp::identity>
-  inline constexpr int_t inc_v = mp::inc<C>::template f<x>;
+  inline constexpr int_t inc_v = mp::inc<C>::template f<x>::value;
 
   template<class x, class C = mp::identity>
-  inline constexpr int_t dec_v = mp::dec<C>::template f<x>;
+  inline constexpr int_t dec_v = mp::dec<C>::template f<x>::value;
 
   template<class x, class y, class C = mp::identity>
-  inline constexpr int_t equal_v = mp::equal<C>::template f<x, y>;
+  inline constexpr int_t equal_v = mp::equal<C>::template f<x, y>::value;
 
   template<class x, class y, class C = mp::identity>
-  inline constexpr int_t not_equal_v = mp::not_equal<C>::template f<x, y>;
+  inline constexpr int_t not_equal_v = mp::not_equal<C>::template f<x, y>::value;
 
   template<class x, class y, class C = mp::identity>
-  inline constexpr int_t less_v = mp::less<C>::template f<x, y::value>;
+  inline constexpr int_t less_v = mp::less<C>::template f<x, y>::value;
 
   template<class x, class y, class C = mp::identity>
-  inline constexpr int_t less_equal_v = mp::less_equal<C>::template f<x, y>;
+  inline constexpr int_t less_equal_v = mp::less_equal<C>::template f<x, y>::value;
 
   template<class x, class y, class C = mp::identity>
-  inline constexpr int_t greater_v = mp::greater<C>::template f<x, y::value>;
+  inline constexpr int_t greater_v = mp::greater<C>::template f<x, y>::value;
 
   template<class x, class y, class C = mp::identity>
-  inline constexpr int_t greater_equal_v = mp::greater_equal<C>::template f<x, y>;
+  inline constexpr int_t greater_equal_v = mp::greater_equal<C>::template f<x, y>::value;
 }
 
 JLN_MP_DIAGNOSTIC_POP()
