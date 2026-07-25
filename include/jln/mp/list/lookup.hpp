@@ -117,10 +117,6 @@ namespace jln::mp
       ::template f<xs...>
     >
   {
-# ifdef JLN_MP_DOXYGENATING
-    template<class i>
-    using f;
-# endif
   };
 #else
   template<class... xs>
