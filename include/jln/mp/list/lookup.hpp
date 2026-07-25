@@ -148,6 +148,12 @@ namespace jln::mp
     template<class L>
     using build_indexed = typename detail::_unpack<cfe<mp::build_indexed>, L>::type;
 
+    template<class BuildedIndexedV, int i>
+    using indexed_at_c = typename BuildedIndexedV::template f<i>;
+
+    template<class BuildedIndexedV, class I>
+    using indexed_at = typename BuildedIndexedV::template f<I::value>;
+
     template<class L, int i>
     using lookup_c =
       typename detail::_unpack<mp::cfe<mp::build_indexed_v>, L>::type::template f<i>;
@@ -155,12 +161,6 @@ namespace jln::mp
     template<class L, class I>
     using lookup =
       typename detail::_unpack<mp::cfe<mp::build_indexed_v>, L>::type::template f<I::value>;
-
-    template<class IndexedV, int i>
-    using indexed_lookup_c = typename IndexedV::template f<i>;
-
-    template<class IndexedV, class I>
-    using indexed_lookup = typename IndexedV::template f<I::value>;
   }
 }
 
