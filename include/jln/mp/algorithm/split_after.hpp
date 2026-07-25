@@ -82,7 +82,7 @@ namespace jln::mp
 namespace jln::mp::detail
 {
   JLN_MP_DIAGNOSTIC_PUSH()
-  JLN_MP_DIAGNOSTIC_IGNORE_BOGUS_WNRVO()
+  JLN_MP_DIAGNOSTIC_IGNORE_BOGUS_NRVO()
   JLN_MP_DIAGNOSTIC_IGNORE_UNSAFE_BUFFER_USAGE()
   template<bool... is_sep>
   struct mk_split_after_indices

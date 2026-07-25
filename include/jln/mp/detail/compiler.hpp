@@ -339,10 +339,10 @@
 // clang bug:
 // - https://stackoverflow.com/a/78746171
 // - https://github.com/llvm/llvm-project/issues/95280
-#  define JLN_MP_DIAGNOSTIC_IGNORE_BOGUS_WNRVO() \
+#  define JLN_MP_DIAGNOSTIC_IGNORE_BOGUS_NRVO() \
   JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wnrvo")
 #else
-#  define JLN_MP_DIAGNOSTIC_IGNORE_BOGUS_WNRVO()
+#  define JLN_MP_DIAGNOSTIC_IGNORE_BOGUS_NRVO()
 #endif
 
 #if JLN_MP_FEATURE_PACK_INDEXING && JLN_MP_CLANG && __cplusplus < 202400L
