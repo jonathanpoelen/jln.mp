@@ -11,15 +11,15 @@ namespace jln::mp::detail
 {
   struct is_not_unique_by_kv_entry;
 
-  template<class KeyF, class C, class CC = unique_by_kv<C>>
+  template<class KeyProj, class C, class CC = unique_by_kv<C>>
   struct smp_unique_by;
 }
 /// \endcond
 
 namespace jln::mp::smp
 {
-  template<class KeyF, class C = listify>
-  using unique_by = try_contract<detail::smp_unique_by<assume_unary<KeyF>, subcontract<C>>>;
+  template<class KeyProj, class C = listify>
+  using unique_by = try_contract<detail::smp_unique_by<assume_unary<KeyProj>, subcontract<C>>>;
 
   template<class C = listify>
   using unique_by_kv = test_contract<
@@ -33,10 +33,10 @@ namespace jln::mp::smp
 /// \cond
 namespace jln::mp::detail
 {
-  template<template<class> class sfinae, class KeyF, class C>
-  struct _sfinae<sfinae, unique_by<KeyF, C>>
+  template<template<class> class sfinae, class KeyProj, class C>
+  struct _sfinae<sfinae, unique_by<KeyProj, C>>
   {
-    using type = smp::unique_by<sfinae<KeyF>, sfinae<C>>;
+    using type = smp::unique_by<sfinae<KeyProj>, sfinae<C>>;
   };
 
   template<template<class> class sfinae, class C>
@@ -92,11 +92,11 @@ namespace jln::mp::detail
   };
 #endif
 
-  template<class KeyF, class, class C>
+  template<class KeyProj, class, class C>
   struct smp_unique_by
   {
     template<class... xs>
-    using f = typename smp_unique_by_impl<JLN_MP_CALL_TRACE(KeyF, xs)...>
+    using f = typename smp_unique_by_impl<JLN_MP_CALL_TRACE(KeyProj, xs)...>
 #if !JLN_MP_FEATURE_CONCEPTS
       ::impl
 #endif

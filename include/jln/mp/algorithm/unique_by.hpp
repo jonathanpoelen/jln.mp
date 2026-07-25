@@ -64,19 +64,19 @@ namespace jln::mp
   };
 
   /// Returns a list with duplicate elements removed,
-  /// using the function \c KeyF to determine uniqueness,
+  /// using \c KeyProj to determine uniqueness,
   /// preserving the order of appearance.
   /// \c unique_by<identity> is equivalent to \c unique<>.
   /// \semantics
   ///   \code
   ///   unique_by<unpack<add<>>>::f<
-  ///     emp::numbers<0, 0>,
-  ///     emp::numbers<1, 0>,
-  ///     emp::numbers<2, -1>,
-  ///     emp::numbers<3, 2>,
-  ///     emp::numbers<1, 4>,
-  ///     emp::numbers<2, 1>,
-  ///     emp::numbers<3, 0>
+  ///     emp::numbers<0,  0>, // KeyProj => 0
+  ///     emp::numbers<1,  0>, // KeyProj => 1
+  ///     emp::numbers<2, -1>, // KeyProj => 1, removed
+  ///     emp::numbers<3,  2>, // KeyProj => 5
+  ///     emp::numbers<1,  4>, // KeyProj => 5, removed
+  ///     emp::numbers<2,  1>, // KeyProj => 3
+  ///     emp::numbers<3,  0>  // KeyProj => 3, removed
   ///   > == list<
   ///     emp::numbers<0, 0>,
   ///     emp::numbers<1, 0>,
@@ -86,29 +86,29 @@ namespace jln::mp
   ///   \endcode
   /// \treturn \sequence
   /// \see unique, unique_if, unique_by_kv
-  template<class KeyF, class C = listify>
+  template<class KeyProj, class C = listify>
   struct unique_by
   {
 #ifdef JLN_MP_DOXYGENATING
     template<class... xs>
     using f = JLN_MP_CALL_TRACE(
       unique_by_kv<C>,
-      unique_by_kv_entry<JLN_MP_CALL_TRACE(KeyF, xs), xs>...
+      unique_by_kv_entry<JLN_MP_CALL_TRACE(KeyProj, xs), xs>...
     );
 #else
     template<class... xs>
     using f = typename detail::flat_recursive_unique_by_kv<
       C::template f,
       typename detail::unique_by_kv_impl
-        ::f<inherit<>, unique_by_kv_entry<JLN_MP_CALL_TRACE(KeyF, xs), xs>...>
+        ::f<inherit<>, unique_by_kv_entry<JLN_MP_CALL_TRACE(KeyProj, xs), xs>...>
     >::type;
 #endif
   };
 
   namespace emp
   {
-    template<class L, class KeyF, class C = mp::listify>
-    using unique_by = typename detail::_unpack<unique_by<KeyF, C>, L>::type;
+    template<class L, class KeyProj, class C = mp::listify>
+    using unique_by = typename detail::_unpack<unique_by<KeyProj, C>, L>::type;
 
     template<class L, class C = mp::listify>
     using unique_by_kv = typename detail::_unpack<unique_by_kv<C>, L>::type;
@@ -232,14 +232,14 @@ namespace jln::mp
     >::type;
   };
 
-  template<class KeyF, template<class...> class C>
-  struct unique_by<KeyF, cfe<C>>
+  template<class KeyProj, template<class...> class C>
+  struct unique_by<KeyProj, cfe<C>>
   {
     template<class... xs>
     using f = typename detail::flat_recursive_unique_by_kv<
       C,
       typename detail::unique_by_kv_impl
-        ::f<inherit<>, unique_by_kv_entry<JLN_MP_CALL_TRACE(KeyF, xs), xs>...>
+        ::f<inherit<>, unique_by_kv_entry<JLN_MP_CALL_TRACE(KeyProj, xs), xs>...>
     >::type;
   };
 #endif
