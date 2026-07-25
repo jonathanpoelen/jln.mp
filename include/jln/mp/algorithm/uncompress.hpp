@@ -76,6 +76,7 @@ namespace jln::mp
 
 #include <jln/mp/utility/enable_if.hpp>
 #include <jln/mp/detail/sequence.hpp>
+#include <jln/mp/list/lookup.hpp>
 
 /// \cond
 namespace jln::mp::detail

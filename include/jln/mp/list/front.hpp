@@ -48,8 +48,6 @@ namespace jln::mp
 }
 
 
-#include <jln/mp/list/lookup.hpp>
-
 /// \cond
 namespace jln::mp
 {
