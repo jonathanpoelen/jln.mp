@@ -220,6 +220,11 @@
 //@}
 
 
+/// Checks that a value respects a condition and is different from 0.
+/// ex: `JLN_MP_WORKAROUND(JLN_MP_GCC, < 1200)`.
+#define JLN_MP_WORKAROUND(symbol, test) ((symbol) != 0 && ((symbol) test))
+
+
 // Pragma
 //@{
 #define JLN_MP_PRAGMA(x) JLN_MP_PRAGMA_I(x)
@@ -345,7 +350,13 @@
 #  define JLN_MP_DIAGNOSTIC_IGNORE_BOGUS_NRVO()
 #endif
 
-#if JLN_MP_FEATURE_PACK_INDEXING && JLN_MP_CLANG && __cplusplus < 202400L
+#if (JLN_MP_CLANG || JLN_MP_WORKAROUND(JLN_MP_GCC, >= 1500)) && __cplusplus < 202400L
+#  define JLN_MP_HAS_CPP26_EXTENSIONS_WARNING 1
+#else
+#  define JLN_MP_HAS_CPP26_EXTENSIONS_WARNING 0
+#endif
+
+#if JLN_MP_FEATURE_PACK_INDEXING && JLN_MP_HAS_CPP26_EXTENSIONS_WARNING
 #  define JLN_MP_DIAGNOSTIC_IGNORE_PACK_INDEXING_EXTENSION() \
   JLN_MP_DIAGNOSTIC_CLANG_IGNORE("-Wc++26-extensions")
 #else
@@ -435,11 +446,6 @@
 # define JLN_MP_PACK_AT_SAFE(xs, ...) JLN_MP_PACK_AT(xs, __VA_ARGS__)
 #endif
 //@}
-
-
-/// Checks that a value respects a condition and is different from 0.
-/// ex: `JLN_MP_WORKAROUND(JLN_MP_GCC, < 1200)`.
-#define JLN_MP_WORKAROUND(symbol, test) ((symbol) != 0 && ((symbol) test))
 
 /// When 1, algorithms using friend injection its accessible
 #ifndef JLN_MP_ENABLE_FRIEND_INJECTION
